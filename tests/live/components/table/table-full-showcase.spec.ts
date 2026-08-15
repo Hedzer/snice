@@ -31,7 +31,8 @@ test.describe('table full showcase', () => {
     const snapshot = await page.evaluate(() => {
       const tableIds = [
         'pro-table', 'editing-demo', 'virtual-demo', 'detail-demo', 'tree-demo',
-        'grouping-demo', 'groups-demo', 'pin-demo', 'dnd-demo', 'pin-row-demo',
+        'grouping-demo', 'groups-demo', 'pin-demo', 'fit-squish', 'fit-scroll',
+        'dnd-demo', 'pin-row-demo',
         'paginated', 'remote-demo', 'super-header', 'density-compact',
         'density-comfy', 'list-mode', 'loading', 'empty',
       ];
@@ -60,6 +61,20 @@ test.describe('table full showcase', () => {
         superHeader: table('super-header').querySelector('[slot="header"]')?.textContent,
         compact: table('density-compact').density,
         comfortable: table('density-comfy').density,
+        // Half-width cards: the columns share the card instead of scrolling.
+        columnFit: {
+          squish: table('fit-squish').columnFit,
+          scroll: table('fit-scroll').columnFit,
+          density: table('density-compact').columnFit,
+          squishOverflows: (() => {
+            const frame = table('fit-squish').shadowRoot.querySelector('.table-frame');
+            return frame.scrollWidth > frame.clientWidth;
+          })(),
+          scrollOverflows: (() => {
+            const frame = table('fit-scroll').shadowRoot.querySelector('.table-frame');
+            return frame.scrollWidth > frame.clientWidth;
+          })(),
+        },
         list: table('list-mode').list,
         toolbarControls: {
           sort: !!table('pro-table').shadowRoot.querySelector('.toolbar-sort'),
@@ -103,7 +118,7 @@ test.describe('table full showcase', () => {
       'Duration', 'File Size', 'Tags', 'Status', 'Email', 'Phone', 'Link',
       'Color', 'Image', 'JSON', 'Location', 'Actions',
     ]);
-    expect(snapshot.tableIds).toHaveLength(18);
+    expect(snapshot.tableIds).toHaveLength(20);
     expect(snapshot.customPills).toBeGreaterThan(0);
     expect(snapshot.loading).toBe(true);
     expect(snapshot.empty).toContain('No employees match this view.');
@@ -111,6 +126,13 @@ test.describe('table full showcase', () => {
     expect(snapshot.superHeader).toContain('Employee Directory');
     expect(snapshot.compact).toBe('compact');
     expect(snapshot.comfortable).toBe('comfortable');
+    expect(snapshot.columnFit.squish).toBe('squish');
+    expect(snapshot.columnFit.scroll).toBe('scroll');
+    expect(snapshot.columnFit.density).toBe('squish');
+    expect(snapshot.columnFit.squishOverflows).toBe(false);
+    // The same columns in the same card: the default policy is what squish
+    // opted out of, so the contrast the section demonstrates is real.
+    expect(snapshot.columnFit.scrollOverflows).toBe(true);
     expect(snapshot.list).toBe(true);
     expect(snapshot.toolbarControls).toEqual({ sort: true, filter: true });
     expect(snapshot.listView).toEqual({ rows: 12, dataCells: 0 });

@@ -278,6 +278,23 @@ export type PaginationMode = 'client' | 'server';
 export type SelectionMode = 'none' | 'single' | 'multiple';
 
 /**
+ * How the columns relate to the width of the frame they are painted in.
+ *
+ * `scroll` (the default, and the historical behavior): a column never goes
+ * below its `minWidth`. A frame too narrow for the minimums overflows into the
+ * frame's own horizontal scroller, so every column keeps a readable width and
+ * the reader scrolls to the ones that did not fit.
+ *
+ * `squish`: the frame's width is the hard constraint and `minWidth` is relaxed
+ * to a bare legibility floor. Every visible column shares the frame, cell
+ * content ellipsises, and the table NEVER scrolls horizontally — the rightmost
+ * column edge sits on the frame's inner edge at any width. Resizing is still
+ * allowed; the columns beside the dragged one give up (or take back) the
+ * difference so the total stays inside the frame.
+ */
+export type ColumnFit = 'scroll' | 'squish';
+
+/**
  * The real public surface of `SniceTable` (components/table/snice-table.ts),
  * enumerated directly from the class — every `@property`, every plain public
  * field, every method without a `private` modifier. Excludes framework
@@ -348,6 +365,7 @@ export interface SniceTableElement extends HTMLElement {
 
   // ── Layout / density ──
   density: 'compact' | 'standard' | 'comfortable';
+  columnFit: ColumnFit;
 
   // ── Column features ──
   columnResize: boolean;

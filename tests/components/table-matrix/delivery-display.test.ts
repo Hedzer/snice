@@ -7,9 +7,9 @@
 // text, so a delivery sequence that leaves a formatted cell blank or stale is
 // caught on the painted output too (MATRIX-1, MATRIX-delivery-1: both fixed).
 //
-// The only expected failure here is X21 (MATRIX-delivery-2, same-array-reference
-// reassignment) — the painted counterpart of delivery-local L8, still open
-// pending the reactivity decision.
+// X21 (MATRIX-delivery-2, same-array-reference reassignment) — the painted
+// counterpart of delivery-local L8 — is also fixed: `data` opts out of the core
+// identity dirty-check locally, so no expected failure remains in this file.
 import { describe, it, afterEach } from 'vitest';
 import { removeComponent } from '../test-utils';
 import { makeTable, deliver, wait, dataRows } from './matrix-utils';
@@ -300,8 +300,7 @@ const LOCAL_ONLY: Scenario[] = [
   },
   {
     id: 'X21',
-    title: 'reassigning the SAME array reference after mutating its contents repaints',
-    deliveryBug: 'MATRIX-delivery-2',
+    title: 'reassigning the SAME array reference after mutating its contents repaints [MATRIX-delivery-2]',
     run: async (apply, table) => {
       const rows = [makeRow('a')];
       await apply(rows);

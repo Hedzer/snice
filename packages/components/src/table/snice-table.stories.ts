@@ -13,6 +13,7 @@ type Args = {
   paginationMode?: 'client' | 'server';
   pageSize?: number;
   density?: 'compact' | 'standard' | 'comfortable';
+  columnFit?: 'scroll' | 'squish';
   list?: boolean;
   loading?: boolean;
   editable?: boolean;
@@ -79,6 +80,7 @@ const meta: Meta<Args> = {
     paginationMode: { control: 'select', options: ['client', 'server'], table: { category: 'Pagination' } },
     pageSize:       { control: { type: 'number', min: 1 }, table: { category: 'Pagination' } },
     density:        { control: 'select', options: ['compact', 'standard', 'comfortable'], table: { category: 'Appearance' } },
+    columnFit:      { control: 'select', options: ['scroll', 'squish'], table: { category: 'Columns' } },
     list:           { control: 'boolean', table: { category: 'Appearance' } },
     loading:        { control: 'boolean', table: { category: 'Data state' } },
     editable:       { control: 'boolean', table: { category: 'Editing' } },
@@ -117,6 +119,7 @@ const meta: Meta<Args> = {
     if (args.editMode !== undefined) table.setAttribute('edit-mode', args.editMode);
     if (args.pageSize !== undefined) table.setAttribute('page-size', String(args.pageSize));
     if (args.density !== undefined)  table.setAttribute('density', String(args.density));
+    if (args.columnFit !== undefined) table.setAttribute('column-fit', String(args.columnFit));
     if (args.rowHeight !== undefined) table.setAttribute('row-height', String(args.rowHeight));
     if (args.lazyLoadThreshold !== undefined) table.setAttribute('lazy-load-threshold', String(args.lazyLoadThreshold));
     if (args.virtualize) table.style.height = '24rem';
@@ -137,6 +140,7 @@ export const Default: Story = {
     selectionMode: 'multiple',
     hoverable: true,
     density: 'standard',
+    columnFit: 'scroll',
     pageSize: 10,
     editMode: 'cell',
   },
@@ -642,6 +646,53 @@ export const ColumnPinningVisibility: Story = {
   },
 };
 
+// h2: Column Fit: Squish vs Scroll
+// Eight columns whose declared minimums add up to well over the box they are
+// painted in. `squish` shares the box and ellipsises; the default `scroll`
+// keeps the minimums and overflows into the frame's own scroller.
+export const ColumnFitSquishVsScroll: Story = {
+  render: () => {
+    const columns = [
+      { key: 'name', label: 'Name', type: 'text', minWidth: 140 },
+      { key: 'department', label: 'Department', type: 'text', minWidth: 130 },
+      { key: 'email', label: 'Email', type: 'email', minWidth: 200 },
+      { key: 'location', label: 'Location', type: 'text', minWidth: 150 },
+      { key: 'startDate', label: 'Start Date', type: 'date', minWidth: 120 },
+      { key: 'age', label: 'Age', type: 'number', minWidth: 70 },
+      {
+        key: 'salary', label: 'Salary', type: 'currency', minWidth: 120,
+        currencyFormat: { currency: 'USD', decimals: 0 },
+      },
+      { key: 'status', label: 'Status', type: 'status', minWidth: 110 },
+    ];
+    const rows = DATA.slice(0, 6).map((row, index) => ({
+      ...row,
+      location: ['New York, NY', 'Austin, TX', 'London, UK'][index % 3],
+      startDate: `202${index % 5}-0${(index % 8) + 1}-15`,
+      status: index % 5 === 0 ? 'Away' : 'Active',
+    }));
+
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;padding:1rem;';
+    for (const fit of ['squish', 'scroll'] as const) {
+      const card = document.createElement('div');
+      card.style.cssText = 'min-width:0;';
+      const label = document.createElement('h3');
+      label.style.cssText = 'margin:0 0 0.5rem;font:600 0.8rem/1.2 system-ui;';
+      label.textContent = fit === 'squish' ? 'column-fit="squish"' : 'column-fit="scroll" (default)';
+      // Each table owns its definitions: the column manager keeps per-table
+      // width state against them.
+      card.append(label, makeTable(
+        { 'column-fit': fit, 'column-resize': true, sortable: true, hoverable: true },
+        columns.map((column) => ({ ...column })),
+        rows,
+      ));
+      wrapper.appendChild(card);
+    }
+    return wrapper;
+  },
+};
+
 // h2: Row Reorder (Drag & Drop)
 export const RowReorderDragDrop: Story = {
   render: () => makeTable(
@@ -699,12 +750,12 @@ export const SuperHeaderSlot: Story = {
 
 // h2: Density: Compact
 export const DensityCompact: Story = {
-  render: () => makeTable({ density: 'compact', sortable: true, striped: true, hoverable: true }),
+  render: () => makeTable({ density: 'compact', 'column-fit': 'squish', sortable: true, striped: true, hoverable: true }),
 };
 
 // h2: Density: Comfortable
 export const DensityComfortable: Story = {
-  render: () => makeTable({ density: 'comfortable', sortable: true, striped: true, hoverable: true }),
+  render: () => makeTable({ density: 'comfortable', 'column-fit': 'squish', sortable: true, striped: true, hoverable: true }),
 };
 
 // h2: List Mode
@@ -726,6 +777,7 @@ export const LoadingState: Story = {
   render: () => {
     const table = document.createElement('snice-table') as any;
     table.toggleAttribute('loading', true);
+    table.setAttribute('column-fit', 'squish');
     table.setColumns(COLUMNS);
     table.setData([]);
     requestAnimationFrame(() => { table.renderHeader(); table.renderBody(); });
@@ -737,6 +789,7 @@ export const LoadingState: Story = {
 export const EmptyTable: Story = {
   render: () => {
     const table = document.createElement('snice-table') as any;
+    table.setAttribute('column-fit', 'squish');
     table.setColumns(COLUMNS);
     table.setData([]);
     requestAnimationFrame(() => { table.renderHeader(); table.renderBody(); });

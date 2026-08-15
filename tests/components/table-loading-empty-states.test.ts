@@ -339,6 +339,33 @@ describe.each(PATHS)('snice-table zero-row states (%s render path)', (_label, vi
     expect(table.classList.contains('table--error')).toBe(true);
   });
 
+  // The documented LIMIT of the two clearing tests above (docs/components/
+  // table.md): a request that was ALREADY in flight when the local rows landed
+  // still reports its own failure when it settles — nothing superseded it, so
+  // it is the newest attempt and it did fail. Pinned so the semantics can only
+  // ever change deliberately, together with the docs.
+  it('still reports an in-flight failure that settles after a local assignment', async () => {
+    table = await makeTable({ remote: true, virtualize });
+    errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const req = pendRequest(table);
+    table.getTableData();
+    await wait(20);
+
+    const rows = ROWS(2);
+    table.unsortedData = [...rows];
+    table.data = rows;
+    await wait(40);
+    expect(table.classList.contains('table--error')).toBe(false);
+
+    req.reject(new Error('late failure'));
+    await wait(60);
+
+    expect(table.loadError).toBe('late failure');
+    expect(table.classList.contains('table--error')).toBe(true);
+    // The locally assigned rows stay: the ⚠️ row only replaces an EMPTY body.
+    expect(bodyState(table)).toBe('rows');
+  });
+
   it('renders a slotted empty-state clone instead of the default placeholder', async () => {
     table = await makeTable({ virtualize, data: [] });
     const custom = document.createElement('div');

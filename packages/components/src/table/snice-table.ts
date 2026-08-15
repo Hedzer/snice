@@ -55,7 +55,7 @@ import type { DetailPanelOptions } from './table-master-detail';
 import type { ToolbarOptions } from './table-toolbar';
 import type { TreeDataOptions, TreeRow } from './table-tree-data';
 import type { ColumnGroup, ColumnState } from './table-column-manager';
-import type { ColumnDefinition, SniceTableElement, SelectionMode, ListViewRenderer } from './snice-table.types';
+import type { ColumnDefinition, ColumnFit, SniceTableElement, SelectionMode, ListViewRenderer } from './snice-table.types';
 
 /**
  * A single desired body row for the render-path reconciler (Task B). `key`
@@ -131,10 +131,30 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   // C1: reactive, no attribute reflection. A post-mount assignment (or the
   // setData/setColumns aliases) re-renders through the microtask-coalesced
   // queue — see handleColumnsAssignment / handleDataAssignment.
-  @property({ attribute: false })
+  //
+  // `hasChanged: () => true` — ASSIGNMENT IS THE SIGNAL, NOT IDENTITY.
+  // The core dirty-check (notEqual in packages/core/src/utils.ts, applied by the
+  // @property setter in element.ts) is identity-based and stays that way for
+  // every other property: that is the right default for reactivity in general.
+  // But `data` and `columns` are bulk payloads that callers routinely mutate in
+  // place and then publish by re-assigning the SAME array reference
+  // (`rows.push(row); table.data = rows`). The documented contract is that
+  // assigning `data`/`columns` rerenders, so these two properties opt OUT of the
+  // identity gate locally rather than weakening it globally.
+  //
+  // Tradeoff — double-render cost: a genuinely redundant assignment
+  // (`table.data = table.data` with nothing changed) now costs a render that the
+  // identity gate used to swallow, and a caller who assigns both `columns` and
+  // `data` pays two schedule calls instead of one. It is bounded: both watchers
+  // go through scheduleRender(), which coalesces a burst within a tick into a
+  // single microtask flush, so the worst case is one extra body paint per tick,
+  // never per assignment. Deep-equality diffing was rejected as the alternative
+  // — it is O(rows x columns) on every assignment, i.e. a cost paid by the
+  // common (genuinely-changed) path to save the rare redundant one.
+  @property({ attribute: false, hasChanged: () => true })
   columns: any[] = [];
 
-  @property({ attribute: false })
+  @property({ attribute: false, hasChanged: () => true })
   data: any[] = [];
 
   /**
@@ -209,6 +229,17 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   @property({ attribute: 'density' })
   density: 'compact' | 'standard' | 'comfortable' = 'standard';
+
+  /**
+   * How the columns relate to the frame's width.
+   *
+   * `scroll` keeps every column at or above its `minWidth` and lets the frame
+   * scroll horizontally when they no longer fit. `squish` makes the frame the
+   * hard constraint instead: minimums relax, content ellipsises, and the table
+   * never scrolls sideways. See the `ColumnFit` docs in snice-table.types.ts.
+   */
+  @property({ attribute: 'column-fit' })
+  columnFit: ColumnFit = 'scroll';
 
   @property({ type: Boolean, attribute: 'header-filters' })
   headerFilters = false;
@@ -358,6 +389,10 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       this.loading = false;
       // Wait for next frame to ensure DOM is updated
       await new Promise(resolve => requestAnimationFrame(resolve));
+      // Same guard the success path applies above: a newer request can settle
+      // (and paint) inside this frame, and this failure's repaint would then be
+      // a second full body rebuild owed to nobody.
+      if (seq !== this.dataRequestSeq) return;
       this.renderBody();
     }
   }
@@ -480,15 +515,22 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
 
   private debouncedDataRequest() {
+    // The supersede decision belongs to the moment the NEW request is decided
+    // on, not to the moment its timeout fires. Bumping here closes the 150ms
+    // window in which an already-obsolete in-flight response still satisfied
+    // `seq === this.dataRequestSeq` and painted rows for the previous sort /
+    // filter / page under a header that already advertises the new one.
+    this.dataRequestSeq++;
+
     // Set loading immediately for instant feedback
     if (!this.loading) {
       this.loading = true;
     }
-    
+
     if (this.dataRequestTimeout) {
       clearTimeout(this.dataRequestTimeout);
     }
-    
+
     this.dataRequestTimeout = setTimeout(() => {
       this.getTableData();
       this.dataRequestTimeout = null;
@@ -569,6 +611,72 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         border-collapse: separate;
         border-spacing: 0;
         /* no border or radius — handled by .table-frame */
+      }
+
+      /* column-fit="squish": the frame's width is the constraint.
+       *
+       * The arithmetic (syncColumnWidthsToFrame → fitVisibleColumns) already
+       * lands the columns on the frame's content width, and fixed layout hands
+       * any rounding slack back to the columns, so the rightmost edge sits on
+       * the frame's inner edge. These rules are the guarantee behind that:
+       * hiding the horizontal overflow means a stray pixel — a sub-pixel
+       * border, a browser rounding a percentage the other way — can never turn
+       * into a scrollbar the mode promised would not appear. Vertical scrolling
+       * is untouched. */
+      :host([column-fit="squish"]) .table-frame {
+        overflow-x: hidden;
+      }
+
+      :host([column-fit="squish"]) table {
+        max-width: 100%;
+      }
+
+      /* Squished columns are narrower than their content by design, so the
+       * content has to end in an ellipsis rather than wrap the row taller (or
+       * push a word past the clip edge). */
+      :host([column-fit="squish"]) th,
+      :host([column-fit="squish"]) td {
+        white-space: nowrap;
+      }
+
+      :host([column-fit="squish"]) td > snice-cell-text,
+      :host([column-fit="squish"]) td > .custom-cell,
+      :host([column-fit="squish"]) td > .tree-label {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* The typed cells (email, status, link, phone, location, json, colour,
+       * image, actions) each declare a 100px floor on their host AND on their
+       * inner .cell-content. That floor is a sensible default at natural width
+       * and fatal here: a squished column is routinely narrower than 100px, the
+       * cell refuses to shrink to it, and the td's own overflow: hidden then
+       * chops the label mid-glyph — no ellipsis, because the element that owns
+       * the ellipsis never got small enough to trigger it.
+       *
+       * .cell-content lives in the cell's shadow root, so no descendant
+       * selector from here can reach it. A custom property can: it inherits
+       * across the boundary, the cells read it with the same 100px as the
+       * fallback, and nothing outside a squished td sees any change. */
+      :host([column-fit="squish"]) td {
+        --snice-cell-min-width: 0;
+      }
+
+      /* The header label is the table's own markup and needs the same promise:
+       * "Department" clipped to "Departme" reads as a different word. A
+       * sortable header puts the label in a flex row beside the sort
+       * indicator, and a flex item only shrinks below its content once it is
+       * allowed to — hence min-width: 0 alongside the ellipsis. A plain header
+       * is bare text in the th, which ellipsises on the th itself. */
+      :host([column-fit="squish"]) th {
+        text-overflow: ellipsis;
+      }
+
+      :host([column-fit="squish"]) th .sort-header > span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
       }
 
       /* Super-header (slotted area above column headers) */
@@ -2029,7 +2137,11 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   @watch('columns', { immediate: false })
   handleColumnsAssignment() {
     this.renderedRows = new Map();
-    if (this.columns.length > 0) this.columnManager.initialize(this.columns, this);
+    // A new array is a NEW CONFIGURATION: its order / pinned / width / declared
+    // set replace whatever the column model is holding, and states for columns
+    // it no longer declares are dropped. initialize() is the render-path resync
+    // that must NOT do this (it would undo a drag-resize on every paint).
+    if (this.columns.length > 0) this.columnManager.applyConfiguration(this.columns, this);
     // F: a column set change can add/remove an `aggregate` — resync the grouping
     // model's aggregator list and drop its stale flattened snapshot.
     this.grouping.setColumns(this.columns);
@@ -2231,8 +2343,42 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   @watch('currentPage', { immediate: false })
   handleCurrentPageChange() {
+    // A clamp written by the display model itself is not a navigation — see
+    // clampCurrentPage().
+    if (this.clampingPage) return;
     if (this.paginationMode === 'server' && this.mode === 'remote') this.debouncedDataRequest();
     else this.scheduleRender('body');
+  }
+
+  /**
+   * Write a page number the display model just derived (a re-clamp after the
+   * row set shortened), WITHOUT re-entering the render scheduler.
+   *
+   * The three clamp sites all sit inside a display-model computation whose
+   * caller paints immediately afterwards with the clamped page — the ordinary
+   * body path slices with it and then renders the pager, the grouping and tree
+   * models return the clamped slice. Letting the @watch fire here queued a
+   * second, byte-identical body pass per delivery — the measured cost, and what
+   * the regression test pins. Suppressing the write's watcher makes the clamp
+   * cost zero extra passes and makes an oscillating clamp structurally unable
+   * to loop.
+   *
+   * All three sites are reachable only under `paginationMode === 'client'`, so
+   * the watcher's server branch (debouncedDataRequest, whose `loading = true`
+   * re-enters renderBody SYNCHRONOUSLY through the loading watcher — from the
+   * middle of a render) is not reachable from a clamp today. It is the reason
+   * to keep this guard rather than to drop the watcher suppression if a fourth
+   * clamp site ever lands outside that guard.
+   */
+  private clampingPage = false;
+  private clampCurrentPage(page: number) {
+    if (page === this.currentPage) return;
+    this.clampingPage = true;
+    try {
+      this.currentPage = page;
+    } finally {
+      this.clampingPage = false;
+    }
   }
 
   @watch('pageSize', { immediate: false })
@@ -2324,6 +2470,19 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     this.scheduleRender('header');
   }
 
+  /**
+   * Switching fit policy re-decides every unsized column's width, so the frame
+   * has to be re-fitted from scratch: the cached width would otherwise make the
+   * resize observer's "did the frame move?" guard swallow the very next pass.
+   */
+  @watch('columnFit', { immediate: false })
+  handleColumnFitChange() {
+    this.columnManager.setFitMode(this.columnFit);
+    this.lastFittedFrameWidth = 0;
+    this.syncColumnWidthsToFrame();
+    this.scheduleRender('header');
+  }
+
   /** Column definitions in their actual painted order. Column state owns
    * visibility/order; pinned columns are partitioned to their physical edges
    * so right-pinned cells do not overlap later unpinned columns. */
@@ -2372,6 +2531,11 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
    * run inside a resize observer without a render cascade.
    */
   private syncColumnWidthsToFrame(): boolean {
+    // The policy is the table's, the arithmetic is the manager's: hand it over
+    // before every fit so a `columnFit` change is honoured on the next pass
+    // whether it arrived as a property, an attribute, or an upgrade.
+    this.columnManager.setFitMode(this.columnFit);
+
     const frame = this.shadowRoot?.querySelector('.table-frame') as HTMLElement | null;
     const headerRow = this.shadowRoot?.querySelector('thead tr.column-header-row') as HTMLElement | null;
     if (!frame || !headerRow) return false;
@@ -2836,8 +3000,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // NOT the raw filtered data — otherwise the virtualizer windows the wrong
     // dataset and expand/collapse silently no-ops.
     if (this.virtualize && this.virtualizer.isEnabled()) {
-      this.virtualRowsSnapshot = this.getVirtualRows();
-      this.virtualizer.setTotalRows(this.virtualRowsSnapshot.length);
+      this.syncVirtualRows();
       // The virtualizer's afterRender hook re-establishes grid ARIA/focus on
       // the freshly inserted window.
 
@@ -2881,7 +3044,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         ? Math.ceil(filteredData.length / this.pageSize)
         : this.currentPage;
       const page = Math.max(1, Math.min(this.currentPage, totalPages));
-      if (page !== this.currentPage) this.currentPage = page;
+      this.clampCurrentPage(page);
       const startIndex = (page - 1) * this.pageSize;
       displayData = filteredData.slice(startIndex, startIndex + this.pageSize);
     }
@@ -4302,7 +4465,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     const scrollContainer = this.getScrollContainer();
     if (!scrollContainer) return;
 
-    this.virtualRowsSnapshot = this.getVirtualRows();
+    this.syncVirtualRows();
     this.virtualizer.attach({
       rowHeight: (displayIndex) => this.getVirtualRowHeight(displayIndex),
       bufferPx: this.virtualBuffer,
@@ -4352,6 +4515,31 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
    * virtualized); otherwise it is the filtered data. Each descriptor carries
    * the logical index used for `data-index`, selection, and detail lookups.
    */
+  /**
+   * Re-derive the windowed row model and hand it to the virtualizer.
+   *
+   * `virtualRowsSnapshot` is the ONLY state the paint pipeline caches, and
+   * `renderRowRange` paints from it. Any caller that resolves a display index
+   * against a FRESH `getVirtualRows()` and then asks the virtualizer to paint
+   * (scrollToRow, the keyboard ensure-visible hook) must republish that model
+   * first, or it scrolls to an offset computed in one list and paints rows from
+   * another — the requested row never appears. Returns the fresh model so the
+   * caller indexes exactly what will be painted.
+   *
+   * `paint` false leaves the repaint to the caller (scrollToIndex refreshes the
+   * window itself). Those callers must not paint from here: the virtualizer's
+   * afterRender hook re-runs keyboard.refresh(), whose ensure-visible callback
+   * lands back in ensureKeyboardRowRendered — an unbounded recursion.
+   */
+  private syncVirtualRows(paint = true) {
+    this.virtualRowsSnapshot = this.getVirtualRows();
+    // Not yet attached during setupVirtualization; attach() takes the count.
+    if (this.virtualizer.isEnabled()) {
+      this.virtualizer.setTotalRows(this.virtualRowsSnapshot.length, paint);
+    }
+    return this.virtualRowsSnapshot;
+  }
+
   private getVirtualRows(): Array<{ data: any; index: number; treeRow?: TreeRow; groupItem?: DisplayItem }> {
     const filtered = this.getFilteredData();
     // F: the flattened group+row+aggregate list is the virtual model when
@@ -4457,7 +4645,8 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // data row rather than an unrelated header/subtotal.
     if (this.usesGroupingDisplayModel() || this.treeData.isEnabled()) {
       const row = this.data[index];
-      const displayIndex = this.getVirtualRows().findIndex((entry) => entry.data === row);
+      // Resolve against the model the virtualizer is about to paint from.
+      const displayIndex = this.syncVirtualRows(false).findIndex((entry) => entry.data === row);
       if (displayIndex >= 0) this.virtualizer.scrollToIndex(displayIndex);
       return;
     }
@@ -4533,7 +4722,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
     const row = this.getKeyboardRows()[rowIndex];
     if (row === undefined) return;
-    const displayIndex = this.getVirtualRows().findIndex((entry) => entry.data === row);
+    // The window is painted from `virtualRowsSnapshot`; republish it so the
+    // offset we scroll to and the rows that land there come from one model.
+    const displayIndex = this.syncVirtualRows(false).findIndex((entry) => entry.data === row);
     if (displayIndex >= 0) this.virtualizer.scrollToIndex(displayIndex);
   }
 
@@ -4672,7 +4863,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
     const totalPages = Math.max(1, Math.ceil(items.length / this.pageSize));
     const page = Math.max(1, Math.min(this.currentPage, totalPages));
-    if (page !== this.currentPage) this.currentPage = page;
+    this.clampCurrentPage(page);
     const start = (page - 1) * this.pageSize;
     return items.slice(start, start + this.pageSize);
   }
@@ -4701,7 +4892,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (!paginate || !this.pagination || this.paginationMode !== 'client') return rows;
     const totalPages = Math.max(1, Math.ceil(rows.length / this.pageSize));
     const page = Math.max(1, Math.min(this.currentPage, totalPages));
-    if (page !== this.currentPage) this.currentPage = page;
+    this.clampCurrentPage(page);
     const start = (page - 1) * this.pageSize;
     return rows.slice(start, start + this.pageSize);
   }
@@ -5091,8 +5282,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     this.masterDetail.attach(this, options);
     this.masterDetail.onHeightChange = () => {
       if (!this.virtualize || !this.virtualizer.isEnabled()) return;
-      this.virtualRowsSnapshot = this.getVirtualRows();
-      this.virtualizer.setTotalRows(this.virtualRowsSnapshot.length);
+      this.syncVirtualRows();
     };
     this.masterDetail.prepare(this.data);
     this.renderHeader();

@@ -69,6 +69,7 @@ The imperative `columns` and `data` properties are the most complete path. Decla
 | `editable` | `boolean` | `false` | Enables the inline editing engine |
 | `editMode` (attr: `edit-mode`) | `'cell' \| 'row'` | `'cell'` | Edits one cell or every editable cell in a row |
 | `density` | `'compact' \| 'standard' \| 'comfortable'` | `'standard'` | Changes header and cell padding, rerenders rows, and emits `density-change` after post-mount assignment |
+| `columnFit` (attr: `column-fit`) | `'scroll' \| 'squish'` | `'scroll'` | How columns relate to the frame's width. `scroll` keeps every column at or above its `minWidth` and lets the frame scroll horizontally; `squish` relaxes the minimums so the columns always fit the frame and never scroll sideways. See [How a column gets its width](#how-a-column-gets-its-width) |
 | `columnResize` (attr: `column-resize`) | `boolean` | `false` | Adds draggable resize handles to resizable columns |
 | `headerFilters` (attr: `header-filters`) | `boolean` | `false` | Adds debounced contains inputs below filterable headers |
 | `quickFilter` (attr: `quick-filter`) | `boolean` | `false` | Shows a debounced local/remote quick-filter input backed by the same model as `setQuickFilter(text)` |
@@ -869,6 +870,40 @@ import 'snice/components/table/snice-table';
 
 `setColumns()` is equally reactive. `setData()` is deliberately non-eager for bulk loading; pair it with an explicit `renderBody()` or prefer `table.data = rows`.
 
+### The assignment is the signal, not the identity
+
+`data` and `columns` re-render on **every** assignment, including one that hands
+back the array the table already holds. Mutating rows in place and re-publishing
+them is a supported pattern:
+
+```typescript
+rows.push({ name: 'Carol Diaz', email: 'carol@example.com', age: 41 });
+table.data = rows;   // same array reference — still re-renders
+```
+
+Most Snice properties use identity to decide whether anything changed, which is
+why assigning an unchanged object elsewhere is a no-op. `data` and `columns`
+opt out of that check, because they are bulk payloads applications routinely
+edit in place. The cost is small and bounded: a genuinely redundant assignment
+(`table.data = table.data` with nothing changed) buys a render pass that would
+otherwise have been skipped, and renders are coalesced per microtask, so a burst
+of assignments in one tick still paints once.
+
+A `columns` assignment is a **new configuration**, not a patch. The array you
+assign is the source of truth for painted order, `pinned`, `width`, and which
+columns exist at all — a column the new array does not declare is dropped from
+the model entirely, and a column it re-declares comes back visible at the
+position and width it declares. That also means the assignment discards column
+state the user established through the UI (a dragged resize, a manual reorder, a
+column hidden with `setColumnVisible()`) for the columns it re-declares.
+
+Because `columns` ignores identity too, this is true of *every* assignment —
+handing back the same array, mutated or untouched, re-applies the declaration
+just as a fresh array would. Mutating the definitions you already published is
+therefore not a way around it. To keep user column state, do not re-assign
+`columns`: drive the change through the column APIs (`setColumnVisible()`,
+`moveColumn()`, `pinColumn()`, `unpinColumn()`), which update the model in place.
+
 Rows delivered while a client-side sort is active land in that sorted order —
 `currentSort` and the rendered body can never disagree. In remote mode the
 server owns the ordering, so the delivered order is rendered as-is.
@@ -1279,6 +1314,53 @@ refitted: `width` on the column definition, a drag-resize on the header edge,
 content has a natural size (an ID, a status chip); leave it off when the column
 should absorb whatever room is going.
 
+#### `column-fit`: scroll or squish
+
+The paragraphs above describe `column-fit="scroll"`, the default: `minWidth` is
+inviolable and the frame gives way. `column-fit="squish"` inverts the priority —
+the frame is inviolable and `minWidth` gives way:
+
+```html
+<!-- Default: columns keep their minimums, the frame scrolls sideways. -->
+<snice-table column-fit="scroll"></snice-table>
+
+<!-- Every column shares the frame; the table never scrolls horizontally. -->
+<snice-table column-fit="squish"></snice-table>
+```
+
+```javascript
+table.columnFit = 'squish';   // reactive; re-fits the painted columns
+```
+
+In squish mode:
+
+- **Every visible column shares the available frame width.** `minWidth` is
+  relaxed down to a 24px legibility floor, so eight columns still fit a
+  half-width card.
+- **Cell content and header labels ellipsise** instead of wrapping the row
+  taller or spilling past the column boundary. This covers the typed cells too
+  (`email`, `status`, `link`, `phone`, `location`, `json`, `color`, `image`,
+  `actions`), whose 100px default width floor squish relaxes through the
+  `--snice-cell-min-width` custom property — without that they refuse to shrink
+  and the column clips them mid-glyph instead of ellipsising.
+- **The table never scrolls horizontally.** The rightmost column edge sits on
+  the frame's inner edge at any width, and `.table-frame` sets
+  `overflow-x: hidden` so a sub-pixel rounding error can never produce a
+  scrollbar. Vertical scrolling is unaffected.
+- **Resizing still works and rebalances.** A drag is honoured, but the columns
+  beside the dragged one give up (or take back) the difference so the total
+  stays inside the frame — capped so no single column can squeeze the others
+  below the floor.
+- **Declared widths are still honoured** while there is an unsized column left
+  to absorb the difference. When the authored widths alone overflow the frame,
+  every column is scaled down by the same factor instead: squish has no
+  scrollbar to fall back on.
+
+Choose `squish` for a table that has to live in a card, a dashboard tile, or a
+split pane, where a horizontal scrollbar reads as a layout bug. Choose the
+default `scroll` for a wide dataset the reader is expected to explore sideways —
+pinned columns, in particular, only pay off when something scrolls past them.
+
 #### Pinned column affordance
 
 A pinned cell renders with `pinned-cell` plus `pinned-cell--left` or
@@ -1393,6 +1475,8 @@ Use `mode="remote"` with server pagination. The request payload contains `search
 ```
 
 Only the newest overlapping request may update the table. A rejected latest request emits `table-load-error` and renders its error message.
+
+A control change that re-requests (sort, filter, page size, or page in server mode) supersedes any in-flight request **at the moment the change is made**, not 150 ms later when the debounce fires. A response that lands inside that window is therefore discarded rather than painted — no flash of rows belonging to the previous sort under a header that already shows the new one — and a superseded request that fails stays silent, exactly like any other stale response: only the newest request reports `table-load-error`.
 
 ### Remote Data with a Controller
 
@@ -1529,7 +1613,7 @@ contract before adopting the table:
 
 - **Pagination labels.** The built-in `pagination` renders "Showing 1–25 of 60" with plain prev/next-style buttons; `snice-pagination` renders numbered `aria-label="Page N"` buttons. Neither produces a "Page X of Y" contract.
 - **Remote-mode debounce.** `mode="remote"` requests are debounced by a hard-coded 150 ms.
-- **Failed remote loads keep their rows.** With data present, a failed re-request leaves the previous rows on screen; the `⚠️` warning row and the `empty-state` slot only appear when there is no data at all. The error state (the `⚠️` row and the `table--error` host class) describes the last delivery *attempt*, so it clears as soon as any dataset arrives — a successful re-request, `setData()`, or a plain `table.data = rows` assignment when the page falls back to local data. Assigning an empty array clears it too, and the body then shows the empty state rather than the stale error. Two limits: the assignment must be a *new* array (re-assigning the identical array reference is a no-op, so it clears nothing), and a request that was already in flight when the local rows arrived still reports its own failure when it settles — the error re-appears until the next assignment. Reordering rows by drag republishes the same rows and deliberately leaves the error alone.
+- **Failed remote loads keep their rows.** With data present, a failed re-request leaves the previous rows on screen; the `⚠️` warning row and the `empty-state` slot only appear when there is no data at all. The error state (the `⚠️` row and the `table--error` host class) describes the last delivery *attempt*, so it clears as soon as any dataset arrives — a successful re-request, `setData()`, or a plain `table.data = rows` assignment when the page falls back to local data. Assigning an empty array clears it too, and the body then shows the empty state rather than the stale error. Re-assigning the identical array reference counts as an arrival and clears the error too — `data` re-renders on every assignment, not only on a new array. One limit remains: a request that was already in flight when the local rows arrived still reports its own failure when it settles — the error re-appears until the next assignment. Reordering rows by drag republishes the same rows and deliberately leaves the error alone.
 - **Remote re-request triggers.** Remote mode re-requests only on `currentPage`, `currentSort`, and `pageSize` changes. A page that owns its own filter set must reset one of those (e.g. `currentPage`) to drive a refetch.
 - **Local mode is client-side.** `sortable`/`searchable` in local mode sort and filter the rows already in `data` — on a server-paged list that is one page of results.
 

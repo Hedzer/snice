@@ -25,6 +25,12 @@
  * measurement, the frame actually filling) is pinned in
  * tests/live/components/table/table-column-layout.spec.ts. What is expressible
  * here is the geometry contract itself.
+ *
+ * The `column-fit` suite at the bottom covers the SECOND fitting policy:
+ * `column-fit="squish"` makes the frame width a hard constraint instead of a
+ * suggestion. Its pixel-level guarantees (no horizontal scrollbar, right edge
+ * on the frame edge, ellipsised content) live in
+ * tests/live/components/table/table-column-fit.spec.ts.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
@@ -218,6 +224,176 @@ describe('table column fitting', () => {
       const leftHead = table.shadowRoot.querySelector('th[data-key="name"]') as HTMLElement;
       expect(leftHead.classList.contains('pinned-cell')).toBe(false);
       expect(leftHead.classList.contains('pinned-cell--edge')).toBe(false);
+    });
+  });
+
+  // ── column-fit="squish" ────────────────────────────────────────────────
+  //
+  // `scroll` (default) treats minWidth as inviolable and lets the frame
+  // scroll. `squish` inverts that: the frame is inviolable, minWidth relaxes to
+  // a legibility floor, and the columns always add up to the frame.
+  describe('column-fit', () => {
+    const manager = (columns: any[], mode: 'scroll' | 'squish' = 'squish') => {
+      const cm = new TableColumnManager();
+      cm.initialize(columns, document.createElement('div'));
+      cm.setFitMode(mode);
+      return cm;
+    };
+    const total = (cm: TableColumnManager) =>
+      cm.getVisibleColumns().reduce((sum, c) => sum + c.width, 0);
+
+    describe('the property/attribute channel', () => {
+      it('defaults to scroll and reflects an assignment to the attribute', async () => {
+        table = await makeTable();
+        expect(table.columnFit).toBe('scroll');
+
+        // The squish stylesheet is written as `:host([column-fit="squish"])`,
+        // so a PROPERTY assignment has to reach the attribute for the mode to
+        // paint at all.
+        table.columnFit = 'squish';
+        await wait(20);
+        expect(table.getAttribute('column-fit')).toBe('squish');
+      });
+
+      it('reads the attribute as the property', async () => {
+        table = await createComponent<any>('snice-table');
+        table.setAttribute('column-fit', 'squish');
+        await wait(20);
+        expect(table.columnFit).toBe('squish');
+      });
+
+      it('hands the mode down to the column manager', async () => {
+        table = await makeTable(COLUMNS, { columnFit: 'squish' });
+        expect(table.columnManager.getFitMode()).toBe('squish');
+      });
+    });
+
+    describe('columns share the frame instead of scrolling out of it', () => {
+      it('shrinks past minWidth rather than overflowing the frame', () => {
+        const cm = manager(COLUMNS.map(c => ({ ...c, minWidth: 120 })));
+        // scroll mode parks these at 120 each (360 > 240) and lets the frame
+        // scroll; squish has no such escape hatch.
+        expect(cm.fitVisibleColumns(240)).toBe(true);
+        expect(cm.getVisibleColumns().map(c => c.width)).toEqual([80, 80, 80]);
+        expect(total(cm)).toBe(240);
+      });
+
+      it('spends the whole frame, not a rounded-down share of it', () => {
+        const cm = manager(COLUMNS);
+        cm.fitVisibleColumns(250); // 250/3 does not divide evenly
+        expect(total(cm)).toBe(250);
+      });
+
+      it('reserves the per-column chrome the same way scroll does', () => {
+        const cm = manager(COLUMNS);
+        cm.fitVisibleColumns(375, 25);
+        expect(total(cm)).toBe(300);
+      });
+
+      it('still keeps a declared width and splits what is left', () => {
+        const cm = manager([
+          { key: 'name', label: 'Name' },
+          { key: 'age', label: 'Age', width: '80' },
+          { key: 'dept', label: 'Department' },
+        ]);
+        cm.fitVisibleColumns(280);
+        const byKey = Object.fromEntries(cm.getVisibleColumns().map(c => [c.key, c.width]));
+        expect(byKey.age).toBe(80);
+        expect(byKey.name).toBe(100);
+        expect(byKey.dept).toBe(100);
+      });
+
+      it('squishes declared widths too when they alone overflow the frame', () => {
+        // Nothing is left to give: every column was authored, and together they
+        // want 600 in a 300 frame. Scrolling is not on the table, so all three
+        // scale down proportionally.
+        const cm = manager([
+          { key: 'name', label: 'Name', width: '300' },
+          { key: 'age', label: 'Age', width: '100' },
+          { key: 'dept', label: 'Department', width: '200' },
+        ]);
+        expect(cm.fitVisibleColumns(300)).toBe(true);
+        expect(cm.getVisibleColumns().map(c => c.width)).toEqual([150, 50, 100]);
+        expect(total(cm)).toBe(300);
+      });
+
+      it('settles — a second fit at the same width reports no change', () => {
+        const cm = manager([
+          { key: 'name', label: 'Name', width: '300' },
+          { key: 'age', label: 'Age', width: '100' },
+          { key: 'dept', label: 'Department', width: '170' },
+        ]);
+        cm.fitVisibleColumns(311);
+        expect(cm.fitVisibleColumns(311)).toBe(false);
+      });
+
+      it('stops at the legibility floor when even squishing cannot fit', () => {
+        const cm = manager(COLUMNS);
+        cm.fitVisibleColumns(12);
+        const floor = TableColumnManager.SQUISH_MIN_WIDTH;
+        expect(cm.getVisibleColumns().map(c => c.width)).toEqual([floor, floor, floor]);
+      });
+
+      it('ignores a frame that has not been laid out yet', () => {
+        const cm = manager(COLUMNS);
+        expect(cm.fitVisibleColumns(0)).toBe(false);
+        expect(cm.getVisibleColumns().map(c => c.width)).toEqual([150, 150, 150]);
+      });
+
+      it('leaves scroll mode exactly as it was', () => {
+        const cm = manager(COLUMNS.map(c => ({ ...c, minWidth: 120 })), 'scroll');
+        cm.fitVisibleColumns(240);
+        expect(cm.getVisibleColumns().map(c => c.width)).toEqual([120, 120, 120]);
+      });
+    });
+
+    describe('resizing rebalances inside the frame', () => {
+      const drag = (cm: TableColumnManager, key: string, from: number, to: number) => {
+        cm.startResize(key, from);
+        document.dispatchEvent(new MouseEvent('mousemove', { clientX: to }));
+        document.dispatchEvent(new MouseEvent('mouseup'));
+      };
+
+      it('takes the width the drag gained out of the other columns', () => {
+        const cm = manager(COLUMNS);
+        cm.fitVisibleColumns(300);              // 100 / 100 / 100
+        drag(cm, 'name', 0, 60);                // name wants 160
+        const byKey = Object.fromEntries(cm.getVisibleColumns().map(c => [c.key, c.width]));
+        expect(byKey.name).toBe(160);
+        expect(total(cm)).toBe(300);
+        expect(byKey.age).toBe(byKey.dept);
+      });
+
+      it('gives the width back when the drag shrinks a column', () => {
+        const cm = manager(COLUMNS);
+        cm.fitVisibleColumns(300);
+        drag(cm, 'age', 0, -60);
+        const byKey = Object.fromEntries(cm.getVisibleColumns().map(c => [c.key, c.width]));
+        expect(byKey.age).toBe(40);
+        expect(total(cm)).toBe(300);
+      });
+
+      it('never lets one column eat the frame', () => {
+        const cm = manager(COLUMNS);
+        cm.fitVisibleColumns(300);
+        drag(cm, 'name', 0, 5000);
+        const floor = TableColumnManager.SQUISH_MIN_WIDTH;
+        const byKey = Object.fromEntries(cm.getVisibleColumns().map(c => [c.key, c.width]));
+        expect(byKey.name).toBe(300 - 2 * floor);
+        expect(byKey.age).toBe(floor);
+        expect(byKey.dept).toBe(floor);
+        expect(total(cm)).toBe(300);
+      });
+
+      it('leaves scroll-mode resizing free to overflow the frame', () => {
+        const cm = manager(COLUMNS, 'scroll');
+        cm.fitVisibleColumns(300);
+        drag(cm, 'name', 0, 400);
+        const byKey = Object.fromEntries(cm.getVisibleColumns().map(c => [c.key, c.width]));
+        expect(byKey.name).toBe(500);
+        expect(byKey.age).toBe(100);
+        expect(total(cm)).toBe(700);
+      });
     });
   });
 });

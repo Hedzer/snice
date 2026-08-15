@@ -48,10 +48,10 @@ const phases: Phase[] = [
 // (docs/ai/components/table.md). This phase does both, so the repaint is
 // required and every cell below is asserted as an ordinary `it`.
 //
-// NOTE ON SCOPE: this phase re-assigns `table.data` AND calls renderBody(). It
-// is deliberately NOT the open same-reference question (MATRIX-delivery-2:
-// whether a bare same-reference `table.data =` must re-render on its own),
-// which is a product decision owned elsewhere and is not exercised here.
+// NOTE ON SCOPE: this phase re-assigns `table.data` AND calls renderBody(), so
+// it does not isolate the same-reference question (MATRIX-delivery-2: whether a
+// bare same-reference `table.data =` re-renders on its own). That is now settled
+// — it does — and is covered in delivery-local L8 / delivery-display X21.
 const MUTATED_SAME_IDENTITY: Phase = 'mutated re-delivery (same identities)';
 
 let table: any;

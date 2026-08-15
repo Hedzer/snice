@@ -11,7 +11,7 @@
  *
  * it.fails policy (never weakened assertions): every assertion here is the
  * DOCUMENTED expectation, in every pipeline — no pipeline is exempt.
- *   MATRIX-columns-6 (new) a column hidden with setColumnVisible() stays hidden
+ *   MATRIX-columns-6 (fixed) a column hidden with setColumnVisible() stayed hidden
  *                    forever, even after the configuration re-declares it. Same
  *                    family as MATRIX-columns-2/3/4 (stale column state wins
  *                    over the new declared configuration).
@@ -195,11 +195,14 @@ describe('columns matrix: hidden columns', () => {
         expectNoBlankCells(table, rows.length);
       });
 
-      // MATRIX-columns-6: `visible: existing?.visible ?? true` in
-      // TableColumnManager.initialize() plus states that are never dropped means
-      // a hidden column can never be brought back by a new configuration array —
-      // the same stale-state family as MATRIX-columns-2/3/4.
-      it.fails(`${combo}: a re-declared column is visible again [MATRIX-columns-6]`, async () => {
+      // MATRIX-columns-6 (fixed): `visible: existing?.visible ?? true` in
+      // TableColumnManager.initialize() plus states that were never dropped
+      // meant a hidden column could never be brought back by a new
+      // configuration array — the same stale-state family as
+      // MATRIX-columns-2/3/4. An assignment to `columns` now re-applies the
+      // declaration wholesale (applyConfiguration), so a re-declared column is
+      // visible again.
+      it(`${combo}: a re-declared column is visible again [MATRIX-columns-6]`, async () => {
         const cols = columnsFor(KEYS, pipeline);
         const rows = rowsFor(pipeline, SPECS);
         table = await makeDelivered({ columns: cols, rows, remote });

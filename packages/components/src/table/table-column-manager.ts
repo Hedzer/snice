@@ -3,7 +3,7 @@
  * Handles: flex width, resize, auto-size, visibility, ordering, pinning, groups.
  */
 
-import type { ColumnDefinition } from './snice-table.types';
+import type { ColumnDefinition, ColumnFit } from './snice-table.types';
 
 /** Padding + border a cell spends before any content fits inside it. */
 export function horizontalCellChrome(cell: HTMLElement): number {
@@ -49,32 +49,118 @@ export class TableColumnManager {
   private resizingKey: string | null = null;
   private resizeOverlay: HTMLElement | null = null;
   private tableElement: HTMLElement | null = null;
+  private fitMode: ColumnFit = 'scroll';
+  /**
+   * The content budget the last `squish` fit shared out. A drag-resize needs it
+   * to know how much width the columns beside the dragged one have to give up
+   * (or take back) for the total to stay on the frame.
+   */
+  private squishBudget: number | null = null;
 
   /** Fallback content width for a column nobody sized. */
   static readonly DEFAULT_WIDTH = 150;
 
-  /** Initialize column states from column definitions */
+  /**
+   * The floor `squish` relaxes `minWidth` down to. Not zero: a column narrower
+   * than this shows no glyph at all, only its ellipsis, and stops being a
+   * column the reader can identify. A frame too narrow even for this is past
+   * what the mode can honour — see `fitVisibleColumns`.
+   */
+  static readonly SQUISH_MIN_WIDTH = 24;
+
+  /**
+   * Which fitting policy `fitVisibleColumns` (and a drag-resize) follows.
+   * Owned by the table's `columnFit` property; see the `ColumnFit` docs.
+   */
+  setFitMode(mode: ColumnFit) {
+    if (mode === this.fitMode) return;
+    this.fitMode = mode;
+    // The budget belongs to the squish fit that recorded it.
+    if (mode !== 'squish') this.squishBudget = null;
+  }
+
+  getFitMode(): ColumnFit {
+    return this.fitMode;
+  }
+
+  /**
+   * Routine resync, run on every render: make sure a state exists for each
+   * declared column and refresh the flags that are pure declaration (min/max,
+   * resizable, reorderable, hideable, pinnable, flex).
+   *
+   * Deliberately PRESERVES the interaction-owned members of an existing state —
+   * width, visible, pinned, order — because renderBody() calls this on every
+   * paint, and re-applying the declaration here would undo a drag-resize, a
+   * hidden column or a user reorder on the very next render. Re-applying the
+   * declaration is applyConfiguration()'s job, and only a `columns` assignment
+   * calls that.
+   */
   initialize(columns: ColumnDefinition[], tableEl: HTMLElement) {
     this.tableElement = tableEl;
     columns.forEach((col, index) => {
       const existing = this.states.get(col.key);
-      const declared = this.parseWidth(col.width);
-      this.states.set(col.key, {
-        key: col.key,
-        width: existing?.width ?? declared ?? TableColumnManager.DEFAULT_WIDTH,
-        flex: (col as any).flex,
-        minWidth: (col as any).minWidth ?? 50,
-        maxWidth: (col as any).maxWidth ?? Infinity,
-        visible: existing?.visible ?? true,
-        pinned: existing?.pinned ?? ((col as any).pinned || false),
-        order: existing?.order ?? index,
-        resizable: (col as any).resizable !== false,
-        reorderable: (col as any).reorderable !== false,
-        hideable: (col as any).hideable !== false,
-        pinnable: (col as any).pinnable !== false,
-        authored: existing?.authored ?? declared !== undefined,
-      });
+      this.states.set(col.key, this.buildState(col, index, existing));
     });
+  }
+
+  /**
+   * A `columns` assignment (or setColumns()) delivered a NEW CONFIGURATION.
+   *
+   * The declaration is the source of truth here: painted order, `pinned`,
+   * `width` and visibility all come from the array just assigned, and states for
+   * columns the new array no longer declares are DROPPED. Without this the first
+   * configuration the table ever saw won permanently — a re-ordered array kept
+   * the original order, a newly declared pin or width was ignored, and a column
+   * hidden through setColumnVisible() could never be brought back
+   * (MATRIX-columns-2/3/4/6).
+   *
+   * The cost is that the assignment also discards user interaction state (a
+   * drag-resize, a manual reorder, a hidden column) for the columns it
+   * re-declares. That is the intended reading of the contract, and it applies to
+   * EVERY assignment: `columns` declares `hasChanged: () => true`, so handing
+   * back the array the table already holds — after mutating it, or unchanged —
+   * re-applies the declaration exactly like a fresh array would. Mutating the
+   * published definitions is therefore NOT an escape hatch; the only way to keep
+   * user column state is to not assign `columns` at all and drive the change
+   * through the column APIs instead (setColumnVisible / moveColumn / pinColumn /
+   * unpinColumn), which mutate the state map in place. Renders triggered by this
+   * go through the table's coalescing queue, so re-applying costs no extra paint.
+   */
+  applyConfiguration(columns: ColumnDefinition[], tableEl: HTMLElement) {
+    this.tableElement = tableEl;
+    const next: Map<string, ColumnState> = new Map();
+    columns.forEach((col, index) => {
+      next.set(col.key, this.buildState(col, index));
+    });
+    this.states = next;
+  }
+
+  /**
+   * One place that turns a column definition into a state. `existing` supplies
+   * the interaction-owned members on the resync path; omitting it yields the
+   * pure declared state applyConfiguration() wants.
+   */
+  private buildState(
+    col: ColumnDefinition,
+    index: number,
+    existing?: ColumnState,
+  ): ColumnState {
+    const declared = this.parseWidth(col.width);
+    return {
+      key: col.key,
+      width: existing?.width ?? declared ?? TableColumnManager.DEFAULT_WIDTH,
+      flex: (col as any).flex,
+      minWidth: (col as any).minWidth ?? 50,
+      maxWidth: (col as any).maxWidth ?? Infinity,
+      visible: existing?.visible ?? true,
+      pinned: existing?.pinned ?? ((col as any).pinned || false),
+      order: existing?.order ?? index,
+      resizable: (col as any).resizable !== false,
+      reorderable: (col as any).reorderable !== false,
+      hideable: (col as any).hideable !== false,
+      pinnable: (col as any).pinnable !== false,
+      authored: existing?.authored ?? declared !== undefined,
+    };
   }
 
   private parseWidth(width?: string): number | undefined {
@@ -156,6 +242,9 @@ export class TableColumnManager {
    * scroller instead of collapsing the columns to nothing.
    *
    * Returns whether any width actually moved, so callers can skip a repaint.
+   *
+   * Under `column-fit="squish"` the frame stops being a suggestion: see
+   * `squishVisibleColumns`.
    */
   fitVisibleColumns(availableWidth: number, chromePerColumn = 0): boolean {
     const visible = this.getVisibleColumns();
@@ -163,15 +252,22 @@ export class TableColumnManager {
     // slam every column to its minimum for a measurement that means nothing.
     if (visible.length === 0 || !(availableWidth > 0)) return false;
 
+    const budget = availableWidth - visible.length * chromePerColumn;
+
+    if (this.fitMode === 'squish') {
+      this.squishBudget = budget;
+      return this.squishVisibleColumns(visible, budget);
+    }
+
     const auto = visible.filter((state) => !state.authored);
     if (auto.length === 0) return false;
 
-    let budget = availableWidth - visible.length * chromePerColumn;
+    let remaining = budget;
     for (const state of visible) {
-      if (state.authored) budget -= state.width;
+      if (state.authored) remaining -= state.width;
     }
 
-    const share = Math.floor(budget / auto.length);
+    const share = Math.floor(remaining / auto.length);
     let changed = false;
     for (const state of auto) {
       const next = Math.max(state.minWidth, Math.min(state.maxWidth, share));
@@ -181,6 +277,131 @@ export class TableColumnManager {
       }
     }
     return changed;
+  }
+
+  /**
+   * The `squish` policy: the columns add up to the frame, whatever that costs.
+   *
+   * `minWidth` is a readability preference, and this mode has already decided
+   * the frame outranks it, so the only floor left is SQUISH_MIN_WIDTH. Two
+   * cases:
+   *
+   *  - There is an unsized column left to absorb the difference, and the
+   *    authored widths still leave room for it. Those are honoured exactly (a
+   *    column that asked for 80, or that the user dragged to 80, keeps 80) and
+   *    the rest is split evenly between the unsized ones.
+   *
+   *  - Every column is authored, or the authored widths alone already overflow
+   *    the frame. There is nothing left to give, so `scroll`'s escape hatch
+   *    (overflow into the frame's scroller) is exactly what this mode exists to
+   *    prevent: every column is scaled by the same factor instead. Scaling is a
+   *    fixed point — the second pass computes a factor of 1 — so this settles
+   *    on the first render rather than creeping on every repaint.
+   *
+   * Either way the remainder from integer division is handed back to the widest
+   * columns that are free to take it, so the widths sum to the budget EXACTLY
+   * and the rightmost column edge lands on the frame's inner edge instead of a
+   * few pixels short of it.
+   */
+  private squishVisibleColumns(visible: ColumnState[], budget: number): boolean {
+    const floor = TableColumnManager.SQUISH_MIN_WIDTH;
+    const auto = visible.filter((state) => !state.authored);
+    // What the frame has left once the authored widths are paid for.
+    const spare = budget - visible.reduce(
+      (spent, state) => spent + (state.authored ? state.width : 0), 0,
+    );
+
+    const next = new Map<string, number>();
+    if (auto.length > 0 && spare >= auto.length * floor) {
+      const share = Math.floor(spare / auto.length);
+      for (const state of visible) {
+        next.set(state.key, state.authored
+          ? state.width
+          : Math.max(floor, Math.min(state.maxWidth, share)));
+      }
+    } else {
+      const current = visible.reduce((sum, state) => sum + state.width, 0) || 1;
+      const scale = budget / current;
+      for (const state of visible) {
+        next.set(state.key, Math.max(floor, Math.floor(state.width * scale)));
+      }
+    }
+
+    // Hand the leftover pixels to the widest column that is free to grow: it
+    // absorbs a few pixels without reading as a different column, and a
+    // narrower one might be sitting on its floor or its maxWidth.
+    let slack = budget - Array.from(next.values()).reduce((sum, w) => sum + w, 0);
+    if (slack > 0) {
+      const takers = visible
+        .filter((state) => (next.get(state.key) ?? 0) < state.maxWidth)
+        .sort((a, b) => (next.get(b.key) ?? 0) - (next.get(a.key) ?? 0));
+      for (const state of takers) {
+        if (slack <= 0) break;
+        const room = Math.min(slack, state.maxWidth - (next.get(state.key) ?? 0));
+        next.set(state.key, (next.get(state.key) ?? 0) + room);
+        slack -= room;
+      }
+    }
+
+    let changed = false;
+    for (const state of visible) {
+      const width = next.get(state.key)!;
+      if (width !== state.width) {
+        state.width = width;
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  /**
+   * A drag-resize under `squish` moved one column; the others pay for it.
+   *
+   * The dragged column is the anchor — it keeps the width the pointer asked
+   * for, capped so the remaining columns can still sit on their floor — and the
+   * rest are scaled to fill exactly what is left of the frame. Without this a
+   * drag would simply push the trailing column out of a frame that is not
+   * allowed to scroll.
+   */
+  private rebalanceSquish(anchorKey: string) {
+    const budget = this.squishBudget;
+    const anchor = this.states.get(anchorKey);
+    if (budget === null || !anchor) return;
+
+    const others = this.getVisibleColumns().filter((state) => state.key !== anchorKey);
+    if (others.length === 0) return;
+
+    const floor = TableColumnManager.SQUISH_MIN_WIDTH;
+    anchor.width = Math.max(floor, Math.min(anchor.width, budget - others.length * floor));
+
+    const remaining = budget - anchor.width;
+    const current = others.reduce((sum, state) => sum + state.width, 0) || 1;
+    const scale = remaining / current;
+    for (const state of others) {
+      state.width = Math.max(floor, Math.floor(state.width * scale));
+    }
+
+    let slack = remaining - others.reduce((sum, state) => sum + state.width, 0);
+    for (const state of [...others].sort((a, b) => b.width - a.width)) {
+      if (slack <= 0) break;
+      const room = Math.min(slack, state.maxWidth - state.width);
+      state.width += room;
+      slack -= room;
+    }
+  }
+
+  /** Push the current widths onto the painted header and body cells. */
+  private writeWidths(keys: string[]) {
+    const root = this.tableElement?.shadowRoot;
+    if (!root) return;
+    for (const key of keys) {
+      const width = this.states.get(key)?.width;
+      if (width === undefined) continue;
+      const th = root.querySelector(`th[data-key="${key}"]`) as HTMLElement | null;
+      if (th) th.style.width = `${width}px`;
+      const tds = root.querySelectorAll(`td[data-key="${key}"]`) as NodeListOf<HTMLElement>;
+      tds.forEach((td) => { td.style.width = `${width}px`; });
+    }
   }
 
   /** Apply computed widths to <col> or <th> elements */
@@ -213,25 +434,27 @@ export class TableColumnManager {
     const onMove = (e: MouseEvent) => {
       e.preventDefault();
       const delta = e.clientX - this.resizeStartX;
-      const newWidth = Math.max(state.minWidth, Math.min(state.maxWidth, this.resizeStartWidth + delta));
-      state.width = newWidth;
+      // Squish relaxes minWidth for the fit, so it has to relax it for the drag
+      // too — otherwise a column the fit already squished below its minimum
+      // would jump back up to it the moment its edge was touched.
+      const squish = this.fitMode === 'squish';
+      const min = squish ? TableColumnManager.SQUISH_MIN_WIDTH : state.minWidth;
+      state.width = Math.max(min, Math.min(state.maxWidth, this.resizeStartWidth + delta));
       // Remove flex if manually resized
       state.flex = undefined;
       // The user chose this width — the container fit must leave it alone.
       state.authored = true;
 
-      // Apply width to DOM immediately
-      const root = this.tableElement?.shadowRoot;
-      if (root) {
-        const th = root.querySelector(`th[data-key="${columnKey}"]`) as HTMLElement;
-        if (th) th.style.width = `${newWidth}px`;
-        const tds = root.querySelectorAll(`td[data-key="${columnKey}"]`) as NodeListOf<HTMLElement>;
-        tds.forEach(td => td.style.width = `${newWidth}px`);
-      }
+      // Squish cannot let the drag push the table past the frame: the columns
+      // beside this one give up (or take back) the difference.
+      if (squish) this.rebalanceSquish(columnKey);
+      this.writeWidths(squish
+        ? this.getVisibleColumns().map((column) => column.key)
+        : [columnKey]);
 
       // Dispatch resize event
       this.tableElement?.dispatchEvent(new CustomEvent('column-resize', {
-        detail: { key: columnKey, width: newWidth },
+        detail: { key: columnKey, width: state.width },
         bubbles: true, composed: true
       }));
     };

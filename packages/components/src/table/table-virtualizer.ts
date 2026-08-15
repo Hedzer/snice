@@ -97,11 +97,24 @@ export class TableVirtualizer {
     cancelAnimationFrame(this.rafId);
   }
 
-  setTotalRows(total: number) {
+  /**
+   * Publish a new row count. `repaint` false updates the model only — the
+   * pending re-render is still armed (lastStartIndex is reset), so the caller's
+   * own paint (scrollToIndex / refresh) performs it. Callers that resolve a
+   * display index and then scroll MUST use that form: painting here runs
+   * `afterRender`, and a host whose afterRender restores keyboard focus would
+   * re-enter this method from inside its own update.
+   */
+  setTotalRows(total: number, repaint = true) {
     this.options.totalRows = total;
     this.invalidateOffsets();
     this.lastStartIndex = -1; // Force re-render
-    this.update();
+    if (repaint) this.update();
+  }
+
+  /** Row count the virtualizer is currently windowing over. */
+  getTotalRows() {
+    return this.options.totalRows ?? 0;
   }
 
   /**

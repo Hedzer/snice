@@ -9,8 +9,11 @@
 //                       text; see delivery-display for the painted text.
 //   MATRIX-delivery-1 - FIXED: reassigning data whose row objects were mutated
 //                       IN PLACE repaints the recycled <tr>.
-//   MATRIX-delivery-2 - assigning the SAME array reference after mutating its
-//                       contents does not rerender at all.
+//   MATRIX-delivery-2 - FIXED: assigning the SAME array reference after
+//                       mutating its contents rerenders. `data` opts out of the
+//                       core identity dirty-check with `hasChanged: () => true`
+//                       so an in-place mutation published by re-assignment is
+//                       honoured (see snice-table.ts).
 import { describe, it, expect, afterEach } from 'vitest';
 import { removeComponent } from '../test-utils';
 import { makeTable, expectCellsMatch, wait, dataRows } from './matrix-utils';
@@ -110,8 +113,7 @@ const SCENARIOS: Scenario[] = [
   },
   {
     id: 'L8',
-    title: 'reassigning the SAME array reference after mutating its contents rerenders',
-    deliveryBug: 'MATRIX-delivery-2',
+    title: 'reassigning the SAME array reference after mutating its contents rerenders [MATRIX-delivery-2]',
     seed: () => [makeRow('a')],
     run: async (table, seeded) => {
       seeded.push(makeRow('b'));

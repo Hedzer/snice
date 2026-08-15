@@ -145,13 +145,12 @@ describe('virtualization × window relocation', () => {
 
     // The relocated window must still run the whole pipeline for every shape.
     if (!remote) {
-      // MATRIX-virtualization-4: docs state `table.data =` rerenders. Assigning
-      // the SAME array reference back is a no-op (the @property identity guard
-      // short-circuits the watcher), so a row appended to the live array never
-      // reaches the virtual model and the spacers keep reserving the old scroll
-      // height. Reproduces without `virtualize` too — the body simply keeps its
-      // old rows.
-      it.fails(`${mode}: reassigning the same data array after mutating it rerenders`, async () => {
+      // MATRIX-virtualization-4 (fixed): docs state `table.data =` rerenders,
+      // and that now includes assigning the SAME array reference back after
+      // mutating it in place — `data` opts out of the core identity dirty-check
+      // with `hasChanged: () => true`. A row appended to the live array reaches
+      // the virtual model and the spacers re-reserve the scroll height.
+      it(`${mode}: reassigning the same data array after mutating it rerenders [MATRIX-virtualization-4]`, async () => {
         const { columns } = await deliveredTable('valueGetter', remote);
         const appended = makeRows(TOTAL + 1)[TOTAL];
         const live = table.data;

@@ -9,16 +9,16 @@
  * the `pinned` / `width` of each column, so a new array is a new configuration
  * and must be reflected on screen.
  *
- * it.fails policy (never weakened assertions): every assertion is the DOCUMENTED
- * expectation and runs in every pipeline — no pipeline is exempt. The three ids
- * below are one defect family (stale column state wins over the new declared
- * configuration) held open by decision, not by this suite:
- *   MATRIX-columns-2 a re-assigned `columns` array does not re-apply the
+ * Every assertion is the DOCUMENTED expectation and runs in every pipeline — no
+ * pipeline is exempt, and no `it.fails` remains. The three ids below were one
+ * defect family (stale column state won over the new declared configuration),
+ * all FIXED by making a `columns` assignment re-apply the declaration:
+ *   MATRIX-columns-2 a re-assigned `columns` array did not re-apply the
  *                    declared column order; the first configuration's order
- *                    sticks for every key the table has already seen.
- *   MATRIX-columns-3 a re-assigned `columns` array does not re-apply the
+ *                    stuck for every key the table had already seen.
+ *   MATRIX-columns-3 a re-assigned `columns` array did not re-apply the
  *                    declared `pinned` side.
- *   MATRIX-columns-4 a re-assigned `columns` array does not re-apply the
+ *   MATRIX-columns-4 a re-assigned `columns` array did not re-apply the
  *                    declared `width`.
  * The same family's `visible` member is covered in columns-visibility.test.ts
  * as MATRIX-columns-6.
@@ -194,7 +194,7 @@ describe('columns matrix: column config changed after data is present', () => {
 
       // MATRIX-columns-2: the new configuration's order is ignored for keys the
       // table has already initialized.
-      it.fails(`${combo}: a re-ordered configuration array repaints in the new order [MATRIX-columns-2]`, async () => {
+      it(`${combo}: a re-ordered configuration array repaints in the new order [MATRIX-columns-2]`, async () => {
         const cols = columnsFor(['a', 'b'], pipeline);
         const rows = rowsFor(pipeline, SPECS);
         table = await makeDelivered({ columns: cols, rows, remote });
@@ -207,7 +207,7 @@ describe('columns matrix: column config changed after data is present', () => {
       });
 
       // MATRIX-columns-2 via the documented setColumns() entry point.
-      it.fails(`${combo}: setColumns() repaints in the new declared order [MATRIX-columns-2]`, async () => {
+      it(`${combo}: setColumns() repaints in the new declared order [MATRIX-columns-2]`, async () => {
         const cols = columnsFor(KEYS, pipeline);
         const rows = rowsFor(pipeline, SPECS);
         table = await makeDelivered({ columns: cols, rows, remote });
@@ -219,7 +219,7 @@ describe('columns matrix: column config changed after data is present', () => {
       });
 
       // MATRIX-columns-2: a column removed and re-declared in a new position.
-      it.fails(`${combo}: a re-declared column paints at its new position [MATRIX-columns-2]`, async () => {
+      it(`${combo}: a re-declared column paints at its new position [MATRIX-columns-2]`, async () => {
         const cols = columnsFor(KEYS, pipeline);
         const rows = rowsFor(pipeline, SPECS);
         table = await makeDelivered({ columns: cols, rows, remote });
@@ -234,7 +234,7 @@ describe('columns matrix: column config changed after data is present', () => {
       });
 
       // MATRIX-columns-2: a brand-new column declared first must paint first.
-      it.fails(`${combo}: a new column declared first paints first [MATRIX-columns-2]`, async () => {
+      it(`${combo}: a new column declared first paints first [MATRIX-columns-2]`, async () => {
         const cols = columnsFor(['a', 'b'], pipeline);
         const rows = rowsFor(pipeline, SPECS);
         table = await makeDelivered({ columns: cols, rows, remote });
@@ -246,7 +246,7 @@ describe('columns matrix: column config changed after data is present', () => {
       });
 
       // MATRIX-columns-3: declared `pinned` is not re-applied.
-      it.fails(`${combo}: a newly declared pinned side is applied [MATRIX-columns-3]`, async () => {
+      it(`${combo}: a newly declared pinned side is applied [MATRIX-columns-3]`, async () => {
         const cols = columnsFor(KEYS, pipeline);
         const rows = rowsFor(pipeline, SPECS);
         table = await makeDelivered({ columns: cols, rows, remote });
@@ -260,7 +260,7 @@ describe('columns matrix: column config changed after data is present', () => {
       });
 
       // MATRIX-columns-3: a pin removed from the configuration is not released.
-      it.fails(`${combo}: a pin dropped from the configuration is released [MATRIX-columns-3]`, async () => {
+      it(`${combo}: a pin dropped from the configuration is released [MATRIX-columns-3]`, async () => {
         const cols = columnsFor(KEYS, pipeline, { c: { pinned: 'left' } });
         const rows = rowsFor(pipeline, SPECS);
         table = await makeDelivered({ columns: cols, rows, remote });
@@ -274,7 +274,7 @@ describe('columns matrix: column config changed after data is present', () => {
       });
 
       // MATRIX-columns-4: declared `width` is not re-applied.
-      it.fails(`${combo}: a narrowed declared width is applied [MATRIX-columns-4]`, async () => {
+      it(`${combo}: a narrowed declared width is applied [MATRIX-columns-4]`, async () => {
         const cols = columnsFor(KEYS, pipeline, { b: { width: '300' } });
         const rows = rowsFor(pipeline, SPECS);
         table = await makeDelivered({ columns: cols, rows, remote });
@@ -288,7 +288,7 @@ describe('columns matrix: column config changed after data is present', () => {
       });
 
       // MATRIX-columns-4: a width introduced by the new configuration.
-      it.fails(`${combo}: a width introduced by the new configuration is applied [MATRIX-columns-4]`, async () => {
+      it(`${combo}: a width introduced by the new configuration is applied [MATRIX-columns-4]`, async () => {
         const cols = columnsFor(KEYS, pipeline);
         const rows = rowsFor(pipeline, SPECS);
         table = await makeDelivered({ columns: cols, rows, remote });
