@@ -1,6 +1,7 @@
 import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
 import cssContent from './snice-cell.css?inline';
 import { installCellPresentation } from './table-cell-presentation';
+import { parseCellDate } from './table-date';
 import type { 
   SniceCellElement, 
   ColumnType, 
@@ -76,7 +77,14 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
   }
 
   private applyAlignment() {
-    this.style.textAlign = this.align;
+    // snice-cell.css already encodes each type's default alignment
+    // (:host([type="accounting"]) and friends are right-aligned, boolean/rating
+    // centred). Writing an inline text-align unconditionally OVERRODE that, so a
+    // standalone accounting figure sat left-aligned beside a right-aligned
+    // currency cell — and the accounting format's alignment padding meant
+    // nothing. Only an alignment the caller actually declared wins.
+    const declared = this.getAttribute('align');
+    this.style.textAlign = declared ?? '';
   }
 
   private applyConditionalFormatting() {
@@ -219,27 +227,61 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
     return `${num.toFixed(format.decimals ?? 2)}%`;
   }
 
+  /**
+   * Accounting notation is currency notation: symbol, grouped digits, and
+   * negatives in parentheses instead of a minus sign. It shares its defaults
+   * with `formatCurrency()` on purpose — an `accounting` cell and a `currency`
+   * cell showing the same amount must not disagree about what money looks
+   * like. `numberFormat` still steers decimals/grouping (its historic role
+   * here), `currencyFormat` steers the symbol and locale, and an explicit
+   * `numberFormat.prefix` opts out of the symbol entirely for ledgers that
+   * label their own columns.
+   */
   private formatAccounting(): string {
     const format = this.column.numberFormat || {};
+    const currency = this.column.currencyFormat || {};
     const num = Number(this.value);
-    
+
     if (isNaN(num)) return String(this.value);
 
-    let formatted = Math.abs(num).toFixed(format.decimals ?? 2);
-    
-    if (format.thousandsSeparator) {
-      const parts = formatted.split('.');
-      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-      formatted = parts.join('.');
+    const decimals = format.decimals ?? currency.decimals ?? 2;
+    const useGrouping = format.thousandsSeparator ?? currency.thousandsSeparator ?? true;
+    const magnitude = Math.abs(num);
+    const options: Intl.NumberFormatOptions = {
+      useGrouping,
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    };
+
+    // An author-supplied prefix/suffix is the caller naming the unit; adding a
+    // currency symbol on top would print it twice.
+    const symbolIsCallers = !!format.prefix || !!format.suffix;
+    if (!symbolIsCallers) {
+      options.style = 'currency';
+      options.currency = currency.currency || 'USD';
+      options.currencyDisplay = currency.currencyDisplay || currency.display || 'symbol';
     }
 
-    if (num < 0) {
-      formatted = `(${formatted})`;
-    } else {
-      formatted = ` ${formatted} `;
+    let formatted: string;
+    try {
+      formatted = new Intl.NumberFormat(currency.locale || 'en-US', options).format(magnitude);
+    } catch {
+      formatted = magnitude.toFixed(decimals);
+      if (useGrouping) {
+        const parts = formatted.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        formatted = parts.join('.');
+      }
+      if (!symbolIsCallers) formatted = `$${formatted}`;
     }
 
-    return formatted;
+    if (format.prefix) formatted = format.prefix + formatted;
+    if (format.suffix) formatted = formatted + format.suffix;
+
+    // The trailing space is the format's whole reason for existing: it keeps a
+    // positive row's last digit under the ")" of the row above in a
+    // right-aligned column. A normal space collapses in HTML, so pad with NBSP.
+    return num < 0 ? `(${formatted})` : `${formatted}\u00a0`;
   }
 
   private formatScientific(): string {
@@ -284,9 +326,11 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
 
   private formatDate(): string {
     const format = this.column.dateFormat || {};
-    const date = new Date(this.value);
-    
-    if (isNaN(date.getTime())) return String(this.value);
+    // Calendar days are read at local midnight (see table-date.ts) so this
+    // generic cell shows the same day as `snice-cell-date` and as the editor.
+    const date = parseCellDate(this.value);
+
+    if (!date) return String(this.value);
 
     if (format.customFormat) {
       // Simple custom format implementation

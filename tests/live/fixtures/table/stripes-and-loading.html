@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* The page must sit on the theme's own surface: a stripe judged against
+         the browser's default white says nothing about either theme. */
+      body {
+        margin: 0;
+        padding: 1.5rem;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      snice-table { display: block; width: 44rem; }
+      #loading { margin-top: 2rem; height: 16rem; }
+    </style>
+  </head>
+  <body>
+    <!-- Zebra striping must read on whichever theme the viewer is in. -->
+    <snice-table id="striped" striped hoverable></snice-table>
+
+    <!-- Zero-row loading: the state has to be legible, not merely present. -->
+    <snice-table id="loading" loading></snice-table>
+
+    <script type="module">
+      import '/packages/components/src/table/snice-table.ts';
+
+      const columns = [
+        { key: 'name', label: 'Name', type: 'text' },
+        { key: 'role', label: 'Role', type: 'text' },
+        { key: 'team', label: 'Team', type: 'text' },
+      ];
+      const rows = Array.from({ length: 8 }, (_, i) => ({
+        name: `Person ${i + 1}`,
+        role: i % 2 ? 'Engineer' : 'Designer',
+        team: i % 3 ? 'Platform' : 'Growth',
+      }));
+
+      const striped = document.getElementById('striped');
+      striped.columns = columns;
+      striped.data = rows;
+
+      const loading = document.getElementById('loading');
+      loading.columns = columns;
+      loading.data = [];
+    </script>
+  </body>
+</html>

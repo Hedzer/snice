@@ -5,11 +5,16 @@ import '../../packages/components/src/input/snice-input';
 import type { SniceTagInputElement } from '../../packages/components/src/tag-input/snice-tag-input.types';
 
 /**
- * Field report FR3 against released 7.7.0:
- *   `snice-tag-input` emits `tag-change` for programmatic `value` assignment.
- *   Expected: programmatic assignment is silent; only user actions emit.
+ * Defect guard: `snice-tag-input` must be SILENT for programmatic `value`
+ * assignment. `tag-change` is a user-intent event — typing, pasting, removing a
+ * chip — exactly like `input`/`change` on `snice-input`.
+ *
+ * When the setter emits, a framework `.value` binding that re-applies component
+ * state from the event payload feeds itself and never settles, so the loop case
+ * below is asserted directly alongside the plain assignment paths (setter,
+ * clear(), and an equal-but-new array).
  */
-describe('field report 7.7.0 / FR3 - snice-tag-input programmatic value assignment', () => {
+describe('snice-tag-input - programmatic value assignment is silent', () => {
   let el: HTMLElement | undefined;
 
   afterEach(() => {
@@ -17,8 +22,8 @@ describe('field report 7.7.0 / FR3 - snice-tag-input programmatic value assignme
     el = undefined;
   });
 
-  // FR3: bug confirmed - programmatic assignment emits tag-change twice.
-  it('does not emit tag-change for programmatic value assignment (exact repro)', async () => {
+  // Plain setter: assigning, then emptying, must not emit at all.
+  it('does not emit tag-change for programmatic value assignment', async () => {
     const tagInput = document.createElement('snice-tag-input') as SniceTagInputElement;
     document.body.appendChild(tagInput);
     el = tagInput as unknown as HTMLElement;
@@ -39,7 +44,7 @@ describe('field report 7.7.0 / FR3 - snice-tag-input programmatic value assignme
     expect(events).toEqual([]);
   });
 
-  // FR3: same defect reached through clear(), which routes through the value setter.
+  // clear() routes through the same value setter, so it must stay silent too.
   it('does not emit tag-change when clear() empties a programmatically set list', async () => {
     const tagInput = await createComponent<SniceTagInputElement>('snice-tag-input');
     el = tagInput as unknown as HTMLElement;
@@ -57,8 +62,8 @@ describe('field report 7.7.0 / FR3 - snice-tag-input programmatic value assignme
     expect(seen).toEqual([]);
   });
 
-  // FR3: assigning a value that differs only in identity still re-enters the
-  // watch, so a `.value` binding fed by the event re-fires indefinitely.
+  // A value that differs only in array identity must not re-enter the watch —
+  // otherwise a `.value` binding fed by the event re-fires indefinitely.
   it('does not re-emit tag-change when an equal array is reassigned', async () => {
     const tagInput = await createComponent<SniceTagInputElement>('snice-tag-input');
     el = tagInput as unknown as HTMLElement;
@@ -77,8 +82,8 @@ describe('field report 7.7.0 / FR3 - snice-tag-input programmatic value assignme
     expect(seen).toEqual([]);
   });
 
-  // Regression guard: the loop the customer describes. A listener that mirrors
-  // the event payload back onto `.value` must terminate.
+  // The feedback loop itself: a listener mirroring the event payload back onto
+  // `.value` must terminate (here: never start).
   it('a .value binding driven by tag-change does not loop', async () => {
     const tagInput = await createComponent<SniceTagInputElement>('snice-tag-input');
     el = tagInput as unknown as HTMLElement;
@@ -98,8 +103,8 @@ describe('field report 7.7.0 / FR3 - snice-tag-input programmatic value assignme
     expect(echoes).toBe(0);
   });
 
-  // Passing guard: user interaction must still emit.
-  it('still emits tag-change when the customer types a tag', async () => {
+  // Contrast: real user interaction must still emit.
+  it('still emits tag-change when the user types a tag', async () => {
     const tagInput = await createComponent<SniceTagInputElement>('snice-tag-input');
     el = tagInput as unknown as HTMLElement;
 
@@ -120,7 +125,7 @@ describe('field report 7.7.0 / FR3 - snice-tag-input programmatic value assignme
     expect(seen).toEqual([['typed']]);
   });
 
-  // Passing guard: the sibling form control's convention this report cites.
+  // Contrast: the sibling form control whose convention this mirrors.
   it('snice-input stays silent for programmatic value assignment', async () => {
     const input = await createComponent<HTMLElement & { value: string }>('snice-input');
     el = input;

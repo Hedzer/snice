@@ -133,8 +133,12 @@ describe('Table public API gap regressions', () => {
     expect(td.style.color).toBe('rgb(1, 2, 3)');
     expect(td.style.fontWeight).toBe('bold');
     expect(td.classList.contains('large-value')).toBe(true);
-    const currency = td.querySelector('snice-cell-currency') as any;
-    expect(currency.shadowRoot.querySelector('[part="content"]')?.textContent).toContain('USD 1234.5');
+    // A declared display formatter renders text (the formatter output is a
+    // string), so the column renders through the text cell — same rule the
+    // declarative <snice-row> path uses.
+    const cell = td.querySelector('snice-cell-text') as any;
+    expect(cell.shadowRoot.querySelector('[part="content"]')?.textContent).toContain('USD 1234.5');
+    expect(cell.getAttribute('value')).toBe('USD 1234.5');
   });
 
   it('renders the configured list-view callback', async () => {

@@ -156,9 +156,10 @@
   tabindex: 0;
 }
 
-/* Striped Rows (applied by parent table) */
+/* Striped Rows (applied by parent table). Alpha tint, not a surface step —
+   see the :host([striped]) rule in snice-table.ts. */
 :host(.row--striped) .row-container {
-  background-color: var(--snice-color-surface-container-low, rgb(245 245 245));
+  background-color: var(--snice-table-stripe-bg, var(--snice-color-overlay-stripe, hsl(0 0% 0% / 0.02)));
 }
 
 /* Bordered Rows (applied by parent table) */

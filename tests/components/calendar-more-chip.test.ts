@@ -1,20 +1,21 @@
-// Field report FR7 (against released 7.7.0, verified against current source):
-// the <snice-calendar> "+N more" overflow chip is invisible, unstylable and
-// inert.
+// Defect guard: the <snice-calendar> "+N more" overflow chip must be a real,
+// themable, interactive control — not decorative text.
 //
-//   div.calendar__more — 0.625rem, --snice-color-text-secondary (fallback
-//   rgb(82 82 82), i.e. dark grey on a dark surface), no CSS part, no click
-//   contract, no association back to the day it belongs to.
+// The defect it replaces: div.calendar__more rendered at 0.625rem in
+// --snice-color-text-secondary (fallback rgb(82 82 82), i.e. dark grey on a dark
+// surface), with no CSS part, no click contract, and no association back to the
+// day it belongs to — leaving hidden events unreachable and the chip invisible.
 //
-// Wanted contract, asserted below:
+// Contract asserted below:
 //   * part="more-chip" so the chip is themable from outside the shadow root,
 //     the way event bars already are (part="event-bar").
 //   * a `calendar-more-click` event carrying { date, count } — same
-//     bubbles/composed shape as calendar-event-click.
+//     bubbles/composed shape as calendar-event-click — reporting the chip's OWN
+//     day, and not falling through to day selection.
 //   * a readable default style: not the 2xs/secondary combination that
 //     disappears against a dark surface.
 //
-// Fixed frame: June 2026, firstDayOfWeek=0 → the month grid starts on
+// Fixed frame: June 2026, firstDayOfWeek=0 -> the month grid starts on
 // Sunday May 31 2026. MAX_EVENT_LANES is 3, so a day carrying 5 single-day
 // events renders 3 bars and hides 2 behind the chip.
 import { describe, it, expect, afterEach } from 'vitest';
@@ -41,7 +42,7 @@ function cellFor(cal: any, dayOfMonth: number, month: number): HTMLElement {
   return cell;
 }
 
-describe('FR7 — snice-calendar "+N more" chip contract', () => {
+describe('snice-calendar — "+N more" overflow chip contract', () => {
   let calendar: SniceCalendarElement | undefined;
 
   afterEach(() => {
@@ -57,8 +58,8 @@ describe('FR7 — snice-calendar "+N more" chip contract', () => {
     return calendar as any;
   }
 
-  // FR7 — the report's own repro, bare DOM: create the element by hand,
-  // assign events, read the chip back out of the shadow root.
+  // Bare DOM path: create the element by hand, assign events, read the chip
+  // back out of the shadow root.
   it('exposes the overflow chip as part="more-chip"', async () => {
     const el = document.createElement('snice-calendar') as any;
     document.body.appendChild(el);
@@ -80,7 +81,6 @@ describe('FR7 — snice-calendar "+N more" chip contract', () => {
     }
   });
 
-  // FR7
   it('dispatches calendar-more-click with { date, count } when the chip is clicked', async () => {
     const cal = await makeCalendar(overflowOn(new Date(2026, 5, 3), 'click'));
     const chip = cellFor(cal, 3, 5).querySelector('.calendar__more') as HTMLElement;
@@ -104,7 +104,7 @@ describe('FR7 — snice-calendar "+N more" chip contract', () => {
     expect(seen[0].composed).toBe(true);
   });
 
-  // FR7 — day association: each chip reports its own day and its own count,
+  // Day association: each chip reports its own day and its own count,
   // not the first overflowing day's.
   it('associates each chip with the day it sits in', async () => {
     const cal = await makeCalendar([
@@ -126,7 +126,7 @@ describe('FR7 — snice-calendar "+N more" chip contract', () => {
       .toEqual([[3, 2], [10, 1]]);
   });
 
-  // FR7 — the chip is its own control: clicking it must not fall through to
+  // The chip is its own control: clicking it must not fall through to
   // the day cell and silently change the selected date.
   it('does not fall through to day selection when the chip is clicked', async () => {
     const cal = await makeCalendar(overflowOn(new Date(2026, 5, 3), 'fall'));
@@ -140,7 +140,7 @@ describe('FR7 — snice-calendar "+N more" chip contract', () => {
     expect(changes.length).toBe(0);
   });
 
-  // FR7 — readable default style. happy-dom cannot resolve cascaded custom
+  // Readable default style. happy-dom cannot resolve cascaded custom
   // properties, so the shipped stylesheet is asserted directly (same approach
   // as tests/components/notification-center.test.ts).
   it('styles the chip readably by default', () => {

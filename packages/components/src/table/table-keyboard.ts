@@ -96,7 +96,7 @@ export class TableKeyboard {
 
     table.setAttribute('role', 'grid');
     table.setAttribute('tabindex', '0');
-    table.setAttribute('aria-rowcount', String(this.ariaRowCount + 1)); // +1 header
+    table.setAttribute('aria-rowcount', String(this.ariaRowCount + this.headerRowCount));
     table.setAttribute('aria-colcount', String(this.totalColCount));
   }
 
@@ -138,6 +138,17 @@ export class TableKeyboard {
     return Math.max(0, this.resolveBound(this.options.ariaRowOffset));
   }
 
+  /**
+   * Rows the header contributes to `aria-rowcount`, and the offset every body
+   * row's `aria-rowindex` starts from. Normally 1 — but list mode paints a
+   * card per row and leaves the thead empty, and claiming a header row that
+   * does not exist would count one row too many and start the body at index 2
+   * with nothing at index 1.
+   */
+  private get headerRowCount(): number {
+    return this.getTable()?.querySelector('thead tr') ? 1 : 0;
+  }
+
   /** Resolve a body row by its logical data-index (not its DOM position). */
   private getBodyRow(index: number): HTMLElement | null {
     if (this.options.getRowElement) return this.options.getRowElement(index);
@@ -151,7 +162,8 @@ export class TableKeyboard {
     const table = this.getTable();
     if (!table) return;
 
-    table.setAttribute('aria-rowcount', String(this.ariaRowCount + 1)); // +1 for header
+    const headerRows = this.headerRowCount;
+    table.setAttribute('aria-rowcount', String(this.ariaRowCount + headerRows));
     table.setAttribute('aria-colcount', String(this.totalColCount));
 
     // Header row
@@ -183,7 +195,7 @@ export class TableKeyboard {
     const bodyRows = table.querySelectorAll('tbody tr:not(.virtual-spacer):not(.table-fill-row)');
     bodyRows.forEach((row, i) => {
       row.setAttribute('role', 'row');
-      row.setAttribute('aria-rowindex', String(this.ariaRowOffset + i + 2)); // +2 for 1-based + header
+      row.setAttribute('aria-rowindex', String(this.ariaRowOffset + i + 1 + headerRows)); // 1-based, after the header
 
       const isSelected = row.getAttribute('data-selected') === 'true';
       if (isSelected) row.setAttribute('aria-selected', 'true');

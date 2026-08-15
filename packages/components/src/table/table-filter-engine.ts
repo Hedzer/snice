@@ -4,6 +4,8 @@
  * Supports client-side and server-side modes.
  */
 
+import { parseCellDate } from './table-date';
+
 export type FilterOperator =
   // Text
   | 'contains' | 'notContains' | 'equals' | 'notEquals'
@@ -257,25 +259,41 @@ export class TableFilterEngine {
       case 'lte':
         return Number(cellValue) <= Number(filterValue);
 
-      // Date
-      case 'is': {
-        const d1 = new Date(cellValue).toDateString();
-        const d2 = new Date(filterValue).toDateString();
-        return d1 === d2;
-      }
+      // Date. Both sides cross the cell layer's parser, so a `2026-03-15`
+      // bound means that calendar day locally — the same day the cell paints
+      // — instead of UTC midnight, which shifted every comparison by a day
+      // for negative UTC offsets and split a date-only bound from a
+      // timestamped cell value on the same day.
+      case 'is':
       case 'isNot': {
-        const d1 = new Date(cellValue).toDateString();
-        const d2 = new Date(filterValue).toDateString();
-        return d1 !== d2;
+        const cellDay = this.calendarDay(cellValue);
+        const filterDay = this.calendarDay(filterValue);
+        // An unparseable value is on no day: it never "is" the filtered day,
+        // and it is therefore always "isNot" it.
+        const sameDay = cellDay !== null && filterDay !== null && cellDay === filterDay;
+        return filter.operator === 'is' ? sameDay : !sameDay;
       }
       case 'before':
-        return new Date(cellValue) < new Date(filterValue);
       case 'onOrBefore':
-        return new Date(cellValue) <= new Date(filterValue);
       case 'after':
-        return new Date(cellValue) > new Date(filterValue);
-      case 'onOrAfter':
-        return new Date(cellValue) >= new Date(filterValue);
+      case 'onOrAfter': {
+        const cell = parseCellDate(cellValue);
+        const bound = parseCellDate(filterValue);
+        if (!cell || !bound) return false;
+        const a = cell.getTime();
+        // A date-only bound names a whole DAY, not the instant it starts at, so
+        // the day's two edges bracket it. Comparing everything against its
+        // opening instant made the four operators disagree with `is`: a cell at
+        // 09:00 on the bound day "is" that day, yet counted as `after` it and
+        // fell outside `onOrBefore` it. A bound that carries its own time is an
+        // instant, and both edges collapse onto it.
+        const dayStart = bound.getTime();
+        const dayEnd = this.boundEnd(filterValue, bound);
+        if (filter.operator === 'before') return a < dayStart;
+        if (filter.operator === 'onOrBefore') return a <= dayEnd;
+        if (filter.operator === 'after') return a > dayEnd;
+        return a >= dayStart;
+      }
 
       // Boolean
       case 'isTrue':
@@ -286,6 +304,29 @@ export class TableFilterEngine {
       default:
         return true;
     }
+  }
+
+  /**
+   * The local calendar day a value falls on, as a `YYYY-M-D` stamp, or `null`
+   * when the value names no day at all.
+   */
+  private calendarDay(value: any): string | null {
+    const date = parseCellDate(value);
+    if (!date) return null;
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  }
+
+  /** True when the raw bound named a calendar day rather than an instant. */
+  private isDateOnlyBound(raw: any): boolean {
+    return typeof raw === 'string' && /^\d{4}(?:-\d{2}){0,2}$/.test(raw.trim());
+  }
+
+  /** Last instant covered by a bound — the day's end when it named a day. */
+  private boundEnd(raw: any, parsed: Date): number {
+    if (!this.isDateOnlyBound(raw)) return parsed.getTime();
+    const end = new Date(parsed);
+    end.setDate(end.getDate() + 1);
+    return end.getTime() - 1;
   }
 
   /** Serialize filter model for server-side requests */

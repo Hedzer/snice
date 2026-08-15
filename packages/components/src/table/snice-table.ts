@@ -5,6 +5,12 @@ import '../button/snice-button';
 import '../checkbox/snice-checkbox';
 import '../modal/snice-modal';
 import '../empty-state/snice-empty-state';
+// The zero-row loading row and the loading overlay both emit <snice-progress>.
+// NOT the same module as this folder's ./snice-progress, which registers
+// `snice-table-progress` for the progress CELL — importing that one leaves the
+// spinner an unregistered 0x0 inline element, i.e. a loading state that paints
+// nothing on any page that imports only the table.
+import '../progress/snice-progress';
 import './snice-cell.ts';
 import './snice-cell-text.ts';
 import './snice-cell-number.ts';
@@ -30,7 +36,7 @@ import './snice-cell-image.ts';
 import './snice-column.ts';
 import './snice-row.ts';
 import { TableVirtualizer } from './table-virtualizer';
-import { TableColumnManager } from './table-column-manager';
+import { TableColumnManager, horizontalCellChrome } from './table-column-manager';
 import { TableFilterEngine } from './table-filter-engine';
 import { TableEditor } from './table-editor';
 import type { EditorType } from './table-editor';
@@ -43,11 +49,12 @@ import { TableGrouping } from './table-grouping';
 import type { DisplayItem, GroupRow, AggregateRow } from './table-grouping';
 import { TableColumnMenu } from './table-column-menu';
 import { TableRowDnD, TableColumnDnD } from './table-row-dnd';
+import { defaultCellAlign, emptyCellValue } from './table-cell-presentation';
 import type { FilterModel } from './table-filter-engine';
 import type { DetailPanelOptions } from './table-master-detail';
 import type { ToolbarOptions } from './table-toolbar';
 import type { TreeDataOptions, TreeRow } from './table-tree-data';
-import type { ColumnGroup } from './table-column-manager';
+import type { ColumnGroup, ColumnState } from './table-column-manager';
 import type { ColumnDefinition, SniceTableElement, SelectionMode, ListViewRenderer } from './snice-table.types';
 
 /**
@@ -66,6 +73,12 @@ interface RowEntry {
   alwaysRebuild?: boolean;
   restampIndex?: number;
 }
+
+/**
+ * The one string both loading affordances use — the zero-row message row shows
+ * it, the refetch overlay announces it. Kept together so they can never drift.
+ */
+const LOADING_LABEL = 'Loading…';
 
 @element('snice-table')
 export class SniceTable extends HTMLElement implements SniceTableElement {
@@ -171,7 +184,8 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   @property({ type: Boolean,  attribute: 'loading' })
   loading: boolean = false;
 
-  // Set when a remote-mode load fails; cleared on the next successful load.
+  // Set when a remote-mode load fails; cleared by clearLoadError() as soon as
+  // ANY fresh dataset arrives (see there).
   // Not a @property — renderBody() reads it directly, no attribute needed.
   private loadError: string | null = null;
 
@@ -279,6 +293,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   @query('tbody')
   tbody!: HTMLTableSectionElement;
 
+  /** Frame width the columns were last fitted to — see handleFrameResize. */
+  private lastFittedFrameWidth = 0;
+
 
   @request('table/config')
   async *getTableConfig(): any {
@@ -288,6 +305,11 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // Wait for next frame to ensure DOM is updated
     await new Promise(resolve => requestAnimationFrame(resolve));
     this.renderHeader();
+    // The body render the columns assignment queued above can have been
+    // consumed against a not-yet-committed <tbody>. Repainting the header
+    // without the rows is what leaves a remote table showing headings over an
+    // empty frame, so this pass owns both.
+    this.renderBody();
     this.renderControls();
     return config;
   }
@@ -320,8 +342,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       if (response.totalItems !== undefined) {
         this.totalItems = response.totalItems;
       }
-      this.loadError = null;
-      this.classList.remove('table--error');
+      this.clearLoadError();
       this.loading = false;
       // Wait for next frame to ensure DOM is updated
       await new Promise(resolve => requestAnimationFrame(resolve));
@@ -380,6 +401,11 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   // model but skips the auto-render (the caller drives the body fill).
   private settingDataImperative = false;
 
+  // Set while the row-reorder handler re-publishes `this.data` as a new array
+  // of the SAME rows. Tells the data @watch that no fresh dataset arrived, so a
+  // pending load error must survive the drag.
+  private reorderingRows = false;
+
   // C1/C2: microtask-coalesced render queue. Reactive assignments schedule a
   // render here instead of calling renderHeader/renderBody synchronously —
   // MANDATORY, because happy-dom crashes constructing cell elements inside a
@@ -388,9 +414,43 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   private pendingHeaderRender = false;
   private pendingBodyRender = false;
 
+  // Re-arm bookkeeping for a body render that found no <tbody> to paint into.
+  // Bounded: the slotted-rows template legitimately has no <tbody>, and an
+  // unbounded retry there would spin every frame.
+  private bodyRenderRetries = 0;
+  private bodyRenderRetryQueued = false;
+
+  /**
+   * Requeue a body render whose target had not been committed yet. A frame is
+   * the right granularity — the shadow template commits between frames — and
+   * the paint is dropped again (silently, as before) once the retries run out.
+   *
+   * The retry CHAINS: a template that needs more than one frame to commit is
+   * the whole reason this exists, so a retry that still finds no <tbody> spends
+   * one more of the budget rather than giving the frame back and quitting.
+   */
+  private rearmBodyRender() {
+    if (this.bodyRenderRetryQueued || this.bodyRenderRetries >= 3) return;
+    this.bodyRenderRetryQueued = true;
+    this.bodyRenderRetries++;
+    requestAnimationFrame(() => {
+      this.bodyRenderRetryQueued = false;
+      if (this.tbody) this.renderBody();
+      else this.rearmBodyRender();
+    });
+  }
+
   private scheduleRender(what: 'header' | 'body' | 'both') {
     if (what === 'header' || what === 'both') this.pendingHeaderRender = true;
-    if (what === 'body' || what === 'both') this.pendingBodyRender = true;
+    if (what === 'body' || what === 'both') {
+      this.pendingBodyRender = true;
+      // A NEWLY requested paint gets a fresh budget. The bound exists to stop
+      // one render from spinning against a template that structurally has no
+      // <tbody> (the slotted-rows branch), not to disqualify the table forever:
+      // without this reset, three misses during the slotted phase silently
+      // cancel every body render that follows a later flip to the native table.
+      if (!this.bodyRenderRetryQueued) this.bodyRenderRetries = 0;
+    }
     if (this.renderQueued) return;
 
     this.renderQueued = true;
@@ -405,7 +465,14 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         const doBody = this.pendingBodyRender;
         this.pendingHeaderRender = false;
         this.pendingBodyRender = false;
-        if (doHeader) this.renderHeader();
+        try {
+          if (doHeader) this.renderHeader();
+        } catch (error) {
+          // Both flags are already consumed. Letting a header failure escape
+          // would cancel the body paint queued alongside it and leave the rows
+          // permanently stale — the exact "header fine, rows blank" symptom.
+          console.error('Error rendering table header:', error);
+        }
         if (doBody) this.renderBody();
       });
     });
@@ -626,9 +693,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         background-color: var(--snice-color-surface-container-low, rgb(245 245 245));
       }
 
-      /* Row styling */
+      /* Row styling. The zebra tint is an ALPHA overlay, not a surface step:
+         surface-container-low sits ~2 luminance points from the body surface
+         on dark themes, so striped rendered as no striping at all there.
+         An overlay also composites over pinned/tinted cells instead of
+         replacing their color. */
       :host([striped]) tbody tr:nth-child(even) {
-        background-color: var(--snice-color-surface-container-low, rgb(245 245 245));
+        background-color: var(--snice-table-stripe-bg, var(--snice-color-overlay-stripe, hsl(0 0% 0% / 0.02)));
       }
 
       :host([hoverable]) tbody tr:hover {
@@ -892,12 +963,14 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         justify-content: center;
       }
 
-      /* Loading fade */
-      tbody {
+      /* Loading fade. Scoped to ROWS, never the whole tbody: with no rows the
+         only thing in there is the loading indicator, and dimming that halves
+         the contrast of the one element whose entire job is to be seen. */
+      tbody > tr {
         transition: opacity var(--snice-transition-normal, 250ms);
       }
 
-      :host([loading]) tbody {
+      :host([loading]) tbody > tr:not(.table-message-row) {
         opacity: 0.5;
       }
 
@@ -910,6 +983,33 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         justify-content: center;
         pointer-events: none;
         z-index: 2;
+      }
+
+      /* Zero-row loading: spinner + the word, centred in the empty body. */
+      .table-loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--snice-spacing-xs, 0.5rem);
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
+      }
+
+      .table-loading-label {
+        font-size: var(--snice-font-size-sm, 0.875rem);
+        line-height: 1;
+      }
+
+      /* snice-progress draws its circular track at 20% alpha, which disappears
+         entirely on a dark surface — the ring the field report saw was a
+         near-black hairline on near-black. Both table spinners opt out and use
+         the border token at full strength, so the track reads in either
+         theme and the primary arc always has something to travel around. */
+      .table-loading-state snice-progress,
+      .table-loading-overlay snice-progress {
+        --progress-track-opacity: 1;
+        --progress-bg: var(--snice-color-border, rgb(226 226 226));
+        --progress-color: var(--snice-color-primary, rgb(37 99 235));
       }
 
       .no-data {
@@ -1053,10 +1153,58 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         background: var(--snice-color-primary, rgb(37 99 235));
       }
 
-      /* Pinned column separator */
+      /* Pinned columns.
+
+         A frozen column must be opaque — scrolled cells pass underneath it —
+         and a header keeps the header's own surface rather than borrowing the
+         body's. The frozen EDGE (the inner-most pinned column on each side) is
+         what the reader actually needs to see: a heavier divider plus a soft
+         shadow cast INTO the scrolling region, mirrored per side. Between two
+         columns pinned to the same side there is no boundary to mark, so they
+         keep the ordinary cell border.
+
+         The shadow is a border-token tint, not black: a black drop shadow is
+         invisible against a dark surface, which is exactly how pinning came to
+         have no affordance at all in the dark theme. */
       .pinned-cell {
         background: var(--snice-color-surface, rgb(255 255 255));
-        box-shadow: 2px 0 4px -1px rgb(0 0 0 / 0.1);
+      }
+
+      th.pinned-cell {
+        background: var(--snice-color-surface-container-low, rgb(245 245 245));
+      }
+
+      .pinned-cell--left.pinned-cell--edge {
+        border-right: 2px solid var(--snice-color-border, rgb(226 226 226));
+        box-shadow: 6px 0 8px -6px var(--snice-color-border, rgb(226 226 226));
+      }
+
+      .pinned-cell--right.pinned-cell--edge {
+        border-left: 2px solid var(--snice-color-border, rgb(226 226 226));
+        box-shadow: -6px 0 8px -6px var(--snice-color-border, rgb(226 226 226));
+      }
+
+      /* A right-pinned header is often the last cell in the row, where the
+         shared rule above strips the right border. Its divider is on the left,
+         so nothing to restore — but the edge border must survive that rule. */
+      th:last-child.pinned-cell--right.pinned-cell--edge,
+      td:last-child.pinned-cell--right.pinned-cell--edge {
+        border-right: none;
+      }
+
+      /* Pin marker: the only cue when the table is wide enough not to scroll. */
+      .pin-indicator {
+        display: inline-flex;
+        align-items: center;
+        margin-left: var(--snice-spacing-2xs, 0.25rem);
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
+        opacity: 0.65;
+        vertical-align: middle;
+        pointer-events: none;
+      }
+
+      .pin-indicator--right {
+        transform: scaleX(-1);
       }
 
       /* Density: compact */
@@ -1479,7 +1627,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       }
 
       :host([striped]) .snice-table--slotted .table-body::slotted(snice-row:nth-child(even)) {
-        background-color: var(--snice-color-surface-container-low, rgb(245 245 245));
+        background-color: var(--snice-table-stripe-bg, var(--snice-color-overlay-stripe, hsl(0 0% 0% / 0.02)));
       }
 
       :host([hoverable]) .snice-table--slotted .table-body::slotted(snice-row:hover) {
@@ -1595,10 +1743,19 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     container.appendChild(controlsDiv);
   }
 
-  // Re-derive the fill row whenever the frame's box changes (host resized,
-  // fullscreen toggled) — the leftover space below the rows changes with it.
+  // Re-derive the frame-dependent layout whenever the frame's box changes
+  // (host resized, fullscreen toggled): the columns share its width, and the
+  // leftover space below the rows changes with its height.
   @observe('resize', '.table-frame')
   handleFrameResize() {
+    // Only when the width actually moved. Fitting rewrites header widths, which
+    // can change row heights, which can flip the frame's vertical scrollbar and
+    // call us straight back — the guard stops that becoming a cycle.
+    const width = (this.shadowRoot?.querySelector('.table-frame') as HTMLElement | null)?.clientWidth ?? 0;
+    if (width > 0 && width !== this.lastFittedFrameWidth) {
+      this.lastFittedFrameWidth = width;
+      this.syncColumnWidthsToFrame();
+    }
     this.updateFillRow();
   }
 
@@ -1712,7 +1869,17 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       }
 
       this.data.splice(toIndex, 0, item);
-      this.data = [...this.data];
+      // Reordering the SAME rows is not a delivery: a failed reload keeps its
+      // error until data actually arrives, so a drag must not dismiss it.
+      // Everything else the data watcher does (row index, detail prep, render)
+      // is still wanted here — hence a narrow flag rather than
+      // `settingSortedData`, which skips all of it.
+      this.reorderingRows = true;
+      try {
+        this.data = [...this.data];
+      } finally {
+        this.reorderingRows = false;
+      }
       this.selectedRows = selectedRows
         .map((row) => this.indexOfRow(row))
         .filter((index) => index >= 0);
@@ -1842,7 +2009,16 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   @watch('selectable')
   handleSelectableChange() {
-    this.render(); // Re-render both header and body for checkbox columns
+    this.render(); // host template (the structural mode can change)
+    // The checkbox tool column is structural: like the sibling selection-mode
+    // watcher, a post-mount toggle has to rebuild the header (select-all th)
+    // AND every row (row checkbox) — the host template render leaves the
+    // imperatively built thead/tbody untouched, so without this the two
+    // disagree and every data cell sits one column off its header. Rows are
+    // never recycled stale across the toggle: computeStructuralSig folds in
+    // `sel=`. Skipped before the first render — the initial paint reads
+    // `selectable` itself.
+    if (this.thead) this.scheduleRender('both');
     queueMicrotask(() => this.syncSlottedSelectionState());
   }
 
@@ -1924,13 +2100,43 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   // (sortLocalData) reassigns this.data with a re-sorted view of the SAME rows
   // and owns its own snapshot/render — settingSortedData tells us to skip.
   @watch('data', { immediate: false })
-  handleDataAssignment() {
+  handleDataAssignment(oldVal?: any[]) {
     if (this.settingSortedData) return;
+    // A load error describes the LAST delivery ATTEMPT, so a dataset arriving
+    // from any source supersedes it — including the app falling back to local
+    // rows (or to none) after the remote load failed. Clearing it only on the
+    // remote success path left `loadError` and the `table--error` host class
+    // alive forever, so the next zero-row render showed the stale ⚠️ where the
+    // empty state belonged.
+    //
+    // A REORDER is not an arrival: the row-reorder handler republishes the same
+    // rows in a new array, and dragging a row must not dismiss the ⚠️ the
+    // contract says survives until data actually arrives.
+    if (!this.reorderingRows) this.clearLoadError();
     this.unsortedData = [...this.data];
+    // C3: rows delivered while a client-side sort is active must land in that
+    // sorted order — the currentSort watcher only fires when the sort itself
+    // changes, so without this the body silently contradicts the header. In
+    // remote mode the server owns the ordering.
+    if (this.mode !== 'remote' && this.currentSort.length > 0) this.applyLocalSortOrder();
     this.rebuildRowIndex();
-    this.masterDetail.prepare(this.data);
+    // Re-delivering the SAME rows in a different order must not move the
+    // selection to whatever row inherited the index (no-op for a new dataset).
+    if (oldVal) this.remapSelectionAfterReorder(oldVal);
+    this.masterDetail.prepare(this.data, row => this.rowValueSignature(row));
     if (this.settingDataImperative) return; // imperative setData(): caller renders
     this.scheduleRender('body');
+  }
+
+  /**
+   * Drop the failed-load state: the ⚠️ message row's text and the `table--error`
+   * host class always move together, so they are cleared together and from one
+   * place. Idempotent, and deliberately does NOT render — every caller is either
+   * mid-delivery (the data watcher renders) or already renders itself.
+   */
+  private clearLoadError() {
+    this.loadError = null;
+    this.classList.remove('table--error');
   }
 
   @watch('loading')
@@ -1953,11 +2159,12 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       overlay = document.createElement('div');
       overlay.className = 'table-loading-overlay';
       overlay.setAttribute('part', 'loading-overlay');
-      const spinner = document.createElement('snice-progress');
-      spinner.setAttribute('variant', 'circular');
-      spinner.setAttribute('indeterminate', '');
-      spinner.setAttribute('size', 'small');
-      overlay.appendChild(spinner);
+      // The overlay sits ON TOP of readable rows, so it carries its label as
+      // an aria-label rather than visible text — but it must still announce.
+      overlay.setAttribute('role', 'status');
+      overlay.setAttribute('aria-live', 'polite');
+      overlay.setAttribute('aria-label', LOADING_LABEL);
+      overlay.appendChild(this.createLoadingSpinner('medium'));
       frame.appendChild(overlay);
     } else if (!show && overlay) {
       overlay.remove();
@@ -2046,7 +2253,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   @watch('list', { immediate: false })
   handleListChange() {
     this.renderedRows = new Map();
-    this.scheduleRender('body');
+    // The header is part of the mode: entering list mode with a renderer drops
+    // the columnar header, and leaving it must bring the header back.
+    this.scheduleRender('both');
   }
 
   @watch('editable', { immediate: false })
@@ -2131,9 +2340,124 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       .filter((column): column is ColumnDefinition => !!column);
   }
 
+  /**
+   * Cells one full-width row spans: every visible data column plus the tool
+   * columns that precede them. Group, aggregate, detail, empty-state, and
+   * virtual-spacer rows all measure themselves against this — a row that spans
+   * MORE than the table has invents columns, and `table-layout: fixed` then
+   * spends the frame's leftover width on the phantoms.
+   */
+  private getTotalColumnSpan(): number {
+    const managed = this.columnManager.getAllStates();
+    const dataColumns = managed.length > 0
+      ? this.columnManager.getVisibleColumns().length
+      : this.columns.length;
+    return dataColumns
+      + (this.hasSelectionColumn() ? 1 : 0)
+      + (this.masterDetail.isEnabled() ? 1 : 0)
+      + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
+  }
+
+  /**
+   * Re-fit the columns nobody sized to the frame they are painted in.
+   *
+   * A column width is a CONTENT width, so the frame's budget has to be reduced
+   * by each column's own padding + border and by the fixed tool columns before
+   * it can be shared out. Both are read off the live header — the previous
+   * render's, on the first pass — rather than guessed, so the fitted table
+   * lands on the frame's width instead of a few pixels past it.
+   *
+   * Widths are written straight onto the header cells: under fixed layout the
+   * first row owns the column grid, so no body repaint is needed and this can
+   * run inside a resize observer without a render cascade.
+   */
+  private syncColumnWidthsToFrame(): boolean {
+    const frame = this.shadowRoot?.querySelector('.table-frame') as HTMLElement | null;
+    const headerRow = this.shadowRoot?.querySelector('thead tr.column-header-row') as HTMLElement | null;
+    if (!frame || !headerRow) return false;
+
+    const available = frame.clientWidth;
+    // Layoutless DOM (or a display:none host): every measurement is 0 and
+    // fitting to it would slam the columns to their minimums for nothing.
+    if (!(available > 0)) return false;
+
+    const dataCells = Array.from(headerRow.querySelectorAll('th[data-key]')) as HTMLElement[];
+    // An active list renderer drops the columnar header entirely; there is no
+    // column geometry to fit and no cell to measure the chrome from.
+    if (dataCells.length === 0) return false;
+
+    let reserved = 0;
+    for (const cell of Array.from(headerRow.children) as HTMLElement[]) {
+      if (!cell.hasAttribute('data-key')) reserved += cell.getBoundingClientRect().width;
+    }
+
+    const chrome = horizontalCellChrome(dataCells[0]);
+    if (!this.columnManager.fitVisibleColumns(available - reserved, chrome)) return false;
+
+    for (const cell of dataCells) {
+      const state = this.columnManager.getState(cell.getAttribute('data-key') || '');
+      if (state) cell.style.width = `${state.width}px`;
+    }
+    return true;
+  }
+
+  /**
+   * Sticky geometry plus the visible affordance for a pinned cell.
+   *
+   * Freezing a column is only communicated if the reader can see where the
+   * frozen region ends, so the inner-most pinned column on each side carries
+   * the divider (`--edge`); the header additionally carries a pin marker, which
+   * is the only cue when the table happens to be wide enough not to scroll.
+   */
+  private applyPinnedCell(cell: HTMLElement, key: string, state: ColumnState, zIndex: string) {
+    if (state.pinned !== 'left' && state.pinned !== 'right') return;
+    const side = state.pinned;
+    const columns = side === 'left'
+      ? this.columnManager.getPinnedLeft()
+      : this.columnManager.getPinnedRight();
+    const offsets = side === 'left'
+      ? this.columnManager.getPinnedLeftOffsets()
+      : this.columnManager.getPinnedRightOffsets();
+    // The edge of the frozen region: the last left-pinned column, the first
+    // right-pinned one. Inner boundaries between two pinned columns are just
+    // ordinary cell borders.
+    const edgeKey = side === 'left' ? columns[columns.length - 1]?.key : columns[0]?.key;
+
+    cell.classList.add('pinned-cell', `pinned-cell--${side}`);
+    if (key === edgeKey) cell.classList.add('pinned-cell--edge');
+    cell.style.position = 'sticky';
+    cell.style[side] = `${offsets.get(key) ?? 0}px`;
+    cell.style.zIndex = zIndex;
+  }
+
+  /** The pin marker a frozen header carries, so pinning reads at any width. */
+  private static pinIndicator(side: 'left' | 'right'): string {
+    return `<span class="pin-indicator pin-indicator--${side}" aria-hidden="true">`
+      + `<svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor">`
+      + `<path d="M9.5 1a1 1 0 0 0-.7 1.7l.3.3-3 3-2.4-.5a1 1 0 0 0-.9 1.7l3 3-3.6 3.6a.6.6 0 0 0 .8.8L6.6 12l3 3a1 1 0 0 0 1.7-.9l-.5-2.4 3-3 .3.3a1 1 0 0 0 1.4-1.4l-5.3-5.3A1 1 0 0 0 9.5 1Z"/>`
+      + `</svg></span>`;
+  }
+
+  /**
+   * List mode is only "list mode" once a renderer is installed: `list` alone is
+   * a border treatment and still paints normal columnar cells. With a renderer
+   * every row collapses to one full-width cell, so there is no column geometry
+   * left for a header to label.
+   */
+  private usesListRowRenderer(): boolean {
+    return !!(this.list && this.listRenderer);
+  }
+
   renderHeader() {
     if (!this.thead) return;
-    
+
+    // A card/directory list has no columns, so a columnar header would promise
+    // fields that align with nothing. Suppress the data-column headers (and the
+    // equally columnar group and header-filter rows) while a list renderer is
+    // active; the tool columns below still have real body cells to head, so
+    // select-all is kept rather than lost as collateral.
+    const listRows = this.usesListRowRenderer();
+
     const headerRow = document.createElement('tr');
     headerRow.className = 'column-header-row';
 
@@ -2174,7 +2498,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       headerRow.appendChild(selectCell);
     }
 
-    const visibleColumns = this.getVisibleColumnDefinitions();
+    const visibleColumns = listRows ? [] : this.getVisibleColumnDefinitions();
 
     visibleColumns.forEach(column => {
 
@@ -2191,23 +2515,10 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
       // Apply column width
       const state = this.columnManager.getState(column.key);
+      const pinnedSide = state?.pinned === 'left' || state?.pinned === 'right' ? state.pinned : null;
       if (state) {
         th.style.width = `${state.width}px`;
-
-        // Pinned column sticky positioning
-        if (state.pinned === 'left') {
-          const offsets = this.columnManager.getPinnedLeftOffsets();
-          th.classList.add('pinned-cell');
-          th.style.position = 'sticky';
-          th.style.left = `${offsets.get(column.key) ?? 0}px`;
-          th.style.zIndex = '2';
-        } else if (state.pinned === 'right') {
-          const offsets = this.columnManager.getPinnedRightOffsets();
-          th.classList.add('pinned-cell');
-          th.style.position = 'sticky';
-          th.style.right = `${offsets.get(column.key) ?? 0}px`;
-          th.style.zIndex = '2';
-        }
+        this.applyPinnedCell(th, column.key, state, '2');
       }
 
       if (this.sortable && column.sortable !== false) {
@@ -2216,10 +2527,21 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         // A role=button must be focusable and named, or the keyboard cannot
         // sort at all. Matches the declarative header in snice-header.ts.
         th.setAttribute('tabindex', '0');
-        th.setAttribute('aria-label', `Sort by ${column.label}`);
+        // Frozen columns say so: the divider is a visual cue only.
+        th.setAttribute('aria-label', pinnedSide
+          ? `Sort by ${column.label}, pinned ${pinnedSide}`
+          : `Sort by ${column.label}`);
         th.innerHTML = this.renderSortableHeader(column);
       } else {
         th.textContent = column.label;
+        if (pinnedSide) th.setAttribute('aria-label', `${column.label}, pinned ${pinnedSide}`);
+      }
+
+      if (pinnedSide) {
+        // Inside the label, not after it: `.sort-header` is a full-width flex
+        // row, so a sibling would be pushed onto a second line.
+        const label = th.querySelector('.sort-header > span') ?? th;
+        label.insertAdjacentHTML('beforeend', SniceTable.pinIndicator(pinnedSide));
       }
 
       // Filter indicator
@@ -2279,7 +2601,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     this.thead.innerHTML = '';
 
     // Column groups header row (if any)
-    const groups = this.columnManager.getColumnGroups();
+    const groups = listRows ? [] : this.columnManager.getColumnGroups();
     if (groups.length > 0) {
       const groupRow = document.createElement('tr');
       groupRow.className = 'column-group-row';
@@ -2304,10 +2626,12 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       this.thead.appendChild(groupRow);
     }
 
-    this.thead.appendChild(headerRow);
+    // A list-mode header row with no tool columns has nothing to show; leaving
+    // it out keeps the thead empty so it paints no strip above the cards.
+    if (!listRows || headerRow.children.length > 0) this.thead.appendChild(headerRow);
 
     // Header filter row (if enabled)
-    if (this.headerFilters) {
+    if (this.headerFilters && !listRows) {
       const filterRow = document.createElement('tr');
       filterRow.className = 'header-filter-row';
 
@@ -2347,6 +2671,12 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
       this.thead.appendChild(filterRow);
     }
+
+    // The header is in the DOM, so its real chrome and tool-column widths are
+    // measurable: fit the unsized columns to the frame before the browser
+    // paints. Widths land on the header cells that were just created, so this
+    // never re-enters renderHeader.
+    this.syncColumnWidthsToFrame();
   }
 
   renderSortableHeader(column: any): string {
@@ -2386,8 +2716,92 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   }
 
 
+  /**
+   * The single message row a zero-row body shows: loading spinner, load error,
+   * or the empty state (the `empty-state` slot cloned fresh, else the default
+   * placeholder). Returns null when there is data to render. Shared by the
+   * ordinary and virtualized paths — the virtualizer wipes the tbody itself, so
+   * it asks for this row rather than leaving a virtualized empty table blank.
+   */
+  /**
+   * The spinner both loading affordances draw. `snice-progress` paints its
+   * track at 20% alpha, which vanishes against a dark surface — the table pins
+   * `--progress-track-opacity` in its own stylesheet so the ring reads on any
+   * theme; the indicator arc keeps the primary color.
+   */
+  private createLoadingSpinner(size: 'medium' | 'large'): HTMLElement {
+    const spinner = document.createElement('snice-progress');
+    spinner.setAttribute('variant', 'circular');
+    spinner.setAttribute('indeterminate', '');
+    spinner.setAttribute('size', size);
+    return spinner;
+  }
+
+  private createEmptyBodyRow(): HTMLTableRowElement | null {
+    if (this.data.length > 0 || this.columns.length === 0) return null;
+
+    const toolCols = (this.hasSelectionColumn() ? 1 : 0)
+      + (this.masterDetail.isEnabled() ? 1 : 0)
+      + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
+
+    const tr = document.createElement('tr');
+    tr.className = 'table-message-row';
+    const td = document.createElement('td');
+    td.colSpan = this.columns.length + toolCols;
+    td.className = 'no-data';
+    tr.appendChild(td);
+
+    if (this.loading) {
+      // A bare ring in an otherwise empty rectangle reads as a rendering
+      // artefact, not as "we are fetching your rows": at `small` it is 24px of
+      // low-contrast stroke with nothing naming it. The zero-row body has the
+      // space for a full-size spinner AND the word, and the pair is what makes
+      // the state legible — visually and to a screen reader.
+      const status = document.createElement('div');
+      status.className = 'table-loading-state';
+      status.setAttribute('role', 'status');
+      status.setAttribute('aria-live', 'polite');
+      status.appendChild(this.createLoadingSpinner('medium'));
+      const label = document.createElement('span');
+      label.className = 'table-loading-label';
+      label.textContent = LOADING_LABEL;
+      status.appendChild(label);
+      td.appendChild(status);
+    } else if (this.loadError) {
+      // Surfaces a failed remote load instead of silently falling through to
+      // the generic "No data" empty state.
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'table-error-message';
+      errorDiv.textContent = `⚠️ ${this.loadError}`;
+      td.appendChild(errorDiv);
+    } else {
+      const slotted = this.querySelector('[slot="empty-state"]');
+      if (slotted) {
+        td.appendChild(slotted.cloneNode(true));
+      } else {
+        const empty = document.createElement('snice-empty-state');
+        empty.setAttribute('size', 'small');
+        empty.setAttribute('icon', '📭');
+        empty.setAttribute('title', 'No data');
+        empty.setAttribute('description', 'No records to display.');
+        td.appendChild(empty);
+      }
+    }
+
+    return tr;
+  }
+
   renderBody() {
-    if (!this.tbody) return;
+    // The queue flush consumed `pendingBodyRender` before calling us, so a body
+    // render that arrives while the shadow template has not committed its
+    // <tbody> (a `table/config` response landing before @ready, a structural
+    // branch flip mid-flight) would simply vanish — the header repaints and the
+    // rows stay stale forever. Re-arm it for the next frame instead.
+    if (!this.tbody) {
+      this.rearmBodyRender();
+      return;
+    }
+    this.bodyRenderRetries = 0;
 
     // Update column manager when columns change
     if (this.columns.length > 0) {
@@ -2429,66 +2843,19 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
       // Still render pagination
       if (this.pagination) this.renderPagination();
+      this.updateSelectAllState();
       return;
     }
 
-    if (this.data.length === 0 && this.columns.length > 0) {
+    const emptyBodyRow = this.createEmptyBodyRow();
+    if (emptyBodyRow) {
       // Empty / loading / error states replace the body with a single message
       // row. Reset the recycler map so a later data render starts from a clean
       // slate (no stale reuse candidates pointing at removed rows).
       this.tbody.innerHTML = '';
       this.renderedRows = new Map();
-
-      const toolCols = (this.hasSelectionColumn() ? 1 : 0)
-        + (this.masterDetail.isEnabled() ? 1 : 0)
-        + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
-      const colSpan = this.columns.length + toolCols;
-
-      if (this.loading) {
-        // Show loading spinner
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = colSpan;
-        td.className = 'no-data';
-        td.innerHTML = '<snice-progress variant="circular" indeterminate size="small"></snice-progress>';
-        tr.appendChild(td);
-        this.tbody.appendChild(tr);
-        return;
-      } else if (this.loadError) {
-        // Show error state — surfaces a failed remote load instead of
-        // silently falling through to the generic "No data" empty state.
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = colSpan;
-        td.className = 'no-data';
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'table-error-message';
-        errorDiv.textContent = `⚠️ ${this.loadError}`;
-        td.appendChild(errorDiv);
-        tr.appendChild(td);
-        this.tbody.appendChild(tr);
-        return;
-      } else {
-        // Show empty state
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = colSpan;
-        td.className = 'no-data';
-        const slotted = this.querySelector('[slot="empty-state"]');
-        if (slotted) {
-          td.appendChild(slotted.cloneNode(true));
-        } else {
-          const empty = document.createElement('snice-empty-state');
-          empty.setAttribute('size', 'small');
-          empty.setAttribute('icon', '📭');
-          empty.setAttribute('title', 'No data');
-          empty.setAttribute('description', 'No records to display.');
-          td.appendChild(empty);
-        }
-        tr.appendChild(td);
-        this.tbody.appendChild(tr);
-        return;
-      }
+      this.tbody.appendChild(emptyBodyRow);
+      return;
     }
 
     // Apply client-side filters (cached snapshot — see getFilteredData).
@@ -2502,16 +2869,24 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.pagination && this.paginationMode === 'client'
         && !this.usesGroupingDisplayModel() && !this.treeData.isEnabled()) {
       this.totalItems = filteredData.length;
-      const startIndex = (this.currentPage - 1) * this.pageSize;
+      // Re-clamp before slicing. A shorter re-delivery (or a filter) can leave
+      // `currentPage` past the new last page; slicing at the stale offset lands
+      // off the end and renders an EMPTY body while the pager still advertises
+      // the tail rows — blank until the user clicks a page button. Same
+      // [1, totalPages] clamp goToPage() applies, and the same one the grouping
+      // and tree display models already do before their own slice.
+      // An empty set is left alone: a render before the rows arrive must not
+      // rewrite the host's declared starting page.
+      const totalPages = filteredData.length > 0
+        ? Math.ceil(filteredData.length / this.pageSize)
+        : this.currentPage;
+      const page = Math.max(1, Math.min(this.currentPage, totalPages));
+      if (page !== this.currentPage) this.currentPage = page;
+      const startIndex = (page - 1) * this.pageSize;
       displayData = filteredData.slice(startIndex, startIndex + this.pageSize);
     }
 
-    const extraCols = (this.hasSelectionColumn() ? 1 : 0) + (this.masterDetail.isEnabled() ? 1 : 0) + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
-    const managedColumns = this.columnManager.getAllStates();
-    const visibleColumnCount = managedColumns.length > 0
-      ? this.columnManager.getVisibleColumns().length
-      : this.columns.length;
-    const totalColSpan = visibleColumnCount + extraCols;
+    const totalColSpan = this.getTotalColumnSpan();
     const structuralSig = this.computeStructuralSig();
 
     // Task B: describe the desired body as an ordered list of keyed entries,
@@ -2609,6 +2984,21 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
           restampIndex: index,
           create: () => this.createRow(rowData, index, treeRow),
         });
+
+        // Tree data must compose with master-detail exactly like the ordinary
+        // and grouping paths: createRow renders the toggle for every tree row,
+        // so omitting this entry left that control inert. Generated gap nodes
+        // (index -1) carry no data row and therefore no panel.
+        if (index >= 0 && this.masterDetail.isEnabled() && this.masterDetail.isExpanded(index)) {
+          entries.push({
+            key: `__detail_${index}`,
+            sig: 'detail',
+            alwaysRebuild: true,
+            create: () =>
+              this.masterDetail.createDetailRow(rowData, index, totalColSpan) ??
+              document.createElement('tr'),
+          });
+        }
       });
     } else {
       displayData.forEach((rowData) => {
@@ -2655,6 +3045,11 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // Re-establish grid role + roving tabindex after the body changed.
     this.keyboard.refresh();
 
+    // The select-all control describes the *filtered* row set, so it goes stale
+    // whenever the denominator moves (rows delivered, filter cleared) even
+    // though `selectedRows` — its only other trigger — never changed.
+    this.updateSelectAllState();
+
     // Render pagination after body
     if (this.pagination) {
       this.renderPagination();
@@ -2669,6 +3064,20 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
    * data row, so column widths, pinning, and alignment track the table
    * engine natively. Removed entirely when content fills (or overflows) the
    * frame, restoring the plain last-row styling.
+   *
+   * INVARIANT — the filler may only consume space the frame ALREADY has; space
+   * that exists only BECAUSE of the filler must be given back. The filler is
+   * table content, and `@observe('resize', '.table-frame')` re-derives it from
+   * the frame's box, so on a host whose height is content-driven (the
+   * documented `:host { height: 100% }` resolving against an auto or
+   * max-content container — a stretched grid/flex item, a plain block parent)
+   * the filler is an input to the very measurement that produced it: the frame
+   * grows, the observer fires, the leftover computes positive again, and the
+   * table inflates by one slack per animation frame without bound. No static
+   * check distinguishes a content-driven frame from a genuinely sized one, so
+   * this measures instead: apply the filler, then confirm the frame kept its
+   * height. Any growth is self-inflicted and is subtracted from the filler;
+   * once nothing honest is left, the frame had no free space to fill at all.
    */
   private updateFillRow() {
     const frame = this.shadowRoot?.querySelector('.table-frame') as HTMLElement | null;
@@ -2683,21 +3092,43 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     const lastRow = rows[rows.length - 1] as HTMLElement | undefined;
     if (!lastRow) return;
 
-    const leftover = Math.floor(frame.clientHeight - tableEl.offsetHeight);
+    // Baseline: the frame's height with no filler of ours in the box. Every
+    // later reading is compared against it, so the correction below can never
+    // hand back more than the filler itself created.
+    const baseline = frame.clientHeight;
+    let leftover = Math.floor(baseline - tableEl.offsetHeight);
     if (leftover <= 1) return;
 
     const fill = lastRow.cloneNode(true) as HTMLElement;
     fill.className = 'table-fill-row';
-    for (const attr of ['data-index', 'data-selected', 'role', 'aria-rowindex', 'aria-selected', 'tabindex', 'id']) {
+    // `part` goes with the rest of the row identity: the filler is not "each
+    // native body row", so a consumer's ::part(row)/::part(cell) rule must not
+    // paint a phantom row across it.
+    for (const attr of ['data-index', 'data-selected', 'role', 'aria-rowindex', 'aria-selected', 'tabindex', 'id', 'part']) {
       fill.removeAttribute(attr);
     }
     fill.setAttribute('aria-hidden', 'true');
     fill.querySelectorAll('td').forEach(td => {
       td.replaceChildren();
-      for (const attr of ['role', 'aria-colindex', 'tabindex', 'aria-selected']) td.removeAttribute(attr);
+      for (const attr of ['role', 'aria-colindex', 'tabindex', 'aria-selected', 'part']) td.removeAttribute(attr);
     });
     fill.style.height = `${leftover}px`;
     tbody.appendChild(fill);
+
+    // Feedback check. Reading `clientHeight` flushes layout, so each pass sees
+    // the frame as it stands WITH the filler in it. A frame that kept its
+    // baseline is genuinely sized and the filler stays; growth means the frame
+    // is (partly) sized by its own content, so give exactly that back. Two
+    // corrections settle every real case — a fully self-made leftover reaches
+    // zero on the first — and the bounded loop guarantees termination.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const selfMade = frame.clientHeight - baseline;
+      if (selfMade <= 0) return;
+      leftover -= selfMade;
+      if (leftover <= 1) break;
+      fill.style.height = `${leftover}px`;
+    }
+    fill.remove();
   }
 
   // ── Task B: render-path reconciler ──────────────────────────────────────
@@ -2807,14 +3238,40 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   }
 
   /**
+   * A fingerprint of a row's own field values, so a row object that was mutated
+   * IN PLACE (the same identity re-delivered by a poll/websocket patch, or an
+   * array the app edits) is rebuilt instead of recycled with stale cells.
+   *
+   * Tradeoff, deliberately chosen: this walks the row's OWN, SHALLOW fields
+   * rather than running each column's valueGetter/formatter. It therefore costs
+   * one string build per rendered row — never a user callback, so call counts
+   * for `valueGetter` stay exactly one per row per render — and it still catches
+   * getter-derived columns, because a getter reads the fields this covers.
+   * Nested objects collapse to their String() form, so a mutation buried inside
+   * a nested object (or an object rendered by a JSON/progress cell) is not
+   * detected; those callers should hand over a new row object. Recycling keeps
+   * its payoff: rows whose values did not change are still reused untouched.
+   */
+  private rowValueSignature(rowData: any): string {
+    if (rowData === null || typeof rowData !== 'object') return String(rowData);
+    const parts: string[] = [];
+    for (const key of Object.keys(rowData)) {
+      const value = (rowData as any)[key];
+      parts.push(`${key}=${value === null || value === undefined ? '' : String(value)}`);
+    }
+    // A separator keeps {a:'1b'} from colliding with {a:'1',b:''}.
+    return parts.join('|');
+  }
+
+  /**
    * The per-row rebuild signature. Selection and the plain data-index are
    * re-stamped on reuse (not here) so they never force a rebuild; this captures
-   * only what a re-stamp cannot repair: tree node state, per-row height, and —
-   * when a feature embeds the index in a row-scoped closure (row DnD drag index,
-   * master-detail toggle index) — the index itself.
+   * the row's cell values plus what a re-stamp cannot repair: tree node state,
+   * per-row height, and — when a feature embeds the index in a row-scoped
+   * closure (row DnD drag index, master-detail toggle index) — the index itself.
    */
   private rowSignature(rowData: any, index: number, structuralSig: string, treeRow?: TreeRow): string {
-    const parts = [structuralSig];
+    const parts = [structuralSig, `v:${this.rowValueSignature(rowData)}`];
     if (treeRow) parts.push(`t:${treeRow.depth}:${treeRow.expanded ? 1 : 0}:${treeRow.hasChildren ? 1 : 0}`);
     if (this.rowHeightCallback) parts.push(`h:${this.rowHeightCallback(rowData, index)}`);
     if (this.masterDetail.isEnabled()) parts.push(`detail:${this.masterDetail.isExpanded(index) ? 1 : 0}`);
@@ -2845,7 +3302,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   private restampRowIndex(el: HTMLElement, index: number) {
     el.setAttribute('data-index', String(index));
     const isSelected = this.selectedRows.includes(index);
-    el.setAttribute('data-selected', String(isSelected));
+    this.stampRowSelection(el, isSelected);
     const checkbox = el.querySelector('snice-checkbox.row-select') as any;
     if (checkbox) {
       checkbox.setAttribute('data-row-index', String(index));
@@ -3027,6 +3484,16 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     return `<button class="pagination__btn pagination__page${active}" data-page="${page}">${page}</button>`;
   }
 
+  /**
+   * The column's display text, or null when the column declares no display
+   * formatter. `formatter` (row-aware) is the display formatter and
+   * `valueFormatter` its documented fallback, so `formatter` wins.
+   */
+  private cellDisplayText(column: any, value: any, row?: any): string | null {
+    const formatter = column.formatter || column.valueFormatter;
+    return formatter ? String(formatter(value, row) ?? '') : null;
+  }
+
   /** Create a cell element safely using createElement + setAttribute */
   createCellElement(column: any, value: any, row?: any): HTMLElement {
     // E2: a custom renderCell bypasses the type-based cell entirely. A string
@@ -3041,32 +3508,55 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       return span;
     }
 
-    const tagName = this.getCellTagName(column.type);
+    // A declared display formatter resolves the whole pipeline here — the
+    // documented precedence is `formatter` first, `valueFormatter` as the
+    // fallback — and its output is TEXT, so the column renders through the text
+    // cell: a rating/progress/link/boolean cell cannot carry a display string
+    // (its value channel is typed) and renders structure rather than text. This
+    // is the rule the declarative <snice-row> path already uses.
+    const displayText = this.cellDisplayText(column, value, row);
+    const tagName = displayText === null ? this.getCellTagName(column.type) : 'snice-cell-text';
     const el = document.createElement(tagName) as any;
 
     // Base attributes. Only force `align` if the column definition specifies
     // one; otherwise let the cell pick its type-appropriate default (numbers
     // right, rating/boolean center, text left). Hard-coding 'left' here fought
-    // the cell's own type-based text-align and made number values drift.
+    // the cell's own type-based text-align and made number values drift — and a
+    // formatted column keeps its TYPE's default, not the text cell's.
     el.setAttribute('type', column.type || 'text');
     if (column.align) el.setAttribute('align', column.align);
+    else if (displayText !== null) el.setAttribute('align', defaultCellAlign(column.type));
     el.setAttribute('in-table', 'true');
+
+    // The cell's value IS its display value: with a formatter declared the cell
+    // receives the formatted text and a column with the formatters removed, so
+    // nothing formats twice and the `value` channel a caller reads is what the
+    // cell shows.
+    const cellColumn = displayText === null
+      ? column
+      : { ...column, formatter: undefined, valueFormatter: undefined };
 
     // Set the property directly so arrays/objects reach progress, sparkline,
     // JSON, action, and tag cells without a lossy attribute conversion. Keep a
     // primitive attribute for declarative inspection and CSS selectors.
-    if (column.type === 'sparkline' && value !== null && typeof value === 'object') {
+    if (displayText !== null) {
+      el.value = displayText;
+      el.setAttribute('value', displayText);
+    } else if (column.type === 'sparkline' && value !== null && typeof value === 'object') {
       el.setAttribute('value', JSON.stringify(value));
       if (Array.isArray(value)) el.data = value;
     } else {
-      el.value = value ?? '';
-    }
-    if (value === null || typeof value !== 'object') {
-      el.setAttribute('value', String(value ?? ''));
+      // An empty row value (null, or a field the row never carried) falls back
+      // to the typed cell's own documented empty value, never to a blanket ''.
+      const resolved = value ?? emptyCellValue(column.type);
+      el.value = resolved;
+      if (resolved !== null && typeof resolved !== 'object') {
+        el.setAttribute('value', String(resolved));
+      }
     }
 
     // Column definition as property (for formatter access etc.)
-    el.column = column;
+    el.column = cellColumn;
     // Row-aware formatters, conditional formatting, and action-cell events all
     // consume the originating row through the cell's property API.
     el.rowData = row ?? null;
@@ -3484,16 +3974,35 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   updateRowSelectionState() {
     if (!this.tbody) return;
 
-    const rows = this.tbody.querySelectorAll('tr');
-    rows.forEach((row, index) => {
+    // Key off each row's own `data-index`, never its DOM position: group
+    // headers, aggregate footers, virtual spacers, and the inert fill row share
+    // the tbody, so a positional walk hands a raw-data index to a non-data row
+    // (and drifts every real row after it — on page 2 of a client-paged table
+    // the offsets never lined up at all).
+    const rows = this.tbody.querySelectorAll('tr[data-index]');
+    rows.forEach(row => {
+      const index = Number(row.getAttribute('data-index'));
       const isSelected = this.selectedRows.includes(index);
-      row.setAttribute('data-selected', String(isSelected));
+      this.stampRowSelection(row as HTMLElement, isSelected);
 
       const checkbox = row.querySelector('snice-checkbox.row-select') as any;
       if (checkbox) {
         checkbox.checked = isSelected;
       }
     });
+  }
+
+  /**
+   * The two selection reflections a row carries, written together: `data-selected`
+   * drives the CSS, `aria-selected` is the documented a11y contract ("selected
+   * data rows expose aria-selected"). The keyboard module stamps ARIA only on a
+   * full body render, so the delta paths below have to carry it themselves —
+   * otherwise a screen reader never hears an interaction-driven selection.
+   */
+  private stampRowSelection(row: HTMLElement, isSelected: boolean) {
+    row.setAttribute('data-selected', String(isSelected));
+    if (isSelected) row.setAttribute('aria-selected', 'true');
+    else row.removeAttribute('aria-selected');
   }
 
   // A2: reflect one row's selection into the DOM (located by data-index). The
@@ -3503,7 +4012,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (!this.tbody) return;
     const row = this.tbody.querySelector(`tr[data-index="${index}"]`) as HTMLElement | null;
     if (!row) return;
-    row.setAttribute('data-selected', String(isSelected));
+    this.stampRowSelection(row, isSelected);
     const checkbox = row.querySelector('snice-checkbox.row-select') as any;
     if (checkbox) checkbox.checked = isSelected;
   }
@@ -3563,7 +4072,12 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     }
   }
 
-  private sortLocalData() {
+  /**
+   * Reorder `this.data` to the current client-side sort (or back to delivery
+   * order when the sort was cleared). Split out of sortLocalData so a fresh
+   * delivery can land sorted without re-entering the render/index bookkeeping.
+   */
+  private applyLocalSortOrder() {
     if (!this.unsortedData.length) {
       this.unsortedData = [...this.data];
     }
@@ -3577,15 +4091,18 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         for (const { column, direction } of this.currentSort) {
           const colDef = this.columns.find(c => c.key === column);
           const customComparator = (colDef as any)?.sortComparator;
+          // The value pipeline feeds BOTH sort paths: valueGetter "runs for
+          // display, sort, aggregation", so a custom comparator sees the same
+          // derived value the cell shows (remote columns routinely key on the
+          // server's sort field and bridge the display with a getter).
+          const aVal = colDef?.valueGetter ? colDef.valueGetter(a[column], a) : a[column];
+          const bVal = colDef?.valueGetter ? colDef.valueGetter(b[column], b) : b[column];
 
           if (customComparator) {
-            const cmp = customComparator(a[column], b[column], direction);
+            const cmp = customComparator(aVal, bVal, direction);
             if (cmp !== 0) return cmp;
           } else {
-            // Use value pipeline getter if available
-            const aVal = colDef?.valueGetter ? colDef.valueGetter(a[column], a) : (a[column] ?? '');
-            const bVal = colDef?.valueGetter ? colDef.valueGetter(b[column], b) : (b[column] ?? '');
-            const cmp = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
+            const cmp = String(aVal ?? '').localeCompare(String(bVal ?? ''), undefined, { numeric: true });
             if (cmp !== 0) return direction === 'asc' ? cmp : -cmp;
           }
         }
@@ -3593,12 +4110,51 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       });
     }
     this.settingSortedData = false;
+  }
+
+  private sortLocalData() {
+    const previous = this.data;
+    this.applyLocalSortOrder();
     // Sort replaced this.data (new order + reference) — resync the row-index
     // map and drop the stale filtered snapshot before re-rendering. Render is
     // queued (not synchronous): sortLocalData is reachable from the currentSort
     // setter stack via handleControlledSort, and cells must never construct there.
     this.rebuildRowIndex();
+    this.remapSelectionAfterReorder(previous);
     this.scheduleRender('body');
+  }
+
+  /**
+   * Selection is anchored to the ROW, not to its position. `selectedRows` holds
+   * indices into `data`, so any reorder of that array — a local sort, or a
+   * re-delivery of the same row objects in another order — has to re-resolve
+   * them; otherwise the indices keep pointing at whatever row now occupies the
+   * slot and the user's checkmark silently jumps to a different row (the same
+   * remap the row-reorder/DnD path performs).
+   *
+   * Only a permutation is remapped: same length, same identities, no duplicates.
+   * A genuinely new dataset keeps the documented raw-index semantics untouched,
+   * and rows carrying no identity (duplicate objects) have nothing to anchor to.
+   * Call AFTER rebuildRowIndex() — the remap reads the fresh row-index map.
+   */
+  private remapSelectionAfterReorder(previous: any[]) {
+    if (this.selectedRows.length === 0) return;
+    if (previous === this.data || previous.length !== this.data.length) return;
+    const identities = new Set(this.data);
+    if (identities.size !== this.data.length) return;
+    // BOTH sides have to be duplicate-free for "same length + subset" to mean
+    // permutation: previous=[A,A] against data=[A,B] satisfies the subset test
+    // while actually being a NEW dataset, and remapping it would move the
+    // selection off the row the raw-index contract points at.
+    if (new Set(previous).size !== previous.length) return;
+    for (const row of previous) if (!identities.has(row)) return;
+
+    const remapped = this.selectedRows
+      .map((index) => this.indexOfRow(previous[index]))
+      .filter((index) => index >= 0);
+    if (remapped.length === this.selectedRows.length
+        && remapped.every((index, i) => index === this.selectedRows[i])) return;
+    this.selectedRows = remapped;
   }
 
   @dispatch('table-row-selection-changed', { bubbles: true, composed: true })
@@ -3752,14 +4308,31 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       bufferPx: this.virtualBuffer,
       totalRows: this.virtualRowsSnapshot.length,
       scrollContainer,
+      // The host template swaps its structural branch (slotted rows ⇄ native
+      // table) without re-attaching. Re-resolving keeps the window painting into
+      // the LIVE tbody instead of the detached branch's orphaned one.
+      resolveScrollContainer: () => this.getScrollContainer(),
       renderRange: (start, end) => this.renderRowRange(start, end),
+      // Spacers span the real grid. A spacer wider than the table invents
+      // columns for fixed layout to spend the frame's spare width on.
+      resolveColumnSpan: () => this.getTotalColumnSpan(),
       // Pinned rows live outside the windowed range so they are always present,
       // exactly like the non-virtual path (renderBody).
       renderPinnedTop: () => this.renderPinnedRows(this.pinnedTopRows, 'top'),
       renderPinnedBottom: () => this.renderPinnedRows(this.pinnedBottomRows, 'bottom'),
+      // A zero-row window still owes the user the empty/loading/error row the
+      // ordinary path renders.
+      renderEmptyBody: () => this.createEmptyBodyRow(),
       // Scroll-driven windows bypass renderBody; restore grid roles, logical
       // row indices, and roving focus after every inserted range.
-      afterRender: () => this.keyboard.refresh(),
+      afterRender: () => {
+        this.keyboard.refresh();
+        // Every window rebuilds the tbody from scratch, taking any filler with
+        // it. Virtualization is not exempt from the fill-row contract, and
+        // renderBody()'s own tail call never runs on the virtual path, so the
+        // filler is re-evaluated here instead.
+        this.updateFillRow();
+      },
     });
   }
 
@@ -3803,15 +4376,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       ? this.virtualRowsSnapshot
       : this.getVirtualRows();
 
-    const extraCols =
-      (this.hasSelectionColumn() ? 1 : 0) +
-      (this.masterDetail.isEnabled() ? 1 : 0) +
-      (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
-    const managedColumns = this.columnManager.getAllStates();
-    const visibleColumnCount = managedColumns.length > 0
-      ? this.columnManager.getVisibleColumns().length
-      : this.columns.length;
-    const totalColSpan = visibleColumnCount + extraCols;
+    const totalColSpan = this.getTotalColumnSpan();
     const structuralSig = this.computeStructuralSig();
 
     // Task B: recycle rows that stay in the window across a scroll shift. A row
@@ -3861,9 +4426,10 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       // Master-detail: render the expanded detail row in-window. The detail
       // A fixed detailHeight participates in virtual spacer math through
       // getVirtualRowHeight. Auto-height content is still rendered in-window
-      // and contributes through normal table layout. Tree rows never carry
-      // detail panels, so skip them.
-      if (!treeRow && this.masterDetail.isEnabled() && this.masterDetail.isExpanded(dataIndex)) {
+      // and contributes through normal table layout. Tree rows compose with
+      // master-detail like any other row; only generated gap nodes (index -1)
+      // have no data row to describe.
+      if (dataIndex >= 0 && this.masterDetail.isEnabled() && this.masterDetail.isExpanded(dataIndex)) {
         const detailRow = this.masterDetail.createDetailRow(data, dataIndex, totalColSpan);
         if (detailRow) fragment.appendChild(detailRow);
       }
@@ -3900,6 +4466,15 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   /** Rows currently reachable by grid keyboard navigation, in display order. */
   private getKeyboardColumnCount(): number {
+    // List mode paints tool cells plus ONE full-width cell per row, and its
+    // header no longer mirrors the body — count the body shape directly.
+    if (this.usesListRowRenderer()) {
+      return 1
+        + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0)
+        + (this.masterDetail.isEnabled() ? 1 : 0)
+        + (this.hasSelectionColumn() ? 1 : 0);
+    }
+
     const rendered = this.shadowRoot?.querySelectorAll('thead tr.column-header-row > th').length ?? 0;
     if (rendered > 0) return rendered;
 
@@ -4198,10 +4773,14 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     this.dispatchColumnPinChange(key, false);
   }
 
+  // A measured width is the column's width, not the header's: the body has to
+  // be repainted with it too, or the th and its tds carry different numbers
+  // and the next body-only re-render paints the stale one.
   autoSizeColumn(key: string) {
     if (this.tbody) {
       this.columnManager.autoSizeColumn(key, this.tbody);
       this.renderHeader();
+      this.renderBody();
     }
   }
 
@@ -4209,6 +4788,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.tbody) {
       this.columnManager.autoSizeAll(this.tbody);
       this.renderHeader();
+      this.renderBody();
     }
   }
 
@@ -4780,6 +5360,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // The row recycler cannot infer that a callback identity changed from
     // row data alone. Force fresh rows so list markup replaces table cells.
     this.renderedRows = new Map();
+    // Installing a renderer removes the column geometry the header describes;
+    // clearing it back to null restores columnar rows AND their header.
+    this.renderHeader();
     this.renderBody();
   }
 
@@ -4802,7 +5385,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     }
 
     const isSelected = this.selectedRows.includes(index);
-    tr.setAttribute('data-selected', String(isSelected));
+    this.stampRowSelection(tr, isSelected);
 
     // Row DnD handle
     if (this.rowReorder && this.rowDnD.isEnabled()) {
@@ -4880,7 +5463,17 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         const toggle = this.treeData.createToggle(treeRow);
         td.appendChild(toggle);
         const textSpan = document.createElement('span');
-        textSpan.textContent = value == null ? '' : String(value);
+        textSpan.className = 'tree-label';
+        // The group cell keeps its plain label next to the indent/chevron, but
+        // it is still a cell: renderCell owns it outright, and otherwise the
+        // documented display pipeline (formatter, then valueFormatter) decides
+        // the text. Only a column with neither shows the raw working value.
+        if (typeof column.renderCell === 'function') {
+          textSpan.appendChild(this.createCellElement(column, value, rowData));
+        } else {
+          textSpan.textContent = this.cellDisplayText(column, value, rowData)
+            ?? (value == null ? '' : String(value));
+        }
         // Clicking the text label also toggles expand/collapse
         if (treeRow.hasChildren) {
           textSpan.style.cursor = 'pointer';
@@ -4899,21 +5492,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const state = this.columnManager.getState(column.key);
       if (state) {
         td.style.width = `${state.width}px`;
-
-        // Pinned column sticky positioning
-        if (state.pinned === 'left') {
-          const offsets = this.columnManager.getPinnedLeftOffsets();
-          td.classList.add('pinned-cell');
-          td.style.position = 'sticky';
-          td.style.left = `${offsets.get(column.key) ?? 0}px`;
-          td.style.zIndex = '1';
-        } else if (state.pinned === 'right') {
-          const offsets = this.columnManager.getPinnedRightOffsets();
-          td.classList.add('pinned-cell');
-          td.style.position = 'sticky';
-          td.style.right = `${offsets.get(column.key) ?? 0}px`;
-          td.style.zIndex = '1';
-        }
+        this.applyPinnedCell(td, column.key, state, '1');
       }
 
       tr.appendChild(td);
@@ -5089,19 +5668,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const state = this.columnManager.getState(column.key);
       if (state) {
         td.style.width = `${state.width}px`;
-        if (state.pinned === 'left') {
-          const offsets = this.columnManager.getPinnedLeftOffsets();
-          td.classList.add('pinned-cell');
-          td.style.position = 'sticky';
-          td.style.left = `${offsets.get(column.key) ?? 0}px`;
-          td.style.zIndex = '1';
-        } else if (state.pinned === 'right') {
-          const offsets = this.columnManager.getPinnedRightOffsets();
-          td.classList.add('pinned-cell');
-          td.style.position = 'sticky';
-          td.style.right = `${offsets.get(column.key) ?? 0}px`;
-          td.style.zIndex = '1';
-        }
+        this.applyPinnedCell(td, column.key, state, '1');
       }
 
       tr.appendChild(td);

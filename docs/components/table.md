@@ -51,7 +51,7 @@ The imperative `columns` and `data` properties are the most complete path. Decla
 | `searchText` | `string` | `''` | Current legacy/controller search text. This is a plain JS field so typing does not rerender and steal focus |
 | `searchDebounce` (attr: `search-debounce`) | `number` | `500` | Delay in milliseconds before the legacy search control requests data |
 | `currentSort` | `Array<{ column: string; direction: 'asc' \| 'desc' }>` | `[]` | Reactive JS-only sort model. Assignment sorts locally or requests remote data |
-| `selectedRows` | `number[]` | `[]` | Reactive JS-only indices into the raw `data` array, not indices into a filtered or sorted page |
+| `selectedRows` | `number[]` | `[]` | Reactive JS-only indices into the raw `data` array, not indices into a filtered or sorted page. Reordering the same rows (a local sort, or a re-delivery of the same row objects in another order) re-resolves the indices so the selection stays on the rows the user picked |
 | `selectionMode` (attr: `selection-mode`) | `'none' \| 'single' \| 'multiple'` | `'multiple'` | Selection model. `'none'` removes selection controls; `'single'` shows row checkboxes without select-all; `'multiple'` enables row, range, group, and select-all selection |
 | `selector` | `string` | `''` | Comma-joined value from the legacy filter selector and the value sent in remote requests |
 | `selectorOptions` | `Array<{ value: string; label: string }>` | `[]` | JS-only options for the legacy `filterable` selector |
@@ -152,11 +152,44 @@ Column capability flags default to enabled unless explicitly set to `false` when
 
 `formatter` is the row-aware display override for every built-in cell.
 `valueFormatter` is the fallback display formatter and is also used by the
-editing pipeline, aggregate output, and formatted clipboard export.
-`valueGetter` derives the working value for cell display, local sorting, and
-aggregation. `valueParser` and
+editing pipeline, aggregate output, and formatted clipboard export. When a
+column declares both, `formatter` wins on every path — rendered cells, group
+and table aggregate footers, declarative rows, and formatted export.
+`valueGetter` derives the working value for cell display, local sorting,
+aggregation, CSV/clipboard export, and declarative `<snice-row>` cells.
+`valueParser` and
 `valueSetter` run during editing; a setter may return either the final field
 value or an updated row object.
+
+A column that declares a display formatter renders through
+`<snice-cell-text>`: the formatter output is a string, so the table resolves
+the pipeline once and hands the text cell the result, keeping the column's
+type-based alignment. The rendered cell's `value` (property and attribute) is
+therefore always the DISPLAY value — the formatter output where one is
+declared, the post-`valueGetter` working value otherwise.
+
+The one cell that is not a typed cell element is the tree group column, which
+renders its label as plain text beside the indent and chevron. It resolves the
+same pipeline (`renderCell`, then `formatter`, then `valueFormatter`), but the
+resulting text lives directly in the cell rather than in a `<snice-cell-text>`,
+so there is no `value` attribute to read there.
+
+When the working value is empty — the row field is `null`, or the row never
+carried the field at all — a table-rendered cell falls back to the empty value
+of its own type rather than to a blanket empty string:
+
+| Column type | Empty value |
+| --- | --- |
+| `boolean` | `false` |
+| `rating`, `progress`, `duration`, `filesize` | `0` |
+| `json` | `null` |
+| everything else | `''` |
+
+This is the same per-type value semantics the standalone cells declare, so a
+row that omits a boolean field renders as false — never as true — and a row
+that omits a progress field renders an empty bar rather than an object. A
+declarative `<snice-row>` cell instead receives the empty working value
+unchanged, so it renders its own no-value state.
 
 The declared `ColumnType` union is:
 
@@ -503,6 +536,36 @@ Standalone behavior boundaries:
 - Links auto-open HTTP(S) values externally. Location builds Google, OpenStreetMap, or Apple URLs. JSON supports collapse, toggle, depth controls, JSON text, and direct object assignment.
 - Date supports relative time, custom tokens, and optional time. Image supports fallback, `variant`, size, lazy loading, and a placeholder/error state.
 
+### Dates and timezones
+
+A date value that carries no time is a **calendar day**, and the table reads it
+at *local* midnight. `'2026-03-15'` therefore renders as March 15 in every
+timezone — it is never shifted to the 14th by a negative UTC offset, as the
+platform's own `new Date('2026-03-15')` (UTC midnight) would. The rule covers
+the shortened ISO forms too: `'2026-03'` is March 1 and `'2026'` is January 1.
+
+A value that *does* carry a time keeps instant semantics and is projected into
+the viewer's local zone: `'2026-03-15T23:30:00Z'` is the evening of the 15th in
+London and the morning of the 16th in Tokyo. Zoneless date-times
+(`'2026-03-15T10:00'`), epoch numbers, and `Date` objects are already local or
+absolute and pass through untouched.
+
+One parse serves the whole date layer, so the day a cell paints is the day the
+row editor holds, the day a CSV/clipboard export ships, and the day a `date`
+column filter (`is`, `before`, `onOrBefore`, `after`, `onOrAfter`) compares
+against.
+
+A date-only *filter bound* names the whole day, so all five operators agree
+about what falls on it. Filtering `onOrBefore` `'2026-03-15'` keeps a row
+timestamped `'2026-03-15T09:00'`, and `after` `'2026-03-15'` excludes it —
+exactly the rows `is` would report for that day, no more and no less. Give the
+bound its own time (`'2026-03-15T12:00'`) to compare against that instant
+instead.
+
+An impossible day is not silently rounded: `'2026-02-30'` and `'2026-13-01'`
+are rejected the way the platform rejects them, and the cell shows the raw
+value rather than inventing March 2 or January 2027.
+
 ## Methods
 
 ### Data, Requests, and Rendering
@@ -527,10 +590,10 @@ Standalone behavior boundaries:
 |--------|-----------|-------------|
 | `getSelectedData()` | — | Returns row objects for the raw `selectedRows` indices |
 | `setSelectabilityCheck()` | `(row, index) => boolean` | Disables selection for rows that fail the predicate and removes them from current, range, group, and select-all selections |
-| `updateRowSelectionState()` | — | Synchronizes rendered rows from `selectedRows` |
-| `updateSelectAllState()` | — | Synchronizes the multiple-mode select-all checkbox |
+| `updateRowSelectionState()` | — | Synchronizes rendered rows from `selectedRows`. Each row is matched by its own data index, so structural rows that share the body — group headers, aggregate footers, virtual spacers, and the bottom filler — are never marked selected, and a paged body cannot mark the wrong row |
+| `updateSelectAllState()` | — | Synchronizes the multiple-mode select-all checkbox. Also runs on every body render, so a delivery or cleared filter that changes the selectable row count re-derives the checked/indeterminate state |
 | `toggleSort()` | `columnKey: string, multiSort = false` | Cycles ascending → descending → none. `multiSort=false` replaces other sorts; header clicks pass `true` and therefore accumulate sorts |
-| `setSortComparator()` | `columnKey, (a, b, direction) => number` | Installs a custom local comparator |
+| `setSortComparator()` | `columnKey, (a, b, direction) => number` | Installs a custom local comparator. It receives the column's working values — the `valueGetter` result where one is declared |
 | `setColumnFilter()` | `column, operator, value` | Adds or replaces one column filter |
 | `removeColumnFilter()` | `column: string` | Removes a column filter |
 | `setQuickFilter()` | `text: string` | Searches all configured columns. Applies synchronously in local mode and requests data in remote mode |
@@ -557,11 +620,11 @@ Filter operators are type-specific:
 | `getColumnVisibility()` | — | Returns `{ [columnKey]: boolean }` |
 | `pinColumn()` | `key, side: 'left' \| 'right'` | Pins a pinnable column to a physical edge |
 | `unpinColumn()` | `key: string` | Removes a column pin |
-| `autoSizeColumn()` | `key: string` | Measures the rendered header and body cells |
-| `autoSizeAllColumns()` | — | Auto-sizes all managed columns |
+| `autoSizeColumn()` | `key: string` | Fits one column to the content of its rendered header and body cells — it shrinks as readily as it grows — and repaints header and body with the measured width |
+| `autoSizeAllColumns()` | — | Auto-sizes every managed column in one measuring pass |
 | `moveColumn()` | `key, toIndex: number` | Moves an unpinned, reorderable column and emits `column-order-change` |
 | `setColumnGroups()` | `Array<{ label, children, headerClass? }>` | Adds a multi-level header row. `children` contains column keys |
-| `scrollToRow()` | `index: number` | Scrolls the virtualized display to a raw data row, translating grouped/tree positions when needed |
+| `scrollToRow()` | `index: number` | Scrolls the virtualized display to a raw data row, translating grouped/tree positions when needed. The virtual window is recomputed as part of the call, so the row is in the DOM when it returns — a programmatic scroll fires no `scroll` event to do it later |
 | `scrollToColumn()` | `columnKey: string` | Scrolls the rendered header into view |
 | `getScrollPosition()` | — | Returns the virtualizer's `{ top, left }` position |
 | `toggleFullscreen()` | — | Toggles native fullscreen with a CSS fallback |
@@ -717,7 +780,7 @@ the corresponding user-action event; density is the explicit exception.
 | `columns` | Declarative `<snice-column>` definitions |
 | `rows` | Declarative `<snice-row>` data |
 | `header` | Super-header content above the native column headers |
-| `empty-state` | Custom content cloned into the empty table body |
+| `empty-state` | Custom content cloned into the empty table body, on the virtualized path as well |
 
 `<snice-table>` has no default slot.
 
@@ -753,11 +816,16 @@ the corresponding user-action event; density is the explicit exception.
 
 The internal native body exposes `row` and `cell` parts, so page CSS can style body rows and cells directly (e.g. `snice-table::part(cell) { ... }`). Standalone cell-component parts are not forwarded through `<snice-table>`.
 
+When a sized host is taller than its rows, the table appends an inert filler row so the column grid reaches the bottom edge of the frame (this happens on the virtualized path too). The filler is not data: it carries no row identity, no ARIA, no selection state, and no `row`/`cell` part — a `::part(row)` border rule therefore stops at the last real row instead of drawing a phantom one underneath it.
+
+**A sized host only.** The filler may only consume space the frame already has. If the host's height is content-driven — `:host { height: 100% }` resolving against an auto or max-content container, such as a stretched grid/flex item or a plain block parent — then the filler would be part of the content the frame is measured from, and it would grow the box it is trying to fill on every resize notification. The table detects this by measurement (apply the filler, confirm the frame kept its height, hand back any growth it caused), so on a content-driven host you get either a smaller filler or none at all, never a growing table. Give the host a real height (`style="height: 24rem"`, a flex/grid track, or a sized ancestor) whenever you want the grid to reach the bottom edge.
+
 ## CSS Custom Properties
 
 | Property | Description | Default |
 |----------|-------------|---------|
 | `--snice-table-body-bg` | Native table body background | `--snice-color-surface` |
+| `--snice-table-stripe-bg` | `striped` row tint | `--snice-color-overlay-stripe` |
 | `--snice-table-group-header-bg` | Group-header background | `--snice-color-surface-container-low` |
 | `--snice-table-group-header-color` | Group-header text | `--snice-color-text` |
 | `--snice-table-group-count-bg` | Group count badge background | `--snice-color-surface-container-high` |
@@ -800,6 +868,17 @@ import 'snice/components/table/snice-table';
 ```
 
 `setColumns()` is equally reactive. `setData()` is deliberately non-eager for bulk loading; pair it with an explicit `renderBody()` or prefer `table.data = rows`.
+
+Rows delivered while a client-side sort is active land in that sorted order —
+`currentSort` and the rendered body can never disagree. In remote mode the
+server owns the ordering, so the delivered order is rendered as-is.
+
+Row rendering recycles the `<tr>` of a row object it has already painted, and a
+row is repainted when its own field values change — so patching a row in place
+and re-delivering it (`table.data = [...rows]`, a poll or websocket update)
+repaints that row while untouched rows keep their DOM. The comparison is
+shallow: a mutation buried inside a nested object value is not detected, so
+hand over a new row object for those.
 
 ## Examples
 
@@ -881,10 +960,25 @@ Use `selectable` with `selection-mode`. In multiple mode, a plain click or Ctrl/
 
   // Runtime mode changes rebuild the selection controls.
   table.selectionMode = 'single';
+
+  // So do runtime `selectable` changes: the header select-all cell and every
+  // row checkbox are added or removed together.
+  table.selectable = false;
 </script>
 ```
 
 In single mode, selecting a row replaces the previous selection; its row checkbox can clear the selection. In none mode, selection controls and row-selection behavior are removed.
+
+Selection is anchored to the row, not to its position. Sorting locally, or
+re-delivering the same row objects in a different order, re-resolves
+`selectedRows` against those objects, so `getSelectedData()` and the highlighted
+rows stay on the rows the user picked. Delivering a different row set keeps the
+documented raw-index semantics.
+
+Every selection path — a row click, a row checkbox, select-all, keyboard
+selection, or a programmatic `selectedRows` assignment — writes both
+`data-selected` and `aria-selected="true"` on the affected rows, so assistive
+technology hears the change immediately rather than at the next full render.
 
 ### Rich Cells and Currency-Looking Columns
 
@@ -925,6 +1019,31 @@ table.addEventListener('cell-action', (event) => {
   console.log(event.detail.action, event.detail.rowData);
 });
 ```
+
+#### Accounting notation
+
+`type: 'accounting'` is currency notation, not a bare number: it renders the
+currency symbol, groups thousands, and puts negatives in parentheses instead of
+using a minus sign. Positives are padded with one non-breaking space so their
+last digit stays under the closing paren of the row above in a right-aligned
+column. An `accounting` cell and a `currency` cell showing the same amount
+therefore agree.
+
+```javascript
+{ key: 'balance', label: 'Balance', type: 'accounting' }
+// -12840.5 -> ($12,840.50)      95000 -> $95,000.00
+```
+
+A generic `<snice-cell>` with no declared `align` keeps its type's alignment
+(right, for every numeric type) instead of forcing left, so the padding lines the
+figures up against the currency column beside it.
+
+Defaults are two decimals, grouping on, and `USD`/`en-US`. Override with
+`numberFormat.decimals` and `numberFormat.thousandsSeparator`, or with
+`currencyFormat.currency`, `currencyFormat.locale`, and
+`currencyFormat.currencyDisplay`. Setting `numberFormat.prefix` or
+`numberFormat.suffix` opts out of the symbol entirely — the caller is naming the
+unit — so `{ prefix: 'CR ' }` renders `(CR 12,840.50)`.
 
 ### Custom Cell and Editor Renderers
 
@@ -1039,6 +1158,8 @@ Use `pagination-mode="client"` to page the local filtered display model.
 
 When grouping or tree data is active, a client page contains flattened visible display items, including structural rows, rather than exactly `pageSize` raw data rows.
 
+If the data behind the current page shrinks — a filter, a `data` reassignment, or a shorter re-delivery — the table re-clamps `currentPage` to the new last page before slicing, exactly as `goToPage()` would. The body therefore always shows the rows the "Showing a–b of n" summary claims, with no page interaction required. An empty result set is the one exception: the declared page is left alone so a table rendered before its rows arrive keeps the starting page the host asked for.
+
 ### Virtualization and Lazy Loading
 
 Use `virtualize` on a fixed-height table and append data in response to `lazy-load`.
@@ -1071,6 +1192,8 @@ Use `virtualize` on a fixed-height table and append data in response to `lazy-lo
 
 Guard the handler because continued scrolling can emit more than once.
 
+A virtualized body renders the same zero-row states as an ordinary one: the loading spinner while a remote request is in flight, the `⚠️` row for a failed load, and the `empty-state` slot (or the default "No data" placeholder) when the delivery is empty. `scrollToRow()` recomputes the window as part of the call, so the requested row is rendered immediately instead of waiting for the next scroll or delivery.
+
 ### Master-Detail Rows
 
 Use `setDetailPanel()` to add an expand control and render detail content below a row.
@@ -1090,7 +1213,7 @@ String detail content is parsed as HTML; use trusted strings or return an `HTMLE
 
 ### Tree Data
 
-Call `setTreeData()` before assigning `data` reactively. Each row's path identifies its place in the hierarchy; missing ancestors become generated gap nodes.
+Call `setTreeData()` before assigning `data` reactively. Each row's path identifies its place in the hierarchy; missing ancestors become generated gap nodes, at every level a path skips — a row at `['Eng', 'Team', 'Alice']` delivered on its own renders `Eng` and `Team` as gap nodes above it.
 
 ```javascript
 const table = document.querySelector('#org-tree');
@@ -1115,7 +1238,9 @@ table.data = [
 ];
 ```
 
-`defaultExpansionDepth: 0` starts collapsed; `1` expands root nodes; `Infinity` expands all levels. Tree node keys are slash-joined paths, such as `Engineering/Alice`.
+`defaultExpansionDepth: 0` starts collapsed; `1` expands root nodes; `Infinity` expands all levels. It describes the *starting* expansion only: it is applied once, when the first rows arrive, so collapsing every node — with `collapseTreeNode()` or `collapseAllTreeNodes()` — sticks across later renders and re-deliveries instead of springing back to the default depth.
+
+The group column is a normal cell: `renderCell` owns it outright, and otherwise `formatter` (then `valueFormatter` as the fallback) produces its label, rendered next to the indent and chevron. Tree rows also compose with master-detail — with `setDetailPanel()` configured, expanding a tree row renders its panel below the row. Generated gap nodes carry no data row, so they show only the label their path implies and have no detail panel.
 
 ### Column Groups and Layout Controls
 
@@ -1135,6 +1260,34 @@ table.moveColumn('department', 1);
 ```
 
 Enable `column-resize`, `column-reorder`, and `column-menu` for equivalent pointer controls. Pinned headers stay at their physical edges and are not draggable.
+
+#### How a column gets its width
+
+A column that declares no `width` **shares the frame**. On every header render,
+and whenever the frame is resized, the space left over after the fixed tool
+columns and the explicitly sized columns is split evenly between them. They
+therefore grow into a wide frame and shrink into a narrow one — a table inside a
+half-width card fits its card instead of running past the edge.
+
+The floor is the column's `minWidth` (50px by default). Once the frame is too
+narrow even for the minimums, the columns stop shrinking and `.table-frame`
+scrolls horizontally; nothing is ever collapsed away.
+
+Four things count as an **authored** width and are honoured verbatim, never
+refitted: `width` on the column definition, a drag-resize on the header edge,
+`autoSizeColumn()`, and `autoSizeAllColumns()`. Give a column `width` when its
+content has a natural size (an ID, a status chip); leave it off when the column
+should absorb whatever room is going.
+
+#### Pinned column affordance
+
+A pinned cell renders with `pinned-cell` plus `pinned-cell--left` or
+`pinned-cell--right`. The inner-most pinned column on each side — the boundary
+between the frozen region and the scrolling one — also gets `pinned-cell--edge`,
+which paints a 2px divider and a soft shadow cast into the scrolling area. Pinned
+headers additionally carry a `.pin-indicator` pin glyph and say "pinned left" /
+"pinned right" in their accessible name, so a frozen column is still legible when
+the table happens to be wide enough that nothing scrolls.
 
 ### Row Reordering and Pinning
 
@@ -1163,6 +1316,18 @@ template, bind it with `.listRenderer=${fn}`. The imperative
 `setListViewRenderer()` equivalent remains available. Tool cells such as
 selection and detail toggles remain available.
 
+An active `listRenderer` also **suppresses the columnar header**: the group
+header row, the per-column `<th>` cells, and the header-filter row are all
+dropped, because a card row has no column geometry for them to line up with.
+The tool-column headers stay, so `selectable` keeps its select-all checkbox
+above the cards. Clearing the renderer (`listRenderer = null`) or leaving list
+mode (`list = false`) brings the full header back. `list` on its own — with no
+renderer — still paints normal columnar cells and keeps its header.
+
+Because there is no header to click, sorting in list mode runs through the
+toolbar (`setToolbar({ showSort: true })`) or the `toggleSort()` / `currentSort`
+API; the rows re-order exactly as they do in table mode.
+
 ```javascript
 table.list = true;
 table.listRenderer = (row) => {
@@ -1181,6 +1346,13 @@ Use `loading` for progress and the `empty-state` slot for a custom zero-row mess
   <div slot="empty-state">No employees match this view.</div>
 </snice-table>
 ```
+
+While `loading` with no rows, the body shows a centred spinner **and the word
+"Loading…"**, wrapped in a `role="status" aria-live="polite"` block so the state
+is announced rather than merely drawn. With rows already on screen the body dims
+and the `loading-overlay` part appears instead, carrying the same announcement
+as an `aria-label`. Both spinners raise `--progress-track-opacity` so their track
+ring stays visible on dark surfaces.
 
 The slotted empty content is **cloned** into the table body on each zero-row render — the light-DOM original is only a template, so event listeners or state on the slotted node do not carry over, and updating the slotted copy only takes effect on the next zero-row render. Remove `loading` after the request completes so the empty state can appear.
 
@@ -1345,7 +1517,9 @@ table.printTable({ pageStyles: '@page { size: landscape; }' });
 
 CSV output uses raw row values and skips columns with `exportable: false`.
 Clipboard output uses formatted values by default and copies every filtered row
-when selection is empty. With a selection, both helpers intersect the correct
+when selection is empty. Both read the column's working value, so a
+`valueGetter` column exports what the table displays rather than a row field it
+may not even have. With a selection, both helpers intersect the correct
 raw row identities with the filtered view.
 
 ## Limits Worth Knowing
@@ -1355,7 +1529,7 @@ contract before adopting the table:
 
 - **Pagination labels.** The built-in `pagination` renders "Showing 1–25 of 60" with plain prev/next-style buttons; `snice-pagination` renders numbered `aria-label="Page N"` buttons. Neither produces a "Page X of Y" contract.
 - **Remote-mode debounce.** `mode="remote"` requests are debounced by a hard-coded 150 ms.
-- **Failed remote loads keep their rows.** With data present, a failed re-request leaves the previous rows on screen; the `⚠️` warning row and the `empty-state` slot only appear when there is no data at all.
+- **Failed remote loads keep their rows.** With data present, a failed re-request leaves the previous rows on screen; the `⚠️` warning row and the `empty-state` slot only appear when there is no data at all. The error state (the `⚠️` row and the `table--error` host class) describes the last delivery *attempt*, so it clears as soon as any dataset arrives — a successful re-request, `setData()`, or a plain `table.data = rows` assignment when the page falls back to local data. Assigning an empty array clears it too, and the body then shows the empty state rather than the stale error. Two limits: the assignment must be a *new* array (re-assigning the identical array reference is a no-op, so it clears nothing), and a request that was already in flight when the local rows arrived still reports its own failure when it settles — the error re-appears until the next assignment. Reordering rows by drag republishes the same rows and deliberately leaves the error alone.
 - **Remote re-request triggers.** Remote mode re-requests only on `currentPage`, `currentSort`, and `pageSize` changes. A page that owns its own filter set must reset one of those (e.g. `currentPage`) to drive a refetch.
 - **Local mode is client-side.** `sortable`/`searchable` in local mode sort and filter the rows already in `data` — on a server-paged list that is one page of results.
 

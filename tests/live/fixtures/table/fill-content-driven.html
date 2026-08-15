@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* The showcase's density layout: two auto-height cards in a grid row.
+         Each host is `height: 100%` against a card whose height is content —
+         and stretched by the taller sibling — so the frame's height is
+         content-driven and the fill row can feed its own resize observer. */
+      .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+      .card { padding: 0.9rem; border: 1px solid #ccc; border-radius: 0.5rem; }
+    </style>
+  </head>
+  <body>
+    <div class="grid">
+      <div class="card"><h3>Compact</h3><snice-table id="compact" density="compact"></snice-table></div>
+      <div class="card"><h3>Comfortable</h3><snice-table id="comfy" density="comfortable"></snice-table></div>
+    </div>
+
+    <!-- A plain block parent: also content-driven, with no sibling involved. -->
+    <div class="card"><snice-table id="lone"></snice-table></div>
+
+    <p id="tail">tail marker</p>
+
+    <script type="module">
+      import '/packages/components/src/table/snice-table.ts';
+
+      const columns = [
+        { key: 'name', label: 'Name', type: 'text' },
+        { key: 'role', label: 'Role', type: 'text' },
+        { key: 'salary', label: 'Salary', type: 'text' },
+      ];
+      const rows = Array.from({ length: 8 }, (_, i) => ({
+        name: `Person ${i + 1}`, role: 'Engineer', salary: `$${100 + i}k`,
+      }));
+
+      for (const id of ['compact', 'comfy', 'lone']) {
+        const t = document.getElementById(id);
+        t.columns = columns;
+        t.data = rows;
+      }
+    </script>
+  </body>
+</html>

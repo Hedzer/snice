@@ -1,11 +1,14 @@
 /**
- * Field report FR5 (reported against 7.5.0, verified here against current source).
+ * Defect guard: stacked @on decorators on one method must ALL register, even when
+ * they differ only in a timing option.
  *
- * Claim: two stacked @on decorators on one method, where one carries
- * { debounce: 300 }, result in NEITHER event firing the handler. Un-stacked,
- * debounce works.
+ * The defect: registration identity ignored debounce/throttle, so two stacked
+ * @on decorators on the same method — one carrying { debounce: 300 } — collapsed
+ * onto one registration and neither event reached the handler. Un-stacked, the
+ * same debounce worked, which is what made it look like a debounce bug.
  *
- * These tests assert CORRECT behavior: every stacked registration must fire.
+ * Every test here asserts the CORRECT behavior: each stacked registration fires,
+ * in either decorator order, for different events and for the same event.
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -13,7 +16,7 @@ import { element, on, render, html } from '../packages/core/src/index';
 
 const flush = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 
-describe('FR5 — stacked @on decorators with debounce/throttle', () => {
+describe('@on — stacked registrations with debounce/throttle', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
     vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -24,8 +27,8 @@ describe('FR5 — stacked @on decorators with debounce/throttle', () => {
     document.body.innerHTML = '';
   });
 
-  // --- Report's exact repro: debounce on top, plain below, different events ---
-  it('fires both stacked handlers when the FIRST decorator has debounce (exact repro)', async () => {
+  // --- Debounce on top, plain below, different events ---
+  it('fires both stacked handlers when the FIRST decorator has debounce', async () => {
     @element('fr5-debounce-then-plain')
     class Fr5DebounceThenPlain extends HTMLElement {
       calls: string[] = [];
@@ -180,9 +183,9 @@ describe('FR5 — stacked @on decorators with debounce/throttle', () => {
   });
 
   // --- Same event name, different selectors, one debounced (dedup-key probe) ---
-  // FR5: registration identity omits debounce/throttle, so a stacked pair that
-  // differs ONLY by timing options collapses to a single registration.
-  it('fires both stacked handlers on the SAME event when only the timing option differs — FR5', async () => {
+  // Registration identity must include debounce/throttle — otherwise a stacked
+  // pair that differs ONLY by timing options collapses to a single registration.
+  it('fires both stacked handlers on the SAME event when only the timing option differs', async () => {
     @element('fr5-same-event-timing-only')
     class Fr5SameEventTimingOnly extends HTMLElement {
       calls: string[] = [];
@@ -210,10 +213,10 @@ describe('FR5 — stacked @on decorators with debounce/throttle', () => {
     expect(el.calls.length).toBe(2);
   });
 
-  // FR5: the surviving registration is order-dependent. With the PLAIN
-  // decorator on top, the plain registration is the one that gets dropped, so
-  // the handler never runs synchronously — the reported "nothing fires" shape.
-  it('runs the plain stacked registration immediately when a debounced one sits below it — FR5', async () => {
+  // Order must not matter either: with the PLAIN decorator on top it is the
+  // plain registration that gets dropped when identity ignores timing, so the
+  // handler stops running synchronously — the "nothing fires" shape of the bug.
+  it('runs the plain stacked registration immediately when a debounced one sits below it', async () => {
     @element('fr5-plain-top-debounce-bottom')
     class Fr5PlainTopDebounceBottom extends HTMLElement {
       calls: string[] = [];
@@ -333,7 +336,7 @@ describe('FR5 — stacked @on decorators with debounce/throttle', () => {
     expect(first.calls).toEqual([]);
   });
 
-  // --- Guard: fixing FR5 must not make registration identity so unique that
+  // --- Guard: registration identity must not become so unique that
   // a subclass re-declaring an identically decorated method registers twice.
   it('does not double-register when a subclass re-declares an identically decorated method', async () => {
     class Fr5Base extends HTMLElement {

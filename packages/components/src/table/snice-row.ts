@@ -27,6 +27,7 @@ import './snice-cell-json';
 import './snice-cell-currency';
 import './snice-cell-percentage';
 import './snice-cell-location';
+import { defaultCellAlign } from './table-cell-presentation';
 
 @element('snice-row')
 export class SniceRow extends HTMLElement implements SniceRowElement {
@@ -109,6 +110,16 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     this.configureCells();
   }
 
+  /**
+   * The column's working value for this row: `valueGetter` runs for display
+   * here exactly as it does on the table's own render path, so a column whose
+   * key names a server field rather than a row field still paints.
+   */
+  private cellValue(column: ColumnDefinition): any {
+    const raw = this.data?.[column.key];
+    return column.valueGetter ? column.valueGetter(raw, this.data) : raw;
+  }
+
   private configureCells() {
     if (!this.columns) {
       return;
@@ -117,7 +128,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     this.columns.forEach((column, index) => {
       const cellElement = this.shadowRoot?.querySelector(`[data-column-index="${index}"]`) as any;
       if (cellElement) {
-        const value = this.data[column.key];
+        const value = this.cellValue(column);
         if (typeof column.renderCell === 'function') {
           const output = column.renderCell(value, this.data, column);
           const replacement = output instanceof HTMLElement ? output : document.createElement('span');
@@ -129,7 +140,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
         }
 
         const formatter = column.formatter || column.valueFormatter;
-        cellElement.value = formatter ? formatter(value, this.data) : value;
+        cellElement.value = formatter ? String(formatter(value, this.data) ?? '') : value;
         cellElement.column = formatter
           ? { ...column, type: 'text', formatter: undefined, valueFormatter: undefined }
           : column;
@@ -237,7 +248,6 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
   }
 
   private renderCell(column: ColumnDefinition, columnIndex: number) {
-    const value = this.data[column.key];
     const cellComponent = this.getCellComponent(
       column.formatter || column.valueFormatter ? 'text' : column.type
     );
@@ -246,17 +256,11 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
       <div class="cell cell--${column.type}" part="cell" style="${this.getCellStyles(column)}">
         ${unsafeHTML(`<${cellComponent}
           type="${column.type}"
-          align="${column.align || this.getDefaultAlign(column.type)}"
+          align="${column.align || defaultCellAlign(column.type)}"
           data-column-index="${columnIndex}"
         ></${cellComponent}>`)}
       </div>
     `;
-  }
-
-  private getDefaultAlign(type?: string): 'left' | 'center' | 'right' {
-    if (['number', 'currency', 'percent', 'percentage', 'duration', 'filesize', 'accounting', 'scientific', 'fraction'].includes(type || '')) return 'right';
-    if (['boolean', 'rating', 'image'].includes(type || '')) return 'center';
-    return 'left';
   }
 
   private applyCellPresentation(wrapper: HTMLElement | null, column: ColumnDefinition, value: any) {

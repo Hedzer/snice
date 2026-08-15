@@ -2,6 +2,7 @@ import { element, property, watch, ready, query, render, styles, html, css } fro
 import cssContent from './snice-cell.css?inline';
 import type { DateFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
 import { installCellPresentation } from './table-cell-presentation';
+import { parseCellDate, startOfLocalDay } from './table-date';
 
 @element('snice-cell-date')
 export class SniceCellDate extends HTMLElement implements SniceCellElement {
@@ -74,7 +75,10 @@ export class SniceCellDate extends HTMLElement implements SniceCellElement {
     this.applyAlignment();
   }
 
-  @watch('value', 'column')
+  // Every input the formatter reads, not just the value: a late
+  // `custom-format` / `locale` / `show-time` change must repaint the day it
+  // describes, or the cell keeps showing the format it happened to be born with.
+  @watch('value', 'column', 'dateFormat', 'customFormat', 'locale', 'relativeTime', 'showTime')
   updateContent() {
     if (this.contentElement) {
       const formattedValue = this.formatDateValue();
@@ -94,9 +98,12 @@ export class SniceCellDate extends HTMLElement implements SniceCellElement {
       return this.column.formatter(this.value, this.rowData);
     }
 
-    const date = new Date(this.value);
-    
-    if (isNaN(date.getTime())) {
+    // A date-only value names a calendar day, so it is read at LOCAL midnight
+    // (see table-date.ts). Parsing it with `new Date` would place it at UTC
+    // midnight and render the previous day for every negative UTC offset.
+    const date = parseCellDate(this.value);
+
+    if (!date) {
       return String(this.value);
     }
 
@@ -192,15 +199,21 @@ export class SniceCellDate extends HTMLElement implements SniceCellElement {
   }
 
   private getDateStyles(): string {
-    const date = new Date(this.value);
-    const now = new Date();
-    const isToday = date.toDateString() === now.toDateString();
-    const isPast = date < now;
-    const isFuture = date > now;
+    const date = parseCellDate(this.value);
 
     // Apply CSS classes instead of direct styles
     this.classList.remove('date--today', 'date--past', 'date--future');
-    
+
+    if (!date) return '';
+
+    // Day granularity: a calendar day is today, past, or future as a whole —
+    // the wall-clock time of day never decides which.
+    const day = startOfLocalDay(date).getTime();
+    const today = startOfLocalDay(new Date()).getTime();
+    const isToday = day === today;
+    const isPast = day < today;
+    const isFuture = day > today;
+
     if (isToday) {
       this.classList.add('date--today');
     } else if (isPast) {

@@ -9,6 +9,37 @@ const presentationProperties: Array<keyof CellStyle> = [
   'textDecoration',
 ];
 
+/** The alignment a column type renders with when the column declares none. */
+export function defaultCellAlign(type?: string): 'left' | 'center' | 'right' {
+  if (['number', 'currency', 'percent', 'percentage', 'duration', 'filesize',
+       'accounting', 'scientific', 'fraction'].includes(type || '')) return 'right';
+  if (['boolean', 'rating', 'image'].includes(type || '')) return 'center';
+  return 'left';
+}
+
+/**
+ * The value a typed cell holds when the row has nothing to show — the row field
+ * is null, or the row never carried the field at all.
+ *
+ * Each typed cell owns its value semantics: `false` for boolean, `0` for
+ * rating/progress/duration/filesize, `null` for JSON, `''` for the text-shaped
+ * rest. Handing every empty value the same `''` instead lets the cell's typed
+ * attribute converter re-read that empty string as a value of the wrong
+ * meaning — `''` on a Boolean property is an attribute that is *present*, i.e.
+ * `true`, and `''` on an Object property parses to `{}`.
+ */
+export function emptyCellValue(type?: string): any {
+  switch (type) {
+    case 'boolean': return false;
+    case 'rating':
+    case 'progress':
+    case 'duration':
+    case 'filesize': return 0;
+    case 'json': return null;
+    default: return '';
+  }
+}
+
 const installed = new WeakMap<HTMLElement, MutationObserver>();
 const appliedClasses = new WeakMap<HTMLElement, string[]>();
 
@@ -16,6 +47,16 @@ const appliedClasses = new WeakMap<HTMLElement, string[]>();
  * Give every standalone specialized table cell the common ColumnDefinition
  * presentation contract. The observer reapplies after Snice's differential
  * renderer changes shadow content; equality guards prevent mutation loops.
+ *
+ * Display formatters
+ * ------------------
+ * `formatter` is the column's display formatter and `valueFormatter` its
+ * fallback, so `formatter` wins. `formatterOverride` says the cell does NOT
+ * apply `column.formatter` itself, so this module owns both formatters for it.
+ *
+ * Table-rendered cells never arrive here with a formatter: `createCellElement`
+ * resolves the pipeline once and hands the text cell the formatted string. This
+ * path serves the declarative and standalone cells, which own a full column.
  */
 export function installCellPresentation(
   host: HTMLElement & { column?: ColumnDefinition | null; value?: any; rowData?: any },
@@ -62,14 +103,17 @@ export function installCellPresentation(
           : (host.value == null ? '' : String(host.value));
       }
 
-      if (formatterOverride || column.valueFormatter) {
-        const formatter = formatterOverride
-          ? (column.formatter || column.valueFormatter)
-          : column.valueFormatter;
+      // `formatter` beats `valueFormatter`. A cell that applies `formatter`
+      // itself has already painted it, so the fallback must not overwrite that
+      // content — only a formatter-less column falls through to valueFormatter.
+      const formatter = column.formatter
+        ? (formatterOverride ? column.formatter : null)
+        : column.valueFormatter;
+      if (formatter) {
+        const display = String(formatter(host.value, host.rowData) ?? '');
         const content = host.shadowRoot?.querySelector('[part~="content"]') as HTMLElement | null;
-        if (formatter && content) {
-          const value = String(formatter(host.value, host.rowData) ?? '');
-          if (content.textContent !== value || content.childElementCount > 0) content.textContent = value;
+        if (content && (content.textContent !== display || content.childElementCount > 0)) {
+          content.textContent = display;
         }
       }
     } finally {

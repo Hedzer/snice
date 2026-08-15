@@ -21,6 +21,8 @@ export class TableMasterDetail {
   private options: DetailPanelOptions | null = null;
   private tableElement: HTMLElement | null = null;
   private contentCache = new Map<any, string | HTMLElement>();
+  /** Last value signature seen per row, so in-place mutations evict the cache. */
+  private fingerprints = new Map<any, string>();
   private rowByIndex = new Map<number, any>();
   private measuredHeights = new Map<any, number>();
   onHeightChange: (() => void) | null = null;
@@ -29,17 +31,32 @@ export class TableMasterDetail {
     this.tableElement = tableEl;
     this.options = options;
     this.contentCache.clear();
+    this.fingerprints.clear();
     this.rowByIndex.clear();
     this.measuredHeights.clear();
   }
 
-  /** Eagerly construct detail content when lazy=false. */
-  prepare(rows: any[]) {
+  /**
+   * Eagerly construct detail content when lazy=false.
+   *
+   * `fingerprint` (the table's per-row value signature) also evicts rows whose
+   * fields were mutated in place: the cache is keyed by row identity, so an
+   * unchanged identity would otherwise keep serving a panel built from the
+   * pre-mutation values.
+   */
+  prepare(rows: any[], fingerprint?: (row: any) => string) {
     if (!this.options) return;
     this.rowByIndex = new Map(rows.map((row, index) => [index, row]));
     const currentRows = new Set(rows);
-    for (const row of this.contentCache.keys()) {
+    for (const row of [...this.contentCache.keys()]) {
       if (!currentRows.has(row)) this.contentCache.delete(row);
+      else if (fingerprint && this.fingerprints.get(row) !== fingerprint(row)) {
+        this.contentCache.delete(row);
+        this.measuredHeights.delete(row);
+      }
+    }
+    if (fingerprint) {
+      this.fingerprints = new Map(rows.map(row => [row, fingerprint(row)]));
     }
     for (const row of this.measuredHeights.keys()) {
       if (!currentRows.has(row)) this.measuredHeights.delete(row);

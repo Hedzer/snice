@@ -6,7 +6,8 @@ import {
 } from '../packages/core/src/index';
 
 /**
- * FR4 (field report against 7.7.0) — attach/respond ordering cycle.
+ * Defect guard: the attach/respond ordering cycle between a controller and a
+ * child element that requests at mount time.
  *
  * Minimal cycle:
  *   host element  -> carries the controller, its @ready gates on the child
@@ -25,7 +26,7 @@ import {
  * synchronously in connectedCallback (packages/core/src/element.ts:348), long before
  * `ready`. The last test in this file is the passing contrast that pins that down.
  */
-describe('FR4: controller attach vs. child mount-time @request', () => {
+describe('controller attach vs. child mount-time @request', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
@@ -37,7 +38,7 @@ describe('FR4: controller attach vs. child mount-time @request', () => {
     container.remove();
   });
 
-  // FR4 — expected: the controller answers the child's mount-time request.
+  // Expected: the controller answers the child's mount-time request.
   it('answers a child @request fired while the host ready gates on that child', async () => {
     @controller('fr4-ctrl')
     class Fr4Controller {
@@ -98,7 +99,7 @@ describe('FR4: controller attach vs. child mount-time @request', () => {
     expect(child.value).toEqual({ id: 'x1', name: 'answered' });
   });
 
-  // FR4 — expected: the cycle resolves and the controller ends up attached.
+  // Expected: the cycle resolves and the controller ends up attached.
   it('attaches the controller instead of deadlocking host ready against the child request', async () => {
     @controller('fr4-ctrl-2')
     class Fr4Controller2 {

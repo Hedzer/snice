@@ -5,6 +5,14 @@
 
 import type { ColumnDefinition } from './snice-table.types';
 
+/** Padding + border a cell spends before any content fits inside it. */
+export function horizontalCellChrome(cell: HTMLElement): number {
+  const style = getComputedStyle(cell);
+  const px = (value: string) => Number.parseFloat(value) || 0;
+  return px(style.paddingLeft) + px(style.paddingRight)
+    + px(style.borderLeftWidth) + px(style.borderRightWidth);
+}
+
 export interface ColumnState {
   key: string;
   width: number;          // Computed pixel width
@@ -18,6 +26,13 @@ export interface ColumnState {
   reorderable: boolean;
   hideable: boolean;
   pinnable: boolean;
+  /**
+   * Someone chose this width on purpose — the column definition declared one,
+   * the user dragged the edge, or auto-size measured the content. Only columns
+   * that never did participate in `fitVisibleColumns`, so a deliberate width is
+   * never quietly overwritten by the container's arithmetic.
+   */
+  authored: boolean;
 }
 
 export interface ColumnGroup {
@@ -35,14 +50,18 @@ export class TableColumnManager {
   private resizeOverlay: HTMLElement | null = null;
   private tableElement: HTMLElement | null = null;
 
+  /** Fallback content width for a column nobody sized. */
+  static readonly DEFAULT_WIDTH = 150;
+
   /** Initialize column states from column definitions */
   initialize(columns: ColumnDefinition[], tableEl: HTMLElement) {
     this.tableElement = tableEl;
     columns.forEach((col, index) => {
       const existing = this.states.get(col.key);
+      const declared = this.parseWidth(col.width);
       this.states.set(col.key, {
         key: col.key,
-        width: existing?.width ?? this.parseWidth(col.width) ?? 150,
+        width: existing?.width ?? declared ?? TableColumnManager.DEFAULT_WIDTH,
         flex: (col as any).flex,
         minWidth: (col as any).minWidth ?? 50,
         maxWidth: (col as any).maxWidth ?? Infinity,
@@ -53,6 +72,7 @@ export class TableColumnManager {
         reorderable: (col as any).reorderable !== false,
         hideable: (col as any).hideable !== false,
         pinnable: (col as any).pinnable !== false,
+        authored: existing?.authored ?? declared !== undefined,
       });
     });
   }
@@ -121,6 +141,48 @@ export class TableColumnManager {
     return widths;
   }
 
+  /**
+   * Fit the columns nobody sized into `availableWidth` (the frame's content
+   * box), reserving `chromePerColumn` for each column's own padding + border.
+   *
+   * A column width is a CONTENT width — the rendered column is that plus its
+   * chrome — so the budget has to come off the top or the fitted table lands a
+   * few pixels wider than the frame it was fitted to.
+   *
+   * Declared and user-chosen widths are spent first and never rewritten: a
+   * table that asked for `width: '80'` keeps 80 whatever the frame does. What
+   * is left is split evenly and clamped to each column's [minWidth, maxWidth],
+   * so a frame too narrow for the minimums overflows into the frame's own
+   * scroller instead of collapsing the columns to nothing.
+   *
+   * Returns whether any width actually moved, so callers can skip a repaint.
+   */
+  fitVisibleColumns(availableWidth: number, chromePerColumn = 0): boolean {
+    const visible = this.getVisibleColumns();
+    // A layoutless (or not-yet-laid-out) frame reports 0. Fitting to that would
+    // slam every column to its minimum for a measurement that means nothing.
+    if (visible.length === 0 || !(availableWidth > 0)) return false;
+
+    const auto = visible.filter((state) => !state.authored);
+    if (auto.length === 0) return false;
+
+    let budget = availableWidth - visible.length * chromePerColumn;
+    for (const state of visible) {
+      if (state.authored) budget -= state.width;
+    }
+
+    const share = Math.floor(budget / auto.length);
+    let changed = false;
+    for (const state of auto) {
+      const next = Math.max(state.minWidth, Math.min(state.maxWidth, share));
+      if (next !== state.width) {
+        state.width = next;
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
   /** Apply computed widths to <col> or <th> elements */
   applyWidths(headerRow: HTMLElement, widths: Map<string, number>) {
     const ths = headerRow.querySelectorAll('th[data-key]') as NodeListOf<HTMLElement>;
@@ -155,6 +217,8 @@ export class TableColumnManager {
       state.width = newWidth;
       // Remove flex if manually resized
       state.flex = undefined;
+      // The user chose this width — the container fit must leave it alone.
+      state.authored = true;
 
       // Apply width to DOM immediately
       const root = this.tableElement?.shadowRoot;
@@ -191,27 +255,91 @@ export class TableColumnManager {
 
   /** Auto-size a column to fit its content */
   autoSizeColumn(columnKey: string, tbody: HTMLElement) {
-    const state = this.states.get(columnKey);
-    if (!state) return;
-
-    // Measure header
-    const th = this.tableElement?.shadowRoot?.querySelector(`th[data-key="${columnKey}"]`) as HTMLElement;
-    let maxWidth = th ? th.scrollWidth : 0;
-
-    // Measure body cells
-    const cells = tbody.querySelectorAll(`td[data-key="${columnKey}"]`) as NodeListOf<HTMLElement>;
-    cells.forEach(cell => {
-      maxWidth = Math.max(maxWidth, cell.scrollWidth);
-    });
-
-    state.width = Math.max(state.minWidth, Math.min(state.maxWidth, maxWidth + 16)); // 16px padding
-    state.flex = undefined;
+    this.autoSizeColumns([columnKey], tbody);
   }
 
   /** Auto-size all columns */
   autoSizeAll(tbody: HTMLElement) {
-    for (const key of this.states.keys()) {
-      this.autoSizeColumn(key, tbody);
+    this.autoSizeColumns(Array.from(this.states.keys()), tbody);
+  }
+
+  /** Slack added to a measured content width so the last glyph never sits on
+   *  the clip edge (and a sortable header keeps room for its chevron). */
+  private static readonly AUTO_SIZE_SLACK = 4;
+
+  /**
+   * Measure the columns' content and give each the width it actually needs.
+   *
+   * A table cell's `scrollWidth` is NOT its content width: for content that
+   * fits, it reports the padding box — the width the column already has. The
+   * previous implementation took that maximum and added 16px, so every
+   * "auto-size" pass could only GROW the column, by a chrome's worth each
+   * time, until the table outgrew its own frame. Once it did, the right-pinned
+   * column (`position: sticky`) parked over the columns beside it, and the
+   * columns behind it read as deleted.
+   *
+   * The width a column NEEDS is a layout question, so ask layout: drop the
+   * table into content-driven sizing (`table-layout: auto` at `max-content`)
+   * with the measured columns' imposed widths removed, and read back the width
+   * each header settles at. `max-content` also means no wrapping, so a long
+   * cell reports its full single-line extent even though the painted column
+   * ellipsises it. Everything is restored in the same task, before paint.
+   */
+  private autoSizeColumns(columnKeys: string[], tbody: HTMLElement) {
+    const root = this.tableElement?.shadowRoot ?? null;
+    const tableEl = (root?.querySelector('table')
+      ?? tbody.closest('table')) as HTMLElement | null;
+    const targets = columnKeys
+      .map((key) => this.states.get(key))
+      .filter((state): state is ColumnState => !!state);
+    if (!tableEl || targets.length === 0) return;
+
+    const restore: Array<() => void> = [];
+    const push = (el: HTMLElement, property: 'width' | 'tableLayout') => {
+      const previous = el.style[property];
+      restore.push(() => { el.style[property] = previous; });
+    };
+
+    push(tableEl, 'tableLayout');
+    push(tableEl, 'width');
+    tableEl.style.tableLayout = 'auto';
+    tableEl.style.width = 'max-content';
+
+    const headers = new Map<string, HTMLElement>();
+    for (const state of targets) {
+      const header = root?.querySelector(`th[data-key="${state.key}"]`) as HTMLElement | null;
+      if (!header) continue;
+      headers.set(state.key, header);
+      // An imposed width is still a preferred width under auto layout, so it
+      // has to come off before the column can report what it wants.
+      push(header, 'width');
+      header.style.width = 'auto';
+      for (const cell of Array.from(
+        tbody.querySelectorAll(`td[data-key="${state.key}"]`),
+      ) as HTMLElement[]) {
+        push(cell, 'width');
+        cell.style.width = 'auto';
+      }
+    }
+
+    const widths = new Map<string, number>();
+    for (const [key, header] of headers) {
+      widths.set(key, header.getBoundingClientRect().width - horizontalCellChrome(header));
+    }
+
+    for (const undo of restore) undo();
+
+    for (const state of targets) {
+      const content = widths.get(state.key) ?? 0;
+      // Nothing measurable — a layoutless DOM, or a column with no rendered
+      // header. Leave the width alone rather than slamming it to the minimum.
+      if (content <= 0) continue;
+      state.width = Math.max(
+        state.minWidth,
+        Math.min(state.maxWidth, Math.ceil(content) + TableColumnManager.AUTO_SIZE_SLACK),
+      );
+      state.flex = undefined;
+      state.authored = true;
     }
   }
 

@@ -38,6 +38,7 @@ export class TableTreeData {
   attach(options: TreeDataOptions) {
     this.options = options;
     this.enabled = true;
+    this.defaultsApplied = false;
 
     // Pre-expand to default depth
     if (options.defaultExpansionDepth !== undefined && options.defaultExpansionDepth >= 0) {
@@ -46,6 +47,8 @@ export class TableTreeData {
   }
 
   private defaultDepth = 0;
+  /** Whether the default expansion depth has been seeded (first data only). */
+  private defaultsApplied = false;
 
   isEnabled(): boolean {
     return this.enabled;
@@ -65,14 +68,27 @@ export class TableTreeData {
       const path = this.options.getPath(row);
       const key = path.join('/');
 
-      nodeMap.set(key, {
-        data: row,
-        children: new Set(),
-        depth: path.length - 1,
-        isGap: false,
-      });
+      // A real row may already exist as a gap node generated for a descendant
+      // delivered earlier; upgrade it in place so the children it collected
+      // survive.
+      const existing = nodeMap.get(key);
+      if (existing) {
+        existing.data = row;
+        existing.depth = path.length - 1;
+        existing.isGap = false;
+      } else {
+        nodeMap.set(key, {
+          data: row,
+          children: new Set(),
+          depth: path.length - 1,
+          isGap: false,
+        });
+      }
 
-      // Ensure all ancestors exist (gap nodes)
+      // Ensure all ancestors exist (gap nodes), and register each one as a
+      // child of its own parent: a generated node with no link upward leaves
+      // its parent reporting hasChildren === false, so flatten() never
+      // descends and the whole subtree — real rows included — disappears.
       for (let i = 1; i < path.length; i++) {
         const ancestorPath = path.slice(0, i);
         const ancestorKey = ancestorPath.join('/');
@@ -83,6 +99,10 @@ export class TableTreeData {
             depth: i - 1,
             isGap: true,
           });
+        }
+        if (i > 1) {
+          const ancestorParent = nodeMap.get(path.slice(0, i - 1).join('/'));
+          if (ancestorParent) ancestorParent.children.add(ancestorKey);
         }
       }
 
@@ -101,13 +121,17 @@ export class TableTreeData {
     }
     rootKeys.sort();
 
-    // Auto-expand to default depth on first process
-    if (this.expandedKeys.size === 0 && this.defaultDepth > 0) {
+    // Auto-expand to default depth on the first process that sees rows.
+    // `defaultExpansionDepth` describes the STARTING expansion only: keying
+    // this off an empty expansion set re-seeded it on every render, so
+    // collapsing the last expanded node (or collapseAll()) was silently undone.
+    if (!this.defaultsApplied && this.defaultDepth > 0 && nodeMap.size > 0) {
       for (const [key, node] of nodeMap) {
         if (node.depth < this.defaultDepth && node.children.size > 0) {
           this.expandedKeys.add(key);
         }
       }
+      this.defaultsApplied = true;
     }
 
     // Flatten tree respecting expand/collapse

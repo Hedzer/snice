@@ -3,6 +3,7 @@
  * Handles: CSV export, print, clipboard copy.
  */
 import type { ColumnDefinition } from './snice-table.types';
+import { parseCellDate } from './table-date';
 
 export interface CSVExportOptions {
   /** CSV delimiter. Default: ',' */
@@ -70,7 +71,7 @@ export class TableExport {
     // Data rows
     for (const row of data) {
       const cells = exportColumns.map(c => {
-        const value = row[c.key];
+        const value = this.cellValue(row, c);
         return this.escapeCSV(value == null ? '' : String(value), delimiter);
       });
       rows.push(cells.join(delimiter));
@@ -203,7 +204,7 @@ export class TableExport {
 
     const text = rows.map(row =>
       columns.map(c => {
-        const value = row[c.key];
+        const value = this.cellValue(row, c);
         return useFormatted ? this.formatValue(value, row, c) : this.rawValue(value);
       }).join(delimiter)
     ).join('\n');
@@ -229,6 +230,16 @@ export class TableExport {
       return `"${value.replace(/"/g, '""')}"`;
     }
     return value;
+  }
+
+  /**
+   * The column's working value for a row: `valueGetter` "runs for display,
+   * sort, aggregation" — and for export, which must ship what the table shows,
+   * not a row field the column may not even have.
+   */
+  private cellValue(row: any, column: ColumnDefinition): any {
+    const raw = row?.[column.key];
+    return column.valueGetter ? column.valueGetter(raw, row) : raw;
   }
 
   private rawValue(value: any): string {
@@ -285,8 +296,10 @@ export class TableExport {
         return `${num.toFixed(column.percentageFormat?.decimals ?? 2)}%`;
       }
       case 'date': {
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) return this.rawValue(value);
+        // Exported dates must read as the cell reads them: a calendar day is
+        // local midnight, never UTC midnight (see table-date.ts).
+        const date = parseCellDate(value);
+        if (!date) return this.rawValue(value);
         const format = column.dateFormat || {};
         const dateStyle = format.format === 'custom' ? undefined : (format.format || 'short');
         return new Intl.DateTimeFormat(format.locale || 'en-US', dateStyle ? { dateStyle } : {}).format(date);
