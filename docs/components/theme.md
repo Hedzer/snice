@@ -51,6 +51,11 @@ Provides all design tokens for Snice components via CSS custom properties. Inclu
 | `--snice-color-overlay-hover` | Alpha tint layered over a surface on hover |
 | `--snice-color-overlay-selected` | Primary-tinted overlay for selected rows/items |
 | `--snice-color-overlay-selected-hover` | Selected state when also hovered |
+| `--snice-color-overlay-stripe` | Zebra tint for alternating rows (`hsl(0 0% 0% / 0.02)` light, `hsl(0 0% 100% / 0.11)` dark) |
+
+Dark surfaces need a far larger step than light ones: the tint that reads as a
+stripe on white is invisible on near-black, which is why the stripe token is an
+alpha overlay tuned per theme rather than a step on the surface scale.
 
 ### Motion
 

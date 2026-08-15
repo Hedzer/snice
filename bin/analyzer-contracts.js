@@ -19,7 +19,7 @@ export const ANALYZER_CONTRACTS = {
     "customElements": 193,
     "componentFamilies": 134,
     "componentModules": 188,
-    "componentUtilityModules": 31,
+    "componentUtilityModules": 32,
     "reactWrappers": 193,
     "rootExports": 119
   },
@@ -352,6 +352,7 @@ export const ANALYZER_CONTRACTS = {
     "snice/components/table/table-cell-presentation",
     "snice/components/table/table-column-manager",
     "snice/components/table/table-column-menu",
+    "snice/components/table/table-date",
     "snice/components/table/table-editor",
     "snice/components/table/table-export",
     "snice/components/table/table-filter-engine",

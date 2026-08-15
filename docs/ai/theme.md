@@ -58,6 +58,7 @@ Modern syntax with alpha: `hsl(0 0% 0% / 0.15)` (not `hsla(0, 0%, 0%, 0.15)`)
 --snice-color-overlay-hover: hsl(0 0% 0% / 0.04);
 --snice-color-overlay-selected: hsl(var(--snice-color-blue-500) / 0.08);
 --snice-color-overlay-selected-hover: hsl(var(--snice-color-blue-500) / 0.12);
+--snice-color-overlay-stripe: hsl(0 0% 0% / 0.02);   /* dark: hsl(0 0% 100% / 0.11) */
 ```
 
 ## Layers (z-index)

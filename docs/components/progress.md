@@ -74,7 +74,20 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `--progress-radius` | Bar border radius | `4px` |
 | `--progress-bg` | Background track color | `var(--snice-color-border)` |
 | `--progress-color` | Progress fill color | `var(--snice-color-primary)` |
+| `--progress-track-opacity` | Opacity of the circular track ring | `0.2` |
 | `--progress-animation-duration` | Animation speed | `1.5s` |
+
+The circular track is deliberately faint over light surfaces. Twenty percent of
+any color over a near-black surface is invisible, so a spinner placed on a dark
+or low-contrast background should raise `--progress-track-opacity` (up to `1`)
+rather than try to compensate with an impossibly bright `--progress-bg`:
+
+```css
+.on-a-dark-panel snice-progress {
+  --progress-track-opacity: 1;
+  --progress-bg: var(--snice-color-border);
+}
+```
 
 ## Basic Usage
 

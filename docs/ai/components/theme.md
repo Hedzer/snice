@@ -56,6 +56,7 @@ CSS-only design token system. No component -- just import the stylesheet.
 --snice-color-overlay-hover          /* hsl(0 0% 0% / 0.04) — hover tint over any surface */
 --snice-color-overlay-selected       /* hsl(primary / 0.08) — selected row/item tint */
 --snice-color-overlay-selected-hover /* hsl(primary / 0.12) — selected + hovered */
+--snice-color-overlay-stripe         /* hsl(0 0% 0%/.02) light, hsl(0 0% 100%/.11) dark — zebra row tint; dark needs the bigger step */
 ```
 
 ### Spacing

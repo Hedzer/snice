@@ -129,6 +129,11 @@
   --snice-color-overlay-hover: hsl(0 0% 0% / 0.04);
   --snice-color-overlay-selected: hsl(var(--snice-color-blue-500) / 0.08);
   --snice-color-overlay-selected-hover: hsl(var(--snice-color-blue-500) / 0.12);
+  /* Zebra tint for alternating rows. Not a surface step: a solid surface token
+     lands within a couple of luminance points of the body on ONE of the two
+     themes and the striping disappears there. An alpha tint is tuned per
+     theme, and composites over pinned/selected/tinted cells alike. */
+  --snice-color-overlay-stripe: hsl(0 0% 0% / 0.02);
 
   --snice-color-primary-subtle: hsl(var(--snice-color-blue-50));
   --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-100));
@@ -342,6 +347,9 @@
   --snice-color-overlay-hover: hsl(0 0% 100% / 0.06);
   --snice-color-overlay-selected: hsl(var(--snice-color-blue-400) / 0.16);
   --snice-color-overlay-selected-hover: hsl(var(--snice-color-blue-400) / 0.22);
+  /* Dark surfaces need a much larger step than light ones: the same tint
+     that reads as a stripe on white is invisible on near-black. */
+  --snice-color-overlay-stripe: hsl(0 0% 100% / 0.11);
 
   --snice-color-primary-subtle: hsl(var(--snice-color-blue-950));
   --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-900));
@@ -405,6 +413,7 @@
     --snice-color-border-focus: hsl(var(--snice-color-blue-400));
 
     --snice-color-surface-hover: hsl(var(--snice-color-gray-700));
+    --snice-color-overlay-stripe: hsl(0 0% 100% / 0.11);
     --snice-color-surface-active: hsl(var(--snice-color-gray-600));
     --snice-color-surface-disabled: hsl(var(--snice-color-gray-800));
     --snice-color-text-disabled: hsl(var(--snice-color-gray-600));

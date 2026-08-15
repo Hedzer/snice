@@ -1008,7 +1008,7 @@
         },
         {
           "name": "value",
-          "description": "value: Date"
+          "description": "The selected day, or `null` for \"nothing selected yet\" — the state a\ncalendar starts in. A default of today would paint the selected\nbackground over today's own highlight, making `highlight-today` invisible\nand announcing `aria-selected` for a choice the user never made."
         },
         {
           "name": "view",

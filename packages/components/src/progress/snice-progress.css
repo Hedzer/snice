@@ -190,9 +190,13 @@
   vector-effect: non-scaling-stroke;
 }
 
+/* The track is deliberately faint over light surfaces, but 20% of any color
+   over a near-black surface is invisible. Consumers that place a spinner on a
+   dark or low-contrast background raise --progress-track-opacity instead of
+   trying to compensate with an impossible --progress-bg. */
 .progress__circle-bg {
   stroke: var(--progress-bg);
-  opacity: 0.2;
+  opacity: var(--progress-track-opacity, 0.2);
 }
 
 .progress__circle-bar {

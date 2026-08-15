@@ -5276,6 +5276,23 @@
             },
             {
               "kind": "method",
+              "name": "handleCalendarResize",
+              "parameters": [
+                {
+                  "name": "entry",
+                  "type": "ResizeObserverEntry",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              },
+              "description": "The lane budget comes from the cell's height, and that height follows the\ncalendar's own box — column width in square mode, the host's height when\nit has one. Re-stripe when the box actually changes."
+            },
+            {
+              "kind": "method",
               "name": "handlePropertyChange",
               "parameters": [],
               "return": {
@@ -5418,7 +5435,8 @@
               "type": {
                 "text": "Date"
               },
-              "default": "new Date()"
+              "default": "null",
+              "description": "The selected day, or `null` for \"nothing selected yet\" — the state a\ncalendar starts in. A default of today would paint the selected\nbackground over today's own highlight, making `highlight-today` invisible\nand announcing `aria-selected` for a choice the user never made."
             },
             {
               "kind": "field",
@@ -5500,7 +5518,8 @@
               "type": {
                 "text": "Date"
               },
-              "reflects": true
+              "reflects": true,
+              "description": "The selected day, or `null` for \"nothing selected yet\" — the state a\ncalendar starts in. A default of today would paint the selected\nbackground over today's own highlight, making `highlight-today` invisible\nand announcing `aria-selected` for a choice the user never made."
             },
             {
               "name": "view",
@@ -45979,7 +45998,13 @@
             {
               "kind": "method",
               "name": "handleDataAssignment",
-              "parameters": [],
+              "parameters": [
+                {
+                  "name": "oldVal",
+                  "type": "any[]",
+                  "optional": true
+                }
+              ],
               "return": {
                 "type": {
                   "text": "unknown"
