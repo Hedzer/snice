@@ -287,3 +287,4 @@ receipt.print();
 - Print styles included for all variants
 - Currency formatted using `Intl.NumberFormat` for locale-appropriate display
 - Subtotal auto-calculated from items if not set; total auto-calculated as subtotal + tax - discount + tip
+- A `ReceiptItem`'s `sku`, `note`, and `discount` render their own lines only in the `detailed` variant; an item `discount` still counts toward the subtotal in every variant

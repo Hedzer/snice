@@ -139,5 +139,5 @@ receipt.taxes = [
 - Subtotal auto-computed from items if not set
 - Total auto-computed as subtotal + tax - discount + tip if not set
 - `taxes` array overrides single `tax` property
-- SKU, notes, per-item discounts only in `detailed` variant
+- SKU, notes, per-item discount lines only in `detailed` variant; an item `discount` still reduces the subtotal in every variant
 - Print styles included for all variants
