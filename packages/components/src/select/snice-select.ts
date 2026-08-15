@@ -194,14 +194,11 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   private remoteSearchTimeout = 0;
   private remoteSearching = false;
 
-  /** Merged options: programmatic `options` array + child `<snice-option>` elements */
+  /** The documented option list: child `<snice-option>` elements win over the `options` array */
   private get mergedOptions(): SelectOption[] {
-    // Child options take precedence if both provided (slot wins)
-    if (this.childOptions.length > 0 && this.options.length > 0) {
-      // Merge: children first, then programmatic options not already present
-      const childValues = new Set(this.childOptions.map(o => o.value));
-      return [...this.childOptions, ...this.options.filter(o => !childValues.has(o.value))];
-    }
+    // "Children take precedence over `options` array" — when children are
+    // present they are the list, so a later `options` assignment cannot
+    // append to or reorder what the author declared in markup.
     return this.childOptions.length > 0 ? this.childOptions : this.options;
   }
 
@@ -428,7 +425,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       option.setAttribute('data-value', opt.value);
       option.setAttribute('role', 'option');
       option.setAttribute('aria-selected', String(isSelected));
-      option.setAttribute('aria-disabled', String(opt.disabled));
+      option.setAttribute('aria-disabled', String(Boolean(opt.disabled)));
       option.setAttribute('part', 'option');
 
       const check = document.createElement('span');
