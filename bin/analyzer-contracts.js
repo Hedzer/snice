@@ -18161,6 +18161,14 @@ export const ANALYZER_CONTRACTS = {
           "type": "boolean",
           "literals": []
         },
+        "column-fit": {
+          "property": "columnFit",
+          "type": "'scroll' | 'squish'",
+          "literals": [
+            "scroll",
+            "squish"
+          ]
+        },
         "column-menu": {
           "property": "columnMenu",
           "type": "boolean",
@@ -18338,6 +18346,11 @@ export const ANALYZER_CONTRACTS = {
         "clickable": {
           "type": "boolean",
           "attribute": "clickable",
+          "structured": false
+        },
+        "columnFit": {
+          "type": "'scroll' | 'squish'",
+          "attribute": "column-fit",
           "structured": false
         },
         "columnMenu": {
@@ -27508,6 +27521,7 @@ export const ANALYZER_CONTRACTS = {
           "editable",
           "editMode",
           "density",
+          "columnFit",
           "headerFilters",
           "quickFilter",
           "rowReorder",
@@ -27567,6 +27581,7 @@ export const ANALYZER_CONTRACTS = {
           "editable",
           "editMode",
           "density",
+          "columnFit",
           "headerFilters",
           "quickFilter",
           "rowReorder",

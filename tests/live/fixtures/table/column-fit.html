@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* Deliberately too narrow for five columns at their natural widths:
+         `scroll` has to overflow here and `squish` has to not. */
+      .narrow { width: 380px; }
+      body { margin: 0; padding: 1rem; }
+    </style>
+  </head>
+  <body>
+    <!-- The mode under test: five columns, long content, a 380px frame. -->
+    <!-- `sortable` on purpose: a sortable header puts its label in a flex row
+         beside the sort indicator, which is the harder of the two header
+         layouts to ellipsise. #resizable below keeps the plain-label path. -->
+    <div class="narrow"><snice-table id="squish" column-fit="squish" sortable></snice-table></div>
+
+    <!-- Same columns, same frame, default policy: the control. -->
+    <div class="narrow"><snice-table id="scroll"></snice-table></div>
+
+    <!-- Squish plus drag-resize: the drag must rebalance, not overflow. -->
+    <div class="narrow"><snice-table id="resizable" column-fit="squish" column-resize></snice-table></div>
+
+    <!-- Starts in the default mode; the spec flips the property at runtime. -->
+    <div class="narrow"><snice-table id="switchable"></snice-table></div>
+
+    <script type="module">
+      import '/packages/components/src/table/snice-table.ts';
+
+      const columns = [
+        { key: 'name', label: 'Name', type: 'text', minWidth: 140 },
+        { key: 'role', label: 'Role', type: 'text', minWidth: 140 },
+        { key: 'team', label: 'Team', type: 'text', minWidth: 140 },
+        // A REAL typed cell, not a text cell that happens to hold an address:
+        // the typed cells render into their own shadow root and carry their own
+        // width floor, so they are the case squish actually has to prove.
+        { key: 'email', label: 'Email Address', type: 'email', minWidth: 180 },
+        { key: 'note', label: 'Note', type: 'text', minWidth: 200 },
+      ];
+
+      const rows = [
+        {
+          name: 'Alexandra Featherstonehaugh',
+          role: 'Principal Platform Engineer',
+          team: 'Developer Experience',
+          email: 'alexandra.featherstonehaugh@example.com',
+          note: 'Owns the build pipeline and the release train end to end.',
+        },
+        {
+          name: 'Bartholomew Winterbourne',
+          role: 'Staff Designer',
+          team: 'Design Systems',
+          email: 'bartholomew.winterbourne@example.com',
+          note: 'Maintains the component library and its accessibility audits.',
+        },
+        {
+          name: 'Cordelia Ravenscroft',
+          role: 'Engineering Manager',
+          team: 'Data Platform',
+          email: 'cordelia.ravenscroft@example.com',
+          note: 'Runs the ingestion team and the on-call rotation.',
+        },
+      ];
+
+      for (const id of ['squish', 'scroll', 'resizable', 'switchable']) {
+        const table = document.getElementById(id);
+        table.columns = columns.map((column) => ({ ...column }));
+        table.data = rows.map((row) => ({ ...row }));
+      }
+    </script>
+  </body>
+</html>

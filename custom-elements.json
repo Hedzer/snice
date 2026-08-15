@@ -45610,6 +45610,15 @@
             },
             {
               "kind": "field",
+              "name": "columnFit",
+              "type": {
+                "text": "'scroll' | 'squish'"
+              },
+              "default": "'scroll'",
+              "description": "How the columns relate to the frame's width.\n\n`scroll` keeps every column at or above its `minWidth` and lets the frame\nscroll horizontally when they no longer fit. `squish` makes the frame the\nhard constraint instead: minimums relax, content ellipsises, and the table\nnever scrolls sideways. See the `ColumnFit` docs in snice-table.types.ts."
+            },
+            {
+              "kind": "field",
               "name": "columnMenu",
               "type": {
                 "text": "boolean"
@@ -45924,6 +45933,17 @@
                 "text": "{ expanded?: boolean }"
               },
               "default": "{}"
+            },
+            {
+              "kind": "method",
+              "name": "handleColumnFitChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              },
+              "description": "Switching fit policy re-decides every unsized column's width, so the frame\nhas to be re-fitted from scratch: the cached width would otherwise make the\nresize observer's \"did the frame move?\" guard swallow the very next pass."
             },
             {
               "kind": "method",
@@ -47091,6 +47111,15 @@
                 "text": "boolean"
               },
               "reflects": true
+            },
+            {
+              "name": "column-fit",
+              "fieldName": "columnFit",
+              "type": {
+                "text": "'scroll' | 'squish'"
+              },
+              "reflects": true,
+              "description": "How the columns relate to the frame's width.\n\n`scroll` keeps every column at or above its `minWidth` and lets the frame\nscroll horizontally when they no longer fit. `squish` makes the frame the\nhard constraint instead: minimums relax, content ellipsises, and the table\nnever scrolls sideways. See the `ColumnFit` docs in snice-table.types.ts."
             },
             {
               "name": "column-menu",

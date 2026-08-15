@@ -199,6 +199,13 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </div>
 <snice-table id="pin-demo" sortable column-resize column-reorder column-menu hoverable></snice-table>
 
+<h2>Column Fit: Squish vs Scroll</h2>
+<p class="note">The same eight columns in the same narrow box. <code>column-fit="squish"</code> makes the frame the constraint — the columns share it, content ellipsises, and nothing scrolls sideways. The default <code>scroll</code> keeps each column at its minimum width and scrolls instead. Both stay resizable: drag a header edge in the squish table and its neighbours give up the width.</p>
+<div class="demo-grid">
+  <div class="demo-card"><h3>squish</h3><snice-table id="fit-squish" column-fit="squish" column-resize sortable hoverable></snice-table></div>
+  <div class="demo-card"><h3>scroll (default)</h3><snice-table id="fit-scroll" column-resize sortable hoverable></snice-table></div>
+</div>
+
 <h2>Row Reorder (Drag &amp; Drop)</h2>
 <p class="note">Drag the ⠿ handle to reorder rows.</p>
 <snice-table id="dnd-demo" row-reorder hoverable></snice-table>
@@ -225,8 +232,8 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <h2>Density</h2>
 <p class="note">Compact and comfortable row spacing use the same columns and data.</p>
 <div class="demo-grid">
-  <div class="demo-card"><h3>Compact</h3><snice-table id="density-compact" density="compact" sortable striped hoverable></snice-table></div>
-  <div class="demo-card"><h3>Comfortable</h3><snice-table id="density-comfy" density="comfortable" sortable striped hoverable></snice-table></div>
+  <div class="demo-card"><h3>Compact</h3><snice-table id="density-compact" density="compact" column-fit="squish" sortable striped hoverable></snice-table></div>
+  <div class="demo-card"><h3>Comfortable</h3><snice-table id="density-comfy" density="comfortable" column-fit="squish" sortable striped hoverable></snice-table></div>
 </div>
 
 <h2>List Mode (Custom Rows)</h2>
@@ -235,10 +242,10 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 <h2>Loading + Empty States</h2>
 <div class="demo-grid">
-  <div class="demo-card"><h3>Loading indicator</h3><snice-table id="loading" loading></snice-table></div>
+  <div class="demo-card"><h3>Loading indicator</h3><snice-table id="loading" column-fit="squish" loading></snice-table></div>
   <div class="demo-card">
     <h3>Custom empty state</h3>
-    <snice-table id="empty">
+    <snice-table id="empty" column-fit="squish">
       <div slot="empty-state" style="padding:2rem;text-align:center;color:var(--snice-color-text-secondary,#777)">No employees match this view.</div>
     </snice-table>
   </div>
@@ -685,6 +692,35 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   pinTable.addEventListener('column-reorder', (event) => {
     columnStatus.textContent = `Moved ${event.detail.fromKey} before ${event.detail.toKey}`;
   });
+
+  // ── Column Fit ──
+  // Deliberately more columns than the half-width card can hold at their
+  // declared minimums: squish shares the frame, scroll overflows into it.
+  const fitColumns = [
+    { key: 'name', label: 'Name', type: 'text', minWidth: 140 },
+    { key: 'department', label: 'Department', type: 'text', minWidth: 130 },
+    { key: 'email', label: 'Email', type: 'email', minWidth: 200 },
+    { key: 'location', label: 'Location', type: 'text', minWidth: 150 },
+    { key: 'startDate', label: 'Start Date', type: 'date', minWidth: 120 },
+    { key: 'age', label: 'Age', type: 'number', minWidth: 70 },
+    {
+      key: 'salary', label: 'Salary', type: 'currency', minWidth: 120,
+      currencyFormat: { currency: 'USD', decimals: 0 },
+    },
+    { key: 'status', label: 'Status', type: 'status', minWidth: 110 },
+  ];
+  const fitData = data.slice(0, 6).map((row, index) => ({
+    ...row,
+    location: ['New York, NY', 'Austin, TX', 'London, UK'][index % 3],
+    startDate: `202${index % 5}-0${(index % 8) + 1}-15`,
+    status: index % 5 === 0 ? 'Away' : 'Active',
+  }));
+  // Each table owns its own definitions: the column manager tracks per-table
+  // width/visibility state against them, and resizing one demo must not move
+  // the other.
+  const fitCopy = () => fitColumns.map((column) => ({ ...column }));
+  setup('fit-squish', fitCopy(), fitData);
+  setup('fit-scroll', fitCopy(), fitData);
 
   // ── Row DnD ──
   setup('dnd-demo', [

@@ -7877,6 +7877,18 @@
           "description": "clickable: boolean"
         },
         {
+          "name": "column-fit",
+          "description": "How the columns relate to the frame's width.\n\n`scroll` keeps every column at or above its `minWidth` and lets the frame\nscroll horizontally when they no longer fit. `squish` makes the frame the\nhard constraint instead: minimums relax, content ellipsises, and the table\nnever scrolls sideways. See the `ColumnFit` docs in snice-table.types.ts.",
+          "values": [
+            {
+              "name": "scroll"
+            },
+            {
+              "name": "squish"
+            }
+          ]
+        },
+        {
           "name": "column-menu",
           "description": "columnMenu: boolean"
         },
