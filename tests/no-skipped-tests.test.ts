@@ -23,6 +23,15 @@ const REPO_ROOT = join(__dirname, '..');
 // Whitelisted directories where skips are tolerated (auto-generated).
 const ALLOWED_SKIP_DIRS = [
   'react-adapters/components', // generator emits skip stubs for unbuilt adapters
+  'live/matrix', // true-visual tier: runtime test.skip() is Playwright's honest
+                 // engine-capability gate there (webkit has no MediaRecorder,
+                 // firefox editing shortcuts differ) — a skip can only ever
+                 // withhold a test from an engine that CANNOT run it, so it
+                 // cannot hide a regression from a capable engine. CAVEAT:
+                 // while this tier stays on-demand it is also outside every
+                 // required gate; if it ever gets fast enough to join one,
+                 // re-review this entry — capability skips would still be
+                 // sound, but any NON-capability skip found here is a bug
 ];
 
 // Patterns that constitute a skip. Match common forms only — comments / strings
