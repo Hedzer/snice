@@ -52,11 +52,11 @@
 }
 
 .command-palette__search {
-  padding: var(--snice-spacing-md, 1rem);
   border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
 }
 
 .command-palette__input {
+  box-sizing: border-box;
   width: 100%;
   padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
   font-size: var(--snice-font-size-md, 1rem);
@@ -73,7 +73,8 @@
 
 .command-palette__results {
   overflow-y: auto;
-  max-height: calc(70vh - 80px);
+  flex: 1;
+  min-height: 0;
 }
 
 .command-palette__category {
