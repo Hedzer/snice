@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-layout shells visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase.
+
+           - The body carries a DELIBERATE 20px margin. "Layouts own the
+             screen… App shells are `position: fixed; inset: 0` — body margin
+             or ancestor padding cannot inset them" is a documented claim, and
+             it is unfalsifiable on a page whose body has no margin. The
+             content shells, which use `100dvh` and let the page scroll, are
+             expected to sit inside that margin instead — so the same fixture
+             separates the two families;
+
+           - `#embed` is a 400x340 box with its own border, used only by the
+             `contained` combos: "`contained` on any shell → sizes to parent
+             instead". A shell that ignores it escapes a box the fixture pins;
+
+           - every slotted region is a bare, flat-filled div with no margin of
+             its own, so a measured region box is the shell's doing and never
+             the content's. */
+      html, body { padding: 0; }
+      body {
+        margin: 20px;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage > * { max-width: 100%; }
+      #embed {
+        width: 400px;
+        height: 340px;
+        border: 2px solid #888;
+        box-sizing: border-box;
+      }
+      .region {
+        margin: 0;
+        min-width: 1px;
+        min-height: 1px;
+        font-size: 13px;
+        line-height: 1.4;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/layout/snice-layout.ts';
+      import '/packages/components/src/layout/snice-layout-sidebar.ts';
+      import '/packages/components/src/layout/snice-layout-dashboard.ts';
+      import '/packages/components/src/layout/snice-layout-blog.ts';
+      import '/packages/components/src/layout/snice-layout-centered.ts';
+      import '/packages/components/src/layout/snice-layout-split.ts';
+      import '/packages/components/src/layout/snice-layout-landing.ts';
+      import '/packages/components/src/layout/snice-layout-card.ts';
+      import '/packages/components/src/layout/snice-layout-minimal.ts';
+      import '/packages/components/src/layout/snice-layout-fullscreen.ts';
+      import '/packages/components/src/layout/snice-layout-master-detail.ts';
+      import '/packages/components/src/layout/snice-layout-docs.ts';
+      import '/packages/components/src/layout/snice-layout-auth-split.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      /** Flat fills, one per region, so a pixel probe can name the region. */
+      const FILL = {
+        brand: 'rgb(220 38 38)', header: 'rgb(37 99 235)', toolbar: 'rgb(22 163 74)',
+        sidebar: 'rgb(217 119 6)', page: 'rgb(147 51 234)', footer: 'rgb(8 145 178)',
+        'right-sidebar': 'rgb(190 24 93)', nav: 'rgb(71 85 105)', cta: 'rgb(202 138 4)',
+        hero: 'rgb(15 118 110)', left: 'rgb(190 18 60)', right: 'rgb(29 78 216)',
+        list: 'rgb(124 45 18)', detail: 'rgb(21 94 117)', empty: 'rgb(120 53 15)',
+        toc: 'rgb(4 120 87)', panel: 'rgb(109 40 217)', background: 'rgb(30 41 59)',
+        overlay: 'rgb(190 24 93)', controls: 'rgb(180 83 9)',
+      };
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+
+      /**
+       * Sidebar width and the mobile drawer both animate over
+       * `--snice-transition-normal` (250ms). Nothing here measures a shell
+       * mid-transition, so every mount clears it.
+       */
+      async function settle(ms = 340) {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, ms));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one shell with one flat-filled div in each named slot. Slots
+         * are the documented region contract — "All regions are slots" — and
+         * every shell option below is an ATTRIBUTE, in the exact hyphenated
+         * form the doc's own table names.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const host = combo.contained
+            ? Object.assign(document.createElement('div'), { id: 'embed' })
+            : stage;
+          if (combo.contained) stage.appendChild(host);
+
+          const el = document.createElement(combo.tag);
+          el.id = 'subject';
+          if (combo.contained) el.setAttribute('contained', '');
+          for (const [name, value] of Object.entries(combo.attrs ?? {})) {
+            if (value === false || value == null) continue;
+            el.setAttribute(name, value === true ? '' : String(value));
+          }
+          for (const slot of combo.slots ?? []) {
+            const region = document.createElement('div');
+            region.className = 'region';
+            region.slot = slot;
+            region.dataset.region = slot;
+            region.style.background = FILL[slot] ?? 'rgb(120 120 120)';
+            region.style.color = '#fff';
+            region.textContent = slot;
+            el.appendChild(region);
+          }
+          host.appendChild(el);
+          await el.ready;
+          await settle(combo.settleMs);
+
+          current = el;
+          return { tag: el.tagName.toLowerCase(), slots: el.children.length };
+        },
+
+        /** Flip a reflected boolean and let the transition finish. */
+        async set(name, value) {
+          if (value === false) current.removeAttribute(name);
+          else current.setAttribute(name, value === true ? '' : String(value));
+          await settle();
+          return { has: current.hasAttribute(name) };
+        },
+
+        /** Click the shell's own sidebar toggle, the way a user would. */
+        async toggle() {
+          const button = current.shadowRoot.querySelector('.sidebar-toggle, .drawer-toggle, [aria-label*="idebar" i]');
+          button?.click();
+          await settle();
+          return { clicked: !!button, collapsed: current.hasAttribute('collapsed') };
+        },
+
+        async press(key) {
+          current.dispatchEvent(new KeyboardEvent('keydown', {
+            key, bubbles: true, composed: true, cancelable: true,
+          }));
+          await settle();
+          return { collapsed: current.hasAttribute('collapsed') };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+        FILL,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

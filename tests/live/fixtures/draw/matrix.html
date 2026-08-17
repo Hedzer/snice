@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-draw visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+
+           - #stage is a fixed, known box, so "the canvas fills its host" is a
+             fact about the component and not about the viewport;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             component occluding its own canvas;
+           - the stage paints a colour the component never uses, so an
+             unpainted canvas shows through as that colour. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 640px;
+        height: 420px;
+        background: #ff00ff; /* a colour the component never paints */
+      }
+      #stage > snice-draw { display: block; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/draw/snice-draw.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      /** Saved drawings, mirroring tests/matrix/draw/draw-support.ts. */
+      const STROKES = {
+        none: [],
+        line: [{
+          id: 's1', tool: 'pen', color: '#e11d48', width: 8,
+          points: [{ x: 80, y: 80 }, { x: 240, y: 200 }, { x: 400, y: 100 }],
+          timestamp: 1700000000000,
+        }],
+        many: [
+          { id: 's1', tool: 'pen', color: '#e11d48', width: 8,
+            points: [{ x: 60, y: 60 }, { x: 180, y: 160 }], timestamp: 1700000000000 },
+          { id: 's2', tool: 'pen', color: '#2563eb', width: 8,
+            points: [{ x: 60, y: 220 }, { x: 180, y: 320 }], timestamp: 1700000000001 },
+          { id: 's3', tool: 'eraser', color: '#000000', width: 14,
+            points: [{ x: 300, y: 60 }, { x: 420, y: 160 }], timestamp: 1700000000002 },
+        ],
+      };
+
+      const api = {
+        /** combo: { tool, color, strokeWidth, backgroundColor, lazy, disabled, strokes } */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-draw');
+          el.id = 'subject';
+          for (const [key, attribute] of Object.entries({
+            tool: 'tool', color: 'color', strokeWidth: 'stroke-width',
+            backgroundColor: 'background-color', lazyRadius: 'lazy-radius',
+            polygonCurvePoints: 'polygon-curve-points', circlePoints: 'circle-points',
+          })) {
+            if (combo[key] !== undefined) el.setAttribute(attribute, String(combo[key]));
+          }
+          for (const flag of ['lazy', 'autoPolygon', 'autoCircle', 'disabled']) {
+            const attribute = flag.replace(/[A-Z]/g, c => '-' + c.toLowerCase());
+            if (combo[flag]) el.setAttribute(attribute, '');
+          }
+
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+
+          if (combo.strokes && combo.strokes !== 'none') {
+            el.setStrokes(STROKES[combo.strokes]);
+            await settle();
+          }
+
+          current = { el, combo };
+          const canvas = el.shadowRoot.querySelector('canvas');
+          return {
+            strokes: el.getStrokes().length,
+            buffer: { width: canvas.width, height: canvas.height },
+          };
+        },
+
+        /** Draw one stroke with real pointer events, in canvas coordinates. */
+        async draw(points) {
+          const el = current?.el;
+          if (!el) return 0;
+          const canvas = el.shadowRoot.querySelector('canvas');
+          const box = canvas.getBoundingClientRect();
+          const at = ([px, py]) => ({
+            clientX: box.left + (px / canvas.width) * box.width,
+            clientY: box.top + (py / canvas.height) * box.height,
+          });
+          const fire = (type, p) => canvas.dispatchEvent(new PointerEvent(type, {
+            pointerId: 1, isPrimary: true, pressure: 0.5,
+            bubbles: true, composed: true, cancelable: true, ...at(p),
+          }));
+          fire('pointerdown', points[0]);
+          await nextFrame();
+          for (const p of points.slice(1)) { fire('pointermove', p); await nextFrame(); }
+          fire('pointerup', points[points.length - 1]);
+          await settle();
+          return el.getStrokes().length;
+        },
+
+        /** Read the pixel the component itself painted, in canvas space. */
+        pixel(x, y) {
+          const el = current?.el;
+          if (!el) return null;
+          const canvas = el.shadowRoot.querySelector('canvas');
+          const data = canvas.getContext('2d').getImageData(x, y, 1, 1).data;
+          return [data[0], data[1], data[2], data[3]];
+        },
+
+        unmount() {
+          if (current) current.el.remove();
+          current = null;
+          stage.innerHTML = '';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

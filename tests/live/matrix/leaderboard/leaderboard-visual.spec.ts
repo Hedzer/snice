@@ -32,7 +32,7 @@
  *   Both are decided by decoding the PNG inside the browser under test.
  */
 import { test, expect, type Page } from '@playwright/test';
-import { capture, contrast, sameColor } from '../pixel-probe';
+import { capture, contrast, sameColor, type RGB } from '../pixel-probe';
 
 const FIXTURE = '/tests/live/fixtures/leaderboard/matrix.html';
 
@@ -291,16 +291,29 @@ test.describe('leaderboard visual matrix: marquee pixels', () => {
         { rank: 2, name: 'Down', score: 9, change: -3 },
       ],
     }));
-    const [up, down] = await capture(
+    // Walk each change indicator's glyph row every 2px and compare the two
+    // rows' DARKEST pixels: the indicator is text-sized, and a single probe
+    // 4px from its right edge lands on a stroke only by font-metric luck
+    // (WebKit's lands past the last glyph, on the row background).
+    const pixels = await capture(
       page, '#subject', 'leaderboard-change',
       `(host) => {
         const nodes = host.shadowRoot.querySelectorAll('.leaderboard__change');
-        return [...nodes].map(node => {
+        const points = [];
+        for (const node of nodes) {
           const box = node.getBoundingClientRect();
-          return { x: box.x + box.width - 4, y: box.y + box.height / 2 };
-        });
+          for (let x = 1; x < box.width; x += 2) {
+            points.push({ x: box.x + x, y: box.y + box.height / 2 });
+          }
+        }
+        return points;
       }`,
     );
+    const half = pixels.length / 2;
+    const ink = (row: RGB[]) =>
+      row.reduce((a, p) => p[0] + p[1] + p[2] < a[0] + a[1] + a[2] ? p : a);
+    const up = ink(pixels.slice(0, half) as RGB[]);
+    const down = ink(pixels.slice(half) as RGB[]);
     expect(sameColor(up, down),
       `rise painted ${up.join(',')} and fall painted ${down.join(',')}`).toBe(false);
   });

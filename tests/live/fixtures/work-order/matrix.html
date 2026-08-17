@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-work-order visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the theme's own surface, so the priority and status badges are
+             judged against the paper they are printed on;
+           - #stage is a fixed 800px column — the doc's own `--wo-max-width` is
+             50rem — so "the checkbox sits left of its task" and "the signature
+             lines span the sheet" are facts about the component;
+           - nothing overlaps the stage, so a failed elementFromPoint probe is
+             the work order occluding itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 800px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      /* THE DOCUMENTED IMPORT, and only it. */
+      import '/packages/components/src/work-order/snice-work-order.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `wo-number`, `date`, `due-date`, `priority`,
+         * `status`, `variant`, `description`, `notes`, `qr-position` cross the
+         * ATTRIBUTE channel — the doc's own example markup. `customer`,
+         * `asset`, `tasks`, `parts` have no attribute form. `laborRate` and
+         * `showQr` are assigned as PROPERTIES here: the DOM tier already pins
+         * what the documented `labor-rate` attribute does to the rate line
+         * (MATRIX-work-order-1), and this page is measuring layout.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-work-order');
+          el.id = 'subject';
+          el.setAttribute('wo-number', combo.woNumber ?? 'WO-2024-001');
+          el.setAttribute('date', '2024-03-15');
+          el.setAttribute('due-date', '2024-03-20');
+          if (combo.priority) el.setAttribute('priority', combo.priority);
+          if (combo.status) el.setAttribute('status', combo.status);
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          if (combo.description) el.setAttribute('description', combo.description);
+          if (combo.notes) el.setAttribute('notes', combo.notes);
+          if (combo.qrPosition) el.setAttribute('qr-position', combo.qrPosition);
+          stage.appendChild(el);
+          await el.ready;
+          el.customer = combo.customer ?? null;
+          el.asset = combo.asset ?? null;
+          el.tasks = combo.tasks ?? [];
+          el.parts = combo.parts ?? [];
+          el.laborRate = combo.laborRate ?? 0;
+          el.showQr = !!combo.showQr;
+          await settle();
+          const sr = el.shadowRoot;
+          return {
+            tasks: sr.querySelectorAll('.wo__task').length,
+            parts: sr.querySelectorAll('.wo__parts-table tbody tr').length,
+          };
+        },
+
+        /**
+         * The doc's own markup, attribute for attribute:
+         *
+         *   <snice-work-order wo-number="WO-2024-001" ... labor-rate="75"
+         *                     variant="field-service" show-qr qr-position="top-right">
+         *
+         * Used only by the pinned MATRIX-work-order cases, which are about what
+         * that markup does — or fails to do — in a browser.
+         */
+        async mountAuthored() {
+          api.unmount();
+          stage.innerHTML = `
+            <snice-work-order id="subject" wo-number="WO-2024-001" date="2024-03-15"
+                              due-date="2024-03-20" priority="high" status="in-progress"
+                              labor-rate="75" variant="field-service" show-qr
+                              qr-position="top-right"></snice-work-order>`;
+          const el = document.getElementById('subject');
+          await el.ready;
+          el.tasks = [
+            { description: 'Remove old unit', assignee: 'John', completed: true, hours: 2 },
+            { description: 'Install new unit', assignee: 'Jane', completed: false, hours: 4 },
+          ];
+          await settle();
+          const sr = el.shadowRoot;
+          const rate = sr.querySelector('[part~="labor-rate"]');
+          const qr = sr.querySelector('[part~="qr-container"]');
+          return {
+            laborRate: el.laborRate,
+            showQr: el.showQr,
+            totalLaborCost: el.getTotalLaborCost(),
+            ratePainted: !!rate && rate.getClientRects().length > 0,
+            rateText: rate ? rate.textContent.replace(/\s+/g, ' ').trim() : null,
+            qrPainted: !!qr && qr.getClientRects().length > 0,
+          };
+        },
+
+        /** Click a task's checkbox and settle. */
+        async toggleTask(index) {
+          const el = document.getElementById('subject');
+          const boxes = el.shadowRoot.querySelectorAll('.wo__task-checkbox');
+          if (!boxes[index]) return false;
+          boxes[index].click();
+          await settle();
+          return true;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

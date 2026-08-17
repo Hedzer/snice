@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-image visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the placeholder's
+             gradient and the image's own pixels are judged against the surface
+             the component was designed for;
+           - #stage is a fixed, known box at a known offset, so "the image is
+             exactly its documented size" is a fact about the component and not
+             about the viewport;
+           - #stage has no padding, background or overlapping content, so a
+             failed elementFromPoint probe is the image occluding itself, never
+             the fixture occluding it;
+           - the stage is larger than any combo needs, so a capture of it always
+             contains surface to compare painted pixels against. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+        min-height: 460px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/image/snice-image.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      /* A 2x2 PNG served as a data URI: real bytes, so `load` really fires and
+         the image layer really paints. A network fixture would make every
+         geometry assertion depend on the dev server's file serving. The colours
+         are deliberately saturated so a pixel probe can tell the image apart
+         from the placeholder gradient and from the page surface. */
+      const OK_IMAGE =
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAF'
+        + 'klEQVR4nGO4o6ammvyaQWyx16vNHAAj8AVE95m2kwAAAABJRU5ErkJggg==';
+      /* A second, visibly different image for the low-res placeholder layer, so
+         "the placeholder is covered by the real image" is a claim about pixels
+         rather than about two copies of the same file. */
+      const LOW_RES =
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAD'
+        + 'UlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+      /* A data URI that is NOT decodable: the browser fires `error`, which is
+         the documented fallback path, with no network round trip. */
+      const BROKEN_IMAGE = 'data:image/png;base64,definitely-not-a-png';
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /* The documented defaults (docs/ai/components/image.md). Only NON-DEFAULT
+         values are assigned, exactly as the DOM matrix does: untouched defaults
+         are not reflected (docs/ai/properties.md), so assigning one would
+         fabricate a styling hook the framework never produces. */
+      const DEFAULTS = {
+        alt: '', fallback: '', placeholder: '', srcset: '', sizes: '',
+        variant: 'rounded', size: 'medium', lazy: true, fit: 'cover',
+        width: '', height: '',
+      };
+
+      const api = {
+        OK_IMAGE, LOW_RES, BROKEN_IMAGE,
+
+        /**
+         * Mount one combo through the PROPERTY channel, exactly as the DOM
+         * matrix does. `image` selects the source: 'ok', 'broken', or absent
+         * for the documented source-less placeholder shape. Mount RESOLVES only
+         * once the image has settled (load or error), so no geometry assertion
+         * can race the decode, and the opacity transition is skipped so a
+         * probe cannot catch a half-faded image.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-image');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+
+          for (const key of Object.keys(DEFAULTS)) {
+            if (combo[key] === undefined || combo[key] === DEFAULTS[key]) continue;
+            el[key] = combo[key];
+          }
+          if (combo.placeholder === 'low') el.placeholder = LOW_RES;
+          const src = combo.image === 'ok' ? OK_IMAGE
+            : combo.image === 'broken' ? BROKEN_IMAGE
+              : '';
+          if (src) el.src = src;
+          await settle();
+
+          if (src) {
+            const img = el.shadowRoot.querySelector('[part~="image"]');
+            if (img && !img.complete) {
+              await new Promise(resolve => {
+                img.addEventListener('load', resolve, { once: true });
+                img.addEventListener('error', resolve, { once: true });
+              });
+            }
+            // The load handler re-renders, and the reveal is a 400ms opacity
+            // transition. Finishing it here keeps every probe deterministic.
+            await settle();
+            const shown = el.shadowRoot.querySelector('[part~="image"]');
+            if (shown) shown.style.transition = 'none';
+            await settle();
+          }
+
+          current = { el, combo };
+          return { mounted: true, hasImage: !!src };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

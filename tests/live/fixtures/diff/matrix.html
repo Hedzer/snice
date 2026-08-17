@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-diff visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+
+           - #stage fixes only the WIDTH, so a pane's own width is the
+             component's answer and not the stage's;
+           - the stage paints a colour the component never paints, so a diff
+             row that failed to fill its table is measurable as exposed
+             magenta rather than guessed at;
+           - nothing overlaps the stage, so a failed elementFromPoint probe is
+             the diff occluding its own row, never the fixture doing it;
+           - the `data-theme` hook is left on <html> so the documented dark
+             mode can be measured against the same markup. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 900px;
+        background: #ff00ff;
+      }
+      #stage > snice-diff { display: block; width: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/diff/snice-diff.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      const numbered = n => Array.from({ length: n }, (_, i) => `line ${i + 1}`);
+
+      /* The same scenarios the DOM matrix uses, so the two tiers are talking
+         about the same diffs. Each pair has exactly one LCS alignment. */
+      const SCENARIOS = {
+        identical: { old: numbered(6).join('\n'), new: numbered(6).join('\n') },
+        append: { old: numbered(3).join('\n'), new: [...numbered(3), 'tail one', 'tail two'].join('\n') },
+        truncate: { old: numbered(5).join('\n'), new: numbered(3).join('\n') },
+        'replace-middle': {
+          old: numbered(7).join('\n'),
+          new: numbered(7).map((l, i) => (i === 3 ? 'swapped' : l)).join('\n'),
+        },
+        'two-far-changes': {
+          old: numbered(20).join('\n'),
+          new: numbered(20).map((l, i) => (i === 1 ? 'early change' : i === 18 ? 'late change' : l)).join('\n'),
+        },
+        rewrite: { old: 'only the old line', new: 'only the new line' },
+        /* A line long enough to overflow the pane, which is the only way to ask
+           whether the code column scrolls or spills over its neighbour. */
+        wide: {
+          old: `short\n${'x'.repeat(400)}\nshort tail`,
+          new: `short\n${'y'.repeat(400)}\nshort tail`,
+        },
+      };
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+          const scenario = SCENARIOS[combo.scenario ?? 'replace-middle'];
+
+          const el = document.createElement('snice-diff');
+          el.id = 'subject';
+          el.setAttribute('old-text', scenario.old);
+          el.setAttribute('new-text', scenario.new);
+          if (combo.mode) el.setAttribute('mode', combo.mode);
+          if (combo.contextLines !== undefined) el.setAttribute('context-lines', String(combo.contextLines));
+
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.lineNumbers === false) el.lineNumbers = false;
+          if (combo.markers === false) el.markers = false;
+          if (combo.showModeToggle === false) el.showModeToggle = false;
+          document.documentElement.dataset.theme = combo.theme ?? 'light';
+          await settle();
+
+          current = { el, combo };
+          return { mode: el.mode, rows: el.shadowRoot.querySelectorAll('tr').length };
+        },
+
+        /** Click the header's Unified / Split button, the documented toggle. */
+        async toggle(which) {
+          const buttons = current?.el.shadowRoot.querySelectorAll('.diff-mode-btn');
+          buttons?.[which === 'split' ? 1 : 0]?.click();
+          await settle();
+          return current?.el.mode ?? null;
+        },
+
+        /** Click the first collapsed section, the documented "click to expand". */
+        async expandFirst() {
+          const sep = current?.el.shadowRoot.querySelector('.diff-hunk-separator');
+          const before = current?.el.shadowRoot.querySelectorAll('tr').length ?? 0;
+          sep?.click();
+          await settle();
+          return { before, after: current?.el.shadowRoot.querySelectorAll('tr').length ?? 0 };
+        },
+
+        unmount() {
+          if (current) current.el.remove();
+          current = null;
+          stage.innerHTML = '';
+          document.documentElement.dataset.theme = 'light';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

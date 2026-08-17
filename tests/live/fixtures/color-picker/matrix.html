@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-color-picker visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+ *          something:
+ *            - the page sits on the theme's own surface, so the swatch's
+ *              paint and the preset row's paints are judged against the
+ *              surface they were designed for;
+ *            - #stage is a fixed, known box, so the swatch's documented size
+ *              axis and the presets' wrap arithmetic are facts about the
+ *              component and not about the viewport;
+ *            - #stage has NO background, padding, font-size override, or
+ *              overlapping siblings, so a failed elementFromPoint probe is
+ *              the picker occluding itself, never the fixture. The root font
+ *              size stays at the browser default on purpose: the swatch and
+ *              preset boxes are specified in rem, and overriding it here
+ *              would make the px expectations facts about this file.
+ *
+ *          No anchored popup exists to give room to: the swatch delegates to
+ *          a hidden NATIVE color chooser (browser/OS chrome, not shadow DOM,
+ *          unassertable cross-engine), and the presets are an inline row.
+ *          Everything this component paints is inline, and is measured
+ *          inline. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/color-picker/snice-color-picker.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. Every boolean and string crosses the ATTRIBUTE
+         * channel exactly as the doc's example authors it (`value` included:
+         * it is the authored/reset DEFAULT). A live `setValue` afterwards is
+         * the documented dirtying path.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-color-picker');
+          el.id = 'subject';
+          el.setAttribute('size', combo.size ?? 'medium');
+          if (combo.value !== undefined) el.setAttribute('value', combo.value);
+          if (combo.format) el.setAttribute('format', combo.format);
+          if (combo.label) el.setAttribute('label', combo.label);
+          if (combo.helperText) el.setAttribute('helper-text', combo.helperText);
+          if (combo.errorText) el.setAttribute('error-text', combo.errorText);
+          if (combo.disabled) el.setAttribute('disabled', '');
+          if (combo.loading) el.setAttribute('loading', '');
+          if (combo.required) el.setAttribute('required', '');
+          if (combo.invalid) el.setAttribute('invalid', '');
+          if (combo.showInput === false) el.setAttribute('show-input', 'false');
+          if (combo.showPresets) el.setAttribute('show-presets', '');
+          stage.appendChild(el);
+          await el.ready;
+          current = el;
+          await settle();
+          if (combo.liveValue !== undefined) await api.setValue(combo.liveValue);
+          return {
+            value: el.value,
+            size: el.size,
+            reflected: {
+              size: el.getAttribute('size'),
+              showInput: el.getAttribute('show-input'),
+              showPresets: el.getAttribute('show-presets'),
+            },
+          };
+        },
+
+        /** The documented live property — assignments dirty, never the default. */
+        async setValue(value) {
+          if (!current) return null;
+          current.value = value;
+          await settle();
+          return current.value;
+        },
+
+        /** Viewport coordinates for REAL pointers. */
+        swatchCenter() {
+          const box = current?.shadowRoot?.querySelector('.color-swatch')?.getBoundingClientRect();
+          return box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : null;
+        },
+        presetCenter(i) {
+          const presets = current
+            ? [...current.shadowRoot.querySelectorAll('.preset')] : [];
+          const box = presets[i]?.getBoundingClientRect();
+          return box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : null;
+        },
+        labelCenter() {
+          const box = current?.shadowRoot?.querySelector('.label')?.getBoundingClientRect();
+          return box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : null;
+        },
+        presetsList() {
+          return current ? [...current.presets] : [];
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

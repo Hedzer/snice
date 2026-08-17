@@ -1,0 +1,176 @@
+<!doctype html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-pagination visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a variant's fill and
+             the active page's primary are judged against the surface they
+             were designed for;
+           - #stage is a fixed, known box wide enough for the widest combo (a
+             20-page window with all four navigation buttons), so "one row,
+             evenly gapped" is a fact about the component and not about the
+             viewport;
+           - #stage has NO background, padding, font-size override, or
+             overlapping siblings, so a failed elementFromPoint probe is the
+             pagination occluding itself, never the fixture. The root font
+             size is left at the browser default on purpose: the button size
+             custom properties are px but the row is a rem-scale design, and
+             overriding it here would make the px expectations facts about
+             this file;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a token assertion compares rgb() to rgb()
+             instead of comparing a var() name to a paint. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 720px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/pagination/snice-pagination.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+      let changes = [];
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 40));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo through the ATTRIBUTE channel, exactly as the
+         * doc's own example authors it (`<snice-pagination current="1"
+         * total="10">`). The `show-*` switches default to TRUE, so switching
+         * one off is expressed as `show-first="false"` — the documented
+         * attribute carrying an explicit false, which is the only markup
+         * form that can override a true default.
+         */
+        async mount(combo) {
+          api.unmount();
+          changes = [];
+
+          const el = document.createElement('snice-pagination');
+          el.id = 'subject';
+          el.setAttribute('current', String(combo.current ?? 1));
+          el.setAttribute('total', String(combo.total ?? 10));
+          el.setAttribute('siblings', String(combo.siblings ?? 1));
+          el.setAttribute('size', combo.size ?? 'medium');
+          el.setAttribute('variant', combo.variant ?? 'default');
+          // The spec's combos name the switches showFirst/showPrev/… (the
+          // property names); the attributes are the kebab-case forms.
+          const SHOW_SWITCHES = [
+            ['showFirst', 'show-first'],
+            ['showPrev', 'show-prev'],
+            ['showNext', 'show-next'],
+            ['showLast', 'show-last'],
+          ];
+          for (const [key, attr] of SHOW_SWITCHES) {
+            if (combo[key] === false) el.setAttribute(attr, 'false');
+          }
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+
+          el.addEventListener('pagination-change', (event) => {
+            changes.push({ ...event.detail });
+          });
+
+          current = el;
+          return {
+            current: el.current,
+            total: el.total,
+            reflected: {
+              size: el.getAttribute('size'),
+              variant: el.getAttribute('variant'),
+            },
+          };
+        },
+
+        /** `goToPage(page)` — the documented navigation method. */
+        async goTo(page) {
+          current?.goToPage(page);
+          await settle();
+          return { current: current?.current ?? 0 };
+        },
+
+        /** Synthetic clicks, the DOM tier's channel, kept for comparison. */
+        async clickPage(page) {
+          const button = current?.shadowRoot?.querySelector(`.pagination-page[data-page="${page}"]`);
+          if (!button) return { clicked: false, current: current?.current ?? 0 };
+          button.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+          await settle();
+          return { clicked: true, current: current?.current ?? 0 };
+        },
+        async clickNav(kind) {
+          const button = current?.shadowRoot?.querySelector(`.pagination-${kind}`);
+          if (!button) return { clicked: false, current: current?.current ?? 0 };
+          button.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+          await settle();
+          return { clicked: true, current: current?.current ?? 0 };
+        },
+
+        /** Viewport centres of shadow buttons, for a REAL pointer. */
+        centers(selectors) {
+          const out = [];
+          for (const selector of selectors) {
+            const box = current?.shadowRoot?.querySelector(selector)?.getBoundingClientRect();
+            out.push(box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : null);
+          }
+          return out;
+        },
+
+        /** `pagination-change` details dispatched since mount, in order. */
+        recordedChanges() { return [...changes]; },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+          changes = [];
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

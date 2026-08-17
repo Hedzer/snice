@@ -281,11 +281,18 @@ test.describe('tree visual matrix: expansion really changes the layout', () => {
     const before = await page.evaluate(() => {
       const host = document.getElementById('subject') as HTMLElement;
       const items = (window as any).treeItems(host);
-      const row = items.find((i: any) => i.node?.id === 'readme')
-        ?.shadowRoot?.querySelector('[part~="content"]');
-      return { height: row?.getBoundingClientRect().height ?? -1, tree: host.getBoundingClientRect().height };
+      // The collapse mechanism clips on the GROUP (`[part~="children"]`:
+      // max-height 0 + overflow hidden + opacity 0, snice-tree-item.css) —
+      // the row inside keeps its own box, so "takes no space" is measured on
+      // the group, exactly as the layer-1 collapsed check does.
+      const group = (items.find((i: any) => i.node?.id === 'readme')
+        ?.getRootNode() as ShadowRoot)?.querySelector('[part~="children"]');
+      return {
+        group: group?.getBoundingClientRect().height ?? -1,
+        tree: host.getBoundingClientRect().height,
+      };
     });
-    expect(before.height, 'a collapsed row already has height').toBeLessThan(1.5);
+    expect(before.group, 'the collapsed subtree already takes space').toBeLessThan(1.5);
 
     await page.evaluate(() => (window as any).matrix.clickExpander('docs'));
     // The group animates `max-height` over 250ms; measure after it settles.
@@ -337,9 +344,12 @@ test.describe('tree visual matrix: marquee pixels', () => {
       shape: 'mixed', selectionMode: 'single', showCheckboxes: false, showIcons: true,
     }));
     // The label text of an enabled row against the label text of a disabled
-    // one: `opacity: 0.5` on the disabled row must show up as less contrast
-    // against the same surface.
-    const [enabled, disabled, surface] = await capture(
+    // one: `opacity: 0.5` on the disabled row (snice-tree-item.css
+    // `.tree-item__content--disabled`) must show up as less contrast against
+    // the same surface. A label's ink is not at one point — a single probe
+    // lands in a glyph's side bearing — so each label is swept across its
+    // opening glyphs and judged by its best-contrast pixel.
+    const pixels = await capture(
       page, '#subject', 'tree-disabled-row',
       `(host) => {
         const items = window.treeItems(host);
@@ -347,16 +357,23 @@ test.describe('tree visual matrix: marquee pixels', () => {
           .shadowRoot.querySelector('[part~="label"]').getBoundingClientRect();
         const ok = label('ok');
         const no = label('no');
+        const sweep = box => Array.from({ length: 12 }, (_, i) =>
+          ({ x: box.left + 2 + i * 2, y: box.top + box.height / 2 }));
         return [
-          { x: ok.left + 3, y: ok.top + ok.height / 2 },
-          { x: no.left + 3, y: no.top + no.height / 2 },
+          ...sweep(ok),
+          ...sweep(no),
           { x: ok.right + 40, y: ok.top + ok.height / 2 },
         ];
       }`,
     );
-    expect(contrast(enabled, surface),
-      `enabled label contrast ${contrast(enabled, surface).toFixed(2)},`
-      + ` disabled ${contrast(disabled, surface).toFixed(2)}`)
-      .toBeGreaterThan(contrast(disabled, surface));
+    const surface = pixels[pixels.length - 1];
+    const inkContrast = (slice: any[]) =>
+      Math.max(...slice.map(p => contrast(p, surface)));
+    const enabled = inkContrast(pixels.slice(0, 12));
+    const disabled = inkContrast(pixels.slice(12, 24));
+    expect(enabled,
+      `enabled label ink contrast ${enabled.toFixed(2)},`
+      + ` disabled ${disabled.toFixed(2)}`)
+      .toBeGreaterThan(disabled);
   });
 });

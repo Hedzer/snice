@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-gantt visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a bar's fill is judged
+             against the background the component was designed for rather than
+             the browser's default white;
+           - #stage is a fixed, known box, so "the timeline scrolls" and "the
+             sidebar sits left of the timeline" are facts about the component
+             and not about the viewport;
+           - #stage has NO padding, NO background and nothing overlapping it, so
+             a failed elementFromPoint probe is the chart occluding itself,
+             never the fixture occluding it;
+           - the stage is deliberately NARROWER than a month-zoom timeline needs,
+             because "Right scrollable timeline area" is a documented claim and
+             a timeline that always fits would never test it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 760px;
+        height: 420px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/gantt/snice-gantt.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const DAY_MS = 86400000;
+      function isoFromToday(offset) {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        return new Date(d.getTime() + offset * DAY_MS).toISOString().slice(0, 10);
+      }
+
+      /**
+       * The same datasets the DOM matrix mounts
+       * (tests/matrix/gantt/gantt-support.ts), so a combo id means the same
+       * thing in both tiers. Each is a FACTORY because the documented drag
+       * handlers mutate the task objects they are handed.
+       */
+      const DATASETS = {
+        empty: () => [],
+        single: () => [
+          { id: 'only', name: 'Solo', start: isoFromToday(0), end: isoFromToday(4) },
+        ],
+        basic: () => [
+          { id: '1', name: 'Design', start: '2026-03-01', end: '2026-03-07', progress: 80, group: 'Phase 1' },
+          { id: '2', name: 'Develop', start: '2026-03-05', end: '2026-03-15', dependencies: ['1'], group: 'Phase 1' },
+          { id: '3', name: 'Test', start: '2026-03-12', end: '2026-03-20', color: 'rgb(234 88 12)' },
+        ],
+        grouped: () => [
+          { id: 'a', name: 'Survey', start: '2026-04-01', end: '2026-04-05', group: 'Discovery' },
+          { id: 'b', name: 'Interview', start: '2026-04-03', end: '2026-04-09', group: 'Discovery' },
+          { id: 'c', name: 'Wireframe', start: '2026-04-06', end: '2026-04-12', group: 'Delivery' },
+          { id: 'd', name: 'Handoff', start: '2026-04-12', end: '2026-04-14', group: 'Delivery' },
+        ],
+        flat: () => [
+          { id: 'p', name: 'Plan', start: '2026-05-01', end: '2026-05-04' },
+          { id: 'q', name: 'Do', start: '2026-05-04', end: '2026-05-11' },
+          { id: 'r', name: 'Review', start: '2026-05-11', end: '2026-05-13' },
+        ],
+        mixed: () => [
+          { id: 'g1', name: 'Spec', start: '2026-06-01', end: '2026-06-04', group: 'Alpha' },
+          { id: 'u1', name: 'Loose', start: '2026-06-02', end: '2026-06-08' },
+          { id: 'g2', name: 'Build', start: '2026-06-04', end: '2026-06-12', group: 'Alpha' },
+          { id: 'u2', name: 'Also loose', start: '2026-06-10', end: '2026-06-15' },
+        ],
+        chained: () => [
+          { id: 'n1', name: 'First', start: '2026-07-01', end: '2026-07-05' },
+          { id: 'n2', name: 'Second', start: '2026-07-05', end: '2026-07-10', dependencies: ['n1'] },
+          { id: 'n3', name: 'Third', start: '2026-07-10', end: '2026-07-16', dependencies: ['n2'] },
+          { id: 'n4', name: 'Fan-in', start: '2026-07-16', end: '2026-07-20', dependencies: ['n1', 'n3'] },
+        ],
+        styled: () => [
+          { id: 's0', name: 'Zero progress', start: '2026-08-01', end: '2026-08-04', progress: 0 },
+          { id: 's50', name: 'Half', start: '2026-08-02', end: '2026-08-09', progress: 50, color: 'rgb(16 185 129)' },
+          { id: 's100', name: 'Complete', start: '2026-08-05', end: '2026-08-12', progress: 100, color: '#a21caf' },
+        ],
+        spans: () => [
+          { id: 'tiny', name: 'One day', start: '2026-09-10', end: '2026-09-10' },
+          { id: 'huge', name: 'Two months', start: '2026-09-01', end: '2026-11-01' },
+        ],
+        today: () => [
+          { id: 'past', name: 'Behind', start: isoFromToday(-6), end: isoFromToday(-1) },
+          { id: 'now', name: 'Current', start: isoFromToday(-2), end: isoFromToday(3), progress: 40 },
+          { id: 'next', name: 'Ahead', start: isoFromToday(4), end: isoFromToday(9) },
+        ],
+      };
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        datasetNames: Object.keys(DATASETS),
+
+        /**
+         * Mount one combo. `tasks` goes through the property channel (declared
+         * `attribute: false`); `zoom` and `show-dependencies` go through the
+         * documented attribute channel — `<snice-gantt zoom="week"
+         * show-dependencies>` — so this tier proves the attribute converters
+         * really reach the paint.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-gantt');
+          el.id = 'subject';
+          el.setAttribute('zoom', combo.zoom ?? 'week');
+          if (combo.showDependencies === false) el.removeAttribute('show-dependencies');
+          else el.setAttribute('show-dependencies', '');
+          if (combo.primary) el.style.setProperty('--snice-color-primary', combo.primary);
+
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.showDependencies === false) el.showDependencies = false;
+          el.tasks = DATASETS[combo.dataset ?? 'basic']();
+          await settle();
+
+          current = { el, combo };
+          return {
+            bars: el.shadowRoot.querySelectorAll('.gantt-bar').length,
+            dataset: combo.dataset ?? 'basic',
+            zoom: el.zoom,
+          };
+        },
+
+        /** Click a zoom toggle button by its documented label. */
+        async clickZoom(labelText) {
+          const button = [...current.el.shadowRoot.querySelectorAll('.gantt-zoom-btn')]
+            .find(b => b.textContent.trim() === labelText);
+          button?.click();
+          await settle();
+          return current.el.zoom;
+        },
+
+        /** Drive the documented scroll methods and report where the timeline landed. */
+        async scrollToDate(date) {
+          const timeline = current.el.shadowRoot.querySelector('.gantt-timeline');
+          const before = timeline.scrollLeft;
+          current.el.scrollToDate(date);
+          await settle();
+          return { before, after: timeline.scrollLeft, max: timeline.scrollWidth - timeline.clientWidth };
+        },
+
+        async scrollToTask(id) {
+          const timeline = current.el.shadowRoot.querySelector('.gantt-timeline');
+          const before = timeline.scrollLeft;
+          current.el.scrollToTask(id);
+          await settle();
+          return { before, after: timeline.scrollLeft, max: timeline.scrollWidth - timeline.clientWidth };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

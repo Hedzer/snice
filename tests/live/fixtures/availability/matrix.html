@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-availability visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the theme's own surface, so an available cell and an unavailable
+             one are judged against the background they were designed for;
+           - #stage is a fixed 760px column — a week grid needs room for seven
+             columns plus the time gutter — so "the seven day columns are even"
+             and "a cell sits under its own day heading" are facts about the
+             component;
+           - nothing overlaps the stage, so a failed elementFromPoint probe is
+             the grid occluding itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 760px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      /* THE DOCUMENTED IMPORT, and only it. */
+      import '/packages/components/src/availability/snice-availability.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `start-hour`, `end-hour`, `granularity`, `format`
+         * and `readonly` all cross the ATTRIBUTE channel — the doc's own
+         * example markup — and `value` is assigned through `setAvailability`,
+         * the documented setter.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-availability');
+          el.id = 'subject';
+          if (combo.startHour !== undefined) el.setAttribute('start-hour', String(combo.startHour));
+          if (combo.endHour !== undefined) el.setAttribute('end-hour', String(combo.endHour));
+          if (combo.granularity !== undefined) el.setAttribute('granularity', String(combo.granularity));
+          if (combo.format) el.setAttribute('format', combo.format);
+          if (combo.readonly) el.setAttribute('readonly', '');
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.value) el.setAvailability(combo.value);
+          await settle();
+          const sr = el.shadowRoot;
+          return {
+            cells: sr.querySelectorAll('.availability__cell').length,
+            rows: sr.querySelectorAll('.availability__row').length,
+            active: sr.querySelectorAll('.availability__cell--active').length,
+          };
+        },
+
+        /** Drag across a band of cells the way the docs say a user does. */
+        async dragBand(startIndex, count) {
+          const sr = document.getElementById('subject').shadowRoot;
+          const cells = [...sr.querySelectorAll('.availability__cell')];
+          const first = cells[startIndex];
+          if (!first) return false;
+          first.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, composed: true }));
+          for (let i = 1; i < count; i++) {
+            const cell = cells[startIndex + i * 7];
+            if (cell) cell.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true, composed: true }));
+          }
+          document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, composed: true }));
+          await settle();
+          return true;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

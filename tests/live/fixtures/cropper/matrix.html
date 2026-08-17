@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-cropper visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the cropper's
+             documented container tokens are judged against the surface they
+             were designed for;
+           - #stage is a fixed box whose size the combo controls, because the
+             crop rectangle is derived from the CONTAINER's measured box — the
+             showcase authors `width:100%;height:100%` inside a sized box, so
+             the fixture does exactly that and nothing else;
+           - #stage has NO background, padding, or font-size override, so a
+             failed elementFromPoint probe is the cropper occluding itself.
+             The root font size stays at the browser default on purpose: the
+             handle size is specified in rem, and overriding the root here
+             would make the px expectations facts about this file;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a token assertion compares rgb() to rgb()
+             instead of comparing a var() name to a paint. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/cropper/snice-cropper.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /**
+       * The synthetic photograph. NO network: the docs' examples point at
+       * photo URLs, but a matrix fixture must render the same pixels on every
+       * run, so the "photo" is drawn once on a canvas and mounted as a data
+       * URL. Two saturated halves, because both crop() and the marquee layer
+       * need to tell left from right by colour alone.
+       */
+      const PHOTO = (() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 320;
+        canvas.height = 200;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'rgb(217, 45, 45)';
+        ctx.fillRect(0, 0, 160, 200);
+        ctx.fillStyle = 'rgb(37, 99, 235)';
+        ctx.fillRect(160, 0, 160, 200);
+        return canvas.toDataURL('image/png');
+      })();
+
+      const api = {
+        photo: PHOTO,
+
+        /**
+         * Mount one combo through the ATTRIBUTE channel — the doc's Basic
+         * Usage writes every property as an attribute — at the documented
+         * authored size (`width:100%; height:100%` inside a sized box, the
+         * shape every showcase example uses).
+         */
+        async mount(combo = {}) {
+          api.unmount();
+          stage.style.width = `${combo.stageWidth ?? 480}px`;
+          stage.style.height = `${combo.stageHeight ?? 300}px`;
+
+          const el = document.createElement('snice-cropper');
+          el.id = 'subject';
+          el.style.width = '100%';
+          el.style.height = '100%';
+          el.setAttribute('src', PHOTO);
+          if (combo.aspectRatio !== undefined) el.setAttribute('aspect-ratio', String(combo.aspectRatio));
+          if (combo.minWidth !== undefined) el.setAttribute('min-width', String(combo.minWidth));
+          if (combo.minHeight !== undefined) el.setAttribute('min-height', String(combo.minHeight));
+          if (combo.outputType) el.setAttribute('output-type', combo.outputType);
+
+          stage.appendChild(el);
+          await el.ready;
+
+          // initCropArea runs from the image's load event, and a data URL can
+          // already be `complete` by the time anyone listens. The observable
+          // that matters — the crop area has a box — is polled instead.
+          for (let i = 0; i < 40; i++) {
+            const area = el.shadowRoot?.querySelector('.crop-area');
+            if (area && area.getBoundingClientRect().width > 0) break;
+            await new Promise(resolve => setTimeout(resolve, 25));
+          }
+          await settle();
+          current = { el, combo };
+          return {
+            aspectRatio: el.aspectRatio,
+            minWidth: el.minWidth,
+            minHeight: el.minHeight,
+            outputType: el.outputType,
+          };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        /** Start/stop recording the two documented events (serialisable). */
+        startEvents() {
+          const log = [];
+          const listener = (event) => {
+            log.push({ type: event.type, detail: { rect: event.detail?.rect ? { ...event.detail.rect } : undefined, hasBlob: !!event.detail?.blob } });
+          };
+          current.el.addEventListener('crop-change', listener);
+          current.el.addEventListener('crop-complete', listener);
+          current.__listener = listener;
+          current.__log = log;
+        },
+        stopEvents() {
+          const log = current?.__log ?? [];
+          if (current?.__listener) current.el.removeEventListener('crop-change', current.__listener);
+          if (current?.__listener) current.el.removeEventListener('crop-complete', current.__listener);
+          current.__listener = null;
+          return log;
+        },
+
+        /** Invoke one of the documented imperatives. */
+        async act(op, arg) {
+          const el = current.el;
+          if (op === 'rotate') el.rotate(arg);
+          else if (op === 'zoom') el.zoom(arg);
+          else if (op === 'reset') el.reset();
+          await settle();
+          return true;
+        },
+
+        /**
+         * `crop()` decoded in-page: the blob never crosses the Playwright
+         * boundary, only its measurable facts — mime type, size, canvas
+         * dimensions — plus pixels sampled at the given FRACTIONS of the
+         * PHOTO's natural width (0.25 = left half, 0.75 = right half),
+         * mapped back through the same source rectangle the component used.
+         */
+        async cropSamples(fractions) {
+          const el = current.el;
+          const events = [];
+          const listener = (event) => events.push(event.type);
+          el.addEventListener('crop-complete', listener);
+          const blob = await el.crop();
+          el.removeEventListener('crop-complete', listener);
+          if (!blob) return { ok: false, fired: events.length };
+
+          const sr = el.shadowRoot;
+          const img = sr.querySelector('img');
+          const container = sr.querySelector('.cropper').getBoundingClientRect();
+          const imgRect = img.getBoundingClientRect();
+          const areaStyle = sr.querySelector('.crop-area').style;
+          const crop = {
+            x: parseFloat(areaStyle.left), y: parseFloat(areaStyle.top),
+            width: parseFloat(areaStyle.width), height: parseFloat(areaStyle.height),
+          };
+          const scaleX = img.naturalWidth / imgRect.width;
+          const scaleY = img.naturalHeight / imgRect.height;
+          const sourceX = (crop.x - (imgRect.left - container.left)) * scaleX;
+          const sourceY = (crop.y - (imgRect.top - container.top)) * scaleY;
+
+          const bitmap = await createImageBitmap(blob);
+          const canvas = document.createElement('canvas');
+          canvas.width = bitmap.width;
+          canvas.height = bitmap.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(bitmap, 0, 0);
+          const pixels = fractions.map((fraction) => {
+            const px = Math.round(img.naturalWidth * fraction - sourceX);
+            const py = Math.round(img.naturalHeight / 2 - sourceY);
+            if (px < 0 || px >= canvas.width || py < 0 || py >= canvas.height) return null;
+            const d = ctx.getImageData(px, py, 1, 1).data;
+            return [d[0], d[1], d[2]];
+          });
+          return {
+            ok: true, fired: events.length,
+            type: blob.type, size: blob.size,
+            width: canvas.width, height: canvas.height,
+            expectedWidth: crop.width * scaleX, expectedHeight: crop.height * scaleY,
+            pixels,
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

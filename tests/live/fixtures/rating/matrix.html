@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-rating visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the filled and empty
+             star colours are judged against the surface the component was
+             designed for rather than the browser's default white;
+           - #stage is a fixed, known box at a known offset, so "a star is
+             exactly its documented size" is a fact about the component and not
+             about the viewport;
+           - #stage has no padding, background or overlapping content, so a
+             failed elementFromPoint probe is the rating occluding itself
+             (its own absolutely-positioned glyph layers), never the fixture
+             occluding it;
+           - nothing else on the page can receive a click, so a real pointer
+             test measures the component's own hit target. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+        min-height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/rating/snice-rating.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+      let events = [];
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /* The documented defaults (docs/ai/components/rating.md). Only
+         NON-DEFAULT values are assigned, exactly as the DOM matrix does:
+         untouched defaults are not reflected (docs/ai/properties.md), so
+         assigning one would fabricate the `:host([size=…])` hook that the
+         documented `--rating-size` scale keys off. */
+      const DEFAULTS = {
+        value: 0, max: 5, icon: 'star', emptyIcon: '',
+        size: 'medium', readonly: false, precision: 'full',
+      };
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-rating');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+
+          for (const key of Object.keys(DEFAULTS)) {
+            if (combo[key] === undefined || combo[key] === DEFAULTS[key]) continue;
+            el[key] = combo[key];
+          }
+          el.addEventListener('rating-change', event => events.push(event.detail));
+          await settle();
+          current = { el, combo };
+          return { mounted: true, max: combo.max ?? DEFAULTS.max };
+        },
+
+        /** Every `rating-change` detail seen since the last mount. */
+        get events() { return events; },
+
+        unmount() {
+          stage.innerHTML = '';
+          events = [];
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-button visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a button's fill and its
+             label colour are judged against the surface the component was
+             designed for rather than the browser's default white;
+           - #stage is a fixed, known box at a known origin, so "the label is
+             centred in the base" is a fact about the button and not about the
+             viewport;
+           - #stage has no padding, no background of its own and nothing overlaps
+             it, so a failed elementFromPoint probe is the button occluding
+             itself, never the fixture occluding it;
+           - the stage is WIDE and lays its children out in a row with a real
+             gap, because the axis comparisons mount every variant/size at once
+             and two buttons that touch would make "these two boxes are
+             disjoint" a claim about the gap rather than about the buttons. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 900px;
+        /* Taller than any button, so an element screenshot of the stage also
+           captures the PAGE SURFACE around the button. A fill can only be shown
+           to "stand off the surface" if both are inside one capture. */
+        min-height: 160px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      /* `justify-text` only means anything inside a button WIDER than its
+         label, so the justification combos get an explicit host width. Applied
+         to the host, never to ::part(base), so the component still owns every
+         rule under test. */
+      #stage.wide > snice-button { width: 260px; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/button/snice-button.ts';
+
+      const LABEL = 'Save changes';
+      /* The icon PROPERTY path documented for emoji/URLs. A single glyph keeps
+         the icon box small enough that "the icon sits before the label" is
+         about ordering and not about the icon crowding the label out. */
+      const ICON_TEXT = '→';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      function build(combo) {
+        const el = document.createElement('snice-button');
+        /* Mount through the PROPERTY channel, exactly as the DOM matrix does.
+           The stylesheet keys off reflected attributes, so property mounting is
+           what makes this tier prove that reflection actually reaches paint. */
+        el.variant = combo.variant ?? 'default';
+        el.size = combo.size ?? 'medium';
+        if (combo.outline) el.outline = true;
+        if (combo.pill) el.pill = true;
+        if (combo.circle) el.circle = true;
+        if (combo.disabled) el.disabled = true;
+        if (combo.loading) el.loading = true;
+        if (combo.href) el.href = combo.href;
+        if (combo.icon) { el.icon = ICON_TEXT; el.iconPlacement = combo.iconPlacement ?? 'start'; }
+        if (combo.justifyText) el.justifyText = combo.justifyText;
+        /* A circle button is documented as an icon-only affordance, so it gets
+           no slotted label; everything else does. */
+        if (!combo.circle) el.textContent = combo.label ?? LABEL;
+        return el;
+      }
+
+      const api = {
+        LABEL,
+        ICON_TEXT,
+
+        async mount(combo) {
+          api.unmount();
+          stage.classList.toggle('wide', !!combo.justifyText);
+
+          const el = build(combo);
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+
+          current = el;
+          return {
+            variant: el.variant,
+            size: el.size,
+            hasLabel: !combo.circle,
+          };
+        },
+
+        /**
+         * Mount a whole ROW at once. The axis comparisons — six variants must
+         * not collapse to one fill, three sizes must really differ, a disabled
+         * button must look different from its enabled twin — need every value on
+         * screen under identical conditions. Mounting them one at a time and
+         * comparing across page states would compare measurements taken under
+         * different layouts.
+         */
+        async mountRow(combos) {
+          api.unmount();
+          const els = combos.map((combo, i) => {
+            const el = build(combo);
+            el.id = `subject-${i}`;
+            stage.appendChild(el);
+            return el;
+          });
+          await Promise.all(els.map(el => el.ready));
+          await settle();
+          current = els[0] ?? null;
+          return els.length;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.classList.remove('wide');
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

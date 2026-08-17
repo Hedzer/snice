@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-form-layout visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the marquee's "the
+             gap is empty surface" probe reads a colour the theme itself
+             defines;
+           - #stage is a fixed 660px box, so "two equal columns" and "the gap
+             is 1rem" are facts about the layout and not about the viewport.
+             The stage has NO background, padding, or font-size override;
+           - the fields are stand-ins that consume the layout's own documented
+             custom properties (`--snice-form-field-direction`,
+             `--snice-form-label-width`, `--snice-form-label-align`,
+             `--snice-form-label-margin`) exactly as the stylesheet publishes
+             them to `::slotted(*)`. No real snice field reads those variables
+             yet — the whole label-position contract lives between this layout
+             and whatever consumes them — so a stand-in that reads them is the
+             honest instrument: if a label sits left of its control, it is
+             because the layout said so;
+           - the stand-ins paint known flat colours so the marquee layer can
+             tell a label's fill from a control's fill from empty surface;
+           - #probe resolves a theme token to the value a browser computes for
+             it, and #length resolves any CSS length (a label-width, a spacing
+             token) to px. */
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 660px;
+      }
+      /* A stand-in for a snice form field: it reads the same custom
+         properties the layout publishes to `::slotted(*)`. */
+      .field {
+        display: flex;
+        flex-direction: var(--snice-form-field-direction, column);
+        min-width: 120px;
+        background: #dbeafe;
+        border: 1px solid #93c5fd;
+        box-sizing: border-box;
+      }
+      .field > .label {
+        width: var(--snice-form-label-width, auto);
+        text-align: var(--snice-form-label-align, left);
+        margin: var(--snice-form-label-margin, 0 0 0.25rem 0);
+        flex-shrink: 0;
+        background: #1d4ed8;
+        color: #fff;
+        font-size: 12px;
+        line-height: 20px;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .field > .control {
+        flex: 1;
+        min-width: 0;
+        height: 24px;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        box-sizing: border-box;
+      }
+      #probe, #length {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+    <span id="length"></span>
+
+    <script type="module">
+      import '/packages/components/src/form-layout/snice-form-layout.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      const lengthProbe = document.getElementById('length');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const field = (index, span) =>
+        `<div class="field" data-index="${index}"${span ? ` style="grid-column: ${span}"` : ''}>`
+        + `<span class="label">Field ${index + 1}</span>`
+        + '<span class="control"></span>'
+        + '</div>';
+
+      const api = {
+        /**
+         * Mount one combo. Everything crosses the ATTRIBUTE channel — every
+         * documented property has one and the stylesheet's hooks are the
+         * classes the component derives from them. A field may carry a
+         * `grid-column` span, the doc's own documented way to span columns.
+         */
+        async mount(combo = {}) {
+          api.unmount();
+          const el = document.createElement('snice-form-layout');
+          el.id = 'subject';
+          el.setAttribute('columns', String(combo.columns ?? 1));
+          el.setAttribute('gap', combo.gap ?? 'medium');
+          el.setAttribute('variant', combo.variant ?? 'default');
+          el.setAttribute('label-position', combo.labelPosition ?? 'top');
+          el.setAttribute('label-width', combo.labelWidth ?? '8rem');
+          el.innerHTML = Array.from({ length: combo.fields ?? 6 },
+            (_, i) => field(i, combo.spans?.[i])).join('');
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+          return { mounted: true };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        /** Any CSS length, resolved to px by the engine under test. */
+        lengthPx(expression) {
+          lengthProbe.style.width = '';
+          lengthProbe.style.width = expression;
+          return parseFloat(getComputedStyle(lengthProbe).width);
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

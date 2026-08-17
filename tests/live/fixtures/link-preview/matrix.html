@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-link-preview visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule here exists so that a measurement
+         means something:
+           - the page sits on the theme's own surface, so the card's own
+             background is judged against the surface it was designed for;
+           - #stage is a fixed, known width, so "horizontal puts the image left
+             of the text" and "large is bigger than small" are facts about the
+             component rather than about the viewport;
+           - #stage has no padding, background or overlapping siblings, so a
+             failed elementFromPoint probe means the card occluded itself and
+             never that the fixture occluded it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/link-preview/snice-link-preview.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo.
+         *
+         * `variant` and `size` cross the ATTRIBUTE channel because the
+         * stylesheet keys off `:host([variant=…])` / `:host([size=…])`; `title`
+         * crosses the PROPERTY channel because the documentation reserves the
+         * `title` ATTRIBUTE for the browser's native tooltip. Everything else
+         * uses its documented attribute (`site-name` for `siteName`).
+         *
+         * Images are inline data URIs so nothing is fetched: a flat-colour SVG
+         * makes "the image painted" a pixel fact rather than a DOM fact.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-link-preview');
+          el.id = 'subject';
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          if (combo.size) el.setAttribute('size', combo.size);
+          if (combo.url) el.setAttribute('url', combo.url);
+          if (combo.description) el.setAttribute('description', combo.description);
+          if (combo.image) el.setAttribute('image', combo.image);
+          if (combo.siteName) el.setAttribute('site-name', combo.siteName);
+          if (combo.favicon) el.setAttribute('favicon', combo.favicon);
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.title) el.title = combo.title;
+          await settle();
+          const root = el.shadowRoot;
+          return {
+            base: !!root.querySelector('[part="base"]'),
+            content: !!root.querySelector('[part="content"]'),
+            title: !!root.querySelector('[part="title"]'),
+            images: root.querySelectorAll('.link-preview__image img').length,
+          };
+        },
+
+        /** Focus the inner card so the documented focus ring can be measured. */
+        focusCard() {
+          const card = document.getElementById('subject').shadowRoot.querySelector('[part="base"]');
+          card.focus();
+          return document.getElementById('subject').shadowRoot.activeElement === card;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

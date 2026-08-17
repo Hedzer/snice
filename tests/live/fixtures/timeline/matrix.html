@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-timeline visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a marker's variant
+             tint is judged against the surface the component was designed for;
+           - #stage is a fixed, known box, so "the marker sits left of the
+             content" and "item 2 is below item 1" are facts about the
+             component and not about the viewport;
+           - #stage has NO padding, background or overlapping content of its
+             own, so a failed elementFromPoint probe is the timeline occluding
+             itself, never the fixture occluding it;
+           - the stage is wide enough that a horizontal timeline's 200px-min
+             items are laid out rather than squeezed into an overflow. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 640px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/timeline/snice-timeline.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /**
+       * The doc's own three-event example, plus the two field shapes that
+       * decide which content parts exist. The DOM matrix measures the same
+       * items, so the two tiers describe one timeline rather than two.
+       */
+      const ITEM_SETS = {
+        doc: [
+          { timestamp: '2024-01-15', title: 'Created', description: 'Project started', variant: 'success' },
+          { timestamp: '2024-02-01', title: 'Review', description: 'In review', variant: 'warning', icon: '!' },
+          { timestamp: '2024-03-01', title: 'Launch', description: 'Deployed', variant: 'info' },
+        ],
+        bare: [
+          { title: 'Event 0' }, { title: 'Event 1' }, { title: 'Event 2' },
+        ],
+        variants: [
+          { title: 'Default', variant: 'default' },
+          { title: 'Success', variant: 'success' },
+          { title: 'Warning', variant: 'warning' },
+          { title: 'Error', variant: 'error' },
+          { title: 'Info', variant: 'info' },
+        ],
+      };
+
+      const api = {
+        /**
+         * Mount one combo. `orientation` / `position` / `reverse` cross the
+         * ATTRIBUTE channel — that is the documented form
+         * (`<snice-timeline position="alternate" reverse>`) — and `items`
+         * crosses the property channel, which is its only channel.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-timeline');
+          el.id = 'subject';
+          if (combo.orientation) el.setAttribute('orientation', combo.orientation);
+          if (combo.position) el.setAttribute('position', combo.position);
+          if (combo.reverse) el.setAttribute('reverse', '');
+          stage.appendChild(el);
+          await el.ready;
+
+          const items = ITEM_SETS[combo.items ?? 'doc'];
+          el.items = items;
+          await settle();
+
+          return {
+            items: el.shadowRoot.querySelectorAll('[part~="item"]').length,
+            /**
+             * The CALLER's order — oldest event first, the way the doc's own
+             * example is written. `reverse` is a claim about what the reader
+             * sees relative to THIS list, so the expectation is derived from
+             * it and never from what the component happened to render.
+             */
+            sourceTitles: items.map(item => item.title),
+            /** DOM order of the titles — the order the component rendered. */
+            domTitles: [...el.shadowRoot.querySelectorAll('[part~="title"]')]
+              .map(node => node.textContent.trim()),
+          };
+        },
+
+        unmount() { stage.innerHTML = ''; },
+
+        get el() { return document.getElementById('subject'); },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

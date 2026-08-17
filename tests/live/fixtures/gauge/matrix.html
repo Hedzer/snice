@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-gauge visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the arc's stroke and
+             the value text are judged against the surface the component was
+             designed for rather than the browser's default white;
+           - #stage is a fixed, known box at a known offset, so gauge geometry
+             is a fact about the component and not about the viewport;
+           - #stage has no padding, background or overlapping content, so a
+             failed elementFromPoint probe is the gauge occluding itself (its
+             value text sits on top of the chart), never the fixture occluding
+             it;
+           - the stage is larger than the largest documented size, so a capture
+             of it always contains surface to compare painted pixels against;
+           - transitions are disabled: the fill arc animates its dash offset
+             over 250ms, and a probe taken mid-animation would measure the
+             animation rather than the value. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 420px;
+        min-height: 320px;
+      }
+      snice-gauge { --snice-transition-medium: 0ms; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/gauge/snice-gauge.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /* The documented defaults (docs/ai/components/gauge.md). Only NON-DEFAULT
+         values are assigned, exactly as the DOM matrix does: untouched defaults
+         are not reflected (docs/ai/properties.md), so assigning one would
+         fabricate the `:host([size=…])` / `:host([variant=…])` hook the
+         stylesheet keys off and hide what the default really paints. */
+      const DEFAULTS = {
+        value: 0, min: 0, max: 100, label: '',
+        variant: 'default', size: 'medium', showValue: true, thickness: 8,
+      };
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-gauge');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+
+          // `min`/`max` are assigned before `value` so a value inside a custom
+          // range is never momentarily out of the default 0..100 one.
+          for (const key of ['min', 'max', 'value', 'label', 'variant', 'size', 'showValue', 'thickness']) {
+            if (combo[key] === undefined || combo[key] === DEFAULTS[key]) continue;
+            el[key] = combo[key];
+          }
+          await settle();
+          current = { el, combo };
+          return { mounted: true };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

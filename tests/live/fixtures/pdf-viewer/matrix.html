@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-pdf-viewer visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+            - the page sits on the theme's own surface;
+            - #stage is a fixed, known box, so "the toolbar spans the viewer"
+              and "the viewport fills the remaining height" are facts about the
+              component and not about the viewport;
+            - #stage has NO background, padding, or font-size override, and
+              nothing overlaps it, so a failed elementFromPoint probe is the
+              viewer occluding itself, never the fixture. The root font size
+              stays at the browser default because the viewport's min-height
+              is specified in rem;
+            - #probe resolves a theme token to the colour a browser actually
+              computes for it;
+            - the fixture builds its PDF entirely in-page (bytes -> Blob ->
+              object URL). NO NETWORK: everything the viewer loads comes from
+              this page's own data, which is what makes the offline visual
+              tier possible at all. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 1000px;
+        height: 720px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/pdf-viewer/snice-pdf-viewer.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      // ── The offline document ────────────────────────────────────────────────
+      //
+      // A minimal, well-formed two-page PDF built as bytes in this page. Page
+      // 1 paints a red rectangle, page 2 a blue one, so a rendered canvas has
+      // identifiable paint. US Letter MediaBox [0 0 612 792].
+      function buildTwoPagePdf() {
+        const enc = new TextEncoder();
+        const contents = [
+          '1 0 0 rg 156 296 300 400 re f',
+          '0 0 1 rg 156 296 300 400 re f',
+        ];
+        let body = '%PDF-1.4\n';
+        const offsets = [0];
+        const add = (obj) => { offsets.push(body.length); body += obj; };
+        add('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+        add('2 0 obj\n<< /Type /Pages /Kids [3 0 R 5 0 R] /Count 2 >>\nendobj\n');
+        add('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << >> >>\nendobj\n');
+        add(`4 0 obj\n<< /Length ${contents[0].length} >>\nstream\n${contents[0]}\nendstream\nendobj\n`);
+        add('5 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 6 0 R /Resources << >> >>\nendobj\n');
+        add(`6 0 obj\n<< /Length ${contents[1].length} >>\nstream\n${contents[1]}\nendstream\nendobj\n`);
+        const xrefPos = body.length;
+        let xref = 'xref\n0 7\n0000000000 65535 f \n';
+        for (let i = 1; i <= 6; i++) xref += String(offsets[i]).padStart(10, '0') + ' 00000 n \n';
+        xref += `trailer\n<< /Size 7 /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`;
+        return enc.encode(body + xref);
+      }
+
+      const goodUrl = URL.createObjectURL(
+        new Blob([buildTwoPagePdf()], { type: 'application/pdf' }));
+      const badUrl = URL.createObjectURL(
+        new Blob([new TextEncoder().encode('definitely not a pdf')], { type: 'application/pdf' }));
+
+      const api = {
+        /**
+         * Mount one combo through the PROPERTY channel (the DOM matrix's
+         * channel for reflection) and resolve once the document lifecycle
+         * settles: `pdf-loaded` / `pdf-error` observed here, plus a render
+         * wait, so geometry probes read a page that has actually painted.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-pdf-viewer');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+
+          let lifecycle = 'none';
+          let totalPages = 0;
+          let error = '';
+          const onLoaded = (e) => { lifecycle = 'loaded'; totalPages = e.detail.totalPages; };
+          const onError = (e) => { lifecycle = 'error'; error = e.detail.error; };
+          el.addEventListener('pdf-loaded', onLoaded);
+          el.addEventListener('pdf-error', onError);
+
+          for (const key of ['page', 'zoom', 'fit']) {
+            if (combo[key] === undefined) continue;
+            el[key] = combo[key];
+          }
+          if (combo.src === 'pdf') el.src = goodUrl;
+          else if (combo.src === 'bad') el.src = badUrl;
+
+          const deadline = Date.now() + 8000;
+          // Only a src can produce a lifecycle event; the empty state needs
+          // no wait beyond the settles below.
+          while (combo.src && lifecycle === 'none' && Date.now() < deadline) {
+            await settle();
+          }
+          // Let the first page render through pdf.js's async pipeline.
+          for (let i = 0; i < 6; i++) await settle();
+          el.removeEventListener('pdf-loaded', onLoaded);
+          el.removeEventListener('pdf-error', onError);
+
+          current = { el, combo };
+          return { lifecycle, totalPages, error, src: combo.src ?? 'none' };
+        },
+
+        /** Navigate and wait for the re-render. */
+        async goToPage(n) {
+          const el = current?.el;
+          if (!el) return { moved: false };
+          el.goToPage(n);
+          for (let i = 0; i < 4; i++) await settle();
+          return { moved: true, page: el.page };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

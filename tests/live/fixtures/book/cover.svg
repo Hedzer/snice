@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="512" viewBox="0 0 360 512">
+  <!-- A STAND-IN COVER, not decoration.
+       The visual matrix must never depend on a network image: a test that
+       fetches one is slow and fails offline for reasons that have nothing to
+       do with the component. This file is served by the same dev server as the
+       fixture, always resolves, and paints a flat saturated colour so a pixel
+       probe over the cover has an unambiguous answer. -->
+  <rect width="360" height="512" fill="rgb(178 44 66)"/>
+  <rect x="24" y="24" width="312" height="464" fill="none" stroke="rgb(233 196 106)" stroke-width="6"/>
+</svg>

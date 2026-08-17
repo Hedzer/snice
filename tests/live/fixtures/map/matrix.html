@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-map visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a marker pin is judged
+             against the background the component was designed for;
+           - #stage is a fixed, known box, so "markers north of one another
+             paint higher" is a fact about the projection and not about the
+             viewport;
+           - #stage has NO padding, NO background and nothing overlapping it, so
+             a failed elementFromPoint probe is the map occluding itself, never
+             the fixture occluding it;
+           - the map's own stylesheet gives `.map-container` a 25rem height, so
+             the stage only has to supply a width. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 720px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/map/snice-map.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      /**
+       * A LOCAL tile template. The documented default points at
+       * tile.openstreetmap.org, and a visual tier that reached it would be
+       * slow, rate-limited and offline-fragile for reasons that have nothing
+       * to do with this component. `tile.svg` is served by the same dev server,
+       * always resolves, and paints a flat known colour — so "the tile layer
+       * really painted" is a question the pixels can answer.
+       *
+       * The three documented placeholders are still present and still have to
+       * be substituted, so the template contract is exercised exactly as the
+       * DOM tier exercises it.
+       */
+      const LOCAL_TILES = '/tests/live/fixtures/map/tile.svg?z={z}&x={x}&y={y}';
+
+      /**
+       * The same marker sets the DOM matrix mounts
+       * (tests/matrix/map/map-support.ts), so a combo id means the same thing
+       * in both tiers.
+       */
+      const MARKERS = {
+        none: () => [],
+        doc: () => [
+          { id: 'nyc', lat: 40.7128, lng: -74.006, label: 'NYC', popup: 'New York City' },
+          { id: 'bos', lat: 42.3601, lng: -71.0589, popup: 'Boston' },
+        ],
+        bare: () => [{ id: 'solo', lat: 51.505, lng: -0.09 }],
+        'label-only': () => [
+          { id: 'l1', lat: 48.8566, lng: 2.3522, label: 'Paris' },
+          { id: 'l2', lat: 52.52, lng: 13.405, label: 'Berlin' },
+        ],
+        'popup-only': () => [{ id: 'p1', lat: 35.6762, lng: 139.6503, popup: 'Tokyo' }],
+        icons: () => [
+          { id: 'i1', lat: 41.9028, lng: 12.4964, icon: '🏛️', label: 'Rome' },
+          { id: 'i2', lat: 55.7558, lng: 37.6173, icon: 'https://example.org/pin.svg', popup: 'Moscow' },
+        ],
+        /** A north/south/east/west cross around the centre — the projection probe. */
+        compass: () => [
+          { id: 'n', lat: 52.0, lng: -0.09, popup: 'North' },
+          { id: 's', lat: 51.0, lng: -0.09, popup: 'South' },
+          { id: 'e', lat: 51.505, lng: 0.5, popup: 'East' },
+          { id: 'w', lat: 51.505, lng: -0.7, popup: 'West' },
+        ],
+        many: () => Array.from({ length: 12 }, (_, i) => ({
+          id: `m${i}`, lat: 51.4 + i * 0.02, lng: -0.2 + i * 0.03, popup: `Marker ${i}`,
+        })),
+        coincident: () => [
+          { id: 'c1', lat: 51.505, lng: -0.09, popup: 'First' },
+          { id: 'c2', lat: 51.505, lng: -0.09, popup: 'Second' },
+        ],
+      };
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        markerSetNames: Object.keys(MARKERS),
+        LOCAL_TILES,
+
+        /**
+         * Mount one combo. `zoom`, `min-zoom`, `max-zoom` and `tile-url` cross
+         * the documented attribute channel; `center` and `markers` are
+         * documented "JS only" and cross the property channel.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-map');
+          el.id = 'subject';
+          el.setAttribute('zoom', String(combo.zoom ?? 13));
+          el.setAttribute('min-zoom', String(combo.minZoom ?? 1));
+          el.setAttribute('max-zoom', String(combo.maxZoom ?? 18));
+          el.setAttribute('tile-url', combo.tileUrl ?? LOCAL_TILES);
+
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.center) el.center = combo.center;
+          el.markers = MARKERS[combo.markers ?? 'doc']();
+          await settle();
+          // A second settle: the tile layer sizes itself from the container's
+          // measured box, which only exists after the first paint.
+          await settle();
+
+          current = { el, combo };
+          return {
+            tiles: el.shadowRoot.querySelectorAll('.map-tile').length,
+            markers: el.shadowRoot.querySelectorAll('.map-marker').length,
+            zoom: el.zoom,
+          };
+        },
+
+        /** Click a marker by index and let the documented popup toggle settle. */
+        async clickMarker(index) {
+          const marker = current.el.shadowRoot.querySelectorAll('.map-marker')[index];
+          marker.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+          await settle();
+          return current.el.shadowRoot.querySelectorAll('.map-popup').length;
+        },
+
+        /** Click a zoom control: 0 is "+", 1 is "-". */
+        async clickControl(index) {
+          const button = current.el.shadowRoot.querySelectorAll('.map-control-btn')[index];
+          button.click();
+          await settle();
+          return current.el.zoom;
+        },
+
+        /** The documented "scroll zoom". */
+        async wheel(deltaY) {
+          const container = current.el.shadowRoot.querySelector('.map-container');
+          container.dispatchEvent(new WheelEvent('wheel', { deltaY, bubbles: true, cancelable: true }));
+          await settle();
+          return current.el.zoom;
+        },
+
+        /** The documented "drag panning", as a real pointer gesture. */
+        async dragPan(dx, dy) {
+          const el = current.el;
+          const container = el.shadowRoot.querySelector('.map-container');
+          const box = container.getBoundingClientRect();
+          const x = box.left + box.width / 2;
+          const y = box.top + box.height / 2;
+          const before = { ...el.center };
+
+          container.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, composed: true, clientX: x, clientY: y }));
+          container.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, composed: true, clientX: x + dx, clientY: y + dy }));
+          await settle();
+          const midTileLeft = el.shadowRoot.querySelector('.map-tile')?.getBoundingClientRect().left ?? 0;
+          container.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, composed: true, clientX: x + dx, clientY: y + dy }));
+          await settle();
+
+          return { before, after: { ...el.center }, midTileLeft };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

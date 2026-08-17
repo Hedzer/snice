@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-checkbox visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the box's fill and the
+             label's colour are judged against the surface the component was
+             designed for rather than the browser's default white;
+           - #stage is a fixed, known box at a known origin, so "the label sits
+             beside the box, not on it" is a fact about the checkbox and not
+             about the viewport;
+           - #stage has no padding, no background of its own and nothing overlaps
+             it, so a failed elementFromPoint probe is the checkbox occluding
+             itself, never the fixture occluding it;
+           - the stage is taller than any control, so an element screenshot of
+             it also captures the page surface behind the component. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 900px;
+        min-height: 200px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/checkbox/snice-checkbox.ts';
+
+      const LABEL = 'Weekly digest';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      function build(combo) {
+        const el = document.createElement('snice-checkbox');
+        /* Property channel, exactly as the DOM matrix mounts it: `checked` is
+           documented as JS-only live state, so a property mount is the only
+           honest way to reach the checked paint at all. */
+        el.size = combo.size ?? 'medium';
+        if (combo.label !== false) el.label = combo.label ?? LABEL;
+        if (combo.required) el.required = true;
+        if (combo.disabled) el.disabled = true;
+        if (combo.loading) el.loading = true;
+        if (combo.invalid) el.invalid = true;
+        if (combo.checked) el.checked = true;
+        if (combo.indeterminate) el.indeterminate = true;
+        return el;
+      }
+
+      const api = {
+        LABEL,
+
+        async mount(combo) {
+          api.unmount();
+          const el = build(combo);
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          /* `checked` and `indeterminate` are live properties, so they are
+             applied AFTER the first render as well — this is the path a
+             customer's code takes, and the one that proves the paint follows
+             a property change rather than only an initial attribute. */
+          if (combo.checked) el.checked = true;
+          if (combo.indeterminate) el.indeterminate = true;
+          await settle();
+          current = el;
+          return { size: el.size, checked: el.checked, indeterminate: el.indeterminate };
+        },
+
+        /** Every value of one axis on screen at once, under one layout. */
+        async mountRow(combos) {
+          api.unmount();
+          const els = combos.map((combo, i) => {
+            const el = build(combo);
+            el.id = `subject-${i}`;
+            stage.appendChild(el);
+            return el;
+          });
+          await Promise.all(els.map(el => el.ready));
+          for (const [i, combo] of combos.entries()) {
+            if (combo.checked) els[i].checked = true;
+            if (combo.indeterminate) els[i].indeterminate = true;
+          }
+          await settle();
+          current = els[0] ?? null;
+          return els.length;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-stepper visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so an indicator's fill
+             and a connector's line are judged against the surface they were
+             designed for;
+           - #stage is a fixed, known box, wide enough that a horizontal
+             ladder never wants to wrap, so "the connectors run between the
+             indicators" is a fact about the component, not about a narrow
+             container squeezing it. It carries NO background, padding,
+             font-size override, or positioned siblings, so a failed
+             elementFromPoint probe is the stepper occluding itself, never
+             the fixture;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a colour assertion compares rgb() to rgb(). */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 640px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/stepper/snice-stepper.ts';
+      import '/packages/components/src/stepper/snice-stepper-panel.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+
+      /**
+       * The stepper syncs its panels through a queued task and its indicator
+       * colours transition over --snice-transition-fast (150ms); 200ms
+       * clears both, so measurements are of the settled ladder.
+       */
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 200));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `orientation` and `clickable` cross the ATTRIBUTE
+         * channel exactly as the doc's example writes them. `steps` is an
+         * array of data and has no attribute form; `currentStep` goes
+         * through the property channel, which is the documented navigation
+         * surface ("Navigate via currentStep property") — the DOM matrix
+         * already pins that the `current-step` attribute does not reach it
+         * (MATRIX-stepper-1), so this tier measures the ladder, not that
+         * known defect.
+         *
+         * The step DATA lives here because option/step lists may cross the
+         * Playwright boundary as plain data, but nothing carrying a function
+         * may. `<snice-stepper-panel>` children are authored before
+         * connection the way the doc's wizard example writes them.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-stepper');
+          el.id = 'subject';
+          if (combo.orientation) el.setAttribute('orientation', combo.orientation);
+          if (combo.clickable) el.setAttribute('clickable', '');
+
+          const steps = combo.steps ?? [
+            { label: 'Account' },
+            { label: 'Profile', description: 'Tell us about you' },
+            { label: 'Billing' },
+            { label: 'Complete' },
+          ];
+          const panels = combo.panels ?? steps.length;
+          el.innerHTML = Array.from({ length: panels }, (_, i) =>
+            `<snice-stepper-panel>Panel ${i + 1}</snice-stepper-panel>`).join('');
+
+          stage.appendChild(el);
+          await el.ready;
+          el.steps = steps.map(step => ({ ...step }));
+          el.currentStep = combo.currentStep ?? 0;
+          await settle();
+          current = { el, combo };
+          return {
+            currentStep: el.currentStep,
+            orientation: el.orientation,
+            clickable: el.clickable,
+          };
+        },
+
+        /** A real pointer-style click on one step row. */
+        async clickStep(index) {
+          const el = current?.el;
+          const row = el?.shadowRoot.querySelectorAll('[data-step-index]')[index];
+          if (!row) return { clicked: false, currentStep: el?.currentStep ?? null };
+          row.dispatchEvent(new MouseEvent('click', {
+            bubbles: true, composed: true, cancelable: true,
+          }));
+          await settle();
+          return { clicked: true, currentStep: el.currentStep };
+        },
+
+        /** The documented keyboard path: "Clickable steps are keyboard accessible (Enter/Space)". */
+        async pressStep(index, key) {
+          const el = current?.el;
+          const row = el?.shadowRoot.querySelectorAll('[data-step-index]')[index];
+          if (!row) return { pressed: false, currentStep: el?.currentStep ?? null };
+          row.dispatchEvent(new KeyboardEvent('keydown', {
+            key, bubbles: true, composed: true, cancelable: true,
+          }));
+          await settle();
+          return { pressed: true, currentStep: el.currentStep };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-date-picker visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the field's variant
+             tokens and the panel's surface are judged against the page they
+             will really appear on;
+           - #stage is positioned at a KNOWN offset and can be moved to the
+             far corners, because "the popup is anchored to its input" and
+             "stays in the viewport" are claims about where the stage sits;
+           - #rival is a high-z-index block overlapping where the calendar
+             opens. The doc says the calendar uses popover="manual" — the top
+             layer — and only a rival with a higher z-index than the popup's
+             own can tell a top-layer paint from a plainly-positioned one;
+           - #stage itself has no background, so a failed elementFromPoint
+             probe is the picker covering itself, never the fixture. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+        min-height: 200vh; /* so the page can scroll under an open popup */
+      }
+      #stage {
+        position: absolute;
+        top: 120px;
+        left: 80px;
+        width: 320px;
+      }
+      #stage.bottom-right { top: auto; left: auto; right: 8px; bottom: 8px; }
+      #stage.top-right { top: 8px; left: auto; right: 8px; }
+      #rival {
+        position: absolute;
+        top: 170px;
+        left: 60px;
+        width: 420px;
+        height: 320px;
+        background: var(--snice-color-danger, rgb(220 38 38));
+        z-index: 9999;
+        display: none;
+      }
+      #rival.on { display: block; }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="rival"></div>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/date-picker/snice-date-picker.ts';
+
+      const stage = document.getElementById('stage');
+      const rival = document.getElementById('rival');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+      /** The popup's open/close transition is 150ms; settle past it. */
+      async function settleLong() {
+        await settle();
+        await new Promise(resolve => setTimeout(resolve, 220));
+      }
+
+      const ATTRS = {
+        variant: 'variant', size: 'size', label: 'label', placeholder: 'placeholder',
+        format: 'format', helperText: 'helper-text', errorText: 'error-text',
+        min: 'min', max: 'max', name: 'name', firstDayOfWeek: 'first-day-of-week',
+      };
+      const FLAGS = {
+        disabled: 'disabled', readonly: 'readonly', loading: 'loading',
+        required: 'required', clearable: 'clearable', invalid: 'invalid',
+      };
+
+      const api = {
+        /**
+         * Mount one combo through the ATTRIBUTE channel — the documented
+         * authored form, so this tier proves the converters really reach the
+         * paint. `value` is written as the `value` ATTRIBUTE (canonical text
+         * is documented to always work and to seed the calendar view).
+         */
+        async mount(combo = {}) {
+          api.unmount();
+          stage.className = combo.corner ?? '';
+          rival.classList.toggle('on', !!combo.rival);
+
+          const el = document.createElement('snice-date-picker');
+          el.id = 'subject';
+          for (const [key, attr] of Object.entries(ATTRS)) {
+            if (combo[key] === undefined || combo[key] === '') continue;
+            el.setAttribute(attr, String(combo[key]));
+          }
+          for (const [key, attr] of Object.entries(FLAGS)) {
+            if (combo[key]) el.setAttribute(attr, '');
+          }
+          if (combo.value !== undefined) el.setAttribute('value', combo.value);
+
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+          current = { el, combo };
+          return { mounted: true, value: el.value };
+        },
+
+        /**
+         * `show()` — the documented opener. Returns whether the documented
+         * `calendar` part rendered a visible panel.
+         */
+        async open() {
+          current?.el.show();
+          await settleLong();
+          const panel = current?.el.shadowRoot.querySelector('[part~="calendar"]');
+          return !!panel && !panel.hasAttribute('hidden');
+        },
+
+        async close() {
+          current?.el.hide();
+          await settleLong();
+          return true;
+        },
+
+        /** Click a calendar day button in-page (spec prefers real pointers). */
+        async clickDay(date) {
+          const button = current?.el.shadowRoot.querySelector(`.day[data-date="${date}"]`);
+          if (!button) return false;
+          button.click();
+          await settleLong();
+          return true;
+        },
+
+        /** Click one of the header nav buttons by its documented data-nav. */
+        async clickNav(nav) {
+          const button = current?.el.shadowRoot.querySelector(`[data-nav="${nav}"]`);
+          if (!button) return false;
+          button.click();
+          await settleLong();
+          return true;
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.className = '';
+          rival.classList.remove('on');
+          window.scrollTo(0, 0);
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

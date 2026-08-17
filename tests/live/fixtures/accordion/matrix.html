@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-accordion visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+ *          something:
+ *            - the page sits on the theme's own surface, so the header fill
+ *              and the open-content fill are judged against the surface they
+ *              were designed for;
+ *            - #stage is a fixed, known box, so "the items stack with no gap"
+ *              and "an open panel really reveals its content" are facts about
+ *              the component and not about the viewport;
+ *            - #stage has NO background, padding, font-size override, or
+ *              overlapping siblings, so a failed elementFromPoint probe is the
+ *              accordion occluding itself, never the fixture. The root font
+ *              size stays at the browser default on purpose: the item spacing
+ *              (the elevated variant's 0.75rem gap) is specified in rem, and
+ *              overriding it here would make the px expectations facts about
+ *              this file;
+ *            - the slotted body copy is authored TALL (three paragraphs), so
+ *              "open" and "closed" differ by a hundred pixels rather than by
+ *              rounding, and a closed panel clipped to 0px cannot pass for an
+ *              open one. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 640px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/accordion/snice-accordion.ts';
+      import '/packages/components/src/accordion/snice-accordion-item.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      /**
+       * The panel opens through a 250ms max-height transition and only releases
+       * its pinned height on `transitionend`, so "settled" means the transition
+       * is FINISHED — geometry is asserted as facts after settle, never
+       * mid-animation.
+       */
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 420));
+        await nextFrame();
+      }
+
+      /**
+       * The slotted body the matrix measures. Three paragraphs so an open
+       * panel is unmistakably taller than its header.
+       */
+      const bodyHtml = (i) => `
+        <div id="body-${i}">
+          <p>Panel ${i} opens to real copy, laid out by the browser.</p>
+          <p>A second paragraph gives the open panel height a closed one can
+             never be mistaken for.</p>
+          <p>A third keeps the measurement robust against leading-margin
+             trimming.</p>
+        </div>`;
+
+      function itemHtml(spec, index) {
+        const attrs = [
+          spec.id ? `item-id="${spec.id}"` : '',
+          spec.open ? 'open' : '',
+          spec.disabled ? 'disabled' : '',
+        ].filter(Boolean).join(' ');
+        return `<snice-accordion-item ${attrs}>`
+          + `<span slot="header">${spec.header ?? `Section ${index}`}</span>`
+          + bodyHtml(index)
+          + '</snice-accordion-item>';
+      }
+
+      const DEFAULT_ITEMS = [
+        { id: 'i0', header: 'Section 0' },
+        { id: 'i1', header: 'Section 1' },
+        { id: 'i2', header: 'Section 2' },
+      ];
+
+      const api = {
+        /**
+         * Mount one combo through the ATTRIBUTE channel, exactly as the doc's
+         * "Basic Usage" authors it — items in place BEFORE the container
+         * connects, because the container reads its children during @ready to
+         * assign auto-ids and seed `activeItems`. Any authored `toggles` are
+         * then performed as header clicks (each settling), which is the user
+         * path whose end state the visual oracle measures.
+         */
+        async mount(combo) {
+          api.unmount();
+          const items = combo.items ?? DEFAULT_ITEMS;
+          const el = document.createElement('snice-accordion');
+          el.id = 'subject';
+          el.setAttribute('variant', combo.variant ?? 'bordered');
+          if (combo.multiple) el.setAttribute('multiple', '');
+          el.innerHTML = items.map(itemHtml).join('');
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+          current = el;
+          for (const index of combo.toggles ?? []) {
+            await api.toggleSection(index);
+          }
+          return {
+            variant: el.variant,
+            multiple: el.multiple,
+            open: items.map((_, i) => el.querySelector(`snice-accordion-item[item-id="${items[i].id ?? `accordion-item-${i}`}"]`)?.open ?? false),
+          };
+        },
+
+        /** Click item `i`'s header the way a user's pointer would. */
+        async toggleSection(i) {
+          const item = api.item(i);
+          item?.shadowRoot?.querySelector('.accordion-item__header')?.click();
+          await settle();
+          return { open: item?.open ?? null };
+        },
+
+        item(i) {
+          return current?.querySelectorAll('snice-accordion-item')[i] ?? null;
+        },
+
+        /** Viewport coordinates for a REAL pointer / keyboard focus. */
+        headerCenter(i) {
+          const header = api.item(i)?.shadowRoot?.querySelector('.accordion-item__header');
+          const box = header?.getBoundingClientRect();
+          return box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : null;
+        },
+        focusHeader(i) {
+          api.item(i)?.shadowRoot?.querySelector('.accordion-item__header')?.focus();
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

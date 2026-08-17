@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-menu visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - `#under` is a full-viewport block in a flat, saturated colour. The
+             panel's whole job is to drop DOWN ON TOP of the page ("Dropdown
+             menu"), through the platform popover API's top layer, so "the
+             panel is really painted over the page" is a pixel claim made
+             against this block and nothing else on the page is positioned;
+           - #stage is a fixed, known box with room on every side of the anchor.
+             Eight placements are eight different sides of the trigger, and a
+             menu parked in the middle of a big stage is the only way to
+             measure the placement arithmetic un-clamped;
+           - #stage has NO background, padding, font-size override, or
+             overlapping siblings, so a failed elementFromPoint probe is the
+             menu occluding itself, never the fixture. The root font size is
+             left at the browser default on purpose: `--menu-min-width` is
+             specified in rem, and overriding it here would make the px
+             expectations facts about this file;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a token assertion compares rgb() to rgb()
+             instead of comparing a var() name to a paint. */
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #under {
+        position: fixed;
+        inset: 0;
+        background: rgb(15 118 110);
+      }
+      #stage {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 960px;
+        height: 780px;
+      }
+      #stage snice-menu {
+        position: absolute;
+        left: 240px;
+        top: 200px;
+      }
+      #stage button[slot="trigger"] { margin: 0; padding: 8px 16px; font: inherit; }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="under"></div>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/menu/snice-menu.ts';
+      import '/packages/components/src/menu/snice-menu-item.ts';
+      import '/packages/components/src/menu/snice-menu-divider.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+      let events = [];
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      /**
+       * The panel opens through a 0.15s opacity/transform transition with
+       * `display 0.15s allow-discrete` on the way down, so a "settled" panel
+       * means the transition is FINISHED — geometry is asserted as facts
+       * after settle, never mid-animation.
+       */
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 320));
+        await nextFrame();
+      }
+
+      function itemHtml(spec) {
+        const attrs = [
+          `value="${spec.value}"`,
+          spec.disabled ? 'disabled' : '',
+          spec.selected ? 'selected' : '',
+        ].filter(Boolean).join(' ');
+        const icon = spec.icon ? `<span slot="icon">${spec.icon}</span>` : '';
+        const shortcut = spec.shortcut ? `<span slot="shortcut">${spec.shortcut}</span>` : '';
+        return `<snice-menu-item ${attrs}>${icon}${spec.label}${shortcut}</snice-menu-item>`;
+      }
+
+      const DEFAULT_ITEMS = [
+        { value: 'new', label: 'New file' },
+        { value: 'save', label: 'Save', icon: '*', shortcut: 'Ctrl+S' },
+        { value: 'exit', label: 'Exit' },
+      ];
+
+      const api = {
+        /**
+         * Mount one combo. `placement` / `trigger` / `distance` cross the
+         * ATTRIBUTE channel exactly as the doc's own example authors them,
+         * the trigger button and every item are light-DOM children present
+         * BEFORE connection (the way a page author writes them), and
+         * `close-on-select="false"` is the only markup form that can override
+         * the true default. The trigger's width is a fixture constant: wide
+         * by default so the `--menu-min-width` floor is satisfied trivially
+         * and a placement combo can only fail on placement; narrow on demand
+         * so the floor has something to fail against.
+         */
+        async mount(combo) {
+          api.unmount();
+          events = [];
+
+          const el = document.createElement('snice-menu');
+          el.id = 'subject';
+          el.setAttribute('placement', combo.placement ?? 'bottom-start');
+          el.setAttribute('trigger', combo.trigger ?? 'click');
+          el.setAttribute('distance', String(combo.distance ?? 4));
+          if (combo.closeOnSelect === false) el.setAttribute('close-on-select', 'false');
+          if (combo.anchor) {
+            el.style.left = `${combo.anchor.x}px`;
+            el.style.top = `${combo.anchor.y}px`;
+          }
+
+          const trigger = document.createElement('button');
+          trigger.slot = 'trigger';
+          trigger.id = 'trigger-child';
+          trigger.textContent = 'Actions';
+          trigger.style.width = combo.narrow ? '80px' : '220px';
+          el.appendChild(trigger);
+
+          const items = (combo.items ?? DEFAULT_ITEMS).map(itemHtml);
+          if (combo.divider && items.length > 1) {
+            items.splice(1, 0, '<snice-menu-divider></snice-menu-divider>');
+          }
+          for (const chunk of items) {
+            const template = document.createElement('template');
+            template.innerHTML = chunk;
+            el.appendChild(template.content);
+          }
+
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+
+          for (const type of ['menu-open', 'menu-close', 'menu-item-select']) {
+            el.addEventListener(type, (event) => {
+              const detail = event.detail ?? {};
+              events.push({ type, value: detail.value ?? null });
+            });
+          }
+
+          current = el;
+          return {
+            open: el.open,
+            reflected: {
+              placement: el.getAttribute('placement'),
+              trigger: el.getAttribute('trigger'),
+              distance: el.getAttribute('distance'),
+              closeOnSelect: el.getAttribute('close-on-select'),
+            },
+          };
+        },
+
+        /** The documented methods, each settling before it reports. */
+        async openMenu() {
+          current?.openMenu();
+          await settle();
+          return { open: current?.open ?? false };
+        },
+        async closeMenu() {
+          current?.closeMenu();
+          await settle();
+          return { open: current?.open ?? false };
+        },
+        async toggleMenu() {
+          current?.toggleMenu();
+          await settle();
+          return { open: current?.open ?? false };
+        },
+
+        /** A synthetic click on the authored trigger button. */
+        async clickTrigger() {
+          current?.querySelector('#trigger-child')?.click();
+          await settle();
+          return { open: current?.open ?? false };
+        },
+        /** A synthetic click on the menu-item host, the DOM tier's channel. */
+        async clickItem(index) {
+          const items = current ? [...current.querySelectorAll('snice-menu-item')] : [];
+          if (!items[index]) return { clicked: false, open: current?.open ?? false };
+          items[index].click();
+          await settle();
+          return { clicked: true, open: current?.open ?? false };
+        },
+
+        /** Viewport coordinates for a REAL pointer, plus hit-test points. */
+        triggerCenter() {
+          const box = current?.shadowRoot?.querySelector('.menu__trigger')?.getBoundingClientRect();
+          return box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : null;
+        },
+        itemCenter(index) {
+          const items = current ? [...current.querySelectorAll('snice-menu-item')] : [];
+          const box = items[index]?.getBoundingClientRect();
+          return box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : null;
+        },
+        /**
+         * A point in the item's own LEFT PADDING strip — inside the painted
+         * item div but clear of every slot. It is the one probe that can tell
+         * `pointer-events: none` (the point falls through the div to the item
+         * host) from an enabled item (the div itself claims the point).
+         */
+        itemPaddingPoint(index) {
+          const items = current ? [...current.querySelectorAll('snice-menu-item')] : [];
+          const div = items[index]?.shadowRoot?.querySelector('.menu-item');
+          const box = div?.getBoundingClientRect();
+          return box ? { x: box.left + 2, y: box.top + box.height / 2 } : null;
+        },
+        focusTrigger() {
+          current?.shadowRoot?.querySelector('.menu__trigger')?.focus();
+        },
+
+        /** Events dispatched since mount, in order. */
+        recordedEvents() { return [...events]; },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+          events = [];
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

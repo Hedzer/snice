@@ -58,9 +58,9 @@
       function nextFrame() {
         return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       }
-      async function settle() {
+      async function settle(ms = 30) {
         await nextFrame();
-        await new Promise(resolve => setTimeout(resolve, 30));
+        await new Promise(resolve => setTimeout(resolve, ms));
         await nextFrame();
       }
 
@@ -103,7 +103,10 @@
 
           if (combo.open !== false) {
             el.open = true;
-            await settle();
+            // The documented open path focuses the search input from a 100ms
+            // timer (transition first, focus second). Settling for less races
+            // it: Firefox and WebKit reliably measure before the focus lands.
+            await settle(160);
           }
           if (combo.query) {
             const input = el.shadowRoot.querySelector('[part="input"]');

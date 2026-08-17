@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-recipe visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase.
+           - the stage is 900px wide, comfortably above the component's own
+             768px breakpoint, so `variant="full"`'s two-column grid is being
+             measured rather than the mobile fallback;
+           - the stage is absolutely positioned with no padding or siblings, so
+             an elementFromPoint miss means the recipe occluded itself;
+           - the page sits on the theme surface so the checked-ingredient and
+             completed-step tints are judged against their design ground. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 900px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/recipe/snice-recipe.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo.
+         *
+         * `variant` crosses the ATTRIBUTE channel — the stylesheet's card rules
+         * are `:host([variant="card"])`. `ingredients`, `steps`, `nutrition`
+         * and `tags` are documented JS-only and cross the PROPERTY channel.
+         * The scalars use their documented attributes (`prep-time`,
+         * `cook-time`), except `title`, which the property channel owns so the
+         * host's native tooltip stays out of it.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-recipe');
+          el.id = 'subject';
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          if (combo.image) el.setAttribute('image', combo.image);
+          if (combo.description) el.setAttribute('description', combo.description);
+          if (combo.author) el.setAttribute('author', combo.author);
+          if (combo.cuisine) el.setAttribute('cuisine', combo.cuisine);
+          if (combo.difficulty) el.setAttribute('difficulty', combo.difficulty);
+          if (combo.prepTime) el.setAttribute('prep-time', String(combo.prepTime));
+          if (combo.cookTime) el.setAttribute('cook-time', String(combo.cookTime));
+          if (combo.servings !== undefined) el.setAttribute('servings', String(combo.servings));
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.title) el.title = combo.title;
+          if (combo.ingredients) el.ingredients = combo.ingredients;
+          if (combo.steps) el.steps = combo.steps;
+          if (combo.nutrition) el.nutrition = combo.nutrition;
+          if (combo.tags) el.tags = combo.tags;
+          await settle();
+          const sr = el.shadowRoot;
+          return {
+            ingredients: sr.querySelectorAll('.recipe__ingredient').length,
+            steps: sr.querySelectorAll('.recipe__step').length,
+            nutrition: !!sr.querySelector('[part="nutrition"]'),
+          };
+        },
+
+        /** Click the nth ingredient row and let the re-render settle. */
+        async checkIngredient(index) {
+          const sr = document.getElementById('subject').shadowRoot;
+          sr.querySelectorAll('.recipe__ingredient')[index].click();
+          await settle();
+        },
+
+        /** Click the nth step's number, the documented complete toggle. */
+        async completeStep(index) {
+          const sr = document.getElementById('subject').shadowRoot;
+          sr.querySelectorAll('.recipe__step-number')[index].click();
+          await settle();
+        },
+
+        /** Drive `setServings`, the documented scaling entry point. */
+        async setServings(count) {
+          const el = document.getElementById('subject');
+          el.setServings(count);
+          await settle();
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

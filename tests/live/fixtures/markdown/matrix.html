@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-markdown visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a code block's or a
+             table row's tint is judged against the surface the component was
+             designed for;
+           - #stage is a fixed, known box, so "the h1 is larger than the h2"
+             and "the blockquote is indented" are facts about the component
+             and not about the viewport;
+           - #stage has NO padding, background or overlapping content of its
+             own, so a failed elementFromPoint probe is the body occluding
+             itself, never the fixture occluding it;
+           - #stage.narrow exists for the overflow claims: a wide table and a
+             long code line only mean something against a box too small. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 640px;
+      }
+      #stage.narrow { width: 260px; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/markdown/snice-markdown.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /** Documents built from the doc's own "Supported Syntax" list. */
+      const DOCUMENTS = {
+        headings: '# H1\n\n## H2\n\n### H3\n\n#### H4\n\n##### H5\n\n###### H6',
+        emphasis: 'Plain, **bold**, *italic*, and ~~struck~~ text in one line.',
+        lists: '- Alpha\n- Beta\n\n1. One\n2. Two',
+        code: 'Inline `code` here.\n\n```javascript\nconst x = 1;\nconst y = 2;\n```',
+        quote: 'Before\n\n> A quoted paragraph that runs on for a while.\n\nAfter',
+        table: '| Name | Size | Owner |\n| --- | --- | --- |\n| Alpha | 1 | a |\n| Beta | 2 | b |\n| Gamma | 3 | c |',
+        links: 'Plain text with [a link](https://example.com) inside it.',
+        rule: 'Above\n\n---\n\nBelow',
+        wideCode: '```javascript\nconst aVeryLongIdentifierName = someFunctionWithAnEquallyLongName(alpha, beta, gamma);\n```',
+        mixed: '# Title\n\nSome **bold** text and `code`.\n\n- one\n- two\n\n> quoted\n\n| A | B |\n| --- | --- |\n| 1 | 2 |',
+      };
+
+      const api = {
+        /**
+         * Mount one combo. `setContent()` is one of the two documented
+         * channels and the one a test can drive deterministically; `theme` and
+         * `sanitize` cross the property channel, which is how the docs write
+         * them.
+         */
+        async mount(combo) {
+          api.unmount();
+          stage.classList.toggle('narrow', !!combo.narrow);
+
+          const el = document.createElement('snice-markdown');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+
+          if (combo.theme !== undefined) el.theme = combo.theme;
+          if (combo.sanitize !== undefined) el.sanitize = combo.sanitize;
+          el.setContent(DOCUMENTS[combo.document ?? 'mixed']);
+          await settle();
+
+          const base = el.shadowRoot.querySelector('[part~="base"]');
+          return {
+            html: base.innerHTML,
+            children: base.children.length,
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.classList.remove('narrow');
+        },
+
+        get el() { return document.getElementById('subject'); },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

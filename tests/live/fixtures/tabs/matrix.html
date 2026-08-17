@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-tabs visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - #stage is a fixed box whose WIDTH the spec drives: the four
+             placements are a layout claim (nav above / below / beside the
+             panels), and the scroll controls only mean anything when the nav
+             actually overflows, which is a width question;
+           - a block BEFORE and AFTER, so "the tabs take space in the flow" is a
+             measurement rather than an opinion;
+           - every panel's text is a distinct string on a distinct id, so
+             "exactly one panel is on screen" can be answered by geometry
+             instead of by an attribute;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             component covering its own tab. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface, #fff);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 640px;
+      }
+      .flow-block {
+        height: 20px;
+        background: var(--snice-color-surface-secondary, #eee);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="flow-block" id="before"></div>
+      <div id="slot"></div>
+      <div class="flow-block" id="after"></div>
+    </div>
+
+    <script type="module">
+      import '/packages/components/src/tabs/snice-tabs.ts';
+      import '/packages/components/src/tabs/snice-tab.ts';
+      import '/packages/components/src/tabs/snice-tab-panel.ts';
+
+      const stage = document.getElementById('stage');
+      const slot = document.getElementById('slot');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const LABELS = [
+        'Overview', 'Details', 'History', 'Settings', 'Danger zone',
+        'Integrations', 'Billing and invoices', 'Notifications',
+      ];
+
+      const api = {
+        /**
+         * `placement` and `selected` cross the ATTRIBUTE channel — the
+         * documented HTML form, and what `.tabs--<placement>` is built from.
+         * `noScrollControls` crosses the PROPERTY channel on purpose: the
+         * documented `no-scroll-controls` attribute is not the one the
+         * component observes (MATRIX-tabs-2, pinned in the DOM tier), and this
+         * tier is about paint rather than about re-proving that.
+         */
+        async mount(combo) {
+          api.unmount();
+          stage.style.width = `${combo.stageWidth ?? 640}px`;
+
+          const el = document.createElement('snice-tabs');
+          el.id = 'subject';
+          el.setAttribute('placement', combo.placement ?? 'top');
+          el.setAttribute('selected', String(combo.selected ?? 0));
+
+          const count = combo.count ?? 3;
+          const parts = [];
+          for (let i = 0; i < count; i++) {
+            const flags = [
+              combo.disabled === i ? ' disabled' : '',
+              combo.closable ? ' closable' : '',
+            ].join('');
+            parts.push(`<snice-tab slot="nav" id="tab-${i}"${flags}>${LABELS[i % LABELS.length]}</snice-tab>`);
+          }
+          for (let i = 0; i < count; i++) {
+            parts.push(`<snice-tab-panel id="panel-${i}"><p id="panel-text-${i}">`
+              + `Panel ${i} content</p></snice-tab-panel>`);
+          }
+          el.innerHTML = parts.join('');
+
+          slot.appendChild(el);
+          await el.ready;
+          await Promise.all([...el.children].map(child => child.ready ?? Promise.resolve()));
+          if (combo.noScrollControls) el.noScrollControls = true;
+          await settle();
+          await settle();
+          return { mounted: true };
+        },
+
+        /** Click a tab the way a pointer does — on its own base region. */
+        async clickTab(index) {
+          const tab = document.getElementById(`tab-${index}`);
+          const base = tab.shadowRoot.querySelector('[part~="base"]') ?? tab;
+          base.click();
+          await settle();
+          await settle();
+          return document.getElementById('subject').selected;
+        },
+
+        async select(index) {
+          document.getElementById('subject').selectTab(index);
+          await settle();
+          await settle();
+          return document.getElementById('subject').selected;
+        },
+
+        unmount() { slot.innerHTML = ''; },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

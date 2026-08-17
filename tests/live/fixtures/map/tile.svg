@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- A STAND-IN TILE, not decoration.
+       The visual matrix must never depend on tile.openstreetmap.org: a test
+       that reaches the public tile service is slow, rate-limited, and fails
+       offline for reasons that have nothing to do with the component. This
+       file is served by the same dev server as the fixture, always resolves,
+       and paints a flat known colour so a pixel probe over the tile layer has
+       an unambiguous answer. The grid lines make a MISSING tile visible as a
+       gap rather than as more of the same colour. -->
+  <rect width="256" height="256" fill="rgb(214 229 209)"/>
+  <path d="M0 0H256M0 64H256M0 128H256M0 192H256M0 0V256M64 0V256M128 0V256M192 0V256"
+        stroke="rgb(188 208 182)" stroke-width="2" fill="none"/>
+</svg>

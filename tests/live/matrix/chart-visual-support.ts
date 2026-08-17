@@ -228,6 +228,13 @@ export async function collectChartProblems(page: Page, probe: ChartProbe): Promi
       marks.forEach((mark, i) => {
         const b = boxes[i];
         if (b.width <= 0 || b.height <= 0) return;
+        // A mark thinner than half a pixel (a 1-of-100001 treemap sliver) is
+        // below every engine's hit-testing floor: Chromium still returns it
+        // from elementFromPoint, Firefox and WebKit snap hit regions to device
+        // pixels and return nothing. A sub-pixel sliver cannot be occluded in
+        // any way a pointer could detect, so the probe claims nothing for it —
+        // the same line the off-viewport guard below already draws.
+        if (b.width < 0.5 || b.height < 0.5) return;
         const x = b.left + b.width / 2;
         const y = b.top + b.height / 2;
         // Off-viewport marks cannot be hit-tested; that is a scroll position

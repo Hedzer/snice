@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-terminal visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - #stage is a fixed, known box, so "the output area scrolls" is a
+             fact about the component and not about the viewport;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             terminal occluding itself;
+           - the page background is a flat, known white. Every colour probe in
+             this tier reads a pixel the terminal painted, and a patterned or
+             themed page surface would make "this pixel is the error colour"
+             unanswerable;
+           - the terminal's own colour custom properties are left at their
+             defaults unless a combo overrides them, because THEMABILITY is one
+             of the things this tier exists to test. */
+      html { font-size: 16px; }
+      html, body { margin: 0; padding: 0; }
+      body { background: rgb(255 255 255); }
+      #stage {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 720px;
+      }
+      snice-terminal { display: block; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/terminal/snice-terminal.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 30));
+        await nextFrame();
+      }
+
+      const api = {
+        unmount() { stage.innerHTML = ''; },
+
+        /**
+         * Mount one combo through the ATTRIBUTE channel (every documented
+         * property here has one) and fill the transcript through the documented
+         * writers.
+         *
+         * `vars` sets CSS custom properties on the host — the documented
+         * theming surface. That is how this tier asks whether
+         * `--snice-terminal-error-color` and its ANSI siblings actually reach
+         * the paint.
+         */
+        async mount(combo) {
+          api.unmount();
+          stage.style.width = `${combo.stageWidth ?? 720}px`;
+
+          const el = document.createElement('snice-terminal');
+          el.id = 'subject';
+          if (combo.prompt !== undefined) el.setAttribute('prompt', combo.prompt);
+          if (combo.readonly) el.setAttribute('readonly', '');
+          if (combo.showTimestamps) el.setAttribute('show-timestamps', '');
+          if (combo.maxLines !== undefined) el.setAttribute('max-lines', String(combo.maxLines));
+          if (combo.height) el.style.setProperty('--snice-terminal-height', `${combo.height}px`);
+          for (const [name, value] of Object.entries(combo.vars ?? {})) {
+            el.style.setProperty(name, value);
+          }
+
+          stage.appendChild(el);
+          await el.ready;
+
+          for (const line of combo.lines ?? []) el.writeln(line.content, line.type);
+          for (const chunk of combo.chunks ?? []) el.appendChunk(chunk.content, chunk.type);
+
+          await settle();
+          return {
+            prompt: el.prompt,
+            readonly: el.readonly,
+            showTimestamps: el.showTimestamps,
+          };
+        },
+
+        /** Geometry of the terminal's own boxes, in viewport space. */
+        boxes() {
+          const host = document.getElementById('subject');
+          const sr = host.shadowRoot;
+          const pick = (name) => [...sr.querySelectorAll('[part]')]
+            .find(node => (node.getAttribute('part') ?? '').split(/\s+/).includes(name));
+          const rect = (node) => {
+            if (!node) return null;
+            const b = node.getBoundingClientRect();
+            return { x: b.x, y: b.y, width: b.width, height: b.height, top: b.top,
+                     right: b.right, bottom: b.bottom, left: b.left };
+          };
+          const output = pick('output');
+          return {
+            host: rect(host),
+            container: rect(pick('container')),
+            output: rect(output),
+            inputLine: rect(pick('input-line')),
+            prompt: rect(pick('prompt')),
+            input: rect(pick('input')),
+            scrollTop: output?.scrollTop ?? 0,
+            scrollHeight: output?.scrollHeight ?? 0,
+            clientHeight: output?.clientHeight ?? 0,
+            overflowY: output ? getComputedStyle(output).overflowY : '',
+            lineCount: sr.querySelectorAll('.terminal-line').length,
+          };
+        },
+
+        /** Computed colour of the first line of the given type. */
+        lineColor(type) {
+          const sr = document.getElementById('subject').shadowRoot;
+          const line = sr.querySelector(`.terminal-line.${type}`);
+          if (!line) return null;
+          const content = line.querySelector('.line-content');
+          return getComputedStyle(content ?? line).color;
+        },
+
+        /** Computed colour of the first ANSI-coloured run in the transcript. */
+        ansiColor() {
+          const sr = document.getElementById('subject').shadowRoot;
+          const span = sr.querySelector('.line-content span');
+          return span ? getComputedStyle(span).color : null;
+        },
+
+        /** Viewport-space box of the first ANSI-coloured run. */
+        ansiBox() {
+          const sr = document.getElementById('subject').shadowRoot;
+          const span = sr.querySelector('.line-content span');
+          if (!span) return null;
+          const b = span.getBoundingClientRect();
+          return { x: b.x, y: b.y, width: b.width, height: b.height };
+        },
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

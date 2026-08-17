@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-carousel visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+ *          something:
+ *            - the page sits on the theme's own surface, so "the viewport
+ *              really clips" is judged against a known background;
+ *            - #stage is a fixed, known box, so the slide-width and stride
+ *              arithmetic ((viewport − gaps) / slidesPerView) resolves to
+ *              exact pixels rather than to a percentage of an unknown parent;
+ *            - #stage has NO background, padding, font-size override, or
+ *              overlapping siblings, so a failed elementFromPoint probe is
+ *              the carousel occluding itself, never the fixture;
+ *            - the slides are authored with a FIXED height and one saturated,
+ *              distinct background per position (the showcase's own approach,
+ *              no network), so "which slide is showing" is a pixel fact. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 640px;
+      }
+      .mx-slide {
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #fff;
+      }
+      .mx-slide:nth-child(1) { background: #6366f1; }
+      .mx-slide:nth-child(2) { background: #ec4899; }
+      .mx-slide:nth-child(3) { background: #14b8a6; }
+      .mx-slide:nth-child(4) { background: #f59e0b; }
+      .mx-slide:nth-child(5) { background: #8b5cf6; }
+      .mx-slide:nth-child(6) { background: #ef4444; }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/carousel/snice-carousel.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      /**
+       * The slides container transitions `transform 0.3s ease`, so "settled"
+       * means the transition is FINISHED — window geometry is asserted as
+       * facts after settle, never mid-animation.
+       */
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 420));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. Slides are authored BEFORE connection (the doc's
+         * "each direct child = one slide", read once at @ready from the
+         * slot), and every property crosses the ATTRIBUTE channel exactly as
+         * the doc's markup examples spell it.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-carousel');
+          el.id = 'subject';
+          const count = combo.slides ?? 6;
+          el.innerHTML = Array.from({ length: count },
+            (_, i) => `<div class="mx-slide" data-slide="${i}">Slide ${i + 1}</div>`).join('');
+          if (combo.activeIndex !== undefined) el.setAttribute('active-index', String(combo.activeIndex));
+          if (combo.loop === false) el.setAttribute('loop', 'false');
+          if (combo.showControls === false) el.setAttribute('show-controls', 'false');
+          if (combo.showIndicators === false) el.setAttribute('show-indicators', 'false');
+          if (combo.slidesPerView !== undefined) el.setAttribute('slides-per-view', String(combo.slidesPerView));
+          if (combo.spaceBetween !== undefined) el.setAttribute('space-between', String(combo.spaceBetween));
+          if (combo.autoplay) {
+            el.setAttribute('autoplay', '');
+            el.setAttribute('autoplay-interval', String(combo.autoplayInterval ?? 3000));
+            if (combo.autoplayDirection) el.setAttribute('autoplay-direction', combo.autoplayDirection);
+          }
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+          current = el;
+          return {
+            activeIndex: el.activeIndex,
+            reflected: {
+              activeIndex: el.getAttribute('active-index'),
+              slidesPerView: el.getAttribute('slides-per-view'),
+              spaceBetween: el.getAttribute('space-between'),
+              loop: el.getAttribute('loop'),
+            },
+          };
+        },
+
+        /** The documented navigation methods, each settling before reporting. */
+        async next() { current?.next(); await settle(); return current?.activeIndex ?? null; },
+        async prev() { current?.prev(); await settle(); return current?.activeIndex ?? null; },
+        async goToSlide(i) { current?.goToSlide(i); await settle(); return current?.activeIndex ?? null; },
+        async play() { current?.play(); await settle(); return true; },
+        async pause() { current?.pause(); await settle(); return true; },
+
+        /**
+         * Start autoplay on an already-mounted, already-measured carousel.
+         * Mounting WITH autoplay lets ticks fire during mount's own settle,
+         * so this is the deterministic channel: the first sample is taken
+         * before any tick, and every tick after it belongs to the test.
+         */
+        async startAutoplay(interval, direction) {
+          if (!current) return false;
+          current.autoplayInterval = interval;
+          if (direction) current.autoplayDirection = direction;
+          current.autoplay = true;
+          return true;
+        },
+
+        /** Viewport coordinates for REAL pointers. */
+        prevCenter() {
+          const box = current?.shadowRoot?.querySelector('[part~="button-prev"]')?.getBoundingClientRect();
+          return box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : null;
+        },
+        nextCenter() {
+          const box = current?.shadowRoot?.querySelector('[part~="button-next"]')?.getBoundingClientRect();
+          return box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : null;
+        },
+        indicatorCenter(i) {
+          const dots = current ? [...current.shadowRoot.querySelectorAll('[part~="indicator"]')] : [];
+          const box = dots[i]?.getBoundingClientRect();
+          return box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : null;
+        },
+
+        /**
+         * The slide data-ids whose boxes are substantially inside the
+         * viewport right now — the browser's own answer to "what is showing".
+         */
+        visibleSlides() {
+          const viewport = current?.shadowRoot?.querySelector('[part~="viewport"]')?.getBoundingClientRect();
+          if (!viewport || !current) return null;
+          const slides = [...current.querySelectorAll('.mx-slide')];
+          return slides
+            .map((slide, i) => {
+              const box = slide.getBoundingClientRect();
+              const overlap = Math.min(box.right, viewport.right) - Math.max(box.left, viewport.left);
+              return { i, visible: overlap > viewport.width * 0.5 };
+            })
+            .filter(entry => entry.visible)
+            .map(entry => entry.i);
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

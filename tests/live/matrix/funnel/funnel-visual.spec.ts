@@ -212,14 +212,23 @@ test.describe('snice-funnel visual matrix (layer 2: painted pixels)', () => {
     await mount(page, {
       id: 'px-labels', dataset: 'canonical', orientation: 'horizontal', variant: 'default',
     });
-    // Sample the label ink and the surface a few pixels below it.
+    // Sample a ROW of points across the label's own box plus the surface just
+    // below it. A single centre sample lands wherever one glyph happens to be —
+    // often on a counter or between two letters — and reads as background; the
+    // question this test asks is whether the darkest ink in the word stands off
+    // the surface, so the strip is the honest probe.
     const probe = `(host) => { const t = host.shadowRoot.querySelector('.funnel__label');
       const b = t.getBoundingClientRect();
-      return [{ x: b.left + b.width / 2, y: b.top + b.height / 2 },
-              { x: b.left + b.width / 2, y: b.bottom + 6 }]; }`;
-    const [ink, ground] = await capture(page, '#subject', 'funnel-labels-horizontal', probe);
-    // Antialiased glyph centres rarely hit full ink, so this is a floor on
-    // "can a human read it", not a WCAG certification of the text colour.
-    expect(contrast(ink, ground)).toBeGreaterThan(1.6);
+      const points = [];
+      for (let i = 1; i <= 12; i++) {
+        points.push({ x: b.left + (b.width * i) / 13, y: b.top + b.height / 2 });
+      }
+      points.push({ x: b.left + b.width / 2, y: b.bottom + 6 });
+      return points; }`;
+    const samples = await capture(page, '#subject', 'funnel-labels-horizontal', probe);
+    const ground = samples[samples.length - 1];
+    const best = Math.max(...samples.slice(0, -1).map(ink => contrast(ink, ground)));
+    // A floor on "can a human read it", not a WCAG certification of the colour.
+    expect(best, `best label contrast over 12 samples`).toBeGreaterThan(1.6);
   });
 });

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-sortable visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule below exists so a measurement means
+         something:
+
+           - #stage fixes only the WIDTH, so "the items lay out in a column /
+             in a row" is a fact about `direction` and not about the stage;
+           - the items carry no layout CSS of their own, so their boxes are the
+             component's flex container's answer and nothing else;
+           - the stage paints a colour the component never paints, so a
+             collapsed container is measurable as exposed magenta rather than
+             guessed at;
+           - nothing overlaps the stage, so a failed elementFromPoint probe is
+             the component occluding its own item, never the fixture. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 520px;
+        background: #ff00ff;
+      }
+      #stage > snice-sortable { display: block; width: 100%; }
+      .item {
+        padding: 10px 12px;
+        background: var(--snice-color-surface-raised, #fff);
+        border: 1px solid var(--snice-color-border, #d0d0d0);
+        border-radius: 6px;
+        color: var(--snice-color-text, #111);
+        font-size: 14px;
+      }
+      .grip { cursor: grab; user-select: none; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/sortable/snice-sortable.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      const ITEMS = ['a', 'b', 'c', 'd'];
+
+      /** A drag event carrying the dataTransfer a real drag carries. */
+      function dragEvent(type, point) {
+        const event = new MouseEvent(type, {
+          bubbles: true, composed: true, cancelable: true,
+          clientX: point?.x ?? 0, clientY: point?.y ?? 0,
+        });
+        const store = new Map();
+        Object.defineProperty(event, 'dataTransfer', {
+          value: {
+            effectAllowed: '', dropEffect: '',
+            setData: (k, v) => store.set(k, v),
+            getData: k => store.get(k) ?? '',
+          },
+          configurable: true,
+        });
+        return event;
+      }
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-sortable');
+          el.id = 'subject';
+          if (combo.direction) el.setAttribute('direction', combo.direction);
+          if (combo.handle) el.setAttribute('handle', combo.handle);
+          if (combo.disabled) el.setAttribute('disabled', '');
+          if (combo.group) el.setAttribute('group', combo.group);
+
+          el.innerHTML = ITEMS.map(id => (combo.handle
+            ? `<div class="item" id="${id}"><span class="grip">&#9776;</span> Item ${id.toUpperCase()}</div>`
+            : `<div class="item" id="${id}">Item ${id.toUpperCase()}</div>`)).join('');
+
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+
+          current = { el, combo };
+          return { direction: el.direction, disabled: el.disabled, items: ITEMS.length };
+        },
+
+        /** Grab the item at `index` and leave the drag in progress. */
+        async beginDrag(index) {
+          const el = current?.el;
+          if (!el) return null;
+          const item = el.children[index];
+          const grip = current.combo.handle ? item.querySelector(current.combo.handle) : item;
+          (grip ?? item).dispatchEvent(dragEvent('dragstart'));
+          await settle();
+          return { id: item.id };
+        },
+
+        async endDrag() {
+          current?.el.dispatchEvent(dragEvent('dragend'));
+          await settle();
+        },
+
+        /** The light-DOM order, the thing a reorder is supposed to change. */
+        order() {
+          return [...(current?.el.children ?? [])].map(item => item.id);
+        },
+
+        unmount() {
+          if (current) current.el.remove();
+          current = null;
+          stage.innerHTML = '';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-file-gallery visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase.
+
+           - `#stage` is EXACTLY 800px wide. The grid view is declared
+             `repeat(auto-fill, minmax(10rem, 1fr))`, so "grid really is a grid"
+             is only a question with a known width: at 800px the browser must
+             fit several tiles per row, and at that width the list view must
+             still put every file on a row of its own. A fluid stage would make
+             both claims unfalsifiable;
+
+           - the page sits on the theme's own surface, because the tile
+             surfaces, the status borders and the dashed dropzone are all
+             designed to read against that ground;
+
+           - nothing is positioned, so a failed hit-test on an action button is
+             always the component and never the fixture. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        width: 800px;
+        margin: 24px auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <script type="module" src="./matrix.ts"></script>
+  </body>
+</html>

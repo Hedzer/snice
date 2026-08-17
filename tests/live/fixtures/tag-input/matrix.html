@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-tag-input visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+            - the page sits on the theme's own surface, so a chip's fill and
+              ink are judged against the surface the component was designed
+              for;
+            - #stage is a fixed, known box, so "the chips wrap" and "the
+              dropdown hangs below the container" are facts about the
+              component and not about the viewport;
+            - #stage has NO background, padding, font-size override, or
+              overlapping siblings, so a failed elementFromPoint probe is the
+              control occluding itself, never the fixture. The root font size
+              is left at the browser default on purpose: the control's type
+              scale is specified in rem;
+            - #probe resolves a theme token to the colour a browser actually
+              computes for it, so a token assertion compares rgb() to rgb();
+            - the fixture OWNS the interaction actuators — typing, keys,
+              remove-clicks, suggestion picks — because functions cannot cross
+              the Playwright boundary. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/tag-input/snice-tag-input.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo through the PROPERTY channel — the documented
+         * JavaScript authoring pattern ("set initial tags via JavaScript") —
+         * so the chips, the invalid state, and the capacity rule are all
+         * observed from typed property assignments, as the DOM matrix does.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-tag-input');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          for (const key of ['label', 'placeholder', 'maxTags', 'allowDuplicates',
+            'disabled', 'readonly', 'suggestions']) {
+            if (combo[key] === undefined) continue;
+            el[key] = combo[key];
+          }
+          if (combo.value !== undefined) el.value = combo.value;
+          await settle();
+          current = { el, combo };
+          return {
+            value: el.value,
+            label: el.label,
+            maxTags: el.maxTags,
+            disabled: el.disabled,
+            readonly: el.readonly,
+          };
+        },
+
+        /** Type into the draft field and let the suggestion list settle. */
+        async type(text) {
+          const el = current?.el;
+          const input = el?.shadowRoot.querySelector('.tag-input-field');
+          if (!input) return { typed: false };
+          input.value = text;
+          input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+          await settle();
+          return { typed: true };
+        },
+
+        /** A keydown on the draft field, as a real key event. */
+        async press(key) {
+          const el = current?.el;
+          const input = el?.shadowRoot.querySelector('.tag-input-field');
+          if (!input) return { pressed: false };
+          input.dispatchEvent(new KeyboardEvent('keydown', {
+            key, bubbles: true, composed: true, cancelable: true,
+          }));
+          await settle();
+          return { pressed: true };
+        },
+
+        /** Click a chip's remove button and report the events. */
+        async clickRemove(index) {
+          const el = current?.el;
+          if (!el) return { clicked: false };
+          const seen = [];
+          const listener = (event) => seen.push({ type: event.type, detail: event.detail });
+          el.addEventListener('tag-remove', listener);
+          el.addEventListener('tag-change', listener);
+          const buttons = el.shadowRoot.querySelectorAll('.tag-remove');
+          if (buttons[index]) buttons[index].click();
+          await settle();
+          el.removeEventListener('tag-remove', listener);
+          el.removeEventListener('tag-change', listener);
+          return {
+            clicked: !!buttons[index],
+            events: seen.map(e => e.type),
+            value: el.value,
+            sameHost: seen[0] ? seen[0].detail.tag !== undefined : false,
+          };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

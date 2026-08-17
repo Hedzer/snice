@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-book visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so page paper is judged
+             against the background the component was designed for;
+           - #stage is a plain, known origin, so "the leaf really rotated" is a
+             fact about the component's transform and not about the viewport;
+           - #stage has NO padding, NO background and nothing overlapping it, so
+             a failed elementFromPoint probe is the book occluding itself, never
+             the fixture occluding it;
+           - `--book-flip-duration` is not set here: the component reads it for
+             its event timing and the CSS transition is 0.9s, so this fixture
+             waits the animation out rather than defeating it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/book/snice-book.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      /** The same light-DOM markup the DOM matrix mounts. */
+      function pagesHtml(count) {
+        return Array.from({ length: count }, (_, i) =>
+          `<snice-book-page><div>Page ${i + 1} content</div></snice-book-page>`).join('');
+      }
+
+      /** A local cover image, so this tier never reaches the network. */
+      const COVER = '/tests/live/fixtures/book/cover.svg';
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+      /**
+       * Outlast the page-turn transition.
+       *
+       * The stylesheet animates `.book__page` for 0.9s, and collapses that to
+       * 0.01ms under `prefers-reduced-motion: reduce`. The visual matrix drives
+       * this fixture with reduced motion ON — a settled transform is what every
+       * rotation assertion is about, and paying 0.9s per navigation across a
+       * whole matrix buys nothing but flakiness. The one test that cares
+       * whether the turn is animated AT ALL opens its own page without the
+       * override and reads the computed transition instead.
+       *
+       * The 120ms below is still real: it clears the 0.01ms transition, the
+       * component's own `setTimeout` for `page-flip-end`, and a frame either
+       * side of both.
+       */
+      async function settleFlip() {
+        await new Promise(resolve => setTimeout(resolve, 120));
+        await nextFrame();
+      }
+
+      const api = {
+        COVER,
+
+        /**
+         * Mount one combo. `current-page`, `cover-image`, `title` and `author`
+         * cross the documented attribute channel; the pages are slotted light
+         * DOM, placed before connection the way an author writes them.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-book');
+          el.id = 'subject';
+          if (combo.currentPage) el.setAttribute('current-page', String(combo.currentPage));
+          if (combo.cover) el.setAttribute('cover-image', COVER);
+          if (combo.title) el.setAttribute('title', combo.title);
+          if (combo.author) el.setAttribute('author', combo.author);
+          el.innerHTML = pagesHtml(combo.pages ?? 3);
+
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+          await settleFlip();
+
+          current = { el, combo };
+          return {
+            totalPages: el.totalPages,
+            leaves: el.shadowRoot.querySelectorAll('.book__page--2').length,
+          };
+        },
+
+        /** Navigate and wait out the animation, so a transform is settled. */
+        async goToPage(page) {
+          current.el.goToPage(page);
+          await settleFlip();
+          return current.el.currentPage;
+        },
+
+        async press(key) {
+          current.el.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, composed: true, cancelable: true }));
+          await settleFlip();
+          return current.el.currentPage;
+        },
+
+        /**
+         * Replace the slotted pages after mount. The DOM tier cannot exercise
+         * this — happy-dom emits no `slotchange` for a post-connect innerHTML
+         * write — so it is asserted here, where the browser really does.
+         */
+        async reslot(count) {
+          current.el.innerHTML = pagesHtml(count);
+          await settle();
+          await settle();
+          return {
+            totalPages: current.el.totalPages,
+            leaves: current.el.shadowRoot.querySelectorAll('.book__page--2').length,
+          };
+        },
+
+        /** The rotation each leaf currently carries, in degrees about Y. */
+        leafRotations() {
+          const sr = current.el.shadowRoot;
+          return [...sr.querySelectorAll('.book__page--2')].map((leaf) => {
+            const matrix = new DOMMatrix(getComputedStyle(leaf).transform);
+            // m11 is cos(theta) and m13 is -sin(theta) for a pure Y rotation.
+            // `|| 0` normalises the -0 that atan2 returns for an unrotated
+            // leaf, so a caller can compare the list with plain equality.
+            return Math.round(Math.atan2(-matrix.m13, matrix.m11) * 180 / Math.PI) || 0;
+          });
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+        settleFlip,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

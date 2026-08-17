@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-booking visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the theme's own surface, so an available day and a disabled one are
+             judged against the background they were designed for;
+           - #stage is a fixed 480px column — a booking widget's width — so
+             "the month grid is seven even columns" and "the slot buttons wrap
+             into a grid" are facts about the component;
+           - nothing overlaps the stage, so a failed elementFromPoint probe is
+             the widget occluding itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 480px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      /* THE DOCUMENTED IMPORT, and only it. */
+      import '/packages/components/src/booking/snice-booking.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /** `YYYY-MM-DD`, local — the format the docs use. */
+      function ymd(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+          + `-${String(date.getDate()).padStart(2, '0')}`;
+      }
+
+      /** Days of the current month still in the future: what a page can book. */
+      function futureDays(count) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const days = [];
+        const cursor = new Date(today);
+        while (days.length < count) {
+          cursor.setDate(cursor.getDate() + 1);
+          if (cursor.getMonth() !== today.getMonth()) break;
+          days.push(ymd(cursor));
+        }
+        return days;
+      }
+
+      const api = {
+        futureDays,
+
+        /**
+         * Mount one combo. `variant`, `min-date` and `max-date` cross the
+         * ATTRIBUTE channel; `availableDates`, `availableSlots` and `fields`
+         * are documented "JS property only".
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-booking');
+          el.id = 'subject';
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          if (combo.minDate) el.setAttribute('min-date', combo.minDate);
+          if (combo.maxDate) el.setAttribute('max-date', combo.maxDate);
+          stage.appendChild(el);
+          await el.ready;
+          el.availableDates = combo.availableDates ?? [];
+          el.availableSlots = combo.availableSlots ?? [];
+          el.fields = combo.fields ?? [];
+          await settle();
+          const sr = el.shadowRoot;
+          return {
+            days: sr.querySelectorAll('.booking__day').length,
+            slots: sr.querySelectorAll('.booking__slot').length,
+          };
+        },
+
+        /** Click the day cell for `date`; returns false when it is disabled. */
+        async pickDay(date) {
+          const sr = document.getElementById('subject').shadowRoot;
+          const cells = [...sr.querySelectorAll('.booking__day')];
+          const target = cells.find(cell => !cell.disabled
+            && cell.textContent.trim() === String(Number(date.slice(-2))));
+          if (!target) return false;
+          target.click();
+          await settle();
+          return true;
+        },
+
+        async pickSlot(index) {
+          const sr = document.getElementById('subject').shadowRoot;
+          const slot = sr.querySelectorAll('.booking__slot')[index ?? 0];
+          if (!slot) return false;
+          slot.click();
+          await settle();
+          return true;
+        },
+
+        async pressPrimary() {
+          const sr = document.getElementById('subject').shadowRoot;
+          const button = sr.querySelector('.booking__btn--primary');
+          if (!button || button.disabled) return false;
+          button.click();
+          await settle();
+          return true;
+        },
+
+        /** Type into every form input the way a visitor would. */
+        async fillForm() {
+          const sr = document.getElementById('subject').shadowRoot;
+          const inputs = [...sr.querySelectorAll('.booking__input')];
+          for (const input of inputs) {
+            input.focus();
+            input.value = input.type === 'email' ? 'a@b.co' : 'Alice';
+            input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+          }
+          await settle();
+          const primary = sr.querySelector('.booking__btn--primary');
+          return { inputs: inputs.length, confirmDisabled: !!primary?.disabled };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

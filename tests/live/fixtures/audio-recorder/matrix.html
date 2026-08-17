@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-audio-recorder visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+
+           - #stage fixes the WIDTH only; the recorder's own layout decides the
+             height, so "the visualizer has a height" is a fact about the
+             component;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             recorder occluding its own control;
+           - the stage paints a colour the component never uses, so a collapsed
+             part shows through as that colour instead of guesswork. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 520px;
+        background: #ff00ff; /* a colour the component never paints */
+      }
+      #stage > snice-audio-recorder { display: block; width: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/audio-recorder/snice-audio-recorder.ts';
+
+      /* ── Substituted microphone ─────────────────────────────────────────
+         A headless browser has no microphone. `getUserMedia` is replaced with a
+         REAL MediaStream from a Web Audio destination node fed by an
+         oscillator, so `MediaRecorder`, the analyser and the visualiser all run
+         their genuine code paths against genuine audio. Only the sound source
+         is synthetic. */
+      const audio = new AudioContext();
+      /* A three-tone mix with amplitudes three decades apart. The recorder
+         reads the analyser's lower 32 bins (fftSize 128 → one ~375Hz bin per
+         bar) through a −100..−30dB window, and a single full-scale sawtooth
+         saturates EVERY bin to 255 — a flat spectrum the real visualiser
+         renders as one equal block, which would measure nothing. Measured
+         bins for this mix: 232 … 106 … 68 … 0 … 38 … 0 — clearly different
+         levels in the exact bars the component reads. */
+      const mix = audio.createGain();
+      for (const [frequency, amplitude] of [[220, 0.3], [1800, 0.004], [6400, 0.0008]]) {
+        const tone = audio.createOscillator();
+        const level = audio.createGain();
+        tone.frequency.value = frequency;
+        level.gain.value = amplitude;
+        tone.connect(level);
+        level.connect(mix);
+        tone.start();
+      }
+
+      /* Every grant is a FRESH stream, as a real device hands out. The
+         component stops every track it was given when a take ends, and a shared
+         stream would be permanently dead from the second combo onwards — the
+         fixture would then be measuring its own reuse rather than the
+         recorder. */
+      function grantStream() {
+        const destination = audio.createMediaStreamDestination();
+        mix.connect(destination);
+        return destination.stream;
+      }
+
+      Object.defineProperty(navigator, 'mediaDevices', {
+        configurable: true,
+        value: {
+          getUserMedia: async () => grantStream(),
+          enumerateDevices: async () => ([
+            { kind: 'audioinput', deviceId: 'a', label: 'A', groupId: 'g' },
+          ]),
+        },
+      });
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * combo: { format, bitrate, maxDuration, showControls, showVisualizer,
+         *          showTimer, showPlayback, phase }
+         * phase: 'idle' | 'recording' | 'paused' | 'playback'
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-audio-recorder');
+          el.id = 'subject';
+          if (combo.format) el.setAttribute('format', combo.format);
+          if (combo.bitrate) el.setAttribute('bitrate', String(combo.bitrate));
+          if (combo.maxDuration) el.setAttribute('max-duration', String(combo.maxDuration));
+
+          stage.appendChild(el);
+          await el.ready;
+          for (const name of ['showControls', 'showVisualizer', 'showTimer', 'showPlayback']) {
+            if (combo[name] === false) el[name] = false;
+          }
+          await settle();
+
+          const phase = combo.phase ?? 'idle';
+          if (phase !== 'idle') {
+            await audio.resume();
+            await el.start();
+            // Let real audio flow so the analyser has something to draw.
+            await new Promise(r => setTimeout(r, 250));
+            if (phase === 'paused') el.pause();
+            if (phase === 'playback') await el.stop();
+            await settle();
+          }
+          await settle();
+
+          current = { el, combo, phase };
+          return { state: el.getState(), recordedUrl: !!el.recordedUrl };
+        },
+
+        /** Click a control by its accessible name. */
+        async press(name) {
+          const el = current?.el;
+          if (!el) return false;
+          const button = [...el.shadowRoot.querySelectorAll('button')]
+            .find(b => (b.getAttribute('aria-label') || b.getAttribute('title')) === name);
+          if (!button) return false;
+          button.click();
+          await settle();
+          return true;
+        },
+
+        /** The rendered heights of the visualizer bars. */
+        barHeights() {
+          const el = current?.el;
+          if (!el) return [];
+          return [...el.shadowRoot.querySelectorAll('.visualizer-bar')]
+            .map(bar => bar.getBoundingClientRect().height);
+        },
+
+        unmount() {
+          if (current) {
+            try { if (current.el.getState() !== 'inactive') current.el.cancel(); } catch {}
+            current.el.remove();
+          }
+          current = null;
+          stage.innerHTML = '';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

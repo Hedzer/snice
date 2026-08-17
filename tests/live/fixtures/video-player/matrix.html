@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-video-player visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+
+           - #stage fixes the WIDTH only, so the player's own height is its
+             answer to the media's aspect ratio and not the stage's;
+           - the stage paints a colour the component never paints, so a control
+             bar that failed to span the player is measurable as exposed
+             magenta rather than guessed at;
+           - nothing overlaps the stage, so a failed elementFromPoint probe is
+             the player occluding its own control, never the fixture. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 640px;
+        background: #ff00ff;
+      }
+      #stage > snice-video-player { display: block; width: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/video-player/snice-video-player.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      /* ── A synthetic clip ────────────────────────────────────────────────
+         A headless browser has no video file to fetch, and a network fetch in
+         a fixture would make the suite flaky for reasons that have nothing to
+         do with the component. So the media is generated in-page: a canvas
+         painted with a deliberately ASYMMETRIC frame (red left, green right)
+         is captured as a MediaStream, RECORDED into a real webm blob, and
+         served to the component through an object URL. Recording rather than
+         handing over the live stream matters: a live stream has no finite
+         duration and cannot be seeked, and the documented progress track is a
+         SEEK surface. Everything the specs measure — the layout, the control
+         bar, the progress geometry, the painted frames — is then real; only
+         the light entering the lens is synthetic. */
+      const source = document.createElement('canvas');
+      source.width = 640;
+      source.height = 360;
+      (function paint() {
+        const ctx = source.getContext('2d');
+        ctx.fillStyle = '#101820';
+        ctx.fillRect(0, 0, source.width, source.height);
+        ctx.fillStyle = '#ff3b30';
+        ctx.fillRect(0, 0, source.width / 3, source.height);
+        ctx.fillStyle = '#34c759';
+        ctx.fillRect((source.width / 3) * 2, 0, source.width / 3, source.height);
+        requestAnimationFrame(paint);
+      })();
+
+      /* Record the canvas once and hand every combo the same object URL.
+         Playwright's WebKit build ships without MediaRecorder (desktop Safari
+         has it), so the in-page recording cannot run there. WebKit still
+         decodes and paints VP8, so such engines fall back to the committed
+         fixture-clip.webm next to this page: the SAME asymmetric red/green
+         frames with a finite, seekable duration, served by the same dev server
+         that serves this fixture. Every spec below then still drives a real
+         <video> through the component's genuine pipeline — only the encoder
+         that produced the bytes differs. */
+      let clipUrl = null;
+      async function clip() {
+        if (clipUrl) return clipUrl;
+        if (typeof MediaRecorder === 'undefined') {
+          const blob = await (await fetch('fixture-clip.webm')).blob();
+          clipUrl = URL.createObjectURL(blob);
+          return clipUrl;
+        }
+        const stream = source.captureStream(30);
+        const chunks = [];
+        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+        recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+        recorder.start();
+        await new Promise(r => setTimeout(r, 1200));
+        await new Promise(r => { recorder.onstop = r; recorder.stop(); });
+        stream.getTracks().forEach(t => t.stop());
+        clipUrl = URL.createObjectURL(new Blob(chunks, { type: 'video/webm' }));
+        return clipUrl;
+      }
+
+      /* A MediaRecorder webm carries no duration in its header, so Chromium
+         reports Infinity until the media has been seeked to its end once. That
+         is a property of the CONTAINER, not of the component, so the fixture
+         resolves it before any spec measures a progress bar. */
+      async function resolveDuration(video) {
+        if (Number.isFinite(video.duration) && video.duration > 0) return video.duration;
+        await new Promise((resolve) => {
+          const done = () => { video.removeEventListener('durationchange', check); resolve(); };
+          const check = () => { if (Number.isFinite(video.duration)) done(); };
+          video.addEventListener('durationchange', check);
+          video.currentTime = 1e101;
+          setTimeout(done, 2000);
+        });
+        video.currentTime = 0;
+        return video.duration;
+      }
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-video-player');
+          el.id = 'subject';
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          if (combo.poster) el.setAttribute('poster', combo.poster);
+          if (combo.muted !== false) el.setAttribute('muted', '');
+          // `loop` keeps a short fixture clip playing for as long as a spec
+          // needs: the controls come back when the media ENDS, so a fade test
+          // on a clip that ran out would be measuring the end handler.
+          if (combo.loop) el.setAttribute('loop', '');
+          el.setAttribute('src', combo.src ?? await clip());
+
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.controls === false) el.controls = false;
+          await settle();
+
+          const video = el.shadowRoot.querySelector('video');
+          for (let i = 0; i < 120 && !(video.videoWidth > 0); i++) await nextFrame();
+          await resolveDuration(video);
+          if (combo.play !== false) {
+            await video.play().catch(() => {});
+            for (let i = 0; i < 60 && video.paused; i++) await nextFrame();
+          }
+          if (combo.paused) { el.pause(); await settle(); }
+          // Keep the auto-hiding control bar up for the whole measurement: it
+          // fades three seconds into playback, and a spec measuring a faded bar
+          // would be measuring the timer, not the layout.
+          if (combo.showControls !== false) {
+            el.shadowRoot.querySelector('.video-container')
+              ?.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+          }
+          await settle();
+
+          current = { el, combo };
+          return {
+            width: video.videoWidth,
+            height: video.videoHeight,
+            playing: !video.paused,
+          };
+        },
+
+        /** Click a control by its class suffix (play / volume / fullscreen / pip). */
+        async clickControl(name) {
+          const el = current?.el;
+          if (!el) return null;
+          el.shadowRoot.querySelector(`.video-btn-${name}`)?.click();
+          await settle();
+          return { paused: el.shadowRoot.querySelector('video').paused };
+        },
+
+        /** Click the progress track at `fraction` of its width, as a user does. */
+        async scrub(fraction) {
+          const el = current?.el;
+          if (!el) return null;
+          const track = el.shadowRoot.querySelector('.video-progress-container');
+          const b = track.getBoundingClientRect();
+          track.dispatchEvent(new MouseEvent('click', {
+            bubbles: true, composed: true,
+            clientX: b.left + b.width * fraction, clientY: b.top + b.height / 2,
+          }));
+          await settle();
+          return { currentTime: el.currentTime, duration: el.duration };
+        },
+
+        /** Let the auto-hide timer run out, the documented idle behaviour. */
+        async idle(ms) {
+          await new Promise(r => setTimeout(r, ms));
+          await settle();
+          const bar = current?.el.shadowRoot.querySelector('[part~="controls"]');
+          return bar ? Number(getComputedStyle(bar).opacity) : null;
+        },
+
+        unmount() {
+          if (current) current.el.remove();
+          current = null;
+          stage.innerHTML = '';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

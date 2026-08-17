@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-input visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - #stage is a fixed 360px column: an input that fails to fill its
+             container becomes a number rather than whitespace;
+           - a block BEFORE and AFTER the control, so "the label is above the
+             field and the helper text below it" is a measurement rather than
+             an opinion, and so a control that takes no space is visible;
+           - the control lives inside a real <form> with a real <label
+             for=...> outside it: `form.reset()`, `FormData` and the `labels`
+             collection are exactly the claims happy-dom could not judge, and
+             they need a real form to be judged at all;
+           - the page uses the theme's plain surface: `filled` tints its own
+             background and `invalid` recolours its border, and a tint is only
+             measurable against a known ground. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface, #fff);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 360px;
+      }
+      .flow-block {
+        height: 20px;
+        background: var(--snice-color-surface-secondary, #eee);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="flow-block" id="before"></div>
+      <form id="form">
+        <label id="external" for="subject">External label</label>
+        <div id="slot"></div>
+      </form>
+      <div class="flow-block" id="after"></div>
+    </div>
+
+    <script type="module">
+      import '/packages/components/src/input/snice-input.ts';
+
+      const slot = document.getElementById('slot');
+      const form = document.getElementById('form');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /** The documented attribute names for the camelCase properties. */
+      const ATTRS = {
+        helperText: 'helper-text',
+        errorText: 'error-text',
+        prefixIcon: 'prefix-icon',
+        suffixIcon: 'suffix-icon',
+        labelAlign: 'label-align',
+        defaultValue: 'value',
+      };
+
+      const api = {
+        /**
+         * Everything crosses the ATTRIBUTE channel — the documented HTML form,
+         * and the only channel the stylesheet's `.input--<variant>` /
+         * `.input--<size>` classes can be reached through. Slotted icons are
+         * light-DOM children, as the doc's slot examples require.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-input');
+          el.id = 'subject';
+          for (const [key, value] of Object.entries(combo)) {
+            if (value === undefined || value === null || value === false) continue;
+            if (key === 'height' || key === 'slotted') continue;
+            const name = ATTRS[key] ?? key;
+            el.setAttribute(name, value === true ? '' : String(value));
+          }
+          if (combo.height) el.style.height = `${combo.height}px`;
+          if (combo.slotted) {
+            el.innerHTML = '<span slot="prefix-icon">★</span><span slot="suffix-icon">☆</span>';
+          }
+          slot.appendChild(el);
+          await el.ready;
+          await settle();
+          return { mounted: true };
+        },
+
+        /** Click a documented CSS part the way a pointer would. */
+        async clickPart(name) {
+          const el = document.getElementById('subject');
+          const node = [...el.shadowRoot.querySelectorAll('[part]')]
+            .find(n => (n.getAttribute('part') ?? '').split(/\s+/).includes(name));
+          node?.click();
+          await settle();
+          return !!node;
+        },
+
+        /** Type the way a customer does — a real value plus a real input event. */
+        async type(value) {
+          const el = document.getElementById('subject');
+          const native = el.shadowRoot.querySelector('input');
+          native.value = value;
+          native.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+          await settle();
+          return el.value;
+        },
+
+        /** The real form claims the DOM tier cannot reach without internals. */
+        formData(name) {
+          return new FormData(form).getAll(name).map(String);
+        },
+        formElements() {
+          return [...form.elements].map(node => node.id || node.tagName.toLowerCase());
+        },
+        async reset() {
+          form.reset();
+          await settle();
+          return document.getElementById('subject').value;
+        },
+        labelCount() {
+          const labels = document.getElementById('subject').labels;
+          return labels ? labels.length : -1;
+        },
+
+        unmount() { slot.innerHTML = ''; },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

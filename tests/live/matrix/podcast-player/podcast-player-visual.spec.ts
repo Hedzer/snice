@@ -22,7 +22,7 @@ import { test, expect, type Page } from '@playwright/test';
 import {
   openChartStage, mount, collectChartProblems, type ChartProbe,
 } from '../chart-visual-support';
-import { capture, contrast, sameColor } from '../pixel-probe';
+import { capture, contrast, sameColor, type RGB } from '../pixel-probe';
 
 const FIXTURE = '/tests/live/fixtures/podcast-player/matrix.html';
 
@@ -246,11 +246,20 @@ test.describe('snice-podcast-player visual matrix (layer 2: painted pixels)', ()
 
   test('the episode title is readable against the player surface', async () => {
     await mount(page, { id: 'px-title', episodes: 'none', duration: 3600, currentTime: 0 });
+    // Walk the title's glyph row every 2px and read its DARKEST pixel as the
+    // ink: a single probe 4px into the box lands on a stroke only by
+    // font-metric luck, and WebKit (deviceScaleFactor 2 here) antialiases the
+    // edge it does land on until the contrast floor dips below readable.
     const probe = `(host) => { const t = host.shadowRoot.querySelector('.podcast-title');
       const b = t.getBoundingClientRect();
-      return [{ x: b.left + 4, y: b.top + b.height / 2 },
-              { x: b.left + 4, y: b.bottom + 8 }]; }`;
-    const [ink, ground] = await capture(page, '#subject', 'podcast-title-contrast', probe);
+      const points = [];
+      for (let x = 1; x < b.width; x += 2) points.push({ x: b.left + x, y: b.top + b.height / 2 });
+      points.push({ x: b.left + 4, y: b.bottom + 8 });
+      return points; }`;
+    const pixels = await capture(page, '#subject', 'podcast-title-contrast', probe);
+    const ground = pixels[pixels.length - 1] as RGB;
+    const ink = (pixels.slice(0, -1) as RGB[]).reduce((a, p) =>
+      p[0] + p[1] + p[2] < a[0] + a[1] + a[2] ? p : a);
     // Antialiased glyph edges rarely hit full ink, so this is a floor on "can a
     // human read it", not a WCAG certification of the text colour.
     expect(contrast(ink, ground)).toBeGreaterThan(1.6);

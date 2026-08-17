@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-radio visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the ring, the dot and
+             the block card are judged against the surface the component was
+             designed for rather than the browser's default white;
+           - #stage is a fixed, known WIDTH, because `variant="block"` is
+             documented as a full-width card and "the suffix is pushed to the
+             far end" is only a claim if the card has a known far end;
+           - #stage has no padding, no background of its own and nothing overlaps
+             it, so a failed elementFromPoint probe is the radio occluding
+             itself, never the fixture occluding it;
+           - the stage is taller than any control, so an element screenshot of
+             it also captures the page surface behind the component. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+        min-height: 240px;
+      }
+      /* The default variant is inline; a row keeps several of them measurable
+         side by side without changing what any one of them is. */
+      #stage.row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/radio/snice-radio.ts';
+
+      const LABEL = 'Pro plan';
+      const DESCRIPTION = 'Everything in Basic, plus priority support';
+      const SUFFIX = '$29/mo';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      function build(combo, index) {
+        const el = document.createElement('snice-radio');
+        /* Property channel, exactly as the DOM matrix mounts it. `checked` is
+           documented as live, property-only state, so a property mount is the
+           only honest way to reach the checked paint. */
+        el.variant = combo.variant ?? 'default';
+        el.size = combo.size ?? 'medium';
+        el.name = combo.name ?? `matrix-${index ?? 0}`;
+        el.value = combo.value ?? 'v';
+        if (combo.label !== false) el.label = combo.label ?? LABEL;
+        if (combo.description) el.description = DESCRIPTION;
+        if (combo.required) el.required = true;
+        if (combo.disabled) el.disabled = true;
+        if (combo.loading) el.loading = true;
+        if (combo.invalid) el.invalid = true;
+        if (combo.suffix) {
+          const suffix = document.createElement('span');
+          suffix.slot = 'suffix';
+          suffix.className = 'suffix';
+          suffix.textContent = SUFFIX;
+          el.appendChild(suffix);
+        }
+        return el;
+      }
+
+      const api = {
+        LABEL,
+        DESCRIPTION,
+        SUFFIX,
+
+        async mount(combo) {
+          api.unmount();
+          stage.classList.toggle('row', combo.variant !== 'block');
+          const el = build(combo, 0);
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.checked) el.checked = true;
+          await settle();
+          current = el;
+          return { variant: el.variant, size: el.size, checked: el.checked };
+        },
+
+        /** Every value of one axis on screen at once, under one layout. */
+        async mountRow(combos) {
+          api.unmount();
+          stage.classList.toggle('row', combos.every(c => c.variant !== 'block'));
+          const els = combos.map((combo, i) => {
+            const el = build(combo, i);
+            el.id = `subject-${i}`;
+            stage.appendChild(el);
+            return el;
+          });
+          await Promise.all(els.map(el => el.ready));
+          for (const [i, combo] of combos.entries()) {
+            if (combo.checked) els[i].checked = true;
+          }
+          await settle();
+          current = els[0] ?? null;
+          return els.length;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.classList.remove('row');
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

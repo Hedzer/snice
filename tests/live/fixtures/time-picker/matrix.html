@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-time-picker visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase.
+           - the body owns the viewport so a full-page pixel probe has something
+             to screenshot, and so the dropdown's viewport-flip logic has a real
+             viewport to reason about;
+           - the control is mounted inside a real <form> with a submit button
+             and a fieldset, because the documented form behaviour (FormData,
+             reset, inherited disabledness, the first-legend exception) is
+             exactly the half happy-dom cannot run;
+           - #curtain is an opaque z-index 2147483647 panel a test can raise
+             over the dropdown: the dropdown is a `popover`, so it lives in the
+             top layer and must paint over it. */
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 120px;
+        left: 120px;
+        width: 320px;
+      }
+      #stage fieldset { border: 0; margin: 0; padding: 0; }
+      #curtain {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: #7c2d12;
+        z-index: 2147483647;
+      }
+      #curtain[data-shown] { display: block; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <div id="curtain"></div>
+
+    <script type="module">
+      import '/packages/components/src/time-picker/snice-time-picker.ts';
+
+      const stage = document.getElementById('stage');
+      const curtain = document.getElementById('curtain');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo inside a real form.
+         *
+         * Every documented property has an attribute and the stylesheet keys
+         * off them, so everything crosses the ATTRIBUTE channel — including
+         * `value`, which the docs describe as the reset DEFAULT rather than the
+         * live value.
+         */
+        async mount(combo) {
+          api.unmount();
+          const form = document.createElement('form');
+          form.id = 'host-form';
+          form.addEventListener('submit', e => e.preventDefault());
+          const fieldset = document.createElement('fieldset');
+          const el = document.createElement('snice-time-picker');
+          el.id = 'subject';
+          const attrs = {
+            value: combo.value, format: combo.format, step: combo.step,
+            'min-time': combo.minTime, 'max-time': combo.maxTime,
+            variant: combo.variant, size: combo.size, label: combo.label,
+            'helper-text': combo.helperText, 'error-text': combo.errorText,
+            placeholder: combo.placeholder, name: combo.name ?? 'when',
+          };
+          for (const [name, value] of Object.entries(attrs)) {
+            if (value !== undefined && value !== null && value !== '') {
+              el.setAttribute(name, String(value));
+            }
+          }
+          for (const flag of ['show-seconds', 'disabled', 'readonly', 'loading',
+            'clearable', 'required', 'invalid']) {
+            const key = flag.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+            if (combo[key]) el.setAttribute(flag, '');
+          }
+          fieldset.appendChild(el);
+          form.appendChild(fieldset);
+          const submit = document.createElement('button');
+          submit.type = 'submit';
+          submit.textContent = 'go';
+          form.appendChild(submit);
+          stage.appendChild(form);
+          await el.ready;
+          await settle();
+          return api.geometry();
+        },
+
+        /** Open the dropdown the documented way: by clicking the clock toggle. */
+        async open() {
+          const sr = document.getElementById('subject').shadowRoot;
+          sr.querySelector('[part="toggle"]').click();
+          await settle();
+          return api.geometry();
+        },
+
+        async close() {
+          document.getElementById('subject').close();
+          await settle();
+          return api.geometry();
+        },
+
+        async pressKey(key) {
+          const sr = document.getElementById('subject').shadowRoot;
+          const input = sr.querySelector('[part="input"]');
+          input.focus();
+          input.dispatchEvent(new KeyboardEvent('keydown', {
+            key, bubbles: true, composed: true, cancelable: true,
+          }));
+          await settle();
+          return api.geometry();
+        },
+
+        /** Click one option in a selector column, by its rendered label. */
+        async pick(unit, label) {
+          const sr = document.getElementById('subject').shadowRoot;
+          const column = sr.querySelector(`[part="${unit}"]`);
+          const option = [...column.querySelectorAll('.selector-item')]
+            .find(item => item.textContent.trim() === label);
+          option.click();
+          await settle();
+          return api.geometry();
+        },
+
+        /** Every box a layer-1 assertion needs, in viewport coordinates. */
+        geometry() {
+          const el = document.getElementById('subject');
+          if (!el) return { mounted: false };
+          const sr = el.shadowRoot;
+          const box = (selector) => {
+            const node = sr.querySelector(selector);
+            if (!node) return null;
+            const r = node.getBoundingClientRect();
+            const cs = getComputedStyle(node);
+            return { x: r.x, y: r.y, width: r.width, height: r.height,
+              top: r.top, left: r.left, right: r.right, bottom: r.bottom,
+              display: cs.display, visibility: cs.visibility, overflowY: cs.overflowY };
+          };
+          const column = (unit) => {
+            const node = sr.querySelector(`[part="${unit}"]`);
+            if (!node) return null;
+            const items = [...node.querySelectorAll('.selector-item')];
+            return {
+              ...box(`[part="${unit}"]`),
+              items: items.map(item => {
+                const r = item.getBoundingClientRect();
+                return { label: item.textContent.trim(), disabled: item.disabled,
+                  selected: item.classList.contains('selector-item--selected'),
+                  x: r.x, y: r.y, width: r.width, height: r.height,
+                  top: r.top, left: r.left, right: r.right, bottom: r.bottom };
+              }),
+            };
+          };
+          return {
+            mounted: true,
+            host: (({ x, y, width, height, top, left, right, bottom }) =>
+              ({ x, y, width, height, top, left, right, bottom }))(el.getBoundingClientRect()),
+            base: box('[part="base"]'),
+            label: box('[part="label"]'),
+            input: box('[part="input"]'),
+            toggle: box('[part="toggle"]'),
+            clear: box('[part="clear"]'),
+            spinner: box('[part="spinner"]'),
+            dropdown: box('[part="dropdown"]'),
+            helper: box('[part="helper-text"]'),
+            error: box('[part="error-text"]'),
+            hours: column('hours'),
+            minutes: column('minutes'),
+            seconds: column('seconds'),
+            period: column('period'),
+            open: !sr.querySelector('[part="dropdown"]').hasAttribute('hidden'),
+            value: el.value,
+            inputValue: sr.querySelector('[part="input"]')?.value ?? null,
+          };
+        },
+
+        formEntries(name = 'when') {
+          return [...new FormData(document.getElementById('host-form')).getAll(name)]
+            .map(String);
+        },
+        formElementsHasSubject() {
+          return [...document.getElementById('host-form').elements]
+            .includes(document.getElementById('subject'));
+        },
+        formValidity() {
+          const form = document.getElementById('host-form');
+          const el = document.getElementById('subject');
+          return { form: form.checkValidity(), control: el.checkValidity(),
+            willValidate: el.willValidate, message: el.validationMessage };
+        },
+        async reset() {
+          document.getElementById('host-form').reset();
+          await settle();
+          return api.geometry();
+        },
+        async setFieldsetDisabled(disabled) {
+          const fieldset = document.querySelector('#host-form fieldset');
+          if (disabled) fieldset.setAttribute('disabled', '');
+          else fieldset.removeAttribute('disabled');
+          await settle();
+          return api.geometry();
+        },
+
+        /** Where the documented `focus()` lands, by part name. */
+        async focusHost() {
+          const el = document.getElementById('subject');
+          el.focus();
+          await settle();
+          return el.shadowRoot.activeElement?.getAttribute('part') ?? null;
+        },
+
+        /** Click an external <label for>, the documented activation path. */
+        async clickExternalLabel() {
+          const label = document.getElementById('external-label');
+          label.click();
+          await settle();
+          const el = document.getElementById('subject');
+          return {
+            focused: el.shadowRoot.activeElement?.getAttribute('part') ?? null,
+            open: !el.shadowRoot.querySelector('[part="dropdown"]').hasAttribute('hidden'),
+          };
+        },
+
+        addExternalLabel(text) {
+          const label = document.createElement('label');
+          label.id = 'external-label';
+          label.setAttribute('for', 'subject');
+          label.textContent = text;
+          stage.prepend(label);
+        },
+
+        showCurtain() { curtain.setAttribute('data-shown', ''); },
+        hideCurtain() { curtain.removeAttribute('data-shown'); },
+
+        /** Move the stage so the dropdown has to flip above the input. */
+        setStageTop(top) { stage.style.top = `${top}px`; },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.style.top = '120px';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

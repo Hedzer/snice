@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-approval-flow visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the theme's own surface, so the four status colours are judged
+             against the background they were designed for;
+           - #stage is a fixed 900px box with room for a horizontal chain, so
+             "the connector reaches from one avatar to the next" and "the last
+             step has no trailing line" are facts about the component;
+           - nothing overlaps the stage. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 900px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      /* THE DOCUMENTED IMPORT, and only it. */
+      import '/packages/components/src/approval-flow/snice-approval-flow.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `orientation` crosses the ATTRIBUTE channel;
+         * `steps` has no attribute form. `currentStep` is assigned as a
+         * PROPERTY here — the documented `current-step` ATTRIBUTE is inert in
+         * a browser (MATRIX-approval-flow-2), and layer 1 is measuring layout,
+         * not that defect. `mountAuthored` below is the same mount written the
+         * way the docs write it, and is used only by the pinned case.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-approval-flow');
+          el.id = 'subject';
+          if (combo.orientation) el.setAttribute('orientation', combo.orientation);
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.currentStep) el.currentStep = combo.currentStep;
+          el.steps = combo.steps ?? [];
+          await settle();
+          return { steps: el.shadowRoot.querySelectorAll('.step').length };
+        },
+
+        /** The doc's own markup: every knob as an attribute. */
+        async mountAuthored(combo) {
+          api.unmount();
+          const el = document.createElement('snice-approval-flow');
+          el.id = 'subject';
+          if (combo.orientation) el.setAttribute('orientation', combo.orientation);
+          if (combo.currentStep) el.setAttribute('current-step', combo.currentStep);
+          stage.appendChild(el);
+          await el.ready;
+          el.steps = combo.steps ?? [];
+          await settle();
+          return {
+            currentStep: el.currentStep,
+            currentNodes: el.shadowRoot.querySelectorAll('.step--current').length,
+            actions: el.shadowRoot.querySelectorAll('.step__actions').length,
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

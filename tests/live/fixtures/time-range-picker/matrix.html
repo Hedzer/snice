@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-time-range-picker visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+
+           - #stage fixes the WIDTH and a generous HEIGHT, so "the slot column
+             scrolls inside its container" is a fact about the component and
+             not about a stage that happened to be too short;
+           - the stage paints a colour the component never paints, so a slot
+             that failed to fill its row is measurable as exposed magenta;
+           - nothing overlaps the stage, so a failed elementFromPoint probe is
+             the picker occluding its own slot, never the fixture doing it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 360px;
+        background: #ff00ff;
+      }
+      #stage > snice-time-range-picker { display: block; width: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/time-range-picker/snice-time-range-picker.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-time-range-picker');
+          el.id = 'subject';
+          el.setAttribute('start-time', combo.startTime ?? '08:00');
+          el.setAttribute('end-time', combo.endTime ?? '12:00');
+          el.setAttribute('granularity', String(combo.granularity ?? 60));
+          el.setAttribute('format', combo.format ?? '24h');
+          if (combo.value) el.setAttribute('value', combo.value);
+          if (combo.disabledRanges) el.setAttribute('disabled-ranges', combo.disabledRanges);
+          if (combo.multiple) el.setAttribute('multiple', '');
+          if (combo.readonly) el.setAttribute('readonly', '');
+          if (combo.disabled) el.setAttribute('disabled', '');
+
+          stage.appendChild(el);
+          await el.ready;
+          document.documentElement.dataset.theme = combo.theme ?? 'light';
+          await settle();
+
+          current = { el, combo };
+          return {
+            slots: el.shadowRoot.querySelectorAll('.slot').length,
+            ranges: el.getSelectedRanges(),
+          };
+        },
+
+        /**
+         * A REAL pointer drag: mousedown on one slot, mousemove across the
+         * others at their own painted coordinates, mouseup. The component
+         * resolves the intermediate moves with `shadowRoot.elementFromPoint`,
+         * which is the one part of the gesture the DOM tier has to stub — here
+         * the browser answers it for itself.
+         */
+        async dragSlots(from, to) {
+          const el = current?.el;
+          if (!el) return null;
+          const slots = [...el.shadowRoot.querySelectorAll('.slot')];
+          const centre = (node) => {
+            const b = node.getBoundingClientRect();
+            return { x: b.left + b.width / 2, y: b.top + b.height / 2 };
+          };
+
+          const start = centre(slots[from]);
+          slots[from].dispatchEvent(new MouseEvent('mousedown', {
+            bubbles: true, composed: true, cancelable: true,
+            clientX: start.x, clientY: start.y,
+          }));
+          await settle();
+
+          const step = to >= from ? 1 : -1;
+          for (let i = from + step; step > 0 ? i <= to : i >= to; i += step) {
+            const point = centre(slots[i]);
+            document.dispatchEvent(new MouseEvent('mousemove', {
+              bubbles: true, clientX: point.x, clientY: point.y,
+            }));
+            await nextFrame();
+          }
+
+          document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+          await settle();
+          return { ranges: el.getSelectedRanges(), value: el.value };
+        },
+
+        /** Leave a drag in progress so the drag-highlight can be measured. */
+        async beginDrag(from, over) {
+          const el = current?.el;
+          if (!el) return null;
+          const slots = [...el.shadowRoot.querySelectorAll('.slot')];
+          const centre = (node) => {
+            const b = node.getBoundingClientRect();
+            return { x: b.left + b.width / 2, y: b.top + b.height / 2 };
+          };
+          const start = centre(slots[from]);
+          slots[from].dispatchEvent(new MouseEvent('mousedown', {
+            bubbles: true, composed: true, cancelable: true,
+            clientX: start.x, clientY: start.y,
+          }));
+          await settle();
+          const point = centre(slots[over]);
+          document.dispatchEvent(new MouseEvent('mousemove', {
+            bubbles: true, clientX: point.x, clientY: point.y,
+          }));
+          await settle();
+          return el.shadowRoot.querySelectorAll('.slot--dragging').length;
+        },
+
+        async endDrag() {
+          document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+          await settle();
+        },
+
+        unmount() {
+          if (current) current.el.remove();
+          current = null;
+          stage.innerHTML = '';
+          document.documentElement.dataset.theme = 'light';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

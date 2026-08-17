@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-skeleton visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the placeholder's
+             fill is judged against the surface it was designed for rather than
+             the browser's default white;
+           - #stage is a fixed, known box, so "the bone fills its container" and
+             "three bones are stacked by `spacing`" are facts about the
+             component and not about the viewport;
+           - #stage has no padding, background or overlapping content, so a
+             failed elementFromPoint probe is the skeleton occluding itself,
+             never the fixture occluding it;
+           - the stage is taller than any combo needs, so a capture of it always
+             contains surface to compare a painted bone against. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 480px;
+        min-height: 420px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/skeleton/snice-skeleton.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /* The documented defaults (docs/ai/components/skeleton.md). Only
+         NON-DEFAULT values are assigned, exactly as the DOM matrix does: the
+         documented rule (docs/ai/properties.md) is that untouched defaults are
+         not reflected, so assigning one would fabricate a styling hook the
+         framework never produces and hide whatever the default really paints. */
+      const DEFAULTS = {
+        variant: 'text', animation: 'wave', count: 1,
+        width: '', height: '', spacing: '8px',
+      };
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-skeleton');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+
+          for (const key of Object.keys(DEFAULTS)) {
+            if (combo[key] === undefined || combo[key] === DEFAULTS[key]) continue;
+            el[key] = combo[key];
+          }
+          await settle();
+          current = { el, combo };
+          return { mounted: true, count: combo.count ?? 1 };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

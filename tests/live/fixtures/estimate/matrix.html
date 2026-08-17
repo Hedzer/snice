@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-estimate visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the theme's own surface, so the accept/decline buttons, the status
+             badge and the optional-line toggle are judged against the
+             background they were designed for;
+           - #stage is a fixed 780px column — a quote's width — so "the accept
+             button is the primary one" and "the toggle sits in its own column"
+             are facts about the component;
+           - nothing overlaps the stage, so a failed elementFromPoint probe is
+             the estimate occluding itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 780px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      /* THE DOCUMENTED IMPORT, and only it:
+         `import 'snice/components/estimate/snice-estimate'`. */
+      import '/packages/components/src/estimate/snice-estimate.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `status`, `variant`, `currency`, `notes`, `terms`,
+         * `show-qr` and `qr-position` cross the ATTRIBUTE channel; `from`,
+         * `to`, `items` are documented "JS only". `taxRate`/`discount` are
+         * assigned as properties so this page measures LAYOUT rather than the
+         * attribute-coercion defect the DOM tier already pins.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-estimate');
+          el.id = 'subject';
+          if (combo.status) el.setAttribute('status', combo.status);
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          if (combo.currency) el.setAttribute('currency', combo.currency);
+          if (combo.notes) el.setAttribute('notes', combo.notes);
+          if (combo.terms) el.setAttribute('terms', combo.terms);
+          if (combo.showQr) {
+            el.setAttribute('show-qr', '');
+            el.setAttribute('qr-data', 'https://example.com/est/1');
+            if (combo.qrPosition) el.setAttribute('qr-position', combo.qrPosition);
+          }
+          stage.appendChild(el);
+          await el.ready;
+          el.estimateNumber = combo.estimateNumber ?? 'EST-001';
+          el.date = '2026-01-15';
+          if (combo.expiryDate) el.expiryDate = combo.expiryDate;
+          el.taxRate = combo.taxRate ?? 0;
+          el.discount = combo.discount ?? 0;
+          el.from = combo.from ?? { name: 'Studio', address: '100 Design Blvd', email: 'hi@studio.com' };
+          el.to = combo.to ?? { name: 'Client Inc', address: '200 Innovation Way' };
+          el.items = combo.items ?? [];
+          await settle();
+          const sr = el.shadowRoot;
+          return {
+            rows: sr.querySelectorAll('tbody tr').length,
+            options: sr.querySelectorAll('.est__option').length,
+          };
+        },
+
+        /** Click the first optional line's toggle and settle. */
+        async toggleOptional() {
+          const el = document.getElementById('subject');
+          const toggle = el.shadowRoot.querySelector('.est__toggle');
+          if (!toggle) return false;
+          toggle.click();
+          await settle();
+          return true;
+        },
+
+        /**
+         * The doc's own markup, attribute for attribute:
+         *
+         *   <snice-estimate estimate-number="EST-001" date="2026-01-15"
+         *                   status="sent" tax-rate="10">
+         *
+         * Used only by the pinned MATRIX-estimate-1 case, which is about what
+         * that markup does — or fails to do — in a browser.
+         */
+        async mountAuthored() {
+          api.unmount();
+          stage.innerHTML = `
+            <snice-estimate id="subject" estimate-number="EST-001" date="2026-01-15"
+                            expiry-date="2026-02-15" status="sent" tax-rate="10"
+                            currency="$"></snice-estimate>`;
+          const el = document.getElementById('subject');
+          await el.ready;
+          el.items = [
+            { description: 'Brand Identity', quantity: 1, unitPrice: 5000 },
+            { description: 'Website Build', quantity: 2, unitPrice: 3000 },
+          ];
+          await settle();
+          const sr = el.shadowRoot;
+          const taxRow = sr.querySelector('[part~="tax-row"]');
+          return {
+            estimateNumber: el.estimateNumber,
+            expiryDate: el.expiryDate,
+            taxRate: el.taxRate,
+            title: sr.querySelector('[part~="title"]').textContent.replace(/\s+/g, ' ').trim(),
+            expiryPainted: !!sr.querySelector('[part~="expiry"]'),
+            taxRowPainted: !!taxRow && taxRow.getClientRects().length > 0,
+            total: sr.querySelector('[part~="total"]').textContent.replace(/\s+/g, ' ').trim(),
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

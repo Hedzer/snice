@@ -43,8 +43,13 @@
       const ICON_TEXT = '★';
       /* A 2x2 opaque PNG. An inline data URI keeps the avatar path off the
          network: a 404 would silently swap the <img> for a fallback and the
-         "avatar has a real box" assertion would measure the wrong thing. */
-      const AVATAR_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAF0lEQVQI12P8z8DAwMDAxMDAwMDAAAANHQEDlmZ8ogAAAABJRU5ErkJggg==';
+         "avatar has a real box" assertion would measure the wrong thing.
+         The first URI tried here was TRUNCATED (no IEND chunk): Chromium and
+         WebKit decode it anyway while Firefox refuses it outright and WebKit
+         never paints a usable raster — an engine-lenience lottery that made
+         the avatar pixel read the chip's own fill. This one carries every
+         chunk a PNG owes the decoder. */
+      const AVATAR_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAE0lEQVR4AWP8z8DwnwEImBigAAAfFwICgH3ifwAAAABJRU5ErkJggg==';
 
       const stage = document.getElementById('stage');
       let current = null;

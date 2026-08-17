@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-paint visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+
+           - #stage is a fixed, known box, so "the toolbar and the canvas share
+             the height" is a fact about the component's own layout;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             component occluding its own control;
+           - the stage paints a colour the component never uses, so an
+             unpainted canvas shows through as that colour. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 720px;
+        height: 460px;
+        background: #ff00ff; /* a colour the component never paints */
+      }
+      #stage > snice-paint { display: block; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/paint/snice-paint.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      /** Saved drawings, mirroring tests/matrix/paint/paint-support.ts. */
+      const STROKES = {
+        none: [],
+        line: [{
+          id: 's1', tool: 'pen', color: '#ef4444', width: 10,
+          points: [{ x: 80, y: 80 }, { x: 240, y: 200 }, { x: 400, y: 100 }],
+          timestamp: 1700000000000,
+        }],
+        many: [
+          { id: 's1', tool: 'pen', color: '#ef4444', width: 10,
+            points: [{ x: 60, y: 60 }, { x: 180, y: 160 }], timestamp: 1700000000000 },
+          { id: 's2', tool: 'pen', color: '#10b981', width: 10,
+            points: [{ x: 60, y: 220 }, { x: 180, y: 300 }], timestamp: 1700000000001 },
+        ],
+      };
+
+      const api = {
+        /**
+         * combo: { controls, color, strokeWidth, minStrokeWidth, maxStrokeWidth,
+         *          backgroundColor, colorSelects, disabled, strokes, slotted }
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-paint');
+          el.id = 'subject';
+          for (const [key, attribute] of Object.entries({
+            controls: 'controls', color: 'color', strokeWidth: 'stroke-width',
+            minStrokeWidth: 'min-stroke-width', maxStrokeWidth: 'max-stroke-width',
+            backgroundColor: 'background-color', colorSelects: 'color-selects',
+          })) {
+            if (combo[key] !== undefined) el.setAttribute(attribute, String(combo[key]));
+          }
+          if (combo.disabled) el.setAttribute('disabled', '');
+          if (combo.slotted) {
+            el.innerHTML = '<button slot="tools" id="mine" style="padding:4px 8px">custom</button>';
+          }
+
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+
+          if (combo.strokes && combo.strokes !== 'none') {
+            el.setStrokes(STROKES[combo.strokes]);
+            await settle();
+          }
+
+          current = { el, combo };
+          const canvas = el.shadowRoot.querySelector('canvas');
+          return {
+            strokes: el.getStrokes().length,
+            buffer: { width: canvas.width, height: canvas.height },
+          };
+        },
+
+        /** Paint one stroke with real pointer events, in canvas CSS pixels.
+            `canvas.width` is the BACKING store — devicePixelRatio-scaled — so
+            scaling through it would halve every coordinate wherever the tier
+            runs at dpr 2 (WebKit). The component maps client coordinates back
+            to CSS-canvas pixels itself; feeding it `box.left + px` is the
+            identity it expects. */
+        async draw(points) {
+          const el = current?.el;
+          if (!el) return 0;
+          const canvas = el.shadowRoot.querySelector('canvas');
+          const box = canvas.getBoundingClientRect();
+          const at = ([px, py]) => ({
+            clientX: box.left + px,
+            clientY: box.top + py,
+          });
+          const fire = (type, p) => canvas.dispatchEvent(new PointerEvent(type, {
+            pointerId: 1, isPrimary: true, bubbles: true, composed: true, cancelable: true, ...at(p),
+          }));
+          fire('pointerdown', points[0]);
+          for (const p of points.slice(1)) fire('pointermove', p);
+          fire('pointerup', points[points.length - 1]);
+          await settle();
+          return el.getStrokes().length;
+        },
+
+        /** Click a toolbar control by its documented title. */
+        async press(title) {
+          const el = current?.el;
+          if (!el) return false;
+          const button = [...el.shadowRoot.querySelectorAll('button.paint-btn')]
+            .find(b => b.getAttribute('title') === title);
+          if (!button) return false;
+          button.click();
+          await settle();
+          return true;
+        },
+
+        /** Read the pixel the component itself painted, in canvas CSS pixels.
+            The backing store is devicePixelRatio-scaled, so the read has to
+            land on the same coordinate space the gestures use. */
+        pixel(x, y) {
+          const el = current?.el;
+          if (!el) return null;
+          const canvas = el.shadowRoot.querySelector('canvas');
+          const box = canvas.getBoundingClientRect();
+          const bx = Math.round((x / box.width) * canvas.width);
+          const by = Math.round((y / box.height) * canvas.height);
+          const data = canvas.getContext('2d').getImageData(bx, by, 1, 1).data;
+          return [data[0], data[1], data[2], data[3]];
+        },
+
+        unmount() {
+          if (current) current.el.remove();
+          current = null;
+          stage.innerHTML = '';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

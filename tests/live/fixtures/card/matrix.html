@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-card visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - #stage is a fixed 360px column so a card that fails to fill its
+             container is a number rather than whitespace;
+           - a block BEFORE and AFTER the card: "the card is in the content
+             flow and takes space" becomes a measurement, and an empty header
+             band shows up as the follower moving down;
+           - the page uses the theme's plain surface: `elevated` casts a shadow
+             onto it, `bordered` draws a rule against it, `flat` does neither,
+             and an accent paints along the top edge — none of which is
+             measurable without a known ground;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             card covering its own content. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface, #fff);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 360px;
+      }
+      .flow-block {
+        height: 20px;
+        background: var(--snice-color-surface-secondary, #eee);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="flow-block" id="before"></div>
+      <div id="slot"></div>
+      <div class="flow-block" id="after"></div>
+    </div>
+
+    <script type="module">
+      import '/packages/components/src/card/snice-card.ts';
+
+      const slot = document.getElementById('slot');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const BODY = '<p id="body-text">A short description of the thing on this card.</p>';
+      const HEADER = '<div slot="header" id="header-text">Card title</div>';
+      const FOOTER = '<div slot="footer"><button id="footer-button">Act now</button></div>';
+      const IMAGE = '<img slot="image" id="card-image" alt="preview"'
+        + ' src="data:image/svg+xml;utf8,'
+        + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="120"><rect width="300" height="120" fill="#3355bb"/></svg>')
+        + '" style="width:100%;display:block">';
+
+      const api = {
+        /**
+         * Everything crosses the ATTRIBUTE channel — the documented HTML form,
+         * and the channel `:host([variant=…])` and `:host([accent=…])` read.
+         * The slotted children are delivered WITH the element, as a page does.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-card');
+          el.id = 'subject';
+          el.setAttribute('variant', combo.variant ?? 'elevated');
+          el.setAttribute('size', combo.size ?? 'medium');
+          if (combo.clickable) el.setAttribute('clickable', '');
+          if (combo.selected) el.setAttribute('selected', '');
+          if (combo.disabled) el.setAttribute('disabled', '');
+          if (combo.accent) el.setAttribute('accent', combo.accent);
+          el.innerHTML = [
+            combo.image ? IMAGE : '',
+            combo.header ? HEADER : '',
+            BODY,
+            combo.footer ? FOOTER : '',
+          ].join('');
+          slot.appendChild(el);
+          await el.ready;
+          await settle();
+          return { mounted: true };
+        },
+
+        /**
+         * Append a header AFTER the card is connected — the `slotchange` path
+         * happy-dom cannot emit, and therefore the one claim the DOM tier had
+         * to hand over to this one.
+         */
+        async addHeader() {
+          const el = document.getElementById('subject');
+          const header = document.createElement('div');
+          header.setAttribute('slot', 'header');
+          header.id = 'header-text';
+          header.textContent = 'Card title';
+          el.insertBefore(header, el.firstChild);
+          await settle();
+          await settle();
+          return true;
+        },
+
+        /**
+         * Where the pointer should be put for a given horizontal fraction of
+         * the card. The tilt is driven by REAL pointer movement (the spec uses
+         * page.mouse), because a synthetic PointerEvent dispatched at the card
+         * would not carry the delegated listener's own currentTarget.
+         */
+        pointFor(fraction) {
+          const box = document.getElementById('subject').getBoundingClientRect();
+          return { x: box.x + box.width * fraction, y: box.y + box.height / 2 };
+        },
+
+        /** What the tilt resolved to after the pointer moved. */
+        readTilt() {
+          const card = document.getElementById('subject').shadowRoot.querySelector('.card');
+          return {
+            mx: card.style.getPropertyValue('--card-mx'),
+            my: card.style.getPropertyValue('--card-my'),
+            transform: getComputedStyle(card).transform,
+          };
+        },
+
+        unmount() { slot.innerHTML = ''; },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

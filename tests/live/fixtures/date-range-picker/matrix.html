@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-date-range-picker visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the popup's own
+             background is judged against the surface it will really open over;
+           - #stage is positioned at a KNOWN offset near the top of the
+             viewport, so an anchored popup has room to open BELOW its input —
+             the documented resting geometry — and the stage can be moved to
+             the far edges to force the viewport clamp;
+           - #rival is a high-z-index block overlapping where the popup opens.
+             A top-layer (`popover="manual"`) popup paints OVER it; a plainly
+             positioned one does not;
+           - #stage itself has no background, padding, font-size override, or
+             overlapping siblings, so a failed elementFromPoint probe is the
+             picker occluding itself, never the fixture. The root font size
+             stays at the browser default because the size axis is specified
+             in rem;
+           - #probe resolves a theme token to the colour a browser actually
+             computes, so a token assertion compares rgb() to rgb(). */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+        min-height: 200vh; /* so the page can be scrolled under an open popup */
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 480px;
+      }
+      #stage.bottom-right { top: auto; left: auto; right: 8px; bottom: 8px; }
+      #stage.top-right { top: 8px; left: auto; right: 8px; }
+      #rival {
+        position: absolute;
+        top: 90px;
+        left: 20px;
+        width: 560px;
+        height: 420px;
+        background: var(--snice-color-danger, rgb(220 38 38));
+        z-index: 9999;
+        display: none;
+      }
+      #rival.on { display: block; }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="rival"></div>
+    <form id="host-form">
+      <div id="stage"></div>
+    </form>
+    <span id="probe"></span>
+
+    <script type="module">
+      /* snice-button is imported because the documented calendar footer's
+         Today control is a labeled snice-button ("Calendar days, presets,
+         month/year navigation, and Today are labeled buttons"). */
+      import '/packages/components/src/button/snice-button.ts';
+      import '/packages/components/src/date-range-picker/snice-date-range-picker.ts';
+
+      const stage = document.getElementById('stage');
+      const rival = document.getElementById('rival');
+      const form = document.getElementById('host-form');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /**
+       * Presets the fixture owns. Functions, Dates, and component instances
+       * cannot cross the Playwright boundary, so a combo names a preset by
+       * key and the fixture supplies the real DateRangePreset objects.
+       */
+      const PRESETS = {
+        march: { label: 'March 2026', start: new Date(2026, 2, 1), end: new Date(2026, 2, 31) },
+        marchStrings: { label: 'March (strings)', start: '2026-03-01', end: '2026-03-31' },
+      };
+
+      const ATTRS = {
+        size: 'size', variant: 'variant', format: 'format', label: 'label',
+        helperText: 'helper-text', errorText: 'error-text', min: 'min', max: 'max',
+        name: 'name', placeholder: 'placeholder', columns: 'columns',
+        firstDayOfWeek: 'first-day-of-week',
+      };
+      const FLAGS = {
+        disabled: 'disabled', readonly: 'readonly', loading: 'loading',
+        required: 'required', invalid: 'invalid', clearable: 'clearable',
+      };
+
+      const api = {
+        /**
+         * Mount one combo through the documented ATTRIBUTE channel, so this
+         * tier proves the converters really reach the paint. `start`/`end`
+         * are the authored `start`/`end` attributes (the reset defaults that
+         * seed the live range while pristine). `presets` names fixture-owned
+         * preset keys; `live` optionally assigns live endpoints afterwards;
+         * `corner` moves the stage to force the viewport clamp; `rival`
+         * shows the occlusion rival.
+         */
+        async mount(combo = {}) {
+          api.unmount();
+          stage.className = combo.corner ?? '';
+          rival.classList.toggle('on', !!combo.rival);
+
+          const el = document.createElement('snice-date-range-picker');
+          el.id = 'subject';
+          for (const [key, attr] of Object.entries(ATTRS)) {
+            if (combo[key] === undefined || combo[key] === '') continue;
+            el.setAttribute(attr, String(combo[key]));
+          }
+          for (const [key, attr] of Object.entries(FLAGS)) {
+            if (combo[key]) el.setAttribute(attr, '');
+          }
+          if (combo.start) el.setAttribute('start', combo.start);
+          if (combo.end) el.setAttribute('end', combo.end);
+
+          stage.appendChild(el);
+          await el.ready;
+          if (Array.isArray(combo.presets)) {
+            el.presets = combo.presets.map(key => PRESETS[key]).filter(Boolean);
+          }
+          if (combo.live) {
+            if (combo.live.start !== undefined) el.start = combo.live.start;
+            if (combo.live.end !== undefined) el.end = combo.live.end;
+          }
+          await settle();
+          // `current` must be set before the open() below: api.open() reads
+          // current?.el, and a mount-time open used to find nothing mounted.
+          current = { el, combo };
+          if (combo.open) await api.open({ quiet: true });
+          return {
+            mounted: true,
+            start: el.start,
+            end: el.end,
+            reflected: {
+              size: el.getAttribute('size'),
+              variant: el.getAttribute('variant'),
+              disabled: el.hasAttribute('disabled'),
+            },
+          };
+        },
+
+        /**
+         * Open the calendar and let it position itself. Returns whether the
+         * panel is actually shown. Waits out the 150ms open transition so a
+         * computed-style probe reads the settled paint, not a frame of it.
+         */
+        async open(options = {}) {
+          const el = current?.el;
+          if (!el) return false;
+          const seen = options.quiet ? null : api.capture(['daterange-open']);
+          el.open();
+          await settle();
+          await new Promise(resolve => setTimeout(resolve, 220));
+          seen?.stop();
+          return !!el.shadowRoot.querySelector('.calendar:not([hidden])');
+        },
+
+        async close() {
+          current?.el.close();
+          await settle();
+        },
+
+        /** Escape from the range input — the documented key path. */
+        async escape() {
+          const el = current?.el;
+          if (!el) return false;
+          el.shadowRoot.querySelector('.input')
+            .dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true }));
+          await settle();
+          return !el.shadowRoot.querySelector('.calendar:not([hidden])');
+        },
+
+        /**
+         * Anchor the open calendar's view on a month without leaving a
+         * selection, so day-click journeys are independent of today.
+         */
+        async viewOn(iso) {
+          const el = current?.el;
+          if (!el) return;
+          el.start = iso;
+          await settle();
+          el.clear();
+          await settle();
+        },
+
+        /** Click a day cell through the component's own calendar handler. */
+        async clickDay(iso) {
+          const el = current?.el;
+          if (!el) return false;
+          const day = el.shadowRoot.querySelector(`[data-date="${iso}"]`);
+          if (!day) return false;
+          day.click();
+          await settle();
+          return true;
+        },
+
+        /** Click a preset button by index. */
+        async clickPreset(index) {
+          const el = current?.el;
+          if (!el) return false;
+          const button = el.shadowRoot.querySelector(`[data-preset="${index}"]`);
+          if (!button) return false;
+          button.click();
+          await settle();
+          return true;
+        },
+
+        /** Click the clear affordance. */
+        async clickClear() {
+          const el = current?.el;
+          if (!el) return false;
+          const button = el.shadowRoot.querySelector('.clear-button');
+          if (!button) return false;
+          button.click();
+          await settle();
+          return true;
+        },
+
+        /**
+         * Event capture: functions cannot cross the boundary, so the fixture
+         * records the documented events itself and hands back a
+         * serializable log (types in order, plus the range-relevant detail
+         * fields).
+         */
+        capture(types) {
+          const el = current.el;
+          const log = [];
+          const listeners = types.map(type => {
+            const listener = (event) => {
+              const detail = event.detail ?? {};
+              log.push({
+                type,
+                start: detail.start,
+                end: detail.end,
+                startIso: detail.startIso,
+                endIso: detail.endIso,
+                label: detail.label,
+              });
+            };
+            el.addEventListener(type, listener);
+            return { type, listener };
+          });
+          return {
+            log,
+            stop: () => listeners.forEach(({ type, listener }) =>
+              el.removeEventListener(type, listener)),
+          };
+        },
+
+        /** The real submission, run by the real engine. */
+        formEntries() {
+          return [...new FormData(form).entries()];
+        },
+
+        /** Real constraint validation, run by the real engine. */
+        validity() {
+          const el = current.el;
+          const validity = el.validity ?? {};
+          return {
+            valid: validity.valid,
+            valueMissing: validity.valueMissing,
+            badInput: validity.badInput,
+            rangeUnderflow: validity.rangeUnderflow,
+            rangeOverflow: validity.rangeOverflow,
+            customError: validity.customError,
+            willValidate: el.willValidate,
+            inFormElements: [...form.elements].includes(el),
+          };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        /** Scroll the page, which the docs say the popup must respond to. */
+        async scrollPage(y) {
+          window.scrollTo(0, y);
+          await settle();
+          return window.scrollY;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.className = '';
+          rival.classList.remove('on');
+          window.scrollTo(0, 0);
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

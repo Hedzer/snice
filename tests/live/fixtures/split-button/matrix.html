@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-split-button visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase.
+           - the body owns the viewport so a full-page pixel probe has something
+             to screenshot;
+           - the stage sits well away from every edge, so "the menu opens BELOW
+             the button" is never a story about running out of room;
+           - #curtain is a deliberately hostile sibling: a fully opaque,
+             z-index 2147483647 panel painted exactly where the menu will open.
+             The menu is a `popover`, so it belongs to the top layer and must
+             paint OVER the curtain; anything that merely has a big z-index
+             would disappear behind it. It stays hidden unless a test asks for
+             it, so it can never affect an ordinary measurement. */
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 120px;
+        left: 120px;
+        width: 420px;
+      }
+      #curtain {
+        display: none;
+        position: fixed;
+        top: 120px;
+        left: 0;
+        width: 100%;
+        height: 600px;
+        background: #7c2d12;
+        z-index: 2147483647;
+      }
+      #curtain[data-shown] { display: block; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <div id="curtain"></div>
+
+    <script type="module">
+      import '/packages/components/src/split-button/snice-split-button.ts';
+
+      const stage = document.getElementById('stage');
+      const curtain = document.getElementById('curtain');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const ACTIONS = [
+        { value: 'draft', label: 'Save as Draft' },
+        { value: 'template', label: 'Save as Template' },
+        { value: 'discard', label: 'Discard', disabled: true },
+      ];
+
+      const api = {
+        /**
+         * Mount one combo.
+         *
+         * `variant`, `size`, `outline`, `pill`, `disabled`, `loading` and
+         * `icon-placement` all cross the ATTRIBUTE channel — the stylesheet
+         * keys off the classes the component derives from them. `actions` is
+         * documented as "set via JS property (array), not child elements", so
+         * it crosses the property channel; `label` is given as slotted content
+         * in one case because the docs say slotted content wins.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-split-button');
+          el.id = 'subject';
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          if (combo.size) el.setAttribute('size', combo.size);
+          if (combo.outline) el.setAttribute('outline', '');
+          if (combo.pill) el.setAttribute('pill', '');
+          if (combo.disabled) el.setAttribute('disabled', '');
+          if (combo.loading) el.setAttribute('loading', '');
+          if (combo.icon) el.setAttribute('icon', combo.icon);
+          if (combo.iconPlacement) el.setAttribute('icon-placement', combo.iconPlacement);
+          if (combo.slottedLabel) el.textContent = combo.slottedLabel;
+          else el.setAttribute('label', combo.label ?? 'Save');
+          stage.appendChild(el);
+          await el.ready;
+          el.actions = combo.actions ?? ACTIONS;
+          await settle();
+          return api.state();
+        },
+
+        /** Open the menu the documented way: by clicking the toggle. */
+        async open() {
+          const sr = document.getElementById('subject').shadowRoot;
+          sr.querySelector('[part="toggle"]').click();
+          await settle();
+          return api.state();
+        },
+
+        async clickPrimary() {
+          document.getElementById('subject').shadowRoot.querySelector('[part="primary"]').click();
+          await settle();
+        },
+
+        async pressEscape() {
+          document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+          await settle();
+          return api.state();
+        },
+
+        showCurtain() { curtain.setAttribute('data-shown', ''); },
+        hideCurtain() { curtain.removeAttribute('data-shown'); },
+
+        state() {
+          const el = document.getElementById('subject');
+          if (!el) return { mounted: false };
+          const sr = el.shadowRoot;
+          const menu = sr.querySelector('[part="menu"]');
+          return {
+            mounted: true,
+            open: menu?.classList.contains('split-button__menu--open') ?? false,
+            actions: sr.querySelectorAll('[part="action"]').length,
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-popover visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase.
+
+           - `#under` is a full-viewport block in a flat, saturated colour. A
+             popover is defined by floating ABOVE the page: "click-triggered,
+             interactive panel anchored to a trigger element", `position:
+             fixed; z-index: 9999`, opened through the platform `popover`
+             API. That claim is a hit-test and a pixel against this block, and
+             nothing else on the page is positioned, so a failed hit-test is
+             always the component;
+
+           - the popover host itself is absolutely positioned at a coordinate
+             the combo names. Twelve placements are twelve different arithmetic
+             results relative to the trigger, and the component clamps a panel
+             that would leave the viewport — so a trigger parked in the middle
+             is the only way to measure the un-clamped placement, and a trigger
+             parked at an edge is the only way to measure the clamp;
+
+           - the trigger is a plain button with no margin, so the anchor
+             rectangle every expectation is built on is the trigger and not the
+             fixture's spacing. */
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #under {
+        position: fixed;
+        inset: 0;
+        background: rgb(15 118 110);
+        color: #fff;
+        padding: 12px;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      #stage { position: relative; height: 100%; }
+      #stage snice-popover { position: absolute; }
+      #stage button[slot="trigger"] { margin: 0; padding: 6px 14px; font: inherit; }
+      .panel-body { margin: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="under">
+      The page the popover floats above.
+      The page the popover floats above.
+      The page the popover floats above.
+      The page the popover floats above.
+      The page the popover floats above.
+      The page the popover floats above.
+      The page the popover floats above.
+      The page the popover floats above.
+      The page the popover floats above.
+      The page the popover floats above.
+      The page the popover floats above.
+      The page the popover floats above.
+    </div>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/popover/snice-popover.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      /** Panel bodies of three deliberately different intrinsic widths. */
+      const BODIES = {
+        short: '<p class="panel-body">Filter</p>',
+        medium: '<p class="panel-body">Sort the results by the column you picked.</p>',
+        long: '<p class="panel-body">'
+          + 'A panel body long enough to run past the documented 28rem maximum width '
+          + 'so that the clamp has something to clamp, and long enough again that a '
+          + 'panel which ignored the maximum would be obvious at a glance.'
+          + '</p>',
+      };
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+
+      /** The panel fades in over --snice-transition-fast; 200ms clears it. */
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 200));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `placement` and `distance` cross the ATTRIBUTE
+         * channel exactly as the doc's own example writes them, the trigger
+         * goes in the documented `trigger` slot, and the panel body in the
+         * default slot. `open` is driven with `show()` — the documented
+         * method — rather than the attribute, so the real open path runs.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-popover');
+          el.id = 'subject';
+          if (combo.placement) el.setAttribute('placement', combo.placement);
+          if (combo.distance !== undefined) el.setAttribute('distance', String(combo.distance));
+          if (combo.noOutsideDismiss) el.setAttribute('no-outside-dismiss', '');
+          if (combo.noEscapeDismiss) el.setAttribute('no-escape-dismiss', '');
+
+          const trigger = document.createElement('button');
+          trigger.slot = 'trigger';
+          trigger.id = 'trigger';
+          trigger.textContent = 'Open';
+          el.appendChild(trigger);
+
+          const body = document.createElement('div');
+          body.id = 'body';
+          body.innerHTML = BODIES[combo.body ?? 'medium'];
+          el.appendChild(body);
+
+          // The anchor coordinate. Defaults to the middle of the viewport, so
+          // the un-clamped placement arithmetic is what gets measured.
+          el.style.left = (combo.anchorX ?? '50%');
+          el.style.top = (combo.anchorY ?? '50%');
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+
+          if (combo.open !== false) {
+            el.show();
+            await settle();
+          }
+
+          current = el;
+          return { open: el.open };
+        },
+
+        async press(key) {
+          current.dispatchEvent(new KeyboardEvent('keydown', {
+            key, bubbles: true, composed: true, cancelable: true,
+          }));
+          await settle();
+          return { open: current.open, activeId: document.activeElement?.id ?? '' };
+        },
+
+        /** Click the page behind the panel — the documented outside dismiss. */
+        async clickOutside() {
+          document.getElementById('under').dispatchEvent(
+            new MouseEvent('pointerdown', { bubbles: true, composed: true }));
+          document.getElementById('under').dispatchEvent(
+            new MouseEvent('click', { bubbles: true, composed: true }));
+          await settle();
+          return { open: current.open };
+        },
+
+        async clickTrigger() {
+          current.querySelector('[slot="trigger"]').click();
+          await settle();
+          return { open: current.open };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

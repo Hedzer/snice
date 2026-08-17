@@ -98,9 +98,6 @@ async function visualProblems(combo: Combo): Promise<string[]> {
       say(`the ring renders at ${hostBox.width}x${hostBox.height}`);
       return problems;
     }
-    if (Math.abs(hostBox.width - hostBox.height) > 2) {
-      say(`the ring is ${hostBox.width.toFixed(0)}x${hostBox.height.toFixed(0)} — not square`);
-    }
 
     const svg = sr.querySelector('svg');
     if (!svg) { say('no svg drawn'); return problems; }
@@ -108,6 +105,15 @@ async function visualProblems(combo: Combo): Promise<string[]> {
     if (svgBox.width <= 0 || svgBox.height <= 0) {
       say(`the svg renders at ${svgBox.width}x${svgBox.height}`);
       return problems;
+    }
+    // Squareness is a claim about the RING — the drawn circle, i.e. the square
+    // rem-sized SVG (docs/ai/components/progress-ring.md: `size`; the component
+    // stylesheet draws 3/5/8rem squares). The host is an inline-block and
+    // legitimately carries the page font's line strut below the svg, so the
+    // host box may be a few pixels taller without the ring being any less
+    // square. The svg-fills-the-host check below still pins the host's width.
+    if (Math.abs(svgBox.width - svgBox.height) > 2) {
+      say(`the ring is ${svgBox.width.toFixed(0)}x${svgBox.height.toFixed(0)} — not square`);
     }
     if (Math.abs(svgBox.width - hostBox.width) > 2) {
       say(`the svg (${svgBox.width.toFixed(0)}px) does not fill the host`
@@ -288,13 +294,19 @@ test.describe('progress-ring visual matrix: marquee pixels', () => {
       .toBeGreaterThan(coverage[25]);
     expect(coverage[100], `100% covered ${coverage[100]}/24, 50% covered ${coverage[50]}/24`)
       .toBeGreaterThan(coverage[50]);
-    // …and the coverage is the value, not merely monotonic. ±2 probes of 24
-    // absorbs the round line cap and anti-aliasing at the arc's ends.
+    // …and the coverage is the value, not merely monotonic — plus the fill's
+    // round line caps (component CSS), which overhang each end of the arc by
+    // thickness/2. This marquee mounts thickness 8 on a 36-unit viewBox with
+    // the band on r=14, so each probe step is 2π·14/24 ≈ 3.67 units and the
+    // two caps add 2·4/3.67 ≈ 2.2 probes to any non-empty arc. ±1 probe then
+    // absorbs only anti-aliasing and probe-phase rounding.
+    const probeSpacing = (2 * Math.PI * 14) / 24;
+    const capSlack = (2 * (8 / 2)) / probeSpacing;
     for (const value of [25, 50, 100]) {
-      const expected = (value / 100) * 24;
+      const expected = Math.min(24, (value / 100) * 24 + capSlack);
       expect(Math.abs(coverage[value] - expected),
-        `value=${value} painted ${coverage[value]}/24 probes, expected about ${expected}`)
-        .toBeLessThanOrEqual(2);
+        `value=${value} painted ${coverage[value]}/24 probes, expected about ${expected.toFixed(1)}`)
+        .toBeLessThanOrEqual(1);
     }
   });
 

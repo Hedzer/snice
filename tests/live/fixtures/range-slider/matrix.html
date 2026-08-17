@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-range-slider visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase.
+           - the body owns the viewport so a full-page pixel probe has something
+             to screenshot;
+           - the stage is a known 400x400 box: a horizontal slider is measured
+             against a 400px track and a vertical one against a 400px column, so
+             "the thumb sits at 30% of the track" is arithmetic, not a guess;
+           - the slider is mounted inside a real <form> with a submit button and
+             a fieldset the tests can disable, because the documented form
+             lifecycle (FormData, reset, disabled fieldsets) is exactly the half
+             happy-dom cannot run — a real engine is the point of this tier. */
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 400px;
+        height: 400px;
+      }
+      #stage fieldset { border: 0; margin: 0; padding: 0; }
+      snice-range-slider { display: block; width: 400px; }
+      snice-range-slider[orientation="vertical"] { height: 400px; width: auto; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/range-slider/snice-range-slider.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo inside a real form.
+         *
+         * Every documented property has an attribute, and the presentation
+         * rules key off them, so everything crosses the ATTRIBUTE channel —
+         * including `value-low`/`value-high`, which the docs describe as the
+         * authored DEFAULTS rather than the live endpoints.
+         */
+        async mount(combo) {
+          api.unmount();
+          const form = document.createElement('form');
+          form.id = 'host-form';
+          const fieldset = document.createElement('fieldset');
+          const el = document.createElement('snice-range-slider');
+          el.id = 'subject';
+          for (const [name, value] of Object.entries({
+            min: combo.min, max: combo.max, step: combo.step,
+            'value-low': combo.valueLow, 'value-high': combo.valueHigh,
+            orientation: combo.orientation, name: combo.name ?? 'span',
+          })) {
+            if (value !== undefined && value !== null) el.setAttribute(name, String(value));
+          }
+          if (combo.disabled) el.setAttribute('disabled', '');
+          if (combo.showTooltip) el.setAttribute('show-tooltip', '');
+          if (combo.showLabels) el.setAttribute('show-labels', '');
+          fieldset.appendChild(el);
+          form.appendChild(fieldset);
+          const submit = document.createElement('button');
+          submit.type = 'submit';
+          submit.textContent = 'go';
+          form.appendChild(submit);
+          form.addEventListener('submit', e => e.preventDefault());
+          stage.appendChild(form);
+          await el.ready;
+          await settle();
+          return api.geometry();
+        },
+
+        /** Every box a layer-1 assertion needs, in viewport coordinates. */
+        geometry() {
+          const el = document.getElementById('subject');
+          if (!el) return { mounted: false };
+          const sr = el.shadowRoot;
+          const box = (selector) => {
+            const node = sr.querySelector(selector);
+            if (!node) return null;
+            const r = node.getBoundingClientRect();
+            return { x: r.x, y: r.y, width: r.width, height: r.height,
+              top: r.top, left: r.left, right: r.right, bottom: r.bottom };
+          };
+          const tooltipText = (selector) =>
+            sr.querySelector(`${selector} .range-slider__tooltip`)?.textContent ?? null;
+          return {
+            mounted: true,
+            host: (({ x, y, width, height, top, left, right, bottom }) =>
+              ({ x, y, width, height, top, left, right, bottom }))(el.getBoundingClientRect()),
+            track: box('[part="track"]'),
+            rangeBar: box('[part="range"]'),
+            low: box('[part="thumb-low"]'),
+            high: box('[part="thumb-high"]'),
+            labelMin: box('[part="label-min"]'),
+            labelMax: box('[part="label-max"]'),
+            lowTooltip: tooltipText('[part="thumb-low"]'),
+            highTooltip: tooltipText('[part="thumb-high"]'),
+            valueLow: el.valueLow,
+            valueHigh: el.valueHigh,
+          };
+        },
+
+        /** Drive a thumb with a real key event, through real focus. */
+        async pressKey(thumb, key) {
+          const sr = document.getElementById('subject').shadowRoot;
+          const node = sr.querySelector(`[part="thumb-${thumb}"]`);
+          node.focus();
+          node.dispatchEvent(new KeyboardEvent('keydown', {
+            key, bubbles: true, composed: true, cancelable: true,
+          }));
+          await settle();
+          return api.geometry();
+        },
+
+        /** Press the track at a fraction of its length, as a pointer would. */
+        async pressTrack(fraction) {
+          const sr = document.getElementById('subject').shadowRoot;
+          const track = sr.querySelector('[part="track"]');
+          const r = track.getBoundingClientRect();
+          track.dispatchEvent(new MouseEvent('mousedown', {
+            bubbles: true, composed: true, cancelable: true,
+            clientX: r.left + r.width * fraction,
+            clientY: r.top + r.height / 2,
+          }));
+          document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+          await settle();
+          return api.geometry();
+        },
+
+        /** The REAL FormData a real engine builds for this form. */
+        formEntries(name = 'span') {
+          const form = document.getElementById('host-form');
+          return [...new FormData(form).getAll(name)].map(String);
+        },
+
+        formElementsHasSubject() {
+          const form = document.getElementById('host-form');
+          return [...form.elements].includes(document.getElementById('subject'));
+        },
+
+        async reset() {
+          document.getElementById('host-form').reset();
+          await settle();
+          return api.geometry();
+        },
+
+        /** A real <fieldset disabled>, which only a real engine propagates. */
+        async setFieldsetDisabled(disabled) {
+          const fieldset = document.querySelector('#host-form fieldset');
+          if (disabled) fieldset.setAttribute('disabled', '');
+          else fieldset.removeAttribute('disabled');
+          await settle();
+          return api.geometry();
+        },
+
+        formValidity() {
+          const form = document.getElementById('host-form');
+          const el = document.getElementById('subject');
+          return { form: form.checkValidity(), control: el.checkValidity(),
+            willValidate: el.willValidate, message: el.validationMessage };
+        },
+
+        async setCustomValidity(message) {
+          document.getElementById('subject').setCustomValidity(message);
+          await settle();
+        },
+
+        /** Focus the low thumb through the documented host method. */
+        async focusHost() {
+          document.getElementById('subject').focus();
+          await settle();
+          const sr = document.getElementById('subject').shadowRoot;
+          return sr.activeElement?.getAttribute('part') ?? null;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

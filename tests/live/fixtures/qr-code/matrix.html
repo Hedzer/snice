@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-qr-code visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the QR's own
+             documented white container background is a paint fact against a
+             known backdrop;
+           - #stage is a fixed, known box wider than the largest documented
+             `size` combo, so `max-width: 100%` on the canvas never engages
+             and a size assertion is about the component, not the viewport;
+           - #stage has NO background, padding, font-size override, or
+             overlapping siblings, so a failed elementFromPoint probe is the
+             QR occluding itself, never the fixture;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it. The QR's own colours are documented literals
+             (`#000000` / `#ffffff`), so pixels are compared to the parsed
+             literals while any theme-facing claim goes through this probe. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 480px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/qr-code/snice-qr-code.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      /**
+       * The component defers its quiet-zone/overlay pass to the frame AFTER
+       * the QR library draws ("without this, the first render comes out
+       * blank"), so a settled QR means TWO frame boundaries past the
+       * property write, then one more for the overlay's own paint.
+       */
+      async function settle() {
+        await nextFrame();
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 60));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo through the PROPERTY channel — `size` and `margin`
+         * are numbers, and the overlay arithmetic is the component's own, so
+         * the fixture only carries values and never re-implements anything.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-qr-code');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+
+          el.value = combo.value ?? 'https://example.com';
+          if (combo.size !== undefined) el.size = combo.size;
+          if (combo.errorCorrectionLevel) el.errorCorrectionLevel = combo.errorCorrectionLevel;
+          if (combo.renderMode) el.renderMode = combo.renderMode;
+          if (combo.dotStyle) el.dotStyle = combo.dotStyle;
+          if (combo.margin !== undefined) el.margin = combo.margin;
+          if (combo.fgColor) el.fgColor = combo.fgColor;
+          if (combo.bgColor) el.bgColor = combo.bgColor;
+          if (combo.centerText !== undefined) el.centerText = combo.centerText;
+          await settle();
+
+          current = el;
+          return {
+            value: el.value,
+            size: el.size,
+            renderMode: el.renderMode,
+            dotStyle: el.dotStyle,
+            margin: el.margin,
+          };
+        },
+
+        /** `value` / `size` after mount — the documented reactive properties. */
+        async setValue(value) {
+          current.value = value;
+          await settle();
+          return { value: current.value };
+        },
+        async setSize(size) {
+          current.size = size;
+          await settle();
+          return { size: current.size };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

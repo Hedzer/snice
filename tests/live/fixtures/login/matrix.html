@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-login visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a `card` variant's
+             own panel is judged against the surface it was designed for;
+           - #stage is a fixed, known box, so "the label sits above its input"
+             and "the options row spans the form" are facts about the
+             component and not about the viewport;
+           - #stage has NO padding, background or overlapping content of its
+             own, so a failed elementFromPoint probe is the form occluding
+             itself, never the fixture occluding it;
+           - the button's transition is disabled, because a screenshot taken
+             mid-transition reads a colour nobody ever ships. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 480px;
+      }
+      snice-login snice-button::part(button) { transition: none !important; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/login/snice-login.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /** The ten documented slots, so projection can be measured for real. */
+      const SLOTS = [
+        'before-header', 'after-header', 'subtitle', 'before-form', 'after-form',
+        'form-top', 'between-fields', 'before-submit', 'after-submit', 'footer',
+      ];
+
+      const api = {
+        /**
+         * Mount one combo. `variant`, `size`, `show-remember-me`,
+         * `show-forgot-password` and `action-text` are documented as
+         * attributes and cross that channel before connection; the alert
+         * properties are documented JS-only.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-login');
+          el.id = 'subject';
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          if (combo.size) el.setAttribute('size', combo.size);
+          if (combo.title !== undefined) el.setAttribute('title', combo.title);
+          if (combo.actionText) el.setAttribute('action-text', combo.actionText);
+          if (combo.disabled) el.setAttribute('disabled', '');
+          if (combo.loading) el.setAttribute('loading', '');
+
+          if (combo.slots) {
+            el.innerHTML = SLOTS
+              .map(name => `<div slot="${name}" id="in-${name}">${name}</div>`)
+              .join('');
+          }
+
+          stage.appendChild(el);
+          await el.ready;
+
+          if (combo.showRememberMe === false) el.showRememberMe = false;
+          if (combo.showForgotPassword === false) el.showForgotPassword = false;
+          if (combo.alertMessage) {
+            el.alertVariant = combo.alertVariant ?? 'error';
+            el.alertMessage = combo.alertMessage;
+          }
+          await settle();
+
+          const sr = el.shadowRoot;
+          return {
+            hasRemember: !!sr.querySelector('input[name="remember"]'),
+            hasForgot: !!sr.querySelector('.login__forgot'),
+            hasAlert: !!sr.querySelector('snice-alert'),
+            slots: SLOTS,
+          };
+        },
+
+        unmount() { stage.innerHTML = ''; },
+
+        get el() { return document.getElementById('subject'); },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

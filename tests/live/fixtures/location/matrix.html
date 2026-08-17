@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-location visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase.
+           - the body owns the whole viewport so a full-page pixel probe has
+             something to screenshot (the stage is absolutely positioned);
+           - the stage is a fixed 420px so the map's documented `width: 100%`
+             and the shrink-to-fit inline-block host are measured against a
+             known ground;
+           - nothing else paints on the page, so a hit-test miss is the
+             component occluding itself. */
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 420px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/location/snice-location.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle(withFrame) {
+        await nextFrame();
+        // An embedded map is a real iframe: give it a load event before any
+        // pixel is read, or the probe reads the frame's blank initial document.
+        if (withFrame) {
+          const frame = document.getElementById('subject')?.shadowRoot
+            ?.querySelector('[part="map"] iframe');
+          if (frame && frame.contentDocument?.readyState !== 'complete') {
+            await new Promise(resolve => {
+              frame.addEventListener('load', resolve, { once: true });
+              setTimeout(resolve, 2000);
+            });
+          }
+        }
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo.
+         *
+         * Everything crosses the ATTRIBUTE channel, because every documented
+         * property of this component has an attribute and the mode rules are
+         * `:host([mode=…])` selectors. `map-url` is always the local stub: the
+         * generated Google fallback is the DOM tier's business (it owns the
+         * URL-safety matrix) and this tier must never touch the network.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-location');
+          el.id = 'subject';
+          if (combo.mode) el.setAttribute('mode', combo.mode);
+          if (combo.name) el.setAttribute('name', combo.name);
+          if (combo.address) el.setAttribute('address', combo.address);
+          if (combo.city) el.setAttribute('city', combo.city);
+          if (combo.state) el.setAttribute('state', combo.state);
+          if (combo.latitude !== undefined) el.setAttribute('latitude', String(combo.latitude));
+          if (combo.longitude !== undefined) el.setAttribute('longitude', String(combo.longitude));
+          if (combo.showMap) {
+            el.setAttribute('show-map', '');
+            el.setAttribute('map-url', '/tests/live/fixtures/location/map-stub.html');
+          }
+          if (combo.clickable) el.setAttribute('clickable', '');
+          if (combo.slottedIcon) {
+            el.innerHTML = '<span slot="icon" id="slotted-icon">■</span>';
+          }
+          stage.appendChild(el);
+          await el.ready;
+          // `showIcon` defaults to TRUE, so a boolean ATTRIBUTE cannot express
+          // its false half — that one crosses the property channel, exactly as
+          // the DOM matrix does it.
+          if (combo.showIcon === false) el.showIcon = false;
+          await settle(!!combo.showMap);
+          const sr = el.shadowRoot;
+          return {
+            base: !!sr.querySelector('[part="base"]'),
+            icon: !!sr.querySelector('[part="icon"]'),
+            map: !!sr.querySelector('[part="map"]'),
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-key-value visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the editor's frame and
+             its inputs are judged against the surface they were designed for;
+           - #stage is a fixed-WIDTH box, because this component is
+             `width: 100%` and every "the key field and the value field share
+             the row" claim is a claim about how it divides a known width;
+           - #stage has NO background, padding, or overlapping siblings, so a
+             failed elementFromPoint probe is the editor occluding itself,
+             never the fixture occluding it;
+           - the editor lives inside a REAL <form> with a REAL <fieldset> and a
+             REAL <label>, because happy-dom implements none of FormData,
+             form.elements, form.reset() or fieldset disabledness for a
+             form-associated custom element. The DOM matrix observes those
+             through ElementInternals; this tier observes the real thing;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a token assertion compares rgb() to rgb()
+             instead of comparing a var() name to a paint. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 640px;
+      }
+      #stage form, #stage fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        display: block;
+        min-width: 0;
+      }
+      /* The label is real (so `labels` and `for` association are real) but must
+         not add layout above the editor that a geometry assertion would meet. */
+      #stage label {
+        position: absolute;
+        left: -9999px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/key-value/snice-key-value.ts';
+      import '/packages/components/src/key-value/snice-kv-pair.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        // The editor defers a validity pass to a microtask and renders on the
+        // next frame; two frames plus a task clears both.
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const ATTRIBUTES = {
+        value: 'value',
+        label: 'label',
+        autoExpand: 'auto-expand',
+        rows: 'rows',
+        showDescription: 'show-description',
+        keyPlaceholder: 'key-placeholder',
+        valuePlaceholder: 'value-placeholder',
+        disabled: 'disabled',
+        readonly: 'readonly',
+        required: 'required',
+        name: 'name',
+        variant: 'variant',
+        mode: 'mode',
+        showCopy: 'show-copy',
+      };
+
+      const api = {
+        /**
+         * Mount one combo the way a page author writes it: attributes and any
+         * `<snice-kv-pair>` children in place BEFORE connection, inside a real
+         * form. Booleans are authored as the explicit strings the documented
+         * converter has a rule for, because `auto-expand` defaults to TRUE and
+         * an absent attribute cannot express `false`.
+         */
+        async mount(combo) {
+          api.unmount();
+          const form = document.createElement('form');
+          form.id = 'host-form';
+          const fieldset = document.createElement('fieldset');
+          if (combo.fieldsetDisabled) fieldset.disabled = true;
+          const label = document.createElement('label');
+          label.htmlFor = 'subject';
+          label.textContent = 'Headers';
+
+          const el = document.createElement('snice-key-value');
+          el.id = 'subject';
+          el.setAttribute('name', combo.name ?? 'headers');
+          for (const [key, attribute] of Object.entries(ATTRIBUTES)) {
+            if (combo[key] === undefined || combo[key] === null) continue;
+            // Booleans are authored the way the docs spell them: BARE when
+            // true, ABSENT when false. The PRESENCE of the attribute is what
+            // both the platform and the stylesheet read — a form-associated
+            // custom element carrying `disabled` is disabled by the engine
+            // whatever string it holds, and the component's own
+            // `:host([readonly]) .kv__delete { display: none }` rule fires for
+            // `readonly="false"` exactly as it does for `readonly`. The one
+            // exception is `auto-expand`, whose documented default is TRUE and
+            // which therefore needs the explicit "false" spelling to be
+            // turned off.
+            const raw = combo[key];
+            const isBoolean = raw === true || raw === false
+              || raw === 'true' || raw === 'false';
+            if (isBoolean && attribute !== 'auto-expand') {
+              if (raw === true || raw === 'true') el.setAttribute(attribute, '');
+              continue;
+            }
+            el.setAttribute(attribute, String(raw));
+          }
+          if (combo.children) el.innerHTML = combo.children;
+
+          fieldset.appendChild(label);
+          fieldset.appendChild(el);
+          form.appendChild(fieldset);
+          stage.appendChild(form);
+
+          await el.ready;
+          if (combo.items) el.setItems(combo.items);
+          await settle();
+          current = { el, form, combo };
+          return {
+            value: el.value,
+            items: el.getItems(),
+            // The real form plumbing, which only a browser has.
+            inForm: el.form === form,
+            listed: [...form.elements].includes(el),
+            submitted: new FormData(form).get(el.getAttribute('name')),
+            labelled: el.labels ? [...el.labels].includes(label) : false,
+            willValidate: el.willValidate,
+            valid: el.checkValidity(),
+            validationMessage: el.validationMessage,
+          };
+        },
+
+        /** Click a delete button the way a pointer would, and report the events. */
+        async deleteRow(index) {
+          const el = current?.el;
+          if (!el) return null;
+          const events = [];
+          const listener = (event) => events.push({ type: event.type, detail: event.detail });
+          for (const type of ['kv-add', 'kv-remove', 'kv-change', 'kv-copy']) {
+            el.addEventListener(type, listener);
+          }
+          const buttons = [...el.shadowRoot.querySelectorAll('[part]')]
+            .filter(node => (node.getAttribute('part') ?? '').split(/\s+/).includes('delete-button'));
+          const button = buttons[index];
+          if (button) button.click();
+          await settle();
+          for (const type of ['kv-add', 'kv-remove', 'kv-change', 'kv-copy']) {
+            el.removeEventListener(type, listener);
+          }
+          return { clicked: !!button, events: events.map(e => e.type), items: el.getItems() };
+        },
+
+        /** Type into a row's field and report what the editor made of it. */
+        async type(field, index, text) {
+          const el = current?.el;
+          if (!el) return null;
+          const part = field === 'key' ? 'key-input'
+            : field === 'value' ? 'value-input' : 'description-input';
+          const inputs = [...el.shadowRoot.querySelectorAll('[part]')]
+            .filter(node => (node.getAttribute('part') ?? '').split(/\s+/).includes(part));
+          const input = inputs[index];
+          if (!input) return { typed: false };
+          input.focus();
+          input.value = text;
+          input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+          await settle();
+          return { typed: true, items: el.getItems(), rendered: input.value };
+        },
+
+        /** Reset the REAL form, which only a browser can do for a FACE. */
+        async reset() {
+          const { el, form } = current ?? {};
+          if (!form) return null;
+          const events = [];
+          const listener = (event) => events.push(event.type);
+          for (const type of ['kv-add', 'kv-remove', 'kv-change']) {
+            el.addEventListener(type, listener);
+          }
+          form.reset();
+          await settle();
+          for (const type of ['kv-add', 'kv-remove', 'kv-change']) {
+            el.removeEventListener(type, listener);
+          }
+          return { items: el.getItems(), value: el.value, events };
+        },
+
+        /** Mutate the slotted children, as a framework re-render would. */
+        async setChildren(html) {
+          const el = current?.el;
+          if (!el) return null;
+          el.innerHTML = html;
+          await settle();
+          return { items: el.getItems(), value: el.value };
+        },
+
+        setCustomValidity(message) {
+          current?.el.setCustomValidity(message);
+          return {
+            valid: current?.el.checkValidity(),
+            message: current?.el.validationMessage,
+          };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

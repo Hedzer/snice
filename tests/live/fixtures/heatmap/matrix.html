@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-heatmap visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+
+           - #stage fixes only the WIDTH, so the grid's own height is the
+             component's answer to `cell-size` / `cell-gap` and not the stage's;
+           - the stage paints a colour the component never paints, so a cell
+             that failed to fill its grid track is measurable as exposed
+             magenta rather than guessed at;
+           - nothing overlaps the stage, so a failed elementFromPoint probe is
+             the heatmap occluding its own cell, never the fixture doing it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 900px;
+        background: #ff00ff;
+      }
+      #stage > snice-heatmap { display: block; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/heatmap/snice-heatmap.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      function daysAgo(n) {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        d.setDate(d.getDate() - n);
+        return iso(d);
+      }
+
+      /* A ramp of five distinct values ending today. The five documented
+         intensity levels are the only thing the colour schemes differ in, so a
+         visual combo has to have one cell at each of them. */
+      const RAMP = [
+        { date: daysAgo(0), value: 12 },
+        { date: daysAgo(1), value: 9 },
+        { date: daysAgo(2), value: 6 },
+        { date: daysAgo(3), value: 3 },
+        { date: daysAgo(4), value: 1 },
+      ];
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-heatmap');
+          el.id = 'subject';
+          el.setAttribute('weeks', String(combo.weeks ?? 8));
+          if (combo.colorScheme) el.setAttribute('color-scheme', combo.colorScheme);
+          if (combo.cellSize !== undefined) el.setAttribute('cell-size', String(combo.cellSize));
+          if (combo.cellGap !== undefined) el.setAttribute('cell-gap', String(combo.cellGap));
+
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.showLabels === false) el.showLabels = false;
+          if (combo.showTooltip === false) el.showTooltip = false;
+          el.data = combo.data === 'none' ? [] : RAMP;
+          document.documentElement.dataset.theme = combo.theme ?? 'light';
+          await settle();
+
+          current = { el, combo };
+          return { cells: el.shadowRoot.querySelectorAll('.heatmap__cell').length };
+        },
+
+        /** Hover a cell with a REAL mouseenter at its own painted coordinates. */
+        async hover(index) {
+          const el = current?.el;
+          if (!el) return null;
+          const cell = el.shadowRoot.querySelectorAll('.heatmap__cell')[index];
+          const b = cell.getBoundingClientRect();
+          cell.dispatchEvent(new MouseEvent('mouseenter', {
+            bubbles: true, clientX: b.left + b.width / 2, clientY: b.top + b.height / 2,
+          }));
+          await settle();
+          const tip = el.shadowRoot.querySelector('[part~="tooltip"]');
+          return tip ? { text: tip.textContent.trim() } : null;
+        },
+
+        async unhover(index) {
+          const el = current?.el;
+          if (!el) return;
+          el.shadowRoot.querySelectorAll('.heatmap__cell')[index]
+            ?.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }));
+          await settle();
+        },
+
+        /** The resolved background of one cell at each intensity level. */
+        levelColours() {
+          const sr = current?.el.shadowRoot;
+          if (!sr) return null;
+          const out = {};
+          for (let level = 0; level <= 4; level++) {
+            const cell = sr.querySelector(`.heatmap__cell--level-${level}`);
+            out[level] = cell ? getComputedStyle(cell).backgroundColor : null;
+          }
+          return out;
+        },
+
+        unmount() {
+          if (current) current.el.remove();
+          current = null;
+          stage.innerHTML = '';
+          document.documentElement.dataset.theme = 'light';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

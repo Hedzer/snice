@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-grid visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase.
+
+           - `#stage` is EXACTLY 900px wide and never scrolls horizontally. The
+             grid's host is `width: 100%`, and `origin-left="false"` measures
+             from the HOST's own right edge, so every right-to-left expectation
+             in this suite is arithmetic on a number the fixture pins;
+
+           - items carry a solid, per-index colour and no padding, border or
+             margin of their own. The component sets their `width`/`height`
+             inline and moves them with `transform`, so an item that brought its
+             own box model would make "the painted box is the computed box"
+             untestable — and the flat fills are what let the marquee layer
+             probe a coordinate and say WHICH item landed there;
+
+           - the page ground is a colour no item uses, so a probe in a gap can
+             be told apart from a probe on a tile. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        width: 900px;
+        margin: 30px auto;
+      }
+      #stage snice-grid > * {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/grid/snice-grid.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      /**
+       * Flat, fully saturated fills, one per item index. The marquee layer
+       * probes a coordinate and matches the pixel against this table, so the
+       * colours must be exact and mutually distinguishable — no gradients, no
+       * alpha, nothing the compositor can blend into a neighbour.
+       */
+      const COLORS = [
+        [220, 38, 38], [37, 99, 235], [22, 163, 74], [217, 119, 6],
+        [147, 51, 234], [8, 145, 178], [190, 24, 93], [71, 85, 105],
+      ];
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+
+      /**
+       * The grid animates every item with `transition: transform
+       * var(--grid-transition-duration)`. Combos that measure a RESTING layout
+       * pass `transitionDuration: '0s'`; the ones that deliberately measure the
+       * animation pass their own and wait longer. 120ms clears the layout pass
+       * plus a ResizeObserver tick.
+       */
+      async function settle(ms = 120) {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, ms));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. Grid options cross the ATTRIBUTE channel in the
+         * hyphenated forms the doc's own examples use, and each item carries
+         * the documented `grid-col` / `grid-row` / `grid-colspan` /
+         * `grid-rowspan` / `name` / `hidden` item attributes.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-grid');
+          el.id = 'subject';
+          el.setAttribute('column-width', String(combo.columnWidth ?? 100));
+          el.setAttribute('row-height', String(combo.rowHeight ?? 70));
+          el.setAttribute('gap', combo.gap ?? '12px');
+          el.setAttribute('transition-duration', combo.transitionDuration ?? '0s');
+          if (combo.columns) el.setAttribute('columns', String(combo.columns));
+          if (combo.rows) el.setAttribute('rows', String(combo.rows));
+          if (combo.originLeft === false) el.setAttribute('origin-left', 'false');
+          if (combo.originTop === false) el.setAttribute('origin-top', 'false');
+          if (combo.stagger) el.setAttribute('stagger', String(combo.stagger));
+          if (combo.draggable) el.setAttribute('draggable', '');
+
+          (combo.items ?? []).forEach((spec, i) => {
+            const item = document.createElement('div');
+            item.setAttribute('grid-col', String(spec.col ?? 0));
+            item.setAttribute('grid-row', String(spec.row ?? 0));
+            if (spec.colspan) item.setAttribute('grid-colspan', String(spec.colspan));
+            if (spec.rowspan) item.setAttribute('grid-rowspan', String(spec.rowspan));
+            item.setAttribute('name', spec.name ?? `i${i}`);
+            if (spec.hidden) item.hidden = true;
+            item.dataset.index = String(i);
+            const [r, g, b] = COLORS[i % COLORS.length];
+            item.style.background = `rgb(${r} ${g} ${b})`;
+            item.textContent = spec.name ?? `i${i}`;
+            el.appendChild(item);
+          });
+
+          stage.appendChild(el);
+          await el.ready;
+          await settle(combo.settleMs ?? 120);
+
+          current = el;
+          return { items: el.getItemElements().length, layout: el.getLayout() };
+        },
+
+        /**
+         * Apply a saved layout through the documented persistence API — behind
+         * an APPEND BUDGET.
+         *
+         * `setLayout()` reorders the light-DOM children with `appendChild`,
+         * which fires `slotchange`, which the component answers by applying
+         * `pendingLayout` again. Nothing ever clears `pendingLayout`, so in a
+         * real browser (where `slotchange` is dispatched, unlike happy-dom)
+         * the call re-enters itself without bound and wedges the page — an
+         * unrecoverable hang that would take the whole spec file with it.
+         *
+         * So the host's own `appendChild` is counted and capped. Past the cap
+         * it throws, which breaks the re-entry inside the slotchange handler
+         * and lets the harness report the count instead of freezing. A healthy
+         * `setLayout()` appends exactly once per item and never reaches it.
+         */
+        async setLayout(layout, budget = 60) {
+          const el = current;
+          let appends = 0;
+          const native = el.appendChild.bind(el);
+          el.appendChild = (node) => {
+            if (++appends > budget) throw new Error('snice-matrix: append budget exhausted');
+            return native(node);
+          };
+          try {
+            el.setLayout(layout);
+          } catch { /* the budget breaker, or a real throw — the count tells which */ }
+          await settle();
+          delete el.appendChild;
+          return { appends, budget, layout: el.getLayout() };
+        },
+
+        async fit(name, col, row) {
+          const item = current?.querySelector(`[name="${name}"]`);
+          current?.fit(item, col, row);
+          await settle();
+          return current?.getLayout();
+        },
+
+        /** Expose the resolved gap in px, which every expectation depends on. */
+        gapPixels() {
+          const probe = document.createElement('div');
+          probe.style.width = current.getAttribute('gap');
+          probe.style.position = 'absolute';
+          stage.appendChild(probe);
+          const px = probe.getBoundingClientRect().width;
+          probe.remove();
+          return px;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+        COLORS,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

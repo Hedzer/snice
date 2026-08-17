@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-action-bar visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule below exists so that a measurement
+         means something:
+
+           - `#anchor` is the "relative parent" the component's own doc requires
+             ("Positioned, animated container for contextual actions within a
+             relative parent"). It has an EXACT, ROUND size so the eight
+             documented `position` values can be checked against known edges
+             rather than against whatever the page happened to lay out;
+
+           - `#under` fills that anchor with text. The bar is an absolutely
+             positioned overlay inside it, so "the open bar is on top of the
+             content" is a hit-test away — and "the closed bar is not clickable"
+             (`pointer-events: none` while closed) is the same hit-test with the
+             opposite expectation;
+
+           - the page sits on the theme's own surface, because the bar's own
+             surface, border and shadow are designed to read against that
+             ground and against nothing else;
+
+           - nothing else on the page is positioned, so a failed hit-test is
+             always the component and never the fixture. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #anchor {
+        position: relative;
+        width: 800px;
+        height: 480px;
+        margin: 60px auto;
+        overflow: visible;
+        background: var(--snice-color-surface);
+      }
+      #under {
+        position: absolute;
+        inset: 0;
+        padding: 20px;
+        font-size: 17px;
+        line-height: 1.7;
+        background: var(--snice-color-surface);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="anchor">
+      <div id="under">
+        Anchor content the action bar floats over.
+        Anchor content the action bar floats over.
+        Anchor content the action bar floats over.
+        Anchor content the action bar floats over.
+        Anchor content the action bar floats over.
+        Anchor content the action bar floats over.
+        Anchor content the action bar floats over.
+        Anchor content the action bar floats over.
+        Anchor content the action bar floats over.
+        Anchor content the action bar floats over.
+      </div>
+    </div>
+
+    <script type="module">
+      import '/packages/components/src/action-bar/snice-action-bar.ts';
+
+      const anchor = document.getElementById('anchor');
+      let current = null;
+
+      /** The documented action sets — "Action content (buttons, icons, etc.)". */
+      const CONTENT = {
+        three: '<button id="a">Edit</button><button id="b">Copy</button><button id="c">Delete</button>',
+        one: '<button id="a">Edit</button>',
+        many: '<button id="a">Edit</button><button id="b">Copy</button><button id="c">Delete</button>'
+          + '<button id="d">Share</button><button id="e">Pin</button><button id="f">Archive</button>',
+        mixed: '<button id="a">Edit</button><a id="b" href="#x">Open</a><span id="c">3 selected</span>',
+      };
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+
+      /**
+       * The bar arms itself on a 10ms timer (`@ready` sets the `ready`
+       * attribute, and `.action-bar` is `display: none` until it lands) and
+       * then transitions over `--snice-transition-medium` (250ms). Both must
+       * be over before anything is measured, or every combo reports a
+       * mid-animation box. 400ms clears the pair with room to spare.
+       */
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 400));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo through the documented channels: `position`, `size`,
+         * `variant` and `label` are documented as attributes, `no-animation`
+         * and `no-escape-dismiss` as their hyphenated attribute forms, and
+         * `open` is set LAST so the documented open transition actually runs
+         * from the closed state rather than being the element's initial paint.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-action-bar');
+          el.id = 'subject';
+          if (combo.position) el.setAttribute('position', combo.position);
+          if (combo.size) el.setAttribute('size', combo.size);
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          if (combo.label) el.setAttribute('label', combo.label);
+          if (combo.noAnimation) el.setAttribute('no-animation', '');
+          if (combo.noEscapeDismiss) el.setAttribute('no-escape-dismiss', '');
+          el.innerHTML = CONTENT[combo.content ?? 'three'];
+          anchor.appendChild(el);
+          await el.ready;
+          await settle();
+
+          if (combo.open) {
+            el.show();
+            await settle();
+          }
+
+          current = { el, combo };
+          return { open: el.open, children: el.children.length };
+        },
+
+        /** Drive the documented keyboard contract and report where focus went. */
+        async press(key) {
+          const el = current?.el;
+          if (!el) return null;
+          el.dispatchEvent(new KeyboardEvent('keydown', {
+            key, bubbles: true, composed: true, cancelable: true,
+          }));
+          await settle();
+          return { open: el.open, activeId: document.activeElement?.id ?? '' };
+        },
+
+        async focusChild(id) {
+          current?.el.querySelector('#' + id)?.focus();
+          await nextFrame();
+        },
+
+        unmount() {
+          current?.el.remove();
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

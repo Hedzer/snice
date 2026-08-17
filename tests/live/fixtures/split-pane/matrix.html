@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-split-pane visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - #stage has a FIXED, known width and height. A split pane is
+             `width: 100%; height: 100%`, so without a definite box "the primary
+             pane is 30% of the container" would be a fact about the viewport;
+           - #stage has no padding, border or background of its own and nothing
+             overlaps it, so a failed elementFromPoint probe is the split pane
+             occluding itself, never the fixture occluding it;
+           - the two slotted panes are FLAT COLOUR BLOCKS filling their pane, and
+             the two colours are far apart in RGB. That is what lets a
+             screenshot answer "which pane is painted at this x" — the question
+             the box model cannot be asked twice;
+           - the slotted panes declare no margin, so the pane box the component
+             sizes is the box that gets painted. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: rgb(255 255 255);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 800px;
+        height: 500px;
+      }
+      .pane {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        margin: 0;
+        overflow: hidden;
+      }
+      /* Primary: saturated blue. Secondary: saturated orange. */
+      .pane--primary { background: rgb(37 99 235); color: rgb(255 255 255); }
+      .pane--secondary { background: rgb(234 88 12); color: rgb(255 255 255); }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/split-pane/snice-split-pane.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        /**
+         * Mount one combo through the ATTRIBUTE channel — the form every
+         * documented example uses, and the only channel the
+         * `:host([direction="…"])` rules that size the divider can see.
+         *
+         * `channel: 'property'` mounts the same combo by property instead, so
+         * the standing finding (MATRIX-split-pane-3: the DEFAULT direction never
+         * reaches the attribute, leaving the divider with no width) can be
+         * measured in a real browser rather than argued about.
+         */
+        async mount(combo) {
+          api.unmount();
+          stage.style.width = `${combo.stageWidth ?? 800}px`;
+          stage.style.height = `${combo.stageHeight ?? 500}px`;
+
+          const el = document.createElement('snice-split-pane');
+          el.id = 'subject';
+
+          const attrs = {
+            direction: combo.direction,
+            'primary-size': combo.primarySize,
+            'min-primary-size': combo.minPrimarySize,
+            'min-secondary-size': combo.minSecondarySize,
+            'snap-size': combo.snapSize,
+          };
+          if (combo.channel !== 'property' && !combo.bare) {
+            for (const [name, value] of Object.entries(attrs)) {
+              if (value !== undefined && value !== null) el.setAttribute(name, String(value));
+            }
+            if (combo.disabled) el.setAttribute('disabled', '');
+          }
+
+          const primary = document.createElement('div');
+          primary.slot = 'primary';
+          primary.className = 'pane pane--primary';
+          primary.textContent = 'Primary';
+          const secondary = document.createElement('div');
+          secondary.slot = 'secondary';
+          secondary.className = 'pane pane--secondary';
+          secondary.textContent = 'Secondary';
+          el.append(primary, secondary);
+
+          stage.appendChild(el);
+          await el.ready;
+
+          if (combo.channel === 'property' && !combo.bare) {
+            if (combo.direction !== undefined) el.direction = combo.direction;
+            if (combo.primarySize !== undefined) el.primarySize = combo.primarySize;
+            if (combo.minPrimarySize !== undefined) el.minPrimarySize = combo.minPrimarySize;
+            if (combo.minSecondarySize !== undefined) el.minSecondarySize = combo.minSecondarySize;
+            if (combo.snapSize !== undefined) el.snapSize = combo.snapSize;
+            if (combo.disabled !== undefined) el.disabled = combo.disabled;
+          }
+
+          await settle();
+          return {
+            direction: el.direction,
+            primarySize: el.primarySize,
+            minPrimarySize: el.minPrimarySize,
+            minSecondarySize: el.minSecondarySize,
+            snapSize: el.snapSize,
+            disabled: el.disabled,
+          };
+        },
+
+        /** The divider's viewport-space centre — where a drag has to start. */
+        dividerCentre() {
+          const host = document.getElementById('subject');
+          const divider = host.shadowRoot.querySelector('[part~="divider"]');
+          const box = divider.getBoundingClientRect();
+          return { x: box.x + box.width / 2, y: box.y + box.height / 2, width: box.width, height: box.height };
+        },
+
+        primarySize() {
+          return document.getElementById('subject').primarySize;
+        },
+
+        /** Every `pane-resize` detail seen since `record()` was called. */
+        record() {
+          const host = document.getElementById('subject');
+          const seen = [];
+          host.addEventListener('pane-resize', (event) => seen.push(event.detail));
+          window.__resizes = seen;
+        },
+        resizes() {
+          return (window.__resizes ?? []).map(d => ({
+            primarySize: d.primarySize, secondarySize: d.secondarySize,
+          }));
+        },
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

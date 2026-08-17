@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-drawer visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page is taller than the viewport so the documented body scroll
+             lock can be judged by a REAL wheel gesture, not a style property;
+           - #beacon is a solid magenta block at a known spot that no left/small
+             panel covers, so "the backdrop covers the page" and "a closed
+             drawer blocks nothing" are pixel and hit-test facts;
+           - #inline-stage is the doc's own inline pattern — a flex row of a
+             fixed height with the drawer as its first child and real content
+             beside it;
+           - #push-stage is the doc's own push-content pattern — a relative
+             box holding a contained drawer and a snice-drawer-target;
+           - none of the stages paint anything, so a failed elementFromPoint
+             probe is the drawer's own doing. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 200vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      #beacon {
+        position: absolute;
+        top: 300px;
+        left: 900px;
+        width: 80px;
+        height: 80px;
+        background: #ff00ff;
+      }
+      #inline-stage {
+        display: flex;
+        height: 420px;
+        width: 100%;
+      }
+      #inline-stage main {
+        flex: 1;
+        padding: 1rem;
+      }
+      #push-stage {
+        position: relative;
+        width: 640px;
+        height: 320px;
+        overflow: hidden;
+      }
+      #push-stage snice-drawer-target {
+        display: block;
+        height: 100%;
+        background: var(--snice-color-surface-container);
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <div id="inline-stage"></div>
+    <div id="push-stage"></div>
+    <div id="beacon"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/drawer/snice-drawer.ts';
+      import '/packages/components/src/drawer/snice-drawer-target.ts';
+
+      const stage = document.getElementById('stage');
+      const inlineStage = document.getElementById('inline-stage');
+      const pushStage = document.getElementById('push-stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+      /** The panel/backdrop transition is 320ms; settle past it. */
+      async function settleLong() {
+        await settle();
+        await new Promise(resolve => setTimeout(resolve, 420));
+      }
+
+      const BOOLEAN_ATTRS = {
+        noHeader: 'no-header', noFooter: 'no-footer', noBackdrop: 'no-backdrop',
+        noBackdropDismiss: 'no-backdrop-dismiss', noEscapeDismiss: 'no-escape-dismiss',
+        noFocusTrap: 'no-focus-trap', persistent: 'persistent',
+        pushContent: 'push-content', contained: 'contained',
+      };
+
+      const api = {
+        /**
+         * Mount one combo. Attributes are the documented authored form. The
+         * slots are authored BEFORE connection — the drawer reads its footer
+         * slot during @ready, and the DOM tier documents that ordering as
+         * load-bearing. `emptyFooter` authors no footer slot, which is the
+         * component's own "empty footer" regime.
+         */
+        async mount(combo = {}) {
+          api.unmount();
+          const el = document.createElement('snice-drawer');
+          el.id = 'subject';
+          el.setAttribute('position', combo.position ?? 'left');
+          el.setAttribute('size', combo.size ?? 'medium');
+          for (const [key, attr] of Object.entries(BOOLEAN_ATTRS)) {
+            if (combo[key]) el.setAttribute(attr, '');
+          }
+          if (combo.open) el.setAttribute('open', '');
+          if (combo.inline) el.setAttribute('inline', '');
+
+          const html = [
+            combo.noHeader ? '' : '<span slot="title">Menu</span>',
+            '<nav><a href="/">Home</a><a href="/about">About</a></nav>',
+            combo.emptyFooter ? '' : '<button slot="footer">Save</button>',
+          ].filter(Boolean).join('');
+          el.innerHTML = html;
+
+          if (combo.mode === 'inline') {
+            el.setAttribute('inline', '');
+            inlineStage.innerHTML = '';
+            // The doc's inline pattern is a flex ROW beside a left/right
+            // drawer; a top/bottom inline drawer belongs in a column.
+            inlineStage.style.flexDirection =
+              combo.position === 'top' || combo.position === 'bottom' ? 'column' : 'row';
+            inlineStage.appendChild(el);
+            const main = document.createElement('main');
+            main.id = 'inline-main';
+            main.textContent = 'Main content sits beside the drawer';
+            inlineStage.appendChild(main);
+          } else if (combo.mode === 'push') {
+            el.setAttribute('contained', '');
+            el.setAttribute('push-content', '');
+            if (combo.open) el.setAttribute('open', '');
+            pushStage.innerHTML = '';
+            pushStage.appendChild(el);
+            const target = document.createElement('snice-drawer-target');
+            target.setAttribute('for', 'subject');
+            target.innerHTML = '<main>Content that should slide</main>';
+            pushStage.appendChild(target);
+          } else {
+            stage.appendChild(el);
+          }
+
+          await el.ready;
+          await settleLong();
+          current = { el, combo };
+          return { position: el.getAttribute('position'), size: el.getAttribute('size') };
+        },
+
+        async show() {
+          current?.el.show();
+          await settleLong();
+        },
+        async hide() {
+          current?.el.hide();
+          await settleLong();
+        },
+
+        /** Start/stop recording the two documented events. */
+        startEvents() {
+          const log = [];
+          const listener = (event) => log.push(event.type);
+          current.el.addEventListener('drawer-open', listener);
+          current.el.addEventListener('drawer-close', listener);
+          current.__listener = listener;
+          current.__log = log;
+        },
+        stopEvents() {
+          const log = current?.__log ?? [];
+          if (current?.__listener) {
+            current.el.removeEventListener('drawer-open', current.__listener);
+            current.el.removeEventListener('drawer-close', current.__listener);
+          }
+          current.__listener = null;
+          return log;
+        },
+
+        scrollY() { return window.scrollY; },
+        async resetScroll() { window.scrollTo(0, 0); await settle(); },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          inlineStage.innerHTML = '';
+          inlineStage.style.flexDirection = 'row';
+          pushStage.innerHTML = '';
+          window.scrollTo(0, 0);
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-camera-annotate visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+
+           - #stage is a fixed, known box, so "the sidebar and the canvas area
+             share the width" is a fact about the component's own layout;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             component occluding its own control, never the fixture doing it;
+           - the stage paints a colour the component never uses, so a collapsed
+             panel shows through as that colour instead of guesswork. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 900px;
+        height: 560px;
+        background: #ff00ff; /* a colour the component never paints */
+      }
+      #stage > snice-camera-annotate { display: block; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/camera-annotate/snice-camera-annotate.ts';
+
+      /* ── Substituted capture stack ──────────────────────────────────────
+         A headless browser has no camera. `getUserMedia` is replaced with a
+         real MediaStream from `canvas.captureStream()`, so the <video> under
+         test receives GENUINE frames at a genuine resolution and every layout,
+         capture and redraw path is the real one. Only the light entering the
+         lens is synthetic.
+
+         The synthetic frame is a flat, saturated blue so a painted annotation
+         stroke is trivially separable from the captured photo in layer 2. */
+      const source = document.createElement('canvas');
+      source.width = 800;
+      source.height = 600;
+      (function paint() {
+        const ctx = source.getContext('2d');
+        ctx.fillStyle = '#0b3d91';
+        ctx.fillRect(0, 0, source.width, source.height);
+        requestAnimationFrame(paint);
+      })();
+
+      Object.defineProperty(navigator, 'mediaDevices', {
+        configurable: true,
+        value: {
+          getUserMedia: async () => source.captureStream(30),
+          enumerateDevices: async () => ([
+            { kind: 'videoinput', deviceId: 'a', label: 'A', groupId: 'g' },
+          ]),
+        },
+      });
+
+      /** Annotation documents, mirroring tests/matrix/camera-annotate. */
+      const stroke = (id, color, width, points) => ({
+        id, color, width, points, timestamp: 1700000000000,
+      });
+      const annotation = (id, strokeId, label, color, visible = true) => ({
+        id, strokeId, label, color, visible, timestamp: 1700000000000,
+      });
+
+      const DOCUMENTS = {
+        none: { annotations: [], strokes: [], imageWidth: 800, imageHeight: 600 },
+        single: {
+          annotations: [annotation('a1', 's1', 'Crack', '#f87171')],
+          strokes: [stroke('s1', '#f87171', 6, [
+            { x: 120, y: 120 }, { x: 260, y: 180 }, { x: 380, y: 120 },
+          ])],
+          imageWidth: 800, imageHeight: 600,
+        },
+        multiple: {
+          annotations: [
+            annotation('a1', 's1', 'Crack', '#f87171'),
+            annotation('a2', 's2', 'Dent', '#60a5fa'),
+            annotation('a3', 's3', '', '#34d399'),
+          ],
+          strokes: [
+            stroke('s1', '#f87171', 6, [{ x: 100, y: 100 }, { x: 200, y: 160 }, { x: 300, y: 100 }]),
+            stroke('s2', '#60a5fa', 6, [{ x: 100, y: 300 }, { x: 220, y: 360 }, { x: 340, y: 300 }]),
+            stroke('s3', '#34d399', 6, [{ x: 420, y: 200 }, { x: 540, y: 260 }, { x: 660, y: 200 }]),
+          ],
+          imageWidth: 800, imageHeight: 600,
+        },
+        hidden: {
+          annotations: [
+            annotation('a1', 's1', 'Shown', '#f87171'),
+            annotation('a2', 's2', 'Hidden', '#60a5fa', false),
+          ],
+          strokes: [
+            stroke('s1', '#f87171', 6, [{ x: 100, y: 100 }, { x: 200, y: 160 }, { x: 300, y: 100 }]),
+            stroke('s2', '#60a5fa', 6, [{ x: 100, y: 300 }, { x: 220, y: 360 }, { x: 340, y: 300 }]),
+          ],
+          imageWidth: 800, imageHeight: 600,
+        },
+      };
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-camera-annotate');
+          el.id = 'subject';
+          if (combo.mode) el.setAttribute('mode', combo.mode);
+          if (combo.autoStart) el.setAttribute('auto-start', '');
+
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.showLabelsPanel === false) el.showLabelsPanel = false;
+          if (combo.autoRotateColors === false) el.autoRotateColors = false;
+          await settle();
+
+          // Wait for a real frame before capturing one; a capture taken before
+          // the first frame arrives is measuring nothing.
+          const video = el.shadowRoot.querySelector('video');
+          for (let i = 0; i < 60 && !(video.videoWidth > 0); i++) await nextFrame();
+
+          if (combo.capture) {
+            await el.capture();
+            await settle();
+          }
+          if (combo.document && combo.document !== 'none') {
+            el.importAnnotations(DOCUMENTS[combo.document]);
+            await settle();
+          }
+          await settle();
+
+          current = { el, combo };
+          return {
+            mode: el.mode,
+            annotations: el.exportAnnotations().annotations.length,
+            frame: { width: video.videoWidth, height: video.videoHeight },
+          };
+        },
+
+        /** Draw-craw canvas geometry, for driving REAL pointer input from the
+         *  spec. A synthetic PointerEvent carries no active pointer, and
+         *  Firefox (per the Pointer Events spec) makes setPointerCapture
+         *  THROW for a pointer that never existed, killing the stroke in the
+         *  component's pointerup handler before the annotation is created.
+         *  Real input — Playwright's mouse — gets a genuine pointerId, so the
+         *  capture calls succeed in every engine. */
+        canvasGeometry() {
+          const el = current?.el;
+          const canvas = el?.shadowRoot.querySelector('.ca-draw-canvas');
+          if (!canvas) return null;
+          const b = canvas.getBoundingClientRect();
+          return {
+            left: b.left, top: b.top, width: b.width, height: b.height,
+            cw: canvas.width, ch: canvas.height,
+          };
+        },
+
+        /** How many annotations the component holds right now. */
+        annotationCount() {
+          return current?.el?.exportAnnotations().annotations.length ?? 0;
+        },
+
+        /** Hover an annotation row, the documented highlight affordance. */
+        async hoverAnnotation(index) {
+          const el = current?.el;
+          if (!el) return false;
+          const row = el.shadowRoot.querySelectorAll('.ca-annotation-item')[index];
+          if (!row) return false;
+          row.dispatchEvent(new MouseEvent('mouseenter', { bubbles: false }));
+          await settle();
+          return true;
+        },
+
+        unmount() {
+          if (current) current.el.remove();
+          current = null;
+          stage.innerHTML = '';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

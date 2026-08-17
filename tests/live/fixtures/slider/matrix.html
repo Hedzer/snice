@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-slider visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the fill/thumb
+             colours are judged against the surface they were designed for;
+           - #stage is a fixed, known box, so "the thumb sits at 40% of the
+             track" is a fact about the component, not the viewport. It is
+             wide enough for a horizontal track to be unmistakably horizontal
+             and tall enough below the control for ticks and labels;
+           - #stage has NO background, padding, font-size override, or
+             positioned siblings, so a failed elementFromPoint probe is the
+             slider occluding itself, never the fixture. The root font size
+             stays at the browser default because the size axis is specified
+             in rem;
+           - #probe resolves a theme token to the value a browser actually
+             computes for it (colour OR any other property), so a token
+             assertion compares computed value to computed value. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 460px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/slider/snice-slider.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+
+      /**
+       * The fill width and thumb position transition over
+       * --snice-transition-fast (150ms) and the thumb itself over
+       * --snice-transition-normal (200ms). 300ms clears both, so every
+       * measurement is of the settled geometry, never mid-animation.
+       */
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo the way the doc's own examples author one —
+         * `<snice-slider label="Volume" min="0" max="100" value="50"
+         * show-value>` — everything through its documented ATTRIBUTE,
+         * including `value`, which the doc says is the `defaultValue`
+         * channel. An off-lattice authored value therefore exercises the
+         * documented snap ("The step lattice starts at min") before any
+         * geometry is measured.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-slider');
+          el.id = 'subject';
+          const set = (name, value) => {
+            if (value !== undefined && value !== null) el.setAttribute(name, String(value));
+          };
+          set('min', combo.min);
+          set('max', combo.max);
+          set('step', combo.step);
+          set('variant', combo.variant);
+          set('size', combo.size);
+          set('value', combo.value);
+          set('label', combo.label);
+          set('helper-text', combo.helperText);
+          set('error-text', combo.errorText);
+          // The two boolean attributes whose combo key is not their
+          // attribute name are looked up explicitly: indexing the combo by
+          // the kebab-case attribute name would silently miss the camelCase
+          // field and never author the attribute at all.
+          const flags = {
+            disabled: combo.disabled,
+            readonly: combo.readonly,
+            loading: combo.loading,
+            required: combo.required,
+            invalid: combo.invalid,
+            'show-value': combo.showValue,
+            'show-ticks': combo.showTicks,
+            vertical: combo.vertical,
+          };
+          for (const [name, on] of Object.entries(flags)) {
+            if (on) el.setAttribute(name, '');
+          }
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+          current = { el, combo };
+          return { value: el.value, min: el.min, max: el.max };
+        },
+
+        /**
+         * The documented keyboard path ("Arrow keys: adjust by step;
+         * Home/End: min/max") driven at the real thumb, the element the
+         * component listens on.
+         */
+        async consumeKey(key) {
+          const el = current?.el;
+          if (!el) return { value: null };
+          const thumb = el.shadowRoot.querySelector('.slider-thumb');
+          thumb.dispatchEvent(new KeyboardEvent('keydown', {
+            key, bubbles: true, composed: true, cancelable: true,
+          }));
+          await settle();
+          return { value: el.value };
+        },
+
+        /**
+         * A REAL drag: pointer-down on the thumb, move over the document
+         * (where the component listens while dragging), pointer-up. The
+         * coordinates are computed from the live track box, so the value a
+         * drag produces comes from the same arithmetic a user's pointer
+         * would. `fraction` is 0..1 along the track, min to max.
+         */
+        async dragThumbTo(fraction) {
+          const el = current?.el;
+          if (!el) return { value: null };
+          const sr = el.shadowRoot;
+          const track = sr.querySelector('.slider-track');
+          const thumb = sr.querySelector('.slider-thumb');
+          const t = track.getBoundingClientRect();
+          const h = thumb.getBoundingClientRect();
+          const vertical = el.vertical;
+          const x = vertical ? t.left + t.width / 2 : t.left + fraction * t.width;
+          const y = vertical ? t.bottom - fraction * t.height : t.top + t.height / 2;
+          const fire = (type, cx, cy, target) => target.dispatchEvent(new MouseEvent(type, {
+            bubbles: true, composed: true, cancelable: true, button: 0, clientX: cx, clientY: cy,
+          }));
+          fire('mousedown', h.left + h.width / 2, h.top + h.height / 2, thumb);
+          fire('mousemove', x, y, document);
+          fire('mouseup', x, y, document);
+          await settle();
+          return { value: el.value };
+        },
+
+        /**
+         * The value a browser computes for a theme token (or any colour
+         * expression). `prop` lets a non-colour claim — a min-height, say —
+         * resolve through the same probe.
+         */
+        token(expr, prop = 'color') {
+          probe.style[prop] = '';
+          probe.style[prop] = expr.startsWith('--') ? `var(${expr})` : expr;
+          return getComputedStyle(probe)[prop];
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-chat visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the chat's tokens
+             are judged against the surface they were designed for;
+           - #stage is a fixed, known box, so "the composer sits below the
+             message list" and "the typing row sits between them" are facts
+             about the component and not about the viewport;
+           - #stage has NO background, padding, font-size override, or
+             overlapping siblings, so a failed elementFromPoint probe is the
+             chat occluding itself, never the fixture occluding it;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a token assertion compares rgb() to rgb(). */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 560px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/chat/snice-chat.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+      let events = [];
+
+      const EVENT_TYPES = [
+        'message-send', 'message-edit', 'message-delete',
+        'message-react', 'typing-start', 'typing-stop',
+      ];
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      // The fixture owns everything that carries functions or Dates — a
+      // combo crosses the Playwright boundary as plain JSON, and the ChatMessage
+      // shape is built here.
+      function buildMessage(m, currentUser) {
+        const reactions = (m.reactions ?? []).map(r => {
+          const users = [...(r.users ?? [])];
+          if (r.active && !users.includes(currentUser)) users.push(currentUser);
+          return { emoji: r.emoji, count: r.count ?? users.length, users };
+        });
+        return {
+          id: m.id,
+          type: m.type ?? 'text',
+          content: m.content ?? '',
+          author: m.author,
+          avatar: m.avatar,
+          timestamp: new Date(m.timestamp ?? '2026-08-16T10:30:00'),
+          edited: m.edited ?? false,
+          format: m.format,
+          authorColor: m.authorColor,
+          reactions: reactions.length ? reactions : undefined,
+          attachment: m.attachment,
+        };
+      }
+
+      function row(index) {
+        return [...current.el.shadowRoot.querySelectorAll('.message')][index] ?? null;
+      }
+      function actionButton(index, title) {
+        return row(index)?.querySelector(`.message-actions button[title="${title}"]`) ?? null;
+      }
+      function inputField() {
+        return current.el.shadowRoot.querySelector('textarea.input-field');
+      }
+      function record() {
+        return events.map(e => ({ type: e.type, detail: e.detail }));
+      }
+
+      const api = {
+        /**
+         * Mount one combo through the PROPERTY channel: every style rule the
+         * chat paints from is a `:host([layout='bubbles'])`-style selector,
+         * so mounting by property is what proves the documented reflection
+         * actually reaches the paint.
+         *
+         * `typingUsers` is applied BEFORE connection so the FIRST render
+         * includes the indicator (the connected-call behaviour is the DOM
+         * finding MATRIX-chat-1 and is pinned separately in the spec).
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-chat');
+          el.id = 'subject';
+          for (const user of combo.typingUsers ?? []) el.addTypingIndicator(user);
+          stage.appendChild(el);
+          await el.ready;
+          el.currentUser = combo.currentUser ?? 'Me';
+          el.placeholder = combo.placeholder ?? 'Type a message...';
+          el.allowFiles = combo.allowFiles ?? true;
+          el.showTyping = combo.showTyping ?? true;
+          el.showAvatars = combo.showAvatars ?? true;
+          el.showTimestamps = combo.showTimestamps ?? true;
+          el.markdown = combo.markdown ?? false;
+          el.layout = combo.layout ?? 'default';
+          el.colorAuthors = combo.colorAuthors ?? false;
+          if (combo.authorColors) el.authorColors = combo.authorColors;
+          if (combo.messages) {
+            el.messages = combo.messages.map(m => buildMessage(m, el.currentUser));
+          }
+          events = [];
+          for (const type of EVENT_TYPES) {
+            el.addEventListener(type, e => events.push({ type, detail: e.detail }));
+          }
+          await settle();
+          current = { el, combo };
+          return {
+            reflected: {
+              layout: el.getAttribute('layout'),
+              markdown: el.hasAttribute('markdown'),
+            },
+          };
+        },
+
+        events: record,
+        clearEvents() { events = []; },
+
+        /** Type into the composer and press Enter, the way a user sends. */
+        async typeAndSend(text) {
+          const input = inputField();
+          input.value = text;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.dispatchEvent(new KeyboardEvent('keydown', {
+            key: 'Enter', bubbles: true, composed: true, cancelable: true,
+          }));
+          await settle();
+          return { events: record(), inputValue: inputField().value };
+        },
+
+        /** Press the send button instead of Enter. */
+        async clickSend() {
+          current.el.shadowRoot.querySelector('.input-button.send').click();
+          await settle();
+          return { events: record(), inputValue: inputField().value };
+        },
+
+        /** Click React on the message at `index` (any message's hover menu). */
+        async clickReact(index) {
+          actionButton(index, 'React')?.click();
+          await settle();
+          return { events: record() };
+        },
+
+        /** Click an existing reaction chip. */
+        async clickReactionChip(index, chip) {
+          row(index)?.querySelectorAll('.reaction')[chip]?.click();
+          await settle();
+          return { events: record() };
+        },
+
+        async openEditor(index) {
+          actionButton(index, 'Edit')?.click();
+          await settle();
+          const editor = row(index)?.querySelector('.edit-field');
+          return { opened: !!editor, value: editor?.value ?? null };
+        },
+
+        async saveEditor(text) {
+          const editor = current.el.shadowRoot.querySelector('.edit-field');
+          if (editor && text !== undefined) editor.value = text;
+          current.el.shadowRoot.querySelector('.edit-save')?.click();
+          await settle();
+          return { events: record() };
+        },
+
+        async requestDelete(index) {
+          actionButton(index, 'Delete')?.click();
+          await settle();
+          return { confirmShown: !!current.el.shadowRoot.querySelector('.message-confirm') };
+        },
+
+        async confirmDelete() {
+          current.el.shadowRoot.querySelector('.confirm-delete')?.click();
+          await settle();
+          return { events: record() };
+        },
+
+        /** The connected-chat typing calls — the MATRIX-chat-1 subject. */
+        async addTyping(user) {
+          current.el.addTypingIndicator(user);
+          await settle();
+        },
+        async removeTyping(user) {
+          current.el.removeTypingIndicator(user);
+          await settle();
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+          events = [];
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

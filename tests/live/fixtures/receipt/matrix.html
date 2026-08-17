@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-receipt visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a variant's paper
+             colour is judged against the surface it was designed for;
+           - #stage is a fixed, known box wider than the widest documented
+             receipt (`--snice-receipt-max-width` brackets), so a max-width
+             assertion is about the component and not about the viewport;
+           - #stage has NO background, padding, font-size override, or
+             overlapping siblings, so a failed elementFromPoint probe is the
+             receipt occluding itself, never the fixture. The host is a block
+             that fills the stage, so the strip of stage surface to the RIGHT
+             of a max-width receipt is a pixel reference the marquee can read
+             without a second element;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a token assertion compares rgb() to rgb()
+             instead of comparing a var() name to a paint;
+           - the QR slot child is styled only in COLOUR: the component's own
+             ::slotted rule sizes it (--receipt-qr-size), so its measured box
+             is the component's contract and not this file's. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 640px;
+      }
+      #stage [slot="qr"] {
+        background: rgb(220 38 38);
+        color: rgb(220 38 38);
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/receipt/snice-receipt.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 40));
+        await nextFrame();
+      }
+
+      /**
+       * The doc's own worked example, completed: a merchant with every field,
+       * four meta facts, three line items (one of each shape the item
+       * renderer knows — quantity, sku+note+per-item discount, and a name
+       * long enough to need the paper's width), the multiple-taxes form that
+       * the docs say overrides `tax`, a tip, a discount, and payment details.
+       */
+      const FULL = {
+        merchant: {
+          name: 'Coffee House',
+          address: '123 Brew St',
+          phone: '555-0100',
+          email: 'house@example.com',
+          website: 'coffee.example',
+          taxId: 'TX-99',
+        },
+        receiptNumber: 'REC-4521',
+        date: '2026-02-27 14:30',
+        cashier: 'Alice',
+        terminalId: 'POS-03',
+        items: [
+          { name: 'Cappuccino', quantity: 2, price: 4.5, sku: 'CAP-01', note: 'oat milk', discount: 0.5 },
+          { name: 'A beverage name long enough to need the width of the paper it is printed on', quantity: 1, price: 3.75 },
+          { name: 'Croissant', quantity: 1, price: 3.25 },
+        ],
+        taxes: [
+          { label: 'State Tax', rate: 6, amount: 3.0 },
+          { label: 'City Tax', rate: 2, amount: 1.0 },
+        ],
+        tip: 2,
+        discount: 1.25,
+        paymentMethod: 'Visa **** 4242',
+        paymentDetails: 'Auth 042421',
+      };
+
+      const api = {
+        /**
+         * Mount one combo. String properties cross the ATTRIBUTE channel the
+         * way the doc's example authors them; `merchant` / `items` / `taxes`
+         * are documented "JS only" and are assigned as properties — plain
+         * data, the deepest payload a page author can hand over. `empty`
+         * mounts the bare receipt: no merchant, no meta, no items — the
+         * totals and the closing line alone.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-receipt');
+          el.id = 'subject';
+          el.setAttribute('variant', combo.variant ?? 'standard');
+          stage.appendChild(el);
+          await el.ready;
+
+          if (!combo.empty) {
+            // `taxes` (array) overrides `tax` (receipt.md); `singleTax` flips
+            // the fixture to the single-`tax` form so the two shapes of the
+            // same contract are both measurable.
+            const overrides = combo.singleTax
+              ? { taxes: [], tax: 2.5, ...(combo.overrides ?? {}) }
+              : (combo.overrides ?? {});
+            const data = { ...FULL, ...overrides };
+            el.merchant = data.merchant;
+            el.items = data.items;
+            el.taxes = data.taxes;
+            el.tax = data.tax ?? 0;
+            el.tip = data.tip ?? 0;
+            el.discount = data.discount ?? 0;
+            el.receiptNumber = data.receiptNumber;
+            el.date = data.date;
+            el.cashier = data.cashier ?? '';
+            el.terminalId = data.terminalId ?? '';
+            el.paymentMethod = data.paymentMethod ?? '';
+            el.paymentDetails = data.paymentDetails ?? '';
+          }
+
+          if (combo.showQr) el.setAttribute('show-qr', '');
+          if (combo.qrPosition) el.setAttribute('qr-position', combo.qrPosition);
+          if (combo.qrChild) {
+            const child = document.createElement('div');
+            child.slot = 'qr';
+            child.id = 'qr-child';
+            child.textContent = 'QR';
+            el.appendChild(child);
+          }
+          await settle();
+
+          current = el;
+          return { variant: el.getAttribute('variant') };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

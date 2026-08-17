@@ -239,7 +239,7 @@ test.describe('virtual-scroller visual matrix: layer 1', () => {
 
 test.describe('virtual-scroller visual matrix: findings', () => {
   /**
-   * MATRIX-virtual-scroller-1 — `scrollToIndex()` does not scroll.
+   * VISUAL-MATRIX-virtual-scroller-1 — `scrollToIndex()` does not scroll.
    *
    * docs/ai/components/virtual-scroller.md: "scrollToIndex(index) - Scroll to
    * item at index", with `scroller.scrollToIndex(500)` as the documented call.
@@ -252,7 +252,7 @@ test.describe('virtual-scroller visual matrix: findings', () => {
    * port never moves: the requested rows are rendered thousands of pixels below
    * the visible band and the user is left looking at blank space.
    */
-  test('MATRIX-virtual-scroller-1: scrollToIndex(500) puts row 500 in view', async () => {
+  test('VISUAL-MATRIX-virtual-scroller-1: scrollToIndex(500) puts row 500 in view', async () => {
     test.fail();
     await page.evaluate(() => (window as any).matrix.mount({
       itemHeight: 50, bufferSize: 5, total: 1000, viewportHeight: 400,

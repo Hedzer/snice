@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-music-player visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+
+           - #stage fixes only the WIDTH, so the player's own height is its
+             answer to which sections are shown and not the stage's;
+           - the stage paints a colour the component never paints, so a section
+             that failed to fill the container is measurable as exposed magenta
+             rather than guessed at;
+           - nothing overlaps the stage, so a failed elementFromPoint probe is
+             the player occluding its own control, never the fixture. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 560px;
+        background: #ff00ff;
+      }
+      #stage > snice-music-player { display: block; width: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/music-player/snice-music-player.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      /* ── Real audio, generated in-page ──────────────────────────────────
+         A headless browser has no audio file to fetch, and a network fetch in
+         a fixture would make the suite flaky for reasons that have nothing to
+         do with the component. So each track is a real, finite, seekable WAV
+         built as a data URL: an actual media resource the browser decodes, so
+         `duration`, `loadedmetadata`, `timeupdate` and `ended` are the real
+         pipeline's answers rather than a stand-in's. */
+      function wav(seconds, frequency) {
+        const rate = 8000;
+        const frames = Math.floor(rate * seconds);
+        const bytes = 44 + frames * 2;
+        const buffer = new ArrayBuffer(bytes);
+        const view = new DataView(buffer);
+        const ascii = (offset, text) => {
+          for (let i = 0; i < text.length; i++) view.setUint8(offset + i, text.charCodeAt(i));
+        };
+        ascii(0, 'RIFF');
+        view.setUint32(4, bytes - 8, true);
+        ascii(8, 'WAVEfmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, 1, true);
+        view.setUint32(24, rate, true);
+        view.setUint32(28, rate * 2, true);
+        view.setUint16(32, 2, true);
+        view.setUint16(34, 16, true);
+        ascii(36, 'data');
+        view.setUint32(40, frames * 2, true);
+        for (let i = 0; i < frames; i++) {
+          view.setInt16(44 + i * 2, Math.round(Math.sin((i / rate) * frequency * 2 * Math.PI) * 8000), true);
+        }
+        let binary = '';
+        const raw = new Uint8Array(buffer);
+        for (let i = 0; i < raw.length; i++) binary += String.fromCharCode(raw[i]);
+        return `data:audio/wav;base64,${btoa(binary)}`;
+      }
+
+      /* A one-pixel PNG per track, so the artwork region has a real image to
+         lay out rather than a broken-image box of the browser's choosing. */
+      function art(hex) {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = hex;
+        ctx.fillRect(0, 0, 64, 64);
+        return canvas.toDataURL('image/png');
+      }
+
+      const SOURCES = [wav(2, 220), wav(3, 330), wav(4, 440)];
+      const COVERS = ['#3b82f6', '#22c55e', '#f97316'].map(art);
+
+      const TRACKS = SOURCES.map((src, i) => ({
+        id: `t${i + 1}`,
+        title: `Track ${i + 1}`,
+        artist: `Artist ${i + 1}`,
+        album: `Album ${i + 1}`,
+        artwork: COVERS[i],
+        src,
+        duration: 2 + i,
+      }));
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-music-player');
+          el.id = 'subject';
+          if (combo.compact) el.setAttribute('compact', '');
+
+          stage.appendChild(el);
+          await el.ready;
+          for (const [flag, attr] of Object.entries({
+            showArtwork: 'artwork', showTrackInfo: 'trackInfo', showControls: 'controls',
+            showVolume: 'volume', showPlaylist: 'playlist',
+          })) {
+            if (combo[attr] === false) el[flag] = false;
+          }
+          el.tracks = combo.tracks === 'none' ? [] : TRACKS;
+          document.documentElement.dataset.theme = combo.theme ?? 'light';
+          await settle();
+
+          if (combo.play) {
+            await el.play().catch(() => {});
+            await settle();
+          }
+
+          current = { el, combo };
+          return { state: el.state, tracks: el.tracks.length };
+        },
+
+        /** Click a transport control by its class suffix. */
+        async clickControl(name) {
+          const el = current?.el;
+          if (!el) return null;
+          el.shadowRoot.querySelector(`.player-btn-${name}`)?.click();
+          await settle();
+          return { state: el.state, index: el.currentTrackIndex };
+        },
+
+        /** Click a playlist row at its own painted coordinates. */
+        async clickRow(index) {
+          const el = current?.el;
+          if (!el) return null;
+          const row = el.shadowRoot.querySelectorAll('.player-playlist-item')[index];
+          const b = row.getBoundingClientRect();
+          row.dispatchEvent(new MouseEvent('click', {
+            bubbles: true, composed: true,
+            clientX: b.left + b.width / 2, clientY: b.top + b.height / 2,
+          }));
+          await settle();
+          return { index: el.currentTrackIndex };
+        },
+
+        /** Click the progress track at `fraction` of its width, as a user does. */
+        async scrub(fraction) {
+          const el = current?.el;
+          if (!el) return null;
+          const track = el.shadowRoot.querySelector('.player-progress');
+          const b = track.getBoundingClientRect();
+          track.dispatchEvent(new MouseEvent('click', {
+            bubbles: true, composed: true,
+            clientX: b.left + b.width * fraction, clientY: b.top + b.height / 2,
+          }));
+          await settle();
+          /* The ARIA readout is floored to whole seconds, which on a
+             two-second fixture track quantises a quarter-way click to zero. The
+             component's own `currentTime` / `duration` fields (documented as
+             plain class fields, not properties) carry the float, so the spec
+             judges the seek by those and uses the ARIA pair only to confirm the
+             two agree. The media element itself is a `new Audio()` the
+             component owns — it is never in the shadow tree to query. */
+          return {
+            valuenow: track.getAttribute('aria-valuenow'),
+            valuemax: track.getAttribute('aria-valuemax'),
+            audioTime: el.currentTime,
+            audioDuration: el.duration,
+          };
+        },
+
+        unmount() {
+          if (current) { try { current.el.stop(); } catch {} current.el.remove(); }
+          current = null;
+          stage.innerHTML = '';
+          document.documentElement.dataset.theme = 'light';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

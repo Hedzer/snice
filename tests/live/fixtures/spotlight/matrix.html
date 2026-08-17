@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-spotlight visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase.
+           - the page is exactly one viewport tall with `overflow: hidden`, so
+             the component's scrollIntoView never moves the ground under a
+             measurement and every rect is in viewport coordinates already;
+           - the targets are absolutely positioned at known points, so "the
+             popover is BELOW the target" is a fact about the component;
+           - the page paints a flat, bright ground (#f2f2f2) and the targets a
+             flat, saturated colour, so the dimming the cutout casts is a pixel
+             difference with only one possible cause. */
+      html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+      body {
+        background: #f2f2f2;
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      .target {
+        position: absolute;
+        background: #d92d20;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+      #target-a { left: 500px; top: 380px; width: 200px; height: 120px; }
+      #target-b { left: 120px; top: 120px; width: 120px; height: 60px; }
+      #target-c { left: 980px; top: 700px; width: 160px; height: 80px; }
+    </style>
+  </head>
+  <body>
+    <div class="target" id="target-a">A</div>
+    <div class="target" id="target-b">B</div>
+    <div class="target" id="target-c">C</div>
+    <snice-spotlight id="subject"></snice-spotlight>
+
+    <script type="module">
+      import '/packages/components/src/spotlight/snice-spotlight.ts';
+
+      const subject = document.getElementById('subject');
+      const targetA = document.getElementById('target-a');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        // The cutout animates its box via `--snice-transition-medium` (250ms);
+        // a measurement taken mid-transition is a measurement of the easing
+        // curve, not of the component.
+        await new Promise(resolve => setTimeout(resolve, 400));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Place target A at a known rect and run a one-step tour pointed at it.
+         *
+         * `steps` is documented JS-only, so it crosses the property channel;
+         * the tour is driven through the documented `start()` entry point
+         * rather than by poking at internals.
+         */
+        async mount(combo) {
+          api.end();
+          targetA.style.left = `${combo.x}px`;
+          targetA.style.top = `${combo.y}px`;
+          targetA.style.width = `${combo.w}px`;
+          targetA.style.height = `${combo.h}px`;
+          subject.steps = [{
+            target: '#target-a',
+            title: combo.title ?? 'Step one',
+            description: combo.description ?? 'The description of the first step.',
+            position: combo.position,
+          }];
+          subject.start();
+          await settle();
+          return api.geometry();
+        },
+
+        /** A three-step tour across the three fixed targets. */
+        async startTour(position) {
+          api.end();
+          subject.steps = [
+            { target: '#target-b', title: 'First', description: 'Step one of three.', position },
+            { target: '#target-a', title: 'Second', description: 'Step two of three.', position },
+            { target: '#target-c', title: 'Third', description: 'Step three of three.', position },
+          ];
+          subject.start();
+          await settle();
+          return api.geometry();
+        },
+
+        async next() { subject.next(); await settle(); return api.geometry(); },
+        async prev() { subject.prev(); await settle(); return api.geometry(); },
+        async goToStep(i) { subject.goToStep(i); await settle(); return api.geometry(); },
+
+        /** Click the rendered Skip button — the documented skip path. */
+        async skip() {
+          document.querySelector('[data-snice-spotlight-portal] [part="button-skip"]').click();
+          await settle();
+        },
+
+        /** Remove the current target mid-tour, the documented route-change case. */
+        async dropTarget() {
+          targetA.remove();
+          subject.goToStep(0);
+          await settle();
+        },
+        restoreTarget() {
+          if (!document.getElementById('target-a')) document.body.prepend(targetA);
+        },
+
+        end() {
+          subject.end();
+        },
+
+        /** Everything a layer-1 assertion needs, in viewport coordinates. */
+        geometry() {
+          const portal = document.querySelector('[data-snice-spotlight-portal]');
+          if (!portal) return { portal: false };
+          const box = (selector) => {
+            const node = portal.querySelector(selector);
+            if (!node) return null;
+            const r = node.getBoundingClientRect();
+            return { x: r.x, y: r.y, width: r.width, height: r.height,
+              top: r.top, left: r.left, right: r.right, bottom: r.bottom };
+          };
+          return {
+            portal: true,
+            base: box('[part="base"]'),
+            backdrop: box('[part="backdrop"]'),
+            cutout: box('[part="cutout"]'),
+            popover: box('[part="popover"]'),
+            title: box('[part="title"]'),
+            description: box('[part="description"]'),
+            actions: box('[part="actions"]'),
+            indicator: box('[part="step-indicator"]'),
+            indicatorText: portal.querySelector('[part="step-indicator"]')?.textContent ?? '',
+            buttons: [...portal.querySelectorAll('[part="actions"] button')]
+              .map(b => ({ part: b.getAttribute('part'), text: b.textContent,
+                ...(({ x, y, width, height, left, right, top, bottom }) =>
+                  ({ x, y, width, height, left, right, top, bottom }))(b.getBoundingClientRect()) })),
+          };
+        },
+
+        targetBox(selector = '#target-a') {
+          const node = document.querySelector(selector);
+          if (!node) return null;
+          const r = node.getBoundingClientRect();
+          return { x: r.x, y: r.y, width: r.width, height: r.height,
+            top: r.top, left: r.left, right: r.right, bottom: r.bottom };
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

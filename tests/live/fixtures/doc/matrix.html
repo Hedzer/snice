@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-doc visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the editor's own
+             background is judged against the surface it will really sit on;
+           - #stage is a fixed, KNOWN box (the host is display:block with
+             height:100%, so it needs a resolvable percentage height), large
+             enough for the toolbar strip plus a screenful of editing
+             surface;
+           - #stage has NO background, padding, or font-size override of its
+             own, so a failed elementFromPoint probe is the component
+             occluding itself and a type measurement is the component's own;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a token assertion compares rgb() to rgb(). */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 720px;
+        height: 640px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/doc/snice-doc.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /**
+       * The established sample content (website/showcases/doc/full.html) —
+       * local strings only, nothing remote.
+       */
+      const SAMPLE = `
+        <h1>Document Title</h1>
+        <p>This is a paragraph with <b>bold</b>, <i>italic</i>, and <u>underlined</u> text.</p>
+        <h2>Section Heading</h2>
+        <ul>
+          <li>Bullet item one</li>
+          <li>Bullet item two</li>
+        </ul>
+        <p>Content after a divider.</p>
+      `;
+
+      const api = {
+        /**
+         * Mount one combo through the documented ATTRIBUTE channel — the
+         * form every Basic Usage example takes. `content` selects
+         * 'sample' | 'empty' | 'html:<markup>' — a plain string either way;
+         * `reallyEmpty` additionally clears the seeded paragraph via
+         * setHTML(''), which is the state the placeholder's :empty CSS
+         * hook answers to.
+         */
+        async mount(combo = {}) {
+          api.unmount();
+          const el = document.createElement('snice-doc');
+          el.id = 'subject';
+          if (combo.placeholder !== undefined) el.setAttribute('placeholder', combo.placeholder);
+          if (combo.readonly) el.setAttribute('readonly', '');
+          if (combo.icons) el.setAttribute('icons', combo.icons);
+
+          stage.appendChild(el);
+          await el.ready;
+          const content = combo.content ?? 'empty';
+          if (content === 'sample') el.setHTML(SAMPLE);
+          else if (typeof content === 'string' && content.startsWith('html:')) {
+            el.setHTML(content.slice(5));
+          } else {
+            el.setHTML('');
+          }
+          await settle();
+
+          current = { el, combo };
+          return {
+            mounted: true,
+            icons: el.icons,
+            readonly: el.readonly,
+            content: el.getHTML(),
+          };
+        },
+
+        /** Click a toolbar button by its documented title. */
+        async clickToolbar(title) {
+          const el = current?.el;
+          if (!el) return false;
+          const button = [...el.shadowRoot.querySelectorAll('.toolbar-btn')]
+            .find(node => node.title === title);
+          if (!button) return false;
+          button.click();
+          await settle();
+          return true;
+        },
+
+        /** Focus the editor and collapse the caret to its start. */
+        async focusEditor() {
+          const editor = current.el.shadowRoot.querySelector('.doc-editor');
+          editor.focus();
+          const selection = current.el.shadowRoot.getSelection?.()
+            ?? window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(editor);
+          range.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(range);
+          await settle();
+          return true;
+        },
+
+        /** Select ALL editor content, the precondition for a format command. */
+        async selectAllInEditor() {
+          const editor = current.el.shadowRoot.querySelector('.doc-editor');
+          editor.focus();
+          const selection = current.el.shadowRoot.getSelection?.()
+            ?? window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(editor);
+          selection.removeAllRanges();
+          selection.addRange(range);
+          await settle();
+          return selection.toString();
+        },
+
+        /** The live document, for after a gesture. */
+        content() {
+          return current.el.getHTML();
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

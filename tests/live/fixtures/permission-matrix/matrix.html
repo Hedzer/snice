@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-permission-matrix visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the theme's own surface, so a granted checkbox and a revoked one
+             are judged against the background they were designed for;
+           - #stage is a fixed 900px column — wide enough for a role column
+             plus several permissions — so "every checkbox sits under its own
+             permission heading" is a fact about the component;
+           - nothing overlaps the stage, so a failed elementFromPoint probe is
+             the grid occluding itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 900px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      /* THE DOCUMENTED IMPORT, and only it. */
+      import '/packages/components/src/permission-matrix/snice-permission-matrix.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `readonly` crosses the ATTRIBUTE channel; `roles`,
+         * `permissions` and `matrix` are documented "attr: none (JS only)".
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-permission-matrix');
+          el.id = 'subject';
+          if (combo.readonly) el.setAttribute('readonly', '');
+          stage.appendChild(el);
+          await el.ready;
+          el.roles = combo.roles ?? [];
+          el.permissions = combo.permissions ?? [];
+          el.matrix = combo.matrix ?? {};
+          await settle();
+          const sr = el.shadowRoot;
+          return {
+            rows: sr.querySelectorAll('tbody tr').length,
+            headings: sr.querySelectorAll('thead th').length,
+            checkboxes: sr.querySelectorAll('.matrix-checkbox').length,
+            indicators: sr.querySelectorAll('.matrix-readonly-indicator').length,
+          };
+        },
+
+        /** Toggle one cell the way a user would, and report what changed. */
+        async toggle(roleId, permId) {
+          const el = document.getElementById('subject');
+          const box = el.shadowRoot.querySelector(
+            `.matrix-checkbox[data-role="${roleId}"][data-perm="${permId}"]`);
+          if (!box) return null;
+          box.click();
+          await settle();
+          return { checked: box.checked, granted: el.hasPermission(roleId, permId) };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

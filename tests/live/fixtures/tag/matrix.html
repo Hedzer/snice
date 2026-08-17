@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-tag visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a variant's fill and
+             text colour are judged against the surface it was designed for;
+           - #stage is a fixed, known box, so "the remove button sits right of
+             the label" and "the tag is one line tall" are facts about the
+             component and not about the viewport;
+           - #stage has NO background, padding, font-size override, or
+             overlapping siblings, so a failed elementFromPoint probe is the tag
+             occluding itself, never the fixture occluding it. The root font
+             size is left at the browser default on purpose: the size axis is
+             specified in rem, and overriding it here would make the px
+             expectations facts about this file;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a token assertion compares rgb() to rgb()
+             instead of comparing a var() name to a paint. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/tag/snice-tag.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo through the PROPERTY channel. Every style rule the
+         * tag has is a `:host([…])` selector, so mounting by property is what
+         * proves the documented reflection actually reaches the paint — a tag
+         * whose `outline` never became an attribute renders filled.
+         *
+         * The light DOM is authored BEFORE connection, the way a page author
+         * writes it, so the icon slot is populated on the first render rather
+         * than by a later slotchange.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-tag');
+          el.id = 'subject';
+          el.innerHTML = (combo.icon ? '<span slot="icon" id="icon-child">*</span>' : '')
+            + (combo.label ?? 'Ready');
+          stage.appendChild(el);
+          await el.ready;
+          for (const key of ['variant', 'size', 'removable', 'outline', 'pill']) {
+            if (combo[key] === undefined) continue;
+            el[key] = combo[key];
+          }
+          await settle();
+          current = { el, combo };
+          return {
+            variant: el.variant,
+            size: el.size,
+            // Defaults are not reflected (docs/ai/properties.md), so `default`
+            // and `medium` legitimately carry no attribute; the stylesheet
+            // covers that with `:host(:not([variant]))`.
+            reflected: {
+              variant: el.getAttribute('variant'),
+              size: el.getAttribute('size'),
+              outline: el.hasAttribute('outline'),
+              pill: el.hasAttribute('pill'),
+              removable: el.hasAttribute('removable'),
+            },
+          };
+        },
+
+        /** Fire the remove button the way a pointer would, and report the event. */
+        async clickRemove() {
+          const el = current?.el;
+          if (!el) return { clicked: false, events: 0 };
+          const seen = [];
+          const listener = (event) => seen.push(event.detail);
+          el.addEventListener('tag-remove', listener);
+          const button = el.shadowRoot.querySelector('.tag-remove');
+          if (button) button.click();
+          await settle();
+          el.removeEventListener('tag-remove', listener);
+          return { clicked: !!button, events: seen.length, sameTag: seen[0]?.tag === el };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

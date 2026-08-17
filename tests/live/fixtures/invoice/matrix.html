@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-invoice visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the theme's own surface, so the invoice's rules, table header fill
+             and status badge are judged against the intended background;
+           - #stage is a fixed 840px column — a document width — so "the amount
+             column is flush right" and "the headings sit over their columns"
+             are facts about the component and not about the window;
+           - no padding, no background, nothing overlapping, so a failed
+             elementFromPoint probe means the invoice occludes itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 840px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      /* THE DOCUMENTED IMPORT, and only it: docs/ai/components/invoice.md tells
+         a consumer to `import 'snice/components/invoice/snice-invoice'`. The
+         invoice renders no child components, so this page needs nothing else —
+         if a control ever fails to paint here, it is the invoice's own tree. */
+      import '/packages/components/src/invoice/snice-invoice.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `variant`, `status`, `tax-rate`, `discount`,
+         * `currency`, `show-qr` and `qr-position` cross the ATTRIBUTE channel
+         * (the form the doc's own example writes); `from`, `to` and `items` are
+         * documented "attribute: false" and are assigned as properties.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-invoice');
+          el.id = 'subject';
+          el.setAttribute('invoice-number', combo.invoiceNumber ?? 'INV-001');
+          el.setAttribute('date', '2026-01-15');
+          el.setAttribute('due-date', '2026-02-15');
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          if (combo.status) el.setAttribute('status', combo.status);
+          if (combo.currency) el.setAttribute('currency', combo.currency);
+          if (combo.taxRate !== undefined) el.setAttribute('tax-rate', String(combo.taxRate));
+          if (combo.discount !== undefined) el.setAttribute('discount', String(combo.discount));
+          if (combo.notes) el.setAttribute('notes', combo.notes);
+          if (combo.showQr) {
+            el.setAttribute('show-qr', '');
+            el.setAttribute('qr-data', 'https://example.com/inv/1');
+            if (combo.qrPosition) el.setAttribute('qr-position', combo.qrPosition);
+          }
+          stage.appendChild(el);
+          await el.ready;
+          el.from = combo.from ?? { name: 'Acme Corp', address: '123 Main St', email: 'billing@acme.com' };
+          el.to = combo.to ?? { name: 'Client Inc', address: '456 Oak Ave' };
+          el.items = combo.items ?? [];
+          await settle();
+          const sr = el.shadowRoot;
+          return {
+            rows: sr.querySelectorAll('[part~="table-row"]').length,
+            headings: sr.querySelectorAll('thead th').length,
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

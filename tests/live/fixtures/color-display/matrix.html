@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-color-display visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the swatch border and
+             the label colour are judged against the surface the component was
+             designed for;
+           - #stage is a fixed, known box at a known origin, so "the label sits
+             to the right of the swatch" and "the swatch is square" are facts
+             about the component and not about the viewport;
+           - #stage has NO background, padding, or overlapping siblings, so a
+             failed elementFromPoint probe is the component occluding itself,
+             never the fixture occluding it;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a token assertion compares rgb() to rgb()
+             instead of comparing a var() name to a paint. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/color-display/snice-color-display.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo through the PROPERTY channel, which is the channel
+         * that has to survive reflection: `swatch-size` styling is applied by a
+         * class the render writes, but `:host([…])` rules and any consumer CSS
+         * see only the attribute, so mounting by property is what proves the
+         * documented reflection actually reaches the paint.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-color-display');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          for (const key of ['value', 'format', 'label', 'showSwatch', 'showLabel', 'swatchSize']) {
+            if (combo[key] === undefined) continue;
+            el[key] = combo[key];
+          }
+          await settle();
+          current = { el, combo };
+          return {
+            value: el.value,
+            format: el.format,
+            swatchSize: el.swatchSize,
+            // Defaults are not reflected (docs/ai/properties.md), so `medium`
+            // and `hex` legitimately have no attribute.
+            reflectedSize: el.getAttribute('swatch-size'),
+            reflectedFormat: el.getAttribute('format'),
+          };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        /** The colour a browser computes for a literal CSS colour string. */
+        resolve(color) {
+          probe.style.color = color;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

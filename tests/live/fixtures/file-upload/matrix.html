@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-file-upload visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - #stage is a fixed, known width so "the drop zone fills its host" is
+             a fact about the component;
+           - the form wrapper is REAL. Half of this component's documentation is
+             its form-associated behaviour — FormData entries, reset,
+             restoration, disabled fieldsets — and none of it can be observed
+             without a live <form> and a real ElementInternals, which is exactly
+             what the DOM tier lacks;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             upload occluding itself. */
+      html { font-size: 16px; }
+      html, body { margin: 0; padding: 0; }
+      body { background: rgb(255 255 255); color: rgb(17 17 17); }
+      #stage { position: absolute; top: 20px; left: 20px; width: 560px; }
+      form { margin: 0; }
+      fieldset { margin: 0; padding: 0; border: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/file-upload/snice-file-upload.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 30));
+        await nextFrame();
+      }
+
+      /** Build a File of an exact byte length, so max-size arithmetic is exact. */
+      const makeFile = (spec) => new File(
+        [new Uint8Array(spec.bytes ?? 8)], spec.name, { type: spec.type ?? 'text/plain' });
+
+      const api = {
+        unmount() { stage.innerHTML = ''; },
+
+        /**
+         * Mount one combo, optionally inside a real form (and a real fieldset),
+         * through the documented attribute channel.
+         */
+        async mount(combo) {
+          api.unmount();
+          stage.style.width = `${combo.stageWidth ?? 560}px`;
+
+          const el = document.createElement('snice-file-upload');
+          el.id = 'subject';
+          const attrs = {
+            size: combo.size, variant: combo.variant, accept: combo.accept,
+            label: combo.label, 'helper-text': combo.helperText,
+            'error-text': combo.errorText, name: combo.name,
+            'max-size': combo.maxSize, 'max-files': combo.maxFiles,
+          };
+          for (const [name, value] of Object.entries(attrs)) {
+            if (value !== undefined && value !== null && value !== '') {
+              el.setAttribute(name, String(value));
+            }
+          }
+          for (const flag of ['multiple', 'disabled', 'required', 'invalid']) {
+            if (combo[flag]) el.setAttribute(flag, '');
+          }
+          if (combo.dragDrop === false) el.dragDrop = false;
+          if (combo.showPreview === false) el.showPreview = false;
+
+          let host = stage;
+          if (combo.inForm) {
+            const form = document.createElement('form');
+            form.id = 'host-form';
+            stage.appendChild(form);
+            host = form;
+            if (combo.inFieldset) {
+              const fieldset = document.createElement('fieldset');
+              fieldset.id = 'host-fieldset';
+              if (combo.fieldsetDisabled) fieldset.disabled = true;
+              form.appendChild(fieldset);
+              host = fieldset;
+            }
+          }
+          host.appendChild(el);
+          await el.ready;
+          await settle();
+
+          return {
+            size: el.size, variant: el.variant, multiple: el.multiple,
+            disabled: el.disabled, required: el.required,
+            hasForm: !!el.form, type: el.type,
+          };
+        },
+
+        /** Choose files the way the native chooser does. */
+        async choose(specs) {
+          const el = document.getElementById('subject');
+          const input = el.shadowRoot.querySelector('input[type="file"]');
+          const transfer = new DataTransfer();
+          for (const spec of specs) transfer.items.add(makeFile(spec));
+          input.files = transfer.files;
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+          await settle();
+          return [...(el.files ?? [])].map(file => file.name);
+        },
+
+        /** Drop files onto the documented drop zone, as a real pointer drop. */
+        async drop(specs) {
+          const el = document.getElementById('subject');
+          const area = el.shadowRoot.querySelector('[part="upload-area"]');
+          const transfer = new DataTransfer();
+          for (const spec of specs) transfer.items.add(makeFile(spec));
+          area.dispatchEvent(new DragEvent('drop', {
+            bubbles: true, cancelable: true, dataTransfer: transfer,
+          }));
+          await settle();
+          return [...(el.files ?? [])].map(file => file.name);
+        },
+
+        /** Every `FormData` entry the owning form collects, as name/value pairs. */
+        formEntries() {
+          const form = document.getElementById('host-form');
+          if (!form) return null;
+          return [...new FormData(form).entries()].map(([name, value]) => ({
+            name,
+            file: value instanceof File ? value.name : null,
+            text: value instanceof File ? null : String(value),
+          }));
+        },
+
+        resetForm() {
+          document.getElementById('host-form')?.reset();
+        },
+
+        setFieldsetDisabled(disabled) {
+          const fieldset = document.getElementById('host-fieldset');
+          if (fieldset) fieldset.disabled = disabled;
+        },
+
+        /** The documented validity surface, flattened for transport. */
+        validity() {
+          const el = document.getElementById('subject');
+          const v = el.validity;
+          return {
+            valid: v.valid, valueMissing: v.valueMissing, customError: v.customError,
+            willValidate: el.willValidate,
+            validationMessage: el.validationMessage,
+            checkValidity: el.checkValidity(),
+          };
+        },
+
+        /** Geometry of the documented parts, in viewport space. */
+        boxes() {
+          const el = document.getElementById('subject');
+          const sr = el.shadowRoot;
+          const pick = (name) => [...sr.querySelectorAll('[part]')]
+            .find(node => (node.getAttribute('part') ?? '').split(/\s+/).includes(name));
+          const rect = (node) => {
+            if (!node) return null;
+            const b = node.getBoundingClientRect();
+            return { x: b.x, y: b.y, width: b.width, height: b.height,
+                     top: b.top, right: b.right, bottom: b.bottom, left: b.left };
+          };
+          const area = pick('upload-area');
+          const items = [...sr.querySelectorAll('[part="file-item"]')].map(rect);
+          const input = pick('input');
+          return {
+            host: rect(el),
+            area: rect(area),
+            input: rect(input),
+            inputOpacity: input ? getComputedStyle(input).opacity : null,
+            inputPosition: input ? getComputedStyle(input).position : null,
+            items,
+            errorText: rect(pick('error-text')),
+            helperText: rect(pick('helper-text')),
+            previews: sr.querySelectorAll('img.file-preview').length,
+            icons: sr.querySelectorAll('.file-icon').length,
+          };
+        },
+
+        /** Whether the image preview actually decoded a bitmap. */
+        async previewDecoded() {
+          const sr = document.getElementById('subject').shadowRoot;
+          const img = sr.querySelector('img.file-preview');
+          if (!img) return null;
+          if (!img.complete) {
+            await new Promise(resolve => {
+              img.addEventListener('load', resolve, { once: true });
+              img.addEventListener('error', resolve, { once: true });
+            });
+          }
+          return { complete: img.complete, width: img.naturalWidth, height: img.naturalHeight,
+                   src: img.src.slice(0, 5) };
+        },
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

@@ -29,6 +29,13 @@
         top: 40px;
         left: 40px;
         width: 640px;
+        /* Room BELOW the rule. A horizontal divider's own box is one pixel
+           tall, so a capture of the element alone holds no surface to compare
+           its painted pixels against; the stage is the smallest box that holds
+           both the rule and the surface it must be visible against. It is pure
+           empty space — no background, no padding — so it still cannot occlude
+           anything the probes look at. */
+        min-height: 120px;
       }
       /* A vertical divider fills its parent's height, so the parent must have
          one. `display: flex` is the documented layout for it (docs/components/

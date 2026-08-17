@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-badge visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the indicator's fill is
+             judged against the surface the component was designed for rather
+             than the browser's default white;
+           - the slotted target is a FIXED 96x44 box with its own flat colour, so
+             "the indicator is centred on the target's top-right corner" is a
+             claim about the badge and not about whatever the anchor happened to
+             measure;
+           - #stage is taller than any badge and has no background of its own, so
+             an element screenshot of the stage also captures the page surface,
+             and a failed elementFromPoint probe is the badge occluding itself
+             rather than the fixture occluding it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 900px;
+        min-height: 200px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 40px;
+      }
+      .target {
+        /* inline-block, not block: `inline` badges are documented as flowing
+           in text next to what they accompany, and a block target would put
+           them on the following LINE — which would make the flow-order
+           assertion a fact about the fixture rather than about the badge. */
+        display: inline-block;
+        /* Kills the baseline descender gap under an inline-block. Without it
+           the badge's own wrapper is ~4px taller than the target, and a
+           `bottom-*` badge would look misplaced when it is in fact exactly on
+           the wrapper's edge — a fixture artefact masquerading as a defect. */
+        vertical-align: top;
+        width: 96px;
+        height: 44px;
+        background: var(--snice-color-surface-variant, rgb(229 231 235));
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/badge/snice-badge.ts';
+
+      /** The documented anchor size, mirrored into the spec through mount(). */
+      const TARGET = { width: 96, height: 44 };
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      function build(combo) {
+        const el = document.createElement('snice-badge');
+        /* Property channel, exactly as the DOM matrix mounts it — the
+           stylesheet keys off reflected attributes, so this is what proves
+           reflection reaches the paint. */
+        el.variant = combo.variant ?? 'default';
+        el.size = combo.size ?? 'medium';
+        el.position = combo.position ?? 'top-right';
+        if (combo.dot) el.dot = true;
+        if (combo.content !== undefined) el.content = combo.content;
+        if (combo.count !== undefined) el.count = combo.count;
+        if (combo.max !== undefined) el.max = combo.max;
+        if (combo.showZero) el.showZero = true;
+        if (combo.inline) el.inline = true;
+        if (combo.pulse) el.pulse = true;
+        if (combo.offset) el.offset = combo.offset;
+        if (combo.label) el.label = combo.label;
+        if (combo.anchor !== false) {
+          const target = document.createElement('span');
+          target.className = 'target';
+          el.appendChild(target);
+        }
+        return el;
+      }
+
+      const api = {
+        TARGET,
+
+        async mount(combo) {
+          api.unmount();
+          const el = build(combo);
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+          current = el;
+          return { variant: el.variant, position: el.position, target: TARGET };
+        },
+
+        /**
+         * Mount a whole ROW at once. The axis comparisons — six variants must
+         * not collapse into one fill, three sizes must really differ — need
+         * every value on screen under one identical layout.
+         */
+        async mountRow(combos) {
+          api.unmount();
+          const els = combos.map((combo, i) => {
+            const el = build(combo);
+            el.id = `subject-${i}`;
+            stage.appendChild(el);
+            return el;
+          });
+          await Promise.all(els.map(el => el.ready));
+          await settle();
+          current = els[0] ?? null;
+          return els.length;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

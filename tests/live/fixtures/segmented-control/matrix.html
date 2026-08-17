@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-segmented-control visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the track background
+             and the indicator's surface are judged against the surface they
+             were designed for — and the indicator's whole job is to be a
+             DIFFERENT surface from the track it sits in;
+           - #stage is a fixed, known box at a known origin, so "the indicator
+             covers the selected segment" is a fact about the component and not
+             about the viewport;
+           - #stage has NO background, padding, or overlapping siblings, so a
+             failed elementFromPoint probe is the control occluding itself,
+             never the fixture occluding it;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a token assertion compares rgb() to rgb()
+             instead of comparing a var() name to a paint. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 720px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/segmented-control/snice-segmented-control.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      /**
+       * A real, decodable icon. The DOM matrix can assert an `<img src>` from a
+       * path that 404s; this tier measures the PAINTED box, so the icon has to
+       * actually load — a data URI is the only source that cannot depend on the
+       * dev server's routing.
+       */
+      const ICON = 'data:image/svg+xml;utf8,'
+        + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">'
+          + '<circle cx="8" cy="8" r="7" fill="#7c3aed"/></svg>');
+
+      /**
+       * The same option-set shapes the DOM matrix crosses
+       * (tests/matrix/segmented-control/matrix-utils.ts), so a finding in one
+       * tier names the same combo in the other. Only the icon SOURCE differs,
+       * for the reason above.
+       */
+      const SHAPES = {
+        plain: () => [
+          { value: 'day', label: 'Day' },
+          { value: 'week', label: 'Week' },
+          { value: 'month', label: 'Month' },
+        ],
+        'first-off': () => [
+          { value: 'day', label: 'Day', disabled: true },
+          { value: 'week', label: 'Week' },
+          { value: 'month', label: 'Month' },
+        ],
+        'all-off': () => [
+          { value: 'day', label: 'Day', disabled: true },
+          { value: 'week', label: 'Week', disabled: true },
+        ],
+        iconed: () => [
+          { value: 'day', label: 'Day', icon: ICON },
+          { value: 'week', label: 'Week' },
+          { value: 'month', label: 'Month', icon: ICON },
+        ],
+      };
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        // The indicator is positioned from inside a requestAnimationFrame in
+        // the component's own `@ready`/`@watch` handlers, and its transform is
+        // animated. Two frames plus a task settles the render; the transition
+        // is waited out explicitly by `settleIndicator` below.
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /**
+       * Wait until the sliding indicator has stopped sliding.
+       *
+       * The documented behaviour is "animates between selections", so a
+       * geometry assertion taken mid-transition would measure the animation
+       * rather than the destination. Polling the box until it repeats is the
+       * only honest way to wait for a CSS transition whose duration is a theme
+       * token this fixture must not assume.
+       */
+      async function settleIndicator(el) {
+        const indicator = el?.shadowRoot?.querySelector('[part~="indicator"]');
+        if (!indicator) return;
+        let previous = null;
+        for (let i = 0; i < 60; i++) {
+          const box = indicator.getBoundingClientRect();
+          const key = `${box.x.toFixed(2)}/${box.width.toFixed(2)}`;
+          if (key === previous) return;
+          previous = key;
+          await nextFrame();
+        }
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `options` is documented as "JS only", so the
+         * property channel is the ONLY channel here; `size` and `disabled` are
+         * assigned as properties too, which is what makes this tier prove that
+         * their reflection reaches the `:host([disabled])` rule.
+         */
+        async mount(combo) {
+          api.unmount();
+          const options = SHAPES[combo.shape]();
+          const el = document.createElement('snice-segmented-control');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          el.options = options;
+          // "First non-disabled option selected IF NO VALUE SET" — so an
+          // `unset` combo must never assign one. Writing `value = ''` after
+          // the options land is not "no value set"; it is a page author
+          // clearing the selection the component just made, and it would
+          // measure a state the docs do not describe.
+          if (combo.value) el.value = combo.value;
+          if (combo.size !== undefined) el.size = combo.size;
+          if (combo.disabled !== undefined) el.disabled = combo.disabled;
+          await settle();
+          await settleIndicator(el);
+          current = { el, combo, options };
+          return {
+            value: el.value,
+            size: el.size,
+            options,
+            reflectedSize: el.getAttribute('size'),
+            reflectedDisabled: el.hasAttribute('disabled'),
+          };
+        },
+
+        /** Click a segment the way a pointer would, and report what happened. */
+        async clickSegment(index) {
+          const el = current?.el;
+          if (!el) return { clicked: false, events: [] };
+          const events = [];
+          const listener = (event) => events.push({
+            value: event.detail.value,
+            previousValue: event.detail.previousValue,
+            option: event.detail.option?.value,
+            isControl: event.detail.control === el,
+          });
+          el.addEventListener('value-change', listener);
+          const segments = [...el.shadowRoot.querySelectorAll('[part~="segment"]')];
+          const target = segments[index];
+          if (target) target.click();
+          await settle();
+          await settleIndicator(el);
+          el.removeEventListener('value-change', listener);
+          return { clicked: !!target, events, value: el.value };
+        },
+
+        /** The indicator's viewport box, after it has finished moving. */
+        async indicatorBox() {
+          const el = current?.el;
+          if (!el) return null;
+          await settleIndicator(el);
+          const indicator = el.shadowRoot.querySelector('[part~="indicator"]');
+          if (!indicator) return null;
+          const box = indicator.getBoundingClientRect();
+          return { x: box.x, width: box.width, opacity: getComputedStyle(indicator).opacity };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

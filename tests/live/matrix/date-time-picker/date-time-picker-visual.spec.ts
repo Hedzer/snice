@@ -40,6 +40,21 @@ import { capture, contrast, sameColor, type RGB } from '../pixel-probe';
 
 const FIXTURE = '/tests/live/fixtures/date-time-picker/matrix.html';
 
+/**
+ * Probe source: every 2px along the mid-height row of the first element
+ * matching `selector`, so text assertions read the row the glyphs sit in
+ * instead of one phase-lucky coordinate.
+ */
+const ROW_WALK = (selector: string) => `(host) => {
+  const node = host.shadowRoot.querySelector('${selector}');
+  const box = node.getBoundingClientRect();
+  const points = [];
+  for (let x = 1; x < box.width; x += 2) {
+    points.push({ x: box.x + x, y: box.y + box.height / 2 });
+  }
+  return points;
+}`;
+
 type Corner = '' | 'bottom-right' | 'top-right';
 
 interface Combo {
@@ -532,32 +547,34 @@ test.describe('date-time-picker visual matrix: marquee pixels', () => {
     await page.evaluate(() => (window as any).matrix.mount({
       label: 'Appointment', helperText: 'Local time, please', variant: 'inline',
     }));
-    const [helper] = await capture(
+    const helperRow = await capture(
       page, '#subject', 'dtp-helper-text',
-      `(host) => {
-        const node = host.shadowRoot.querySelector('[part~="helper-text"]');
-        const box = node.getBoundingClientRect();
-        return [{ x: box.x + 2, y: box.y + box.height / 2 }];
-      }`,
+      ROW_WALK('[part~="helper-text"]'),
     );
 
     await page.evaluate(() => (window as any).matrix.mount({
       label: 'Appointment', errorText: 'That slot is gone', variant: 'inline',
     }));
-    const [error] = await capture(
+    const errorRow = await capture(
       page, '#subject', 'dtp-error-text',
-      `(host) => {
-        const node = host.shadowRoot.querySelector('[part~="error-text"]');
-        const box = node.getBoundingClientRect();
-        return [{ x: box.x + 2, y: box.y + box.height / 2 }];
-      }`,
+      ROW_WALK('[part~="error-text"]'),
     );
 
     // The docs make the error a distinct, alerting state; two texts that paint
-    // the same colour are one text with two names.
+    // the same colour are one text with two names. The ink each engine really
+    // draws is the DARKEST pixel of a dense walk of the text's mid row — a
+    // single probe 2px into the box lands on a glyph stroke only by
+    // font-metric luck, which is exactly how Chromium passes and Firefox and
+    // WebKit read the white background instead.
+    const ink = (row: RGB[]) =>
+      row.reduce((a, p) => p[0] + p[1] + p[2] < a[0] + a[1] + a[2] ? p : a);
+    const helper = ink(helperRow as RGB[]);
+    const error = ink(errorRow as RGB[]);
+    expect(errorRow.some(p => p[0] + p[1] + p[2] < 255 * 3 - 15),
+      'no ink at all on the error text row — the text did not paint').toBe(true);
     expect(sameColor(helper, error),
       `helper painted ${helper.join(',')} and error painted ${error.join(',')}`).toBe(false);
-    const [r, g, b] = error as RGB;
+    const [r, g, b] = error;
     expect(r > g && r > b, `error text painted rgb(${r},${g},${b}), not a danger colour`).toBe(true);
   });
 

@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-select visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the trigger, the
+             dropdown panel and the danger ring are judged against the
+             surface they were designed for;
+           - #stage is a fixed, known box with room BELOW the control — the
+             listbox is an anchored surface that opens downward out of the
+             host's box, and it must open over plain stage, not over another
+             fixture element. It carries NO background, padding, font-size
+             override, or positioned siblings of its own, so a failed
+             elementFromPoint probe below the trigger is the select's own
+             dropdown (or its absence), never the fixture. The fixed height
+             exists so a marquee capture of #stage contains the whole open
+             listbox region;
+           - #probe resolves a theme token to the value a browser actually
+             computes for it — a colour for border comparisons, a min-height
+             for the documented --snice-select-min-height — so a token
+             assertion compares computed value to computed value. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 520px;
+        height: 600px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/select/snice-select.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+
+      /** The dropdown fades/slides in over --snice-transition-fast (150ms). */
+      async function settle(ms = 60) {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, ms));
+        await nextFrame();
+      }
+
+      /**
+       * The option sets, as plain data. Option lists may cross the
+       * Playwright boundary as data; nothing carrying a function may.
+       * `many` is thirty entries long so the documented maxHeight clamp and
+       * the scroll it implies have something to clamp.
+       */
+      const OPTION_SETS = {
+        fruits: [
+          { value: 'apple', label: 'Apple' },
+          { value: 'banana', label: 'Banana' },
+          { value: 'cherry', label: 'Cherry' },
+        ],
+        extras: [
+          { value: 'apple', label: 'Apple', icon: '/icons/apple.svg' },
+          { value: 'banana', label: 'Banana', disabled: true },
+          { value: 'cherry', label: 'Cherry' },
+        ],
+        many: Array.from({ length: 30 }, (_, i) => ({
+          value: `opt-${i + 1}`, label: `Option ${i + 1}`,
+        })),
+        empty: [],
+      };
+
+      const api = {
+        /**
+         * Mount one combo the way the doc's own examples author one — every
+         * documented attribute on the host (`value` is the `defaultValue`
+         * channel), options either as `<snice-option>` children ("Children
+         * take precedence") or through the `options` property after ready.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-select');
+          el.id = 'subject';
+          const set = (name, value) => {
+            if (value !== undefined && value !== null) el.setAttribute(name, String(value));
+          };
+          set('size', combo.size);
+          set('label', combo.label);
+          set('helper-text', combo.helperText);
+          set('error-text', combo.errorText);
+          set('placeholder', combo.placeholder);
+          set('value', combo.value);
+          set('max-height', combo.maxHeight);
+          for (const flag of ['disabled', 'readonly', 'loading', 'required', 'invalid',
+            'multiple', 'searchable', 'clearable', 'editable', 'allow-free-text']) {
+            if (combo[flag]) el.setAttribute(flag, '');
+          }
+
+          const options = OPTION_SETS[combo.optionSet ?? 'fruits'];
+          if (combo.source === 'children') {
+            el.innerHTML = options.map(option => {
+              const attrs = [`value="${option.value}"`,
+                option.disabled ? 'disabled' : '',
+                option.icon ? `icon="${option.icon}"` : ''].filter(Boolean).join(' ');
+              return `<snice-option ${attrs}>${option.label}</snice-option>`;
+            }).join('');
+          }
+
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.source !== 'children') {
+            el.options = options.map(option => ({ ...option }));
+          }
+          await settle();
+          current = { el, combo };
+          return { open: el.isOpen, value: el.value };
+        },
+
+        /** Open through the documented method, then clear the 150ms transition. */
+        async openListbox() {
+          const el = current.el;
+          el.openDropdown();
+          await settle(320);
+          return el.isOpen;
+        },
+
+        async closeListbox() {
+          const el = current.el;
+          el.closeDropdown();
+          await settle(320);
+          return el.isOpen;
+        },
+
+        /**
+         * Editable mode's documented open path: focusing the input opens the
+         * listbox (focus-to-open combobox behaviour).
+         */
+        async focusInput() {
+          const el = current.el;
+          el.focus();
+          await settle(320);
+          return el.isOpen;
+        },
+
+        /** A real click on one rendered option row. */
+        async clickOption(value) {
+          const el = current.el;
+          const row = el.shadowRoot.querySelector(
+            `.select-option[data-value="${CSS.escape(value)}"]`);
+          if (row) row.click();
+          await settle(320);
+          return {
+            clicked: !!row,
+            open: el.isOpen,
+            value: el.value,
+            valueText: (el.shadowRoot.querySelector('.select-value')?.textContent ?? '').trim(),
+          };
+        },
+
+        /**
+         * The value a browser computes for a theme token, on any style
+         * property — colours for borders, min-height for the documented
+         * custom property.
+         */
+        token(expr, prop = 'color') {
+          probe.style[prop] = '';
+          probe.style[prop] = expr.startsWith('--') ? `var(${expr})` : expr;
+          return getComputedStyle(probe)[prop];
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

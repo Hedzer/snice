@@ -607,10 +607,37 @@ export async function collectVisualProblems(
 
 interface Waiver {
   id: string;
-  /** Does this waiver apply to this combo at all? */
-  applies: (combo: Combo) => boolean;
+  /**
+   * Does this waiver apply to this combo AT ALL, on THIS engine? A component
+   * defect is not obliged to reproduce on every engine — a different layout
+   * or timing path can render the documented behaviour on one of them — so
+   * `applies` sees the engine and the tripwire below only demands a
+   * reproduction where one was actually observed. The assertion the waiver
+   * excuses stays asserted everywhere else, on every engine.
+   */
+  applies: (combo: Combo, engine: Engine) => boolean;
   /** The one message it excuses. */
   matches: RegExp;
+}
+
+/** The engines this tier runs on, as far as a waiver needs to care. */
+export type Engine = 'chromium' | 'firefox' | 'webkit' | 'other';
+
+const engineCache = new WeakMap<Page, Promise<Engine>>();
+/** `applies` needs the engine; one cheap evaluate per page, cached. */
+function engineOf(page: Page): Promise<Engine> {
+  let engine = engineCache.get(page);
+  if (!engine) {
+    engine = page.evaluate(() => {
+      const ua = navigator.userAgent;
+      if (ua.includes('Firefox')) return 'firefox';
+      if (ua.includes('Chrome')) return 'chromium';
+      if (ua.includes('Safari')) return 'webkit';
+      return 'other';
+    });
+    engineCache.set(page, engine);
+  }
+  return engine;
 }
 
 const WAIVERS: Waiver[] = [
@@ -629,9 +656,20 @@ const WAIVERS: Waiver[] = [
     // `initial` never trips it (no prior empty render); `remote` never trips it;
     // it does not self-correct after 2s. Reported, not fixed — see
     // updateFillRow() in packages/components/src/table/snice-table.ts.
+    //
+    // ENGINE-DEPENDENT REPRODUCTION: on firefox the `selectable` rebuild of
+    // header + body re-measures the frame correctly on the second render, so
+    // with the select-all column present the filler is NOT appended and the
+    // documented contract ("the filler only consumes space the frame ALREADY
+    // has") is what renders (measured: 12 rows overflowing a 318px frame,
+    // 0 fill rows on firefox, 1 on chromium/webkit). The tripwire therefore
+    // does not demand a reproduction for firefox+selectable — everywhere else
+    // the defect is still required to show up, and the filler contract itself
+    // stays asserted on every engine.
     id: 'VISUAL-MATRIX-fill-1',
-    applies: c => c.delivery === 'local' && c.height > 0 && !c.virtualize
-      && c.pattern !== 'initial',
+    applies: (c, engine) => c.delivery === 'local' && c.height > 0 && !c.virtualize
+      && c.pattern !== 'initial'
+      && !(engine === 'firefox' && c.selectable),
     matches: /^content already fills the frame \(\d+px of content in a \d+px frame\) but a \d+px filler was appended$/,
   },
 ];
@@ -652,7 +690,8 @@ export async function checkCombo(page: Page, combo: Combo): Promise<void> {
     problems = await collectVisualProblems(page, combo, mounted);
   }
 
-  const waivers = WAIVERS.filter(w => w.applies(combo));
+  const engine = await engineOf(page);
+  const waivers = WAIVERS.filter(w => w.applies(combo, engine));
   const excused = (problem: string) => waivers.some(w => w.matches.test(problem));
 
   // Everything the waivers do NOT name is a live failure, as always.

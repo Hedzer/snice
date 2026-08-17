@@ -109,14 +109,23 @@
           await settle();
 
           if (src) {
+            /* Settle on the COMPONENT's own state, not on the load/error
+               events: Firefox keeps `img.complete` false after a failed
+               data-URI decode and may have fired `error` before any listener
+               could attach (Chromium sets complete on failure instead), so an
+               event wait can hang forever. The error path re-renders with the
+               `avatar-image--error` class, and the success path completes the
+               image — both are visible in the DOM in every engine. */
             const img = el.shadowRoot.querySelector('img');
-            if (img && !img.complete) {
-              await new Promise(resolve => {
-                img.addEventListener('load', resolve, { once: true });
-                img.addEventListener('error', resolve, { once: true });
-              });
-              await settle();
-            }
+            const settled = () => !img || img.complete
+              || img.classList.contains('avatar-image--error');
+            await new Promise(resolve => {
+              const started = performance.now();
+              (function poll() {
+                if (settled() || performance.now() - started > 3000) return resolve();
+                requestAnimationFrame(poll);
+              })();
+            });
             // The error handler re-renders; give that render a frame too.
             await settle();
           }

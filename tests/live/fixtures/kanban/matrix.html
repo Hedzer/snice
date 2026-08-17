@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-kanban visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+            - the page sits on the theme's own surface, so a column's tint and
+              a card's ink are judged against the surface the component was
+              designed for;
+            - #stage is a fixed, known box wide enough for three columns plus
+              the board's own gap and padding, so "columns lay out left to
+              right" and "cards stack inside their column" are facts about the
+              component and not about the viewport;
+            - #stage has NO background, padding, or font-size override, and
+              nothing overlaps it, so a failed elementFromPoint probe is the
+              board occluding itself, never the fixture occluding it. The root
+              font size stays at the browser default because the column width
+              is specified in rem;
+            - #probe resolves a theme token to the colour a browser actually
+              computes for it, so a token assertion compares rgb() to rgb();
+            - the fixture OWNS the column/card data — KanbanColumn[] carries
+              handler-free data only, but keeping it here means the Playwright
+              boundary never has to carry structures at all. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 1060px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/kanban/snice-kanban.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      // Board families, fresh per mount. The names cross the documented
+      // KanbanColumn/KanbanCard fields: a plain board, column and card colors,
+      // rich labels (icon + custom colors), a collapsed column, and empty
+      // columns.
+      const BOARDS = {
+        basic: () => ([
+          { id: 'todo', title: 'To Do', cards: [
+            { id: 'c1', title: 'Research competitors', description: 'Analyze top 5.' },
+            { id: 'c2', title: 'Write user stories', assignee: 'Alice' },
+          ]},
+          { id: 'progress', title: 'In Progress', cards: [
+            { id: 'c3', title: 'Design mockups', description: 'Create prototypes.', assignee: 'Alice' },
+          ]},
+          { id: 'done', title: 'Done', cards: [{ id: 'c4', title: 'Set up repository' }] },
+        ]),
+        colors: () => ([
+          { id: 'todo', title: 'To Do', color: 'rgb(220, 38, 38)', cards: [
+            { id: 'cc1', title: 'Bug fix', color: 'rgb(220, 38, 38)' },
+            { id: 'cc2', title: 'Feature', color: 'rgb(37, 99, 235)' },
+          ]},
+          { id: 'done', title: 'Done', color: 'rgb(22, 163, 74)', cards: [] },
+        ]),
+        labels: () => ([
+          { id: 'todo', title: 'To Do', cards: [
+            { id: 'l1', title: 'Implement auth', labels: ['Backend', 'Security'], assignee: 'Bob' },
+            { id: 'l2', title: 'API endpoints', labels: [
+              { text: 'Backend', color: '#ffffff', background: 'rgb(37, 99, 235)' },
+              { text: 'Hot', color: '#ffffff', background: 'rgb(220, 38, 38)', icon: 'fire', iconPosition: 'left' },
+            ], assignee: 'Carol' },
+          ]},
+          { id: 'review', title: 'Review', cards: [
+            { id: 'l3', title: 'Code review PR #42', labels: [{ text: 'Review', color: 'rgb(146, 64, 14)', background: 'rgb(254, 243, 199)' }] },
+          ]},
+        ]),
+        collapsed: () => ([
+          { id: 'todo', title: 'To Do', cards: [{ id: 'x1', title: 'Hidden task' }], collapsed: true },
+          { id: 'done', title: 'Done', cards: [{ id: 'x2', title: 'Visible task' }] },
+        ]),
+        empty: () => ([
+          { id: 'e1', title: 'Open', cards: [] },
+          { id: 'e2', title: 'In Progress', cards: [] },
+          { id: 'e3', title: 'Done', cards: [] },
+        ]),
+      };
+
+      const api = {
+        /**
+         * Mount one combo through the PROPERTY channel: the booleans land as
+         * properties, the columns array has no attribute form at all
+         * (attribute: false), so property is the only authoring channel data
+         * has — exactly as the DOM matrix mounts it.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-kanban');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          el.allowDragDrop = combo.allowDragDrop !== undefined ? combo.allowDragDrop : true;
+          el.showCardCount = combo.showCardCount !== undefined ? combo.showCardCount : true;
+          el.columns = (BOARDS[combo.family] || BOARDS.basic)();
+          await settle();
+          current = { el, combo };
+          return {
+            family: combo.family,
+            allowDragDrop: el.allowDragDrop,
+            showCardCount: el.showCardCount,
+            columns: el.columns.length,
+          };
+        },
+
+        /** Click a card the way a pointer would, and report the event. */
+        async clickCard(cardId) {
+          const el = current?.el;
+          if (!el) return { clicked: false };
+          const seen = [];
+          const listener = (event) => seen.push(event.detail);
+          el.addEventListener('kanban-card-click', listener);
+          const card = el.shadowRoot.querySelector(`[data-card-id="${cardId}"]`);
+          if (card) card.click();
+          await settle();
+          el.removeEventListener('kanban-card-click', listener);
+          return {
+            clicked: !!card,
+            events: seen.length,
+            sameBoard: seen[0]?.kanban === el,
+            cardId: seen[0] ? String(seen[0].card.id) : null,
+          };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        /** The colour a browser computes for any authored colour string. */
+        colorOf(value) {
+          probe.style.color = value;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

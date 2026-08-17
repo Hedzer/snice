@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-flow visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a node header's colour
+             is judged against the background the component was designed for;
+           - #stage is a fixed, known box, so "fitView brings every node inside
+             the canvas" is a fact about the component and not about the viewport;
+           - #stage has NO padding, NO background and nothing overlapping it, so
+             a failed elementFromPoint probe is the editor occluding itself,
+             never the fixture occluding it;
+           - the flow sizes itself from its host, so the stage supplies both a
+             width and a height. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 820px;
+        height: 520px;
+      }
+      #stage snice-flow { display: block; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/flow/snice-flow.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      /**
+       * The same graphs the DOM matrix mounts
+       * (tests/matrix/flow/flow-support.ts), so a combo id means the same thing
+       * in both tiers. Each is a FACTORY because the documented drag handler
+       * mutates the node objects it is handed.
+       */
+      const GRAPHS = {
+        empty: () => ({ nodes: [], edges: [] }),
+        single: () => ({ nodes: [{ id: 'a', x: 40, y: 40 }], edges: [] }),
+        doc: () => ({
+          nodes: [
+            { id: 'a', x: 50, y: 50, label: 'Start', outputs: [{ id: 'out', label: 'Out' }] },
+            { id: 'b', x: 300, y: 50, label: 'Process',
+              inputs: [{ id: 'in', label: 'In' }], outputs: [{ id: 'out', label: 'Out' }] },
+          ],
+          edges: [{ id: 'e1', source: 'a', target: 'b', sourcePort: 'out', targetPort: 'in' }],
+        }),
+        chain: () => ({
+          nodes: [
+            { id: 'n1', x: 40, y: 40, label: 'Trigger', type: 'trigger', outputs: [{ id: 'o', label: 'Out' }] },
+            { id: 'n2', x: 260, y: 40, label: 'Transform', type: 'transform',
+              inputs: [{ id: 'i', label: 'In' }], outputs: [{ id: 'o', label: 'Out' }] },
+            { id: 'n3', x: 480, y: 40, label: 'Sink', type: 'sink', inputs: [{ id: 'i', label: 'In' }] },
+          ],
+          edges: [
+            { id: 'e1', source: 'n1', target: 'n2', sourcePort: 'o', targetPort: 'i' },
+            { id: 'e2', source: 'n2', target: 'n3', sourcePort: 'o', targetPort: 'i' },
+          ],
+        }),
+        'multi-port': () => ({
+          nodes: [
+            { id: 'src', x: 40, y: 40, label: 'Source',
+              outputs: [{ id: 'o1', label: 'A' }, { id: 'o2', label: 'B' }, { id: 'o3', label: 'C' }] },
+            { id: 'dst', x: 380, y: 40, label: 'Sink',
+              inputs: [{ id: 'i1', label: 'X' }, { id: 'i2', label: 'Y' }] },
+          ],
+          edges: [
+            { id: 'e1', source: 'src', target: 'dst', sourcePort: 'o1', targetPort: 'i1' },
+            { id: 'e2', source: 'src', target: 'dst', sourcePort: 'o3', targetPort: 'i2' },
+          ],
+        }),
+        'styled-edges': () => ({
+          nodes: [
+            { id: 'p', x: 40, y: 40, label: 'P', outputs: [{ id: 'o' }] },
+            { id: 'q', x: 380, y: 40, label: 'Q', inputs: [{ id: 'i' }] },
+            { id: 'r', x: 380, y: 240, label: 'R', inputs: [{ id: 'i' }] },
+          ],
+          edges: [
+            { id: 'e1', source: 'p', target: 'q', sourcePort: 'o', targetPort: 'i', label: 'yes', color: 'rgb(16 185 129)' },
+            { id: 'e2', source: 'p', target: 'r', sourcePort: 'o', targetPort: 'i', label: 'no', animated: true },
+          ],
+        }),
+        sized: () => ({
+          nodes: [
+            { id: 'default', x: 40, y: 40, label: 'Default size' },
+            { id: 'wide', x: 40, y: 220, label: 'Wide', width: 320, height: 120 },
+            { id: 'tinted', x: 420, y: 40, label: 'Tinted', color: 'rgb(168 85 247)' },
+          ],
+          edges: [],
+        }),
+        large: () => {
+          const nodes = Array.from({ length: 9 }, (_, i) => ({
+            id: `L${i}`, x: (i % 3) * 260, y: Math.floor(i / 3) * 160, label: `Node ${i}`,
+            inputs: i === 0 ? undefined : [{ id: 'i' }],
+            outputs: i === 8 ? undefined : [{ id: 'o' }],
+          }));
+          const edges = Array.from({ length: 8 }, (_, i) => ({
+            id: `E${i}`, source: `L${i}`, target: `L${i + 1}`, sourcePort: 'o', targetPort: 'i',
+          }));
+          return { nodes, edges };
+        },
+        'off-origin': () => ({
+          nodes: [
+            { id: 'neg', x: -240, y: -120, label: 'Negative', outputs: [{ id: 'o' }] },
+            { id: 'frac', x: 17.5, y: 33.25, label: 'Fractional', inputs: [{ id: 'i' }] },
+          ],
+          edges: [{ id: 'e1', source: 'neg', target: 'frac', sourcePort: 'o', targetPort: 'i' }],
+        }),
+      };
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        graphNames: Object.keys(GRAPHS),
+
+        /**
+         * Mount one combo. The five switches and `grid-size` cross the
+         * documented attribute channel; `nodes` and `edges` are documented
+         * `attribute: false` and cross the property channel.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-flow');
+          el.id = 'subject';
+          if (combo.snapToGrid !== false) el.setAttribute('snap-to-grid', '');
+          el.setAttribute('grid-size', String(combo.gridSize ?? 20));
+          if (combo.zoomEnabled !== false) el.setAttribute('zoom-enabled', '');
+          if (combo.panEnabled !== false) el.setAttribute('pan-enabled', '');
+          if (combo.minimap !== false) el.setAttribute('minimap', '');
+          if (combo.editable !== false) el.setAttribute('editable', '');
+
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.snapToGrid === false) el.snapToGrid = false;
+          if (combo.zoomEnabled === false) el.zoomEnabled = false;
+          if (combo.panEnabled === false) el.panEnabled = false;
+          if (combo.editable === false) el.editable = false;
+
+          const graph = GRAPHS[combo.graph ?? 'doc']();
+          el.nodes = graph.nodes;
+          el.edges = graph.edges;
+          await settle();
+          await settle();
+
+          current = { el, combo, graph };
+          return {
+            nodes: el.shadowRoot.querySelectorAll('.flow__node').length,
+            edges: el.shadowRoot.querySelectorAll('.flow__edge').length,
+          };
+        },
+
+        /** Drag a node by its header, the documented "draggable nodes" gesture. */
+        async dragNode(id, dx, dy) {
+          const el = current.el;
+          const node = el.shadowRoot.querySelector(`.flow__node[data-node-id="${id}"]`);
+          const box = node.getBoundingClientRect();
+          const x = box.left + 20;
+          const y = box.top + 10;
+          node.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, composed: true, button: 0, clientX: x, clientY: y }));
+          document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: x + dx, clientY: y + dy }));
+          await settle();
+          document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, clientX: x + dx, clientY: y + dy }));
+          await settle();
+          const moved = el.nodes.find(n => n.id === id);
+          return { x: moved.x, y: moved.y };
+        },
+
+        /** A wheel gesture over the canvas — the documented "zoom/pan canvas". */
+        async wheel(deltaY) {
+          const svg = current.el.shadowRoot.querySelector('.flow__svg');
+          const box = svg.getBoundingClientRect();
+          svg.dispatchEvent(new WheelEvent('wheel', {
+            deltaY, bubbles: true, cancelable: true,
+            clientX: box.left + box.width / 2, clientY: box.top + box.height / 2,
+          }));
+          await settle();
+          return true;
+        },
+
+        async fitView() {
+          current.el.fitView();
+          await settle();
+          await settle();
+          return true;
+        },
+
+        /** Select a node by pressing it without moving — the selection path. */
+        async selectNode(id) {
+          const el = current.el;
+          const node = el.shadowRoot.querySelector(`.flow__node[data-node-id="${id}"]`);
+          const box = node.getBoundingClientRect();
+          node.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, composed: true, button: 0, clientX: box.left + 20, clientY: box.top + 10 }));
+          document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, clientX: box.left + 20, clientY: box.top + 10 }));
+          await settle();
+          return true;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        get graph() { return current?.graph ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

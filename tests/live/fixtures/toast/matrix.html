@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-toast visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a toast chip is
+             judged against the surface it floats over;
+           - #stage is deliberately EMPTY of toasts: the container positions
+             itself against the VIEWPORT ("Position on screen"), hoists
+             itself out of this stage to document.body on ready (so its
+             z-index is not trapped in a parent stacking context), and every
+             position claim below is therefore measured against
+             window.innerWidth/innerHeight. The stage only anchors the mount
+             before the hoist;
+           - nothing on the page is positioned or z-indexed, so a failed
+             elementFromPoint probe at a chip is the toast's own chrome
+             occluding it, never the fixture;
+           - #probe resolves a theme token — or any colour expression, like
+             the warning chip's hsl(var(--snice-color-yellow-400)) — to the
+             rgb() a browser actually computes. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/toast/snice-toast-container.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+
+      /**
+       * A toast slides in over 300ms and slides out over 300ms more. 450ms
+       * clears the entrance; dismiss() waits longer itself so a departure is
+       * measured only after the element is really gone.
+       */
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 450));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one container at a documented `position` (the attribute
+         * channel, authored before connection the way the static API itself
+         * authors it) and show ONE toast through the documented instance
+         * method `show(message, options)`.
+         *
+         * Every combo shows with `duration: 0` — the documented sticky
+         * option ("0 = no auto-dismiss") — unless the combo names a
+         * duration, so no toast ever vanishes under a timer mid-assertion.
+         */
+        async mount(combo) {
+          api.unmount();
+          const container = document.createElement('snice-toast-container');
+          container.setAttribute('position', combo.position ?? 'bottom-center');
+          stage.appendChild(container);
+          await container.ready;
+          await settle();
+
+          let toastId = null;
+          if (combo.show !== false) {
+            toastId = container.show(combo.message ?? 'Saved successfully', {
+              type: combo.type ?? 'info',
+              duration: combo.duration ?? 0,
+              closable: combo.closable ?? true,
+              icon: combo.icon ?? true,
+            });
+            await settle();
+          }
+          current = { container, combo, toastId };
+          return { position: container.position, toastId };
+        },
+
+        /** Stack more toasts into the current container (also sticky). */
+        async stack(messages) {
+          const { container } = current;
+          const ids = messages.map(message =>
+            container.show(message, { duration: 0 }));
+          await settle();
+          return ids;
+        },
+
+        /** Click the current toast's close button, capturing close-toast. */
+        async clickClose() {
+          const { container, toastId } = current;
+          const toast = [...container.shadowRoot.querySelectorAll('snice-toast')]
+            .find(t => t.getAttribute('toast-id') === toastId);
+          if (!toast) return { clicked: false, events: 0 };
+          const seen = [];
+          toast.addEventListener('close-toast', e => seen.push(e.detail));
+          const button = toast.shadowRoot.querySelector('.toast-close');
+          if (button) button.click();
+          await settle();
+          return { clicked: !!button, events: seen.length, id: seen[0]?.id };
+        },
+
+        /**
+         * The documented `hide(id)`: mark the toast for the slide-out and
+         * remove it when the animation ends. 800ms covers the 300ms exit
+         * plus slack, so the caller measures the world AFTER the departure.
+         */
+        async dismiss() {
+          const { container, toastId } = current;
+          const toast = [...container.shadowRoot.querySelectorAll('snice-toast')]
+            .find(t => t.getAttribute('toast-id') === toastId);
+          container.hide(toastId);
+          await nextFrame();
+          await new Promise(resolve => setTimeout(resolve, 800));
+          return {
+            stillRendered: container.shadowRoot.querySelectorAll('snice-toast').length,
+            stillConnected: toast ? toast.isConnected : null,
+          };
+        },
+
+        /** The colour a browser computes for a token or colour expression. */
+        token(expr) {
+          probe.style.color = '';
+          probe.style.color = expr.startsWith('--') ? `var(${expr})` : expr;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          // The container hoists itself to document.body on ready, so the
+          // teardown must sweep body, not just the stage. Removing it lets
+          // the component's own disposal clear the global registry slot the
+          // static API would otherwise keep reusing.
+          for (const container of document.body.querySelectorAll('snice-toast-container')) {
+            container.remove();
+          }
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.container ?? null; },
+        get toastId() { return current?.toastId ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

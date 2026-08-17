@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-step-input visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the field's own
+             surface and border are judged against the surface the control was
+             designed for;
+           - #stage is a fixed, known box, so "the minus button, the field and
+             the plus button run left to right on one line" is a fact about the
+             component and not about the viewport;
+           - #stage has NO background, padding, or overlapping siblings, so a
+             failed elementFromPoint probe is the control occluding itself,
+             never the fixture occluding it. The root font size is left at the
+             browser default because the size axis is specified in rem;
+           - the control lives inside a REAL <form> with a REAL <fieldset> and a
+             REAL <label>, because the whole point of this tier is that the
+             browser's own form plumbing runs: happy-dom implements none of
+             FormData, form.elements, form.reset() or fieldset disabledness for
+             a form-associated custom element, so the DOM matrix observes them
+             through ElementInternals and this tier observes the real thing;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a token assertion compares rgb() to rgb()
+             instead of comparing a var() name to a paint. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+      }
+      /* The form furniture must not paint or lay anything out of its own, or a
+         geometry assertion would be measuring the fixture. */
+      #stage form, #stage fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        display: block;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/step-input/snice-step-input.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo the way a page author writes it: attributes, before
+         * connection, inside a real form. `value` is the DOCUMENTED name of the
+         * default attribute, so it is spelled that way here too.
+         */
+        async mount(combo) {
+          api.unmount();
+          const form = document.createElement('form');
+          form.id = 'host-form';
+          const fieldset = document.createElement('fieldset');
+          if (combo.fieldsetDisabled) fieldset.disabled = true;
+          const label = document.createElement('label');
+          label.htmlFor = 'subject';
+          label.textContent = 'Quantity';
+
+          const attrs = {
+            id: 'subject',
+            name: combo.name ?? 'qty',
+            value: combo.value,
+            min: combo.min,
+            max: combo.max,
+            step: combo.step,
+            size: combo.size,
+          };
+          const markup = Object.entries(attrs)
+            .filter(([, v]) => v !== undefined && v !== null && v !== '')
+            .map(([k, v]) => `${k}="${v}"`)
+            .concat(combo.disabled ? ['disabled'] : [])
+            .concat(combo.readonly ? ['readonly'] : [])
+            .concat(combo.wrap ? ['wrap'] : [])
+            .join(' ');
+
+          fieldset.appendChild(label);
+          fieldset.insertAdjacentHTML('beforeend', `<snice-step-input ${markup}></snice-step-input>`);
+          form.appendChild(fieldset);
+          stage.appendChild(form);
+
+          const el = form.querySelector('snice-step-input');
+          await el.ready;
+          await settle();
+          current = { el, form, combo };
+          return {
+            value: el.value,
+            defaultValue: el.defaultValue,
+            size: el.size,
+            reflectedSize: el.getAttribute('size'),
+            // The real form plumbing, which only a browser has.
+            inForm: el.form === form,
+            listed: [...form.elements].includes(el),
+            submitted: new FormData(form).get(el.name ?? 'qty'),
+            labelled: el.labels ? [...el.labels].includes(label) : false,
+            willValidate: el.willValidate,
+          };
+        },
+
+        /** Click a stepper button the way a pointer would. */
+        async press(which, times = 1) {
+          const el = current?.el;
+          if (!el) return null;
+          const events = [];
+          const listener = (event) => events.push({
+            value: event.detail.value,
+            oldValue: event.detail.oldValue,
+            isComponent: event.detail.component === el,
+          });
+          el.addEventListener('value-change', listener);
+          const selector = which === 'up' ? '[part~="increment-button"]' : '[part~="decrement-button"]';
+          const button = el.shadowRoot.querySelector(selector);
+          for (let i = 0; i < times; i++) {
+            if (button && !button.disabled) button.click();
+            await settle();
+          }
+          el.removeEventListener('value-change', listener);
+          return { value: el.value, disabled: !!button?.disabled, events };
+        },
+
+        /** Type a number into the field and commit it, as a user does. */
+        async type(text) {
+          const el = current?.el;
+          if (!el) return null;
+          const input = el.shadowRoot.querySelector('[part~="input"]');
+          input.focus();
+          input.value = text;
+          input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+          input.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+          await settle();
+          return { value: el.value, rendered: input.value };
+        },
+
+        /** Reset the REAL form, which only a browser can do for a FACE. */
+        async reset() {
+          const { el, form } = current ?? {};
+          if (!form) return null;
+          const events = [];
+          const listener = (event) => events.push(event.detail.value);
+          el.addEventListener('value-change', listener);
+          form.reset();
+          await settle();
+          el.removeEventListener('value-change', listener);
+          return { value: el.value, events };
+        },
+
+        /** Native validity, computed by the engine rather than by happy-dom. */
+        validity() {
+          const el = current?.el;
+          if (!el) return null;
+          const input = el.shadowRoot.querySelector('[part~="input"]');
+          return {
+            hostValid: el.checkValidity(),
+            stepMismatch: input.validity.stepMismatch,
+            rangeOverflow: input.validity.rangeOverflow,
+            rangeUnderflow: input.validity.rangeUnderflow,
+            badInput: input.validity.badInput,
+          };
+        },
+
+        setCustomValidity(message) {
+          current?.el.setCustomValidity(message);
+          return {
+            valid: current?.el.checkValidity(),
+            message: current?.el.validationMessage,
+            ariaInvalid: current?.el.shadowRoot
+              .querySelector('[part~="input"]').getAttribute('aria-invalid'),
+          };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

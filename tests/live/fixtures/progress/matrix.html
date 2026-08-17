@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-progress visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the track and the fill
+             are judged against the surface the component was designed for
+             rather than the browser's default white;
+           - #stage is a FIXED 400px wide, because the headline claim of a linear
+             progress bar is "the fill is `value/max` of the track". That is only
+             a claim about the component if the track's width is a known,
+             stable number rather than whatever the viewport allowed;
+           - #stage has no padding, no background of its own and nothing overlaps
+             it, so a failed elementFromPoint probe is the bar occluding itself,
+             never the fixture occluding it;
+           - the stage is much taller than any bar, so an element screenshot of
+             it also captures the page surface behind the component. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 400px;
+        min-height: 320px;
+      }
+      /* The axis comparisons put several bars on screen at once; a column keeps
+         each one at the same known width as a solo mount. */
+      #stage.row {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/progress/snice-progress.ts';
+
+      const STAGE_WIDTH = 400;
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      function build(combo) {
+        const el = document.createElement('snice-progress');
+        /* Property channel, exactly as the DOM matrix mounts it. */
+        el.variant = combo.variant ?? 'linear';
+        el.size = combo.size ?? 'medium';
+        if (combo.color) el.color = combo.color;
+        if (combo.max !== undefined) el.max = combo.max;
+        if (combo.value !== undefined) el.value = combo.value;
+        if (combo.indeterminate) el.indeterminate = true;
+        if (combo.showLabel) el.showLabel = true;
+        if (combo.label) el.label = combo.label;
+        if (combo.striped) el.striped = true;
+        if (combo.animated) el.animated = true;
+        if (combo.thickness !== undefined) el.thickness = combo.thickness;
+        return el;
+      }
+
+      const api = {
+        STAGE_WIDTH,
+
+        async mount(combo) {
+          api.unmount();
+          const el = build(combo);
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          /* `value` is also applied AFTER the first render: this is the path a
+             customer's code takes when progress advances, and the one that
+             proves the fill follows a property change rather than only the
+             initial attribute. */
+          if (combo.value !== undefined) el.value = combo.value;
+          await settle();
+          current = el;
+          return {
+            variant: el.variant,
+            size: el.size,
+            percentage: el.getPercentage(),
+            stageWidth: STAGE_WIDTH,
+          };
+        },
+
+        /**
+         * Drive a live bar, the way a real upload would, and wait for the
+         * PAINT to catch up. The fill has `transition: width 0.3s ease`, so a
+         * measurement taken two frames after the property change reads a
+         * halfway-animated width — which looks exactly like a component that
+         * computed the wrong percentage.
+         */
+        async setProgress(value, max) {
+          if (!current) return null;
+          if (max === undefined) current.setProgress(value);
+          else current.setProgress(value, max);
+          await settle();
+          const bar = current.shadowRoot.querySelector('[part~="bar"]');
+          if (bar) {
+            let last = -1;
+            for (let i = 0; i < 120; i++) {
+              const width = bar.getBoundingClientRect().width;
+              if (Math.abs(width - last) < 0.05) break;
+              last = width;
+              await nextFrame();
+            }
+          }
+          return current.getPercentage();
+        },
+
+        async mountRow(combos) {
+          api.unmount();
+          stage.classList.add('row');
+          const els = combos.map((combo, i) => {
+            const el = build(combo);
+            el.id = `subject-${i}`;
+            stage.appendChild(el);
+            return el;
+          });
+          await Promise.all(els.map(el => el.ready));
+          for (const [i, combo] of combos.entries()) {
+            if (combo.value !== undefined) els[i].value = combo.value;
+          }
+          await settle();
+          current = els[0] ?? null;
+          return els.length;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.classList.remove('row');
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

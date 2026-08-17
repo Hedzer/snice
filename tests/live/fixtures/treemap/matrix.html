@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-treemap visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+
+           - the page sits on the theme's own surface, so a rectangle's fill is
+             judged against the surface the component was designed for;
+           - #stage is a fixed, known box, so "the chart fills its host" is a
+             fact about the treemap and not about the viewport;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             component occluding itself, never the fixture occluding it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 720px;
+        height: 460px;
+      }
+      #stage > snice-treemap { display: block; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/treemap/snice-treemap.ts';
+
+      /** Trees, mirroring tests/matrix/treemap/treemap-support.ts. */
+      const TREES = {
+        doc: {
+          label: 'Root', value: 0,
+          children: [
+            { label: 'A', value: 50 },
+            { label: 'B', value: 30, color: '#e74c3c' },
+            { label: 'C', value: 20, children: [
+              { label: 'C1', value: 12 },
+              { label: 'C2', value: 8 },
+            ] },
+          ],
+        },
+        single: { label: 'Root', value: 0, children: [{ label: 'Solo', value: 42 }] },
+        equal: {
+          label: 'Root', value: 0,
+          children: [{ label: 'A', value: 100 }, { label: 'B', value: 100 }],
+        },
+        steep: {
+          label: 'Root', value: 0,
+          children: [{ label: 'Huge', value: 100000 }, { label: 'Tiny', value: 1 }],
+        },
+        colored: {
+          label: 'Root', value: 0,
+          children: [
+            { label: 'Red', value: 40, color: '#e74c3c' },
+            { label: 'Green', value: 30, color: '#2e7d32' },
+            { label: 'Blue', value: 20, color: '#1565c0' },
+          ],
+        },
+        deep: {
+          label: 'Root', value: 0,
+          children: [
+            { label: 'Branch', value: 0, children: [
+              { label: 'Leaf 1', value: 30 },
+              { label: 'Leaf 2', value: 20 },
+            ] },
+            { label: 'Other', value: 40 },
+          ],
+        },
+        many: {
+          label: 'Root', value: 0,
+          children: Array.from({ length: 12 }, (_, i) => ({
+            label: `N${i + 1}`, value: 100 - i * 7,
+          })),
+        },
+      };
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /** combo: { tree, showLabels, showValues, colorScheme, padding, animation, drill } */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-treemap');
+          el.id = 'subject';
+          if (combo.showValues) el.setAttribute('show-values', '');
+          if (combo.colorScheme) el.setAttribute('color-scheme', combo.colorScheme);
+          if (combo.padding !== undefined) el.setAttribute('padding', String(combo.padding));
+
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.showLabels === false) el.showLabels = false;
+          if (combo.animation === false) el.animation = false;
+
+          const tree = TREES[combo.tree ?? 'doc'];
+          el.data = tree;
+          await settle();
+
+          if (combo.drill) {
+            const target = tree.children.find(child => child.label === combo.drill);
+            if (target) el.drillDown(target);
+            await settle();
+          }
+          await settle();
+
+          current = { el, tree, combo };
+          return {
+            rects: el.shadowRoot.querySelectorAll('.treemap__rect').length,
+            depth: el.drillPath.length,
+          };
+        },
+
+        /** Hover a rectangle, the documented tooltip affordance. */
+        async hoverRect(index) {
+          const el = current?.el;
+          if (!el) return false;
+          const rect = el.shadowRoot.querySelectorAll('.treemap__rect')[index];
+          if (!rect) return false;
+          rect.dispatchEvent(new MouseEvent('mouseenter', { bubbles: false }));
+          await settle();
+          return true;
+        },
+
+        async leaveRect(index) {
+          const el = current?.el;
+          if (!el) return false;
+          const rect = el.shadowRoot.querySelectorAll('.treemap__rect')[index];
+          if (!rect) return false;
+          rect.dispatchEvent(new MouseEvent('mouseleave', { bubbles: false }));
+          // The tooltip fades out over a transition; a spec that measured it
+          // mid-fade would be timing the CSS, not the component. Wait for the
+          // fade to actually finish, bounded so a stuck tooltip still fails.
+          const tip = el.shadowRoot.querySelector('.treemap__tooltip');
+          for (let i = 0; i < 60 && Number(getComputedStyle(tip).opacity) > 0; i++) {
+            await nextFrame();
+          }
+          await settle();
+          return true;
+        },
+
+        /** Click a rectangle by index — the drill affordance. */
+        async clickRect(index) {
+          const el = current?.el;
+          if (!el) return false;
+          const rect = el.shadowRoot.querySelectorAll('.treemap__rect')[index];
+          if (!rect) return false;
+          rect.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+          await settle();
+          return el.drillPath.length;
+        },
+
+        unmount() {
+          if (current) current.el.remove();
+          current = null;
+          stage.innerHTML = '';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

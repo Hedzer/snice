@@ -120,9 +120,21 @@ async function visualProblems(combo: Combo): Promise<string[]> {
     if (Number(hostCs.opacity) <= 0) say(`host opacity "${hostCs.opacity}"`);
 
     // ── The documented display switch ────────────────────────────────────────
-    const wantDisplay = combo.orientation === 'vertical' ? 'inline-block' : 'block';
+    //
+    // A vertical divider is `inline-block` so it can sit between two inline
+    // items. The documented layout for it, though, is a flex row (docs/
+    // components/divider.md "Vertical Orientation"), and CSS BLOCKIFIES every
+    // flex item: `inline-block` computes to `block` for a flex child, by spec.
+    // So the expectation is read against the parent's formatting context —
+    // measuring the same rule, in the box model the browser actually built.
+    const parentDisplay = host.parentElement
+      ? getComputedStyle(host.parentElement).display : 'block';
+    const blockified = /flex|grid/.test(parentDisplay);
+    const wantDisplay = combo.orientation === 'vertical' && !blockified
+      ? 'inline-block' : 'block';
     if (hostCs.display !== wantDisplay) {
-      say(`${combo.orientation} host computed display "${hostCs.display}", expected "${wantDisplay}"`);
+      say(`${combo.orientation} host computed display "${hostCs.display}", expected "${wantDisplay}"`
+        + ` (parent display "${parentDisplay}")`);
     }
 
     // ── spacing: the documented margin, on the documented axis ───────────────
@@ -187,10 +199,17 @@ async function visualProblems(combo: Combo): Promise<string[]> {
         if (combo.variant === 'dotted' && !image.includes('radial-gradient')) {
           say(`dotted line ${i} background-image is "${image}", expected a radial-gradient`);
         }
-        // The vertical dashed rule must run down the line, not across it.
+        // The vertical dashed rule must run DOWN the line, not across it.
+        // `to bottom` is the initial direction, and every engine serializes it
+        // by omission — so the observable claim is the absence of a horizontal
+        // direction, not the presence of the word "bottom".
         if (combo.variant === 'dashed' && combo.orientation === 'vertical'
-          && !image.includes('bottom')) {
-          say(`vertical dashed line ${i} still gradients "to right" (${image})`);
+          && /to right|to left|90deg|270deg/.test(image)) {
+          say(`vertical dashed line ${i} still gradients across the rule (${image})`);
+        }
+        if (combo.variant === 'dashed' && combo.orientation === 'horizontal'
+          && !/to right|to left|90deg|270deg/.test(image)) {
+          say(`horizontal dashed line ${i} gradients down the rule (${image})`);
         }
       }
     }
@@ -280,14 +299,66 @@ async function visualProblems(combo: Combo): Promise<string[]> {
 
 const combos = generateCombos();
 
+/**
+ * The findings this tier pinned, as a predicate over the combo.
+ *
+ * MATRIX-divider-3 — the documented default `spacing: 'medium'` produces NO
+ * margin at all. Every margin this component has lives under
+ * `:host([spacing="…"])`, and an untouched default reflects no attribute
+ * (docs/ai/properties.md), so `<snice-divider></snice-divider>` — the docs' own
+ * first example — renders flush against its neighbours while the property
+ * reads `'medium'`. Only an explicitly written `spacing="medium"` produces the
+ * documented "Vertical margin". Per .ai/fuzzing.md the assertion is NOT
+ * weakened and the component is NOT changed: the affected combos are declared
+ * `test.fail()`, so the suite goes red the day it is fixed.
+ */
+function pinnedFindings(combo: Combo): string[] {
+  return combo.spacing === 'medium' ? ['MATRIX-divider-3'] : [];
+}
+
 test.describe('divider visual matrix: layer 1', () => {
   for (const combo of combos) {
-    test(combo.id, async () => {
+    const findings = pinnedFindings(combo);
+    const title = findings.length ? `${findings.join(' ')} ${combo.id}` : combo.id;
+    test(title, async () => {
+      if (findings.length) test.fail();
       const mounted = await page.evaluate(c => (window as any).matrix.mount(c), combo as any);
       expect(mounted.orientation).toBe(combo.orientation);
       expect(await visualProblems(combo), `combo ${combo.id}`).toEqual([]);
     });
   }
+});
+
+test.describe('divider visual matrix: the spacing scale', () => {
+  // The finding above is about the DEFAULT, not about the scale: an explicitly
+  // written spacing must still produce its documented margin, on the documented
+  // axis. This is the check that keeps MATRIX-divider-3 honest — if the whole
+  // scale were broken, pinning the default alone would hide it.
+  for (const spacing of ['none', 'small', 'large'] as Spacing[]) {
+    test(`spacing="${spacing}" applies ${SPACING_PX[spacing]}px of vertical margin`, async () => {
+      await page.evaluate(c => (window as any).matrix.mount(c), {
+        orientation: 'horizontal', variant: 'solid', spacing, align: 'center',
+        capped: false, text: '',
+      } as any);
+      const margins = await page.evaluate(() => {
+        const cs = getComputedStyle(document.getElementById('subject')!);
+        return [cs.marginTop, cs.marginBottom, cs.marginLeft, cs.marginRight];
+      });
+      expect(parseFloat(margins[0])).toBeCloseTo(SPACING_PX[spacing], 1);
+      expect(parseFloat(margins[1])).toBeCloseTo(SPACING_PX[spacing], 1);
+      expect(parseFloat(margins[2])).toBe(0);
+      expect(parseFloat(margins[3])).toBe(0);
+    });
+  }
+
+  // MATRIX-divider-3 at its most direct: the documented default, alone.
+  test('MATRIX-divider-3: a default divider carries its documented medium margin', async () => {
+    test.fail();
+    await page.evaluate(() => (window as any).matrix.mount({}));
+    const margin = await page.evaluate(() =>
+      getComputedStyle(document.getElementById('subject')!).marginTop);
+    expect(parseFloat(margin)).toBeCloseTo(SPACING_PX.medium, 1);
+  });
 });
 
 // ── LAYER 2: the pinned marquee captures ────────────────────────────────────
@@ -304,12 +375,19 @@ test.describe('divider visual matrix: marquee pixels', () => {
     }));
     // Probe the middle of the rule, and a point two rows below it (the page
     // surface). A rule that "renders" but paints the surface colour is invisible.
+    //
+    // The capture is of the STAGE, not of `#subject`: a horizontal rule's own
+    // box is one pixel tall, so a screenshot of the element contains no surface
+    // to compare against and both probes would clamp onto the same row.
     const [line, surface] = await capture(
-      page, '#subject', 'divider-solid',
-      `(host) => {
-        const box = host.getBoundingClientRect();
+      page, '#stage', 'divider-solid',
+      // The rule is a HAIRLINE: `y + height / 2` on a 1px box rounds to the row
+      // BELOW it. The probe takes the line's own top edge, which is the only
+      // row the rule occupies, and the surface six rows further down.
+      `() => {
+        const box = document.getElementById('subject').getBoundingClientRect();
         return [
-          { x: box.x + box.width / 2, y: box.y + box.height / 2 },
+          { x: box.x + box.width / 2, y: box.y },
           { x: box.x + box.width / 2, y: box.y + box.height + 6 },
         ];
       }`,
@@ -348,22 +426,32 @@ test.describe('divider visual matrix: marquee pixels', () => {
       orientation: 'horizontal', variant: 'solid', spacing: 'medium',
       align: 'center', capped: false, text: 'OR',
     }));
-    // Three probes across the label's box. If the rule painted through the
-    // label, every probe would read the rule's colour; text and its background
-    // guarantee variety.
+    // Walk the label's mid-height row every 2px. If the rule painted through
+    // the label, every step reads the rule's colour and the row is flat; if
+    // no text painted, the row is flat white; real text leaves ink between
+    // background gaps. Three lone probes at fixed fractions cannot make that
+    // distinction deterministically — whether one lands on a glyph stroke is
+    // font-metric luck (the glyphs sit at different x offsets per engine),
+    // and the row itself is ink-bearing in every engine.
     const pixels = await capture(
       page, '#subject', 'divider-label',
       `(host) => {
         const label = host.shadowRoot.querySelector('[part~="text"]');
         const box = label.getBoundingClientRect();
-        return [0.2, 0.5, 0.8].map(f => ({
-          x: box.x + box.width * f,
-          y: box.y + box.height / 2,
-        }));
+        const points = [];
+        for (let x = 1; x < box.width; x += 2) {
+          points.push({ x: box.x + x, y: box.y + box.height / 2 });
+        }
+        return points;
       }`,
     );
+    expect(pixels.length, 'the label box is too small to walk').toBeGreaterThan(4);
     const distinct = new Set(pixels.map(p => p.join(',')));
-    expect(distinct.size, `label area painted one flat colour: ${[...distinct]}`)
+    expect(distinct.size, `label's mid row painted one flat colour: ${[...distinct]}`)
       .toBeGreaterThan(1);
+    const ink = pixels.filter(([r, g, b]) => r < 250 || g < 250 || b < 250);
+    expect(ink.length, 'no ink on the label row — the text did not paint').toBeGreaterThan(0);
+    expect(ink.length, 'the label row is solid ink — a rule painted through the text')
+      .toBeLessThan(pixels.length);
   });
 });

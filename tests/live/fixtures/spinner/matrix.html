@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-spinner visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the loader's colour is
+             judged against the surface the component was designed for rather
+             than the browser's default white;
+           - #stage is a fixed, known box at a known origin with generous room
+             around it, because the label is positioned BELOW the host (the host
+             is exactly --spinner-size square) and a cramped stage would clip the
+             very text under test;
+           - #stage has no padding, no background of its own and nothing overlaps
+             it, so a failed elementFromPoint probe is the spinner occluding
+             itself, never the fixture occluding it;
+           - the stage is much taller than any spinner, so an element screenshot
+             of it also captures the page surface behind the component. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 900px;
+        min-height: 260px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 64px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/spinner/snice-spinner.ts';
+
+      const LABEL = 'Loading…';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      function build(combo) {
+        const el = document.createElement('snice-spinner');
+        /* Property channel, exactly as the DOM matrix mounts it — the
+           stylesheet keys off reflected attributes, so this is what proves the
+           reflection reaches the paint. */
+        el.variant = combo.variant ?? 'arc';
+        el.size = combo.size ?? 'medium';
+        el.color = combo.color ?? 'primary';
+        if (combo.label) el.label = LABEL;
+        if (combo.thickness !== undefined) el.thickness = combo.thickness;
+        return el;
+      }
+
+      const api = {
+        LABEL,
+
+        async mount(combo) {
+          api.unmount();
+          const el = build(combo);
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+          current = el;
+          return { variant: el.variant, size: el.size, color: el.color };
+        },
+
+        /** Every value of one axis on screen at once, under one layout. */
+        async mountRow(combos) {
+          api.unmount();
+          const els = combos.map((combo, i) => {
+            const el = build(combo);
+            el.id = `subject-${i}`;
+            stage.appendChild(el);
+            return el;
+          });
+          await Promise.all(els.map(el => el.ready));
+          await settle();
+          current = els[0] ?? null;
+          return els.length;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

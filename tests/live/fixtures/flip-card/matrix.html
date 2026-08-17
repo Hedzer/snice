@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-flip-card visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a face's fill is
+             judged against the surface the component was designed for;
+           - the card is given an explicit box, exactly as the documented usage
+             does (`style="width: 300px; height: 200px"`): a flip card's faces
+             are absolutely positioned, so a card with no size has no faces to
+             measure;
+           - the two faces are filled with two SATURATED, DIFFERENT colours, so
+             "which face is showing" is a question pixels can answer — the whole
+             point of this tier for this component;
+           - #stage has no padding, background or overlapping content, so a
+             failed elementFromPoint probe is the card occluding itself (its own
+             back face) and never the fixture occluding it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+        min-height: 400px;
+      }
+      #subject {
+        width: 300px;
+        height: 200px;
+      }
+      .face {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: rgb(255, 255, 255);
+      }
+      .face--front { background: rgb(37, 99, 235); }
+      .face--back { background: rgb(217, 70, 239); }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/flip-card/snice-flip-card.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+      let events = [];
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /* The documented defaults (docs/ai/components/flip-card.md). Only
+         NON-DEFAULT values are assigned, exactly as the DOM matrix does:
+         untouched defaults are not reflected (docs/ai/properties.md), so
+         assigning one would fabricate the `:host([direction=…])` /
+         `:host([flipped])` hook the transform keys off. */
+      const DEFAULTS = {
+        flipped: false, clickToFlip: true, direction: 'horizontal', duration: 600,
+      };
+
+      const api = {
+        /**
+         * Mount one combo. The two faces are written BEFORE connection, the way
+         * an author writes them in markup — the card renders named slots and a
+         * child appended afterwards would measure a different first paint.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-flip-card');
+          el.id = 'subject';
+          el.innerHTML =
+            '<div slot="front" class="face face--front" data-face="front">FRONT</div>'
+            + '<div slot="back" class="face face--back" data-face="back">BACK</div>';
+          stage.appendChild(el);
+          await el.ready;
+
+          for (const key of Object.keys(DEFAULTS)) {
+            if (combo[key] === undefined || combo[key] === DEFAULTS[key]) continue;
+            el[key] = combo[key];
+          }
+          el.addEventListener('flip-change', event => events.push(event.detail));
+          await settle();
+          await api.rest();
+          current = { el, combo };
+          return { mounted: true, flipped: !!combo.flipped };
+        },
+
+        /**
+         * Wait until the flip transform has stopped moving. The card animates
+         * for `duration` ms and a probe taken mid-flip measures the animation,
+         * not the state — so every assertion runs from rest.
+         */
+        async rest(timeout = 3000) {
+          const el = document.getElementById('subject');
+          if (!el) return;
+          const base = el.shadowRoot.querySelector('[part~="base"]');
+          let previous = '';
+          const deadline = performance.now() + timeout;
+          for (;;) {
+            const now = getComputedStyle(base).transform;
+            if (now === previous) return;
+            previous = now;
+            if (performance.now() > deadline) return;
+            await nextFrame();
+          }
+        },
+
+        /** Every `flip-change` detail seen since the last mount. */
+        get events() { return events; },
+
+        unmount() {
+          stage.innerHTML = '';
+          events = [];
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

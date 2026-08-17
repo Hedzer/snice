@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-kpi visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own BACKGROUND rather than its
+             surface, because a KPI tile paints its own surface: keeping the two
+             distinct is what makes "the tile is visible on the page" and "the
+             value is legible on the tile" separate, answerable questions;
+           - #stage is a fixed, known box at a known offset, so tile geometry is
+             a fact about the component and not about the viewport;
+           - #stage has no padding, background or overlapping content, so a
+             failed elementFromPoint probe is the KPI occluding itself, never
+             the fixture occluding it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-background, rgb(245 245 245));
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+        min-height: 420px;
+      }
+      /* Slotted probes. Sized and coloured so the geometry assertions have
+         something real to measure — an empty slotted <span> has no box. */
+      .probe {
+        display: block;
+        width: 40px;
+        height: 16px;
+        background: rgb(147, 51, 234);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/kpi/snice-kpi.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /* The documented defaults (docs/ai/components/kpi.md). Only NON-DEFAULT
+         values are assigned, exactly as the DOM matrix does: untouched defaults
+         are not reflected (docs/ai/properties.md). */
+      const DEFAULTS = {
+        label: '', value: '', trendValue: undefined, sentiment: undefined,
+        size: 'medium', showSparkline: true, colorValue: false,
+      };
+
+      const api = {
+        /**
+         * Mount one combo. Slotted children are written BEFORE connection, the
+         * way an author writes them in markup — the KPI renders named slots and
+         * a child appended afterwards would measure a different first paint.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-kpi');
+          el.id = 'subject';
+          let html = '';
+          if (combo.slotBefore) html += '<span slot="before" class="probe" data-probe="before"></span>';
+          if (combo.slotAfter) html += '<span slot="after" class="probe" data-probe="after"></span>';
+          if (html) el.innerHTML = html;
+          stage.appendChild(el);
+          await el.ready;
+
+          for (const key of Object.keys(DEFAULTS)) {
+            if (combo[key] === undefined || combo[key] === DEFAULTS[key]) continue;
+            el[key] = combo[key];
+          }
+          if (combo.trendData !== undefined) el.trendData = combo.trendData;
+          await settle();
+          current = { el, combo };
+          return { mounted: true };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

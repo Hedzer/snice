@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-breadcrumbs visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so link, active and
+             separator colours are judged against the surface the component was
+             designed for rather than the browser's default white;
+           - #stage is a fixed, known WIDTH, so "the trail is one row" is a fact
+             about the component and not about the viewport: a narrow stage
+             would wrap the flex list and every ordering assertion would then be
+             measuring the fixture;
+           - #stage has no padding, no background of its own and nothing overlaps
+             it, so a failed elementFromPoint probe is the trail occluding
+             itself, never the fixture occluding it;
+           - the stage is taller than the trail, so an element screenshot of it
+             also captures the page surface behind the component. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 1000px;
+        min-height: 160px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/breadcrumbs/snice-breadcrumbs.ts';
+
+      /** A trail long enough that `max-items` has something to collapse. */
+      const TRAIL = [
+        { label: 'Home', href: '/' },
+        { label: 'Catalogue', href: '/catalogue' },
+        { label: 'Laptops', href: '/catalogue/laptops' },
+        { label: 'Ultrabooks', href: '/catalogue/laptops/ultrabooks' },
+        { label: 'Model X14', active: true },
+      ];
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        TRAIL,
+
+        /**
+         * Mount one combo through the PROPERTY channel, exactly as the DOM
+         * matrix does. `items` is documented as JS-only, so this is the only
+         * way to build a trail at all; `separator`, `size` and `max-items`
+         * reflect, and mounting them as properties is what proves the
+         * reflection reaches the paint.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-breadcrumbs');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+
+          if (combo.separator) el.separator = combo.separator;
+          if (combo.size) el.size = combo.size;
+          if (combo.maxItems) el.maxItems = combo.maxItems;
+          if (combo.collapsed === false) el.collapsed = false;
+          el.items = TRAIL.slice(0, combo.length ?? TRAIL.length);
+
+          await settle();
+          current = el;
+          return {
+            separator: el.separator,
+            size: el.size,
+            maxItems: el.maxItems,
+            collapsed: el.collapsed,
+            items: el.items.length,
+          };
+        },
+
+        /** Click the collapse ellipsis exactly as a customer would. */
+        async clickEllipsis() {
+          const button = current?.shadowRoot?.querySelector('[part~="ellipsis"]');
+          if (!button) return false;
+          button.click();
+          await settle();
+          return true;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-weather visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase.
+           - the page sits on `--snice-color-surface`, the ground the card's own
+             `--snice-color-surface-container-high` was designed to sit on, so
+             "the card has a background" is a real pixel question;
+           - #stage is a fixed 420px, narrow enough that a five-day forecast has
+             to use its documented horizontal scroll rather than the viewport;
+           - no padding, background or siblings on the stage, so a failed
+             hit-test means the card occluded itself. */
+      /* The body is given the whole viewport on purpose: the stage is
+         absolutely positioned, so without this the body would collapse to zero
+         height and a full-page pixel probe would have nothing to screenshot. */
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 420px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/weather/snice-weather.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `unit` and `variant` cross the ATTRIBUTE channel —
+         * the compact rules are `:host([variant="compact"])` — and `data` is
+         * an object, so it crosses the property channel as documented.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-weather');
+          el.id = 'subject';
+          if (combo.unit) el.setAttribute('unit', combo.unit);
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          stage.appendChild(el);
+          await el.ready;
+          el.data = combo.data ?? null;
+          await settle();
+          const sr = el.shadowRoot;
+          return {
+            base: !!sr.querySelector('[part="base"]'),
+            days: sr.querySelectorAll('.forecast-day').length,
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

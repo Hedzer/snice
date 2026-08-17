@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-product-card visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - #stage is a fixed 420px box so a card that fails to fill its
+             container is a number, not whitespace. The horizontal layout needs
+             room, so the stage widens for it via matrix.mount({ stageWidth });
+           - the page uses the theme's plain surface: the badge, the sale
+             discount and the stock dot all tint themselves, and a tint is only
+             measurable against a known ground;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             card occluding its own controls — which is exactly the defect an
+             overlay-heavy component (badge + heart + quick-view over the
+             gallery) is prone to;
+           - gallery images are inline SVG data URIs: no network, no flake, and
+             a known solid colour to probe. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface, #fff);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 420px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"><div id="slot"></div></div>
+
+    <script type="module">
+      import '/packages/components/src/product-card/snice-product-card.ts';
+
+      const stage = document.getElementById('stage');
+      const slot = document.getElementById('slot');
+
+      /** A solid-colour image with no network round trip. */
+      const image = (fill) => 'data:image/svg+xml;utf8,'
+        + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><rect width="300" height="300" fill="${fill}"/></svg>`);
+
+      const IMAGES = [image('#3355bb'), image('#bb5533'), image('#33bb55')];
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * `variant`, `badge`, `in-stock`, the prices and the counts cross the
+         * ATTRIBUTE channel — the stylesheet keys off `.product-card--<variant>`
+         * built from the property, and an attribute is the documented HTML
+         * form. `images` and `variants` have no attribute form at all, so they
+         * cross the property channel, exactly as the doc's example does.
+         */
+        async mount(combo) {
+          api.unmount();
+          stage.style.width = `${combo.stageWidth ?? 420}px`;
+
+          const el = document.createElement('snice-product-card');
+          el.id = 'subject';
+          el.setAttribute('name', combo.name ?? 'Trail Runner 3000');
+          el.setAttribute('price', String(combo.price ?? 129.99));
+          if (combo.salePrice != null) el.setAttribute('sale-price', String(combo.salePrice));
+          el.setAttribute('currency', combo.currency ?? '$');
+          el.setAttribute('rating', String(combo.rating ?? 0));
+          el.setAttribute('review-count', String(combo.reviewCount ?? 0));
+          el.setAttribute('variant', combo.variant ?? 'vertical');
+          if (combo.badge) el.setAttribute('badge', combo.badge);
+          el.setAttribute('badge-variant', combo.badgeVariant ?? 'sale');
+          el.setAttribute('stock-count', String(combo.stockCount ?? -1));
+          if (combo.inStock !== false) el.setAttribute('in-stock', '');
+          if (combo.loading) el.setAttribute('loading', '');
+          if (combo.favorite) el.setAttribute('favorite', '');
+
+          slot.appendChild(el);
+          await el.ready;
+          // `inStock` DEFAULTS to true in the class, so an absent attribute is
+          // not the same as `false`: the property channel is the only way to
+          // express an out-of-stock product.
+          el.inStock = combo.inStock !== false;
+          el.images = (combo.images ?? []).map((_, i) => IMAGES[i % IMAGES.length]);
+          el.variants = combo.variants ?? [];
+          await settle();
+          return { mounted: true };
+        },
+
+        /** Click a documented part and let the re-render settle. */
+        async clickPart(name) {
+          const el = document.getElementById('subject');
+          const node = [...el.shadowRoot.querySelectorAll('[part]')]
+            .find(n => (n.getAttribute('part') ?? '').split(/\s+/).includes(name));
+          node?.click();
+          await settle();
+          return !!node;
+        },
+
+        unmount() { slot.innerHTML = ''; },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

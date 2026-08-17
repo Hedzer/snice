@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-calendar visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the root font size is pinned to 16px. The documented lane budget is
+             written in REM ("lanes = max(1, floor((cellHeight - 2.125rem -
+             chip) / 1.375rem))"), so a theme or user-agent rem of 15px would
+             make every lane assertion a fact about the browser's default font;
+           - #stage has an explicit width and, when a combo asks for one, an
+             explicit height. "Cells as tall as the column is wide" and "the six
+             week rows share the room under the header" are both claims about a
+             KNOWN box;
+           - #stage has no padding, border or background and nothing overlaps
+             it, so a failed elementFromPoint probe is the calendar occluding
+             itself;
+           - `::part(base) { max-width: none }` is applied for the combos that
+             ask for it. The component ships a 37.5rem cap that the doc names
+             explicitly ("lift with ::part(base) { max-width: none }"), and a
+             wide-calendar lane test cannot be written without lifting it. */
+      html { font-size: 16px; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 600px;
+      }
+      #stage.uncapped snice-calendar::part(base) { max-width: none; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/calendar/snice-calendar.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      /**
+       * The calendar re-derives its lane budget from a ResizeObserver
+       * THROTTLED at 100ms, and the first stripe pass itself changes the box
+       * that observer watches — so a combo can go through two or three render
+       * passes before it stops moving. Waiting a fixed 100ms would sample the
+       * middle of that sequence and make every lane assertion a race. This
+       * waits for the rendered bar/chip counts to hold still across two
+       * consecutive 150ms windows instead.
+       */
+      async function settle() {
+        await nextFrame();
+        const snapshot = () => {
+          const host = document.getElementById('subject');
+          const sr = host?.shadowRoot;
+          if (!sr) return 'none';
+          return `${sr.querySelectorAll('.calendar__event-bar').length}`
+            + `/${sr.querySelectorAll('.calendar__more').length}`
+            + `/${Math.round(host.getBoundingClientRect().height)}`;
+        };
+        let previous = snapshot();
+        let stable = 0;
+        for (let i = 0; i < 20 && stable < 2; i++) {
+          await new Promise(resolve => setTimeout(resolve, 150));
+          await nextFrame();
+          const now = snapshot();
+          stable = now === previous ? stable + 1 : 0;
+          previous = now;
+        }
+      }
+
+      /** Rebuild `Date`s the spec sent over the wire as ISO day strings. */
+      const asDate = (iso) => {
+        const [y, m, d] = iso.split('-').map(Number);
+        return new Date(y, m - 1, d);
+      };
+
+      const api = {
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        /**
+         * Mount one combo through the ATTRIBUTE channel for the documented
+         * attribute-backed properties, and the PROPERTY channel for `events`
+         * (documented "property only").
+         *
+         * The month is pinned with `goToDate` and the selection cleared right
+         * after, because `goToDate` also assigns `value` — MATRIX-calendar-1 in
+         * the DOM tier. Without that reset every combo would carry a selection
+         * nobody asked for, and the "today is marked by highlightToday, not by
+         * a selection" claim could not be measured.
+         */
+        async mount(combo) {
+          api.unmount();
+          stage.style.width = `${combo.stageWidth ?? 600}px`;
+          stage.classList.toggle('uncapped', !!combo.uncapped);
+
+          const el = document.createElement('snice-calendar');
+          el.id = 'subject';
+          if (combo.firstDayOfWeek !== undefined) {
+            el.setAttribute('first-day-of-week', String(combo.firstDayOfWeek));
+          }
+          if (combo.showWeekNumbers) el.setAttribute('show-week-numbers', '');
+          if (combo.cellSizing) el.setAttribute('cell-sizing', combo.cellSizing);
+          if (combo.noDaySelect) el.setAttribute('no-day-select', '');
+          if (combo.hostHeight) el.style.height = `${combo.hostHeight}px`;
+
+          stage.appendChild(el);
+          await el.ready;
+
+          if (combo.events) {
+            el.events = combo.events.map(event => ({
+              ...event,
+              start: asDate(event.start),
+              ...(event.end ? { end: asDate(event.end) } : {}),
+            }));
+          }
+          if (combo.month) el.goToDate(asDate(combo.month));
+          el.value = combo.value ? asDate(combo.value) : null;
+
+          await settle();
+          return {
+            firstDayOfWeek: el.firstDayOfWeek,
+            cellSizing: el.cellSizing,
+            showWeekNumbers: el.showWeekNumbers,
+            displayed: el.getDisplayedMonth(),
+          };
+        },
+
+        /** Click the "+N more" chip of the first day that has one. */
+        clickMoreChip() {
+          const host = document.getElementById('subject');
+          const chip = [...host.shadowRoot.querySelectorAll('[part]')]
+            .find(node => node.getAttribute('part').split(/\s+/).includes('more-chip'));
+          if (!chip) return false;
+          chip.click();
+          return true;
+        },
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-link visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so link colours and the
+             underline rule are judged against the surface the component was
+             designed for rather than the browser's default white;
+           - #stage is a fixed, known box at a known origin, so "the external
+             icon follows the text" is a fact about the link and not about the
+             viewport;
+           - #stage has no padding, no background of its own and nothing overlaps
+             it, so a failed elementFromPoint probe is the link occluding itself,
+             never the fixture occluding it;
+           - the stage is taller than a line of text, so an element screenshot of
+             it also captures the page surface above and below the link — which
+             is the only way to see whether an underline was actually drawn.
+           - NOTHING here hovers the link: the underline is animated on :hover,
+             so a stray pointer over the stage would make every rest-state
+             measurement a hover measurement. The spec keeps the mouse away. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+        font-size: 18px;
+      }
+      #stage {
+        position: absolute;
+        top: 80px;
+        left: 60px;
+        width: 800px;
+        min-height: 200px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/link/snice-link.ts';
+
+      const TEXT = 'Documentation';
+      const ACCEPTED = '/docs/getting-started';
+      /* A scheme the documented URL policy rejects. The component keeps the
+         label but drops the internal href and paints muted non-link styling —
+         a promise only a browser can check. */
+      const REJECTED = 'javascript:alert(1)';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      function build(combo) {
+        const el = document.createElement('snice-link');
+        /* Property channel, exactly as the DOM matrix mounts it. */
+        el.variant = combo.variant ?? 'default';
+        el.href = combo.rejected ? REJECTED : (combo.href ?? ACCEPTED);
+        if (combo.underline) el.underline = true;
+        if (combo.external) el.external = true;
+        if (combo.hash) el.hash = true;
+        if (combo.disabled) el.disabled = true;
+        if (combo.target) el.target = combo.target;
+        el.textContent = combo.text ?? TEXT;
+        return el;
+      }
+
+      const api = {
+        TEXT,
+        ACCEPTED,
+        REJECTED,
+
+        async mount(combo) {
+          api.unmount();
+          const el = build(combo);
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+          current = el;
+          return { variant: el.variant, href: el.href };
+        },
+
+        /** Every value of one axis on screen at once, under one layout. */
+        async mountRow(combos) {
+          api.unmount();
+          const els = combos.map((combo, i) => {
+            const el = build(combo);
+            el.id = `subject-${i}`;
+            stage.appendChild(el);
+            return el;
+          });
+          await Promise.all(els.map(el => el.ready));
+          await settle();
+          current = els[0] ?? null;
+          return els.length;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

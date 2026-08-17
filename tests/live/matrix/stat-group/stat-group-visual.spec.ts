@@ -59,11 +59,17 @@ const DATASETS: Dataset[] = [
   },
   {
     name: 'full',
+    // Icon names come from the built-in SVG registry, never ligature names
+    // ('trending_up' …): without an icon font a ligature paints as 150px of
+    // raw text, which crushes `.stat__content` against `min-width: 0` — to
+    // 0.2px in Chromium and a clean 0 in Firefox/WebKit. A registry icon is
+    // a 24px SVG in every engine, so what this tier measures is the card's
+    // layout, not the host page's font set.
     stats: [
-      { label: 'Revenue', value: '$45,231', trend: 'up', trendValue: '+12.5%', icon: 'trending_up' },
+      { label: 'Revenue', value: '$45,231', trend: 'up', trendValue: '+12.5%', icon: 'arrow-trending-up' },
       { label: 'Users', value: 2338, trend: 'down', trendValue: '-3.1%' },
-      { label: 'Orders', value: '1,245', trend: 'neutral', trendValue: '0.0%', icon: 'shopping_cart' },
-      { label: 'Refunds', value: 12, icon: 'undo', color: 'rgb(220, 38, 38)' },
+      { label: 'Orders', value: '1,245', trend: 'neutral', trendValue: '0.0%', icon: 'chart-bar' },
+      { label: 'Refunds', value: 12, icon: 'banknotes', color: 'rgb(220, 38, 38)' },
     ],
   },
 ];

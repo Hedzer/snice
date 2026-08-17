@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-avatar-group visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+ *          something:
+ *            - the page sits on the theme's own surface, so an avatar's fill
+ *              and the overflow chip's fill are judged against the surface
+ *              they were designed for;
+ *            - #stage is a fixed, known box, so "consecutive avatars sit
+ *              exactly `overlap` px apart" and "the row is one line tall" are
+ *              facts about the component and not about the viewport;
+ *            - #stage has NO background, padding, font-size override, or
+ *              overlapping siblings, so a failed elementFromPoint probe is
+ *              the group occluding itself, never the fixture. The root font
+ *              size stays at the browser default on purpose: the overlap the
+ *              component writes is derived in rem (`-${overlap / 16}rem`), so
+ *              overriding it here would make the px expectations facts about
+ *              this file. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 560px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/avatar-group/snice-avatar-group.ts';
+      import '/packages/components/src/avatar/snice-avatar.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+      let events = [];
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /**
+       * An offline image for the `src` item shape: a data-URL SVG, so the
+       * image path renders with no network and no fixture asset.
+       */
+      const IMG_URL = 'data:image/svg+xml,' + encodeURIComponent(
+        "<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>"
+        + "<rect width='8' height='8' fill='#2563eb'/></svg>");
+
+      /** `count` distinct people, so an index is always readable in a failure. */
+      const people = (count) => Array.from({ length: count }, (_, i) => ({
+        name: ['Alice Johnson', 'Bob Smith', 'Carol Williams', 'Dan Brown',
+          'Erin Davis', 'Frank Miller', 'Grace Lee', 'Hank Moody',
+          'Ivy Chen'][i % 9] + (i >= 9 ? ` ${Math.floor(i / 9)}` : ''),
+      }));
+
+      const api = {
+        IMG_URL,
+
+        /**
+         * Mount one combo. `size` / `max` / `overlap` cross the ATTRIBUTE
+         * channel exactly as the doc's declarative example authors them; the
+         * `avatars` array is the documented JS-only property ("set via JS"),
+         * so imperative mode mounts an empty group first and feeds it through
+         * setGroupData below — data with functions could never cross the
+         * Playwright boundary, so the fixture owns it. Slotted mode authors
+         * `<snice-avatar>` children BEFORE connection, the way a page author
+         * writes them.
+         */
+        async mount(combo) {
+          api.unmount();
+          events = [];
+
+          const el = document.createElement('snice-avatar-group');
+          el.id = 'subject';
+          el.setAttribute('size', combo.size ?? 'medium');
+          el.setAttribute('max', String(combo.max ?? 5));
+          el.setAttribute('overlap', String(combo.overlap ?? 8));
+
+          if (combo.mode === 'slotted') {
+            const children = combo.children ?? people(4);
+            el.innerHTML = children.map(child =>
+              `<snice-avatar ${child.src ? `src="${child.src}"` : `name="${child.name ?? ''}"`}></snice-avatar>`
+            ).join('');
+            stage.appendChild(el);
+            await el.ready;
+            current = el;
+            await settle();
+          } else {
+            stage.appendChild(el);
+            await el.ready;
+            current = el;
+            await api.setGroupData(combo.avatars ?? people(4));
+          }
+
+          for (const type of ['avatar-click', 'overflow-click']) {
+            el.addEventListener(type, (event) => {
+              events.push({ type, detail: event.detail });
+            });
+          }
+
+          current = el;
+          return {
+            size: el.size,
+            max: el.max,
+            overlap: el.overlap,
+            reflected: {
+              size: el.getAttribute('size'),
+              max: el.getAttribute('max'),
+              overlap: el.getAttribute('overlap'),
+            },
+          };
+        },
+
+        /** The documented JS-only feed for imperative mode. */
+        async setGroupData(list) {
+          if (!current) return { count: 0 };
+          current.avatars = list;
+          await settle();
+          return { count: list.length };
+        },
+
+        /** The rendered avatar buttons (imperative) / hosts (slotted). */
+        avatarNodes() {
+          if (!current) return [];
+          const sr = current.shadowRoot;
+          return [...sr.querySelectorAll('[part~="avatar"]')];
+        },
+        overflowNode() {
+          if (!current) return null;
+          return current.shadowRoot.querySelector('[part~="overflow"]');
+        },
+
+        /** Viewport coordinates for a REAL pointer. */
+        avatarCenter(i) {
+          const nodes = api.avatarNodes();
+          const box = nodes[i]?.getBoundingClientRect();
+          return box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : null;
+        },
+        overflowCenter() {
+          const box = api.overflowNode()?.getBoundingClientRect();
+          return box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : null;
+        },
+
+        /** Events dispatched since mount, in order. */
+        recordedEvents() { return [...events]; },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+          events = [];
+        },
+
+        get el() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

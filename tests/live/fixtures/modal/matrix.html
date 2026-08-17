@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-modal visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the page is DELIBERATELY TALL (#filler is 3000px) so "body scroll
+             locked while open" is a measurable fact — a page that cannot
+             scroll is a page whose scrollTop refuses to move;
+           - #beacon is a bright, absolutely-positioned block in the middle of
+             the viewport: the backdrop has to cover it, and a pixel probe over
+             it is how "the backdrop dims the page behind it" gets an answer;
+           - #opener is a real focusable button outside the modal, so "previous
+             focus restored on close" can be asserted end to end;
+           - nothing else overlaps the stage, so a failed elementFromPoint probe
+             is the modal covering its own panel. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface, #fff);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #beacon {
+        position: absolute;
+        top: 300px;
+        left: 40px;
+        width: 240px;
+        height: 120px;
+        background: rgb(255 0 255);
+      }
+      #filler { height: 3000px; }
+    </style>
+  </head>
+  <body>
+    <button id="opener">Open the dialog</button>
+    <div id="beacon"></div>
+    <div id="slot"></div>
+    <div id="filler"></div>
+
+    <script type="module">
+      import '/packages/components/src/modal/snice-modal.ts';
+
+      const slot = document.getElementById('slot');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const HEADER = '<div slot="header"><h2 id="header-text">Confirm</h2></div>';
+      const BODY = '<p id="body-text">Are you sure?</p>';
+      const FOOTER = '<div slot="footer">'
+        + '<button id="cancel">Cancel</button><button id="confirm">Confirm</button></div>';
+
+      const SWITCHES = {
+        noBackdropDismiss: 'no-backdrop-dismiss',
+        noEscapeDismiss: 'no-escape-dismiss',
+        noFocusTrap: 'no-focus-trap',
+        noCloseButton: 'no-close-button',
+        noHeader: 'no-header',
+        noFooter: 'no-footer',
+      };
+
+      const api = {
+        /**
+         * Everything crosses the ATTRIBUTE channel — the documented HTML form,
+         * and what `:host([size=…])` reads. Slotted children are delivered WITH
+         * the element, as a page does.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-modal');
+          el.id = 'subject';
+          el.setAttribute('size', combo.size ?? 'medium');
+          el.setAttribute('label', combo.label ?? 'Confirm action');
+          for (const [key, attr] of Object.entries(SWITCHES)) {
+            if (combo[key]) el.setAttribute(attr, '');
+          }
+          el.innerHTML = [
+            combo.header === false ? '' : HEADER,
+            BODY,
+            combo.footer === false ? '' : FOOTER,
+          ].join('');
+          if (combo.open) el.setAttribute('open', '');
+          slot.appendChild(el);
+          await el.ready;
+          await settle();
+          return { mounted: true };
+        },
+
+        /** Open from a real focused button — the focus-restore contract. */
+        async openFromOpener() {
+          const opener = document.getElementById('opener');
+          opener.focus();
+          document.getElementById('subject').show();
+          await settle();
+          await settle();
+          return true;
+        },
+
+        async show() {
+          document.getElementById('subject').show();
+          await settle();
+          await settle();
+          return true;
+        },
+
+        async close() {
+          document.getElementById('subject').close();
+          await settle();
+          await settle();
+          return true;
+        },
+
+        /** Which element the browser thinks has focus, piercing shadow roots. */
+        activeId() {
+          let node = document.activeElement;
+          while (node?.shadowRoot?.activeElement) node = node.shadowRoot.activeElement;
+          return node?.id || node?.getAttribute?.('part') || node?.tagName?.toLowerCase() || null;
+        },
+
+        /**
+         * Where the page is scrolled to. The lock is measured with a REAL
+         * wheel gesture from the spec (page.mouse.wheel), not with
+         * `window.scrollTo`: a box with `overflow: hidden` is still
+         * PROGRAMMATICALLY scrollable, so a scrollTo would move even a
+         * correctly locked page and the probe would prove nothing.
+         */
+        scrollY() {
+          return window.scrollY;
+        },
+
+        async resetScroll() {
+          window.scrollTo(0, 0);
+          await nextFrame();
+          return window.scrollY;
+        },
+
+        unmount() { slot.innerHTML = ''; },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>
