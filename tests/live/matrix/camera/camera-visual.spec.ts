@@ -94,7 +94,7 @@ test.describe('snice-camera visual matrix (layer 1: framing)', () => {
   for (const objectFit of ['cover', 'contain'] as const) {
     for (const aspectRatio of ['auto', '16:9', '1:1'] as const) {
       test(`object-fit=${objectFit}/aspect-ratio=${aspectRatio}`, async () => {
-        // MATRIX-camera-1 (see the pinned test below): the documented DEFAULT
+        // VISUAL-MATRIX-camera-1 (see the pinned test below): the documented DEFAULT
         // value `aspect-ratio="auto"`, written out explicitly, collapses the
         // camera to zero height. The assertion stays correct and the combo is
         // expected to fail until the component is fixed.
@@ -106,7 +106,7 @@ test.describe('snice-camera visual matrix (layer 1: framing)', () => {
   }
 
   /**
-   * MATRIX-camera-1 — writing the documented default `aspect-ratio="auto"`
+   * VISUAL-MATRIX-camera-1 — writing the documented default `aspect-ratio="auto"`
    * collapses the camera to a zero-height box.
    *
    * `docs/ai/components/camera.md` documents
@@ -121,7 +121,7 @@ test.describe('snice-camera visual matrix (layer 1: framing)', () => {
    * pinned, so the day the component is fixed this suite fails and the
    * finding can be closed.
    */
-  test('MATRIX-camera-1: aspect-ratio="auto" renders the same visible camera as omitting it', async () => {
+  test('VISUAL-MATRIX-camera-1: aspect-ratio="auto" renders the same visible camera as omitting it', async () => {
     test.fail();
     await mount(page, { id: 'implicit', start: true });
     const implicit = await page.evaluate(() => {
@@ -188,7 +188,7 @@ test.describe('snice-camera visual matrix (layer 1: framing)', () => {
     const problems: string[] = [];
     for (const objectFit of ['cover', 'contain'] as const) {
       for (const aspectRatio of ['16:9', '9:16', '4:3', '1:1', '21:9'] as const) {
-        // `auto` is excluded here and pinned by MATRIX-camera-1 above: it
+        // `auto` is excluded here and pinned by VISUAL-MATRIX-camera-1 above: it
         // renders no box at all, so there is no box for a preview to fill.
         await mount(page, { id: 'fit', objectFit, aspectRatio, start: true });
         const gap = await page.evaluate(() => {

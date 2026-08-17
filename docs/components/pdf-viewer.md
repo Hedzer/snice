@@ -12,6 +12,7 @@ A PDF document viewer with a toolbar for page navigation, zoom controls, fit mod
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Toolbar Readouts](#toolbar-readouts)
 - [Keyboard Navigation](#keyboard-navigation)
 - [Accessibility](#accessibility)
 
@@ -104,6 +105,12 @@ viewer.prevPage();
 viewer.print();
 viewer.download();
 ```
+
+## Toolbar Readouts
+
+- The zoom readout shows the zoom level as a whole percentage: `100%` at `zoom = 1`, `125%` at `zoom = 1.25`.
+- The page-total readout shows `/ N` once a document has loaded, and `/ -` until then (while `totalPages` is `0`).
+- Zoom in and zoom out — the toolbar buttons and the `Ctrl/Cmd` `+`/`-` shortcuts — change `zoom` in steps of `0.25`, clamped to the documented `0.25`–`5` range.
 
 ## Keyboard Navigation
 

@@ -91,7 +91,7 @@ interface Waiver {
 
 const WAIVERS: Waiver[] = [
   {
-    // MATRIX-timeline-1. `reverse` is documented as "newest first", and the
+    // VISUAL-MATRIX-timeline-1. `reverse` is documented as "newest first", and the
     // component implements it TWICE: `render()` reverses the items array, and
     // the stylesheet adds `flex-direction: column-reverse` (vertical) /
     // `row-reverse` (horizontal) via `.timeline--reverse`. The two cancel, so
@@ -105,7 +105,7 @@ const WAIVERS: Waiver[] = [
     // Reported, not fixed — see render() in
     // packages/components/src/timeline/snice-timeline.ts and the
     // `.timeline--reverse` rules in snice-timeline.css.
-    id: 'MATRIX-timeline-1',
+    id: 'VISUAL-MATRIX-timeline-1',
     applies: c => c.reverse,
     matches: /^reverse painted the items in source order \(.*\) — the newest event is not first$/,
   },

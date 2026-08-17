@@ -90,10 +90,10 @@ test.describe('snice-music-player visual matrix (layer 1)', () => {
   test.afterAll(async () => { await page?.close(); });
 
   for (const { id, combo } of VECTORS) {
-    // MATRIX-music-player-1 (documented in full at the bottom of this
+    // VISUAL-MATRIX-music-player-1 (documented in full at the bottom of this
     // describe): the compact container lays its playlist outside its own box.
     // The assertion below stays the correct one and the combo is pinned.
-    test(id === 'compact' ? `MATRIX-music-player-1: ${id}` : id, async () => {
+    test(id === 'compact' ? `VISUAL-MATRIX-music-player-1: ${id}` : id, async () => {
       if (id === 'compact') test.fail();
       await mount(page, combo);
       expect(await collectChartProblems(page, PROBE), id).toEqual([]);
@@ -266,7 +266,7 @@ test.describe('snice-music-player visual matrix (layer 1)', () => {
   });
 
   /**
-   * MATRIX-music-player-1 — `compact` lays the playlist outside the player.
+   * VISUAL-MATRIX-music-player-1 — `compact` lays the playlist outside the player.
    *
    * `docs/ai/components/music-player.md` documents `compact: boolean = false`
    * and `showPlaylist: boolean = true` as independent switches, with no note
@@ -287,7 +287,7 @@ test.describe('snice-music-player visual matrix (layer 1)', () => {
    * pinned, so the day the layout is fixed this suite fails and the finding can
    * be closed.
    */
-  test('MATRIX-music-player-1: a compact player keeps its playlist inside itself', async () => {
+  test('VISUAL-MATRIX-music-player-1: a compact player keeps its playlist inside itself', async () => {
     test.fail();
     await mount(page, { compact: true });
     const escape = await page.evaluate(() => {

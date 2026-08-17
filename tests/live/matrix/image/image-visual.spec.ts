@@ -230,7 +230,7 @@ test.describe('image visual matrix: the documented size scale', () => {
     });
   }
 
-  // MATRIX-image-1 — `size="large"` paints a SMALLER image than
+  // VISUAL-MATRIX-image-1 — `size="large"` paints a SMALLER image than
   // `size="medium"`, and exactly the same box as `size="small"`. The three
   // documented sizes are meant to be a scale ("small / medium / large" in the
   // Properties block and three separate usage examples); `.image--large` reads
@@ -238,7 +238,7 @@ test.describe('image visual matrix: the documented size scale', () => {
   // 4rem token — the same one `.image--small` uses — so `large` and `small`
   // render identically and both are half of `medium`. Per .ai/fuzzing.md the
   // assertion is NOT weakened and the component is NOT changed.
-  test('MATRIX-image-1: small < medium < large', async () => {
+  test('VISUAL-MATRIX-image-1: small < medium < large', async () => {
     test.fail();
     const small = await boxOf('small');
     const medium = await boxOf('medium');

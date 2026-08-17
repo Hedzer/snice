@@ -53,7 +53,7 @@ const FIXTURE = '/tests/live/fixtures/location/matrix.html';
  * whose messages stop appearing fails itself — so a fix cannot land while the
  * excuse quietly stays behind.
  *
- * MATRIX-location-1
+ * VISUAL-MATRIX-location-1
  *   Combo:    every combo with `show-map` (16 of 32).
  *   Expected: `[part="map"]`, whose stylesheet gives it `width: 100%`, fits
  *             inside `[part="content"]` — the element it is rendered into.
@@ -65,7 +65,7 @@ const FIXTURE = '/tests/live/fixtures/location/matrix.html';
  */
 const WAIVED: { id: string; matches: (message: string) => boolean }[] = [
   {
-    id: 'MATRIX-location-1',
+    id: 'VISUAL-MATRIX-location-1',
     matches: message =>
       // The row index differs by mode (the map is row 3 in `full`, row 1 in
       // `coordinates`), so the index is the only part left open.
@@ -301,8 +301,8 @@ test.describe('location visual matrix: layer 1', () => {
       // A waiver that stops firing is a fix that landed: delete the waiver
       // rather than let it outlive the defect it describes.
       if (combo.showMap) {
-        expect([...fired], `combo ${combo.id}: MATRIX-location-1 no longer reproduces`)
-          .toContain('MATRIX-location-1');
+        expect([...fired], `combo ${combo.id}: VISUAL-MATRIX-location-1 no longer reproduces`)
+          .toContain('VISUAL-MATRIX-location-1');
       } else {
         expect([...fired], `combo ${combo.id}: a map waiver fired without a map`).toEqual([]);
       }

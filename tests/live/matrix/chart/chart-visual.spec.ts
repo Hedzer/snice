@@ -232,7 +232,7 @@ const FINDINGS = {
    * and `.chart-canvas { overflow: hidden }` clips the bottom of the chart
    * away — the x-axis and its labels are the first casualties.
    */
-  clipped: 'MATRIX-chart-6: a top/bottom legend does not shrink the canvas, so the '
+  clipped: 'VISUAL-MATRIX-chart-6: a top/bottom legend does not shrink the canvas, so the '
     + 'canvas overflows part="base" and the bottom of the chart (x-axis and labels) '
     + 'is clipped away',
   /**
@@ -244,7 +244,7 @@ const FINDINGS = {
    * fails a hit-test, so the documented toggle-by-clicking feature cannot be
    * used at all in these two positions.
    */
-  buried: 'MATRIX-chart-7: a left/right legend is absolutely positioned over the plot '
+  buried: 'VISUAL-MATRIX-chart-7: a left/right legend is absolutely positioned over the plot '
     + 'and painted underneath the canvas — it is invisible and its entries cannot be '
     + 'clicked, so the documented legend toggle is unreachable',
 } as const;

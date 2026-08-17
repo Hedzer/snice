@@ -33,7 +33,7 @@
  *
  * ── FINDING ────────────────────────────────────────────────────────────────
  *
- * MATRIX-book-3  only the current leaf is turned; the pages before it are not.
+ * VISUAL-MATRIX-book-3  only the current leaf is turned; the pages before it are not.
  *   combo:    pages=4, currentPage=3 (and every currentPage > 1 at every page
  *             count above 1)
  *   expected: at page k, the k leaves the reader has passed are all turned —
@@ -71,7 +71,7 @@ interface Combo {
  * combos, with `cover` rotated across them. Sized to a component with four
  * documented properties and one render path — the point of this tier is that
  * the turn mechanism and the cover paint get a real browser, not that the
- * product is large. The intermediate pages are where MATRIX-book-3 lives and
+ * product is large. The intermediate pages are where VISUAL-MATRIX-book-3 lives and
  * they get their own pinned block.
  */
 function generateCombos(): Combo[] {
@@ -294,7 +294,7 @@ test('layer1 the page turn really is animated', async ({ browser }) => {
   }
 });
 
-// ── MATRIX-book-3: how many leaves are turned at page k ────────────────────
+// ── VISUAL-MATRIX-book-3: how many leaves are turned at page k ────────────────────
 
 async function rotationsAt(pages: number, currentPage: number): Promise<number[]> {
   return page.evaluate(async ({ pages, currentPage }) => {
@@ -314,7 +314,7 @@ test('a closed book turns nothing, and page 1 turns exactly the first leaf', asy
 });
 
 for (const [pages, currentPage] of [[4, 2], [4, 3], [6, 3], [6, 5], [2, 2]] as const) {
-  test(`MATRIX-book-3 pages=${pages}/page=${currentPage}: every leaf before the current one is turned`, async () => {
+  test(`VISUAL-MATRIX-book-3 pages=${pages}/page=${currentPage}: every leaf before the current one is turned`, async () => {
     test.fail();
     const rotations = await rotationsAt(pages, currentPage);
     const turned = rotations.map(r => Math.abs(r) > 90);
@@ -325,7 +325,7 @@ for (const [pages, currentPage] of [[4, 2], [4, 3], [6, 3], [6, 5], [2, 2]] as c
   });
 }
 
-test('MATRIX-book-3: exactly one leaf is turned at any page', async () => {
+test('VISUAL-MATRIX-book-3: exactly one leaf is turned at any page', async () => {
   // The mechanism, stated positively. This is what IS true today; the pinned
   // tests above are what a page-flipping book has to do. A fix flips both.
   for (const currentPage of [1, 2, 3, 4]) {

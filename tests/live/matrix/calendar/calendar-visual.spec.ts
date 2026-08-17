@@ -348,7 +348,7 @@ async function budgetTable(combo: Combo): Promise<Array<{ cellHeight: number; st
 const combos = generateCombos();
 
 /**
- * MATRIX-calendar-3
+ * VISUAL-MATRIX-calendar-3
  *
  * Combo:    `cell-sizing="stretch"` + `show-week-numbers`, host height auto —
  *           any stage width, any stack depth.
@@ -398,7 +398,7 @@ test.describe('calendar visual matrix: layer 1', () => {
   for (const combo of combos) {
     const finding = isStretchWeekNumberFinding(combo);
     const tightBudget = isTightBudgetFinding(combo);
-    test(`${finding ? 'MATRIX-calendar-3: ' : ''}${tightBudget ? 'VISUAL-MATRIX-calendar-1: ' : ''}${combo.id}`, async ({ browserName }) => {
+    test(`${finding ? 'VISUAL-MATRIX-calendar-3: ' : ''}${tightBudget ? 'VISUAL-MATRIX-calendar-1: ' : ''}${combo.id}`, async ({ browserName }) => {
       if (finding) test.fail();
       test.fail(browserName === 'firefox' && tightBudget,
         'lane budget lands after the row cap measure — see VISUAL-MATRIX-calendar-1');
@@ -431,7 +431,7 @@ test.describe('calendar visual matrix: cell-sizing="stretch" collapses its rows'
       .toBeLessThan(cell.width - 2);
   });
 
-  test('MATRIX-calendar-3: with week numbers the row still collapses', async () => {
+  test('VISUAL-MATRIX-calendar-3: with week numbers the row still collapses', async () => {
     test.fail();
     const cell = await cellHeight(true);
     expect(cell.height, `a stretch cell is ${cell.height}px in a ${cell.width}px column`)

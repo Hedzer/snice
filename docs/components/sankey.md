@@ -9,6 +9,8 @@ An SVG-based Sankey diagram for visualizing flow between categories.
 - [Properties](#properties)
 - [Events](#events)
 - [CSS Parts](#css-parts)
+- [Layout](#layout)
+- [Tooltip](#tooltip)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
@@ -62,6 +64,20 @@ interface SankeyLink {
 | `base` | The outer Sankey container |
 | `chart` | The SVG chart area |
 | `tooltip` | The hover tooltip |
+
+## Layout
+
+- A ribbon's stroke width is proportional to its `value`.
+- A node is at least as tall as the total flow leaving it: the ribbons leaving a node never overflow the node they come out of.
+
+## Tooltip
+
+Hovering a node or link shows the `tooltip` part with:
+
+- **Node**: `<label> Value: <value>` — the node's `label`, which defaults to its `id`.
+- **Link**: `<source> → <target> Value: <value>` — the labels of the two endpoint nodes (falling back to their ids) and the flow's own value.
+
+For example, a link of value `30` from node `A` to node `Sink` reads `A → Sink Value: 30`.
 
 ## Basic Usage
 

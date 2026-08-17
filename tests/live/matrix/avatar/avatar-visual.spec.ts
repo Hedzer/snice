@@ -257,13 +257,13 @@ const combos = generateCombos();
  * above are NOT weakened and the component is NOT changed: the affected combos
  * are declared `test.fail()` so the suite goes red the day either is fixed.
  *
- *   · MATRIX-avatar-2 — the documented default `shape: 'circle'` paints a
+ *   · VISUAL-MATRIX-avatar-2 — the documented default `shape: 'circle'` paints a
  *     SQUARE. `border-radius: 50%` exists only under `:host([shape="circle"])`,
  *     and an untouched default reflects no attribute (docs/ai/properties.md), so
  *     the docs' own first example — `<snice-avatar src="/user.jpg"
  *     name="John Doe">` — is not a circle. Only an explicitly written
  *     `shape="circle"` produces one.
- *   · MATRIX-avatar-3 — the documented default `size: 'medium'` does not get its
+ *   · VISUAL-MATRIX-avatar-3 — the documented default `size: 'medium'` does not get its
  *     documented font-size. `:host` supplies `--avatar-size: 2.5rem`, so the BOX
  *     is the documented 40px, but the "medium … / 0.875rem" half of the Size
  *     Reference lives only in `:host([size="medium"])` and never applies. A
@@ -271,10 +271,10 @@ const combos = generateCombos();
  */
 function pinnedFindings(combo: Combo): string[] {
   const ids: string[] = [];
-  if (combo.shape === 'circle') ids.push('MATRIX-avatar-2');
+  if (combo.shape === 'circle') ids.push('VISUAL-MATRIX-avatar-2');
   // Only observable where the initials are actually measured — the font-size
   // check runs for every combo, so `medium` is enough on its own.
-  if (combo.size === 'medium') ids.push('MATRIX-avatar-3');
+  if (combo.size === 'medium') ids.push('VISUAL-MATRIX-avatar-3');
   return ids;
 }
 
@@ -362,10 +362,10 @@ test.describe('avatar visual matrix: marquee pixels', () => {
       .toBeGreaterThan(1);
   });
 
-  // MATRIX-avatar-2 again, at the pixel level: with the default `shape:
+  // VISUAL-MATRIX-avatar-2 again, at the pixel level: with the default `shape:
   // 'circle'` reflecting no attribute, the frame is a square and its corner
   // paints the image instead of the page behind it.
-  test('MATRIX-avatar-2: a circular avatar really clips its corners', async () => {
+  test('VISUAL-MATRIX-avatar-2: a circular avatar really clips its corners', async () => {
     test.fail();
     await page.evaluate(() => (window as any).matrix.mount({
       size: 'xxl', shape: 'circle', name: 'John Doe', image: 'ok',

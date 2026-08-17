@@ -348,7 +348,7 @@ interface Waiver {
 const WAIVERS: Waiver[] = [
   {
     /**
-     * FINDING MATRIX-product-card-3 — `variant="compact"` deletes three
+     * FINDING VISUAL-MATRIX-product-card-3 — `variant="compact"` deletes three
      * documented regions.
      *
      * combo:    variant=compact (any images/sale/stock)
@@ -358,24 +358,24 @@ const WAIVERS: Waiver[] = [
      *           they render at 0x0 — a compact card cannot be favourited, shows
      *           no badge, and offers no size or colour choice.
      */
-    id: 'MATRIX-product-card-3',
+    id: 'VISUAL-MATRIX-product-card-3',
     applies: c => c.variant === 'compact',
     matches: /^a variant option renders at 0x0 — too small to hit$/,
     times: 3,
   },
   {
-    id: 'MATRIX-product-card-3',
+    id: 'VISUAL-MATRIX-product-card-3',
     applies: c => c.variant === 'compact',
     matches: /^the favorite button renders at 0x0 — too small to hit$/,
   },
   {
-    id: 'MATRIX-product-card-3',
+    id: 'VISUAL-MATRIX-product-card-3',
     applies: c => c.variant === 'compact' && c.sale,
     matches: /^\[part="badge"\] renders at 0x0$/,
   },
   {
     /**
-     * FINDING MATRIX-product-card-4 — `variant="grid"` deletes the variant
+     * FINDING VISUAL-MATRIX-product-card-4 — `variant="grid"` deletes the variant
      * selectors.
      *
      * combo:    variant=grid, variants=[{ type: 'Size', options: [S,M,L] }]
@@ -385,14 +385,14 @@ const WAIVERS: Waiver[] = [
      *           `add-to-cart` still reports a `selectedVariants` the shopper
      *           was never shown.
      */
-    id: 'MATRIX-product-card-4',
+    id: 'VISUAL-MATRIX-product-card-4',
     applies: c => c.variant === 'grid',
     matches: /^a variant option renders at 0x0 — too small to hit$/,
     times: 3,
   },
   {
     /**
-     * FINDING MATRIX-product-card-5 — `variant="minimal"` deletes the stock
+     * FINDING VISUAL-MATRIX-product-card-5 — `variant="minimal"` deletes the stock
      * line.
      *
      * combo:    variant=minimal, in-stock or out
@@ -402,7 +402,7 @@ const WAIVERS: Waiver[] = [
      *           — an out-of-stock minimal card says nothing about it anywhere
      *           except a disabled button.
      */
-    id: 'MATRIX-product-card-5',
+    id: 'VISUAL-MATRIX-product-card-5',
     applies: c => c.variant === 'minimal',
     matches: /^\[part="stock"\] has no box$/,
   },

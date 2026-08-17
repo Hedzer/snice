@@ -303,7 +303,7 @@ test.describe('empty-state visual matrix: size really scales', () => {
     expect(small.height).toBeLessThan(large.height);
   });
 
-  // MATRIX-empty-state-1: `size="large"` renders a SMALLER icon than
+  // VISUAL-MATRIX-empty-state-1: `size="large"` renders a SMALLER icon than
   // `size="medium"`, and exactly the same icon as `size="small"`.
   // snice-empty-state.css sizes the large icon from
   // `var(--snice-font-size-3xl, 5rem)` — the same token the SMALL rule uses
@@ -312,7 +312,7 @@ test.describe('empty-state visual matrix: size really scales', () => {
   // defines `--snice-font-size-3xl` (it does), large and small resolve
   // identically and the documented small/medium/large scale inverts at its top
   // end. Measured here: 30px / 36px / 30px. The assertion below stays correct.
-  test('MATRIX-empty-state-1: the icon grows with size', async () => {
+  test('VISUAL-MATRIX-empty-state-1: the icon grows with size', async () => {
     test.fail();
     const small = await measure('small');
     const medium = await measure('medium');

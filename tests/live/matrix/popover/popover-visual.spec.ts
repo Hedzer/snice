@@ -63,7 +63,7 @@ interface Combo {
 }
 
 /**
- * ── FINDING MATRIX-popover-1 ────────────────────────────────────────────────
+ * ── FINDING VISUAL-MATRIX-popover-1 ────────────────────────────────────────────────
  *
  * `position()` measures the panel BEFORE the panel exists on screen.
  *
@@ -117,7 +117,7 @@ const COMBOS: Combo[] = [
     id: `${placement}/distance=${distance}`,
     placement,
     distance,
-    finding: MISPLACED.includes(placement) ? 'MATRIX-popover-1' : undefined,
+    finding: MISPLACED.includes(placement) ? 'VISUAL-MATRIX-popover-1' : undefined,
   }))),
 
   // The documented width bracket: `--snice-popover-min-width` (12rem) and
@@ -130,9 +130,9 @@ const COMBOS: Combo[] = [
   // panel painted off the edge of the screen is a panel nobody can use, so the
   // claim asserted for these is only that: it stays on screen.
   combo({ id: 'anchored top-left corner', placement: 'top-start', anchorX: '8px', anchorY: '8px', clamped: true }),
-  combo({ id: 'anchored top-right corner', placement: 'top-end', anchorX: 'calc(100% - 90px)', anchorY: '8px', clamped: true, finding: 'MATRIX-popover-1' }),
-  combo({ id: 'anchored bottom-left corner', placement: 'bottom-start', anchorX: '8px', anchorY: 'calc(100% - 40px)', clamped: true, finding: 'MATRIX-popover-1' }),
-  combo({ id: 'anchored bottom-right corner', placement: 'right', anchorX: 'calc(100% - 90px)', anchorY: 'calc(100% - 40px)', clamped: true, finding: 'MATRIX-popover-1' }),
+  combo({ id: 'anchored top-right corner', placement: 'top-end', anchorX: 'calc(100% - 90px)', anchorY: '8px', clamped: true, finding: 'VISUAL-MATRIX-popover-1' }),
+  combo({ id: 'anchored bottom-left corner', placement: 'bottom-start', anchorX: '8px', anchorY: 'calc(100% - 40px)', clamped: true, finding: 'VISUAL-MATRIX-popover-1' }),
+  combo({ id: 'anchored bottom-right corner', placement: 'right', anchorX: 'calc(100% - 90px)', anchorY: 'calc(100% - 40px)', clamped: true, finding: 'VISUAL-MATRIX-popover-1' }),
 
   combo({ id: 'closed', placement: 'bottom-end', open: false }),
 ];
@@ -382,10 +382,10 @@ test.describe('popover visual matrix: dismissal', () => {
         'no-escape-dismiss did not survive Escape').toBe(true);
     });
 
-  test('a reposition places the panel correctly — the MATRIX-popover-1 diagnosis',
+  test('a reposition places the panel correctly — the VISUAL-MATRIX-popover-1 diagnosis',
     async () => {
       // Not a finding: this asserts the CORRECT documented placement, and it
-      // passes. It is here because it is the evidence that MATRIX-popover-1 is
+      // passes. It is here because it is the evidence that VISUAL-MATRIX-popover-1 is
       // a measurement-ordering bug and nothing else — the very same
       // `position()` produces the right answer the moment the panel it measures
       // is really on screen. A `resize` is the documented reposition trigger

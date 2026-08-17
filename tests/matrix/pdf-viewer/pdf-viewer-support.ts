@@ -16,7 +16,12 @@
  *     `tabindex="0"`", "All toolbar buttons have descriptive `title`
  *     attributes", "The page input field allows direct page number entry",
  *     "Navigation buttons are disabled at page boundaries".
- *   · Toolbar state: `zoomInfo` reads the zoom as a percentage, the page input
+ *   · Toolbar state: the toolbar readout contract is documented —
+ *     docs/ai/components/pdf-viewer.md "Toolbar Readouts" (lines 49-53) and
+ *     docs/components/pdf-viewer.md "Toolbar Readouts" (lines 109-113): the
+ *     zoom readout is the zoom as a whole percentage, the page-total readout
+ *     is "/ N" once a document has loaded and "/ -" until then, and zoom
+ *     in/out (buttons or keyboard) step by 0.25 within 0.25-5. The page input
  *     mirrors `page`, and the boundary rule is "disabled at page boundaries" —
  *     prev at the first page, next at the last, and the documented zoom range
  *     caps the zoom buttons at 0.25 and 5. Download and print act on `src`,
@@ -238,7 +243,9 @@ export function pressKey(el: HTMLElement, key: string, init: KeyboardEventInit =
     }));
 }
 
-/** The zoom step the toolbar buttons and keyboard share: 0.25 within [0.25, 5]. */
+/** The zoom step the toolbar buttons and keyboard share: 0.25 within [0.25, 5]
+ *  ("Toolbar Readouts": "Zoom in/out — toolbar buttons or keyboard — step
+ *  `zoom` by 0.25, clamped to 0.25-5"). */
 export function expectedZoomAfter(zoom: number, direction: 'in' | 'out'): number {
   const stepped = Math.round((zoom + (direction === 'in' ? 0.25 : -0.25)) * 100) / 100;
   return Math.min(5, Math.max(0.25, stepped));

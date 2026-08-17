@@ -302,7 +302,7 @@ const combos = generateCombos();
 /**
  * The findings this tier pinned, as a predicate over the combo.
  *
- * MATRIX-divider-3 — the documented default `spacing: 'medium'` produces NO
+ * VISUAL-MATRIX-divider-3 — the documented default `spacing: 'medium'` produces NO
  * margin at all. Every margin this component has lives under
  * `:host([spacing="…"])`, and an untouched default reflects no attribute
  * (docs/ai/properties.md), so `<snice-divider></snice-divider>` — the docs' own
@@ -313,7 +313,7 @@ const combos = generateCombos();
  * `test.fail()`, so the suite goes red the day it is fixed.
  */
 function pinnedFindings(combo: Combo): string[] {
-  return combo.spacing === 'medium' ? ['MATRIX-divider-3'] : [];
+  return combo.spacing === 'medium' ? ['VISUAL-MATRIX-divider-3'] : [];
 }
 
 test.describe('divider visual matrix: layer 1', () => {
@@ -332,7 +332,7 @@ test.describe('divider visual matrix: layer 1', () => {
 test.describe('divider visual matrix: the spacing scale', () => {
   // The finding above is about the DEFAULT, not about the scale: an explicitly
   // written spacing must still produce its documented margin, on the documented
-  // axis. This is the check that keeps MATRIX-divider-3 honest — if the whole
+  // axis. This is the check that keeps VISUAL-MATRIX-divider-3 honest — if the whole
   // scale were broken, pinning the default alone would hide it.
   for (const spacing of ['none', 'small', 'large'] as Spacing[]) {
     test(`spacing="${spacing}" applies ${SPACING_PX[spacing]}px of vertical margin`, async () => {
@@ -351,8 +351,8 @@ test.describe('divider visual matrix: the spacing scale', () => {
     });
   }
 
-  // MATRIX-divider-3 at its most direct: the documented default, alone.
-  test('MATRIX-divider-3: a default divider carries its documented medium margin', async () => {
+  // VISUAL-MATRIX-divider-3 at its most direct: the documented default, alone.
+  test('VISUAL-MATRIX-divider-3: a default divider carries its documented medium margin', async () => {
     test.fail();
     await page.evaluate(() => (window as any).matrix.mount({}));
     const margin = await page.evaluate(() =>

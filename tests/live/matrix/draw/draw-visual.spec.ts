@@ -42,7 +42,7 @@ test.describe('snice-draw visual matrix (layer 1)', () => {
    * those writes schedule re-emits the canvas's `width`/`height` ATTRIBUTES at
    * the LOGICAL size — which per the HTML spec resets the bitmap. At dpr 1
    * that stomp is invisible in geometry and only the transparency half shows
-   * (that is FINDING MATRIX-draw-3 below). At dpr ≠ 1 — Playwright's WebKit
+   * (that is FINDING VISUAL-MATRIX-draw-3 below). At dpr ≠ 1 — Playwright's WebKit
    * on a scaled display reports 2 — the same defect clamps the buffer back to
    * 1× FOREVER, so the still-applied `ctx.scale(dpr, dpr)` paints every
    * stroke at the wrong scale and ink lands away from the pointer.
@@ -50,7 +50,7 @@ test.describe('snice-draw visual matrix (layer 1)', () => {
    * Chromium, this tier's default engine, runs at dpr 1 and cannot expose it,
    * which is why the DOM tier never saw it either. The assertion stays as
    * written; the affected engines pin it, and a fixed component turns the pin
-   * red ("expected to fail but passed") exactly like MATRIX-draw-3's.
+   * red ("expected to fail but passed") exactly like VISUAL-MATRIX-draw-3's.
    */
   for (const tool of TOOLS) {
     for (const disabled of [false, true]) {
@@ -147,7 +147,7 @@ test.describe('snice-draw visual matrix (layer 2: painted pixels)', () => {
   test.afterAll(async () => { await page?.close(); });
 
   /**
-   * FINDING MATRIX-draw-3 (browser-only).
+   * FINDING VISUAL-MATRIX-draw-3 (browser-only).
    *
    * `backgroundColor: string = '#ffffff'` is documented as the canvas's
    * background — it is what an exported PNG shows behind the strokes and what
@@ -162,7 +162,7 @@ test.describe('snice-draw visual matrix (layer 2: painted pixels)', () => {
    * (happy-dom cannot see this: its 2D context is a call recorder with no
    * bitmap to reset, which is exactly why the finding belongs to this tier.)
    */
-  test('MATRIX-draw-3: the background colour fills the whole canvas', async () => {
+  test('VISUAL-MATRIX-draw-3: the background colour fills the whole canvas', async () => {
     test.fail();
     await mount(page, { id: 'px-background', backgroundColor: '#102030', strokes: 'none' });
     const probe = `(host) => { const b = host.shadowRoot.querySelector('canvas').getBoundingClientRect();
@@ -177,7 +177,7 @@ test.describe('snice-draw visual matrix (layer 2: painted pixels)', () => {
     }
   });
 
-  test('MATRIX-draw-3 reproduces: a freshly mounted canvas is transparent', async () => {
+  test('VISUAL-MATRIX-draw-3 reproduces: a freshly mounted canvas is transparent', async () => {
     await mount(page, { id: 'px-background-repro', backgroundColor: '#102030', strokes: 'none' });
     const fresh = await page.evaluate(() => (window as any).matrix.pixel(10, 10));
     expect(fresh, 'alpha 0 everywhere').toEqual([0, 0, 0, 0]);

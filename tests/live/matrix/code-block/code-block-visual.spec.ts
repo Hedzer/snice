@@ -504,7 +504,7 @@ test.describe('code-block visual matrix: marquee pixels', () => {
     );
   };
 
-  // ── MATRIX-code-block-3 ───────────────────────────────────────────────────
+  // ── VISUAL-MATRIX-code-block-3 ───────────────────────────────────────────────────
   //
   // `theme: '' | 'dark' | 'light'` is documented as "Force theme; empty =
   // auto-detect", and the Theming section says "Force with
@@ -527,7 +527,7 @@ test.describe('code-block visual matrix: marquee pixels', () => {
   //
   // Reported, not fixed — see the `:host([theme="dark"])` /
   // `:host([theme="light"])` blocks in snice-code-block.css.
-  test('MATRIX-code-block-3: theme="dark" and theme="light" paint different chrome', async () => {
+  test('VISUAL-MATRIX-code-block-3: theme="dark" and theme="light" paint different chrome', async () => {
     test.fail();
     const [darkBody] = await readTheme('dark');
     const [lightBody] = await readTheme('light');
@@ -536,7 +536,7 @@ test.describe('code-block visual matrix: marquee pixels', () => {
       + ` (${darkBody.join(',')})`).toBe(false);
   });
 
-  test('MATRIX-code-block-3 reproduces: both forced themes resolve one palette', async () => {
+  test('VISUAL-MATRIX-code-block-3 reproduces: both forced themes resolve one palette', async () => {
     const read = async (theme: string) => {
       await page.evaluate(t => (window as any).matrix.mount({
         snippet: 'threeLines', language: 'javascript', theme: t, filename: 'app.ts',

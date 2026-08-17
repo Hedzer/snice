@@ -211,7 +211,7 @@ const COMBOS: Combo[] = [
 
   // ── split: both directions × every documented ratio ──────────────────────
   //
-  // FINDING MATRIX-layout-4 — every VERTICAL split with a non-default ratio.
+  // FINDING VISUAL-MATRIX-layout-4 — every VERTICAL split with a non-default ratio.
   // `snice-layout-split.css` scopes its direction rule
   // (`:host([direction="vertical"]) .layout { grid-template-columns: 1fr }`)
   // but NOT its ratio rules (`:host([ratio="60-40"]) .layout {
@@ -229,7 +229,7 @@ const COMBOS: Combo[] = [
       attrs: { direction, ratio },
       expect: { ratio: parts as unknown as [number, number], direction },
       finding: direction === 'vertical' && ratio !== '50-50'
-        ? 'MATRIX-layout-4' : undefined,
+        ? 'VISUAL-MATRIX-layout-4' : undefined,
     }))),
 
   // ── card: every column count, and every gap ──────────────────────────────

@@ -305,7 +305,7 @@ test.describe('textarea visual matrix: the documented scales are real', () => {
 
 test.describe('textarea visual matrix: marquee pixels', () => {
   /**
-   * MATRIX-textarea-2.
+   * VISUAL-MATRIX-textarea-2.
    *
    * Documented: `variant: 'outlined'|'filled'|'underlined' = 'outlined'`, a
    * first-class appearance property with its own row in the Properties table
@@ -323,7 +323,7 @@ test.describe('textarea visual matrix: marquee pixels', () => {
    * NOT changed: this test fails the day the three variants get their rules,
    * which is how the finding gets closed.
    */
-  test('MATRIX-textarea-2: the three variants paint three distinguishable fields', async () => {
+  test('VISUAL-MATRIX-textarea-2: the three variants paint three distinguishable fields', async () => {
     test.fail();
     const painted: Record<string, string> = {};
     for (const variant of VARIANTS) {

@@ -362,7 +362,7 @@ test.describe('grid visual matrix: cross-combo geometry', () => {
   });
 
   /**
-   * ── FINDING MATRIX-grid-3 ────────────────────────────────────────────────
+   * ── FINDING VISUAL-MATRIX-grid-3 ────────────────────────────────────────────────
    *
    * `setLayout(layout)` is documented as "Apply saved layout (reorder,
    * reposition, hide/show)" — one application of one layout. In a real browser
@@ -384,7 +384,7 @@ test.describe('grid visual matrix: cross-combo geometry', () => {
    * and it stays. `test.fail()` records the divergence; the fixture's append
    * budget is what keeps the page alive long enough to report it.
    */
-  test.fail('MATRIX-grid-3: setLayout() restores the painted arrangement, hidden items included',
+  test.fail('VISUAL-MATRIX-grid-3: setLayout() restores the painted arrangement, hidden items included',
     async () => {
       await page.evaluate(() => (window as any).matrix.mount({
         items: [

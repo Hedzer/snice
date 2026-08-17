@@ -280,7 +280,7 @@ test.describe('virtual-scroller visual matrix: findings', () => {
   });
 
   /**
-   * MATRIX-virtual-scroller-2 — a user scroll never updates the window.
+   * VISUAL-MATRIX-virtual-scroller-2 — a user scroll never updates the window.
    *
    * docs/ai/components/virtual-scroller.md: "Efficiently renders large lists by
    * only displaying visible items." The window is therefore a function of the
@@ -292,7 +292,7 @@ test.describe('virtual-scroller visual matrix: findings', () => {
    * frozen and the user scrolls straight off the end of the rendered window
    * into empty space.
    */
-  test('MATRIX-virtual-scroller-2: scrolling the port updates the window', async () => {
+  test('VISUAL-MATRIX-virtual-scroller-2: scrolling the port updates the window', async () => {
     test.fail();
     await page.evaluate(() => (window as any).matrix.mount({
       itemHeight: 50, bufferSize: 5, total: 1000, viewportHeight: 400,

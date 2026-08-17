@@ -206,7 +206,7 @@ test.describe('snice-heatmap visual matrix (layer 1)', () => {
   });
 
   /**
-   * MATRIX-heatmap-3 — the tooltip is placed relative to the host, not the
+   * VISUAL-MATRIX-heatmap-3 — the tooltip is placed relative to the host, not the
    * viewport, so it lands over the cell it is describing.
    *
    * `docs/ai/components/heatmap.md` promises a "Tooltip on hover with date and
@@ -228,7 +228,7 @@ test.describe('snice-heatmap visual matrix (layer 1)', () => {
    * pinned, so the day the containment is fixed this suite fails and the
    * finding can be closed.
    */
-  test('MATRIX-heatmap-3: the tooltip sits directly above the cell it describes', async () => {
+  test('VISUAL-MATRIX-heatmap-3: the tooltip sits directly above the cell it describes', async () => {
     test.fail();
     await mount(page, { weeks: 4 });
     await page.evaluate(() => (window as any).matrix.hover(20));

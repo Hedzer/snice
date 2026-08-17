@@ -312,7 +312,7 @@ test.describe('network-graph visual matrix: zoom really moves the paint', () => 
 // red the day the component is fixed and the finding can be closed.
 
 test.describe('network-graph visual matrix: findings', () => {
-  test('MATRIX-network-graph-2: a container resize never re-lays-out the graph', async () => {
+  test('VISUAL-MATRIX-network-graph-2: a container resize never re-lays-out the graph', async () => {
     test.fail();
     // The ResizeObserver updates the canvas `viewBox` and nothing else, so a
     // static layout computed for the old box keeps its old coordinates inside

@@ -43,7 +43,7 @@
  *
  * ── FINDING ────────────────────────────────────────────────────────────────
  *
- * MATRIX-gantt-3  sidebar rows do not line up with their own bars.
+ * VISUAL-MATRIX-gantt-3  sidebar rows do not line up with their own bars.
  *   combo:    dataset=flat|basic|grouped|mixed, zoom=week (every dataset with
  *             more than one task, at every zoom)
  *   expected: the sidebar row for a task vertically overlaps that task's bar —
@@ -428,10 +428,10 @@ test('layer1 scrollToTask scrolls to that task\'s start', async () => {
   expect(result.after).toBeGreaterThan(result.before);
 });
 
-// ── MATRIX-gantt-3 ─────────────────────────────────────────────────────────
+// ── VISUAL-MATRIX-gantt-3 ─────────────────────────────────────────────────────────
 // The sidebar/timeline row correspondence. Kept at full strength and pinned.
 for (const dataset of ['flat', 'basic', 'grouped', 'mixed'] as Dataset[]) {
-  test(`MATRIX-gantt-3 ${dataset}: each sidebar row lines up with its own bar`, async () => {
+  test(`VISUAL-MATRIX-gantt-3 ${dataset}: each sidebar row lines up with its own bar`, async () => {
     test.fail();
     const problems = await page.evaluate(async (dataset) => {
       const out: string[] = [];
@@ -464,7 +464,7 @@ for (const dataset of ['flat', 'basic', 'grouped', 'mixed'] as Dataset[]) {
       if (names.length !== tasks.length) out.push(`${names.length} sidebar rows for ${tasks.length} tasks`);
       return out;
     }, dataset);
-    expect(problems, `MATRIX-gantt-3 ${dataset}`).toEqual([]);
+    expect(problems, `VISUAL-MATRIX-gantt-3 ${dataset}`).toEqual([]);
   });
 }
 

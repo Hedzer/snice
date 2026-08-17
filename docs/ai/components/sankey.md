@@ -22,6 +22,9 @@ interface SankeyNode { id: string; label?: string; color?: string; }
 interface SankeyLink { source: string; target: string; value: number; color?: string; }
 ```
 
+- `label` defaults to the node `id`; node `color` is auto-assigned if omitted
+- link `color` defaults to its source node's color
+
 ## Events
 
 - `sankey-node-click` → `{ node: SankeyNode }`
@@ -33,6 +36,17 @@ interface SankeyLink { source: string; target: string; value: number; color?: st
 - `base` - Outer container
 - `chart` - SVG chart area
 - `tooltip` - Hover tooltip
+
+## Layout
+
+- A ribbon's stroke width is proportional to its `value`
+- A node is at least as tall as the total flow leaving it (ribbons never overflow their source node)
+
+## Tooltip
+
+- Node: `<label> Value: <value>` (`label` defaults to node `id`)
+- Link: `<source> → <target> Value: <value>` (source/target labels, falling back to ids)
+- Values are formatted with `toLocaleString()`
 
 ## Basic Usage
 

@@ -46,6 +46,12 @@ viewer.addEventListener('pdf-loaded', (e) => {
 });
 ```
 
+## Toolbar Readouts
+
+- Zoom readout: whole percentage — `100%` at `zoom = 1`, `125%` at `zoom = 1.25`
+- Page-total readout: `` / N `` once a document has loaded; `` / - `` until then (`totalPages = 0`)
+- Zoom in/out — toolbar buttons or keyboard — step `zoom` by 0.25, clamped to 0.25-5
+
 ## Keyboard Navigation
 
 - `ArrowRight` / `PageDown` - Next page

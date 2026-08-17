@@ -345,7 +345,7 @@ interface Waiver {
 const WAIVERS: Waiver[] = [
   {
     /**
-     * FINDING MATRIX-input-3 — a SLOTTED suffix icon does not move the clear
+     * FINDING VISUAL-MATRIX-input-3 — a SLOTTED suffix icon does not move the clear
      * button, so the two stack.
      *
      * The doc gives the suffix icon two equal channels: the `suffix-icon`
@@ -361,7 +361,7 @@ const WAIVERS: Waiver[] = [
      * actual:   the clear control [368,392] covers the icon [366,390] — a 22px
      *           overlap of two 24px boxes
      */
-    id: 'MATRIX-input-3',
+    id: 'VISUAL-MATRIX-input-3',
     applies: c => c.icons === 'slotted' && (c.state === 'plain' || c.state === 'invalid'),
     matches: /^\[part="clear"\] and \[part="suffix-icon"\] overlap by \d+x\d+px$/,
   },

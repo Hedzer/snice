@@ -204,7 +204,7 @@ test.describe('snice-camera-annotate visual matrix (layer 2: painted pixels)', (
   const isBlueFrame = (px: RGB) => px[2] > px[0] && px[2] > px[1];
 
   /**
-   * FINDING MATRIX-camera-annotate-4 (browser-only).
+   * FINDING VISUAL-MATRIX-camera-annotate-4 (browser-only).
    *
    * `startCamera()` is invoked from `@ready`, and it assigns the granted
    * `MediaStream` to `this.videoEl` — the `@query('.ca-video')` reference. In a
@@ -217,7 +217,7 @@ test.describe('snice-camera-annotate visual matrix (layer 2: painted pixels)', (
    * The assertion below is the documented one — the captured frame is the one
    * the camera was showing — and stays as it is.
    */
-  test('MATRIX-camera-annotate-4: the captured frame is painted onto the annotate canvas', async () => {
+  test('VISUAL-MATRIX-camera-annotate-4: the captured frame is painted onto the annotate canvas', async () => {
     test.fail();
     await mount(page, { id: 'px-frame', capture: true, document: 'none' });
     const probe = `(host) => { const c = host.shadowRoot.querySelector('.ca-draw-canvas');
@@ -229,7 +229,7 @@ test.describe('snice-camera-annotate visual matrix (layer 2: painted pixels)', (
     expect(isBlueFrame(centre), `canvas centre painted ${centre}`).toBe(true);
   });
 
-  test('MATRIX-camera-annotate-4 reproduces: the preview never receives the granted stream', async () => {
+  test('VISUAL-MATRIX-camera-annotate-4 reproduces: the preview never receives the granted stream', async () => {
     const state = await mount(page, { id: 'px-frame-repro', capture: false, document: 'none' });
     expect(state.frame).toEqual({ width: 0, height: 0 });
 
@@ -257,7 +257,7 @@ test.describe('snice-camera-annotate visual matrix (layer 2: painted pixels)', (
     expect(isInk(onPath) || isInk(alsoOnPath),
       `stroke path painted ${onPath} / ${alsoOnPath}`).toBe(true);
     // Whatever the frame behind it turned out to be (see
-    // MATRIX-camera-annotate-4), the stroke has to be visible against it.
+    // VISUAL-MATRIX-camera-annotate-4), the stroke has to be visible against it.
     expect(sameColor(onPath, ground) && sameColor(alsoOnPath, ground),
       'the stroke is indistinguishable from what is behind it').toBe(false);
   });

@@ -12,11 +12,23 @@
  *     TRUE), `animation` (default FALSE).
  *   · TYPES — `SankeyNode { id, label?, color? }` and
  *     `SankeyLink { source, target, value, color? }`. `label` and `color` are
- *     OPTIONAL, which is what makes the fallbacks assertable: a node with no
- *     label is named by its id, a link with no colour takes its source's.
+ *     OPTIONAL, and the doc's Types section (docs/ai/components/sankey.md
+ *     lines 25-26) anchors the fallbacks: "label defaults to the node id",
+ *     "link color defaults to its source node's color".
  *   · EVENTS — `sankey-node-click { node }`, `sankey-link-click { link }`,
  *     `sankey-hover { type, item } | null`.
  *   · CSS PARTS — `base`, `chart`, `tooltip`.
+ *   · TOOLTIP — the doc's Tooltip section (docs/ai/components/sankey.md
+ *     lines 45-49) anchors the exact copy: a node shows
+ *     `<label> Value: <value>` (label defaulting to the id), a link shows
+ *     `<source> → <target> Value: <value>` (endpoint labels, falling back to
+ *     ids). That is where 'Sink Value: 100' and 'A → Sink Value: 30' come
+ *     from.
+ *   · LAYOUT — the doc's Layout section (docs/ai/components/sankey.md
+ *     lines 40-43) anchors the conservation semantics: "A ribbon's stroke
+ *     width is proportional to its value" and "a node is at least as tall as
+ *     the total flow leaving it" — the promise MATRIX-sankey-2 pins a
+ *     violation of.
  *   · A11Y — "SVG role='img' with aria-label", "Hover highlighting dims
  *     non-connected elements".
  *
@@ -25,8 +37,8 @@
  * labels and values written only when their switch is on. The exact flow
  * geometry (which the component relaxes over 32 iterations) is asserted as
  * relationships — a link starts at its source's right edge and ends at its
- * target's left edge, a node is at least as tall as its own flow — rather than
- * as coordinates the docs never promise.
+ * target's left edge, a node is at least as tall as its own flow (Layout,
+ * above) — rather than as coordinates the docs never promise.
  *
  * happy-dom performs no layout, so the component keeps its own 600x400 default
  * viewport. That is stable and sufficient here; real geometry belongs to the

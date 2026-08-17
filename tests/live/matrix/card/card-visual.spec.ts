@@ -286,7 +286,7 @@ test.describe('card visual matrix: a header that arrives late', () => {
 
 test.describe('card visual matrix: the cursor tilt', () => {
   /**
-   * FINDING MATRIX-card-2 — the documented cursor tilt never happens, and
+   * FINDING VISUAL-MATRIX-card-2 — the documented cursor tilt never happens, and
    * every pointer move over a clickable card throws.
    *
    * The doc: "clickable cards tilt toward cursor on hover (±3° perspective)".
@@ -330,7 +330,7 @@ test.describe('card visual matrix: the cursor tilt', () => {
   });
 
   test('a clickable card still lifts on hover, and a plain one does not', async () => {
-    // The half of the hover treatment that DOES survive MATRIX-card-2: the
+    // The half of the hover treatment that DOES survive VISUAL-MATRIX-card-2: the
     // stylesheet's own translateY(-2px), which needs no custom property.
     await page.evaluate(c => (window as any).matrix.mount(c), {
       variant: 'elevated', clickable: true,

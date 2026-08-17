@@ -156,11 +156,13 @@ describe('snice-sankey matrix: node geometry', () => {
   /**
    * FINDING MATRIX-sankey-2.
    *
-   * A Sankey's defining property is conservation: a ribbon's thickness is its
-   * value, so the ribbons LEAVING a node cannot be thicker than the node they
-   * leave. The layout computes each ribbon's width from its source
-   * (`value / source.value * source.height`) and then, in a second pass over
-   * the same links, OVERWRITES it with the target's proportion
+   * The doc promises conservation (docs/ai/components/sankey.md "Layout",
+   * lines 40-43: "A ribbon's stroke width is proportional to its value" and
+   * "a node is at least as tall as the total flow leaving it"): a ribbon's
+   * thickness is its value, so the ribbons LEAVING a node cannot be thicker
+   * than the node they leave. The layout computes each ribbon's width from
+   * its source (`value / source.value * source.height`) and then, in a second
+   * pass over the same links, OVERWRITES it with the target's proportion
    * (`value / target.value * target.height`). Only the second number survives,
    * so a ribbon flowing into a taller node is drawn thicker than its source:
    * in the diamond, node `x` is 186 tall and its single outgoing ribbon is
