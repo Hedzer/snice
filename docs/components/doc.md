@@ -142,7 +142,7 @@ saveHtml.addEventListener('click', () => {
 
 Use the `icons` attribute to switch toolbar icon sets.
 
-**Default (text/emoji)**
+**Default (text labels and embedded SVG icons)**
 ```html
 <snice-doc></snice-doc>
 ```

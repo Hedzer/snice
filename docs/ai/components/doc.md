@@ -63,7 +63,7 @@ doc.downloadAs('markdown', 'my-doc.md');
 
 ## Icon Sets
 
-- `default` - Text labels and emoji
+- `default` - Text labels and embedded SVG icons
 - `material` - Material Symbols Outlined (load font in document)
 - `fontawesome` - Font Awesome 6 solid (load font in document)
 - Fonts cascade from light DOM into shadow DOM
