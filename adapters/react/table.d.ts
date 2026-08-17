@@ -37,6 +37,7 @@ export interface TableProps extends SniceBaseProps {
     editable?: any;
     editMode?: any;
     density?: any;
+    columnFit?: any;
     headerFilters?: any;
     quickFilter?: any;
     rowReorder?: any;
