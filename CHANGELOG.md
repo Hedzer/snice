@@ -1,3 +1,24 @@
+# [7.9.0](https://github.com/Hedzer/snice/compare/v7.8.0...v7.9.0) (2026-08-17)
+
+
+### Bug Fixes
+
+* **calendar:** fit constrained hosts and give the +N more chip a built-in day panel ([879039b](https://github.com/Hedzer/snice/commit/879039b20b7d27c2ab662c9645b8ea3c453025ee))
+* **calendar:** lane budgeting, demo contracts, overlay anchoring, and polish ([82c0d90](https://github.com/Hedzer/snice/commit/82c0d9079a3409e06aa97445f21feeee013d5add))
+* **code-block:** preserve author newlines in grammar formatting ([255027f](https://github.com/Hedzer/snice/commit/255027f2aba8a558c2d927c2fb3f0e3af2f9330c))
+* **command-palette:** collapse the double-padded search band ([272020d](https://github.com/Hedzer/snice/commit/272020dd0d96cf65418b5b464d44be96f43b770a))
+* **qr-code:** honour error-correction level M ([5882612](https://github.com/Hedzer/snice/commit/5882612b0eb22dea6d1cebc919662fbd3891e638))
+* **receipt:** gate per-item extras to the detailed variant ([c5117ed](https://github.com/Hedzer/snice/commit/c5117ed5496de42e17bc8b01ace1df6a99733c02))
+* **select:** document-true option a11y state and child precedence ([ff9dd56](https://github.com/Hedzer/snice/commit/ff9dd564f2c07c9f48c2e0a60353e068be74be81))
+* **table:** matrix, paint-scheduling, and visual-sweep defect wave ([a569f3b](https://github.com/Hedzer/snice/commit/a569f3b84dcf795dea6fbea7da728e731bdf47db))
+* **table:** namespace the typed-cell width floor as --snice-table-cell-min-width ([db8091c](https://github.com/Hedzer/snice/commit/db8091c0131132678b349d5a5b4a328b23c61119))
+* **table:** same-reference reassignment re-renders; close remaining paint-scheduling races ([5b8053a](https://github.com/Hedzer/snice/commit/5b8053ab9f4a6502dbdf0ab98c8eb92c15f59528))
+
+
+### Features
+
+* **table:** column-fit squish mode with ellipsized cells ([f6350e3](https://github.com/Hedzer/snice/commit/f6350e39c0e0f78441a6b06a502e53e5dcacf5cf))
+
 # [7.8.0](https://github.com/Hedzer/snice/compare/v7.7.0...v7.8.0) (2026-08-14)
 
 
