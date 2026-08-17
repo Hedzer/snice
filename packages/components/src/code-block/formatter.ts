@@ -4,6 +4,12 @@
  * Rules are defined in grammar JSON files under "formatters" section.
  * The engine scans code char by char, tracks string/comment context,
  * and applies newline/space/indent rules based on regex char classes.
+ *
+ * Semantics: a code display formats authored code — it does not re-flow it.
+ * Author line breaks are preserved; rule-driven newlines fire only where
+ * they do not duplicate an author break and are suppressed inside
+ * parentheses/bracket depth. Leading indentation is renormalized from the
+ * indent/dedent char-class depth.
  */
 
 export interface FormatRules {
@@ -29,7 +35,6 @@ export function formatCode(code: string, rules: FormatRules): string {
   const tabSize = rules.tabSize ?? 2;
   const useTabs = rules.useTabs ?? false;
   const indentUnit = useTabs ? '\t' : ' '.repeat(tabSize);
-  const trimTrailing = rules.trimTrailing ?? true;
   const skipStrings = rules.skipStrings ?? true;
   const skipComments = rules.skipComments ?? true;
 
@@ -41,225 +46,228 @@ export function formatCode(code: string, rules: FormatRules): string {
   const indentRe = rules.indent ? new RegExp(rules.indent) : null;
   const dedentRe = rules.dedent ? new RegExp(rules.dedent) : null;
 
-  // Strip existing formatting: collapse whitespace outside strings/comments
-  const stripped = stripWhitespace(code, skipStrings, skipComments);
+  // Chars whose newline rules stay active inside […] depth: JSON-style
+  // structural brackets and separators must keep exploding one-liners.
+  const bracketExemptRe = /[[\],]/;
 
-  // Build formatted output
-  let result = '';
+  const lines: string[] = [];
+  let line = '';
+  let lineHasContent = false;
+  let needIndent = false;
+  // True while the current line begins inside a string/block comment: its
+  // content is emitted verbatim, never re-indented or rule-processed.
+  let inContinuation = false;
+  let pendingSpace = false;
   let depth = 0;
-  let lineStart = true;
+  let parenDepth = 0;
+  let bracketDepth = 0;
+  // One flag per open indent group: did a line break occur inside it? A
+  // closing char only starts its own line when the group it closes is
+  // multi-line, so `import { a } from 'x'` never breaks.
+  const brokenGroups: boolean[] = [];
+
   let inString: string | null = null;
-  let inComment = false; // block comment
+  let inBlockComment = false;
   let inLineComment = false;
 
-  for (let i = 0; i < stripped.length; i++) {
-    const ch = stripped[i];
-    const prev = i > 0 ? stripped[i - 1] : '';
-    const next = i + 1 < stripped.length ? stripped[i + 1] : '';
+  /** Rule-driven newlines are suppressed inside () or (for non-bracket
+   *  chars) inside [], so `({ ... })`, `f([a, b])` and `for (;;)` never
+   *  explode. */
+  const newlineSuppressed = (ch: string): boolean => {
+    if (parenDepth > 0) return true;
+    if (bracketDepth > 0 && !bracketExemptRe.test(ch)) return true;
+    return false;
+  };
 
-    // Track string context
-    if (!inComment && !inLineComment && skipStrings) {
-      if (inString) {
-        result += ch;
-        if (ch === inString && prev !== '\\') {
-          inString = null;
-        }
-        continue;
+  const beginLine = (): void => {
+    line = '';
+    lineHasContent = false;
+    needIndent = true;
+    pendingSpace = false;
+    inContinuation = inString !== null || inBlockComment;
+    if (brokenGroups.length > 0) brokenGroups[brokenGroups.length - 1] = true;
+  };
+
+  const endLine = (): void => {
+    lines.push(line.replace(/[ \t]+$/, ''));
+    beginLine();
+  };
+
+  const appendContent = (ch: string): void => {
+    if (needIndent) {
+      needIndent = false;
+      // Current depth, not a line-start snapshot: a dedent char re-indents
+      // its own line (the closing brace drops back before being written).
+      if (!inContinuation) line += indentUnit.repeat(depth);
+    }
+    if (pendingSpace) {
+      line += ' ';
+      pendingSpace = false;
+    }
+    line += ch;
+    lineHasContent = true;
+  };
+
+  beginLine();
+
+  for (let i = 0; i < code.length; i++) {
+    const ch = code[i];
+    const next = i + 1 < code.length ? code[i + 1] : '';
+
+    // Line comment content: verbatim until the author newline
+    if (inLineComment) {
+      if (ch === '\n') {
+        inLineComment = false;
+        endLine();
+      } else {
+        appendContent(ch);
       }
-      if (ch === '"' || ch === "'" || ch === '`') {
-        inString = ch;
-        if (lineStart) {
-          result += indentUnit.repeat(depth);
-          lineStart = false;
-        }
-        result += ch;
-        continue;
-      }
+      continue;
     }
 
-    // Track comment context
+    // Block comment content: verbatim, may span lines
+    if (inBlockComment) {
+      if (ch === '\n') {
+        endLine();
+        continue;
+      }
+      appendContent(ch);
+      if (ch === '/' && code[i - 1] === '*') inBlockComment = false;
+      continue;
+    }
+
+    // String content: verbatim, may span lines (template literals)
+    if (inString) {
+      if (ch === '\n') {
+        endLine();
+        continue;
+      }
+      appendContent(ch);
+      if (ch === inString && code[i - 1] !== '\\') inString = null;
+      continue;
+    }
+
+    // Entering a string
+    if (skipStrings && (ch === '"' || ch === "'" || ch === '`')) {
+      inString = ch;
+      appendContent(ch);
+      continue;
+    }
+
+    // Entering a comment
     if (skipComments) {
-      if (inLineComment) {
-        result += ch;
-        if (ch === '\n') {
-          inLineComment = false;
-          lineStart = true;
-        }
-        continue;
-      }
-      if (inComment) {
-        result += ch;
-        if (ch === '/' && prev === '*') {
-          inComment = false;
-        }
-        continue;
-      }
       if (ch === '/' && next === '/') {
-        if (lineStart) {
-          result += indentUnit.repeat(depth);
-          lineStart = false;
-        }
         inLineComment = true;
-        result += ch;
+        appendContent(ch);
         continue;
       }
       if (ch === '/' && next === '*') {
-        if (lineStart) {
-          result += indentUnit.repeat(depth);
-          lineStart = false;
-        }
-        inComment = true;
-        result += ch;
+        inBlockComment = true;
+        appendContent(ch);
         continue;
       }
     }
 
-    // Dedent before the char
+    // Author newline: preserved
+    if (ch === '\n') {
+      endLine();
+      continue;
+    }
+    if (ch === '\r') {
+      if (next !== '\n') endLine();
+      continue;
+    }
+
+    // Whitespace within a line: collapsed to a single pending space;
+    // leading indentation is dropped (renormalized from depth)
+    if (ch === ' ' || ch === '\t') {
+      if (lineHasContent) pendingSpace = true;
+      continue;
+    }
+
+    // Bracket/paren depth (outside strings/comments)
+    if (ch === '(') parenDepth++;
+    else if (ch === ')') parenDepth = Math.max(0, parenDepth - 1);
+    else if (ch === '[') bracketDepth++;
+    else if (ch === ']') bracketDepth = Math.max(0, bracketDepth - 1);
+
+    // Dedent before the char; a closer pops its group's multi-line flag
+    let closesBrokenGroup = false;
     if (dedentRe && dedentRe.test(ch)) {
       depth = Math.max(0, depth - 1);
+      closesBrokenGroup = brokenGroups.pop() ?? false;
     }
 
-    // Newline before
-    if (newlineBefore && newlineBefore.test(ch)) {
-      if (!lineStart) {
-        result = trimTrailingSpaces(result);
-        result += '\n';
-        lineStart = true;
-      }
+    // Newline before (only where it does not duplicate an author break, and
+    // for closers only when the group being closed is multi-line)
+    if (
+      newlineBefore && newlineBefore.test(ch) && lineHasContent &&
+      !newlineSuppressed(ch) && (!dedentRe || !dedentRe.test(ch) || closesBrokenGroup)
+    ) {
+      endLine();
     }
 
-    // Space before (including spaceAround)
-    if ((spaceBefore && spaceBefore.test(ch)) || (spaceAround && spaceAround.test(ch))) {
-      if (!lineStart && result.length > 0 && result[result.length - 1] !== ' ' && result[result.length - 1] !== '\n') {
-        result += ' ';
-      }
+    // Space before (including spaceAround). A rule char glued to a
+    // preceding operator char is a compound operator (`+=`, `===`), not a
+    // fresh token — it keeps its left side.
+    const prevRaw = i > 0 ? code[i - 1] : '';
+    const partOfOperator = prevRaw !== '' && !/[ \t\n\r]/.test(prevRaw) && /[+\-*/%=<>!&|^~?:]/.test(prevRaw);
+    if (
+      ((spaceBefore && spaceBefore.test(ch)) || (spaceAround && spaceAround.test(ch))) &&
+      lineHasContent && !partOfOperator
+    ) {
+      pendingSpace = true;
     }
 
-    // Write indent if at line start
-    if (lineStart && ch !== '\n') {
-      result += indentUnit.repeat(depth);
-      lineStart = false;
-    }
-
-    result += ch;
+    appendContent(ch);
 
     // Indent after the char
     if (indentRe && indentRe.test(ch)) {
       depth++;
+      brokenGroups.push(false);
     }
 
-    // Space after (including spaceAround)
+    // Space after (including spaceAround). An `=` directly followed by
+    // another `=` is an equality chain and `=>` is an arrow — not two tokens.
     if ((spaceAfter && spaceAfter.test(ch)) || (spaceAround && spaceAround.test(ch))) {
-      if (next && next !== '\n' && next !== ' ') {
-        result += ' ';
+      const continuesOperator = ch === '=' && (next === '=' || next === '>');
+      if (next && next !== ' ' && next !== '\t' && next !== '\n' && next !== '\r' && !continuesOperator) {
+        pendingSpace = true;
       }
     }
 
-    // Newline after
-    if (newlineAfter && newlineAfter.test(ch)) {
-      result = trimTrailingSpaces(result);
-      result += '\n';
-      lineStart = true;
+    // Newline after: fires only where it does not duplicate an author
+    // break or detach a same-line trailing comment
+    if (newlineAfter && newlineAfter.test(ch) && !newlineSuppressed(ch)) {
+      let j = i + 1;
+      while (j < code.length && (code[j] === ' ' || code[j] === '\t')) j++;
+      const ahead = j < code.length ? code[j] : '';
+      const atAuthorBreak = ahead === '' || ahead === '\n' || ahead === '\r';
+      const atTrailingComment = ahead === '/' && (code[j + 1] === '/' || code[j + 1] === '*');
+      if (!atAuthorBreak && !atTrailingComment) {
+        endLine();
+      }
     }
   }
 
-  // Post-processing
-  let lines = result.split('\n');
+  lines.push(line.replace(/[ \t]+$/, ''));
 
-  if (trimTrailing) {
-    lines = lines.map(l => l.replace(/\s+$/, ''));
+  // Post-processing
+  let out = lines;
+
+  if (rules.trimTrailing ?? true) {
+    out = out.map(l => l.replace(/[ \t]+$/, ''));
   }
 
   if (rules.collapseBlankLines !== undefined) {
-    lines = collapseBlankLinesArr(lines, rules.collapseBlankLines);
+    out = collapseBlankLinesArr(out, rules.collapseBlankLines);
   }
 
   // Trim leading/trailing blank lines
-  while (lines.length > 0 && lines[0].trim() === '') lines.shift();
-  while (lines.length > 0 && lines[lines.length - 1].trim() === '') lines.pop();
+  while (out.length > 0 && out[0].trim() === '') out.shift();
+  while (out.length > 0 && out[out.length - 1].trim() === '') out.pop();
 
-  return lines.join('\n');
-}
-
-/**
- * Strip existing whitespace: replace runs of whitespace (outside strings/comments)
- * with a single space, and remove all newlines.
- */
-function stripWhitespace(code: string, skipStrings: boolean, skipComments: boolean): string {
-  let result = '';
-  let inString: string | null = null;
-  let inComment = false;
-  let inLineComment = false;
-
-  for (let i = 0; i < code.length; i++) {
-    const ch = code[i];
-    const prev = i > 0 ? code[i - 1] : '';
-    const next = i + 1 < code.length ? code[i + 1] : '';
-
-    // Track strings
-    if (!inComment && !inLineComment && skipStrings) {
-      if (inString) {
-        result += ch;
-        if (ch === inString && prev !== '\\') {
-          inString = null;
-        }
-        continue;
-      }
-      if (ch === '"' || ch === "'" || ch === '`') {
-        inString = ch;
-        result += ch;
-        continue;
-      }
-    }
-
-    // Track comments
-    if (skipComments) {
-      if (inLineComment) {
-        if (ch === '\n') {
-          inLineComment = false;
-          // Emit the newline so line comments stay separate
-          result += ch;
-        } else {
-          result += ch;
-        }
-        continue;
-      }
-      if (inComment) {
-        result += ch;
-        if (ch === '/' && prev === '*') {
-          inComment = false;
-        }
-        continue;
-      }
-      if (ch === '/' && next === '/') {
-        inLineComment = true;
-        result += ch;
-        continue;
-      }
-      if (ch === '/' && next === '*') {
-        inComment = true;
-        result += ch;
-        continue;
-      }
-    }
-
-    // Collapse whitespace
-    if (/\s/.test(ch)) {
-      if (result.length > 0 && !/\s/.test(result[result.length - 1])) {
-        result += ' ';
-      }
-    } else {
-      result += ch;
-    }
-  }
-
-  return result;
-}
-
-function trimTrailingSpaces(s: string): string {
-  let end = s.length;
-  while (end > 0 && s[end - 1] === ' ') end--;
-  return s.slice(0, end);
+  return out.join('\n');
 }
 
 function collapseBlankLinesArr(lines: string[], max: number): string[] {

@@ -6,7 +6,7 @@
     "pretty": {
       "tabSize": 2,
       "useTabs": false,
-      "newlineAfter": "[{;]",
+      "newlineAfter": "[;]",
       "newlineBefore": "[}]",
       "spaceAfter": "[,]",
       "spaceAround": "[=]",

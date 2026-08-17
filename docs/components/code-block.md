@@ -157,6 +157,8 @@ Use `format="pretty"` with a grammar that includes formatters.
 <snice-code-block grammar="grammars/json.json" format="pretty" code='{"a":1,"b":[2,3]}'></snice-code-block>
 ```
 
+Grammar formatters format authored code — they do not re-flow it. Author line breaks and blank lines are preserved; leading indentation is renormalized; spacing rules apply within a line. Rule-driven breaks (e.g. after `;`) fire only where they do not duplicate an author break and are suppressed inside parentheses/brackets. One-liners like the JSON example above are still pretty-printed.
+
 Grammars with built-in `"pretty"` formatters: `json.json`, `typescript.json`, `css.json`, `snice.json`.
 
 ### Imperative Formatter

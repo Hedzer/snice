@@ -1156,6 +1156,13 @@ describe('indent formatter', () => {
   });
 });
 
+// SEMANTIC CHANGE (formatter v2): formatCode now PRESERVES author line
+// breaks — a code display formats authored code, it does not re-flow it.
+// Rule-driven newlines fire only where they do not duplicate an author
+// break, are suppressed inside parentheses/brackets, and a closing char
+// only starts its own line when the group it closes is multi-line.
+// Leading indentation is renormalized from the indent/dedent depth.
+// Expectations below were corrected from the old re-flow engine.
 describe('formatCode (declarative rule-based formatter)', () => {
   it('should format JSON with pretty rules', () => {
     const rules: FormatRules = {
@@ -1182,10 +1189,119 @@ describe('formatCode (declarative rule-based formatter)', () => {
     expect(result).toBe('a;\nb;\nc');
   });
 
-  it('should apply newlineBefore rule', () => {
+  it('should apply newlineBefore rule to a closer of a multi-line group', () => {
     const rules: FormatRules = { newlineBefore: '[}]', indent: '[{]', dedent: '[}]' };
-    const result = formatCode('{a}', rules);
-    expect(result).toContain('\n}');
+    const result = formatCode('{a;\nb}', rules);
+    expect(result).toBe('{a;\n  b\n}');
+  });
+
+  it('should keep a single-line brace group on one line', () => {
+    const rules: FormatRules = { newlineBefore: '[}]', indent: '[{]', dedent: '[}]' };
+    expect(formatCode('{a}', rules)).toBe('{a}');
+  });
+
+  it('should preserve author line breaks', () => {
+    const rules: FormatRules = { newlineAfter: '[;]' };
+    expect(formatCode('a;\nb;', rules)).toBe('a;\nb;');
+  });
+
+  it('should not duplicate an author break after a rule char', () => {
+    const rules: FormatRules = { newlineAfter: '[;]' };
+    expect(formatCode('a;\nb', rules)).toBe('a;\nb');
+  });
+
+  it('should preserve blank lines and collapse runs per collapseBlankLines', () => {
+    const rules: FormatRules = { newlineAfter: '[;]', collapseBlankLines: 1 };
+    const result = formatCode('a;\n\n\n\nb;', rules);
+    expect(result).toBe('a;\n\nb;');
+  });
+
+  it('should suppress rule newlines inside parentheses', () => {
+    const rules: FormatRules = {
+      newlineAfter: '[;]', newlineBefore: '[}]', indent: '[{]', dedent: '[}]',
+    };
+    expect(formatCode('for (i = 0; i < n; i++) {}', rules))
+      .toBe('for (i = 0; i < n; i++) {}');
+  });
+
+  it('should not break one-line object literals inside call arguments', () => {
+    const rules: FormatRules = {
+      newlineAfter: '[{;]',
+      newlineBefore: '[}]',
+      spaceAfter: '[,]',
+      indent: '[{]',
+      dedent: '[}]',
+      skipStrings: true,
+    };
+    expect(formatCode('register({ type: Number, opts: { deep: true } });', rules))
+      .toBe('register({ type: Number, opts: { deep: true } });');
+  });
+
+  it('should keep a one-line import on one line', () => {
+    const rules: FormatRules = {
+      newlineAfter: '[;]',
+      newlineBefore: '[}]',
+      spaceAfter: '[,]',
+      indent: '[{]',
+      dedent: '[}]',
+      skipStrings: true,
+    };
+    expect(formatCode("import { a, b } from 'x';", rules))
+      .toBe("import { a, b } from 'x';");
+  });
+
+  it('should still explode JSON one-liners, including arrays', () => {
+    const rules: FormatRules = {
+      tabSize: 2,
+      newlineAfter: '[{\\[,]',
+      newlineBefore: '[}\\]]',
+      spaceAfter: '[:]',
+      indent: '[{\\[]',
+      dedent: '[}\\]]',
+      skipStrings: true,
+    };
+    expect(formatCode('{"a":1,"b":[2,3]}', rules))
+      .toBe('{\n  "a": 1,\n  "b": [\n    2,\n    3\n  ]\n}');
+  });
+
+  it('should keep a trailing line comment attached to its statement', () => {
+    const rules: FormatRules = { newlineAfter: '[;]', skipComments: true };
+    expect(formatCode('a; // note', rules)).toBe('a; // note');
+  });
+
+  it('should renormalize leading indentation by brace depth', () => {
+    const rules: FormatRules = {
+      tabSize: 2,
+      newlineAfter: '[;]',
+      indent: '[{]',
+      dedent: '[}]',
+      skipStrings: true,
+    };
+    expect(formatCode('function f() {\n      return 1;\n    }', rules))
+      .toBe('function f() {\n  return 1;\n}');
+  });
+
+  it('should not split compound operators', () => {
+    const rules: FormatRules = { spaceAround: '[=]' };
+    expect(formatCode('a += b;', rules)).toBe('a += b;');
+    expect(formatCode('a === b;', rules)).toBe('a === b;');
+    expect(formatCode('a => b;', rules)).toBe('a => b;');
+  });
+
+  it('should format an authored snice sample exactly as authored', () => {
+    const sample = [
+      "import { element, property } from 'snice';",
+      '',
+      "@element('my-counter')",
+      'export class MyCounter extends HTMLElement {',
+      '  @property({ type: Number }) count = 0;',
+      '  increment() {',
+      '    this.count = Math.min(this.count + this.step, this.max);',
+      '    this.emitChange();',
+      '  }',
+      '}',
+    ].join('\n');
+    expect(formatCode(sample, sniceGrammar.formatters.pretty as FormatRules)).toBe(sample);
   });
 
   it('should apply spaceAfter rule', () => {

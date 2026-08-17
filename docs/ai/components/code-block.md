@@ -71,6 +71,10 @@ cb.code = 'const x = 1;';
 
 Grammar-based: `format="pretty"` (grammars: json, typescript, css, snice)
 
+- Preserve author line breaks and blank lines; renormalize leading indentation; space rules apply within a line
+- Rule-driven breaks (after `;`, before `}`) fire only where no author break exists; suppressed inside `()`/`[]`; closers break only when their group is multi-line
+- One-liners (e.g. minified JSON) still pretty-print
+
 Imperative: `setFormatter(fn)` overrides grammar formatters
 
 ```typescript
