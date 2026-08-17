@@ -9,8 +9,8 @@
  *
  * The subset: one combo per feature family — the image path, the initials
  * fallback, the icon fallback, the broken-image recovery, the size/shape
- * reflection contract, the colour override — plus the marquee finding the
- * matrix pinned. Every assertion routes through the matrix's own oracle, so
+ * reflection contract, the colour override — plus the marquee broken-image
+ * recovery regression the matrix guards. Every assertion routes through the matrix's own oracle, so
  * this file cannot drift into something weaker than the suite it stands in for.
  * Budget: well under 1s.
  */
@@ -67,11 +67,13 @@ describe('avatar matrix smoke', () => {
     expect(avatarProblems(el, c)).toEqual([]);
   });
 
-  // MATRIX-avatar-1: the image-error state is permanent for the element, so a
-  // replacement src is downloaded and never shown.
-  it.fails('MATRIX-avatar-1: a new src after a failure is shown', async () => {
+  it('a new src after a failure is shown', async () => {
     el = await makeAvatar({ name: 'Ada Lovelace', src: SRC, broken: true });
     el.src = '/fixtures/other.jpg';
+    await wait(20);
+    // happy-dom never fetches: the working URL's load event is dispatched by
+    // hand, the counterpart of the error event makeAvatar fired for the 404.
+    el.shadowRoot?.querySelector('img')?.dispatchEvent(new Event('load'));
     await wait(20);
     expect(avatarProblems(el, combo({ name: 'Ada Lovelace', src: '/fixtures/other.jpg' }),
       { fresh: false })).toEqual([]);

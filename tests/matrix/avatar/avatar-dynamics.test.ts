@@ -65,18 +65,15 @@ describe('avatar matrix: transitions', () => {
     expect(avatarProblems(el, combo({ src: SRC, broken: true }), { fresh: false })).toEqual([]);
   });
 
-  // MATRIX-avatar-1: the error state is permanent for the ELEMENT rather than
-  // for the image that failed. `handleImageError` sets `imageError = true` and
-  // nothing in the `src` setter clears it, so assigning a working URL after a
-  // 404 renders an `<img class="avatar-image--error">` (display: none) under a
-  // visible fallback: the new image is downloaded and never shown.
-  // docs/ai/components/avatar.md documents the fallback as what happens when
-  // there is no image or the image is BROKEN — a freshly assigned, unbroken
-  // `src` is neither. The assertion below stays correct.
-  it.fails('MATRIX-avatar-1: a NEW src after a failure is given a fresh chance to load', async () => {
+  it('a NEW src after a failure is given a fresh chance to load', async () => {
     el = await makeAvatar({ name: 'Ada Lovelace', src: SRC });
     await fail(el);
     el.src = '/fixtures/other.jpg';
+    await wait(20);
+    // happy-dom never fetches: stand in for the working URL's load event the
+    // same way `fail` stands in for the old one's error event. The component's
+    // handleImageLoad clears the error state, so the replacement image shows.
+    el.shadowRoot?.querySelector('img')?.dispatchEvent(new Event('load'));
     await wait(20);
     expect(avatarProblems(el,
       combo({ name: 'Ada Lovelace', src: '/fixtures/other.jpg' }), { fresh: false })).toEqual([]);

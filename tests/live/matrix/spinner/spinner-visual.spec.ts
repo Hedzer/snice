@@ -267,8 +267,12 @@ const combos = generateCombos();
  *           component's CSS is standard flexbox; this is a Gecko cross-axis
  *           alignment divergence, not a stylesheet defect.
  *
- * The assertion is NOT weakened; the affected combo is declared `test.fail()`
- * so the suite goes red the day Firefox centres it.
+ * The assertion is NOT weakened; on the engine that diverges the affected
+ * combo is declared `test.fail()` so the suite goes red the day Firefox
+ * centres it. ENGINE-CONDITIONAL PIN: Chromium centres the row, so an
+ * unconditional pin made the default chromium tier error with "expected to
+ * fail but passed" (observed 2026-08-17). The pin now applies on Firefox
+ * only — everywhere else the strict assertion runs normally and passes.
  */
 const PINNED: Record<string, string> = {
   'dots/small/info': 'VISUAL-MATRIX-spinner-2',
@@ -277,8 +281,8 @@ const PINNED: Record<string, string> = {
 test.describe('spinner visual matrix: layer 1', () => {
   for (const combo of combos) {
     const pin = PINNED[combo.id];
-    test(pin ? `${pin} ${combo.id}` : combo.id, async () => {
-      if (pin) test.fail();
+    test(pin ? `${pin} ${combo.id}` : combo.id, async ({ browserName }) => {
+      if (pin && browserName === 'firefox') test.fail();
       const mounted = await page.evaluate(c => (window as any).matrix.mount(c), combo as any);
       expect(mounted.variant).toBe(combo.variant);
       expect(await visualProblems(combo, VARIANT_PART[combo.variant]), `combo ${combo.id}`)
