@@ -80,8 +80,9 @@ describe('sortable matrix smoke', () => {
 
   // ── Standing findings — see tests/matrix/sortable/gesture.test.ts ──────────
 
-  // MATRIX-sortable-1: the documented `.sortable-ghost` class is never applied.
-  it.fails('MATRIX-sortable-1: a drag in progress marks a ghost placeholder', async () => {
+  // MATRIX-sortable-1 (fixed): the documented `.sortable-ghost` class is
+  // applied to the dragged item for the length of the drag.
+  it('MATRIX-sortable-1 (fixed): a drag in progress marks a ghost placeholder', async () => {
     el = await makeSortable();
     dragStart(el, 0, DEFAULTS);
     expect(items(el).filter(item => item.classList.contains('sortable-ghost')).length).toBe(1);

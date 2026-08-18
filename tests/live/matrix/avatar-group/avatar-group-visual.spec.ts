@@ -332,7 +332,11 @@ async function visualProblems(combo: Combo): Promise<string[]> {
       const x = box.left + box.width / 2;
       const y = box.top + box.height / 2;
       const outer = document.elementFromPoint(x, y);
-      if (outer !== host) {
+      // Slotted children are light DOM — the centre hit-tests as the child
+      // <snice-avatar> itself; imperative avatars retarget to the group host.
+      // Either way the hit must land INSIDE the group: anything else is
+      // genuine occlusion.
+      if (outer !== host && !(outer && host.contains(outer))) {
         say(`avatar ${index}'s centre hit-tests as <${outer?.tagName.toLowerCase() ?? 'nothing'}>`);
         continue;
       }
@@ -397,22 +401,8 @@ test.describe('avatar-group visual matrix: layer 1 — max extremes', () => {
 });
 
 test.describe('avatar-group visual matrix: layer 1 — declarative slotted mode', () => {
-  // VISUAL-MATRIX-avatar-group-1 — declarative mode paints NOTHING at mount.
-  //
-  // DOM-tier pin MATRIX-avatar-group-1 (tests/matrix/avatar-group/
-  // avatar-group-events-and-slot.test.ts) already holds the structural half:
-  // the group's first render commits BEFORE `detectMode()` (the @ready() hook
-  // in snice-avatar-group.ts) flips `useSlot`, and that flip schedules no
-  // render — so no `<slot>` is ever painted. This tier sees the paint half of
-  // the same defect: unprojected light-DOM children render nothing, so every
-  // "Slotted Person" host measures 0x0 (no box, no stride, no ring, no hit)
-  // until any watched property changes and a render finally runs. The
-  // assertions stay exactly as the documented declarative contract
-  // (docs/ai/components/avatar-group.md: the default slot takes
-  // "<snice-avatar> elements for declarative mode") demands; the day the
-  // mount-time ordering is fixed they must pass as written.
   for (const combo of slottedCombos()) {
-    test.fail(combo.id, async () => {
+    test(combo.id, async () => {
       await mountCombo(combo);
       expect(await visualProblems(combo), `combo ${combo.id}`).toEqual([]);
     });
@@ -547,21 +537,13 @@ test.describe('avatar-group visual matrix: marquee pixels', () => {
     }
   });
 
-  // VISUAL-MATRIX-avatar-group-2 — the monogram is painted unreadably on its
-  // own chip.
-  //
   // The doc's item model makes `initials` the documented fallback CONTENT a
   // named avatar paints (docs/ai/components/avatar-group.md: "initials:
   // Fallback initials" / "name: Name (used for initials/color/title)"), and
   // this suite's marquee charter judges exactly that the monogram is readable
-  // on the chip it names. The component paints every monogram in a fixed
-  // `--snice-color-text-inverse` (white, snice-avatar-group.css `.avatar-item`)
-  // over a name-hashed palette colour with no contrast adaptation: "Alice
-  // Johnson" hashes to `avatar-color-lime` (rgb(163, 230, 53)), and white on
-  // that lime measures ~1.4:1 — below even the 3:1 antialiased floor for
-  // large text. The assertion stays strict; it must pass the day the monogram
-  // ink adapts to its chip.
-  test.fail('initials are readable on their chip', async () => {
+  // on the chip it names: a 12-16px semibold monogram on a mid-tone chip needs
+  // the 3:1 antialiased floor to look like a glyph that is really there.
+  test('initials are readable on their chip', async () => {
     await mountCombo(base({
       id: 'initials-contrast', size: 'large',
       avatars: [{ name: 'Alice Johnson', initials: 'AJ' }],

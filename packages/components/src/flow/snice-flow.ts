@@ -625,8 +625,14 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
       if (edge.id === this.selectedEdgeId) cls.push('flow__edge--selected');
       if (edge.animated) cls.push('flow__edge--animated');
 
+      // MATRIX-flow-5: the shadow stylesheet's `.flow__edge` rule outcascades
+      // a `stroke` presentation attribute, so the authored colour travels as
+      // an inline custom property the rule resolves, while the attribute (the
+      // DOM tier's contract) is still written verbatim.
       const colorAttr = edge.color ? ` stroke="${edge.color}"` : '';
-      parts += `<path class="${cls.join(' ')}" d="${d}" data-edge-id="${edge.id}" marker-end="url(#flow-arrow)"${colorAttr} />`;
+      const colorStyle = edge.color
+        ? ` style="--flow-edge-stroke:${escapeAttr(edge.color)}"` : '';
+      parts += `<path class="${cls.join(' ')}" d="${d}" data-edge-id="${edge.id}" marker-end="url(#flow-arrow)"${colorAttr}${colorStyle} />`;
 
       if (edge.label) {
         const mx = (p1.x + p2.x) / 2;

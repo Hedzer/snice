@@ -1161,6 +1161,13 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
         }
       }
     }
+
+    // VISUAL-MATRIX-calendar-1: the cap at the top of this method was measured
+    // against the lane-LESS grid, so a busy week's reservation could grow its
+    // row past a share the cap never took from it — overflowing a tight host
+    // by the few pixels Firefox's taller weekday header exposes. Re-measure
+    // with the reservations in place so the cap always sees the grid it ships.
+    this.syncRowCap();
   }
 
   goToToday(): void {

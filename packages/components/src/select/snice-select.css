@@ -249,6 +249,10 @@ img[src=""] {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-sizing: border-box;
+  /* The documented clamp bounds the dropdown's whole BOX (border included) —
+     content-box here painted 2px past the authored/`max-height` limit. */
+  max-height: var(--snice-select-dropdown-max-height, 12.5rem);
 }
 
 .select-dropdown--open {
@@ -283,10 +287,12 @@ img[src=""] {
 
 /* Options list */
 .select-options {
-  max-height: 12.5rem;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0.25rem;
+  box-sizing: border-box;
   scrollbar-gutter: stable;
 }
 

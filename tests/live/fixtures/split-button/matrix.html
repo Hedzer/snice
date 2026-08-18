@@ -101,7 +101,18 @@
         /** Open the menu the documented way: by clicking the toggle. */
         async open() {
           const sr = document.getElementById('subject').shadowRoot;
+          const menu = sr.querySelector('[part="menu"]');
+          const opened = new Promise(resolve => {
+            menu.addEventListener('transitionend', resolve, { once: true });
+            // The transitionend fallback: never hang if the engine skips the
+            // transition (reduced motion, @starting-style fast-path).
+            setTimeout(resolve, 400);
+          });
           sr.querySelector('[part="toggle"]').click();
+          await settle();
+          // The open menu slides in over 150ms (translateY(-8px) → 0);
+          // measuring mid-transition reads a menu that has not landed yet.
+          await opened;
           await settle();
           return api.state();
         },

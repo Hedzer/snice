@@ -145,10 +145,10 @@ describe('terminal matrix smoke', () => {
     expectClean(problems, 'smoke/write');
   });
 
-  // MATRIX-terminal-2 — see tests/matrix/terminal/ansi.test.ts.
-  // The sixteen documented `--snice-terminal-ansi-*` custom properties never
-  // reach the output: ANSI runs get a hardcoded inline colour instead.
-  it.fails('MATRIX-terminal-2: an ANSI run is themable by its custom property', async () => {
+  // MATRIX-terminal-2 (fixed) — see tests/matrix/terminal/ansi.test.ts.
+  // The sixteen documented `--snice-terminal-ansi-*` custom properties reach
+  // the output: ANSI runs carry the matching `.ansi-*` class.
+  it('MATRIX-terminal-2 (fixed): an ANSI run is themable by its custom property', async () => {
     el = await mountTerminal();
     const problems = new Problems();
     (el as any).writeln('\x1b[31mfailed\x1b[0m');

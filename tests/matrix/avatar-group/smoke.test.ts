@@ -14,8 +14,9 @@
  *     name-derived, custom color, anonymous);
  *   · the style axes: the `size` attribute and the `overlap` custom property;
  *   · both events, including the button-text/event-detail agreement;
- *   · declarative mode's working behavior: sizing and `avatars` precedence;
- *   · the two pinned findings.
+ *   · declarative mode's working behavior: sizing, `avatars` precedence,
+ *     and the mount-time "+N";
+ *   · the one pinned finding, with its reproduces evidence.
  *
  * Every assertion routes through the matrix's own oracle, so this file cannot
  * drift into something weaker than the suite it stands in for.
@@ -104,9 +105,7 @@ describe('avatar-group matrix smoke', () => {
     expect(el.querySelectorAll('snice-avatar')).toHaveLength(2);
   });
 
-  // MATRIX-avatar-group-1: declarative mode paints no <slot> and no +N at
-  // mount — full write-up in avatar-group-events-and-slot.test.ts.
-  it.fails('MATRIX-avatar-group-1: a declarative group past max shows its "+N"', async () => {
+  it('a declarative group past max shows its "+N"', async () => {
     const el = await mountAvatarGroup({ max: 2 }, CHILDREN(5));
     expect(overflowButton(el)?.textContent?.trim()).toBe('+3');
   });
@@ -120,11 +119,7 @@ describe('avatar-group matrix smoke', () => {
     expect(overflowButton(el)?.textContent?.trim()).toBe('+1');
   });
 
-  it('the two findings reproduce exactly as recorded', async () => {
-    const atMount = await mountAvatarGroup({ max: 2 }, CHILDREN(5));
-    expect(atMount.shadowRoot!.querySelector('slot')).toBeNull();
-    expect(overflowButton(atMount)).toBeNull();
-
+  it('MATRIX-avatar-group-2 reproduces: the late child is hidden but never counted', async () => {
     const late = await mountAvatarGroup({ max: 2 }, CHILDREN(2));
     late.insertAdjacentHTML('beforeend', '<snice-avatar name="Late"></snice-avatar>');
     await tick(late);

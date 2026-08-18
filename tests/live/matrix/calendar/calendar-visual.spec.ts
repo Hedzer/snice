@@ -246,14 +246,27 @@ async function visualProblems(combo: Combo): Promise<string[]> {
         : (combo.hostHeight ? 'capped' : 'exact');
 
       if (mode === 'unbudgeted') {
-        // The regime is defined by the cell COLLAPSING, so that is what is
-        // checked first — a "stretch" cell still sized by its column width is
-        // not in this regime at all, and saying so names the cause rather than
-        // the symptom.
-        if (Math.abs(cellHeight - columnWidth) < 2) {
-          say(`cell-sizing="stretch" with no imposed height produced a`
-            + ` ${cellHeight.toFixed(2)}px cell in a ${columnWidth.toFixed(2)}px column —`
-            + ' the cell is still square, so the row did not collapse to its content');
+        // The regime is defined by the cell COLLAPSING to its content, so the
+        // busy cell's height must be its documented reservation — the
+        // day-number strip plus one lane per drawn bar, no chip — rather than
+        // the square column width. The reservation is the primary claim; the
+        // "still square" report names the cause, but only when the
+        // reservation does not itself explain the height (a 4-deep stack
+        // reserves 7.625rem, which a 900px week-number calendar puts within
+        // 2px of its column width — collapsed, not square).
+        const reservation = (2.125 + combo.stackDepth * 1.375) * 16;
+        const collapsed = Math.abs(cellHeight - reservation) <= 2;
+        const stillSquare = Math.abs(cellHeight - columnWidth) < 2;
+        if (!collapsed) {
+          if (stillSquare) {
+            say(`cell-sizing="stretch" with no imposed height produced a`
+              + ` ${cellHeight.toFixed(2)}px cell in a ${columnWidth.toFixed(2)}px column —`
+              + ' the cell is still square, so the row did not collapse to its content');
+          } else {
+            say(`cell-sizing="stretch" with no imposed height produced a`
+              + ` ${cellHeight.toFixed(2)}px cell, but the documented reservation for a`
+              + ` ${combo.stackDepth}-deep stack is ${reservation.toFixed(2)}px`);
+          }
         }
         if (bars.length !== combo.stackDepth) {
           say(`stretch with no imposed height drew ${bars.length} bars of ${combo.stackDepth};`
@@ -348,7 +361,7 @@ async function budgetTable(combo: Combo): Promise<Array<{ cellHeight: number; st
 const combos = generateCombos();
 
 /**
- * VISUAL-MATRIX-calendar-3
+ * VISUAL-MATRIX-calendar-3 (fixed)
  *
  * Combo:    `cell-sizing="stretch"` + `show-week-numbers`, host height auto —
  *           any stage width, any stack depth.
@@ -359,49 +372,38 @@ const combos = generateCombos();
  *           the stylesheet's own comment for that rule says the square baseline
  *           only "discounts it so cells stay square", which is a statement
  *           about the SQUARE mode.
- * Actual:   the day cells keep the square column-width height, so the stretch
- *           mode never happens and the lane budget applies after all. Measured:
- *           a 900px calendar gives 123.42px cells (exactly the day column
- *           width) and collapses a 9-deep stack to 3 bars plus "+6 more"; at
- *           600px the cells are 80.56px and the SAME stack shows 1 bar plus
- *           "+8 more". Without `show-week-numbers` the identical combo
- *           collapses to 48px cells and draws all nine.
- *
- *           Cause: `.calendar--week-numbers .calendar__day` (two classes)
- *           re-imposes `max(calc((100cqw - <week col>) / 7), 3rem, …)` and
- *           outranks `.calendar__day--stretch` (one class) on specificity, so
- *           the stretch minimum is unreachable whenever the week-number column
- *           is on. The two documented properties are independent in the docs
- *           and mutually exclusive in the stylesheet.
+ * Fixed:    the stylesheet's `.calendar--week-numbers .calendar__day` rule
+ *           (two classes) re-imposed the square column-width height and
+ *           outranked `.calendar__day--stretch` (one class) on specificity, so
+ *           the stretch minimum was unreachable whenever the week-number
+ *           column was on. A `.calendar--week-numbers .calendar__day--stretch`
+ *           rule now carries the stretch minimum, so the two documented
+ *           properties stay independent.
  */
-const isStretchWeekNumberFinding = (combo: Combo) =>
+const isStretchWeekNumberCombo = (combo: Combo) =>
   combo.cellSizing === 'stretch' && combo.showWeekNumbers && !combo.hostHeight;
 
 /**
- * FINDING VISUAL-MATRIX-calendar-1 — the two tight-budget stretch combos
- * overflow a 420px host by 6px in Firefox only. `renderEventStripes` calls
+ * VISUAL-MATRIX-calendar-1 (fixed) — the two tight-budget stretch combos used
+ * to overflow a 420px host by 6px in Firefox only. `renderEventStripes` called
  * `syncRowCap()` with every `--calendar-week-lanes` reservation cleared, so
- * the cap is computed for the lane-less grid; the lanes are set right after,
- * the busy week's row grows past the share the cap never took from it, and
- * `cap` stays unset because the lane-less grid fit the room. Firefox's
+ * the cap was computed for the lane-less grid; the lanes were set right after,
+ * the busy week's row grew past the share the cap never took from it, and
+ * `cap` stayed unset because the lane-less grid fit the room. Firefox's
  * weekday header measures 3px taller than Chromium's (font metrics), which
- * is what turns the same ordering into a visible overflow there. Component
- * bug (`syncRowCap` must re-run after the lane budget, or measure with the
- * lanes it is about to set) — reported, not fixed; the assertions stay and
- * the pin must fail and be deleted the day the ordering is fixed.
+ * is what turned the same ordering into a visible overflow there. Fixed:
+ * `syncRowCap()` re-runs after the lane budget, so the cap always measures
+ * the grid it ships.
  */
-const isTightBudgetFinding = (combo: Combo) =>
+const isTightBudgetCombo = (combo: Combo) =>
   combo.cellSizing === 'stretch' && !combo.showWeekNumbers
   && combo.hostHeight === 420 && combo.firstDayOfWeek === 1;
 
 test.describe('calendar visual matrix: layer 1', () => {
   for (const combo of combos) {
-    const finding = isStretchWeekNumberFinding(combo);
-    const tightBudget = isTightBudgetFinding(combo);
-    test(`${finding ? 'VISUAL-MATRIX-calendar-3: ' : ''}${tightBudget ? 'VISUAL-MATRIX-calendar-1: ' : ''}${combo.id}`, async ({ browserName }) => {
-      if (finding) test.fail();
-      test.fail(browserName === 'firefox' && tightBudget,
-        'lane budget lands after the row cap measure — see VISUAL-MATRIX-calendar-1');
+    const stretchWeekNumbers = isStretchWeekNumberCombo(combo);
+    const tightBudget = isTightBudgetCombo(combo);
+    test(`${stretchWeekNumbers ? 'VISUAL-MATRIX-calendar-3 (fixed): ' : ''}${tightBudget ? 'VISUAL-MATRIX-calendar-1 (fixed): ' : ''}${combo.id}`, async () => {
       const mounted = await page.evaluate(c => (window as any).matrix.mount(c), combo as any);
       expect(mounted.cellSizing).toBe(combo.cellSizing);
       expect(mounted.displayed).toEqual({ month: 5, year: 2026 });
@@ -431,8 +433,7 @@ test.describe('calendar visual matrix: cell-sizing="stretch" collapses its rows'
       .toBeLessThan(cell.width - 2);
   });
 
-  test('VISUAL-MATRIX-calendar-3: with week numbers the row still collapses', async () => {
-    test.fail();
+  test('VISUAL-MATRIX-calendar-3 (fixed): with week numbers the row still collapses', async () => {
     const cell = await cellHeight(true);
     expect(cell.height, `a stretch cell is ${cell.height}px in a ${cell.width}px column`)
       .toBeLessThan(cell.width - 2);

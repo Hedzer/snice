@@ -9197,7 +9197,7 @@
           ]
         },
         {
-          "name": "showqr",
+          "name": "show-qr",
           "description": "showQr: boolean"
         },
         {

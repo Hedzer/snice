@@ -196,22 +196,16 @@ test.describe('snice-sortable visual matrix (layer 1)', () => {
   });
 
   /**
-   * MATRIX-sortable-1 — the documented `.sortable-ghost` class is never
-   * applied, so the documented ghost placeholder never paints.
+   * MATRIX-sortable-1 (fixed) — the documented `.sortable-ghost` class.
    *
    * `docs/ai/components/sortable.md`, Accessibility: "Ghost placeholder with
    * dashed outline" / "`.sortable-dragging` / `.sortable-ghost` classes during
    * drag". The stylesheet ships the rule — `::slotted(.sortable-ghost)` with
-   * `outline: 2px dashed var(--snice-color-primary)` — and nothing in the
-   * component ever adds the class, so during a drag no item in the list ever
-   * grows the documented dashed outline.
-   *
-   * Policy (.ai/fuzzing.md): the assertion stays correct and the combo is
-   * pinned, so the day the component is fixed this suite fails and the finding
-   * can be closed.
+   * `outline: 2px dashed var(--snice-color-primary)` — and the dragged
+   * element now carries the class for the length of the drag, so the
+   * documented ghost placeholder paints.
    */
-  test('MATRIX-sortable-1: a drag in progress paints the documented dashed ghost', async () => {
-    test.fail();
+  test('MATRIX-sortable-1 (fixed): a drag in progress paints the documented dashed ghost', async () => {
     await mount(page, { direction: 'vertical' });
     await page.evaluate(() => (window as any).matrix.beginDrag(0));
     const outlines = await page.evaluate(() => [...document.getElementById('subject')!.children]

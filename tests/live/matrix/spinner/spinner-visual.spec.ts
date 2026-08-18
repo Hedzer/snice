@@ -253,7 +253,7 @@ async function visualProblems(combo: Combo, expectedPart: string): Promise<strin
 const combos = generateCombos();
 
 /**
- * FINDING VISUAL-MATRIX-spinner-2.
+ * FINDING VISUAL-MATRIX-spinner-2 (still pinned).
  *
  * Combo:    `dots/small/info` (layer 1, cross-axis centring).
  * Expected: the loader is centred in the box it reserved — `part="base"` is
@@ -265,14 +265,19 @@ const combos = generateCombos();
  *           `align-items: center` and a 4px fixed-height child reproduces it
  *           with no component code involved). Chromium centres it. The
  *           component's CSS is standard flexbox; this is a Gecko cross-axis
- *           alignment divergence, not a stylesheet defect.
+ *           alignment divergence, not a stylesheet defect. A minimal
+ *           workaround (auto margins on `.spinner__dots` instead of the
+ *           parent's `align-items`/`justify-content` centring) was attempted
+ *           2026-08-17 and did NOT change Firefox's placement — the same
+ *           4.0px offset — so the component CSS stays standard and the pin
+ *           stays.
  *
  * The assertion is NOT weakened; on the engine that diverges the affected
  * combo is declared `test.fail()` so the suite goes red the day Firefox
  * centres it. ENGINE-CONDITIONAL PIN: Chromium centres the row, so an
  * unconditional pin made the default chromium tier error with "expected to
- * fail but passed" (observed 2026-08-17). The pin now applies on Firefox
- * only — everywhere else the strict assertion runs normally and passes.
+ * fail but passed" (observed 2026-08-17). The pin applies on Firefox only —
+ * everywhere else the strict assertion runs normally and passes.
  */
 const PINNED: Record<string, string> = {
   'dots/small/info': 'VISUAL-MATRIX-spinner-2',

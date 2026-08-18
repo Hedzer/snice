@@ -121,10 +121,14 @@ export class SnicePopover extends HTMLElement implements SnicePopoverElement {
     if (!this.panel) return;
 
     if (this.open) {
-      this.position();
+      // Show first: until showPopover() lands the panel carries the UA's
+      // `[popover]:not(:popover-open) { display: none }` rule, so measuring
+      // before it answers 0x0 and every placement that subtracts the panel's
+      // own box lands in the wrong place.
       if (typeof this.panel.showPopover === 'function') {
         try { this.panel.showPopover(); } catch { /* already open */ }
       }
+      this.position();
       window.addEventListener('resize', this.repositionHandler);
       window.addEventListener('scroll', this.repositionHandler, true);
       this.dispatchOpenEvent();

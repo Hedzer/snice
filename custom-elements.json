@@ -36284,6 +36284,16 @@
             },
             {
               "kind": "method",
+              "name": "handleMaxHeightChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleOpenChange",
               "parameters": [],
               "return": {
@@ -55087,7 +55097,7 @@
               "reflects": true
             },
             {
-              "name": "showqr",
+              "name": "show-qr",
               "fieldName": "showQr",
               "type": {
                 "text": "boolean"

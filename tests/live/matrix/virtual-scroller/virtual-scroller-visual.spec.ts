@@ -30,10 +30,13 @@
  *   browser under test and asserts the rows really painted.
  *
  * ── Findings ───────────────────────────────────────────────────────────────
- *   Two documented behaviours do not survive contact with a real scroll port.
- *   Both are asserted correctly and declared `test.fail()`; see the block at the
- *   bottom of this file. Neither is reachable from the DOM tier, because
- *   neither happy-dom nor the component's own bookkeeping has a scroll port.
+ *   Two documented behaviours once failed against a real scroll port. Both
+ *   findings (VISUAL-MATRIX-virtual-scroller-1 and -2) are FIXED: the
+ *   component now scrolls the host (the real port) in `scrollToIndex()` and
+ *   listens for `scroll` on the host. The assertions at the bottom of this
+ *   file run unpinned at documented strength — a regression re-fails them.
+ *   Neither is reachable from the DOM tier, because neither happy-dom nor the
+ *   component's own bookkeeping has a scroll port.
  */
 import { test, expect, type Page } from '@playwright/test';
 import { capture } from '../pixel-probe';

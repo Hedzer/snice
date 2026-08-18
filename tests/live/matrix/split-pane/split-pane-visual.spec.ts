@@ -352,19 +352,17 @@ test.describe('split-pane visual matrix: dragging the divider', () => {
   }
 });
 
-// ── MATRIX-split-pane-3 in a real browser ───────────────────────────────────
+// ── MATRIX-split-pane-3 in a real browser (fixed) ────────────────────────────
 //
 // Combo:    `<snice-split-pane>` with nothing but its two slotted panes.
 // Expected: the divider is the documented "Draggable divider bar" —
 //           `:host([direction="horizontal"]) .divider { width: 0.25rem;
 //           cursor: col-resize }` — so it has a 4px box and a resize cursor.
-// Actual:   the default `direction` never reaches the host attribute, no
-//           `:host([direction="…"])` rule matches, and the divider is a 0px-wide
-//           seam with the default cursor. The DOM tier proves the attribute is
-//           absent; this proves what that costs.
+// Fixed:    the component reflects the effective default `direction` at ready,
+//           so the `:host([direction="…"])` rules always have an attribute to
+//           match and the divider is grabbable on the headline example.
 test.describe('split-pane visual matrix: the standing finding', () => {
-  test('MATRIX-split-pane-3: the default split pane has a grabbable divider', async () => {
-    test.fail();
+  test('MATRIX-split-pane-3 (fixed): the default split pane has a grabbable divider', async () => {
     await page.evaluate(() => (window as any).matrix.mount({
       bare: true, stageWidth: 800, stageHeight: 500,
     }));

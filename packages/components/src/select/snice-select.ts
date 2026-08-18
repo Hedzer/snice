@@ -459,6 +459,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   init() {
     // Read options from child snice-option elements
     this.readOptionsFromChildren();
+    this.applyMaxHeight();
 
     if (Object.prototype.hasOwnProperty.call(this, 'value')) {
       const value = (this as { value: unknown }).value;
@@ -1107,9 +1108,16 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   handleOptionsPropertyChange() {
     this.filteredOptions = [...this.mergedOptions];
     this.updateDropdownContent();
-    if (this.editable) {
-      this.syncEditableInputToValue();
-    }
+    this.syncRenderedValue();
+  }
+
+  @watch('maxHeight')
+  handleMaxHeightChange() {
+    this.applyMaxHeight();
+  }
+
+  private applyMaxHeight() {
+    this.style.setProperty('--snice-select-dropdown-max-height', this.maxHeight);
   }
 
   @watch('disabled', 'loading', 'formDisabled')

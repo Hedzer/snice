@@ -57,7 +57,7 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
   @property()
   variant: WorkOrderVariant = 'standard';
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, attribute: 'show-qr' })
   showQr = false;
 
   @property({ attribute: 'qr-data' })

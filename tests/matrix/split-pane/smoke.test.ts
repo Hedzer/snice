@@ -118,9 +118,9 @@ describe('split-pane matrix smoke', () => {
     expect(after).toBe(snapped(after, 10));
   });
 
-  // MATRIX-split-pane-3 — see tests/matrix/split-pane/layout.test.ts.
-  // The default direction never reaches the attribute the divider is sized by.
-  it.fails('MATRIX-split-pane-3: <snice-split-pane> carries direction="horizontal"', async () => {
+  // MATRIX-split-pane-3 (fixed) — see tests/matrix/split-pane/layout.test.ts.
+  // The default direction now reaches the attribute the divider is sized by.
+  it('MATRIX-split-pane-3 (fixed): <snice-split-pane> carries direction="horizontal"', async () => {
     el = await mountDefaults();
     const problems = new Problems();
     checkDirectionAttribute(problems, el, DEFAULTS.direction);

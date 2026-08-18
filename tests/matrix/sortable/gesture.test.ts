@@ -127,19 +127,17 @@ describe('snice-sortable matrix: gesture edges', () => {
 // ── Findings ────────────────────────────────────────────────────────────────
 
 /**
- * MATRIX-sortable-1 — the documented `.sortable-ghost` class is never applied.
+ * MATRIX-sortable-1 (fixed) — the documented `.sortable-ghost` class.
  *
  * `docs/ai/components/sortable.md`, Accessibility: "Ghost placeholder with
  * dashed outline" and "`.sortable-dragging` / `.sortable-ghost` classes during
  * drag". The stylesheet ships the rule (`::slotted(.sortable-ghost)` — 0.6
- * opacity plus the dashed outline the doc describes), but nothing in the
- * component ever adds the class, so the documented ghost placeholder never
- * appears in any combo.
- *
- * Policy (.ai/fuzzing.md): the assertion stays correct and the test is pinned.
+ * opacity plus the dashed outline the doc describes). The dragged element now
+ * carries the class for the length of the drag, so the documented ghost
+ * placeholder paints.
  */
 describe('snice-sortable matrix: findings', () => {
-  it.fails('MATRIX-sortable-1: a drag in progress marks a ghost placeholder', async () => {
+  it('MATRIX-sortable-1 (fixed): a drag in progress marks a ghost placeholder', async () => {
     el = await makeSortable();
     dragStart(el, 0, DEFAULTS);
     const ghosts = items(el).filter(item => item.classList.contains('sortable-ghost'));

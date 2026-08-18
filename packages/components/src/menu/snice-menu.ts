@@ -52,12 +52,7 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
   @watch('open', { immediate: false })
   handleOpenChange() {
     if (this.open) {
-      if (this.panel) {
-        this.positionMenu();
-        if (typeof this.panel.showPopover === 'function') {
-          this.panel.showPopover();
-        }
-      }
+      this.showPanel();
       this.dispatchOpenEvent();
     } else {
       if (this.panel) {
@@ -200,23 +195,70 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
     return css/*css*/`${cssContent}`;
   }
 
+  /** Display the panel first — a `display: none` panel measures 0x0 — then
+   * place it. Anchor-positioning engines are placed entirely by CSS. */
+  private showPanel() {
+    if (!this.panel) return;
+    if (typeof this.panel.showPopover === 'function') {
+      this.panel.showPopover();
+    }
+    this.positionMenu();
+  }
+
   private positionMenu() {
     if (!this.panel || !this.menuElement || CSS.supports('position-anchor', '--a')) return;
-    const rect = this.menuElement.getBoundingClientRect();
-    this.panel.style.top = `${rect.bottom + 4}px`;
-    this.panel.style.left = `${rect.left}px`;
-    this.panel.style.minWidth = `${rect.width}px`;
+    const anchor = this.menuElement.getBoundingClientRect();
+    const floor = parseFloat(getComputedStyle(this.panel).minWidth) || 0;
+    this.panel.style.minWidth = `${Math.max(anchor.width, floor)}px`;
+    const box = this.panel.getBoundingClientRect();
+    const distance = this.distance;
+    let top = 0;
+    let left = 0;
+
+    switch (this.placement) {
+      case 'bottom-end':
+        top = anchor.bottom + distance;
+        left = anchor.right - box.width;
+        break;
+      case 'top-start':
+        top = anchor.top - distance - box.height;
+        left = anchor.left;
+        break;
+      case 'top-end':
+        top = anchor.top - distance - box.height;
+        left = anchor.right - box.width;
+        break;
+      case 'right-start':
+        top = anchor.top;
+        left = anchor.right + distance;
+        break;
+      case 'right-end':
+        top = anchor.bottom - box.height;
+        left = anchor.right + distance;
+        break;
+      case 'left-start':
+        top = anchor.top;
+        left = anchor.left - distance - box.width;
+        break;
+      case 'left-end':
+        top = anchor.bottom - box.height;
+        left = anchor.left - distance - box.width;
+        break;
+      case 'bottom-start':
+      default:
+        top = anchor.bottom + distance;
+        left = anchor.left;
+        break;
+    }
+
+    this.panel.style.top = `${top}px`;
+    this.panel.style.left = `${left}px`;
   }
 
   // Public API
   openMenu() {
     this.open = true;
-    if (this.panel) {
-      this.positionMenu();
-      if (typeof this.panel.showPopover === 'function') {
-        this.panel.showPopover();
-      }
-    }
+    this.showPanel();
   }
 
   closeMenu() {

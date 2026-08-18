@@ -7,6 +7,7 @@
   --avatar-size: 2.5rem; /* 40px */
   --avatar-bg: var(--snice-color-text-tertiary, rgb(115 115 115));
   --avatar-color: var(--snice-color-text-inverse, rgb(255 255 255));
+  font-size: 0.875rem; /* 14px */
 }
 
 /* Meta elements should not interfere with layout */
@@ -26,13 +27,10 @@ case, when, default, if {
   justify-content: center;
   font-weight: var(--snice-font-weight-semibold, 600);
   user-select: none;
-}
-
-/* Shapes */
-:host([shape="circle"]) .avatar {
   border-radius: 50%;
 }
 
+/* Shapes */
 :host([shape="square"]) .avatar {
   border-radius: 0;
 }
@@ -132,10 +130,9 @@ case, when, default, if {
   border-radius: 50%;
 }
 
+/* Group avatar support — the ring lives on the HOST (see above); the inner
+   .avatar must not paint a second one or the box grows past the documented
+   size + one 2px ring. */
 :host(.avatar-group-item:first-child) {
   margin-left: 0;
-}
-
-:host(.avatar-group-item) .avatar {
-  border: 2px solid var(--snice-color-surface, rgb(255 255 255));
 }

@@ -24,12 +24,12 @@
  *                     but `part="form"` — the third step, the one that asks
  *                     the visitor for their name — appears only after a slot
  *                     has been selected.
- *   MATRIX-booking-2  With any `required` field — the doc's own example form
- *                     has two — the Confirm button is disabled when step three
- *                     is drawn and never re-enables, because typing writes to
- *                     an internal map without re-rendering the action row. The
- *                     documented `booking-confirm` event, and the confirmation
- *                     screen behind it, cannot be reached through the UI.
+ *   MATRIX-booking-2 (fixed)  With any `required` field — the doc's own
+ *                     example form has two — the Confirm button used to stay
+ *                     disabled forever: typing wrote to an internal map without
+ *                     re-evaluating the action row. The button now syncs on
+ *                     every input, so the documented `booking-confirm` event
+ *                     and the confirmation screen are reachable.
  *
  * Both keep the documented assertion and are declared `it.fails`.
  */
@@ -180,23 +180,19 @@ describe('booking matrix: a booking, end to end', () => {
 
 // ── Completing the booking ──────────────────────────────────────────────────
 //
-// MATRIX-booking-2: the Confirm button's `disabled` flag is computed while the
-// action row is being built, and typing into a field only writes to an internal
-// map — no re-render follows. So for any field set with a `required` field —
-// the doc's own example form has two — Confirm is disabled when step three is
-// drawn and stays disabled forever, and `booking-confirm`, `getBooking()`'s
-// payload and the documented confirmation screen are all unreachable through
-// the component's own UI.
-//
-// The assertion is the documented flow, unweakened, and is `it.fails` for
-// exactly the field sets that contain a required field.
+// MATRIX-booking-2 (fixed): the Confirm button's `disabled` flag used to be
+// computed once while the action row was built, and typing into a field only
+// wrote to an internal map — no re-evaluation followed — so for any field set
+// with a `required` field, Confirm was disabled when step three was drawn and
+// stayed disabled forever. The button state now syncs on every input, and the
+// documented flow runs on every field set.
 
 describe('booking matrix: confirming', () => {
   for (const name of ['none', 'required', 'optional'] as const) {
     const fields = FIELD_SETS[name];
     const gated = fields.some(field => field.required);
     const title = `fields=${name}: a completed form confirms the booking`
-      + (gated ? ' [MATRIX-booking-2]' : '');
+      + (gated ? ' [MATRIX-booking-2 (fixed)]' : '');
 
     const run = async () => {
       if (!FUTURE.length) return;
@@ -241,7 +237,7 @@ describe('booking matrix: confirming', () => {
       removeComponent(el);
     };
 
-    if (gated) it.fails(title, run); else it(title, run);
+    it(title, run);
   }
 
   it('an empty required form cannot be confirmed', async () => {

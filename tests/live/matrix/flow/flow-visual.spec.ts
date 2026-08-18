@@ -34,50 +34,40 @@
  *   that a node header colour really paints, that an edge colour really
  *   reaches the stroke, and that a selected node really looks different.
  *
- * ── FINDING ────────────────────────────────────────────────────────────────
- *
- * MATRIX-flow-4  an output-only node draws its outputs on its LEFT edge.
- *   combo:    graph=doc (node "a", the doc's own "Start"), graph=multi-port
- *             (node "src"), graph=large (node "L0") — every node that declares
- *             `outputs` and no `inputs`, at any zoom
- *   expected: an output port's dot sits on the right half of its node and an
- *             input port's dot on the left half. That is what makes a
- *             left-to-right diagram readable, it is what the stylesheet is
- *             written to produce (`.flow__node-body { justify-content:
- *             space-between }`, `.flow__node-outputs { align-items: flex-end }`,
- *             `.flow__port--output { flex-direction: row-reverse }`), and it is
- *             what nodes with BOTH sides actually do — measured at 0.10 of the
- *             node width for inputs and 0.77-0.90 for outputs.
- *   actual:   an output-only node puts its output dots at 0.10 — the left edge.
- *             `space-between` positions a SINGLE flex child at the start, so
- *             with no input column to push against, the output column lands
- *             where the input column would have. The consequence is not
- *             cosmetic: the component anchors each edge to the measured dot, so
- *             every edge leaving such a node starts underneath the node body
- *             and runs backwards under it before emerging — and the node layer
- *             paints above the edge canvas, so that leading segment is hidden.
- *             The doc's own Basic Usage graph contains exactly this node.
- *   Pinned with `test.fail()` below. Nodes with both an input and an output
- *   side are asserted unpinned in the same block, which is what localises the
- *   defect to the single-column case.
- *
- * MATRIX-flow-5  `FlowEdge.color` never reaches the painted stroke.
- *   combo:    graph=styled-edges, edge "e1" authored `color: 'rgb(16 185 129)'`
- *   expected: that edge paints green, and visibly differently from the
- *             uncoloured edge beside it. `color?: string` is a documented
- *             FlowEdge field and the only way to distinguish one connection
- *             from another.
- *   actual:   the edge paints `rgb(209, 209, 209)` — the same border grey as
- *             every uncoloured edge. The component writes the colour as an SVG
- *             `stroke="…"` PRESENTATION ATTRIBUTE, and the shadow stylesheet
- *             carries `.flow__edge { stroke: var(--snice-color-border, …) }`.
- *             CSS declarations beat presentation attributes in the cascade, so
- *             the rule wins on every edge and the authored colour is inert.
- *             The DOM tier cannot see this: the attribute really is set, and
- *             asserting the attribute passes. Only a computed style or a real
- *             pixel shows the paint.
- *   Pinned with `test.fail()` below, alongside an unpinned test that records
- *   what the stroke actually resolves to.
+  * ── FINDINGS (both fixed) ─────────────────────────────────────────────────
+  *
+  *   MATRIX-flow-4 (fixed)  a node declaring `outputs` and no `inputs` used
+  *   to paint its output ports on its LEFT edge.
+  *   combo:    graph=doc (node "a", the doc's own "Start"), graph=multi-port
+  *             (node "src"), graph=large (node "L0") — every node that declares
+  *             `outputs` and no `inputs`, at any zoom
+  *   expected: an output port's dot sits on the right half of its node and an
+  *             input port's dot on the left half. That is what makes a
+  *             left-to-right diagram readable, it is what the stylesheet is
+  *             written to produce (`.flow__node-body { justify-content:
+  *             space-between }`, `.flow__node-outputs { align-items: flex-end }`,
+  *             `.flow__port--output { flex-direction: row-reverse }`), and it is
+  *             what nodes with BOTH sides actually do — measured at 0.10 of the
+  *             node width for inputs and 0.77-0.90 for outputs.
+  *   fixed:    `.flow__node-outputs` carries an auto main-start margin, so the
+  *             single output column of an output-only node is pinned to the
+  *             right edge instead of `space-between` parking it at the start.
+  *             Nodes with both an input and an output side are asserted
+  *             unpinned in the same block, which is what localised the defect
+  *             to the single-column case.
+  *
+  *   MATRIX-flow-5 (fixed)  `FlowEdge.color` used never to reach the painted
+  *   stroke.
+  *   combo:    graph=styled-edges, edge "e1" authored `color: 'rgb(16 185 129)'`
+  *   expected: that edge paints green, and visibly differently from the
+  *             uncoloured edge beside it. `color?: string` is a documented
+  *             FlowEdge field and the only way to distinguish one connection
+  *             from another.
+  *   fixed:    the authored colour travels as an inline
+  *             `--flow-edge-stroke` custom property that the shadow
+  *             stylesheet's `.flow__edge` rule resolves (the `stroke`
+  *             presentation attribute stays for the DOM tier's contract), so
+  *             the authored colour outcascades the stylesheet default.
  *
  * The other three findings this component has (MATRIX-flow-1..3) are
  * behavioural and are pinned in the DOM tier.
@@ -483,8 +473,7 @@ for (const graph of ['doc', 'chain', 'large'] as Graph[]) {
 
 // Graphs that contain at least one node declaring `outputs` and no `inputs`.
 for (const graph of ['doc', 'chain', 'multi-port', 'large', 'styled-edges'] as Graph[]) {
-  test(`MATRIX-flow-4 ${graph}: an output-only node keeps its outputs on the right`, async () => {
-    test.fail();
+  test(`MATRIX-flow-4 (fixed) ${graph}: an output-only node keeps its outputs on the right`, async () => {
     const ports = (await portSides(graph)).filter(port => port.onlySide && port.kind === 'output');
     expect(ports.length, `graph ${graph} has no output-only node`).toBeGreaterThan(0);
     for (const port of ports) {
@@ -519,9 +508,8 @@ test('marquee: a node colour override really paints its header', async () => {
   expect(tinted[2]).toBeGreaterThan(tinted[1]);
 });
 
-test('MATRIX-flow-5 marquee: an edge colour override really reaches the stroke', async () => {
-  test.fail();
-  await page.evaluate(() => (window as any).matrix.mount({ graph: 'styled-edges', minimap: false }));
+test('MATRIX-flow-5 (fixed) marquee: an edge colour override really reaches the stroke', async () => {
+    await page.evaluate(() => (window as any).matrix.mount({ graph: 'styled-edges', minimap: false }));
   // A 2px stroke is a THIN target: a single probe at the geometric midpoint
   // can land on the antialiased shoulder and read the background. So each edge
   // is sampled over a small vertical span through the curve, and the assertion
@@ -553,10 +541,11 @@ test('MATRIX-flow-5 marquee: an edge colour override really reaches the stroke',
   expect(sameColor(green, plain), 'the coloured and uncoloured edges paint alike').toBe(false);
 });
 
-test('MATRIX-flow-5: the stylesheet overrides the authored stroke attribute', async () => {
-  // The mechanism, stated positively. This is what IS true today; the pinned
-  // test above is what the doc says should be. Both are kept so a fix flips
-  // exactly one of them.
+test('MATRIX-flow-5 (fixed): the authored stroke attribute reaches the computed stroke', async () => {
+  // The mechanism, stated positively after the fix: the inline
+  // --flow-edge-stroke custom property carries the authored colour past the
+  // stylesheet's own `.flow__edge` rule, while the presentation attribute the
+  // DOM tier asserts is still written verbatim.
   const result = await page.evaluate(async () => {
     await (window as any).matrix.mount({ graph: 'styled-edges', minimap: false });
     const sr = (window as any).matrix.el.shadowRoot as ShadowRoot;
@@ -570,8 +559,10 @@ test('MATRIX-flow-5: the stylesheet overrides the authored stroke attribute', as
   // The attribute the DOM tier asserts really is written…
   expect(result.coloured.attribute).toBe('rgb(16 185 129)');
   expect(result.plain.attribute).toBeNull();
-  // …and the cascade discards it: both edges compute to the same stroke.
-  expect(result.coloured.computed).toBe(result.plain.computed);
+  // …and the cascade honours it: only the coloured edge computes its colour.
+  expect(result.coloured.computed,
+    `the coloured edge computed ${result.coloured.computed}, the plain ${result.plain.computed}`)
+    .not.toBe(result.plain.computed);
 });
 
 test('marquee: a selected node really looks selected', async () => {

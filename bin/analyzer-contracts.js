@@ -21095,7 +21095,7 @@ export const ANALYZER_CONTRACTS = {
             "footer"
           ]
         },
-        "showqr": {
+        "show-qr": {
           "property": "showQr",
           "type": "boolean",
           "literals": []
@@ -21189,7 +21189,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "showQr": {
           "type": "boolean",
-          "attribute": "showqr",
+          "attribute": "show-qr",
           "structured": false
         },
         "status": {

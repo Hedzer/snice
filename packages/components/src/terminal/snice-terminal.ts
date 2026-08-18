@@ -265,25 +265,28 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
 
 
   // ANSI color parsing. Escapes HTML first so untrusted input cannot inject
-  // markup; only the ANSI escape sequences produce real <span> tags.
+  // markup; only the ANSI escape sequences produce real <span> tags. Each SGR
+  // code becomes the matching .ansi-* class, so the colour is resolved by the
+  // documented --snice-terminal-ansi-* custom properties and the component's
+  // own stylesheet — never a hardcoded inline literal (MATRIX-terminal-2).
   private parseAnsiColors(text: string): string {
     const ansiColorMap: Record<number, string> = {
-      30: '#000000', // Black
-      31: '#ff5555', // Red
-      32: '#50fa7b', // Green
-      33: '#f1fa8c', // Yellow
-      34: '#bd93f9', // Blue
-      35: '#ff79c6', // Magenta
-      36: '#8be9fd', // Cyan
-      37: '#f8f8f2', // White
-      90: '#6272a4', // Bright Black (Gray)
-      91: '#ff6e6e', // Bright Red
-      92: '#69ff94', // Bright Green
-      93: '#ffffa5', // Bright Yellow
-      94: '#d6acff', // Bright Blue
-      95: '#ff92df', // Bright Magenta
-      96: '#a4ffff', // Bright Cyan
-      97: '#ffffff'  // Bright White
+      30: 'ansi-black',
+      31: 'ansi-red',
+      32: 'ansi-green',
+      33: 'ansi-yellow',
+      34: 'ansi-blue',
+      35: 'ansi-magenta',
+      36: 'ansi-cyan',
+      37: 'ansi-white',
+      90: 'ansi-bright-black',
+      91: 'ansi-bright-red',
+      92: 'ansi-bright-green',
+      93: 'ansi-bright-yellow',
+      94: 'ansi-bright-blue',
+      95: 'ansi-bright-magenta',
+      96: 'ansi-bright-cyan',
+      97: 'ansi-bright-white',
     };
 
     const escape = (s: string) => s
@@ -307,7 +310,7 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
       } else {
         for (const code of codeList) {
           if (ansiColorMap[code]) {
-            parts.push(`<span style="color: ${ansiColorMap[code]}">`);
+            parts.push(`<span class="${ansiColorMap[code]}">`);
             break;
           }
         }

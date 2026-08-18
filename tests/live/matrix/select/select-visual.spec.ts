@@ -136,20 +136,12 @@ function stateCross(): Combo[] {
 function clearableCross(): Combo[] {
   // clearable (2) x valued (2) = 4: the clear button exists exactly when
   // "clearable" meets a selection, and never otherwise.
-  //
-  // ── FINDING VISUAL-MATRIX-select-2 (see tagCross below) ──────────────────
-  // The clearable/valued cell is pinned: `options` assigned after ready
-  // never re-renders the trigger, so the clear button stays display:none.
   const combos: Combo[] = [];
   for (const clearable of [false, true]) {
     for (const valued of [false, true]) {
-      const pinned = clearable && valued;
       combos.push(base({
-        id: pinned
-          ? 'VISUAL-MATRIX-select-2: clearable/clearable/valued'
-          : `clearable/${clearable ? 'clearable' : 'plain'}/${valued ? 'valued' : 'empty'}`,
+        id: `clearable/${clearable ? 'clearable' : 'plain'}/${valued ? 'valued' : 'empty'}`,
         clearable, value: valued ? 'apple' : undefined, label: 'Fruit',
-        ...(pinned ? { finding: 'VISUAL-MATRIX-select-2' } : {}),
       }));
     }
   }
@@ -181,80 +173,27 @@ function openCross(): Combo[] {
 function tagCross(): Combo[] {
   // "comma-separated for multiple": a two-value selection paints tag chips
   // in the trigger, closed and with the listbox open = 2.
-  /**
-   * ── FINDING VISUAL-MATRIX-select-2 ──────────────────────────────────────
-   *
-   * Assigning `options` after ready never re-renders the trigger.
-   *
-   * The doc's own Basic Usage mounts the host (here: every attribute,
-   * `value` through its defaultValue channel) and only then runs
-   * `select.options = [...]` — "JS only, works alongside <snice-option>
-   * children". `@ready()` resolves the authored selection while
-   * `resolvableOptions` is still empty, and `@watch('options')`
-   * (`handleOptionsPropertyChange`) rebuilds only the option rows:
-   * `updateValueDisplay()` / `updateClearButton()` are not called again,
-   * and the re-render resets `part="value"` to its placeholder template.
-   *
-   * So a multiple select with value="apple,cherry" paints ZERO tag chips
-   * (both combos below: "a two-value selection paints 0 tag chips"), and
-   * a clearable single select with value="apple" keeps its clear button
-   * at display:none (VISUAL-MATRIX-select-2 in clearableCross above) —
-   * until some unrelated state change (a selection, a flag flip) happens
-   * to re-run the sync. The DOM matrix cannot see this: it drives the
-   * value channel after options exist. The assertions stay exactly as
-   * documented; the combos stay pinned until the options watcher re-syncs
-   * the trigger.
-   */
   return [
     base({
-      id: 'VISUAL-MATRIX-select-2: tags/closed', multiple: true, clearable: true,
+      id: 'tags/closed', multiple: true, clearable: true,
       value: 'apple,cherry', label: 'Fruit',
-      finding: 'VISUAL-MATRIX-select-2',
     }),
     base({
-      id: 'VISUAL-MATRIX-select-2: tags/open', multiple: true, value: 'apple,cherry',
+      id: 'tags/open', multiple: true, value: 'apple,cherry',
       label: 'Fruit', open: true,
-      finding: 'VISUAL-MATRIX-select-2',
     }),
   ];
 }
 
 function listCross(): Combo[] {
   return [
-    /**
-     * ── FINDING VISUAL-MATRIX-select-3 ────────────────────────────────────
-     *
-     * The documented default clamp paints 208px, not 200px. The clamp
-     * lives on a content-box `.select-options` (`max-height: 12.5rem` =
-     * the documented 200px default) with `padding: 0.25rem` riding
-     * outside it, so thirty options paint a 208px list box — the visible
-     * dropdown is over its documented "Maximum dropdown height" default
-     * by its own padding. The assertion stays exactly as documented; the
-     * combo is pinned `test.fail` until the clamp bounds the painted box.
-     */
     base({
-      id: 'VISUAL-MATRIX-select-3: list/many/default-200px', optionSet: 'many',
-      label: 'Fruit', open: true, finding: 'VISUAL-MATRIX-select-3',
+      id: 'list/many/default-200px', optionSet: 'many',
+      label: 'Fruit', open: true,
     }),
-    /**
-     * ── FINDING VISUAL-MATRIX-select-1 ────────────────────────────────────
-     *
-     * The documented `maxHeight` (attr `max-height`, "Maximum dropdown
-     * height", default 200px) is never applied to anything: the property
-     * is declared on the class and written into the docs, but no code path
-     * reads it, and no style rule carries it. The open panel's height is
-     * therefore governed only by the hard-coded `.select-options` clamp —
-     * 12.5rem of content box, which is the documented DEFAULT only before
-     * its own padding is added (see VISUAL-MATRIX-select-3), so the
-     * default combo above fails on its own account while every override
-     * silently does nothing. The assertion below stays exactly as
-     * documented; the combo is pinned `test.fail` until the attribute is
-     * wired up.
-     */
     base({
-      id: 'VISUAL-MATRIX-select-1: list/many/max-height=80px',
+      id: 'list/many/max-height=80px',
       optionSet: 'many', maxHeight: '80px', label: 'Fruit', open: true,
-      finding: 'VISUAL-MATRIX-select-1',
     }),
     // A short list must not paint a scroll region it does not need.
     base({ id: 'list/fruits/natural-height', label: 'Fruit', open: true }),
@@ -389,7 +328,16 @@ async function visualProblems(combo: Combo): Promise<string[]> {
 
     // ── the trigger's right-end affordances (button mode) ───────────────────
     if (!combo.editable) {
-      const valueBox = rect(partNamed('value')!);
+      // `part="value"` is the flex:1 wrapper that stretches the whole trigger
+      // track (by design, so the ellipsis has room); the affordances must not
+      // overlap the value's CONTENT — the single label, the tag row, or the
+      // placeholder — which is what "overlaps the value" has always meant.
+      const valueContent = sr.querySelector(
+        '.select-value--single, .select-value--multiple, .select-placeholder',
+      ) as HTMLElement | null;
+      const valueBox = valueContent
+        ? rect(valueContent)
+        : rect(partNamed('value')!);
       const arrow = sr.querySelector('.select-arrow') as HTMLElement | null;
       if (combo.loading) {
         const spinner = withBox(partNamed('spinner'));

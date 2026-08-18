@@ -351,7 +351,7 @@ test.describe('work-order visual matrix: toggling a task', () => {
   });
 });
 
-// ── MATRIX-work-order-1 (fixed) and -2, as a page author meets them ─────────
+// ── MATRIX-work-order-1 and -2 (both fixed), as a page author meets them ────
 //
 // The doc's Basic Usage is a single block of markup:
 //
@@ -359,12 +359,11 @@ test.describe('work-order visual matrix: toggling a task', () => {
 //                       `attribute: 'labor-rate'`, so the rate arrives as the
 //                       documented number and the sheet prices six hours of
 //                       work at $450.
-//   show-qr          -> `showQr` is still declared with a bare
-//                       `@property({ type: Boolean })` (observed: `showqr`),
-//                       so no QR block is painted however `qr-position` is set.
-//                       MATRIX-work-order-2 remains pinned.
+//   show-qr          -> (fixed) `showQr` declares `attribute: 'show-qr'`, so
+//                       the documented boolean paints the QR block however
+//                       `qr-position` is set.
 //
-// The DOM matrix cannot see the second one — happy-dom hands
+// The DOM matrix cannot see either one — happy-dom hands
 // `attributeChangedCallback` every attribute change whether or not the element
 // observed it (see tests/matrix/work-order/work-order-interaction.test.ts).
 
@@ -377,8 +376,7 @@ test.describe('work-order visual matrix: the documented markup', () => {
     expect(authored.rateText, 'the rendered rate').toBe('$75.00/hr');
   });
 
-  test('show-qr paints the QR block [MATRIX-work-order-2]', async () => {
-    test.fail();
+  test('show-qr paints the QR block [MATRIX-work-order-2 (fixed)]', async () => {
     const authored = await page.evaluate(() => (window as any).matrix.mountAuthored());
     expect(authored.showQr, 'show-qr -> showQr').toBe(true);
     expect(authored.qrPainted, 'the QR block is painted').toBe(true);

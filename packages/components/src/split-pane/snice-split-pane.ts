@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, query, dispose, on, html, css } from 'snice';
+import { element, property, render, styles, dispatch, query, dispose, on, ready, html, css } from 'snice';
 import type { SniceResizeElement, SplitDirection, SniceResizeDetail } from './snice-split-pane.types';
 import cssContent from './snice-split-pane.css?inline';
 
@@ -47,6 +47,18 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
   @styles()
   private styles() {
     return css/*css*/`${cssContent}`;
+  }
+
+  @ready()
+  private reflectDefaultDirection() {
+    // MATRIX-split-pane-3: the stylesheet expresses the whole documented
+    // meaning of `direction` through :host([direction="…"]) rules, but
+    // reflection only fires on a CHANGE — an authored default was never
+    // written, leaving <snice-split-pane> a divider with no box or cursor.
+    // Reflect the effective default once, unless the author set an attribute.
+    if (!this.hasAttribute('direction')) {
+      this.setAttribute('direction', this.direction);
+    }
   }
 
   getPrimarySize(): number {

@@ -45,46 +45,18 @@ import { capture, sameColor, type RGB } from '../pixel-probe';
 const FIXTURE = '/tests/live/fixtures/location/matrix.html';
 
 /**
- * ── Pinned defects ──────────────────────────────────────────────────────────
+ * ── VISUAL-MATRIX-location-1 (fixed) ────────────────────────────────────────
  *
- * The Playwright counterpart of the DOM matrix's `it.fails`, and deliberately
- * stricter than `test.fail()`: a waiver names the EXACT messages it excuses,
- * every OTHER problem in the same combo still fails the test, and a waiver
- * whose messages stop appearing fails itself — so a fix cannot land while the
- * excuse quietly stays behind.
- *
- * VISUAL-MATRIX-location-1
  *   Combo:    every combo with `show-map` (16 of 32).
  *   Expected: `[part="map"]`, whose stylesheet gives it `width: 100%`, fits
  *             inside `[part="content"]` — the element it is rendered into.
- *   Actual:   the map is exactly 2px wider than the content area and hangs 1px
- *             past each edge. `.map-container` combines `width: 100%` with a
- *             1px border under the default content-box sizing, so its border
- *             box is `100% + 2px`. Invisible on this fixture's flat ground;
- *             a clipped or bordered host is where it shows.
+ *   Fixed:    `.map-container` combines `width: 100%` with a 1px border and
+ *             used to size under the default content-box, so its border box
+ *             was `100% + 2px` — the map hung 1px past each edge. It is now
+ *             `box-sizing: border-box`, and the waiver this finding carried
+ *             (a waiver names the EXACT messages it excuses and fails itself
+ *             the day its messages stop appearing) is deleted.
  */
-const WAIVED: { id: string; matches: (message: string) => boolean }[] = [
-  {
-    id: 'VISUAL-MATRIX-location-1',
-    matches: message =>
-      // The row index differs by mode (the map is row 3 in `full`, row 1 in
-      // `coordinates`), so the index is the only part left open.
-      /^content row \d+ \(\.map-container\) escapes \[part="content"\]$/.test(message)
-      || /^the map is \d+(\.\d+)?px wide inside a \d+(\.\d+)?px content area$/.test(message),
-  },
-];
-
-/** Split a problem list into the unexcused problems and the waivers that fired. */
-function applyWaivers(problems: string[]): { unexcused: string[]; fired: Set<string> } {
-  const unexcused: string[] = [];
-  const fired = new Set<string>();
-  for (const problem of problems) {
-    const waiver = WAIVED.find(w => w.matches(problem));
-    if (waiver) fired.add(waiver.id);
-    else unexcused.push(problem);
-  }
-  return { unexcused, fired };
-}
 
 type Mode = 'full' | 'compact' | 'coordinates' | 'address';
 
@@ -296,16 +268,7 @@ test.describe('location visual matrix: layer 1', () => {
       expect(mounted.icon, `combo ${combo.id}: icon part presence`).toBe(combo.showIcon);
       expect(mounted.map, `combo ${combo.id}: map part presence`).toBe(combo.showMap);
 
-      const { unexcused, fired } = applyWaivers(await visualProblems(combo));
-      expect(unexcused, `combo ${combo.id}`).toEqual([]);
-      // A waiver that stops firing is a fix that landed: delete the waiver
-      // rather than let it outlive the defect it describes.
-      if (combo.showMap) {
-        expect([...fired], `combo ${combo.id}: VISUAL-MATRIX-location-1 no longer reproduces`)
-          .toContain('VISUAL-MATRIX-location-1');
-      } else {
-        expect([...fired], `combo ${combo.id}: a map waiver fired without a map`).toEqual([]);
-      }
+      expect(await visualProblems(combo), `combo ${combo.id}`).toEqual([]);
     });
   }
 });

@@ -44,7 +44,10 @@
 /* Edges */
 .flow__edge {
   fill: none;
-  stroke: var(--snice-color-border, rgb(226 226 226));
+  /* MATRIX-flow-5: a `stroke` presentation attribute loses to any CSS
+     declaration, so an authored FlowEdge.color travels as the inline
+     --flow-edge-stroke custom property this rule resolves. */
+  stroke: var(--flow-edge-stroke, var(--snice-color-border, rgb(226 226 226)));
   stroke-width: 2px;
   cursor: pointer;
   transition: stroke var(--snice-transition-fast, 150ms) ease;
@@ -168,6 +171,11 @@
 
 .flow__node-outputs {
   align-items: flex-end;
+  /* MATRIX-flow-4: an output-only node has no input column for
+     `justify-content: space-between` to push against, so the single output
+     column landed on the LEFT edge. An auto main-start margin pins the output
+     column to the right edge whether or not an input column exists. */
+  margin-left: auto;
 }
 
 /* Ports */

@@ -21,11 +21,9 @@
  *   · `overflow-click` still reports `remaining`; there are no
  *     `AvatarGroupItem` objects in this mode, so the item list is empty.
  *
- * Every assertion is the DOCUMENTED expectation. Two findings are pinned
- * with `it.fails`: MATRIX-avatar-group-1 (declarative mode paints no
- * `<slot>` and no `+N` at mount) and MATRIX-avatar-group-2 (a child added
- * after mount is never counted) — full write-ups in
- * "avatar-group matrix: findings" below.
+ * Every assertion is the DOCUMENTED expectation. One finding is pinned
+ * with `it.fails`: MATRIX-avatar-group-2 (a child added after mount is
+ * never counted) — full write-up in "avatar-group matrix: findings" below.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { product, click, unmountAll } from '../matrix-utils';
@@ -127,16 +125,10 @@ const CHILDREN = (count: number) => Array.from({ length: count },
 const SLOT_COMBOS = product({ count: [1, 3, 5, 8], max: [2, 5, 10] as const });
 
 describe(`avatar-group matrix: declarative mode (${SLOT_COMBOS.length} combos)`, () => {
-  // MATRIX-avatar-group-1 (full write-up in "avatar-group matrix: findings"
-  // below): a declarative group past its `max` never paints the documented
-  // `+N` indicator — or the `<slot>` itself. Exactly the combos where
-  // children exceed `max` diverge; the body below stays the documented one.
   for (const combo of SLOT_COMBOS) {
     const id = `children=${combo.count}/max=${combo.max}`;
-    const diverges = combo.count > combo.max;
-    const run = diverges ? it.fails : it;
 
-    run(diverges ? `MATRIX-avatar-group-1: ${id}` : id, async () => {
+    it(id, async () => {
       const el = await mountAvatarGroup({ max: combo.max }, CHILDREN(combo.count));
       const remaining = overflowCount(combo.count, combo.max);
 
@@ -180,10 +172,7 @@ describe(`avatar-group matrix: declarative mode (${SLOT_COMBOS.length} combos)`,
     }
   });
 
-  // MATRIX-avatar-group-1: the `+N` button this documented event needs does
-  // not exist at mount in declarative mode, so the click lands on nothing and
-  // no event fires. The assertions stay the documented ones.
-  it.fails('MATRIX-avatar-group-1: overflow-click in declarative mode reports the remaining count', async () => {
+  it('overflow-click in declarative mode reports the remaining count', async () => {
     const el = await mountAvatarGroup({ max: 2 }, CHILDREN(5));
     const seen = recordEvents(el);
     click(overflowButton(el));
@@ -220,38 +209,6 @@ describe(`avatar-group matrix: declarative mode (${SLOT_COMBOS.length} combos)`,
 // ── Findings ────────────────────────────────────────────────────────────────
 
 describe('avatar-group matrix: findings', () => {
-  /**
-   * MATRIX-avatar-group-1 — declarative mode paints no `<slot>` and no `+N`.
-   *
-   * The docs promise the overflow arithmetic mode-independently:
-   * docs/components/avatar-group.md line 6 — "Displays a row of overlapping
-   * avatars with a '+N' overflow indicator when avatars exceed the maximum
-   * visible count"; line 23 — `max` is "Maximum visible avatars before '+N'";
-   * line 53 — the "(default)" slot takes "`<snice-avatar>` elements for
-   * declarative mode"; and the Declarative Mode example (lines 109-119) is a
-   * `max="3"` group holding four children — three avatars and a "+1".
-   *
-   * Actual: the group's first render commits BEFORE `detectMode()` (the
-   * `@ready()` hook in snice-avatar-group.ts) flips `useSlot`, and that flip
-   * schedules no render of its own. `applySlottedStyles()` still hides the
-   * children past `max` — the arithmetic's hiding half happens on the light
-   * DOM — while the indicator half never renders: no `<slot>` (so not even
-   * the visible children are projected) and no `+N`, which also starves
-   * `overflow-click`. Any watched-property change re-renders and paints the
-   * documented tree, which the reproduces test pins as evidence that the
-   * pinned assertions above pass the day the first render is fixed.
-   */
-  it('MATRIX-avatar-group-1 reproduces: a watched-property change paints the missing +N', async () => {
-    const el = await mountAvatarGroup({ max: 2 }, CHILDREN(5));
-    expect(overflowButton(el), 'the defect: 3 overflow, no indicator').toBeNull();
-    expect(el.shadowRoot!.querySelector('slot'), 'and no slot to project the children').toBeNull();
-
-    el.size = 'large'; // any @watch property re-renders the shadow tree
-    await tick(el);
-    expect(el.shadowRoot!.querySelector('slot')).not.toBeNull();
-    expect(overflowButton(el)?.textContent?.trim()).toBe('+3');
-  });
-
   /**
    * MATRIX-avatar-group-2 — a child added after mount is never counted.
    *

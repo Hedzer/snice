@@ -85,6 +85,9 @@ export class SniceSortable extends HTMLElement implements SniceSortableElement {
     this.dragItem = item;
     this.dragIndex = this.getItemIndex(item);
     item.classList.add('sortable-dragging');
+    // The documented ghost placeholder: the element left behind during the
+    // drag carries the dashed outline (`::slotted(.sortable-ghost)`).
+    item.classList.add('sortable-ghost');
 
     if (e.dataTransfer) {
       e.dataTransfer.effectAllowed = 'move';
@@ -127,6 +130,7 @@ export class SniceSortable extends HTMLElement implements SniceSortableElement {
   private onDragEnd = () => {
     if (!this.dragItem) return;
     this.dragItem.classList.remove('sortable-dragging');
+    this.dragItem.classList.remove('sortable-ghost');
 
     const newIndex = this.getItemIndex(this.dragItem);
     if (this.dragIndex !== newIndex) {

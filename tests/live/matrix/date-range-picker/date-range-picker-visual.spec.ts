@@ -40,11 +40,6 @@
  *   be invisible. The marquee captures decode the PNG inside the browser
  *   under test and assert the range endpoints, the error state, and the
  *   top-layer popup really paint.
- *
- * Known defects pinned, never softened (.ai/fuzzing.md):
- *   VISUAL-MATRIX-date-range-picker-1 — `.input { min-height: 2.5rem }`
- *   erases the small step of the documented size axis: small and medium
- *   paint identical field boxes.
  */
 import { test, expect, type Page } from '@playwright/test';
 import { capture, contrast, sameColor, type RGB } from '../pixel-probe';
@@ -628,13 +623,7 @@ test.describe('date-range-picker visual matrix: panel behaviour', () => {
       .toBeGreaterThan(measured.small.fontSize);
   });
 
-  // FINDING VISUAL-MATRIX-date-range-picker-1: the base `.input` rule sets
-  // `min-height: 2.5rem`, which is exactly the height the SMALL and MEDIUM
-  // paddings compute to — so the documented `size: 'small' | 'medium' |
-  // 'large'` axis paints small and medium byte-identically (same height,
-  // same 14px type). The axis's ordering claim cannot hold until the
-  // min-height stops erasing the small step. Pinned, not softened.
-  test.fail('VISUAL-MATRIX-date-range-picker-1: small is shorter than medium', async () => {
+  test('small is shorter than medium', async () => {
     const heights: number[] = [];
     for (const size of ['small', 'medium']) {
       await page.evaluate(s => (window as any).matrix.mount({ size: s, label: 'Stay' }), size);

@@ -34,33 +34,6 @@
  *   accent bar really paints, :hover really paints (only a real pointer can
  *   raise it), the open panel really covers the page it drops onto, and the
  *   divider really draws a line.
- *
- * ── FINDINGS (documented contract, observed divergence — pinned, not softened)
- *
- *  VISUAL-MATRIX-menu-1 — `bottom-end` does not align the trailing edges.
- *  VISUAL-MATRIX-menu-2 — `top-start` / `top-end` open BELOW the trigger.
- *  VISUAL-MATRIX-menu-3 — all four `right-*` / `left-*` placements open BELOW
- *    the trigger, on the wrong side entirely.
- *  VISUAL-MATRIX-menu-4 — `distance` has no visual effect: the gap stays 4px
- *    whatever `distance` says.
- *  VISUAL-MATRIX-menu-5 — the documented `--menu-min-width: 10rem` floor is
- *    not honoured: a narrow trigger shrinks the panel below it.
- *
- *  One cause underlies 1–4 and the placement half of 5. In the panel CSS the
- *  anchor-positioning block `.menu__panel[popover] { top: calc(anchor(bottom)
- *  + 4px); left: anchor(left); min-width: anchor-size(width); }` carries
- *  specificity (0,2,0) while every per-placement rule — `top: 100%`,
- *  `right: 0`, `margin-top: var(--menu-distance)` — carries (0,1,0) and the
- *  base rule's `margin: 0` (0,2,0) beats each per-placement margin. So in an
- *  anchor-positioning engine EVERY placement renders below-left of the
- *  trigger with a hardcoded 4px gap, and `distance`'s custom property is
- *  consumed by nothing. Engines without anchor positioning take the JS
- *  fallback in `positionMenu()`, which sets the same bottom-left box inline
- *  (also hardcoded +4) — the divergence is engine-independent. The
- *  min-width floor (menu-5) is eaten by `min-width: anchor-size(width)`
- *  (inline `minWidth` in the JS fallback): the floor becomes the trigger's
- *  own width, so a narrow trigger with narrow content renders a panel
- *  narrower than the documented 10rem.
  */
 import { test, expect, type Page } from '@playwright/test';
 import { capture, sameColor, type RGB } from '../pixel-probe';
@@ -92,26 +65,13 @@ function combo(over: Partial<Combo> & { id: string }): Combo {
   return { placement: 'bottom-start', distance: 4, ...over };
 }
 
-/** Which placements the anchor block drags to bottom-left (findings 1–3). */
-const FINDING_FOR: Record<Placement, string | undefined> = {
-  'bottom-start': undefined,
-  'bottom-end': 'VISUAL-MATRIX-menu-1',
-  'top-start': 'VISUAL-MATRIX-menu-2',
-  'top-end': 'VISUAL-MATRIX-menu-2',
-  'right-start': 'VISUAL-MATRIX-menu-3',
-  'right-end': 'VISUAL-MATRIX-menu-3',
-  'left-start': 'VISUAL-MATRIX-menu-3',
-  'left-end': 'VISUAL-MATRIX-menu-3',
-};
-
 const COMBOS: Combo[] = [
   ...PLACEMENTS.map(placement => combo({
     id: placement,
     placement,
-    finding: FINDING_FOR[placement],
   })),
-  combo({ id: 'bottom-start/distance=24', distance: 24, finding: 'VISUAL-MATRIX-menu-4' }),
-  combo({ id: 'bottom-start/narrow-trigger', narrow: true, finding: 'VISUAL-MATRIX-menu-5' }),
+  combo({ id: 'bottom-start/distance=24', distance: 24 }),
+  combo({ id: 'bottom-start/narrow-trigger', narrow: true }),
   combo({
     id: 'selected+disabled items',
     items: [

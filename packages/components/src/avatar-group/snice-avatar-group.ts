@@ -1,4 +1,4 @@
-import { element, property, watch, ready, dispose, dispatch, render, styles, html, css } from 'snice';
+import { element, property, state, watch, ready, dispose, dispatch, render, styles, html, css } from 'snice';
 import cssContent from './snice-avatar-group.css?inline';
 import type { AvatarGroupSize, AvatarGroupItem, SniceAvatarGroupElement } from './snice-avatar-group.types';
 
@@ -38,6 +38,7 @@ export class SniceAvatarGroup extends HTMLElement implements SniceAvatarGroupEle
   @property({ type: Number })
   overlap = 8;
 
+  @state()
   private useSlot = false;
 
   @ready()

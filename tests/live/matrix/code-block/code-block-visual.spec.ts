@@ -504,11 +504,11 @@ test.describe('code-block visual matrix: marquee pixels', () => {
     );
   };
 
-  // ── VISUAL-MATRIX-code-block-3 ───────────────────────────────────────────────────
+  // ── VISUAL-MATRIX-code-block-3 (fixed) ─────────────────────────────────────
   //
   // `theme: '' | 'dark' | 'light'` is documented as "Force theme; empty =
   // auto-detect", and the Theming section says "Force with
-  // theme="dark"|"light"". The stylesheet's forced blocks define every
+  // theme="dark"|"light"". The stylesheet's forced blocks used to define every
   // structural colour as
   //
   //     --_cb-bg: var(--snice-color-surface-container, #282c34);   /* dark  */
@@ -516,19 +516,12 @@ test.describe('code-block visual matrix: marquee pixels', () => {
   //
   // — the same token in both, with the palette living only in the FALLBACK.
   // On any page that loads the snice theme (which every page does), the token
-  // resolves and both forced themes paint identically. The per-token colours
-  // (keyword, string, …) are hard-coded per theme and would differ, but they
-  // only appear once a grammar has tokenized the code — the CHROME, which is
-  // what a reader sees first, does not.
+  // resolved and both forced themes painted identically. Fixed: the forced
+  // blocks pin their own palettes, so forcing a theme is deterministic.
   //
-  // Minimal repro: mount the same block twice with theme="dark" and
-  // theme="light" and read `getComputedStyle(container).backgroundColor` —
-  // both answer rgb(242, 242, 242).
-  //
-  // Reported, not fixed — see the `:host([theme="dark"])` /
-  // `:host([theme="light"])` blocks in snice-code-block.css.
-  test('VISUAL-MATRIX-code-block-3: theme="dark" and theme="light" paint different chrome', async () => {
-    test.fail();
+  // See the `:host([theme="dark"])` / `:host([theme="light"])` blocks in
+  // snice-code-block.css.
+  test('VISUAL-MATRIX-code-block-3 (fixed): theme="dark" and theme="light" paint different chrome', async () => {
     const [darkBody] = await readTheme('dark');
     const [lightBody] = await readTheme('light');
     expect(sameColor(darkBody, lightBody),
@@ -536,7 +529,7 @@ test.describe('code-block visual matrix: marquee pixels', () => {
       + ` (${darkBody.join(',')})`).toBe(false);
   });
 
-  test('VISUAL-MATRIX-code-block-3 reproduces: both forced themes resolve one palette', async () => {
+  test('VISUAL-MATRIX-code-block-3 (fixed): each forced theme resolves its own palette', async () => {
     const read = async (theme: string) => {
       await page.evaluate(t => (window as any).matrix.mount({
         snippet: 'threeLines', language: 'javascript', theme: t, filename: 'app.ts',
@@ -551,7 +544,7 @@ test.describe('code-block visual matrix: marquee pixels', () => {
         };
       });
     };
-    expect(await read('dark')).toEqual(await read('light'));
+    expect(await read('dark')).not.toEqual(await read('light'));
   });
 
   test('the code is readable against its own background in both themes', async () => {

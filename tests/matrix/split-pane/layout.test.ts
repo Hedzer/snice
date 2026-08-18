@@ -79,7 +79,7 @@ describe('split-pane matrix: the property channel agrees with the attribute chan
 });
 
 /**
- * MATRIX-split-pane-3
+ * MATRIX-split-pane-3 (fixed)
  *
  * Combo:    `<snice-split-pane>` — i.e. the documented default
  *           `direction: 'horizontal'`, whatever channel it arrives by, as long
@@ -91,14 +91,9 @@ describe('split-pane matrix: the property channel agrees with the attribute chan
  *           `col-resize`/`row-resize` cursor, and the handle's dimensions — so
  *           the attribute is the only way the documented default can reach the
  *           layout.
- * Actual:   `getAttribute('direction')` is `null`. Reflection only fires on a
- *           CHANGE, and the default is never written, so the most basic
- *           documented usage (`<snice-split-pane>` with two slotted panes)
- *           renders a divider with no width, no height and no resize cursor —
- *           an invisible, un-grabbable handle on the component's own headline
- *           example. Setting `direction="vertical"` works; setting it back to
- *           `"horizontal"` by property does not, because that assignment is
- *           also a no-op relative to the stored default.
+ * Fixed:    the component reflects the effective default once at ready (unless
+ *           the author set the attribute), so the default reaches the rules
+ *           that size the divider on every channel.
  */
 describe('split-pane matrix: direction reaches the rules that size the divider', () => {
   for (const direction of ['horizontal', 'vertical'] as const) {
@@ -117,14 +112,14 @@ describe('split-pane matrix: direction reaches the rules that size the divider',
     expectClean(problems, 'property/vertical');
   });
 
-  it.fails('MATRIX-split-pane-3: by property: direction=horizontal', async () => {
+  it('MATRIX-split-pane-3 (fixed): by property: direction=horizontal', async () => {
     el = await mountSplitPaneByProperty({ ...DEFAULTS, direction: 'horizontal' });
     const problems = new Problems();
     checkDirectionAttribute(problems, el, 'horizontal');
     expectClean(problems, 'property/horizontal');
   });
 
-  it.fails('MATRIX-split-pane-3: <snice-split-pane> with no direction authored', async () => {
+  it('MATRIX-split-pane-3 (fixed): <snice-split-pane> with no direction authored', async () => {
     el = await mountDefaults();
     const problems = new Problems();
     checkDirectionAttribute(problems, el, DEFAULTS.direction);

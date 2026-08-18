@@ -210,25 +210,9 @@ function featureCombos(): Combo[] {
  * asserted with the real keyboard/drag paths in the interaction describe).
  */
 const STATE_COMBOS: Combo[] = [
-  /**
-   * ── FINDING VISUAL-MATRIX-slider-1 ──────────────────────────────────────
-   *
-   * The documented error "updates … track/thumb styling" (docs/ai/components/
-   * slider.md, "Form and validation contract"), and the component's own
-   * `.slider-thumb--invalid` rule intends exactly that — border-color: the
-   * danger semantic. But the rule is cascade-defeated: every
-   * `.slider-thumb--<variant>` rule in snice-slider.css carries the same
-   * single-class specificity and appears LATER in the stylesheet, so the
-   * variant's border wins and an invalid slider keeps its variant ring
-   * (rgb(36, 112, 235) here, primary) instead of the danger one. Only the
-   * box-shadow half of the invalid rule survives. The assertion below stays
-   * exactly as documented; the combo is pinned `test.fail` until the
-   * invalid rule outranks the variant ones.
-   */
   base({
-    id: 'VISUAL-MATRIX-slider-1: state/invalid',
+    id: 'state/invalid',
     invalid: true, errorText: 'Value out of range', value: 40, variant: 'primary',
-    finding: 'VISUAL-MATRIX-slider-1',
   }),
   base({ id: 'state/disabled', disabled: true, value: 40, variant: 'primary' }),
   base({ id: 'state/readonly', readonly: true, value: 40, variant: 'primary' }),

@@ -94,7 +94,7 @@ describe('terminal matrix: ANSI escapes are consumed, never shown', () => {
 });
 
 /**
- * MATRIX-terminal-2
+ * MATRIX-terminal-2 (fixed)
  *
  * Combo:    any of the sixteen documented ANSI colours — e.g.
  *           `terminal.writeln('\x1b[31mfailed\x1b[0m')` on a page that sets
@@ -106,19 +106,13 @@ describe('terminal matrix: ANSI escapes are consumed, never shown', () => {
  *           stylesheet agrees, defining `.ansi-red { color:
  *           var(--snice-terminal-ansi-red, #cd3131) }` and a class for each of
  *           the other fifteen.
- * Actual:   `parseAnsiColors()` never emits those classes. It writes a hardcoded
- *           literal inline instead — `<span style="color: #ff5555">` for red —
- *           so all sixteen documented custom properties are dead: setting them
- *           changes nothing, the sixteen `.ansi-*` rules in the component's own
- *           stylesheet match nothing, and because the colour arrives as an
- *           INLINE style it also outranks any `::part(line-content)` a page
- *           writes. The hardcoded value is not even the stylesheet's own
- *           default for the same colour (#ff5555 against #cd3131), so the two
- *           halves of the component disagree about what "ANSI red" is.
+ * Fixed:    `parseAnsiColors()` now emits the `.ansi-*` classes instead of a
+ *           hardcoded inline literal, so all sixteen documented custom
+ *           properties reach the run and `::part()` rules rank above it again.
  */
 describe('terminal matrix: the documented ANSI custom properties', () => {
   for (const colour of ANSI_COLOURS) {
-    it.fails(`MATRIX-terminal-2: --snice-terminal-ansi-${colour.name} reaches the output`, async () => {
+    it(`MATRIX-terminal-2 (fixed): --snice-terminal-ansi-${colour.name} reaches the output`, async () => {
       el = await mountTerminal();
       const problems = new Problems();
 

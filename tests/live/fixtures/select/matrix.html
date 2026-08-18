@@ -66,6 +66,11 @@
         await nextFrame();
         await new Promise(resolve => setTimeout(resolve, ms));
         await nextFrame();
+        // Text-dependent boxes (tag pills, value labels) keep re-laying-out
+        // until the page's fonts finish swapping in; under heavy parallel
+        // load that lands arbitrarily late. A settled font set is a
+        // prerequisite for any geometry the oracle derives from text.
+        if (document.fonts?.ready) await document.fonts.ready;
       }
 
       /**

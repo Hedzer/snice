@@ -173,8 +173,8 @@ export function checkSizing(problems: Problems, el: HTMLElement, vector: Vector)
 /**
  * `direction` reaches the ATTRIBUTE.
  *
- * Split into its own oracle because it is the one part of the documented
- * surface that has a standing finding (MATRIX-split-pane-3), and because it is
+ * Split into its own oracle because it carried the standing finding
+ * (MATRIX-split-pane-3, fixed), and because it is
  * the load-bearing one: the stylesheet expresses the ENTIRE documented
  * difference between the two directions through `:host([direction="…"])` —
  * `flex-direction`, the divider's width/height and resize cursor, and the

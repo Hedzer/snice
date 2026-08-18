@@ -380,7 +380,8 @@ test.describe('terminal visual matrix: marquee pixels', () => {
   });
 
   /**
-   * MATRIX-terminal-2 (the DOM tier's finding, measured where it is visible)
+   * MATRIX-terminal-2 (fixed — the DOM tier's finding, measured where it is
+   * visible)
    *
    * Combo:    `--snice-terminal-ansi-red: rgb(0, 255, 0)` on a terminal that
    *           writes `\x1b[31mfailed\x1b[0m`.
@@ -389,13 +390,11 @@ test.describe('terminal visual matrix: marquee pixels', () => {
    *           under "CSS Custom Properties", and the component's own stylesheet
    *           defines `.ansi-red { color: var(--snice-terminal-ansi-red, …) }`
    *           for each of them.
-   * Actual:   `parseAnsiColors()` emits `<span style="color: #ff5555">`, a
-   *           hardcoded inline literal that no custom property and no
-   *           `::part()` rule can override. Setting the documented property to
-   *           pure green leaves the run exactly as red as it was.
+   * Fixed:    `parseAnsiColors()` emits the `.ansi-*` classes instead of a
+   *           hardcoded inline literal, so the documented properties reach the
+   *           painted run.
    */
-  test('MATRIX-terminal-2: --snice-terminal-ansi-red repaints an ANSI red run', async () => {
-    test.fail();
+  test('MATRIX-terminal-2 (fixed): --snice-terminal-ansi-red repaints an ANSI red run', async () => {
     const runColour = async (override?: string) => {
       await page.evaluate(c => (window as any).matrix.mount(c), {
         height: 220, stageWidth: 720, prompt: '$ ',

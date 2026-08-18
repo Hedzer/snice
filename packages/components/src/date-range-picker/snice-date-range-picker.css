@@ -64,11 +64,13 @@
 .input--small {
   padding: 0.375rem 2.75rem 0.375rem 0.625rem;
   font-size: var(--snice-font-size-sm, 0.875rem);
+  min-height: 2rem;
 }
 
 .input--large {
   padding: 0.75rem 3.5rem 0.75rem 1rem;
   font-size: var(--snice-font-size-md, 1rem);
+  min-height: 3rem;
 }
 
 .input--filled {

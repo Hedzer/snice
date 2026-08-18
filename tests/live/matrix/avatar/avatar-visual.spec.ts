@@ -249,41 +249,9 @@ async function visualProblems(combo: Combo, sizePx: { box: number; font: number 
 
 const combos = generateCombos();
 
-/**
- * The findings this tier pinned, as a predicate over the combo.
- *
- * Both are DEFAULT-STATE defects and both are invisible to the DOM tier, which
- * is the entire reason this tier exists. Per .ai/fuzzing.md the assertions
- * above are NOT weakened and the component is NOT changed: the affected combos
- * are declared `test.fail()` so the suite goes red the day either is fixed.
- *
- *   · VISUAL-MATRIX-avatar-2 — the documented default `shape: 'circle'` paints a
- *     SQUARE. `border-radius: 50%` exists only under `:host([shape="circle"])`,
- *     and an untouched default reflects no attribute (docs/ai/properties.md), so
- *     the docs' own first example — `<snice-avatar src="/user.jpg"
- *     name="John Doe">` — is not a circle. Only an explicitly written
- *     `shape="circle"` produces one.
- *   · VISUAL-MATRIX-avatar-3 — the documented default `size: 'medium'` does not get its
- *     documented font-size. `:host` supplies `--avatar-size: 2.5rem`, so the BOX
- *     is the documented 40px, but the "medium … / 0.875rem" half of the Size
- *     Reference lives only in `:host([size="medium"])` and never applies. A
- *     default avatar's initials render at the inherited page font-size instead.
- */
-function pinnedFindings(combo: Combo): string[] {
-  const ids: string[] = [];
-  if (combo.shape === 'circle') ids.push('VISUAL-MATRIX-avatar-2');
-  // Only observable where the initials are actually measured — the font-size
-  // check runs for every combo, so `medium` is enough on its own.
-  if (combo.size === 'medium') ids.push('VISUAL-MATRIX-avatar-3');
-  return ids;
-}
-
 test.describe('avatar visual matrix: layer 1', () => {
   for (const combo of combos) {
-    const findings = pinnedFindings(combo);
-    const title = findings.length ? `${findings.join(' ')} ${combo.id}` : combo.id;
-    test(title, async () => {
-      if (findings.length) test.fail();
+    test(combo.id, async () => {
       const mounted = await page.evaluate(c => (window as any).matrix.mount(c), combo as any);
       expect(mounted.mounted).toBe(true);
       expect(await visualProblems(combo, SIZE_PX[combo.size]), `combo ${combo.id}`).toEqual([]);
@@ -362,11 +330,9 @@ test.describe('avatar visual matrix: marquee pixels', () => {
       .toBeGreaterThan(1);
   });
 
-  // VISUAL-MATRIX-avatar-2 again, at the pixel level: with the default `shape:
-  // 'circle'` reflecting no attribute, the frame is a square and its corner
-  // paints the image instead of the page behind it.
-  test('VISUAL-MATRIX-avatar-2: a circular avatar really clips its corners', async () => {
-    test.fail();
+  // A circular avatar really clips its corners: the strongest form of the
+  // shape claim, judged in pixels.
+  test('a circular avatar really clips its corners', async () => {
     await page.evaluate(() => (window as any).matrix.mount({
       size: 'xxl', shape: 'circle', name: 'John Doe', image: 'ok',
     }));

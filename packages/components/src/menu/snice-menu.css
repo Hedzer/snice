@@ -81,91 +81,92 @@
   }
 }
 
-/* CSS Anchor Positioning (Chrome/Edge 125+) */
+/* CSS Anchor Positioning (Chrome/Edge 125+). Each placement rule carries
+   the [popover] attribute so (0,3,0) outranks the base panel block's
+   `inset: auto` and `margin: 0` shorthands. `distance` is part of the
+   anchor() arithmetic and the width floor composes with the trigger's own
+   width. Engines without anchor positioning take the inline box
+   positionMenu() computes from the same contract. */
 @supports (position-anchor: --a) {
   .menu__panel[popover] {
     position-anchor: --menu-anchor;
-    top: calc(anchor(bottom) + 4px);
+    min-width: max(var(--menu-min-width), anchor-size(width));
+  }
+
+  .menu__panel[popover].menu__panel--bottom-start {
+    top: calc(anchor(bottom) + var(--menu-distance, 4px));
     left: anchor(left);
-    min-width: anchor-size(width);
+  }
+
+  .menu__panel[popover].menu__panel--bottom-end {
+    top: calc(anchor(bottom) + var(--menu-distance, 4px));
+    left: anchor(right);
+    translate: -100% 0;
+  }
+
+  .menu__panel[popover].menu__panel--top-start {
+    top: calc(anchor(top) - var(--menu-distance, 4px));
+    left: anchor(left);
+    translate: 0 -100%;
+  }
+
+  .menu__panel[popover].menu__panel--top-end {
+    top: calc(anchor(top) - var(--menu-distance, 4px));
+    left: anchor(right);
+    translate: -100% -100%;
+  }
+
+  .menu__panel[popover].menu__panel--right-start {
+    top: anchor(top);
+    left: calc(anchor(right) + var(--menu-distance, 4px));
+  }
+
+  .menu__panel[popover].menu__panel--right-end {
+    top: anchor(bottom);
+    left: calc(anchor(right) + var(--menu-distance, 4px));
+    translate: 0 -100%;
+  }
+
+  .menu__panel[popover].menu__panel--left-start {
+    top: anchor(top);
+    left: calc(anchor(left) - var(--menu-distance, 4px));
+    translate: -100% 0;
+  }
+
+  .menu__panel[popover].menu__panel--left-end {
+    top: anchor(bottom);
+    left: calc(anchor(left) - var(--menu-distance, 4px));
+    translate: -100% -100%;
   }
 }
 
-/* Placement variations */
-.menu__panel--bottom-start {
-  top: 100%;
-  left: 0;
-  margin-top: var(--menu-distance, 0.25rem);
-}
-
-.menu__panel--bottom-end {
-  top: 100%;
-  right: 0;
-  margin-top: var(--menu-distance, 0.25rem);
-}
-
-.menu__panel--top-start {
-  bottom: 100%;
-  left: 0;
-  margin-bottom: var(--menu-distance, 0.25rem);
-  transform: translateY(0.5rem);
-}
-
-.menu__panel--top-start.menu__panel--open {
-  transform: translateY(0);
-}
-
+/* Entrance animation: the closed panel nudges toward its own side. */
+.menu__panel--top-start,
 .menu__panel--top-end {
-  bottom: 100%;
-  right: 0;
-  margin-bottom: var(--menu-distance, 0.25rem);
   transform: translateY(0.5rem);
 }
 
+.menu__panel--top-start.menu__panel--open,
 .menu__panel--top-end.menu__panel--open {
   transform: translateY(0);
 }
 
-.menu__panel--right-start {
-  top: 0;
-  left: 100%;
-  margin-left: var(--menu-distance, 0.25rem);
-  transform: translateX(-0.5rem);
-}
-
-.menu__panel--right-start.menu__panel--open {
-  transform: translateX(0);
-}
-
+.menu__panel--right-start,
 .menu__panel--right-end {
-  bottom: 0;
-  left: 100%;
-  margin-left: var(--menu-distance, 0.25rem);
   transform: translateX(-0.5rem);
 }
 
+.menu__panel--right-start.menu__panel--open,
 .menu__panel--right-end.menu__panel--open {
   transform: translateX(0);
 }
 
-.menu__panel--left-start {
-  top: 0;
-  right: 100%;
-  margin-right: var(--menu-distance, 0.25rem);
-  transform: translateX(0.5rem);
-}
-
-.menu__panel--left-start.menu__panel--open {
-  transform: translateX(0);
-}
-
+.menu__panel--left-start,
 .menu__panel--left-end {
-  bottom: 0;
-  right: 100%;
-  margin-right: var(--menu-distance, 0.25rem);
   transform: translateX(0.5rem);
 }
 
+.menu__panel--left-start.menu__panel--open,
 .menu__panel--left-end.menu__panel--open {
   transform: translateX(0);
 }

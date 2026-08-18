@@ -330,7 +330,10 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
         if (field.placeholder) textarea.placeholder = field.placeholder;
         if (field.required) textarea.required = true;
         textarea.value = this.formValues[field.name] || '';
-        textarea.oninput = () => { this.formValues[field.name] = textarea.value; };
+        textarea.oninput = () => {
+          this.formValues[field.name] = textarea.value;
+          this.syncConfirmState();
+        };
         fieldEl.appendChild(textarea);
       } else {
         const input = document.createElement('input');
@@ -339,7 +342,10 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
         if (field.placeholder) input.placeholder = field.placeholder;
         if (field.required) input.required = true;
         input.value = this.formValues[field.name] || '';
-        input.oninput = () => { this.formValues[field.name] = input.value; };
+        input.oninput = () => {
+          this.formValues[field.name] = input.value;
+          this.syncConfirmState();
+        };
         fieldEl.appendChild(input);
       }
 
@@ -513,6 +519,19 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
     return this.fields
       .filter(f => f.required)
       .every(f => this.formValues[f.name]?.trim());
+  }
+
+  /**
+   * MATRIX-booking-2: the Confirm button's `disabled` flag was computed once
+   * while the action row was built, and typing into a field only wrote to the
+   * internal map — so Confirm stayed disabled forever. Re-evaluate it live.
+   */
+  private syncConfirmState(): void {
+    if (this.currentStep !== 3) return;
+    const btn = this.container.querySelector<HTMLButtonElement>('.booking__btn--primary');
+    if (btn && btn.textContent === 'Confirm Booking') {
+      btn.disabled = !this.isFormValid();
+    }
   }
 
   // Public methods

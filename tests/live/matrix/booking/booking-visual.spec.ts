@@ -19,8 +19,8 @@
  *
  * ── Layer 2: pinned pixel captures ─────────────────────────────────────────
  *   the selected day must not paint the same colour as its neighbours, and
- *   MATRIX-booking-2 is confirmed in a real browser: a completed required form
- *   leaves Confirm disabled.
+ *   MATRIX-booking-2 is confirmed fixed in a real browser: a completed required
+ *   form leaves Confirm enabled.
  */
 import { test, expect, type Page } from '@playwright/test';
 import { capture, sameColor } from '../pixel-probe';
@@ -222,16 +222,15 @@ test.describe('booking visual matrix: the slots grid', () => {
   }
 });
 
-// ── MATRIX-booking-2, in a real browser ─────────────────────────────────────
+// ── MATRIX-booking-2 (fixed), in a real browser ─────────────────────────────
 //
-// The DOM matrix already pins it; this is the same claim measured where the
-// events, the focus and the input handlers are all real, so the finding cannot
-// be dismissed as a happy-dom artefact. Pinned with `test.fail()`; the
-// assertion is the documented flow and is not weakened.
+// The DOM matrix already unwrapped it; this is the same claim measured where
+// the events, the focus and the input handlers are all real, so the fix cannot
+// be dismissed as a happy-dom artefact. The assertion is the documented flow
+// and is not weakened.
 
 test.describe('booking visual matrix: confirming a booking', () => {
-  test('a filled required form enables Confirm [MATRIX-booking-2]', async () => {
-    test.fail();
+  test('a filled required form enables Confirm [MATRIX-booking-2 (fixed)]', async () => {
     await mount({ id: 'confirm', variant: 'stepper', gate: 'listed', fields: 'required' });
     expect(await page.evaluate(d => (window as any).matrix.pickDay(d), future[0])).toBe(true);
     expect(await page.evaluate(() => (window as any).matrix.pressPrimary())).toBe(true);

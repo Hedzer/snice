@@ -9,7 +9,7 @@
  *   · `availableDates` disables every other day, and the past is never open;
  *   · picking a date offers that date's slots and emits `date-select`;
  *   · a slot fills `getBooking()` and emits `slot-select`;
- *   · MATRIX-booking-2 — a completed required form still cannot be confirmed;
+ *   · MATRIX-booking-2 (fixed) — a completed required form can be confirmed;
  *   · MATRIX-booking-1 — the inline variant does not show all three steps.
  *
  * The full cross lives in the sibling files and runs via
@@ -73,7 +73,7 @@ describe('booking smoke', () => {
     expect(el.getBooking(), 'getBooking()').toMatchObject({ date: day, slot: { time: '09:00' } });
   });
 
-  it.fails('a completed required form can be confirmed [MATRIX-booking-2]', async () => {
+  it('a completed required form can be confirmed [MATRIX-booking-2 (fixed)]', async () => {
     if (!FUTURE.length) return;
     const day = FUTURE[0];
     const el = await mount<any>(TAG, {}, {

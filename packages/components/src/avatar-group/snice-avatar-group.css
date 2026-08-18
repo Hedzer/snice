@@ -109,6 +109,16 @@
 .avatar-color-pink { background: var(--avatar-palette-pink, rgb(236 72 153)); }
 .avatar-color-rose { background: var(--avatar-palette-rose, rgb(244 63 94)); }
 
+.avatar-color-orange,
+.avatar-color-yellow,
+.avatar-color-lime,
+.avatar-color-green,
+.avatar-color-teal,
+.avatar-color-cyan,
+.avatar-color-sky {
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
 /* ── Slotted mode — style <snice-avatar> children ── */
 ::slotted(snice-avatar) {
   --avatar-size: var(--avatar-group-size);

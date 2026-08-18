@@ -472,6 +472,19 @@
     var(--calendar-row-cap, 100000px));
 }
 
+/* VISUAL-MATRIX-calendar-3: the rule above re-imposes the square baseline at
+   two-class specificity and outranked the one-class stretch rule, so
+   `cell-sizing="stretch"` + `show-week-numbers` never collapsed. The
+   week-number column only discounts the SQUARE baseline; the stretch minimum
+   wins with or without the column. Same two classes, later in the sheet. */
+.calendar--week-numbers .calendar__day--stretch {
+  min-height: min(
+    max(3rem, calc(2.125rem
+      + var(--calendar-week-lanes, 0) * 1.375rem
+      + var(--calendar-week-more, 0rem))),
+    var(--calendar-row-cap, 100000px));
+}
+
 .calendar__week-number {
   box-sizing: border-box;
   display: flex;
