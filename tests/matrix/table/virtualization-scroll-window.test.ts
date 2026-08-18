@@ -80,10 +80,10 @@ describe('virtualization × window relocation', () => {
       expect(frame.scrollTop).toBe(TARGET * table.rowHeight);
     });
 
-    // MATRIX-virtualization-3: `scrollToRow(index)` is documented as "Reveal
-    // data row". A programmatic `scrollTop` assignment fires no scroll event,
-    // so the virtualizer recomputes the window itself — otherwise the requested
-    // row is never rendered and the body is nothing but spacer.
+    // MATRIX-virtualization-3 (fixed): `scrollToRow(index)` is documented as
+    // "Reveal data row". A programmatic `scrollTop` assignment fires no scroll
+    // event, so the virtualizer recomputes the window itself — otherwise the
+    // requested row is never rendered and the body is nothing but spacer.
     it(`${mode}: scrollToRow(${TARGET}) renders row ${TARGET}`, async () => {
       const { columns, rows } = await deliveredTable('valueGetter', remote);
       table.scrollToRow(TARGET);
@@ -102,10 +102,10 @@ describe('virtualization × window relocation', () => {
       expectWindowCells(table, rows, [CONTROL_COLUMN, pipelineColumn('valueGetter')]);
     });
 
-    // MATRIX-virtualization-3, second half: spacer integrity against the scroll
-    // offset. Whatever window is rendered has to straddle the current offset —
-    // otherwise the viewport is parked over bare spacer and the user sees an
-    // empty body.
+    // MATRIX-virtualization-3, second half (fixed): spacer integrity against
+    // the scroll offset. Whatever window is rendered has to straddle the
+    // current offset — otherwise the viewport is parked over bare spacer and
+    // the user sees an empty body.
     it(`${mode}: the window after scrollToRow(${TARGET}) covers the scroll offset`, async () => {
       const { columns, rows } = await deliveredTable('valueGetter', remote);
       table.scrollToRow(TARGET);
