@@ -1,4 +1,4 @@
-import { element, property, ready, on, render, styles, dispatch, html, css as cssTag } from 'snice';
+import { element, property, ready, on, query, render, styles, dispatch, html, nothing, css as cssTag } from 'snice';
 import cssContent from './snice-card.css?inline';
 import type { CardVariant, CardSize, SniceCardElement } from './snice-card.types';
 
@@ -25,6 +25,9 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
   @property({ type: Boolean,  })
   private hasFooter = false;
 
+  @query('.card')
+  private cardElement?: HTMLElement;
+
   @ready()
   onReady() {
     // Check slots after a microtask to allow slot assignment
@@ -35,15 +38,15 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
   render() {
     const role = this.clickable ? 'button' : 'article';
     const tabindex = this.clickable && !this.disabled ? '0' : '-1';
-    // aria-selected is only valid on option/tab/row/gridcell/treeitem.
-    // Use aria-pressed for button-as-toggle state; omit for article.
-    const ariaPressed = this.clickable ? String(!!this.selected) : 'false';
+    // aria-pressed is only valid on button-like roles; a plain article card
+    // carries no button state at all.
+    const ariaPressed = this.clickable ? String(!!this.selected) : nothing;
 
     return html/*html*/`
       <div part="base" class="card"
            role="${role}"
            tabindex="${tabindex}"
-           aria-pressed="${ariaPressed}"
+           aria-pressed=${ariaPressed}
            aria-disabled="${this.disabled}"
            @click="${(e: MouseEvent) => this.handleClick(e)}"
            @keydown="${(e: KeyboardEvent) => this.handleKeydown(e)}">
@@ -90,11 +93,16 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
    * Update --card-mx/--card-my based on cursor position over the card so
    * CSS can tilt the card toward the cursor. Only runs for clickable cards
    * and only while hovered — plain cards get no events attached.
+   *
+   * The `@on` handlers are DELEGATED (listener on the shadow root), so
+   * `event.currentTarget` is the ShadowRoot, not the matched `.card` — the
+   * tilt is written to the queried card instead.
    */
   @on('pointermove', '.card')
   handlePointerMove(event: PointerEvent) {
     if (!this.clickable || this.disabled) return;
-    const card = event.currentTarget as HTMLElement;
+    const card = this.cardElement;
+    if (!card) return;
     const rect = card.getBoundingClientRect();
     const mx = (event.clientX - rect.left) / rect.width;
     const my = (event.clientY - rect.top) / rect.height;
@@ -103,8 +111,9 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
   }
 
   @on('pointerleave', '.card')
-  handlePointerLeave(event: PointerEvent) {
-    const card = event.currentTarget as HTMLElement;
+  handlePointerLeave() {
+    const card = this.cardElement;
+    if (!card) return;
     // Ease back to center — the CSS transition on transform handles the lerp.
     card.style.setProperty('--card-mx', '0.5');
     card.style.setProperty('--card-my', '0.5');

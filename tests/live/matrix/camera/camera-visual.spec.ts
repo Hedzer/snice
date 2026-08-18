@@ -94,11 +94,6 @@ test.describe('snice-camera visual matrix (layer 1: framing)', () => {
   for (const objectFit of ['cover', 'contain'] as const) {
     for (const aspectRatio of ['auto', '16:9', '1:1'] as const) {
       test(`object-fit=${objectFit}/aspect-ratio=${aspectRatio}`, async () => {
-        // VISUAL-MATRIX-camera-1 (see the pinned test below): the documented DEFAULT
-        // value `aspect-ratio="auto"`, written out explicitly, collapses the
-        // camera to zero height. The assertion stays correct and the combo is
-        // expected to fail until the component is fixed.
-        if (aspectRatio === 'auto') test.fail();
         await mount(page, { id: `${objectFit}-${aspectRatio}`, objectFit, aspectRatio, start: true });
         expect(await collectChartProblems(page, PROBE), `${objectFit}/${aspectRatio}`).toEqual([]);
       });
@@ -106,23 +101,14 @@ test.describe('snice-camera visual matrix (layer 1: framing)', () => {
   }
 
   /**
-   * VISUAL-MATRIX-camera-1 — writing the documented default `aspect-ratio="auto"`
-   * collapses the camera to a zero-height box.
-   *
-   * `docs/ai/components/camera.md` documents
-   * `aspectRatio: string = 'auto'  // attribute: aspect-ratio — 'auto','16:9',…`,
-   * so `auto` is both a legal value and the DEFAULT. Omitting the attribute
-   * gives the camera a 4:3 box and a visible preview; writing the default out
-   * gives it `height: 100%` of a height-less parent, which resolves to zero.
-   * A page that spells its default out — exactly what the documented enum
-   * invites — renders nothing at all.
-   *
-   * Policy (.ai/fuzzing.md): the assertion stays correct and the test is
-   * pinned, so the day the component is fixed this suite fails and the
-   * finding can be closed.
+   * VISUAL-MATRIX-camera-1 (FIXED) — writing the documented default
+   * `aspect-ratio="auto"` used to collapse the camera to a zero-height box:
+   * the stylesheet gave the explicit `auto` selector `height: 100%` of a
+   * height-less parent while the omitted default got the 4:3 padding-bottom
+   * box. `auto` now selects the same default-box rules the omitted attribute
+   * does, so spelling the default out renders exactly what omitting it does.
    */
-  test('VISUAL-MATRIX-camera-1: aspect-ratio="auto" renders the same visible camera as omitting it', async () => {
-    test.fail();
+  test('VISUAL-MATRIX-camera-1 (fixed): aspect-ratio="auto" renders the same visible camera as omitting it', async () => {
     await mount(page, { id: 'implicit', start: true });
     const implicit = await page.evaluate(() => {
       const b = document.getElementById('subject')!.getBoundingClientRect();

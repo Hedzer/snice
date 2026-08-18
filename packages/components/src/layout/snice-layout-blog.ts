@@ -15,6 +15,10 @@ export class SniceLayoutBlog extends HTMLElement implements Layout {
   @property({ attribute: false })
   hasSidebar = false;
 
+  /** Size to the parent element instead of filling the screen. */
+  @property({ type: Boolean })
+  contained = false;
+
   private placards: Placard[] = [];
   private currentRoute = '';
 
@@ -29,14 +33,13 @@ export class SniceLayoutBlog extends HTMLElement implements Layout {
                 <h1>Blog</h1>
               </slot>
             </div>
-            <if ${this.useNav}>
-              <snice-nav class="nav" variant="flat" orientation="horizontal"></snice-nav>
-            </if>
-            <if ${!this.useNav}>
-              <nav class="nav">
-                <slot name="nav"></slot>
-              </nav>
-            </if>
+            <nav class="nav">
+              <slot name="nav">
+                <if ${this.useNav}>
+                  <snice-nav variant="flat" orientation="horizontal"></snice-nav>
+                </if>
+              </slot>
+            </nav>
           </div>
         </header>
 

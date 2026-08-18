@@ -109,8 +109,12 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
   @render()
   renderContent() {
     const classes = `step-input step-input--${this.size}${this.constraintInvalid ? ' step-input--invalid' : ''}`;
+    // The boundary cue sits on the highest value the lattice can actually
+    // hold: when the range's width is not a whole number of steps, the raw
+    // maximum is not a value this control can ever hold.
+    const reachableMax = this.max === Infinity ? Infinity : this.roundToStep(this.max);
     const isMinBound = !this.wrap && this.value <= this.min;
-    const isMaxBound = !this.wrap && this.value >= this.max;
+    const isMaxBound = !this.wrap && this.value >= reachableMax;
     const disableDec = this.interactionDisabled || (!this.wrap && isMinBound);
     const disableInc = this.interactionDisabled || (!this.wrap && isMaxBound);
 
@@ -269,7 +273,10 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
     let newValue: number;
 
     if (this.max !== Infinity && candidate > this.max) {
-      newValue = this.wrap && this.min !== -Infinity ? this.min : this.max;
+      // The boundary target is seated on the lattice BEFORE the change guard,
+      // so a target the lattice would snap straight back to the current value
+      // neither moves the value nor announces a change.
+      newValue = this.roundToStep(this.wrap && this.min !== -Infinity ? this.min : this.max);
     } else {
       newValue = this.roundToStep(candidate);
     }
@@ -287,7 +294,7 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
     let newValue: number;
 
     if (this.min !== -Infinity && candidate < this.min) {
-      newValue = this.wrap && this.max !== Infinity ? this.max : this.min;
+      newValue = this.roundToStep(this.wrap && this.max !== Infinity ? this.max : this.min);
     } else {
       newValue = this.roundToStep(candidate);
     }

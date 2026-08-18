@@ -13,9 +13,8 @@
  * own oracle, so this file cannot drift into asserting something weaker than
  * the suite it stands in for.
  *
- * It also carries the two pinned findings' marquee cases (`it.fails`), so a fix
- * to either one is noticed by the everyday loop rather than only by the opt-in
- * matrix run.
+ * It also carries the two FIXED findings' marquee cases, kept where the
+ * everyday loop runs them as regression guards (MATRIX-step-input-1/-2).
  *
  * BUDGET: well under 1s. New feature combinations belong in the matrix.
  */
@@ -113,28 +112,28 @@ describe('step-input matrix smoke', () => {
 });
 
 /**
- * The pinned findings, kept where the everyday loop runs them. Both keep the
- * DOCUMENTED assertion and are declared `it.fails`, so the day either one is
- * fixed this file goes red and the finding can be closed.
+ * The FIXED findings' marquee cases, kept where the everyday loop runs them.
+ * Both assert the DOCUMENTED behavior that the source now delivers.
  */
-describe('step-input matrix smoke: pinned findings', () => {
-  it.fails(
-    'MATRIX-step-input-1: a step that cannot move the value dispatches nothing',
+describe('step-input matrix smoke: fixed findings', () => {
+  it(
+    'MATRIX-step-input-1 (fixed): a step that cannot move the value dispatches nothing',
     async () => {
       // min=1 max=12 step=5 admits 1, 6, 11 — so 11 is the top, and stepping up
-      // from it targets 12, which the lattice snaps straight back to 11.
+      // from it targets 12, which the lattice seats back on 11 before the
+      // change guard: no move, no event.
       const el = await mountStepInput({ min: 1, max: 12, step: 5, defaultValue: 11 });
       expect(el.value).toBe(11);
       const seen = recordValueChange(el);
       el.increment();
       await tick(el);
-      expect(el.value, 'the value moved after all').toBe(11);
-      expect(seen, 'value-change was dispatched for a value that never changed').toEqual([]);
+      expect(el.value).toBe(11);
+      expect(seen).toEqual([]);
     },
   );
 
-  it.fails(
-    'MATRIX-step-input-2: the boundary cue appears at the top value the lattice admits',
+  it(
+    'MATRIX-step-input-2 (fixed): the boundary cue appears at the top value the lattice admits',
     async () => {
       const el = await mountStepInput({ min: 1, max: 12, step: 5, defaultValue: 12 });
       expect(el.value).toBe(11);

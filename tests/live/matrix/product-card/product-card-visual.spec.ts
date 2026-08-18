@@ -318,95 +318,14 @@ async function visualProblems(combo: Combo): Promise<string[]> {
   }, combo as any);
 }
 
-// ── Findings: documented regions the layout stylesheet deletes ──────────────
+// ── Findings ────────────────────────────────────────────────────────────────
 //
 // `.ai/fuzzing.md`: a combo that diverges from the docs is a FINDING — keep the
-// correct assertion, pin it against an id, never weaken it. `it.fails` is the
-// DOM tier's tool; the equivalent here is deliberately stricter than
-// `test.fail()`, which would mark the whole combo expected-to-fail and quietly
-// absorb any unrelated regression alongside it.
-//
-// A waiver names the EXACT message it excuses and the exact combos it applies
-// to. Everything else the combo reports still fails, and a waiver that stops
-// reproducing fails on its own — so a fixed component cannot leave a permanent
-// lie behind in the suite.
-//
-// All three findings below have the same shape: `snice-product-card.css`
-// deletes documented regions for three of the six documented layouts, and the
-// doc's `variant` property says nothing about a layout dropping features. The
-// DOM tier cannot see any of it — the parts are all present in the shadow tree;
-// only `display: none` removes them from the shopper's screen.
-
-interface Waiver {
-  id: string;
-  applies: (combo: Combo) => boolean;
-  matches: RegExp;
-  /** How many times the message is expected, when it repeats per element. */
-  times?: number;
-}
-
-const WAIVERS: Waiver[] = [
-  {
-    /**
-     * FINDING VISUAL-MATRIX-product-card-3 — `variant="compact"` deletes three
-     * documented regions.
-     *
-     * combo:    variant=compact (any images/sale/stock)
-     * expected: the documented `variants`, `badge` and `favorite-btn` parts are
-     *           on screen, as they are for `vertical`
-     * actual:   `.product-card--compact` sets `display: none` on all three, so
-     *           they render at 0x0 — a compact card cannot be favourited, shows
-     *           no badge, and offers no size or colour choice.
-     */
-    id: 'VISUAL-MATRIX-product-card-3',
-    applies: c => c.variant === 'compact',
-    matches: /^a variant option renders at 0x0 — too small to hit$/,
-    times: 3,
-  },
-  {
-    id: 'VISUAL-MATRIX-product-card-3',
-    applies: c => c.variant === 'compact',
-    matches: /^the favorite button renders at 0x0 — too small to hit$/,
-  },
-  {
-    id: 'VISUAL-MATRIX-product-card-3',
-    applies: c => c.variant === 'compact' && c.sale,
-    matches: /^\[part="badge"\] renders at 0x0$/,
-  },
-  {
-    /**
-     * FINDING VISUAL-MATRIX-product-card-4 — `variant="grid"` deletes the variant
-     * selectors.
-     *
-     * combo:    variant=grid, variants=[{ type: 'Size', options: [S,M,L] }]
-     * expected: three hit-testable `variant-option` buttons
-     * actual:   `.product-card--grid .product-card__variants { display: none }`
-     *           — a grid card silently drops every documented selector while
-     *           `add-to-cart` still reports a `selectedVariants` the shopper
-     *           was never shown.
-     */
-    id: 'VISUAL-MATRIX-product-card-4',
-    applies: c => c.variant === 'grid',
-    matches: /^a variant option renders at 0x0 — too small to hit$/,
-    times: 3,
-  },
-  {
-    /**
-     * FINDING VISUAL-MATRIX-product-card-5 — `variant="minimal"` deletes the stock
-     * line.
-     *
-     * combo:    variant=minimal, in-stock or out
-     * expected: the documented `stock` part is on screen — the doc makes stock
-     *           a first-class region and even ties `stockCount` urgency to it
-     * actual:   `.product-card--minimal .product-card__stock { display: none }`
-     *           — an out-of-stock minimal card says nothing about it anywhere
-     *           except a disabled button.
-     */
-    id: 'VISUAL-MATRIX-product-card-5',
-    applies: c => c.variant === 'minimal',
-    matches: /^\[part="stock"\] has no box$/,
-  },
-];
+// correct assertion, pin it against an id, never weaken it. When a waiver's
+// message stops reproducing, the waiver must be deleted (its `hits` count fails
+// the suite otherwise), which is how fixed defects expire their pins here. No
+// waivers are currently pinned: the layout stylesheet keeps every documented
+// region on screen in all six layouts.
 
 const combos = generateCombos();
 
@@ -415,18 +334,7 @@ test.describe('product-card visual matrix: layer 1', () => {
     test(combo.id, async () => {
       await page.evaluate(c => (window as any).matrix.mount(c), mountArgs(combo) as any);
       const problems = await visualProblems(combo);
-      const waivers = WAIVERS.filter(w => w.applies(combo));
-
-      const excused = (problem: string) => waivers.some(w => w.matches.test(problem));
-      expect(problems.filter(p => !excused(p)), `combo ${combo.id}`).toEqual([]);
-
-      for (const waiver of waivers) {
-        const hits = problems.filter(p => waiver.matches.test(p)).length;
-        expect(hits,
-          `combo ${combo.id}: ${waiver.id} no longer reproduces (${waiver.matches})`
-          + ' — delete its waiver in product-card-visual.spec.ts')
-          .toBe(waiver.times ?? 1);
-      }
+      expect(problems, `combo ${combo.id}`).toEqual([]);
     });
   }
 });

@@ -10,6 +10,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  */
 export interface LayoutLandingProps extends SniceBaseProps {
   useNav?: any;
+  contained?: any;
 
 }
 
@@ -31,7 +32,7 @@ export interface LayoutLandingProps extends SniceBaseProps {
  */
 export const LayoutLanding: SniceReactComponent<LayoutLandingProps, SniceComponentRef> = createReactAdapter<LayoutLandingProps, false>({
   tagName: 'snice-layout-landing',
-  properties: ["useNav"],
+  properties: ["useNav","contained"],
   events: {},
   formAssociated: false
 });

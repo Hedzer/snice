@@ -198,62 +198,64 @@
   display: none;
 }
 
-/* Below 1024px the right rail stacks under main — content stays reachable */
-@media (max-width: 1024px) {
-  .content-area--railed {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "main"
-      "right-sidebar";
-  }
-
-  .right-sidebar {
-    border-left: none;
-    border-top: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
-  }
+/* Below 1024px the right rail stacks under main — content stays reachable.
+   Scoped to .layout--railed-stacked (set from a matchMedia listener in the
+   component) rather than an @media block: WebKit does not reliably
+   re-evaluate @media rules inside a constructable stylesheet shared across
+   shadow roots after viewport changes, so a pure media query can go stale
+   there. */
+.layout--railed-stacked .content-area--railed {
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "main"
+    "right-sidebar";
 }
 
-/* Below 768px the left sidebar overlays main behind a scrim */
-@media (max-width: 768px) {
-  .header {
-    padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
-  }
+.layout--railed-stacked .right-sidebar {
+  border-left: none;
+  border-top: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
+}
 
-  .toolbar {
-    padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
-  }
+/* Below 768px the left sidebar overlays main behind a scrim (same
+   matchMedia-driven scoping as the rail rule above). */
+.layout--mobile .header {
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+}
 
-  .sidebar {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: var(--snice-z-overlay, 1100);
-    width: min(80vw, 18rem);
-    transform: translateX(-105%);
-    box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
-  }
+.layout--mobile .toolbar {
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+}
 
-  .sidebar--collapsed {
-    width: min(80vw, 18rem);
-    border-right: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
-  }
+.layout--mobile .sidebar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--snice-z-overlay, 1100);
+  width: min(80vw, 18rem);
+  transform: translateX(-105%);
+  box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+}
 
-  .sidebar--mobile-open {
-    transform: translateX(0);
-  }
+.layout--mobile .sidebar--collapsed {
+  width: min(80vw, 18rem);
+  border-right: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
+}
 
-  .scrim--visible {
-    display: block;
-    position: absolute;
-    inset: 0;
-    z-index: var(--snice-z-scrim, 1000);
-    background: rgb(0 0 0 / 0.4);
-  }
+.layout--mobile .sidebar--mobile-open {
+  transform: translateX(0);
+}
 
-  .main {
-    padding: var(--snice-spacing-md, 1rem);
-  }
+.layout--mobile .scrim--visible {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: var(--snice-z-scrim, 1000);
+  background: rgb(0 0 0 / 0.4);
+}
+
+.layout--mobile .main {
+  padding: var(--snice-spacing-md, 1rem);
 }
 
 @media (prefers-reduced-motion: reduce) {

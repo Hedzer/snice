@@ -118,6 +118,20 @@ export class TableVirtualizer {
   }
 
   /**
+   * Publish a new buffer size. `bufferPx` is read on every update, but the
+   * skip-if-unchanged range guard would keep the old window until the next
+   * scroll — resetting the painted range forces the wider/narrower window out
+   * immediately. The host's `virtualBuffer` property is live
+   * (MATRIX-virtualization-5).
+   */
+  setBuffer(bufferPx: number) {
+    this.options.bufferPx = bufferPx;
+    this.lastStartIndex = -1;
+    this.lastEndIndex = -1;
+    this.update();
+  }
+
+  /**
    * Force a full re-render of the visible range.
    */
   refresh() {

@@ -73,32 +73,18 @@ describe('snice-camera-annotate matrix: capture()', () => {
   });
 
   /**
-   * FINDING MATRIX-camera-annotate-2.
+   * FINDING MATRIX-camera-annotate-2 (FIXED).
    *
-   * `startCamera()` assigns the newly granted `MediaStream` over `this.stream`
-   * without stopping the previous one, and the component starts the camera more
-   * than once (see MATRIX-camera-annotate-1). `stopCamera()` — reached from
-   * `capture()` and from `@dispose` — can therefore only ever release the LAST
-   * stream, and every earlier one keeps a live video track forever: the user's
-   * camera indicator stays lit after the frame has been taken and after the
-   * element has been removed from the page.
+   * `startCamera()` now stops any prior stream before requesting a new one, so
+   * at most one stream is ever live and `stopCamera()` releases it wherever it
+   * is reached from (`capture()`, `@dispose`).
    */
-  it.fails('MATRIX-camera-annotate-2: capture() releases the camera it was previewing', async () => {
+  it('MATRIX-camera-annotate-2 (fixed): capture() releases the camera it was previewing', async () => {
     const el = await mountAnnotator({ autoStart: true });
     await captureFrame(el);
     const live = media.streams.flatMap(stream => stream.getTracks())
       .filter(track => track.readyState === 'live');
     expect(live).toEqual([]);
-  });
-
-  it('MATRIX-camera-annotate-2 reproduces: one track per orphaned stream stays live', async () => {
-    const el = await mountAnnotator({ autoStart: true });
-    await captureFrame(el);
-    const live = media.streams.flatMap(stream => stream.getTracks())
-      .filter(track => track.readyState === 'live');
-    // Two streams were granted; exactly the un-referenced one is still running.
-    expect(media.streams).toHaveLength(2);
-    expect(live).toHaveLength(1);
   });
 
   it('after a capture the drawing surface is the visible one', async () => {
@@ -270,8 +256,8 @@ describe('snice-camera-annotate matrix: freehand drawing', () => {
 describe('snice-camera-annotate matrix: disposal', () => {
   // The privacy contract every camera component owes: nothing keeps the device
   // open once the element is gone. Same root cause as the capture-path leak —
-  // see MATRIX-camera-annotate-2.
-  it.fails('MATRIX-camera-annotate-2: a removed element leaves no camera running', async () => {
+  // see MATRIX-camera-annotate-2 (FIXED).
+  it('MATRIX-camera-annotate-2 (fixed): a removed element leaves no camera running', async () => {
     const el = await mountAnnotator({ autoStart: true });
     (el as HTMLElement).remove();
     await wait(SETTLE);
@@ -279,16 +265,6 @@ describe('snice-camera-annotate matrix: disposal', () => {
     const live = media.streams.flatMap(stream => stream.getTracks())
       .filter(track => track.readyState === 'live');
     expect(live).toEqual([]);
-  });
-
-  it('MATRIX-camera-annotate-2 reproduces: disposal releases only the last stream', async () => {
-    const el = await mountAnnotator({ autoStart: true });
-    (el as HTMLElement).remove();
-    await wait(SETTLE);
-
-    const tracks = media.streams.flatMap(stream => stream.getTracks());
-    expect(tracks.filter(track => track.readyState === 'ended')).toHaveLength(1);
-    expect(tracks.filter(track => track.readyState === 'live')).toHaveLength(1);
   });
 
   it('a removed element that only ever had one stream is fully released', async () => {

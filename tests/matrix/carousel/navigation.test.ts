@@ -153,19 +153,17 @@ describe('snice-carousel matrix: slide-change event', () => {
     expect(seen).toEqual([]);
   });
 
-  // ── FINDING ───────────────────────────────────────────────────────────────
-  // Doc Events: `carousel-slide-change` — a SLIDE CHANGE. Every navigation
-  // entry point dispatches it unconditionally, including the calls that
+  // ── FIXED (was MATRIX-carousel-1) ─────────────────────────────────────────
+  // Doc Events: `carousel-slide-change` — a SLIDE CHANGE. Navigation entry
+  // points used to dispatch it unconditionally, including the calls that
   // deliberately do nothing: `next()` on the last slide with `loop="false"`,
-  // `prev()` on the first, and `goToSlide(activeIndex)`. The listener in the
-  // doc's own example (`console.log('Active:', e.detail.activeIndex)`) fires
-  // repeatedly for a carousel that never moved, and `previousIndex ===
-  // activeIndex` is the proof that nothing changed.
-  it.fails(finding(
+  // `prev()` on the first, and `goToSlide(activeIndex)`. Fixed to emit only on
+  // real moves; the assertion is unchanged.
+  it(finding(
     'MATRIX-carousel-1',
     'carousel-slide-change fires for navigation that does not move the carousel '
     + '(next at the end without loop, prev at the start, goToSlide of the current slide)',
-  ), async () => {
+  ) + ' (fixed)', async () => {
     el = await makeCarousel({ slides: 3, loop: false });
     const seen = captureSlideChanges(el);
 
@@ -182,17 +180,17 @@ describe('snice-carousel matrix: slide-change event', () => {
       `emitted ${seen.length} events for one real move`).toEqual([2]);
   });
 
-  // ── FINDING ───────────────────────────────────────────────────────────────
+  // ── FIXED (was MATRIX-carousel-2) ─────────────────────────────────────────
   // Doc Methods: `goToSlide(index: number)` - "Go to specific slide". An index
-  // past the last slide names no slide at all, but it is accepted verbatim: the
-  // slides container is translated off into empty space, every indicator loses
-  // its active mark, and the carousel shows nothing. `next()` and `prev()` both
-  // clamp; the documented random-access method does not.
-  it.fails(finding(
+  // past the last slide used to be accepted verbatim: the slides container was
+  // translated off into empty space, every indicator lost its active mark, and
+  // the carousel showed nothing. Fixed to clamp to the last reachable slide,
+  // the same boundary `next()` and `prev()` already clamp at.
+  it(finding(
     'MATRIX-carousel-2',
     'goToSlide accepts an index past the last slide, scrolling the carousel into '
     + 'empty space with no active indicator',
-  ), async () => {
+  ) + ' (fixed)', async () => {
     el = await makeCarousel({ slides: 3 });
     el.goToSlide(99);
     await wait(SETTLE);

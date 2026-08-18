@@ -235,12 +235,12 @@ describe('filtering matrix — filter on the pipeline column (remote)', () => {
           await check(rows);
         });
 
-        // MATRIX-filtering-3: the server matched a field the table never
-        // received (row 2 has no 'paris' anywhere in its delivered columns), so
-        // the client-side re-filter discards it. Scoped to this ONE scenario —
-        // the rest of the block runs as ordinary `it`, and the guard below
-        // covers the parts of the same sequence that are not the known defect.
-        it.fails('server result wider than the client predicate keeps every delivered row', async () => {
+        // MATRIX-filtering-3 (fixed): the server matched a field the table
+        // never received (row 2 has no 'paris' anywhere in its delivered
+        // columns), and remote mode used to re-filter the response client-side
+        // so the row was dropped. getFilteredData() no longer applies the
+        // client filter engine in remote mode — every delivered row renders.
+        it('server result wider than the client predicate keeps every delivered row', async () => {
           await mk();
           const rows = places();
           await filterRemote(
@@ -251,7 +251,7 @@ describe('filtering matrix — filter on the pipeline column (remote)', () => {
           await check([rows[0], rows[1], rows[2]]);
         });
 
-        it('MATRIX-filtering-3 guard: the rows the predicate does accept still render', async () => {
+        it('clearing that filter re-requests the full server set', async () => {
           await mk();
           const rows = places();
           await filterRemote(
@@ -259,10 +259,9 @@ describe('filtering matrix — filter on the pipeline column (remote)', () => {
             () => table.setQuickFilter('paris'),
             [rows[0], rows[1], rows[2]],
           );
-          // Only rows[1] ('Lisbon HQ') is dropped by the client re-filter; the
-          // two matching rows must still be complete and in order.
-          await check([rows[0], rows[2]]);
-          // And clearing recovers the full server set.
+          // All three server rows render while the filter is active …
+          await check([rows[0], rows[1], rows[2]]);
+          // …and clearing recovers the full server set.
           await filterRemote(table, () => table.clearAllFilters(), rows);
           await check(rows);
         });

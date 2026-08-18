@@ -87,10 +87,10 @@ describe('snice-audio-recorder matrix smoke', () => {
     expect(el.getState()).toBe('inactive');
   });
 
-  // MATRIX-audio-recorder-1: `show-timer` off must stay off in the playback
-  // view too. The guard lives here so the everyday loop notices the day it
-  // changes in either direction.
-  it.fails('MATRIX-audio-recorder-1: show-timer off keeps the timer hidden after a recording', async () => {
+  // MATRIX-audio-recorder-1 (fixed): `show-timer` off stays off in the
+  // playback view too. The guard lives here so the everyday loop notices the
+  // day it changes in either direction.
+  it('MATRIX-audio-recorder-1 (fixed): show-timer off keeps the timer hidden after a recording', async () => {
     const el = await mountRecorder({ showTimer: false });
     await startRecording(el);
     await stopRecording(el);

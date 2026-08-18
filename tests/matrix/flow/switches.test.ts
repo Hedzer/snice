@@ -21,40 +21,16 @@
  *
  * ── FINDINGS ───────────────────────────────────────────────────────────────
  *
- * MATRIX-flow-1  `editable = false` does not stop a node being edited.
- *   combo:    graph=doc, editable=false, drag node "a" from (100,100) to
- *             (300,240)
- *   expected: with editing off, a drag gesture leaves `node.x`/`node.y` where
- *             the caller put them and emits no `node-drag`. `editable` is the
- *             only documented switch whose name says "may this diagram be
- *             changed", and a node's position is diagram state — it is the very
- *             state `node-drag` exists to report.
- *   actual:   the node moves and `node-drag` fires exactly as when editing is
- *             on. `editable` is consulted in one place only — the port
- *             mousedown that starts an edge — so it gates drawing NEW EDGES
- *             and nothing else. Node dragging, node selection and edge
- *             selection are all unaffected.
+ * MATRIX-flow-1 (fixed)  `editable = false` used not to stop a node being
+ *   edited. A node drag now respects the switch — selection still works, the
+ *   position does not move and `node-drag` stays silent. Unpinned below as the
+ *   regression guard.
  *
- * MATRIX-flow-2  `minimap = false` never hides the minimap panel.
- *   combo:    graph=empty|doc|large, minimap=false — both authored at mount
- *             time and assigned afterwards
- *   expected: the documented `minimap: boolean = true` switches the panel off,
- *             the way every other documented boolean switches its feature off.
- *   actual:   the panel is always in the layout. Two mechanisms combine:
- *             · the host template is rendered `@render({ once: true })`, so the
- *               `display:none` it writes from `this.minimap` is decided at the
- *               single initial render and never revisited — and at that moment
- *               the property still holds its `true` default, because a Boolean
- *               attribute that is ABSENT cannot express false;
- *             · the `@watch('minimap')` handler calls `updateMinimap()`, which
- *               returns early when the flag is false, so turning it off only
- *               ever stops REFRESHING the panel rather than hiding it.
- *             The observable result is a panel that is present and EMPTY
- *             instead of absent. Turning the flag back on afterwards does
- *             repaint its contents, so the property is read — just never for
- *             visibility.
- *
- * Both are pinned with `it.fails` below and kept at full strength.
+ * MATRIX-flow-2 (fixed)  `minimap = false` used never to hide the minimap
+ *   panel: the host template rendered once with the default `true`, and the
+ *   `@watch` handler's early return only stopped refreshing it. The panel's
+ *   visibility now follows the property both ways, at mount time and after.
+ *   Unpinned below as the regression guard.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import {
@@ -90,9 +66,9 @@ describe('flow matrix: switches', () => {
         el = await makeFlow(c, data);
         expectClean(structureProblems(el, c, data), comboId(c));
 
-        // The minimap's own visibility claim is NOT asserted here: it is
-        // MATRIX-flow-2, pinned once at the bottom of this file rather than
-        // sixteen times through this product.
+        // The minimap's own visibility claim is asserted once per graph in
+        // the `minimap` dimension below, not sixteen times through this
+        // product.
 
         // Every switch reaches its property, whatever the others say.
         expect(el.snapToGrid).toBe(c.snapToGrid);
@@ -192,11 +168,9 @@ describe('flow matrix: switches', () => {
     for (const graph of ['empty', 'doc', 'large'] as const) {
       for (const minimap of [true, false]) {
         const c = combo({ graph, minimap });
-        // MATRIX-flow-2: the OFF half of this dimension cannot be satisfied.
-        const pin = minimap ? it : it.fails;
 
-        pin(`${comboId(c)}: the panel is ${minimap ? 'shown' : 'hidden'} as authored${
-          minimap ? '' : ' [MATRIX-flow-2]'}`, async () => {
+        it(`${comboId(c)}: the panel is ${minimap ? 'shown' : 'hidden'} as authored${
+          minimap ? '' : ' [MATRIX-flow-2 (fixed)]'}`, async () => {
           const data = graphOf(c);
           el = await makeFlow(c, data);
           expectClean(minimapProblems(el, c, data), comboId(c));
@@ -236,8 +210,8 @@ describe('flow matrix: switches', () => {
       expect(data.nodes[0].x).not.toBe(50);
     });
 
-    // ── MATRIX-flow-1 ──────────────────────────────────────────────────────
-    it.fails('MATRIX-flow-1 editable=false leaves a dragged node where it was', async () => {
+    // ── MATRIX-flow-1 (fixed) ───────────────────────────────────────────────
+    it('MATRIX-flow-1 (fixed) editable=false leaves a dragged node where it was', async () => {
       const c = combo({ graph: 'doc', editable: false });
       const data = graphOf(c);
       const before = { x: data.nodes[0].x, y: data.nodes[0].y };
@@ -250,7 +224,7 @@ describe('flow matrix: switches', () => {
       expect({ x: data.nodes[0].x, y: data.nodes[0].y }).toEqual(before);
     });
 
-    it.fails('MATRIX-flow-1 editable=false blocks the drag at every grid setting', async () => {
+    it('MATRIX-flow-1 (fixed) editable=false blocks the drag at every grid setting', async () => {
       const c = combo({ graph: 'chain', editable: false, snapToGrid: false });
       const data = graphOf(c);
       const before = data.nodes.map(node => ({ x: node.x, y: node.y }));
@@ -262,9 +236,9 @@ describe('flow matrix: switches', () => {
     });
   });
 
-  // ── MATRIX-flow-2 ────────────────────────────────────────────────────────
-  describe('MATRIX-flow-2: minimap after mount', () => {
-    it.fails('assigning minimap = false hides the panel', async () => {
+  // ── MATRIX-flow-2 (fixed) ─────────────────────────────────────────────────
+  describe('MATRIX-flow-2 (fixed): minimap after mount', () => {
+    it('assigning minimap = false hides the panel', async () => {
       const c = combo({ graph: 'doc', minimap: true });
       const data = graphOf(c);
       el = await makeFlow(c, data);
@@ -291,20 +265,20 @@ describe('flow matrix: switches', () => {
       expect(readFacts(el).minimapNodes).toBe(data.nodes.length);
     });
 
-    it.fails('minimap authored false at mount time hides the panel', async () => {
+    it('minimap authored false at mount time hides the panel', async () => {
       const c = combo({ graph: 'doc', minimap: false });
       el = await makeFlow(c);
       expect(el.minimap).toBe(false);
       expect(readFacts(el).minimapHidden, 'the minimap panel is still in the layout').toBe(true);
     });
 
-    it('minimap=false does at least empty the panel', async () => {
-      // What IS true today, stated positively so the file records the actual
-      // behaviour without weakening either claim above.
+    it('minimap=false hides the panel and empties it', async () => {
+      // What IS true after the fix, stated positively: the panel is absent
+      // from the layout and carries no stale contents.
       const c = combo({ graph: 'doc', minimap: false });
       el = await makeFlow(c);
       const facts = readFacts(el);
-      expect(facts.minimapHidden).toBe(false);
+      expect(facts.minimapHidden).toBe(true);
       expect(facts.minimapNodes).toBe(0);
       expect(facts.minimapEdges).toBe(0);
     });

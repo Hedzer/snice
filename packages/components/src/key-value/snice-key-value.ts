@@ -9,6 +9,9 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
   internals!: ElementInternals;
 
   private dirtyValue = false;
+
+  /** Reactive so `setCustomValidity()` re-renders the `part="error"` block. */
+  @state()
   private customValidationMessage = '';
   private serializedParseError = false;
   private validationInput?: HTMLInputElement;
@@ -318,10 +321,13 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
         return result.slice(0, this.rows);
       }
     } else if (this.autoExpand) {
-      const hasEmptyLast = result.length > 0 && this.isEmptyItem(result[result.length - 1]);
-      if (!hasEmptyLast) {
-        result.push({ key: '', value: '', description: '' });
+      // "Variable + auto-expand: trailing empty display row" — exactly ONE.
+      // Surplus trailing empties (padding left behind by a lowered fixed
+      // `rows` count) are trimmed so the trailing editing row is never many.
+      while (result.length > 0 && this.isEmptyItem(result[result.length - 1])) {
+        result.pop();
       }
+      result.push({ key: '', value: '', description: '' });
     }
     if (result.length === 0) {
       result.push({ key: '', value: '', description: '' });

@@ -43,23 +43,14 @@
  *
  * ── FINDING ────────────────────────────────────────────────────────────────
  *
- * VISUAL-MATRIX-gantt-3  sidebar rows do not line up with their own bars.
- *   combo:    dataset=flat|basic|grouped|mixed, zoom=week (every dataset with
- *             more than one task, at every zoom)
- *   expected: the sidebar row for a task vertically overlaps that task's bar —
- *             the correspondence that makes "task-list — Left sidebar with task
- *             names" readable against "timeline — Right scrollable timeline
- *             area" at all.
- *   actual:   the two columns advance at different pitches. `.gantt-task-name`
- *             declares `height: 2.25rem` under content-box sizing and adds
- *             0.5rem of vertical padding plus a 1px border, so a sidebar row
- *             occupies 53px, while the timeline places each bar on a 2.25rem
- *             (36px) row. Row 0's name is already 24px below its bar and the
- *             gap grows by 17px per row, so by the fourth task the name sits
- *             beside a different task's bar entirely. Group headers add a
- *             second, independent error: the timeline reserves a full 36px row
- *             for each, but `.gantt-group-header` renders 31px tall.
- *   Pinned with `test.fail()` below; every other claim in this file passes.
+ * VISUAL-MATRIX-gantt-3 (fixed)  sidebar rows did not line up with their bars.
+ *   The two columns advanced at different pitches: `.gantt-task-name`
+ *   declared `height: 2.25rem` under content-box sizing and added 0.5rem of
+ *   vertical padding plus a 1px border, so a sidebar row occupied 53px while
+ *   the timeline placed each bar on a 2.25rem (36px) row, and group headers
+ *   rendered 31px against the 36px row the timeline reserves for them. Both
+ *   sidebar rows and group headers now size to the 2.25rem row pitch
+ *   (border-box), so each name band overlaps its own bar.
  */
 import { test, expect, type Page } from '@playwright/test';
 import { capture, contrast, sameColor, type RGB } from '../pixel-probe';
@@ -428,11 +419,10 @@ test('layer1 scrollToTask scrolls to that task\'s start', async () => {
   expect(result.after).toBeGreaterThan(result.before);
 });
 
-// ── VISUAL-MATRIX-gantt-3 ─────────────────────────────────────────────────────────
-// The sidebar/timeline row correspondence. Kept at full strength and pinned.
+// ── VISUAL-MATRIX-gantt-3 (fixed) ───────────────────────────────────────────
+// The sidebar/timeline row correspondence, unpinned as the regression guard.
 for (const dataset of ['flat', 'basic', 'grouped', 'mixed'] as Dataset[]) {
-  test(`VISUAL-MATRIX-gantt-3 ${dataset}: each sidebar row lines up with its own bar`, async () => {
-    test.fail();
+  test(`VISUAL-MATRIX-gantt-3 (fixed) ${dataset}: each sidebar row lines up with its own bar`, async () => {
     const problems = await page.evaluate(async (dataset) => {
       const out: string[] = [];
       await (window as any).matrix.mount({ dataset, zoom: 'week' });
@@ -464,7 +454,7 @@ for (const dataset of ['flat', 'basic', 'grouped', 'mixed'] as Dataset[]) {
       if (names.length !== tasks.length) out.push(`${names.length} sidebar rows for ${tasks.length} tasks`);
       return out;
     }, dataset);
-    expect(problems, `VISUAL-MATRIX-gantt-3 ${dataset}`).toEqual([]);
+    expect(problems, `VISUAL-MATRIX-gantt-3 (fixed) ${dataset}`).toEqual([]);
   });
 }
 

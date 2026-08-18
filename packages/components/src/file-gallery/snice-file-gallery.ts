@@ -403,7 +403,7 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
               <if ${this.accept}>
                 <div class="drop-zone-hint">Accepted: ${this.formatAcceptTypes()}</div>
               </if>
-              <if ${this.maxSize > 0}>
+              <if ${this.maxSize >= 0}>
                 <div class="drop-zone-hint">Max size: ${this.formatFileSize(this.maxSize)}</div>
               </if>
             </div>
@@ -503,8 +503,9 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
   addFiles(files: FileList | File[]): void {
     const fileArray = Array.from(files);
 
-    // Check max files limit
-    if (this.maxFiles > 0 && this.galleryFiles.length + fileArray.length > this.maxFiles) {
+    // Check max files limit (-1 is the documented "no limit" sentinel, so 0 is
+    // a limit of zero and must hold)
+    if (this.maxFiles >= 0 && this.galleryFiles.length + fileArray.length > this.maxFiles) {
       this.emitError(`Maximum ${this.maxFiles} file${this.maxFiles !== 1 ? 's' : ''} allowed`);
       return;
     }
@@ -512,7 +513,7 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
     // Validate and add files
     for (const file of fileArray) {
       // Check file size
-      if (this.maxSize > 0 && file.size > this.maxSize) {
+      if (this.maxSize >= 0 && file.size > this.maxSize) {
         this.emitError(`File "${file.name}" exceeds maximum size of ${this.formatFileSize(this.maxSize)}`);
         continue;
       }
@@ -548,13 +549,13 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
 
   addFileWithPreview(file: File, previewDataUrl: string): void {
     // Check max files limit
-    if (this.maxFiles > 0 && this.galleryFiles.length >= this.maxFiles) {
+    if (this.maxFiles >= 0 && this.galleryFiles.length >= this.maxFiles) {
       this.emitError(`Maximum ${this.maxFiles} file${this.maxFiles !== 1 ? 's' : ''} allowed`);
       return;
     }
 
     // Check file size
-    if (this.maxSize > 0 && file.size > this.maxSize) {
+    if (this.maxSize >= 0 && file.size > this.maxSize) {
       this.emitError(`File "${file.name}" exceeds maximum size of ${this.formatFileSize(this.maxSize)}`);
       return;
     }

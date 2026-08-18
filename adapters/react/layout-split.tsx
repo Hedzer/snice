@@ -11,6 +11,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
 export interface LayoutSplitProps extends SniceBaseProps {
   direction?: any;
   ratio?: any;
+  contained?: any;
 
 }
 
@@ -32,7 +33,7 @@ export interface LayoutSplitProps extends SniceBaseProps {
  */
 export const LayoutSplit: SniceReactComponent<LayoutSplitProps, SniceComponentRef> = createReactAdapter<LayoutSplitProps, false>({
   tagName: 'snice-layout-split',
-  properties: ["direction","ratio"],
+  properties: ["direction","ratio","contained"],
   events: {},
   formAssociated: false
 });

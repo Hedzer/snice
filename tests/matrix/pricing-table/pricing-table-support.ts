@@ -399,9 +399,9 @@ function checkTable(
       const button = buttons[index];
       if (!button) return;
       problems.equal(textOf(button), plan.cta, `CTA ${index}: text`);
-      // The `part="cta"` claim is asserted separately by `checkCtaParts`, so
-      // that the ONE divergence it finds (MATRIX-pricing-table-1) does not
-      // blind the rest of this oracle for the whole table variant.
+      // The `part="cta"` claim is asserted separately by `checkCtaParts`
+      // (MATRIX-pricing-table-1, fixed) so a regression there cannot blind
+      // the rest of this oracle for the whole table variant.
     });
   }
 }

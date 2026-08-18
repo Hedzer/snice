@@ -380,16 +380,16 @@ test.describe('banner visual matrix: marquee pixels', () => {
       .toBeGreaterThan(3);
   });
 
-  // VISUAL-MATRIX-banner-2 — a CLOSED banner still darkens the page underneath it.
-  // `open` is documented as "Whether banner is visible", and the closed state
-  // moves the banner off-screen with `transform: translateY(-100%)`; but the
-  // strip that sits under it paints rgb(8,116,100) with a closed banner mounted
-  // and exactly its own rgb(9,121,105) with no banner on the page at all. Some
-  // part of the closed banner — its shadow layer — is still painting over
-  // content it is supposed to have left alone. The assertion below is the
-  // documented one and is NOT weakened.
-  test('VISUAL-MATRIX-banner-2: a closed banner paints nothing over the page', async () => {
-    test.fail();
+  // VISUAL-MATRIX-banner-2 (fixed) — a CLOSED banner used to still darken the
+  // page underneath it. `open` is documented as "Whether banner is visible",
+  // and the closed state moves the banner off-screen with
+  // `transform: translateY(-100%)`; but the strip that sat under it painted
+  // rgb(8,116,100) with a closed banner mounted and exactly its own
+  // rgb(9,121,105) with no banner on the page at all. The culprit was the
+  // banner's downward `box-shadow`: a box translated fully above the viewport
+  // still cast ~10px of shadow into it. The shadow is now gated on `[open]`,
+  // and the assertion runs unpinned as a regression guard.
+  test('VISUAL-MATRIX-banner-2 (fixed): a closed banner paints nothing over the page', async () => {
     // The page's fixed strip is a known solid colour. If a "closed" banner is
     // only translated part of the way — or merely faded — the strip's pixels
     // change, and no geometry assertion would necessarily notice a 1px sliver.

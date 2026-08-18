@@ -72,7 +72,7 @@ Style internal elements from outside the shadow DOM using `::part()`.
 |----------|-------------|---------|
 | `--progress-height` | Bar height (linear) | `0.5rem` |
 | `--progress-radius` | Bar border radius | `4px` |
-| `--progress-bg` | Background track color | `var(--snice-color-border)` |
+| `--progress-bg` | Background track color. Lightened one step past the border token (90% border, 10% white) so the default fill/track pair clears WCAG 1.4.11's 3:1 | `color-mix(in srgb, var(--snice-color-border) 90%, white)` |
 | `--progress-color` | Progress fill color | `var(--snice-color-primary)` |
 | `--progress-track-opacity` | Opacity of the circular track ring | `0.2` |
 | `--progress-animation-duration` | Animation speed | `1.5s` |

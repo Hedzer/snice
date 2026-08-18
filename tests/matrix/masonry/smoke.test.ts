@@ -58,9 +58,9 @@ describe('masonry matrix smoke', () => {
     expectClean(problems, 'smoke/empty');
   });
 
-  // MATRIX-masonry-1 — see tests/matrix/masonry/layout.test.ts.
-  // The documented `min-column-width` attribute never reaches the layout.
-  it.fails('MATRIX-masonry-1: min-column-width="300px" reaches the layout', async () => {
+  // MATRIX-masonry-1 (fixed) — see tests/matrix/masonry/layout.test.ts.
+  // The documented `min-column-width` attribute now reaches the layout.
+  it('MATRIX-masonry-1 (fixed): min-column-width="300px" reaches the layout', async () => {
     el = await mountMasonryMinWidthAttribute('300px');
     const problems = new Problems();
     checkColumnWidth(problems, el, '300px');

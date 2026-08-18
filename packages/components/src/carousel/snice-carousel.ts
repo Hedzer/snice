@@ -122,7 +122,15 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
 
     const slideWidth = 100 / this.slidesPerView;
     const offset = -(this.activeIndex * slideWidth);
-    this.container.style.transform = `translateX(${offset}%)`;
+    // A position's real travel is one slide width PLUS one gap: each index
+    // additionally advances spaceBetween / slidesPerView px (the gap share of
+    // a position), which a percentage-only translate omits.
+    if (this.spaceBetween > 0) {
+      const gap = this.activeIndex * this.spaceBetween / this.slidesPerView;
+      this.container.style.transform = `translateX(calc(${offset}% - ${gap}px))`;
+    } else {
+      this.container.style.transform = `translateX(${offset}%)`;
+    }
   }
 
   @dispatch('carousel-slide-change', { bubbles: true, composed: true })
@@ -213,6 +221,10 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
   @ready()
   private initSlideSizing() {
     this.applySlideSizing();
+    // The initial active-index attribute is applied before the first render,
+    // when @watch('activeIndex') has no container to write to yet — re-apply
+    // the transform once the container exists.
+    this.updateTransform();
   }
 
   @watch('slidesPerView')
@@ -226,33 +238,38 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
   }
 
   // Public API
+  // carousel-slide-change marks a CHANGE of slide: navigation that does not
+  // move (next at the end without loop, prev at the start, goToSlide of the
+  // current slide) emits nothing.
   next() {
-    this.previousIndex = this.activeIndex;
     if (this.activeIndex < this.slideCount - this.slidesPerView) {
-      this.activeIndex++;
+      this.moveTo(this.activeIndex + 1);
     } else if (this.loop) {
-      this.activeIndex = 0;
+      this.moveTo(0);
     }
-    this.dispatchSlideChange();
   }
 
   prev() {
-    this.previousIndex = this.activeIndex;
     if (this.activeIndex > 0) {
-      this.activeIndex--;
+      this.moveTo(this.activeIndex - 1);
     } else if (this.loop) {
-      this.activeIndex = this.slideCount - this.slidesPerView;
+      this.moveTo(this.slideCount - this.slidesPerView);
     }
-    this.dispatchSlideChange();
   }
 
   goToSlide(index: number) {
-    if (index >= 0) {
-      // Allow setting any index - validation happens on render
-      this.previousIndex = this.activeIndex;
-      this.activeIndex = index;
-      this.dispatchSlideChange();
-    }
+    if (index < 0) return;
+    // next()/prev() clamp at the boundaries; the random-access method clamps
+    // the same way rather than scrolling past the last reachable slide.
+    const maxIndex = Math.max(0, this.slideCount - this.slidesPerView);
+    this.moveTo(Math.min(index, maxIndex));
+  }
+
+  private moveTo(index: number) {
+    if (index === this.activeIndex) return;
+    this.previousIndex = this.activeIndex;
+    this.activeIndex = index;
+    this.dispatchSlideChange();
   }
 
   play() {

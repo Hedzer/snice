@@ -192,25 +192,11 @@ export function expectedHunks(lines: DiffLine[], contextLines: number): Expected
   return hunks;
 }
 
-/**
- * Does the documented grouping of these lines contain a collapsed section
- * SHORTER than twice the context width?
- *
- * The component applies an undocumented threshold — an unchanged run is only
- * collapsed when it is longer than `2 * contextLines`, and a shorter one is
- * merged into the neighbouring open hunk. `docs/ai/components/diff.md` names no
- * threshold at all ("Unchanged sections beyond context are collapsed"), so
- * every combo this predicate answers `true` for is a MATRIX-diff-2 divergence,
- * pinned rather than accommodated.
- *
- * A diff with no changes at all is excluded: the doc and the component agree
- * that the whole file collapses, by a different route.
- */
-export function hasShortGap(lines: DiffLine[], contextLines: number): boolean {
-  if (!lines.some(line => line.type !== 'unchanged')) return false;
-  return expectedHunks(lines, contextLines)
-    .some(hunk => hunk.collapsed && hunk.lines.length <= 2 * contextLines);
-}
+// MATRIX-diff-2 (fixed): the component used to apply an undocumented
+// threshold — an unchanged run was only collapsed when longer than
+// `2 * contextLines`. `docs/ai/components/diff.md` names no threshold at all
+// ("Unchanged sections beyond context are collapsed"); the threshold is gone
+// and `expectedHunks` above is the whole rule.
 
 /** doc: `diff-computed → { additions, deletions }`. */
 export function expectedStats(lines: DiffLine[]): { additions: number; deletions: number } {

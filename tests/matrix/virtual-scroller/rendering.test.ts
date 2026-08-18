@@ -87,20 +87,14 @@ describe('virtual-scroller matrix / per-item height', () => {
   });
 
   /**
-   * FINDING MATRIX-virtual-scroller-1.
+   * FINDING MATRIX-virtual-scroller-1 (fixed).
    *
-   * `VirtualScrollerItem.height` is documented ("height?: number"), and the
-   * component honours it — but only for the row's own CSS height. Every row's
-   * `top` is still `index * itemHeight`, and the spacer that gives the list its
-   * scroll extent is still `items.length * itemHeight`. So a list whose items
-   * declare a height different from `itemHeight` paints its rows on top of one
-   * another and can never scroll to its own end.
-   *
-   * The assertion below is the correct one — consecutive rows do not overlap,
-   * and the scrollable extent equals the sum of the item heights — and it stays
-   * as written. Marked `it.fails` because the component does not satisfy it.
+   * `VirtualScrollerItem.height` is documented ("height?: number"), so it must
+   * decide where each row sits and how far the list scrolls: rows with
+   * explicit heights stack without overlapping, and the scrollable extent is
+   * the sum of the item heights.
    */
-  it.fails('MATRIX-virtual-scroller-1: rows with explicit heights stack without overlapping', async () => {
+  it('MATRIX-virtual-scroller-1 (fixed): rows with explicit heights stack without overlapping', async () => {
     const tall: Item[] = items(12).map((item, i) => ({ ...item, height: i % 2 === 0 ? 100 : 50 }));
     el = await makeScroller({ items: tall, itemHeight: 50, bufferSize: 0 });
 
@@ -115,13 +109,13 @@ describe('virtual-scroller matrix / per-item height', () => {
     expect(spacerHeight(el)).toBe(tall.reduce((sum, item) => sum + (item.height ?? 50), 0));
   });
 
-  it('records the observed behaviour of MATRIX-virtual-scroller-1 (regression guard)', async () => {
-    // Not an endorsement: this pins TODAY's output so the finding above cannot
-    // be "fixed" by accident without someone noticing the pair disagree.
+  it('records the fixed behaviour of MATRIX-virtual-scroller-1 (regression guard)', async () => {
+    // The corrected output the finding above asserts, at a second shape: a
+    // uniform explicit height larger than itemHeight.
     const tall: Item[] = items(4).map(item => ({ ...item, height: 100 }));
     el = await makeScroller({ items: tall, itemHeight: 50, bufferSize: 0 });
     expect(itemHeights(el)).toEqual([100, 100, 100, 100]);
-    expect(absoluteTops(el)).toEqual([0, 50, 100, 150]); // 50px of overlap per row
-    expect(spacerHeight(el)).toBe(200); // 4 x itemHeight, not 4 x 100
+    expect(absoluteTops(el)).toEqual([0, 100, 200, 300]); // stacked, no overlap
+    expect(spacerHeight(el)).toBe(400); // the sum of the item heights
   });
 });

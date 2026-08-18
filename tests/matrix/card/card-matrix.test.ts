@@ -83,22 +83,20 @@ describe('card matrix: states', () => {
   }
 
   /**
-   * FINDING MATRIX-card-1 — a plain card is dressed as a button it is not.
+   * FINDING MATRIX-card-1 (fixed) — a plain card used to be dressed as a
+   * button it is not.
    *
    * The doc's accessibility section promises "ARIA roles and states for
    * INTERACTIVE cards", and a card that is not `clickable` is documented as a
-   * "Container for grouped content". The template nevertheless renders
+   * "Container for grouped content". The template nevertheless rendered
    * `aria-pressed="false"` on every card, including the ones whose role is
    * `article` — and `aria-pressed` is defined only for `button`,
    * `menuitemcheckbox`, `option`, `radio`, `switch` and `tab`. A screen reader
    * meeting an article that reports a pressed state announces a toggle nobody
-   * can toggle.
-   *
-   * combo:    a plain card (clickable=false)
-   * expected: no aria-pressed on [part="base"]
-   * actual:   aria-pressed="false"
+   * can toggle. The attribute is now gated on `clickable`; the assertion runs
+   * unpinned as a regression guard.
    */
-  it.fails('a plain card carries no button-only ARIA state', async () => {
+  it('MATRIX-card-1 (fixed): a plain card carries no button-only ARIA state', async () => {
     const card = await mountCard(spec());
     const problems = new Problems();
 

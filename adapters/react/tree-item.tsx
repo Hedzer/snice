@@ -14,6 +14,7 @@ export interface TreeItemProps extends SniceBaseProps {
   checked?: any;
   showCheckbox?: any;
   showIcon?: any;
+  expandOnClick?: any;
   loading?: any;
   indeterminate?: any;
   onTreeItemToggle?: (event: any) => void;
@@ -40,7 +41,7 @@ export interface TreeItemProps extends SniceBaseProps {
  */
 export const TreeItem: SniceReactComponent<TreeItemProps, SniceComponentRef> = createReactAdapter<TreeItemProps, false>({
   tagName: 'snice-tree-item',
-  properties: ["expanded","selected","checked","showCheckbox","showIcon","loading","indeterminate"],
+  properties: ["expanded","selected","checked","showCheckbox","showIcon","expandOnClick","loading","indeterminate"],
   events: {"tree-item-toggle":"onTreeItemToggle","tree-item-select":"onTreeItemSelect","tree-item-check":"onTreeItemCheck","tree-item-lazy-load":"onTreeItemLazyLoad"},
   formAssociated: false
 });

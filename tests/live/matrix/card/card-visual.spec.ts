@@ -286,35 +286,26 @@ test.describe('card visual matrix: a header that arrives late', () => {
 
 test.describe('card visual matrix: the cursor tilt', () => {
   /**
-   * FINDING VISUAL-MATRIX-card-2 — the documented cursor tilt never happens, and
-   * every pointer move over a clickable card throws.
+   * FINDING VISUAL-MATRIX-card-2 (fixed) — the documented cursor tilt used to
+   * never happen, and every pointer move over a clickable card threw.
    *
    * The doc: "clickable cards tilt toward cursor on hover (±3° perspective)".
-   * The stylesheet is ready for it — `.card:hover` rotates by
-   * `(var(--card-mx) - 0.5) * 3deg` — and `handlePointerMove` is supposed to
+   * The stylesheet was ready for it — `.card:hover` rotates by
+   * `(var(--card-mx) - 0.5) * 3deg` — and `handlePointerMove` was supposed to
    * write `--card-mx`/`--card-my` from the cursor's position inside the card.
    *
-   * It is registered as `@on('pointermove', '.card')`, which is DELEGATED: the
-   * listener lives on the shadow ROOT and the handler is called with the
-   * original event, so `event.currentTarget` is the ShadowRoot rather than the
-   * matched `.card`. The first line of the handler therefore throws:
+   * It was registered as `@on('pointermove', '.card')`, which is DELEGATED:
+   * the listener lived on the shadow ROOT and the handler read
+   * `event.currentTarget`, which is the ShadowRoot rather than the matched
+   * `.card`, so the first line of the handler threw:
    *
    *   Error in event handler handlePointerMove:
    *   TypeError: card.getBoundingClientRect is not a function
-   *     at SniceCard.handlePointerMove (snice-card.ts:519)
-   *     at ShadowRoot.delegatedHandler
    *
-   * `--card-mx`/`--card-my` keep their 0.5 defaults, so both rotations resolve
-   * to 0deg and the card paints the same transform wherever the cursor is —
-   * the translateY(-2px) lift and nothing else. It also means a console error
-   * per pointermove event for as long as the cursor is over the card.
-   *
-   * combo:    a clickable elevated card, cursor at 10% then at 90% of its width
-   * expected: --card-mx ≈ 0.1 then ≈ 0.9, and two different transforms
-   * actual:   --card-mx is unset at both, and the transform is
-   *           matrix3d(…, -1.94, 0, 1) at both
+   * The handlers now write the custom properties onto the queried `.card`,
+   * and the assertions below run unpinned as regression guards.
    */
-  test.fail('a clickable card tilts toward the cursor', async () => {
+  test('VISUAL-MATRIX-card-2 (fixed): a clickable card tilts toward the cursor', async () => {
     await page.evaluate(c => (window as any).matrix.mount(c), {
       variant: 'elevated', clickable: true, header: true, footer: true,
     } as any);
@@ -330,7 +321,7 @@ test.describe('card visual matrix: the cursor tilt', () => {
   });
 
   test('a clickable card still lifts on hover, and a plain one does not', async () => {
-    // The half of the hover treatment that DOES survive VISUAL-MATRIX-card-2: the
+    // The half of the hover treatment that never depended on the tilt: the
     // stylesheet's own translateY(-2px), which needs no custom property.
     await page.evaluate(c => (window as any).matrix.mount(c), {
       variant: 'elevated', clickable: true,

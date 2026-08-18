@@ -36,13 +36,15 @@
  *
  * Findings raised against this component:
  *
- *   MATRIX-flow-1  switches.test.ts — `editable = false` still lets a node be
- *                  dragged, mutating `node.x`/`node.y` and emitting `node-drag`.
- *   MATRIX-flow-2  switches.test.ts — assigning `minimap = false` after mount
- *                  does not hide the minimap panel.
- *   MATRIX-flow-3  methods.test.ts — `removeNode` deletes the connected edges
- *                  without emitting `edge-disconnect`, though `removeEdge`
- *                  emits it for exactly the same deletion.
+ *   MATRIX-flow-1 (fixed)  switches.test.ts — `editable = false` used to let a
+ *                  node be dragged, mutating `node.x`/`node.y` and emitting
+ *                  `node-drag`. Node drag now respects the switch.
+ *   MATRIX-flow-2 (fixed)  switches.test.ts — assigning `minimap = false`
+ *                  after mount used not to hide the minimap panel. Visibility
+ *                  now follows the property both ways.
+ *   MATRIX-flow-3 (fixed)  methods.test.ts — `removeNode` used to delete the
+ *                  connected edges without emitting `edge-disconnect`. Every
+ *                  removal-driven disconnect now announces itself.
  *
  * Two further findings belong to the VISUAL tier
  * (tests/live/matrix/flow/flow-visual.spec.ts) because neither is observable

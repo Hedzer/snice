@@ -230,16 +230,16 @@ test.describe('image visual matrix: the documented size scale', () => {
     });
   }
 
-  // VISUAL-MATRIX-image-1 — `size="large"` paints a SMALLER image than
-  // `size="medium"`, and exactly the same box as `size="small"`. The three
-  // documented sizes are meant to be a scale ("small / medium / large" in the
-  // Properties block and three separate usage examples); `.image--large` reads
-  // `var(--snice-spacing-3xl, 12rem)`, but `--snice-spacing-3xl` is the theme's
-  // 4rem token — the same one `.image--small` uses — so `large` and `small`
-  // render identically and both are half of `medium`. Per .ai/fuzzing.md the
-  // assertion is NOT weakened and the component is NOT changed.
+  // VISUAL-MATRIX-image-1 (fixed) — `size="large"` used to paint a SMALLER
+  // image than `size="medium"`, and exactly the same box as `size="small"`. The
+  // three documented sizes are meant to be a scale ("small / medium / large" in
+  // the Properties block and three separate usage examples); `.image--large`
+  // read `var(--snice-spacing-3xl, 12rem)`, but `--snice-spacing-3xl` is the
+  // theme's 4rem token — the same one `.image--small` uses — so `large` and
+  // `small` rendered identically and both were half of `medium`. Fixed:
+  // `.image--large` is now 1.5x medium (`--snice-spacing-5xl`), past the top of
+  // the spacing scale, and the pin is removed.
   test('VISUAL-MATRIX-image-1: small < medium < large', async () => {
-    test.fail();
     const small = await boxOf('small');
     const medium = await boxOf('medium');
     const large = await boxOf('large');

@@ -24,18 +24,11 @@
  *
  * ── FINDING ────────────────────────────────────────────────────────────────
  *
- * MATRIX-flow-3  `removeNode` disconnects edges silently.
- *   combo:    graph=chain (n1→n2→n3), `removeNode('n2')`, which the doc says
- *             removes the node "and connected edges" — here both of them
- *   expected: `edge-disconnect` fires once per edge the call removed, carrying
- *             that `FlowEdge`. The doc attaches no qualifier to the event, and
- *             `removeEdge` emits it for the very same deletion, so a listener
- *             maintaining an external copy of the graph is told about one route
- *             and not the other.
- *   actual:   the edges are removed correctly and no event of any kind is
- *             emitted. `removeNode` filters `this.edges` directly instead of
- *             routing through `removeEdge`, so the emitter is bypassed.
- *   Pinned with `it.fails` below.
+ * MATRIX-flow-3 (fixed)  `removeNode` used to disconnect edges silently.
+ *   The doc says `removeNode(id)` "Remove node and connected edges", and
+ *   `edge-disconnect → { edge: FlowEdge }` carries no qualifier, so removal
+ *   via `removeNode` now announces every edge it removes, exactly as
+ *   `removeEdge` always did. Unpinned below as the regression guard.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import {
@@ -311,8 +304,8 @@ describe('flow matrix: methods and events', () => {
     }
   });
 
-  // ── MATRIX-flow-3 ────────────────────────────────────────────────────────
-  describe('MATRIX-flow-3: removeNode and edge-disconnect', () => {
+  // ── MATRIX-flow-3 (fixed) ─────────────────────────────────────────────────
+  describe('MATRIX-flow-3 (fixed): removeNode and edge-disconnect', () => {
     const CASES: Array<[GraphName, string, number]> = [
       ['chain', 'n2', 2],       // both edges are connected to n2
       ['doc', 'a', 1],
@@ -320,7 +313,7 @@ describe('flow matrix: methods and events', () => {
     ];
 
     for (const [graph, id, expected] of CASES) {
-      it.fails(`graph=${graph}/removeNode("${id}"): emits ${expected} edge-disconnect events`, async () => {
+      it(`graph=${graph}/removeNode("${id}"): emits ${expected} edge-disconnect events (fixed)`, async () => {
         const c = combo({ graph });
         const data = graphOf(c);
         const doomed = data.edges.filter(edge => edge.source === id || edge.target === id);

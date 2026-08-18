@@ -12,7 +12,8 @@
  *   · `copyable=false`, the one switch that withdraws chrome;
  *   · `copy()`, the whole clipboard contract in one call;
  *   · `setFormatter` + `format`, the documented gate and event pair;
- *   · the ONE pinned finding, MATRIX-code-block-1.
+ *   · the two FIXED findings' marquee cases (MATRIX-code-block-1/-2), kept
+ *     where the everyday loop runs them as regression guards.
  *
  * Every structural assertion routes through the matrix's own oracle, so this
  * file cannot drift into something weaker than the suite it stands in for.
@@ -23,6 +24,7 @@ import { expectClean, mount, removeComponent, textOf, wait } from '../matrix-com
 import { exactPart } from '../part-exact';
 import {
   SNIPPETS, checkCodeBlock, comboId, mountCodeBlock, recordEvents, renderedLines,
+  highlightedIndices,
   type CodeBlockCombo,
 } from './code-block-support';
 
@@ -84,37 +86,21 @@ describe('code-block matrix smoke', () => {
     expect(renderedLines(el)).toEqual(['let x = 1;']);
   });
 
-  // MATRIX-code-block-1: `code` is a plain class field with no watcher, so the
-  // documented `cb.code = '…'` assignment reaches no render.
-  it.fails('MATRIX-code-block-1: assigning the code property renders the code', async () => {
+  // MATRIX-code-block-1 (fixed): `code` is now a reactive property, so the
+  // documented `cb.code = '…'` assignment renders without a manual highlight().
+  it('MATRIX-code-block-1 (fixed): assigning the code property renders the code', async () => {
     el = await mount<HTMLElement>('snice-code-block', {});
     (el as any).code = SNIPPETS.oneLine;
     await wait(60);
     expectClean(checkCodeBlock(el, { snippet: 'oneLine' }), 'code-via-property');
   });
 
-  it('MATRIX-code-block-1 reproduces: the property assignment leaves the block empty', async () => {
-    el = await mount<HTMLElement>('snice-code-block', {});
-    (el as any).code = SNIPPETS.oneLine;
-    await wait(60);
-    expect(exactPart(el, 'code')!.textContent).toBe('');
-  });
-
-  // MATRIX-code-block-2: `showLineNumbers`, `startLine` and `highlightLines`
-  // carry no watcher, so a rendered block ignores them.
-  it.fails('MATRIX-code-block-2: setting highlightLines after mount re-renders', async () => {
+  // MATRIX-code-block-2 (fixed): `highlightLines` carries a watcher, so the
+  // JS-only property reaches an already-rendered block.
+  it('MATRIX-code-block-2 (fixed): setting highlightLines after mount re-renders', async () => {
     el = await mountCodeBlock({ snippet: 'threeLines' });
-    const before = exactPart(el, 'code')!.innerHTML;
     (el as any).highlightLines = [2];
     await wait(60);
-    expect(exactPart(el, 'code')!.innerHTML).not.toBe(before);
-  });
-
-  it('MATRIX-code-block-2 reproduces: the rendered code is untouched', async () => {
-    el = await mountCodeBlock({ snippet: 'threeLines' });
-    const before = exactPart(el, 'code')!.innerHTML;
-    (el as any).highlightLines = [2];
-    await wait(60);
-    expect(exactPart(el, 'code')!.innerHTML).toBe(before);
+    expect(highlightedIndices(el)).toEqual([1]);
   });
 });

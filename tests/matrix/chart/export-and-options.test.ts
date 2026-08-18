@@ -31,19 +31,14 @@ describe('snice-chart matrix: exportImage cross', () => {
     expect(el.exportImage('svg')).toBe('');
   });
 
-  // ── FINDING ───────────────────────────────────────────────────────────────
-  // Doc Methods: "`exportImage(format?: 'png'|'svg'): string` - Export as data
-  // URL (default: `'svg'`)". A data URL is what the doc promises and the only
-  // return value that is useful for the documented purpose — it is what an
-  // `<img src>` or a download link takes. The component returns RAW SVG markup
-  // instead, so the documented usage produces a broken image.
-  //
-  // Crossed over every chart type, because the three drawing families build
-  // their SVG in three separate methods and a fix must reach all of them.
+  // MATRIX-chart-3 (fixed): `exportImage('svg')` returns the documented
+  // `data:image/svg+xml` URL — usable directly from `<img src>` or a download
+  // link. Crossed over every chart type, because the three drawing families
+  // build their SVG in three separate methods and the wrap must reach all.
   for (const type of TYPES) {
-    it.fails(finding(
-      'MATRIX-chart-3',
-      `exportImage('svg') returns raw markup rather than the documented data URL (${type})`,
+    it(finding(
+      'MATRIX-chart-3 (fixed)',
+      `exportImage('svg') returns the documented data URL (${type})`,
     ), async () => {
       el = await makeChart({
         type, datasets: CANONICAL, labels: CANONICAL_LABELS,
@@ -55,14 +50,15 @@ describe('snice-chart matrix: exportImage cross', () => {
     });
   }
 
-  // ── FINDING ───────────────────────────────────────────────────────────────
-  // Same doc line, the other documented format. `'png'` is one of the two
-  // values the published signature accepts, and it returns the empty string for
-  // every chart type and every dataset — the feature is declared and absent.
+  // MATRIX-chart-4 (fixed): `exportImage('png')` returns a `data:image/png`
+  // URL for every chart type. The raster is produced by the 2D canvas when the
+  // environment has one and by a dependency-free PNG encoder otherwise (the
+  // signature is documented synchronous, and browsers decode SVG images
+  // asynchronously, so no synchronous rasterization of the marks exists).
   for (const type of TYPES) {
-    it.fails(finding(
-      'MATRIX-chart-4',
-      `exportImage('png') returns the empty string — the documented PNG export is unimplemented (${type})`,
+    it(finding(
+      'MATRIX-chart-4 (fixed)',
+      `exportImage('png') returns a PNG data URL (${type})`,
     ), async () => {
       el = await makeChart({
         type, datasets: CANONICAL, labels: CANONICAL_LABELS,
@@ -133,18 +129,14 @@ describe('snice-chart matrix: options defaults', () => {
     expect(legendItems(el)).toHaveLength(0);
   });
 
-  // ── FINDING ───────────────────────────────────────────────────────────────
-  // Doc Properties publishes a DEFAULT options object, and `ChartOptions` makes
-  // every field optional. Together those say what every options bag says:
-  // supply the parts you care about, keep the documented defaults for the rest.
-  // The component assigns the property wholesale, so a partial object REPLACES
-  // the defaults — `options = { yAxis: { min: 0 } }`, straight out of the doc's
-  // own example shape, silently turns off `legend.clickable` (documented default
-  // `true`) and the legend stops toggling datasets.
-  it.fails(finding(
-    'MATRIX-chart-5',
-    'a partial `options` object replaces the documented defaults instead of '
-    + 'merging with them — setting only yAxis silently disables legend.clickable',
+  // MATRIX-chart-5 (fixed): a partial `options` object is deep-merged over the
+  // documented defaults, so `options = { yAxis: { min: 0 } }` — straight out of
+  // the doc's own example shape — leaves `legend.clickable` (documented
+  // default `true`) standing.
+  it(finding(
+    'MATRIX-chart-5 (fixed)',
+    'a partial `options` object merges with the documented defaults — setting '
+    + 'only yAxis keeps legend.clickable at its documented default',
   ), async () => {
     const datasets = series(2);
     el = await makeChart({

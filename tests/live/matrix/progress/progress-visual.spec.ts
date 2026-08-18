@@ -6,8 +6,9 @@
  * The DOM matrix (tests/matrix/progress, `npm run test:matrix`) owns value
  * truth: what `getPercentage()` returns, what `progress-change` carries, what
  * the label text says, which ARIA values are exposed, and the divergence it
- * already records (MATRIX-progress-1). It cannot own VISUAL truth, because
- * happy-dom performs no layout — every box reads 0 and nothing is painted.
+ * recorded before its fix (MATRIX-progress-1). It cannot own VISUAL truth,
+ * because happy-dom performs no layout — every box reads 0 and nothing is
+ * painted.
  *
  * That leaves this tier holding the component's ENTIRE headline promise: a
  * progress bar's whole job is that the painted fill is `value / max` of the
@@ -317,28 +318,11 @@ interface Waiver {
   matches: RegExp;
 }
 
-const WAIVERS: Waiver[] = [
-  {
-    // The linear label is centred on the FILL (`.progress__label` is absolutely
-    // positioned at 50% of `part="bar"`), so at value=0 the fill has zero width
-    // at the track's left edge and the label is painted half OUTSIDE the
-    // component — at x 51.3..68.7 against a track starting at x=60. `show-label`
-    // is documented with no value carve-out, and "0%" is the state a progress
-    // bar starts in.
-    id: 'VISUAL-MATRIX-progress-2',
-    applies: c => c.variant === 'linear' && c.showLabel && c.value === 0,
-    matches: /^the label \([\d.]+\.\.[\d.]+\) escapes the component/,
-  },
-  {
-    // `:host([size="small"]) .progress__circle-label { font-size: 0.375rem }` —
-    // a 6px label. `show-label` and `size="small"` are both documented, with no
-    // note that combining them produces text at a third the size of the smallest
-    // type anywhere else in the library.
-    id: 'VISUAL-MATRIX-progress-3',
-    applies: c => c.variant === 'circular' && c.showLabel && c.size === 'small',
-    matches: /^label font-size 6px$/,
-  },
-];
+// (None live. VISUAL-MATRIX-progress-2 and -3 were fixed in the component —
+// the label is now a track-centred sibling of the bar, and the small circular
+// label has an 8px floor — so their waivers were deleted. VISUAL-MATRIX-
+// progress-1 and -4 were fixed before them; see the (fixed) comments below.)
+const WAIVERS: Waiver[] = [];
 
 test.describe('progress visual matrix: layer 1', () => {
   for (const combo of combos) {
@@ -365,7 +349,10 @@ test.describe('progress visual matrix: layer 1', () => {
 
 test.describe('progress visual matrix: findings', () => {
   /**
-   * FINDING VISUAL-MATRIX-progress-2 — a 0% bar paints its label outside itself.
+   * FINDING VISUAL-MATRIX-progress-2 (fixed). The label used to be centred on
+   * the FILL, so at value=0 — the state a progress bar starts in — it painted
+   * half outside the component. It is now a sibling of the bar, centred on the
+   * track, so "0%" stays inside at every value.
    */
   test('show-label at value=0 keeps the label inside the component', async () => {
     await page.evaluate(() => (window as any).matrix.mount({
@@ -380,14 +367,16 @@ test.describe('progress visual matrix: findings', () => {
       return { trackLeft: b.left, labelLeft: l.left, overhang: b.left - l.left };
     });
     expect(geometry.overhang,
-      `VISUAL-MATRIX-progress-2 no longer reproduces: the 0% label now starts at`
-      + ` x=${geometry.labelLeft.toFixed(1)} inside a track starting at`
-      + ` x=${geometry.trackLeft.toFixed(1)} — delete this finding`)
-      .toBeGreaterThan(1);
+      `the 0% label starts at x=${geometry.labelLeft.toFixed(1)} against a track`
+      + ` starting at x=${geometry.trackLeft.toFixed(1)} — it hangs outside`)
+      .toBeLessThanOrEqual(0);
   });
 
   /**
-   * FINDING VISUAL-MATRIX-progress-3 — a 6px label on a small circular bar.
+   * FINDING VISUAL-MATRIX-progress-3 (fixed). The small circular label used to
+   * compute to 6px (`0.375rem`) — a third the size of the smallest type
+   * anywhere else in the library. It now has an 8px floor, the minimum this
+   * tier's oracle accepts as readable.
    */
   test('a small circular bar labels itself at a readable size', async () => {
     await page.evaluate(() => (window as any).matrix.mount({
@@ -399,8 +388,8 @@ test.describe('progress visual matrix: findings', () => {
       return parseFloat(getComputedStyle(label).fontSize);
     });
     expect(fontSize,
-      `VISUAL-MATRIX-progress-3 no longer reproduces: the small circular label is now`
-      + ` ${fontSize}px — delete this finding`).toBeLessThan(8);
+      `the small circular label computes to ${fontSize}px — below the 8px floor`)
+      .toBeGreaterThanOrEqual(8);
   });
 });
 
@@ -444,19 +433,13 @@ test.describe('progress visual matrix: axis comparisons', () => {
   });
 
   /**
-   * FINDING VISUAL-MATRIX-progress-1.
-   *
-   * `color="info"` is identical to `color="primary"`: the stylesheet resolves
+   * FINDING VISUAL-MATRIX-progress-1 (fixed). `color="info"` used to be
+   * identical to `color="primary"`: the stylesheet resolved
    * `:host([color="info"]) { --progress-color: var(--snice-color-primary, …) }`
-   * — the same theme token `primary` uses — even though the theme defines its
-   * own info colour. The docs list the colour enum as five choices; a customer
-   * who asks for `info` silently gets `primary`.
-   *
-   * The assertion is NOT weakened: every other pair must still differ. The one
-   * collision is named, and the naming is asserted, so a fix trips this test.
+   * — the same theme token `primary` uses. It now resolves to indigo
+   * (`rgb(99 102 241)`), the spinner's info fallback, so all five documented
+   * colours paint pairwise-distinct fills.
    */
-  const KNOWN_COLLISION: [Colour, Colour] = ['primary', 'info'];
-
   test('the five documented colours do not collapse into one', async () => {
     const fills: string[] = [];
     for (const color of COLOURS) {
@@ -471,19 +454,11 @@ test.describe('progress visual matrix: axis comparisons', () => {
 
     const seen = new Map<string, Colour>();
     for (const [i, colour] of COLOURS.entries()) {
-      if (colour === KNOWN_COLLISION[1]) continue;
       const clash = seen.get(fills[i]);
       expect(clash, `color="${colour}" paints exactly like "${clash}" (${fills[i]})`)
         .toBeUndefined();
       seen.set(fills[i], colour);
     }
-
-    const a = COLOURS.indexOf(KNOWN_COLLISION[0]);
-    const b = COLOURS.indexOf(KNOWN_COLLISION[1]);
-    expect(fills[a],
-      `VISUAL-MATRIX-progress-1 no longer reproduces: "${KNOWN_COLLISION[1]}" now paints`
-      + ` ${fills[b]} against "${KNOWN_COLLISION[0]}"'s ${fills[a]} — delete the waiver`)
-      .toBe(fills[b]);
   });
 
   test('a custom CSS colour string really reaches the fill', async () => {
@@ -553,21 +528,18 @@ test.describe('progress visual matrix: marquee pixels', () => {
     expect(ratio, `fill/track contrast is ${ratio.toFixed(2)}:1`).toBeGreaterThan(1.6);
 
     /**
-     * FINDING VISUAL-MATRIX-progress-4.
-     *
-     * The default token pair — `--progress-color` (primary) on `--progress-bg`
-     * (the border grey) — measures 2.99:1 in the painted pixels, just under the
-     * 3:1 WCAG 1.4.11 bar for a graphical object that carries meaning. A
-     * progress bar's fill IS the information, so it is exactly the kind of
-     * object that clause is about. Reported, not fixed; the shortfall is small
-     * and a one-token change closes it.
-     *
-     * Pinned so it cannot rot: raise the pair above 3:1 and this fails until
-     * the finding is deleted.
+     * FINDING VISUAL-MATRIX-progress-4 (fixed). The default token pair —
+     * `--progress-color` (primary) on `--progress-bg` (the raw border grey) —
+     * measured 2.99:1 in the painted pixels, just under the 3:1 WCAG 1.4.11
+     * bar for a graphical object that carries meaning. `--progress-bg` now
+     * lightens the border token one step (color-mix 90% border, 10% white),
+     * which lifts the pair past 3:1 — a progress bar's fill IS the
+     * information, so the fixed contract is pinned from below too.
      */
     expect(ratio,
-      `VISUAL-MATRIX-progress-4 no longer reproduces: the default fill/track pair now`
-      + ` measures ${ratio.toFixed(2)}:1 — delete this finding`).toBeLessThan(3);
+      `the default fill/track pair measures only ${ratio.toFixed(2)}:1 — below`
+      + ' the WCAG 1.4.11 3:1 bar for a meaningful graphical object')
+      .toBeGreaterThanOrEqual(3);
   });
 
   test('a full bar really paints all the way to the end', async () => {
@@ -600,34 +572,53 @@ test.describe('progress visual matrix: marquee pixels', () => {
     await page.evaluate(() => (window as any).matrix.mount({
       variant: 'circular', size: 'xxxl', value: 50, max: 100, color: 'primary', thickness: 10,
     }));
-    const [arc, ring, surface] = await capture(
+    const pixels = await capture(
       page, '#stage', 'progress-circular-ring',
       `() => {
         const sr = document.getElementById('subject').shadowRoot;
+        const svg = sr.querySelector('[part~="circle"]');
         const bar = sr.querySelector('[part~="circle-bar"]');
         const base = sr.querySelector('[part~="base"]');
-        // The probe radius comes from the circle's OWN geometry: the element's
-        // painted box spans 2r + stroke in user units, so scaling that against
-        // its screen box lands the probes on the middle of the stroke rather
-        // than on either of its anti-aliased edges.
-        const box = bar.getBoundingClientRect();
-        const rUser = Number(bar.getAttribute('r'));
-        const strokeUser = parseFloat(getComputedStyle(bar).strokeWidth);
-        const scale = box.width / (2 * rUser + strokeUser);
-        const r = rUser * scale;
-        const cx = box.x + box.width / 2;
-        const cy = box.y + box.height / 2;
         const b = base.getBoundingClientRect();
-        return [
-          // The arc runs clockwise from 12 o'clock, so at 50% the 3 o'clock
-          // point is well inside it...
-          { x: cx + r, y: cy },
-          // ...and the 9 o'clock point is untouched track ring.
-          { x: cx - r, y: cy },
-          { x: cx, y: b.bottom + 60 },
-        ];
+        // The probe geometry comes from the circle's OWN attributes, never
+        // from a getBoundingClientRect on the SVG shape: whether that rect
+        // includes the stroke is engine-specific (Chromium reports the
+        // geometry box, Firefox the stroke extents), so "half the rect is the
+        // centreline" lands mid-stroke in one engine and on the band's outer
+        // edge — pure surface — in the other. Every engine paints from the
+        // same cx/cy/r/viewBox attributes, and the svg fills the base box, so
+        // those give the client-space circle directly.
+        const vb = (svg.getAttribute('viewBox') || '').trim().split(' ').map(Number);
+        const scale = b.width / vb[2];
+        const cx = b.x + parseFloat(bar.getAttribute('cx')) * scale;
+        const cy = b.y + parseFloat(bar.getAttribute('cy')) * scale;
+        const centreline = parseFloat(bar.getAttribute('r')) * scale;
+        // vector-effect: non-scaling-stroke keeps the stroke width in screen
+        // pixels, which is what the band below is sampled in.
+        const sw = parseFloat(getComputedStyle(bar).strokeWidth);
+        // Sample ACROSS the stroke band at fractions of the stroke width,
+        // clear of both anti-aliased edges: fonts and rasterisation differ
+        // per engine, so a single probe can graze an edge in one of them.
+        const radii = [-0.3, -0.15, 0, 0.15, 0.3].map(f => centreline + f * sw);
+        const points = [];
+        // The arc runs clockwise from 12 o'clock, so at 50% the 3 o'clock
+        // point is well inside it...
+        for (const r of radii) points.push({ x: cx + r, y: cy });
+        // ...and the 9 o'clock point is untouched track ring.
+        for (const r of radii) points.push({ x: cx - r, y: cy });
+        return [...points, { x: b.x, y: b.bottom + 60 }];
       }`,
     );
+    // Each side is judged on the STRONGEST ink its band managed — the sample
+    // furthest from the surface colour — so a probe that grazes an
+    // anti-aliased edge cannot make a painted ring read as invisible.
+    const arcBand = pixels.slice(0, 5);
+    const ringBand = pixels.slice(5, 10);
+    const [surface] = pixels.slice(10);
+    const ink = (band: typeof arcBand) =>
+      band.reduce((best, px) => (contrast(px, surface) > contrast(best, surface) ? px : best));
+    const arc = ink(arcBand);
+    const ring = ink(ringBand);
     expect(sameColor(arc, surface),
       `the drawn arc painted ${arc.join(',')}, identical to the page surface`).toBe(false);
     expect(sameColor(ring, surface),

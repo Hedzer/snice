@@ -15,17 +15,16 @@
  *   · CSS part `icon` — "Icon wrapper element"
  *
  * it.fails policy (never weakened assertions):
- *   MATRIX-chip-2 — a `disabled` + `removable` chip renders NO remove button
- *     at all. The docs describe `removable` and `disabled` as independent
- *     properties and give no exception, so the assertion stays "removable means
- *     a named remove affordance exists" and the combo is pinned instead.
- *   MATRIX-chip-5 — a chip whose ONLY icon source is the documented `icon`
- *     SLOT never renders the icon wrapper. `showIcon` gates the wrapper on
- *     `this.icon || this.hasIconSlot`, and `hasIconSlot` is only ever set by a
- *     `slotchange` listener bound to `slot[name="icon"]` — which lives inside
- *     the wrapper that `showIcon` is gating. The slot is never rendered, so the
- *     event never fires, so the flag never flips: slotted icon content is
- *     unreachable unless an `icon` property is ALSO set.
+ *   MATRIX-chip-2 (fixed) — a `disabled` + `removable` chip used to render NO
+ *     remove button at all. The docs describe `removable` and `disabled` as
+ *     independent properties and give no exception, so the remove affordance
+ *     now stays rendered (barred by the disabled dim, not gone).
+ *   MATRIX-chip-5 (fixed) — a chip whose ONLY icon source is the documented
+ *     `icon` SLOT never rendered the icon wrapper: `showIcon` gated the
+ *     wrapper on `this.icon || this.hasIconSlot`, and `hasIconSlot` was only
+ *     ever set by a `slotchange` listener bound to `slot[name="icon"]` —
+ *     which lived inside the wrapper that `showIcon` was gating. The render
+ *     now probes the light DOM for slotted icon content directly.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { removeComponent } from '../../components/test-utils';
@@ -42,18 +41,8 @@ describe('chip matrix: affordance precedence', () => {
     for (const removable of [false, true]) {
       for (const disabled of [false, true]) {
         const c = combo({ affordance, removable, disabled });
-        // Two findings intersect in this product. A slot-only icon never
-        // paints (MATRIX-chip-5); a disabled removable chip has no remove
-        // button (MATRIX-chip-2). Everything else is a live assertion.
-        const finding = affordance === 'icon-slot'
-          ? 'MATRIX-chip-5'
-          : (removable && disabled) ? 'MATRIX-chip-2' : null;
-        const runner = finding ? it.fails : it;
-        const title = finding
-          ? `${comboId(c)}: renders the documented affordances [${finding}]`
-          : `${comboId(c)}: renders the documented affordances`;
 
-        runner(title, async () => {
+        it(`${comboId(c)}: renders the documented affordances`, async () => {
           chip = await makeChip(c);
           expectChipMatches(chip, c);
         });
@@ -72,9 +61,9 @@ describe('chip matrix: affordance precedence', () => {
     expect(sr.querySelector('[part="icon"]'), 'avatar takes precedence over the icon slot').toBeNull();
   });
 
-  // MATRIX-chip-5: the documented `icon` slot, used on its own, never reaches
-  // the DOM at all — there is no wrapper and therefore no slot to assign to.
-  it.fails('the icon slot renders on its own, without an icon property [MATRIX-chip-5]', async () => {
+  // MATRIX-chip-5 (fixed): the documented `icon` slot used on its own never
+  // reached the DOM at all — no wrapper, therefore no slot to assign to.
+  it('MATRIX-chip-5 (fixed): the icon slot renders on its own, without an icon property', async () => {
     chip = await makeChip(combo({ affordance: 'icon-slot' }));
     const iconPart = chip.shadowRoot.querySelector('[part="icon"]') as HTMLElement;
     const slot = iconPart.querySelector('slot[name="icon"]') as HTMLSlotElement;

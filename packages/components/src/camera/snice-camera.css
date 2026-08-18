@@ -24,7 +24,10 @@
   max-width: none;
 }
 
-:host(:not([aspect-ratio])) {
+/* 'auto' is the documented default, so writing it out must render exactly
+   what omitting the attribute renders — including the default 4:3 box. */
+:host(:not([aspect-ratio])),
+:host([aspect-ratio="auto"]) {
   height: auto;
 }
 
@@ -35,7 +38,8 @@
   background: var(--camera-bg);
 }
 
-:host(:not([aspect-ratio])) .camera-container {
+:host(:not([aspect-ratio])) .camera-container,
+:host([aspect-ratio="auto"]) .camera-container {
   padding-bottom: 75%; /* Default 4:3 aspect ratio when no aspect-ratio set */
   height: 0;
 }
@@ -64,11 +68,6 @@
 :host([aspect-ratio="21:9"]:not([style*="height"])) .camera-container {
   padding-bottom: 42.857%; /* Ultra-wide */
   height: 0;
-}
-
-:host([aspect-ratio="auto"]) .camera-container {
-  padding-bottom: 0;
-  height: 100%;
 }
 
 .camera-container:fullscreen {

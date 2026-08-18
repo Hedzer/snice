@@ -32,10 +32,7 @@ export class SniceSkeleton extends HTMLElement implements SniceSkeletonElement {
       <div part="base" class="skeleton-container" style="gap: ${this.spacing}">
         ${items.map(() => html`
           <div part="bone" class="${skeletonClass}"
-               style="${inlineStyles}"
-               role="status"
-               aria-label="Loading...">
-            <span class="skeleton-screen-reader">Loading...</span>
+               style="${inlineStyles}">
           </div>
         `)}
       </div>

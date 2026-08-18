@@ -58,8 +58,8 @@ describe('layout matrix — family-wide contracts', () => {
    * router hook, listed under Methods with no shell excluded — a router that
    * calls it on the shell an application happens to use must not fall over.
    */
-  it.fails(
-    finding('MATRIX-layout-1', 'six shells expose no router update() method, though the docs say all shells take one'),
+  it(
+    `${finding('MATRIX-layout-1', 'six shells expose no router update() method, though the docs say all shells take one')} (fixed)`,
     async () => {
       const without: string[] = [];
       for (const spec of SHELLS) {
@@ -73,8 +73,8 @@ describe('layout matrix — family-wide contracts', () => {
   /**
    * "`contained` on any shell → sizes to parent instead."
    */
-  it.fails(
-    finding('MATRIX-layout-2', 'seven shells have no `contained` option, though the docs offer it on any shell'),
+  it(
+    `${finding('MATRIX-layout-2', 'seven shells have no `contained` option, though the docs offer it on any shell')} (fixed)`,
     async () => {
       const without: string[] = [];
       for (const spec of SHELLS) {
@@ -86,13 +86,9 @@ describe('layout matrix — family-wide contracts', () => {
     },
   );
 
-  it('the shells that do take update() survive a router call with no placards', async () => {
+  it('every shell survives a router call with no placards', async () => {
     for (const spec of SHELLS) {
-      // blog and landing lose their `nav` region to a router call — that is
-      // MATRIX-layout-3 below, asserted once rather than in every combo.
-      if (spec.tag === 'snice-layout-blog' || spec.tag === 'snice-layout-landing') continue;
       const el = await makeShell(spec);
-      if (typeof (el as any).update !== 'function') continue;
       (el as any).update({} as any, [], '/', {});
       await wait(20);
       expectNoProblems(checkShell(el, spec), `${spec.tag} after update()`);
@@ -101,13 +97,13 @@ describe('layout matrix — family-wide contracts', () => {
 
   /**
    * "All regions are slots" — a region is part of the shell's contract, and a
-   * router call is not a licence to delete one. `update()` forces `use-nav` on,
-   * and the `use-nav` branch renders the placard nav INSTEAD of
-   * `<slot name="nav">`, so the documented `nav` region disappears and whatever
-   * the application authored into it is dropped from the page.
+   * router call is not a licence to delete one. `update()` used to force
+   * `use-nav` on, and the `use-nav` branch rendered the placard nav INSTEAD of
+   * `<slot name="nav">`, so the documented `nav` region disappeared and whatever
+   * the application authored into it was dropped from the page.
    */
-  it.fails(
-    finding('MATRIX-layout-3', 'a router update() (and use-nav) deletes the documented `nav` region on the blog and landing shells, discarding its slotted content'),
+  it(
+    `${finding('MATRIX-layout-3', 'a router update() (and use-nav) deletes the documented `nav` region on the blog and landing shells, discarding its slotted content')} (fixed)`,
     async () => {
       const problems: string[] = [];
       for (const tag of ['snice-layout-blog', 'snice-layout-landing']) {

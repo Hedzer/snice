@@ -53,18 +53,19 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
   @render()
   render() {
     const chipClasses = `chip${this.selected ? ' chip--selected' : ''}`;
-    const showIcon = !this.avatar && (this.icon || this.hasIconSlot);
-
-    // aria-selected is only valid on option/tab/row/gridcell/treeitem.
-    // Use aria-pressed when chip is interactive (role=button); omit otherwise.
-    const ariaPressed = this.removable ? String(!!this.selected) : 'false';
+    // The icon slot must project whenever slotted, regardless of the `icon`
+    // property — probe the light DOM directly so a slot-only icon paints on
+    // first render (MATRIX-chip-5: the slotchange flag alone was chicken-and-
+    // egg, since the slot lived inside the gate it controlled).
+    const showIcon = !this.avatar
+      && (this.icon || this.hasIconSlot || !!this.querySelector('[slot="icon"]'));
 
     return html/*html*/`
       <div class="${chipClasses}"
            role="${this.removable ? 'button' : 'status'}"
            tabindex="${this.disabled ? '-1' : '0'}"
            aria-disabled="${this.disabled}"
-           aria-pressed="${ariaPressed}"
+           aria-selected="${this.selected}"
            part="base"
            @click=${(e: MouseEvent) => this.handleChipClick(e)}
            @keydown=${(e: KeyboardEvent) => this.handleKeydown(e)}>
@@ -81,7 +82,7 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
           </span>
         </if>
         <span class="chip-label"><slot>${this.label}</slot></span>
-        <if ${this.removable && !this.disabled}>
+        <if ${this.removable}>
           <button class="chip-remove"
                   type="button"
                   tabindex="-1"
@@ -106,7 +107,7 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
     const target = event.target as HTMLElement;
     if (target.closest('.chip-remove')) return;
 
-    if (this.selectable && !this.removable) {
+    if (this.selectable) {
       this.selected = !this.selected;
     }
 
@@ -124,12 +125,10 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
 
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      if (this.selectable && !this.removable) {
+      if (this.selectable) {
         this.selected = !this.selected;
-        this.dispatchChipClick();
-      } else if (!this.removable) {
-        this.dispatchChipClick();
       }
+      this.dispatchChipClick();
     } else if ((event.key === 'Delete' || event.key === 'Backspace') && this.removable) {
       event.preventDefault();
       this.dispatchChipRemove();

@@ -9,7 +9,7 @@
  * others — a striped bar computes its percentage exactly like a plain one.
  */
 import { describe, it, expect, afterEach } from 'vitest';
-import { mount, unmountAll, product, comboId, expectShape, settle, finding } from '../matrix-utils';
+import { mount, unmountAll, product, comboId, expectShape, settle } from '../matrix-utils';
 import {
   VARIANTS, SIZES, SEMANTIC_COLORS, VALUE_CASES, expectedShape, readShape,
   expectedPercentage, readFillPercentage, expectedLabelText, labelText,
@@ -65,13 +65,13 @@ describe('progress matrix: the label', () => {
     indeterminate: [false, true],
   })) {
     const label = comboId(combo);
-    // FINDING MATRIX-progress-1. A circular INDETERMINATE bar with `show-label`
-    // renders no `label` part at all — including when the author supplied
-    // custom label text. The docs list `label` as a part of the circular
-    // variant with no exception, give `show-label` as the switch that shows it,
-    // and the linear variant does show it in exactly this state. The assertion
-    // below is the documented one and is NOT weakened.
-    const isFinding = combo.variant === 'circular' && combo.showLabel && combo.indeterminate;
+    // FINDING MATRIX-progress-1 (fixed). A circular INDETERMINATE bar with
+    // `show-label` used to render no `label` part at all — including when the
+    // author supplied custom label text. The docs list `label` as a part of
+    // the circular variant with no exception, give `show-label` as the switch
+    // that shows it, and the linear variant shows it in exactly this state.
+    // The circular template now keys the label on `show-label` alone.
+    const wasFinding = combo.variant === 'circular' && combo.showLabel && combo.indeterminate;
     const run = async () => {
       const useCase = VALUE_CASES.find(c => c.id === 'half')!;
       const full: ProgressCombo = {
@@ -96,9 +96,8 @@ describe('progress matrix: the label', () => {
       }
     };
 
-    if (isFinding) {
-      it.fails(finding('MATRIX-progress-1',
-        `${label}: an indeterminate circular bar renders no label part despite show-label`), run);
+    if (wasFinding) {
+      it(`MATRIX-progress-1 (fixed): ${label}: an indeterminate circular bar renders its label part`, run);
     } else {
       it(label, run);
     }

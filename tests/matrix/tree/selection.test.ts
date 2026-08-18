@@ -38,38 +38,21 @@ const TARGETS: Record<string, [string, string]> = {
 };
 
 /**
- * FINDING — MATRIX-tree-2.
- *
- * docs/ai/components/tree.md declares `selectable: boolean = true` and
- * `selectionMode: 'single'|'multiple'|'none'`. Turning selection off — either
- * way — means a node cannot be selected.
- *
- * Through the API it holds: `selectNode()` returns early, and `selectedNodes`
- * stays empty for both switches. Through a ROW CLICK it does not. `snice-tree-
- * item`'s `handleContentClick` sets its own `selected = true`, adds
- * `tree-item__content--selected` and writes `aria-selected="true"` BEFORE it
- * dispatches; `snice-tree`'s `handleItemSelect` then returns early
- * (`if (!this.selectable || this.selectionMode === 'none') return;`) and never
- * rolls that state back. The property is right and the DOM is wrong: the row
- * paints as selected and announces itself as selected to a screen reader,
- * while `selectedNodes` says nothing is.
- *
- * The 12 combos this affects are the ones where selection is off AND the entry
- * point is a click. They keep the documented assertion and are marked
- * `it.fails`.
+ * MATRIX-tree-2 (fixed): through a ROW CLICK, turning selection off used not
+ * to hold. `snice-tree-item`'s `handleContentClick` set its own
+ * `selected = true` and painted the row before dispatching; `snice-tree`'s
+ * early return never rolled that back, so the row announced itself selected
+ * while `selectedNodes` stayed empty. The tree now rolls the optimistic paint
+ * back when `selectable`/`selectionMode` forbid selection, so every combo
+ * below runs unpinned.
  */
-const brokenByClick = (selectionMode: string, selectable: boolean, entry: string) =>
-  entry === 'click' && (!selectable || selectionMode === 'none');
-
 describe('tree matrix / selection cross', () => {
   for (const selectionMode of MODES) {
     for (const selectable of [true, false]) {
       for (const shape of SHAPES) {
         for (const entry of ['click', 'api'] as const) {
-          const broken = brokenByClick(selectionMode, selectable, entry);
-          const id = `${broken ? 'MATRIX-tree-2: ' : ''}`
-            + `${selectionMode}/selectable=${selectable}/${shape}/${entry}`;
-          (broken ? it.fails : it)(id, async () => {
+          const id = `${selectionMode}/selectable=${selectable}/${shape}/${entry}`;
+          it(id, async () => {
             const vector: TreeVector = { ...DEFAULTS, selectionMode, selectable };
             tree = await makeTree(vector, nodesFor(shape));
             const problems = new Problems();
@@ -192,28 +175,16 @@ describe('tree matrix / tree-node-select', () => {
 });
 
 /**
- * FINDING — MATRIX-tree-1.
- *
- * docs/ai/components/tree.md declares
- *
- *     expandOnClick: boolean = false;   // attr: expand-on-click
- *
- * and documents the usage `<snice-tree show-icons="false" expand-on-click>`.
- * The name and the default only mean one thing: with the flag on, clicking a
- * node's ROW expands (or collapses) it, instead of the expander chevron being
- * the only way.
- *
- * `expandOnClick` is declared on the class and then never read: `grep -c
- * expandOnClick packages/components/src/tree/snice-tree.ts` finds it only in
- * its own declaration. `snice-tree-item`'s row click handler runs
- * select/deselect and nothing else, so the property has no effect whatsoever.
- *
- * The assertions below are the documented ones and stay that way.
+ * MATRIX-tree-1 (fixed): `expandOnClick` used to be declared and never read —
+ * a row click only ever selected. With the flag on, a row click on an
+ * expandable node now toggles its expansion (docs/ai/components/tree.md:
+ * `expandOnClick: boolean = false`, "makes a row click expand instead of only
+ * select"). The assertions below are the documented ones and always were.
  */
 describe('tree matrix / expand-on-click', () => {
   for (const shape of ['nested', 'deep'] as const) {
     const target = shape === 'nested' ? 'docs' : 'l1';
-    it.fails(`MATRIX-tree-1: ${shape}: clicking a row expands it`, async () => {
+    it(`${shape}: clicking a row expands it [MATRIX-tree-1]`, async () => {
       tree = await makeTree({ expandOnClick: true }, nodesFor(shape));
       const problems = new Problems();
 

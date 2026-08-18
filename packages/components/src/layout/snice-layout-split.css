@@ -39,25 +39,28 @@
   grid-template-columns: 1fr;
 }
 
-/* Ratio variants - Horizontal */
-:host([ratio="50-50"]) .layout,
-:host(:not([ratio])) .layout {
+/* Ratio variants - Horizontal. Scoped to the horizontal direction: the
+   vertical rule below sets `grid-template-columns: 1fr`, and an unscoped
+   ratio rule at the same specificity would restore three columns in a
+   vertical split (later in the cascade wins). */
+:host(:not([direction="vertical"])[ratio="50-50"]) .layout,
+:host(:not([direction="vertical"]):not([ratio])) .layout {
   grid-template-columns: 1fr 1px 1fr;
 }
 
-:host([ratio="60-40"]) .layout {
+:host(:not([direction="vertical"])[ratio="60-40"]) .layout {
   grid-template-columns: 60fr 1px 40fr;
 }
 
-:host([ratio="70-30"]) .layout {
+:host(:not([direction="vertical"])[ratio="70-30"]) .layout {
   grid-template-columns: 70fr 1px 30fr;
 }
 
-:host([ratio="33-67"]) .layout {
+:host(:not([direction="vertical"])[ratio="33-67"]) .layout {
   grid-template-columns: 33fr 1px 67fr;
 }
 
-:host([ratio="67-33"]) .layout {
+:host(:not([direction="vertical"])[ratio="67-33"]) .layout {
   grid-template-columns: 67fr 1px 33fr;
 }
 

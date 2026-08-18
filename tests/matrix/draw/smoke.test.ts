@@ -78,9 +78,9 @@ describe('snice-draw matrix smoke', () => {
     expect(events).toEqual([]);
   });
 
-  // MATRIX-draw-1: `width`/`height` are documented properties, not read-outs of
-  // the layout. Guard lives here so the everyday loop notices a fix.
-  it.fails('MATRIX-draw-1: the documented width and height survive initialisation', async () => {
+  // MATRIX-draw-1 (fixed): `width`/`height` are documented properties, not
+  // read-outs of the layout.
+  it('MATRIX-draw-1 (fixed): the documented width and height survive initialisation', async () => {
     const el = await mountDraw({ width: 400, height: 300 });
     expect({ width: el.width, height: el.height }).toEqual({ width: 400, height: 300 });
   });

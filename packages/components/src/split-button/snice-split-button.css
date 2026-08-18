@@ -328,20 +328,22 @@
   overflow: hidden;
   pointer-events: none;
 
-  /* Animation */
+  /* Animation. The transition lives ONLY on the open state: transitioning
+     `display` with allow-discrete keeps a dismissed popover at display:block
+     forever on WebKit (the UA sheet's closed-popover display:none never
+     lands), leaving an invisible, hit-tested box. Opening still animates via
+     @starting-style; dismissing hides immediately in every engine. */
   opacity: 0;
   transform: translateY(-8px) scaleY(0.95);
   transform-origin: top right;
-  transition: opacity var(--snice-transition-fast, 150ms) ease,
-              transform var(--snice-transition-fast, 150ms) ease,
-              display var(--snice-transition-fast, 150ms) allow-discrete,
-              overlay var(--snice-transition-fast, 150ms) allow-discrete;
 }
 
 .split-button__menu[popover]:popover-open {
   opacity: 1;
   transform: translateY(0) scaleY(1);
   pointer-events: auto;
+  transition: opacity var(--snice-transition-fast, 150ms) ease,
+              transform var(--snice-transition-fast, 150ms) ease;
 }
 
 @starting-style {

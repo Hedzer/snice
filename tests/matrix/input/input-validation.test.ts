@@ -27,8 +27,8 @@
  *   · "`readonly` remains successful but is barred from validation. `loading`
  *     is inert and barred."
  *
- * it.fails policy: one finding is pinned in this file, MATRIX-input-2 — a
- * removed constraint stays on the native proxy as an empty attribute.
+ * it.fails policy: MATRIX-input-2 was pinned in this file and is fixed; every
+ * assertion is the documented expectation and no combo is weakened.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import {
@@ -256,31 +256,12 @@ describe('input matrix: recalculation and constraint removal', () => {
   });
 
   /**
-   * FINDING MATRIX-input-2 — a removed constraint stays on the native proxy as
-   * an EMPTY attribute.
-   *
-   * Documented: "Removing `min`, `max`, `step`, `pattern`, `minlength`, or
-   * `maxlength` removes it from the native proxy as well." The watchers and
-   * `syncValidity()` do call `removeAttribute`, but the render that follows
-   * re-applies the template's `min=${this.min || null}` bindings and writes an
-   * EMPTY STRING instead of removing the attribute, so the inner input is left
-   * carrying `min=""`, `pattern=""` and friends. (A later, unrelated render
-   * eventually clears the one written first, which is why only the most
-   * recently removed constraints are visible in the failure.)
-   *
-   * `pattern=""` is the sharp edge: per HTML, a present `pattern` attribute is
-   * compiled as `^(?:)$`, which only the empty string satisfies — so in a real
-   * browser a control whose pattern was "removed" rejects every value the user
-   * types. The ATTRIBUTE is what this asserts, because it is the part the
-   * component owns: the resulting validity is judged by whichever engine reads
-   * the leftover attribute, and happy-dom's answer for `max=""` (still
-   * `rangeOverflow`) is its own, not the component's.
-   *
-   * combo:    type=number min=1 max=10 step=2 pattern=\d+, then all four set to ''
-   * expected: the inner input carries none of min/max/step/pattern
-   * actual:   it carries min="" max="" step="" pattern=""
+   * MATRIX-input-2 (fixed) — a removed constraint used to stay on the native
+   * proxy as an EMPTY attribute: the render bindings committed `null` as ''
+   * (`min=${this.min || null}`). They now bind the framework's `nothing`
+   * sentinel, which removes the attribute, exactly as the docs promise.
    */
-  it.fails('removing min/max/step/pattern removes them from the native proxy', async () => {
+  it('MATRIX-input-2 (fixed): removing min/max/step/pattern removes them from the native proxy', async () => {
     const el = await makeInput(
       combo({ type: 'number', min: '1', max: '10', step: '2', pattern: '\\d+' }),
       { value: '4' },
@@ -301,13 +282,9 @@ describe('input matrix: recalculation and constraint removal', () => {
   });
 
   /**
-   * FINDING MATRIX-input-2 (same defect, the length half of the same sentence).
-   *
-   * combo:    minlength=3 maxlength=6, then both set to -1
-   * expected: the inner input carries neither minlength nor maxlength
-   * actual:   it carries minlength="" and maxlength=""
+   * MATRIX-input-2 (fixed, same defect, the length half of the same sentence).
    */
-  it.fails('removing minlength/maxlength removes them from the native proxy', async () => {
+  it('MATRIX-input-2 (fixed): removing minlength/maxlength removes them from the native proxy', async () => {
     const el = await makeInput(combo({ minlength: 3, maxlength: 6 }));
     expect(nativeInput(el).hasAttribute('minlength')).toBe(true);
     expect(nativeInput(el).hasAttribute('maxlength')).toBe(true);

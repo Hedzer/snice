@@ -9,7 +9,7 @@
  *
  * The marquee combos: the doc's own basic-usage markup, the unified table with
  * every column on, the split view, the collapsed section, the two events, and
- * the three standing findings.
+ * the three fixed findings (unwrapped; see tests/matrix/diff/hunks.test.ts).
  *
  * BUDGET: under 1s.
  */
@@ -79,10 +79,11 @@ describe('diff matrix smoke', () => {
       .toEqual(['split']);
   });
 
-  // ── Standing findings — see tests/matrix/diff/hunks.test.ts ────────────────
+  // ── Fixed findings — full statements in tests/matrix/diff/hunks.test.ts ────
 
-  // MATRIX-diff-1: the collapsed section's click handler schedules no re-render.
-  it.fails('MATRIX-diff-1: clicking a collapsed section reveals its lines', async () => {
+  // MATRIX-diff-1 (fixed): `hunks` is @state, so the collapsed section's click
+  // handler re-renders.
+  it('MATRIX-diff-1 (fixed): clicking a collapsed section reveals its lines', async () => {
     el = await makeDiff({ scenario: 'two-far-changes', contextLines: 3 });
     const before = unifiedRows(el, true, true).length;
     click(separators(el)[0]);
@@ -90,15 +91,16 @@ describe('diff matrix smoke', () => {
     expect(unifiedRows(el, true, true).length).toBeGreaterThan(before);
   });
 
-  // MATRIX-diff-2: an undocumented `> 2 * contextLines` threshold leaves short
-  // beyond-context runs open.
-  it.fails('MATRIX-diff-2: a two-line gap beyond a one-line context collapses', async () => {
+  // MATRIX-diff-2 (fixed): the undocumented `> 2 * contextLines` threshold is
+  // gone; beyond-context runs collapse at any length.
+  it('MATRIX-diff-2 (fixed): a two-line gap beyond a one-line context collapses', async () => {
     el = await makeDiff({ scenario: 'append', contextLines: 1 });
     expect(separators(el).length).toBe(1);
   });
 
-  // MATRIX-diff-3: the split view drops collapsed lines with no expander.
-  it.fails('MATRIX-diff-3: split mode marks its collapsed sections too', async () => {
+  // MATRIX-diff-3 (fixed): the split view renders the separator row in both
+  // panes instead of dropping collapsed lines silently.
+  it('MATRIX-diff-3 (fixed): split mode marks its collapsed sections too', async () => {
     el = await makeDiff({ scenario: 'two-far-changes', contextLines: 3, mode: 'split' });
     expect(separators(el).length).toBeGreaterThan(0);
   });

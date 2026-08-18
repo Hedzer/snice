@@ -141,7 +141,7 @@ describe('map matrix smoke', () => {
 
   // The two marquee regressions, kept at full strength. See
   // matrix/map/markers.test.ts and matrix/map/fitbounds.test.ts.
-  it.fails('MATRIX-map-1 a marker renders its authored icon', async () => {
+  it('MATRIX-map-1 (fixed) a marker renders its authored icon', async () => {
     el = await makeMap(combo({ markers: 'bare' }), [{ id: 'a', lat: 0, lng: 0, icon: '🏛️' }]);
     const withIcon = readFacts(el).markerIconText[0];
 
@@ -150,7 +150,7 @@ describe('map matrix smoke', () => {
     expect(withIcon).not.toBe(readFacts(el).markerIconText[0]);
   });
 
-  it.fails('MATRIX-map-2 fitBounds emits map-zoom when it changes the level', async () => {
+  it('MATRIX-map-2 (fixed) fitBounds emits map-zoom when it changes the level', async () => {
     el = await makeMap(combo({ markers: 'spread', zoom: 13 }), MARKER_SETS.spread());
     const seen = collectEvents(el);
 

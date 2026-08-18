@@ -104,9 +104,10 @@ describe('video-player matrix smoke', () => {
 
   // ── Standing findings — see tests/matrix/video-player/findings.test.ts ─────
 
-  // MATRIX-video-player-1: `@watch('src')` zeroes `currentTime` during the same
-  // attribute pass that set it, so the documented `current-time` never lands.
-  it.fails('MATRIX-video-player-1: current-time="30" opens the video at 30 seconds', async () => {
+  // MATRIX-video-player-1 (fixed): `@watch('src')` used to zero `currentTime`
+  // during the same attribute pass that set it, so the documented
+  // `current-time` never landed.
+  it('MATRIX-video-player-1 (fixed): current-time="30" opens the video at 30 seconds', async () => {
     const authored = document.createElement('snice-video-player') as any;
     authored.setAttribute('src', SRC);
     authored.setAttribute('current-time', '30');
@@ -121,14 +122,16 @@ describe('video-player matrix smoke', () => {
     expect(el.currentTime).toBe(30);
   });
 
-  // MATRIX-video-player-2: the control bar is gated on `src`, so the documented
-  // `<source>` markup renders an uncontrollable player.
-  it.fails('MATRIX-video-player-2: the documented <source> markup still renders its controls', async () => {
+  // MATRIX-video-player-2 (fixed): the control bar used to be gated on `src`,
+  // so the documented `<source>` markup rendered an uncontrollable player.
+  it('MATRIX-video-player-2 (fixed): the documented <source> markup still renders its controls', async () => {
     el = await makePlayer(
       { ...DEFAULTS, src: '', poster: POSTER },
       { html: '<source src="/media/clip.mp4" type="video/mp4">', prime: false },
     );
     expect(controlsBar(el)).not.toBeNull();
-    expect(centrePlay(el)).not.toBeNull();
+    // The combo carries a poster, so the way to start is the poster overlay's
+    // play affordance; without one it is the centre play.
+    expect(centrePlay(el) ?? el.shadowRoot.querySelector('.video-poster-play')).not.toBeNull();
   });
 });

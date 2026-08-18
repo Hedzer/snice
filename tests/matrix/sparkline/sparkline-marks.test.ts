@@ -16,7 +16,6 @@ import {
   checkSparkline, mountSparkline, sparklineComboId,
   type SparklineCombo, type SparklineElement,
 } from './sparkline-utils';
-
 let el: SparklineElement | null = null;
 afterEach(() => { if (el) { removeComponent(el); el = null; } });
 
@@ -33,17 +32,14 @@ const COMBOS: SparklineCombo[] = TYPES.flatMap(type =>
 );
 
 /**
- * Two findings own the single-point line/area combos (see below); every other
- * vector is asserted outright.
+ * MATRIX-sparkline-1/-2 (fixed) used to own the single-point line/area combos;
+ * they now run in the shared loop below like every other vector.
  */
-const isLineLike = (combo: SparklineCombo) => combo.type !== 'bar';
-const isSmoothSinglePoint = (combo: SparklineCombo) =>
-  combo.smooth === true && isLineLike(combo) && combo.data.length === 1;
-const isFlatSinglePoint = (combo: SparklineCombo) =>
-  combo.smooth !== true && isLineLike(combo) && combo.data.length === 1;
 
 describe('sparkline matrix: mark vectors', () => {
-  for (const combo of COMBOS.filter(c => !isSmoothSinglePoint(c) && !isFlatSinglePoint(c))) {
+  // MATRIX-sparkline-1 (fixed) and MATRIX-sparkline-2 (fixed) used to own the
+  // single-point line/area combos; they are asserted outright now.
+  for (const combo of COMBOS) {
     it(`renders ${sparklineComboId(combo)}`, async () => {
       el = await mountSparkline(combo);
       expectClean(checkSparkline(el, combo), sparklineComboId(combo));
@@ -51,63 +47,42 @@ describe('sparkline matrix: mark vectors', () => {
   }
 });
 
-describe('sparkline matrix: defects', () => {
-  // MATRIX-sparkline-1 — a ONE-POINT series with `smooth` renders a
-  // `part="line"` whose `d` attribute is the empty string, so the chart draws
-  // nothing at all.
-  //
-  //   <snice-sparkline smooth></snice-sparkline>   with data = [42]
-  //     -> <path class="sparkline__line" d="" pathLength="1" part="line"/>
-  //
-  // `smooth` is documented as a rendering style, not as a minimum series
-  // length, and the same series without `smooth` renders a `<polyline>`
-  // carrying its one real vertex. Expected: the line part carries geometry for
-  // every non-empty series. Actual: `d=""` whenever `data.length < 2`.
-  for (const combo of COMBOS.filter(isSmoothSinglePoint)) {
-    it.fails(`MATRIX-sparkline-1: ${sparklineComboId(combo)} still draws its line`, async () => {
-      el = await mountSparkline(combo);
-      expectClean(checkSparkline(el, combo), sparklineComboId(combo));
-    });
-  }
-
-  it('MATRIX-sparkline-1 reproduces: the smooth one-point line has an empty d', async () => {
-    // The counterpart assertion that documents what actually happens, so the
-    // finding cannot be closed by accident without this file noticing.
+describe('sparkline matrix: single-point findings', () => {
+  // MATRIX-sparkline-1 (fixed): a ONE-POINT series with `smooth` renders a
+  // `part="line"` path carrying its single vertex (`M x,y`) instead of the
+  // empty `d` that paints nothing.
+  it('MATRIX-sparkline-1 (fixed): the smooth one-point line carries its vertex', async () => {
     el = await mountSparkline({ type: 'line', data: [42], smooth: true });
     const line = el.shadowRoot!.querySelector('[part~="line"]')!;
     expect(line.tagName.toLowerCase()).toBe('path');
-    expect(line.getAttribute('d')).toBe('');
+    const d = line.getAttribute('d')!;
+    expect(d.startsWith('M ')).toBe(true);
+    expect(d).not.toMatch(/NaN|Infinity/);
+    removeComponent(el);
+    el = null;
+
+    // The area variant composes the same degenerate path into a closed shape.
+    el = await mountSparkline({ type: 'area', data: [42], smooth: true, showArea: true });
+    const areaPath = el.shadowRoot!.querySelector('[part~="area"]')!.getAttribute('d')!;
+    expect(areaPath).not.toMatch(/NaN|Infinity/);
   });
 
-  // MATRIX-sparkline-2 — a ONE-POINT series WITHOUT `smooth` puts `NaN` in
-  // every x coordinate, so the polyline, the area and the dot all paint
-  // nothing.
-  //
-  //   <snice-sparkline></snice-sparkline>   with data = [42]
-  //     -> <polyline points="NaN,15" …/>   and, with show-dots, <circle cx="NaN"/>
-  //
-  // The x of point i is `padding + (i / (data.length - 1)) * drawWidth`, which
-  // is `0 / 0` for the only point of a one-point series. Expected: a single
-  // datum lands at a real coordinate inside the viewBox. Actual: NaN.
-  for (const combo of COMBOS.filter(isFlatSinglePoint)) {
-    it.fails(`MATRIX-sparkline-2: ${sparklineComboId(combo)} places its point`, async () => {
-      el = await mountSparkline(combo);
-      expectClean(checkSparkline(el, combo), sparklineComboId(combo));
-    });
-  }
-
-  it('MATRIX-sparkline-2 reproduces: the one-point series has a NaN x', async () => {
+  // MATRIX-sparkline-2 (fixed): a ONE-POINT series WITHOUT `smooth` centres
+  // its vertex on the canvas instead of putting `NaN` (0/0) in every x
+  // coordinate of the polyline, the area and the dot.
+  it('MATRIX-sparkline-2 (fixed): the one-point series places its point', async () => {
     el = await mountSparkline({ type: 'line', data: [42], showDots: true, showArea: true });
     const root = el.shadowRoot!;
-    expect(root.querySelector('[part~="line"]')!.getAttribute('points')).toBe('NaN,15');
-    expect(root.querySelector('[part~="dot"]')!.getAttribute('cx')).toBe('NaN');
-    expect(root.querySelector('[part~="area"]')!.getAttribute('points')).toContain('NaN');
+    expect(root.querySelector('[part~="line"]')!.getAttribute('points')).not.toMatch(/NaN/);
+    const cx = root.querySelector('[part~="dot"]')!.getAttribute('cx')!;
+    expect(Number.isFinite(parseFloat(cx))).toBe(true);
+    expect(root.querySelector('[part~="area"]')!.getAttribute('points')!).not.toMatch(/NaN/);
   });
 
   it('a bar chart of the same one-point series places its bar correctly', async () => {
     // The bar branch computes x from `index * (drawWidth / data.length)`, which
     // has no division by zero — the same series renders fine. That is what
-    // makes MATRIX-sparkline-2 a defect in one branch rather than an
+    // made MATRIX-sparkline-2 a defect in one branch rather than an
     // undocumented limit on one-point series.
     el = await mountSparkline({ type: 'bar', data: [42] });
     const bar = el.shadowRoot!.querySelector('[part~="bar"]')!;

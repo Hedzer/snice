@@ -181,13 +181,14 @@ export class SniceDataCard extends HTMLElement implements SniceDataCardElement {
       try {
         external = new URL(href, location.href).origin !== location.origin;
       } catch { /* unparsable href: treat as in-app */ }
-      if (external) {
-        return html/*html*/`
-          <a class="field__value field__value--link" part="field-value" href="${href}" target="_blank" rel="noopener">${field.value}</a>
-        `;
-      }
+      const anchor = external
+        ? html/*html*/`<a class="field__value field__value--link" part="field-value" href="${href}" target="_blank" rel="noopener">${field.value}</a>`
+        : html/*html*/`<a class="field__value field__value--link" part="field-value" href="${href}">${field.value}</a>`;
       return html/*html*/`
-        <a class="field__value field__value--link" part="field-value" href="${href}">${field.value}</a>
+        ${anchor}
+        <if ${canEdit}>
+          <button class="field__save-btn" part="field-edit" @click=${() => this.startEdit(field)} style="background:transparent;color:var(--snice-color-text-tertiary,rgb(115 115 115));border:1px solid var(--snice-color-border,rgb(226 226 226))">✎</button>
+        </if>
       `;
     }
 

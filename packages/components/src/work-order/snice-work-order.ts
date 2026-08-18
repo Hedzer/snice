@@ -48,7 +48,7 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
   @property({ type: Object, attribute: false })
   asset: WorkOrderAsset | null = null;
 
-  @property({ type: Number })
+  @property({ type: Number, attribute: 'labor-rate' })
   laborRate = 0;
 
   @property()

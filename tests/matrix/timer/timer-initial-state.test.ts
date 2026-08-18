@@ -11,17 +11,10 @@
  *     <snice-timer mode="timer" initial-time="60"></snice-timer>
  *
  * A timer authored with `initial-time="60"` is therefore a countdown standing at
- * 60 seconds: `getTime()` reads 60 and the display shows a minute. The component
- * instead starts every mode at 0 and only reaches `initialTime` if `reset()` is
- * called by hand — so the documented markup above renders a timer that has
- * already run out, and `start()` on it fires `timer-complete` immediately
- * instead of counting down.
- *
- * Per .ai/fuzzing.md the assertions below are the DOCUMENTED ones and are NOT
- * weakened: the divergent combos are declared `it.fails` with a finding id, so
- * the day the component is fixed this suite goes red and the findings close.
- * The combos that agree with the docs (every stopwatch, and a timer whose
- * initial time really is 0) run as ordinary passing tests in the same cross.
+ * 60 seconds: `getTime()` reads 60 and the display shows a minute. The
+ * component seeds that state in `@ready` (MATRIX-timer-1/timer-2, FIXED), so
+ * `start()` counts down from the authored time instead of completing in the
+ * first frame. `reset()` still restores the same state from anywhere.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { unmountAll, finding, product, wait } from '../matrix-utils';
@@ -45,9 +38,8 @@ describe('timer matrix: the state a freshly authored timer stands at', () => {
 
   for (const combo of COMBOS) {
     const declare = combo.diverges
-      ? (name: string, fn: () => Promise<void>) => it.fails(
-        finding('MATRIX-timer-1',
-          `${name} — an authored countdown stands at 0, not at its initial-time`), fn)
+      ? (name: string, fn: () => Promise<void>) => it(
+        finding('MATRIX-timer-1 (fixed)', `${name}`), fn)
       : (name: string, fn: () => Promise<void>) => it(name, fn);
 
     declare(`${combo.id}: reads its documented initial state on mount`, async () => {
@@ -67,11 +59,9 @@ describe('timer matrix: starting an authored countdown', () => {
   afterEach(() => unmountAll());
 
   for (const initialTime of [5, 60, 3725]) {
-    it.fails(
-      finding('MATRIX-timer-2',
-        `timer/initial:${initialTime}: start() on an authored countdown finishes it`
-        + ' immediately — timer-complete fires in the same frame and the display'
-        + ' never leaves 0'),
+    it(
+      finding('MATRIX-timer-2 (fixed)',
+        `timer/initial:${initialTime}: start() counts down from the authored time`),
       async () => {
         const el = await mountTimer('timer', initialTime);
         const seen = recordEvents(el);

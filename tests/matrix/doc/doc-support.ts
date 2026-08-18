@@ -42,8 +42,11 @@
  *     property assignments reflect unless equal to the documented default.
  *     `readonly` is the axis that matters most: the stylesheet hides the
  *     toolbar with `:host([readonly])`.
- *   · `clear()` and the fresh-editor seed are `'<p><br></p>'` — the
- *     established empty-document contract from tests/components/doc.test.ts.
+ *   · `clear()` re-seeds `'<p><br></p>'` — the established empty-document
+ *     contract from tests/components/doc.test.ts. A FRESH editor mounts
+ *     empty instead: the documented placeholder paints through
+ *     `.doc-editor:empty::before` (VISUAL-MATRIX-doc-1), and a seeded
+ *     `<p><br></p>` would defeat it.
  *
  * Deliberately NOT encoded: webfont glyph painting, toolbar/editor geometry,
  * placeholder pixels — those belong to tests/live/matrix/doc, where a real
@@ -227,8 +230,10 @@ export function expectedShape(combo: DocCombo): Shape {
     editorEditable: combo.readonly ? 'false' : 'true',
     // The placeholder rides the editor's data-placeholder attribute.
     placeholderAttr: combo.placeholder,
-    // A fresh editor seeds one empty paragraph (the clear() contract).
-    initialHTML: '<p><br></p>',
+    // A fresh editor mounts EMPTY so the documented placeholder can paint
+    // through `.doc-editor:empty::before` (VISUAL-MATRIX-doc-1); only
+    // clear() re-seeds the paragraph.
+    initialHTML: '',
   };
 }
 

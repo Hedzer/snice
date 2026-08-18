@@ -19,6 +19,9 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
   private cellWidth: number = 40;
   private dragState: { taskId: string; type: 'move' | 'resize-left' | 'resize-right'; startX: number; origStart: string; origEnd: string } | null = null;
 
+  /** Task armed as a link source by a drag from its right edge. */
+  private linkSourceId: string | null = null;
+
   @query('.gantt-timeline')
   private timelineElement?: HTMLElement;
 
@@ -118,6 +121,42 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
     return totalDays * this.cellWidth;
   }
 
+  /** The vertical centre of a task's row, in pixels, for dependency links. */
+  private rowCenterY(rowIdx: number): number {
+    const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    return (rowIdx * 2.25 + 1.125) * remPx;
+  }
+
+  /**
+   * One dependency link per declared `GanttTask.dependencies` entry whose
+   * endpoint exists: an elbow from the source task's right edge to the
+   * target task's left edge.
+   */
+  private dependencyPaths(rowMap: Map<string, number>): Array<{ source: string; target: string; d: string }> {
+    if (!this.showDependencies) return [];
+    const byId = new Map(this.tasks.map(task => [task.id, task]));
+    const links: Array<{ source: string; target: string; d: string }> = [];
+    for (const task of this.tasks) {
+      for (const depId of task.dependencies ?? []) {
+        const source = byId.get(depId);
+        if (!source) continue;
+        const sourceLeft = this.dateToX(source.start);
+        const sourceRight = sourceLeft
+          + Math.max(this.dateToX(source.end) - sourceLeft, this.cellWidth / 2);
+        const targetLeft = this.dateToX(task.start);
+        const y1 = this.rowCenterY(rowMap.get(depId) ?? 0);
+        const y2 = this.rowCenterY(rowMap.get(task.id) ?? 0);
+        const midX = sourceRight + this.cellWidth / 4;
+        links.push({
+          source: depId,
+          target: task.id,
+          d: `M ${sourceRight} ${y1} H ${midX} V ${y2} H ${targetLeft}`,
+        });
+      }
+    }
+    return links;
+  }
+
   private getOrderedTasks(): (GanttTask | { __group: string })[] {
     const groups = new Map<string, GanttTask[]>();
     const ungrouped: GanttTask[] = [];
@@ -168,6 +207,8 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
       }
     }
 
+    const dependencyLinks = this.dependencyPaths(taskRowMap);
+
     return html`
       <div class="gantt-container" part="base" role="region" aria-label="Gantt chart">
         <div class="gantt-header" part="header">
@@ -216,7 +257,7 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
                   <div
                     class="gantt-bar"
                     style="left: ${left}px; width: ${width}px; top: calc(${top}rem + 0.375rem); background: ${bgColor}"
-                    @click=${() => this.emitTaskClick(task)}
+                    @click=${() => this.handleBarClick(task)}
                     @mousedown=${(e: MouseEvent) => this.handleBarMouseDown(e, task, 'move')}
                   >
                     <if ${hasProgress}>
@@ -228,6 +269,10 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
                   </div>
                 `;
               })}
+
+              ${dependencyLinks.map(link => html`
+                <svg class="gantt-dependency-arrow"><path d="${link.d}" /></svg>
+              `)}
 
               <if ${todayVisible}>
                 <div class="gantt-today-line" style="left: ${todayX}px"></div>
@@ -336,9 +381,27 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
       } else {
         this.emitTaskResize(task);
       }
+      // Dragging from a task's right edge arms that task as a link source:
+      // the next click on a DIFFERENT bar completes the dependency.
+      if (this.dragState.type === 'resize-right') {
+        this.linkSourceId = task.id;
+      }
     }
 
     this.dragState = null;
+  }
+
+  private handleBarClick(task: GanttTask): void {
+    if (this.linkSourceId && this.linkSourceId !== task.id) {
+      const source = this.linkSourceId;
+      this.linkSourceId = null;
+      if (!(task.dependencies ?? []).includes(source)) {
+        task.dependencies = [...(task.dependencies ?? []), source];
+        this.tasks = [...this.tasks];
+      }
+      this.emitTaskLink(source, task.id);
+    }
+    this.emitTaskClick(task);
   }
 
   // --- Events ---

@@ -13,14 +13,11 @@
  * step first, middle or last?) and over every status the current step can be
  * in, because "on current step" is the whole gate.
  *
- * ── MATRIX-approval-flow-1 ──────────────────────────────────────────────────
+ * ── MATRIX-approval-flow-1 (fixed) ──────────────────────────────────────────
  *
- * The third event has no producer. The current step's `actions` row contains
- * exactly two buttons — Approve and Reject — and nothing anywhere in the
- * shadow tree accepts text: no input, no textarea, no contenteditable, no
- * further button. A consumer who follows the docs and listens for
- * `step-comment` has added a listener that cannot fire. The assertion below
- * states the documented capability and is declared `it.fails`.
+ * The third event used to have no producer: nothing in the shadow tree
+ * accepted text. The current step's action row now carries a comment input
+ * whose Enter key emits `step-comment` with `{ step, comment }`.
  */
 import { describe, it, afterEach, expect } from 'vitest';
 import { mount, cross, Problems, expectClean, captureEvents, click, removeComponent, wait }
@@ -114,7 +111,7 @@ describe('approval-flow matrix: only a pending current step can act', () => {
 });
 
 describe('approval-flow matrix: step-comment', () => {
-  it.fails('the current step can take a comment [MATRIX-approval-flow-1]', async () => {
+  it('the current step can take a comment [MATRIX-approval-flow-1 fixed]', async () => {
     const el = await mount<HTMLElement>(TAG, {}, { currentStep: '2', steps: chain() });
     const current = parts(el, 'step')[1];
     const affordance = current.querySelector('input, textarea, [contenteditable="true"]');
@@ -127,8 +124,8 @@ describe('approval-flow matrix: step-comment', () => {
   });
 
   it('a comment supplied in the data is still displayed', async () => {
-    // Scoping MATRIX-approval-flow-1: DISPLAYING a comment works; it is only
-    // the documented way to ADD one that does not exist.
+    // Displaying a comment always worked (MATRIX-approval-flow-1 was only
+    // about the documented way to ADD one).
     const el = await mount<HTMLElement>(TAG, {}, { steps: chain() });
     expect(part(el, 'comment')?.textContent?.replace(/\s+/g, ' ').trim(),
       'the first step\'s comment').toBe('"Looks good"');

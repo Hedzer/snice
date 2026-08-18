@@ -15,6 +15,10 @@ export class SniceLayout extends HTMLElement implements Layout {
   @property({ attribute: false })
   private hasFooterContent = false;
 
+  /** Size to the parent element instead of filling the screen. */
+  @property({ type: Boolean })
+  contained = false;
+
   @render()
   render() {
     return html/*html*/`

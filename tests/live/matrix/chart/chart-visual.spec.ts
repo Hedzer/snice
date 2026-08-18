@@ -214,54 +214,20 @@ async function visualProblems(combo: Combo): Promise<string[]> {
 }
 
 /**
- * ── FINDINGS ────────────────────────────────────────────────────────────────
+ * VISUAL-MATRIX-chart-6 and VISUAL-MATRIX-chart-7 are FIXED.
  *
- * Both of these are divergences from `docs/ai/components/chart.md` that ONLY a
- * browser can see, which is exactly what this tier exists for. Per
- * `.ai/fuzzing.md` the assertions above are NOT weakened and the component is
- * NOT changed: the affected combos keep asserting the documented behaviour and
- * are marked `test.fail`, so they start failing the day the component is fixed.
+ * chart-6: a top/bottom legend now takes its flex row, and the canvas is sized
+ * from the plot area the layout gave it instead of the host box, so it no
+ * longer overflows `part="base"` and clips the x-axis away.
+ * chart-7: a left/right legend is a flex item BESIDE the plot (the container
+ * switches to row flow) instead of an absolutely-positioned overlay painted
+ * underneath the canvas, so it is visible and every entry is clickable.
+ * The 50 layer-1 combos below assert both placements outright.
  */
-const FINDINGS = {
-  /**
-   * Doc `legend.position: 'top' | 'bottom'` places the legend above or below
-   * the plot — the legend takes a row of the container and the chart keeps the
-   * rest. The canvas is instead sized from the HOST's box
-   * (`this.height || this.offsetHeight || 400`) and knows nothing about the row
-   * the legend just took, so it overflows `part="base"` by the legend's height
-   * and `.chart-canvas { overflow: hidden }` clips the bottom of the chart
-   * away — the x-axis and its labels are the first casualties.
-   */
-  clipped: 'VISUAL-MATRIX-chart-6: a top/bottom legend does not shrink the canvas, so the '
-    + 'canvas overflows part="base" and the bottom of the chart (x-axis and labels) '
-    + 'is clipped away',
-  /**
-   * Doc `legend.position: 'left' | 'right'`, plus doc "Accessibility: Legend
-   * items clickable to toggle datasets". The left/right legend is
-   * `position: absolute` OVER the plot area and, being earlier in DOM order
-   * than the equally-positioned `.chart-canvas` with no z-index of its own, is
-   * painted UNDERNEATH the canvas. The legend is invisible and every entry
-   * fails a hit-test, so the documented toggle-by-clicking feature cannot be
-   * used at all in these two positions.
-   */
-  buried: 'VISUAL-MATRIX-chart-7: a left/right legend is absolutely positioned over the plot '
-    + 'and painted underneath the canvas — it is invisible and its entries cannot be '
-    + 'clicked, so the documented legend toggle is unreachable',
-} as const;
-
-function findingFor(position: Combo['position']): string | null {
-  if (position === 'top' || position === 'bottom') return FINDINGS.clipped;
-  if (position === 'left' || position === 'right') return FINDINGS.buried;
-  return null;
-}
 
 test.describe('chart visual matrix: layer 1', () => {
   for (const combo of COMBOS) {
-    const known = findingFor(combo.position);
-    const title = known ? `${known.split(':')[0]} \u00b7 ${combo.id}` : combo.id;
-
-    test(title, async () => {
-      if (known) test.fail(true, known);
+    test(combo.id, async () => {
       const mounted = await mount(page, {
         type: combo.type,
         datasets: DATASETS,

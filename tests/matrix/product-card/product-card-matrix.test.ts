@@ -149,20 +149,7 @@ describe('product-card matrix: stock', () => {
     stockCount: [-1, 0, 1, 4, 5, 12],
     inStock: [true, false],
   })) {
-    /**
-     * FINDING MATRIX-product-card-1 — `stock-count="0"`.
-     *
-     * The doc's contract for the property is "-1=hidden, <5=urgency". Zero is
-     * neither the hidden sentinel nor five or more, so the documented reading
-     * is that it belongs to the urgency band. The component treats it as
-     * hidden (`stockCount > 0 && stockCount < 5`) and renders the plain
-     * "In Stock"/"Out of Stock" line instead — a card that has exactly none
-     * left says nothing about it.
-     */
-    const finding = combo.stockCount === 0;
-    const runner = finding ? it.fails : it;
-
-    runner(`${combo.id}/stock`, async () => {
+    it(`${combo.id}/stock`, async () => {
       const s = spec({ stockCount: combo.stockCount, inStock: combo.inStock });
       const card = await mountCard(s);
       const problems = new Problems();
@@ -275,20 +262,7 @@ describe('product-card matrix: events', () => {
     expectClean(problems, 'add-to-cart');
   });
 
-  /**
-   * FINDING MATRIX-product-card-2 — `add-to-cart` detail on a sale item.
-   *
-   * The documented detail is `{ name, price, salePrice, selectedVariants }`:
-   * two separate numeric fields, one named after the `price` property and one
-   * after `salePrice`. On a discounted card the component sends the SALE price
-   * in BOTH — `price: this.salePrice ?? this.price` — so a cart listener has no
-   * way to recover the original price it was told it would receive.
-   *
-   * combo:    price=100, sale-price=75
-   * expected: detail.price === 100, detail.salePrice === 75
-   * actual:   detail.price === 75,  detail.salePrice === 75
-   */
-  it.fails('add-to-cart on a sale item reports both the list price and the sale price', async () => {
+  it('add-to-cart on a sale item reports both the list price and the sale price', async () => {
     const s = spec({ price: 100, salePrice: 75 });
     const card = await mountCard(s);
     const problems = new Problems();

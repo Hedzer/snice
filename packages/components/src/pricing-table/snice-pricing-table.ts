@@ -299,7 +299,8 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
               ${this.plans.map((plan, i) => html/*html*/`
                 <td class="${plan.highlighted ? 'pricing__table-highlight' : ''}">
                   <button class="pricing__cta pricing__cta--${plan.ctaVariant || (plan.highlighted ? 'primary' : 'outline')}"
-                          @click=${() => this.handleSelect(plan, i)}>
+                          @click=${() => this.handleSelect(plan, i)}
+                          part="cta">
                     ${plan.cta}
                   </button>
                 </td>

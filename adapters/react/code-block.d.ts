@@ -4,6 +4,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  * Props for the CodeBlock component
  */
 export interface CodeBlockProps extends SniceBaseProps {
+    code?: any;
     language?: any;
     showLineNumbers?: any;
     startLine?: any;

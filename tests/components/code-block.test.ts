@@ -141,8 +141,9 @@ describe('snice-code-block', () => {
     codeBlock.addEventListener('code-after-format', () => events.push('after'));
     codeBlock.setFormatter((code) => code);
     codeBlock.format = 'pretty';
+    // Assigning `code` is itself the documented trigger for a highlight pass;
+    // a manual highlight() here would start a second, overlapping pass.
     codeBlock.code = 'test';
-    await codeBlock.highlight();
     await wait(50);
     expect(events).toEqual(['before', 'after']);
   });

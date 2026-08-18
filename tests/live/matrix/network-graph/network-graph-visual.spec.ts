@@ -308,19 +308,17 @@ test.describe('network-graph visual matrix: zoom really moves the paint', () => 
 //
 // Per .ai/fuzzing.md the assertion below stays CORRECT — it asserts what
 // docs/ai/components/network-graph.md promises ("Responsive via
-// ResizeObserver") — and is marked as an expected failure so the suite turns
-// red the day the component is fixed and the finding can be closed.
+// ResizeObserver") — and is unpinned as the regression guard now that the
+// ResizeObserver re-lays the graph out, not just its viewBox.
 
 test.describe('network-graph visual matrix: findings', () => {
-  test('VISUAL-MATRIX-network-graph-2: a container resize never re-lays-out the graph', async () => {
-    test.fail();
-    // The ResizeObserver updates the canvas `viewBox` and nothing else, so a
-    // static layout computed for the old box keeps its old coordinates inside
-    // the new one. A graph that was centred before the resize is painted
-    // off-centre after it — which is the whole observable meaning of
-    // "responsive" for a component whose layouts are functions of the
-    // container's width and height. Nothing about this is visible to a DOM
-    // test: there, the container never has a size to change.
+  test('VISUAL-MATRIX-network-graph-2 (fixed): a container resize re-lays-out the graph', async () => {
+    // The ResizeObserver used to update the canvas `viewBox` and nothing else,
+    // so a static layout computed for the old box kept its old coordinates
+    // inside the new one. A resize now rebuilds the layout, so a graph that
+    // was centred before the resize stays centred after it — which is the
+    // whole observable meaning of "responsive" for a component whose layouts
+    // are functions of the container's width and height.
     await page.evaluate(() => (window as any).matrix.mount({
       graph: 'star', layout: 'circular', showLabels: false, animation: false,
     }));

@@ -80,7 +80,7 @@ describe('masonry matrix / slotted content', () => {
 });
 
 /**
- * FINDING — MATRIX-masonry-1.
+ * FINDING — MATRIX-masonry-1 (fixed).
  *
  * docs/ai/components/masonry.md declares
  *
@@ -90,18 +90,16 @@ describe('masonry matrix / slotted content', () => {
  *
  *     <snice-masonry columns="0" min-column-width="300px"> ... </snice-masonry>
  *
- * The property is declared as a bare `@property()`, whose derived attribute
- * name is the lowercased PROPERTY name — `mincolumnwidth`, not the documented
- * kebab-case `min-column-width` (packages/core/src/utils.ts getAttrName: kebab
- * naming needs `attribute: true` or an explicit string). So the documented
- * attribute is inert: `--masonry-column-width` keeps its 250px default and the
- * documented auto layout silently uses the wrong column width.
- *
- * The assertion below is the documented one and stays that way.
+ * The property used to be declared as a bare `@property()`, whose derived
+ * attribute name is the lowercased PROPERTY name — `mincolumnwidth`, not the
+ * documented kebab-case `min-column-width` (packages/core/src/utils.ts
+ * getAttrName). The decorator now names the documented attribute, so
+ * `--masonry-column-width` follows it; the assertions below are the
+ * documented ones and run unpinned as regression guards.
  */
 describe('masonry matrix / min-column-width attribute', () => {
   for (const width of ['150px', '300px', '20rem']) {
-    it.fails(`MATRIX-masonry-1: min-column-width="${width}" reaches the layout`, async () => {
+    it(`MATRIX-masonry-1 (fixed): min-column-width="${width}" reaches the layout`, async () => {
       el = await mountMasonryMinWidthAttribute(width);
       const problems = new Problems();
       checkColumnWidth(problems, el, width);

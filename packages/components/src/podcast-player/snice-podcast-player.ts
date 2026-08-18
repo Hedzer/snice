@@ -114,10 +114,9 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
       this.loadSrc(this.src);
     }
 
-    // Fetch RSS if provided
-    if (this.fromRss) {
-      this.fetchRSS(this.fromRss);
-    }
+    // `from-rss` is fetched by the `@watch('fromRss')` reaction, which also
+    // fires for the initial attribute — fetching here too would request and
+    // announce the feed twice.
   }
 
   @dispose()

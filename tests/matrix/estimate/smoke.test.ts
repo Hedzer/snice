@@ -10,7 +10,7 @@
  *   · toggling it moves the subtotal, the tax, the total and `toJSON()`;
  *   · the comparison variant renders option cards instead of a table;
  *   · accept / decline / item-toggle all reach the page;
- *   · MATRIX-estimate-1 — `tax-rate="10"` sets `taxRate` to the string "10".
+ *   · MATRIX-estimate-1 (fixed) — `tax-rate="10"` sets `taxRate` to 10.
  *
  * The full cross lives in the sibling files and runs via
  * `npx vitest run --config vitest.matrix.config.ts tests/matrix/estimate`.
@@ -75,7 +75,7 @@ describe('estimate smoke', () => {
     expect(declined.map(d => d.estimateNumber)).toEqual(['EST-001']);
   });
 
-  it.fails('tax-rate arrives as the documented number [MATRIX-estimate-1]', async () => {
+  it('tax-rate arrives as the documented number [MATRIX-estimate-1 (fixed)]', async () => {
     const el = await mount<any>(TAG, { 'tax-rate': '10' });
     expect(el.taxRate, 'taxRate from the documented attribute').toBe(10);
   });

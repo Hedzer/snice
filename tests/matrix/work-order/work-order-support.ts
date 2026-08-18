@@ -18,19 +18,18 @@
  *
  * ── Findings pinned by this suite ───────────────────────────────────────────
  *
- *   MATRIX-work-order-1  The doc declares `laborRate: number` with
- *                        "attr: labor-rate", and its HTML example writes
- *                        `labor-rate="75"`. The attribute lands as the STRING
- *                        "75": the property is declared with a bare
- *                        `@property({ type: Number })`, so the observed
- *                        attribute is `laborrate` and the documented kebab
- *                        name reaches the property through a fallback that
- *                        skips the Number converter. `toJSON().laborRate` is
- *                        then a string, and `getTotalLaborCost()` — documented
- *                        as "Hours * labor rate" — returns a number only
- *                        because `*` coerces.
- *
- * The finding keeps the documented assertion and is declared `it.fails`.
+ *   MATRIX-work-order-1 (fixed)  The doc declares `laborRate: number` with
+ *                                "attr: labor-rate", and its HTML example
+ *                                writes `labor-rate="75"`. The property used
+ *                                to be declared with a bare
+ *                                `@property({ type: Number })`, so the
+ *                                observed attribute was `laborrate` and the
+ *                                documented kebab name reached the property
+ *                                through a fallback that skipped the Number
+ *                                converter: `toJSON().laborRate` was a string
+ *                                and the rate line printed "75/hr". The
+ *                                decorator now names `labor-rate` and the
+ *                                guards run unpinned.
  */
 import { Problems, text, all } from '../matrix-kit';
 import { exactPart as part, exactParts as parts, partTokens } from '../part-exact';

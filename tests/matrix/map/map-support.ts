@@ -44,12 +44,14 @@
  *
  * Findings raised against this component:
  *
- *   MATRIX-map-1  markers.test.ts — `MapMarker.icon?: string` is a documented
- *                 field that no render path reads; every marker draws the same
- *                 built-in pin.
- *   MATRIX-map-2  fitbounds.test.ts — `fitBounds()` changes the zoom level and
- *                 emits no `map-zoom`, though the doc defines that event as
- *                 "zoom level changed" without qualification.
+ *   MATRIX-map-1 (fixed)  markers.test.ts — `MapMarker.icon?: string` is a
+ *                 documented field no render path used to read; every marker
+ *                 drew the same built-in pin. An authored icon now replaces
+ *                 the pin.
+ *   MATRIX-map-2 (fixed)  fitbounds.test.ts — `fitBounds()` used to change the
+ *                 zoom level and emit no `map-zoom`, though the doc defines
+ *                 that event as "zoom level changed" without qualification.
+ *                 The level now routes through `setZoom` and announces itself.
  */
 import { expect } from 'vitest';
 import {

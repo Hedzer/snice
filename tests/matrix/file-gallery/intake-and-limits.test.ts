@@ -6,10 +6,9 @@
  * documented outcome: an admitted file appears in `files` and reports
  * `files-change`; a rejected one does not appear and reports `gallery-error`.
  *
- * 36 combos + 2 findings.
+ * 36 combos + 2 closed findings.
  */
 import { describe, it, expect, afterEach } from 'vitest';
-import { finding } from '../matrix-utils';
 import {
   FILES, makeFile,
   checkChrome, combo, comboName, expectNoProblems, makeGallery, record,
@@ -132,16 +131,10 @@ describe('file-gallery matrix — max-files', () => {
     expect(el.files[0].preview).toBe('data:image/png;base64,AA');
   });
 
-  // ── Findings ──────────────────────────────────────────────────────────────
+  // ── Closed findings (fixed; assertions kept) ──────────────────────────────
 
-  /**
-   * `max-files` is documented as "-1 = no limit", so 0 is a limit of zero — and
-   * `canAddFiles()` agrees, reporting false. `addFiles` admits the file anyway,
-   * leaving the component holding more files than its own limit permits and
-   * disagreeing with its own documented predicate.
-   */
-  it.fails(
-    finding('MATRIX-file-gallery-1', 'max-files="0" admits files even though canAddFiles() reports false'),
+  it(
+    'max-files="0" rejects files, agreeing with canAddFiles() [MATRIX-file-gallery-1 fixed]',
     async () => {
       const el = await makeGallery(combo({ maxFiles: 0 }));
       expect(el.canAddFiles()).toBe(false);
@@ -151,13 +144,8 @@ describe('file-gallery matrix — max-files', () => {
     },
   );
 
-  /**
-   * `max-size` is documented as "bytes, -1 = no limit". A limit of 0 bytes
-   * therefore admits nothing bigger than 0 bytes; the size check only runs when
-   * `maxSize > 0`, so the limit is silently ignored.
-   */
-  it.fails(
-    finding('MATRIX-file-gallery-2', 'max-size="0" admits a file of any size'),
+  it(
+    'max-size="0" admits nothing bigger than zero bytes [MATRIX-file-gallery-2 fixed]',
     async () => {
       const el = await makeGallery(combo({ maxSize: 0 }));
       el.addFiles([makeFile('probe.bin', 512, 'application/octet-stream')]);

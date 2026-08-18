@@ -208,27 +208,21 @@ test.describe('approval-flow visual matrix: layer 1', () => {
   }
 });
 
-// ── MATRIX-approval-flow-2, as a page author meets it ───────────────────────
+// ── The documented markup ───────────────────────────────────────────────────
 //
 // The doc's property table says `currentStep: string = ''; // attr:
 // current-step`, and the doc's own example markup is
 //
 //     <snice-approval-flow current-step="2" orientation="vertical">
 //
-// In a browser that attribute is inert: `currentStep` is declared with a bare
-// `@property()`, so the element observes `currentstep`, and `current-step` is
-// never seen. The chain renders with no current step, which means no Approve
-// and no Reject button — the component's only interaction — for a consumer who
-// copied the documentation.
-//
-// This tier owns the finding because happy-dom hands `attributeChangedCallback`
-// every attribute change whether or not it was observed, so the DOM matrix sees
-// the documented behaviour working. Pinned with `test.fail()`; the assertion is
-// the documented one and is not weakened.
+// MATRIX-approval-flow-2 (fixed): `currentStep` used to be declared with a
+// bare `@property()`, so the element observed `currentstep` and the documented
+// `current-step` attribute was never seen in a browser — no current step, no
+// Approve/Reject. The property now declares `attribute: 'current-step'`, and
+// the authored markup below works exactly as documented.
 
 test.describe('approval-flow visual matrix: the documented markup', () => {
-  test('current-step="2" makes step 2 the current one [MATRIX-approval-flow-2]', async () => {
-    test.fail();
+  test('current-step="2" makes step 2 the current one [MATRIX-approval-flow-2 fixed]', async () => {
     const result = await page.evaluate(() => (window as any).matrix.mountAuthored({
       orientation: 'vertical',
       currentStep: '2',

@@ -23,13 +23,12 @@
  *
  * ── Findings pinned by this suite ───────────────────────────────────────────
  *
- *   MATRIX-approval-flow-1  The docs list a third event, `step-comment` ->
- *                           `{ step, comment }`, "Comment added to step".
- *                           Nothing in the component can produce it: the
- *                           current step's `actions` row holds an Approve and
- *                           a Reject button and nothing else, and no part of
- *                           the shadow tree accepts text. A consumer following
- *                           the docs adds a listener that can never run.
+ *   MATRIX-approval-flow-1 (fixed)  The docs list a third event,
+ *                           `step-comment` -> `{ step, comment }`, "Comment
+ *                           added to step". Nothing in the component could
+ *                           produce it; the current step's action row now
+ *                           carries a comment input (Enter commits), so the
+ *                           documented event has a producer again.
  */
 import { Problems, text } from '../matrix-kit';
 import { exactPart as part, exactParts as parts, exactPartsIn, partTokens } from '../part-exact';

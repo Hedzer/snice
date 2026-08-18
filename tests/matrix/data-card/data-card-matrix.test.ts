@@ -26,7 +26,7 @@ import {
 import {
   FIELD_TYPES, GROUP_LAYOUTS, SHAPES, VARIANTS,
   checkField, checkGroups, checkStructure, datasetFor, editButtonOf, editToggleOf,
-  expectedValues, fieldsOf, groupsOf, inputOf, rowFor, saveButtonOf, structuralFinding, typeInto, valueOf,
+  expectedValues, fieldsOf, groupsOf, inputOf, rowFor, saveButtonOf, typeInto, valueOf,
   type DataCardField, type DataCardFieldType,
 } from './data-card-support';
 import { exactPartIn } from '../part-exact';
@@ -48,9 +48,7 @@ async function mountCard(
 
 describe('data-card matrix: structure', () => {
   for (const combo of cross({ variant: VARIANTS, editable: [false, true], shape: SHAPES })) {
-    const known = structuralFinding(combo.shape, combo.editable);
-    const run = known ? it.fails : it;
-    run(known ? `${combo.id} — ${known}` : combo.id, async () => {
+    it(combo.id, async () => {
       const fields = datasetFor(combo.shape);
       const card = await mountCard(combo.variant, combo.editable, fields);
       const problems = new Problems();
@@ -98,15 +96,7 @@ describe('data-card matrix: edit lifecycle', () => {
   const COMMITS = ['Enter', 'save-button', 'Escape'] as const;
 
   for (const combo of cross({ type: FIELD_TYPES, commit: COMMITS })) {
-    const isLink = combo.type === 'link';
-    // MATRIX-data-card-1 again, from the interaction side: with no edit
-    // affordance a link field cannot enter edit mode at all.
-    const run = isLink ? it.fails : it;
-    const title = isLink
-      ? `${combo.id} — MATRIX-data-card-1: a type="link" field cannot enter edit mode`
-      : combo.id;
-
-    run(title, async () => {
+    it(combo.id, async () => {
       const fields: DataCardField[] = [
         { label: 'Reference', value: 'REF-001' },
         { label: 'Subject', value: 'before', type: combo.type as DataCardFieldType, href: '/subject' },

@@ -342,30 +342,11 @@ interface Waiver {
   matches: RegExp;
 }
 
-const WAIVERS: Waiver[] = [
-  {
-    /**
-     * FINDING VISUAL-MATRIX-input-3 — a SLOTTED suffix icon does not move the clear
-     * button, so the two stack.
-     *
-     * The doc gives the suffix icon two equal channels: the `suffix-icon`
-     * ATTRIBUTE ("for emoji, URLs, image files only") and the `suffix-icon`
-     * SLOT ("Custom suffix icon (overrides `suffixIcon` property)"). The
-     * component's clear button steps aside for the first — the template adds
-     * `clear-button--with-suffix` (right: 2rem) when `this.suffixIcon` is set —
-     * but the slot is invisible to that test, so a slotted icon keeps the
-     * default `right: 0.5rem` and the clear button lands on top of it.
-     *
-     * combo:    clearable + a value + `<span slot="suffix-icon">☆</span>`
-     * expected: the clear control and the suffix icon occupy separate boxes
-     * actual:   the clear control [368,392] covers the icon [366,390] — a 22px
-     *           overlap of two 24px boxes
-     */
-    id: 'VISUAL-MATRIX-input-3',
-    applies: c => c.icons === 'slotted' && (c.state === 'plain' || c.state === 'invalid'),
-    matches: /^\[part="clear"\] and \[part="suffix-icon"\] overlap by \d+x\d+px$/,
-  },
-];
+// VISUAL-MATRIX-input-3 (slotted suffix icon did not move the clear button;
+// the two stacked) — fixed: the template now tracks the suffix slot via
+// `slottedSuffixIcon` and applies `clear-button--with-suffix` for either
+// channel. Waiver deleted.
+const WAIVERS: Waiver[] = [];
 
 const combos = generateCombos();
 

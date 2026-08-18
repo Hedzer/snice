@@ -22,19 +22,11 @@
  *
  * ── FINDING ────────────────────────────────────────────────────────────────
  *
- * MATRIX-map-2  `fitBounds()` changes the zoom level silently.
- *   combo:    markers=spread (London pair plus New York), zoom=13 before the
- *             call, which fitBounds moves to a much wider level
- *   expected: `map-zoom` fires once with the new level, because the doc
- *             qualifies that event only as "zoom level changed" — it is the
- *             single event a caller can use to keep an external zoom readout in
- *             step, and `fitBounds` is the one API that changes the level
- *             without the caller naming it.
- *   actual:   no event of any kind. `fitBounds` assigns `this.zoom` directly
- *             rather than going through `setZoom`, so it bypasses the emitter
- *             that every other zoom path uses (the buttons, the wheel, the
- *             keyboard, and `setZoom` itself all emit).
- *   Pinned with `it.fails` below.
+ * MATRIX-map-2 (fixed)  `fitBounds()` used to change the zoom level silently.
+ *   It assigned `this.zoom` directly rather than going through `setZoom`, so
+ *   it bypassed the emitter every other zoom path uses. It now routes the
+ *   level through `setZoom`, and a changed level announces `map-zoom`.
+ *   Unpinned below.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import {
@@ -228,9 +220,9 @@ describe('map matrix: fitBounds', () => {
     });
   });
 
-  // ── MATRIX-map-2 ─────────────────────────────────────────────────────────
-  describe('MATRIX-map-2: fitBounds and map-zoom', () => {
-    it.fails('fitBounds emits map-zoom when it changes the level', async () => {
+  // ── MATRIX-map-2 (fixed) ─────────────────────────────────────────────────
+  describe('MATRIX-map-2 (fixed): fitBounds and map-zoom', () => {
+    it('fitBounds emits map-zoom when it changes the level (fixed)', async () => {
       const markers = MARKER_SETS.spread();
       el = await makeMap(combo({ markers: 'spread', zoom: 13 }), markers);
       const seen = collectEvents(el);
@@ -244,7 +236,7 @@ describe('map matrix: fitBounds', () => {
       expect(zooms[0].detail.zoom).toBe(el.zoom);
     });
 
-    it.fails('fitBounds(subset) emits map-zoom when it changes the level', async () => {
+    it('fitBounds(subset) emits map-zoom when it changes the level (fixed)', async () => {
       const markers = MARKER_SETS.spread();
       el = await makeMap(combo({ markers: 'spread', zoom: 2 }), markers);
       const seen = collectEvents(el);

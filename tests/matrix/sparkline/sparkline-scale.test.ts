@@ -142,43 +142,25 @@ describe('sparkline matrix: min / max', () => {
   );
 
   /**
-   * MATRIX-sparkline-3 owns the bar combos with a datum BELOW an explicit
-   * `min`; everything else is asserted outright.
+   * MATRIX-sparkline-3 (fixed): a datum below an explicit `min` no longer
+   * produces a negative rect height; every combo is asserted outright.
    */
-  const underflowsBar = ({ combo }: { combo: SparklineCombo }) =>
-    combo.type === 'bar' && combo.min !== undefined
-    && combo.data.some(value => value < combo.min!);
-
-  for (const { dataset, combo } of RANGE_COMBOS.filter(entry => !underflowsBar(entry))) {
+  for (const { dataset, combo } of RANGE_COMBOS) {
     it(`renders ${dataset} ${sparklineComboId(combo)}`, async () => {
       el = await mountSparkline(combo);
       expectClean(checkSparkline(el, combo), `${dataset}/${sparklineComboId(combo)}`);
     });
   }
 
-  // MATRIX-sparkline-3 — a datum below an explicit `min` makes a bar's
-  // NEGATIVE height, which is an error in SVG: the rect paints nothing.
-  //
-  //   <snice-sparkline type="bar" min="15"></snice-sparkline>  with data
-  //   = [10, 20, 15, 25, 30]  ->  <rect y="43" height="-14" …/>
-  //
-  // `min`/`max` are documented as the normalisation window, and the line/area
-  // branches simply place the point outside the viewBox and let it clip.
-  // Expected: a bar chart with an explicit window renders rects with a real,
-  // non-negative height. Actual: `height="-14"` — the bar vanishes and the
-  // reader sees a gap with no indication that a datum is out of range.
-  for (const { dataset, combo } of RANGE_COMBOS.filter(underflowsBar)) {
-    it.fails(`MATRIX-sparkline-3: ${dataset} ${sparklineComboId(combo)} draws real bars`, async () => {
-      el = await mountSparkline(combo);
-      expectClean(checkSparkline(el, combo), `${dataset}/${sparklineComboId(combo)}`);
-    });
-  }
-
-  it('MATRIX-sparkline-3 reproduces: an under-range datum gets a negative bar', async () => {
+  // MATRIX-sparkline-3 (fixed): an under-range bar keeps its unclamped `y` (so
+  // out-of-window data still ranks) but its height is clamped to >= 0 — a
+  // negative height is an SVG error that paints nothing.
+  it('MATRIX-sparkline-3 (fixed): an under-range datum draws a non-negative bar', async () => {
     el = await mountSparkline({ type: 'bar', data: [10, 20, 30], min: 15, height: 30 });
     const bars = [...el.shadowRoot!.querySelectorAll('[part~="bar"]')];
-    expect(parseFloat(bars[0].getAttribute('height')!)).toBeLessThan(0);
-    // The other two are fine, which is what makes the gap silent rather than
+    expect(parseFloat(bars[0].getAttribute('height')!)).toBeGreaterThanOrEqual(0);
+    expect(parseFloat(bars[0].getAttribute('y')!)).toBeGreaterThan(30);
+    // The other two are fine, which is what made the gap silent rather than
     // an obviously broken chart.
     expect(parseFloat(bars[1].getAttribute('height')!)).toBeGreaterThan(0);
   });

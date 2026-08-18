@@ -332,25 +332,25 @@ test.describe('estimate visual matrix: toggling an optional line', () => {
   });
 });
 
-// ── MATRIX-estimate-1, as a page author meets it ────────────────────────────
+// ── MATRIX-estimate-1 (fixed), as a page author meets it ────────────────────
 //
 // The doc's property table gives three properties kebab-case attributes —
 // `estimate-number`, `expiry-date`, `tax-rate` — and its example markup writes
-// them. In a browser all three are inert: each property is declared with a
-// bare `@property()`, so the element observes `estimatenumber`, `expirydate`
-// and `taxrate`, and the documented names are never seen. The estimate renders
-// with no number in its title, no expiry line, and no tax.
+// them. Each property used to be declared with a bare `@property()`, so the
+// element observed `estimatenumber`, `expirydate` and `taxrate`, and the
+// documented names were never seen: the estimate rendered with no number in
+// its title, no expiry line, and no tax.
 //
 // This tier owns that claim because happy-dom hands `attributeChangedCallback`
 // every attribute change whether or not it was observed, so the DOM matrix
-// sees the documented attributes "work" and can only catch the residue (the
-// value arrives untyped — see tests/matrix/estimate/estimate-api.test.ts).
+// could only catch the residue (the value arriving untyped — see
+// tests/matrix/estimate/estimate-api.test.ts).
 //
-// Pinned with `test.fail()`; the assertions are the documented ones.
+// The decorators now name the documented attributes; this runs unpinned as
+// the regression guard.
 
 test.describe('estimate visual matrix: the documented markup', () => {
-  test('the doc\'s own attributes reach the document [MATRIX-estimate-1]', async () => {
-    test.fail();
+  test('the doc\'s own attributes reach the document [MATRIX-estimate-1 (fixed)]', async () => {
     const authored = await page.evaluate(() => (window as any).matrix.mountAuthored());
     expect(authored.estimateNumber, 'estimate-number -> estimateNumber').toBe('EST-001');
     expect(authored.expiryDate, 'expiry-date -> expiryDate').toBe('2026-02-15');

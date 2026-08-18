@@ -14,28 +14,24 @@
  * combo checks the event, the element's own `tasks` array, and the rendered
  * row together.
  *
- * ── MATRIX-work-order-1, and what THIS tier can see of it ───────────────────
+ * ── MATRIX-work-order-1 (fixed), and what THIS tier can see of it ───────────
  *
  * The doc's HTML example writes `labor-rate="75"`, and the property table says
- * `laborRate: number = 0; // attr: labor-rate`. `laborRate` is declared with a
- * bare `@property({ type: Number })`, so the element observes `laborrate` and
- * the documented name is never seen — in a REAL BROWSER the rate simply never
- * arrives, and that pinned case (with `show-qr`, MATRIX-work-order-2) lives in
- * tests/live/matrix/work-order/work-order-visual.spec.ts.
+ * `laborRate: number = 0; // attr: labor-rate`. `laborRate` used to be declared
+ * with a bare `@property({ type: Number })`, so the element observed
+ * `laborrate` and the documented name was never seen — in a REAL BROWSER the
+ * rate simply never arrived (that pinned case, with `show-qr`,
+ * MATRIX-work-order-2, lives in tests/live/matrix/work-order/work-order-visual.spec.ts).
  *
  * happy-dom hands `attributeChangedCallback` every attribute change whether or
- * not the element observed it, so HERE the value arrives — as the STRING "75",
- * through a path that skips the Number converter.
+ * not the element observed it, so HERE the value arrived — as the STRING "75",
+ * through a path that skipped the Number converter, which also left the rate
+ * line printing "75/hr" instead of money.
  *
- * The totals survive, because `hours * "75"` coerces — but the RATE LINE does
- * not. The component formats money with `amount.toLocaleString(undefined,
- * { style: 'currency', currency: 'USD' })`, and `String.prototype.toLocaleString`
- * ignores those options, so the sheet prints "75/hr" where every other figure
- * on it reads "$450.00". A work order authored exactly as the docs show it
- * quotes its labour rate in no currency at all.
- *
- * Pinned with `it.fails` on the property type, the JSON type, and the rendered
- * rate. None of the three is weakened.
+ * The decorator now names `labor-rate`, the converter runs, and the guards on
+ * the property type, the JSON type, and the rendered rate run unpinned.
+ * MATRIX-work-order-2 (`show-qr`) is a separate defect and stays pinned in the
+ * visual tier.
  */
 import { describe, it, afterEach, expect } from 'vitest';
 import { mount, cross, Problems, expectClean, captureEvents, click, removeComponent, wait }
@@ -151,8 +147,9 @@ const ATTRIBUTES: AttrCase[] = [
   { attribute: 'variant', value: 'field-service', property: 'variant', expected: 'field-service', works: true },
   { attribute: 'qr-data', value: 'https://e/1', property: 'qrData', expected: 'https://e/1', works: true },
   { attribute: 'qr-position', value: 'footer', property: 'qrPosition', expected: 'footer', works: true },
-  // Documented `laborRate: number` with "attr: labor-rate".
-  { attribute: 'labor-rate', value: '75', property: 'laborRate', expected: 75, works: false },
+  // Documented `laborRate: number` with "attr: labor-rate" (MATRIX-work-order-1,
+  // fixed): the converter runs.
+  { attribute: 'labor-rate', value: '75', property: 'laborRate', expected: 75, works: true },
 ];
 
 describe('work-order matrix: every documented attribute reaches its property', () => {
@@ -166,21 +163,21 @@ describe('work-order matrix: every documented attribute reaches its property', (
     if (item.works) it(title, run); else it.fails(title, run);
   }
 
-  it.fails('toJSON() reports the documented numeric laborRate [MATRIX-work-order-1]', async () => {
+  it('toJSON() reports the documented numeric laborRate [MATRIX-work-order-1 (fixed)]', async () => {
     const el = await mount<any>(TAG, { 'labor-rate': '75' }, { tasks: TASK_SETS.mixed });
     expect(typeof el.toJSON().laborRate, 'toJSON().laborRate type').toBe('number');
   });
 
-  it.fails('the rate line is money, not a bare number [MATRIX-work-order-1]', async () => {
+  it('the rate line is money, not a bare number [MATRIX-work-order-1 (fixed)]', async () => {
     const el = await mount<any>(TAG, { 'labor-rate': '75' }, { tasks: TASK_SETS.mixed });
     expect(part(el, 'labor-rate')?.textContent?.trim(), 'the rendered labor rate')
       .toBe(`${money(75)}/hr`);
   });
 
-  it('the totals survive the string rate', async () => {
-    // Scoping MATRIX-work-order-1: multiplication coerces, so the money the
-    // customer is charged is still right. This case exists so a future fix
-    // cannot change the totals unnoticed while closing the finding above.
+  it('the totals survive an attribute-set rate', async () => {
+    // Scoping MATRIX-work-order-1 (fixed): the rate used to arrive as a string
+    // that survived arithmetic only by coercion. This case stays so a future
+    // change cannot alter the totals unnoticed behind the guards above.
     const el = await mount<any>(TAG, { 'labor-rate': '75' },
       { tasks: TASK_SETS.mixed, parts: PART_SETS.two });
     const problems = new Problems();

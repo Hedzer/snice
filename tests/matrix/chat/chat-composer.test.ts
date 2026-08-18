@@ -258,14 +258,13 @@ describe('chat matrix: typing indicators', () => {
       continue;
     }
 
-    // FINDING MATRIX-chat-1: addTypingIndicator()/removeTypingIndicator()
-    // only touch a private Map and never request a render, so on a connected
-    // chat the documented "Show typing indicator" / "Remove typing indicator"
-    // effect of the Methods contract (and the doc's own Basic Usage example,
-    // which calls them on a live chat) does not land until an unrelated
-    // property change happens to re-render the component. The assertion stays
-    // as documented; pinned it.fails until the methods request a render.
-    it.fails(`${id}: the typing-indicator part follows the flag and names its users`, async () => {
+    // MATRIX-chat-1 (fixed): addTypingIndicator()/removeTypingIndicator()
+    // used to only touch a private Map and never request a render, so on a
+    // connected chat the documented "Show typing indicator" / "Remove typing
+    // indicator" effect of the Methods contract did not land until an
+    // unrelated property change happened to re-render. The Map is @state and
+    // the methods reassign it, so the row follows the calls on its own.
+    it(`${id}: the typing-indicator part follows the flag and names its users`, async () => {
       const combo = base({ showTyping });
       el = await mountChat(combo, { messages: SEED });
 

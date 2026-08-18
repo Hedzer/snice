@@ -1,4 +1,4 @@
-import { element, property, state, query, watch, dispatch, ready, reconnect, dispose, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, reconnect, dispose, render, styles, html, css, nothing } from 'snice';
 import cssContent from './snice-textarea.css?inline';
 import type { TextareaSize, TextareaVariant, TextareaResize, SniceTextareaElement } from './snice-textarea.types';
 import { applyElementInternalsFormValue, applyElementInternalsValidity, findFormOwner, hasValidityError, validityFlagsFrom } from '../form-control-validity';
@@ -177,9 +177,9 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
             aria-invalid="${displayedInvalid ? 'true' : 'false'}"
             aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
             rows="${this.rows}"
-            cols=${this.cols > 0 ? this.cols : null}
-            maxlength=${this.maxlength > 0 ? this.maxlength : null}
-            minlength=${this.minlength > 0 ? this.minlength : null}
+            cols=${this.cols > 0 ? this.cols : nothing}
+            maxlength=${this.maxlength > 0 ? this.maxlength : nothing}
+            minlength=${this.minlength > 0 ? this.minlength : nothing}
             autocomplete="${this.autocomplete || ''}"
             name="${this.name || ''}"
             part="textarea"

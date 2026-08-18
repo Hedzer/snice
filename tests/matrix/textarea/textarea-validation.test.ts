@@ -178,27 +178,14 @@ describe('textarea matrix: length constraints need customer editing', () => {
   });
 
   /**
-   * MATRIX-textarea-1.
-   *
-   * Documented: `maxlength: number = -1`, and -1 is the documented "no limit"
-   * state — a freshly mounted control with the default sets no `maxlength` on
-   * the native textarea at all (asserted two tests up, and green). Returning to
-   * the same documented value must reach the same documented state.
-   *
-   * It does not. Going from a positive `maxlength` back to -1 leaves an EMPTY
-   * `maxlength=""` attribute on the native textarea, and `textarea.maxLength`
-   * then reads `NaN` instead of the platform's -1. The component's own
-   * `handleMaxLengthChange`/`syncValidity` both call `removeAttribute`, so the
-   * stale attribute is re-applied by the render binding
-   * (`maxlength=${this.maxlength > 0 ? this.maxlength : null}`), which writes an
-   * empty attribute where it should remove one.
-   *
-   * Per .ai/fuzzing.md the assertion stays at full strength and the component is
-   * NOT changed: this test fails the day the render binding is fixed, which is
-   * how the finding gets closed.
+   * MATRIX-textarea-1 (fixed) — the render binding used to commit
+   * `maxlength=${this.maxlength > 0 ? this.maxlength : null}` and null wrote
+   * `maxlength=""`. It now binds the framework's `nothing` sentinel, which
+   * removes the attribute, so returning to -1 reaches the same documented
+   * "no limit" state a fresh mount shows.
    */
-  it.fails(
-    'MATRIX-textarea-1: returning maxlength to -1 leaves maxlength="" on the native control',
+  it(
+    'MATRIX-textarea-1 (fixed): returning maxlength to -1 removes maxlength from the native control',
     async () => {
       el = await makeTextarea(combo({ maxlength: MAX }));
       el.maxlength = -1;

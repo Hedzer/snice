@@ -404,6 +404,30 @@ export class TableColumnManager {
     }
   }
 
+  /**
+   * Re-apply the sticky offsets of the pinned columns on one edge to the
+   * painted header and body cells. The offsets are running totals of the
+   * pinned widths, so a resize that changes any pinned width moves them — but
+   * writeWidths() only repaints widths, and the offsets otherwise land only
+   * when a cell is CREATED (renderHeader / renderBody). Without this the
+   * pinned columns after the resized one keep stale offsets, and a body-only
+   * re-render then leaves the header and the body disagreeing
+   * (MATRIX-columns-5).
+   */
+  private writePinnedOffsets(side: 'left' | 'right') {
+    const root = this.tableElement?.shadowRoot;
+    if (!root) return;
+    const offsets = side === 'left'
+      ? this.getPinnedLeftOffsets()
+      : this.getPinnedRightOffsets();
+    for (const [key, offset] of offsets) {
+      const th = root.querySelector(`th[data-key="${key}"]`) as HTMLElement | null;
+      if (th) th.style[side] = `${offset}px`;
+      const tds = root.querySelectorAll(`td[data-key="${key}"]`) as NodeListOf<HTMLElement>;
+      tds.forEach((td) => { td.style[side] = `${offset}px`; });
+    }
+  }
+
   /** Apply computed widths to <col> or <th> elements */
   applyWidths(headerRow: HTMLElement, widths: Map<string, number>) {
     const ths = headerRow.querySelectorAll('th[data-key]') as NodeListOf<HTMLElement>;
@@ -451,6 +475,13 @@ export class TableColumnManager {
       this.writeWidths(squish
         ? this.getVisibleColumns().map((column) => column.key)
         : [columnKey]);
+
+      // A resized pinned column moves the sticky offsets of the pinned columns
+      // after it, and a squish rebalance can move any column's width. Repaint
+      // the offsets on both edges so the header and the body cells agree
+      // without a full re-render (MATRIX-columns-5).
+      if (this.getPinnedLeft().length > 0) this.writePinnedOffsets('left');
+      if (this.getPinnedRight().length > 0) this.writePinnedOffsets('right');
 
       // Dispatch resize event
       this.tableElement?.dispatchEvent(new CustomEvent('column-resize', {

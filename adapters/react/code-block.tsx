@@ -9,6 +9,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  * Props for the CodeBlock component
  */
 export interface CodeBlockProps extends SniceBaseProps {
+  code?: any;
   language?: any;
   showLineNumbers?: any;
   startLine?: any;
@@ -46,7 +47,7 @@ export interface CodeBlockProps extends SniceBaseProps {
  */
 export const CodeBlock: SniceReactComponent<CodeBlockProps, SniceComponentRef> = createReactAdapter<CodeBlockProps, false>({
   tagName: 'snice-code-block',
-  properties: ["language","showLineNumbers","startLine","highlightLines","copyable","filename","grammar","fetchMode","format","theme"],
+  properties: ["code","language","showLineNumbers","startLine","highlightLines","copyable","filename","grammar","fetchMode","format","theme"],
   events: {"code-copy":"onCodeCopy","code-before-highlight":"onCodeBeforeHighlight","code-after-highlight":"onCodeAfterHighlight","code-before-format":"onCodeBeforeFormat","code-after-format":"onCodeAfterFormat","grammar-request":"onGrammarRequest","grammar-loaded":"onGrammarLoaded"},
   formAssociated: false
 });

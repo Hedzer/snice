@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Layout = createReactAdapter({
     tagName: 'snice-layout',
-    properties: [],
+    properties: ["contained"],
     events: {},
     formAssociated: false
 });

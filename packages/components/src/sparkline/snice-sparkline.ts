@@ -65,7 +65,12 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
   }
 
   private getSmoothPath(points: { x: number; y: number }[]): string {
-    if (points.length < 2) return '';
+    if (points.length === 0) return '';
+    // A single point has no curve to draw, but the line part must still carry
+    // its vertex — an empty `d` paints nothing at all.
+    if (points.length === 1) {
+      return `M ${points[0].x},${points[0].y}`;
+    }
     if (points.length === 2) {
       return `M ${points[0].x},${points[0].y} L ${points[1].x},${points[1].y}`;
     }
@@ -129,17 +134,25 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
         const normalizedValue = this.normalizeValue(value, min, max);
         const barHeight = normalizedValue * drawHeight;
         const x = padding + (index * barWidth) + gap / 2;
+        // `y` keeps the unclamped arithmetic so out-of-window data still ranks
+        // correctly; only the rect's height is clamped, because a negative
+        // height is an SVG error that paints nothing.
         const y = padding + drawHeight - barHeight;
         // Stagger each bar's grow-from-baseline via --bar-delay (0..1).
         const delay = this.data.length > 1 ? index / (this.data.length - 1) : 0;
-        return `<rect class="sparkline__bar" style="--bar-delay:${delay.toFixed(3)}" x="${x}" y="${y}" width="${actualBarWidth}" height="${barHeight}" part="bar"/>`;
+        return `<rect class="sparkline__bar" style="--bar-delay:${delay.toFixed(3)}" x="${x}" y="${y}" width="${actualBarWidth}" height="${Math.max(0, barHeight)}" part="bar"/>`;
       }).join('');
 
       svgContent = bars;
     } else {
       // line or area type
+      const span = this.data.length - 1;
       const pointsArray = this.data.map((value, index) => {
-        const x = padding + (index / (this.data.length - 1)) * drawWidth;
+        // A one-point series has no span to spread across; centre it so its
+        // dot (and vertex) lands whole inside the viewBox.
+        const x = span === 0
+          ? padding + drawWidth / 2
+          : padding + (index / span) * drawWidth;
         const y = padding + drawHeight - this.normalizeValue(value, min, max) * drawHeight;
         return { x, y };
       });

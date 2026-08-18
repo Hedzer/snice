@@ -15,13 +15,13 @@ import type {
 
 @element('snice-estimate')
 export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
-  @property()
+  @property({ attribute: 'estimate-number' })
   estimateNumber = '';
 
   @property()
   date = '';
 
-  @property()
+  @property({ attribute: 'expiry-date' })
   expiryDate = '';
 
   @property()
@@ -39,7 +39,7 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
   @property()
   currency = '$';
 
-  @property({ type: Number })
+  @property({ type: Number, attribute: 'tax-rate' })
   taxRate = 0;
 
   @property({ type: Number })

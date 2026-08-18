@@ -206,8 +206,11 @@
   display: none;
 }
 
-.book input[type="radio"]:checked + .book__page {
-  transition: transform 0.9s cubic-bezier(0.645, 0.045, 0.355, 1);
+/* A turned leaf swings over the spine. `.book__page--2`'s base transition on
+   .book__page animates the swing; the class is synced from currentPage in
+   syncRadio() so EVERY leaf before the current page is turned, not just the
+   one adjacent to the checked radio. */
+.book__page--2.turned {
   transform: rotateY(-180deg);
 }
 

@@ -10,7 +10,8 @@
  * The marquee combos: one nested render with icons and checkboxes on (the
  * shape that exercises every documented row region at once), single and
  * multiple selection, the checkbox cascade, the expander, the lazy handshake,
- * and one standing finding from each of the four found in the full suite.
+ * and one regression guard from each of the four findings the full suite
+ * pinned (all fixed).
  *
  * BUDGET: under 1s.
  */
@@ -106,18 +107,19 @@ describe('tree matrix smoke', () => {
     expect(itemFor(tree, 'remote').loading).toBe(true);
   });
 
-  // ── Standing findings — see tests/matrix/tree/ ────────────────
+  // ── Regression guards for the four findings, all fixed ────────
 
-  // MATRIX-tree-1: `expand-on-click` is declared and never read.
-  it.fails('MATRIX-tree-1: a row click expands when expand-on-click is set', async () => {
+  // MATRIX-tree-1 (fixed): `expand-on-click` used to be declared and never read.
+  it('MATRIX-tree-1 (fixed): a row click expands when expand-on-click is set', async () => {
     tree = await makeTree({ expandOnClick: true }, nodesFor('nested'));
     clickRow(itemFor(tree, 'docs'));
     await wait(20);
     expect(rowOf(itemFor(tree, 'docs'))?.getAttribute('aria-expanded')).toBe('true');
   });
 
-  // MATRIX-tree-2: a row click paints itself selected even when selection is off.
-  it.fails('MATRIX-tree-2: selection-mode="none" leaves a clicked row unselected', async () => {
+  // MATRIX-tree-2 (fixed): a row click used to paint itself selected even when
+  // selection was off.
+  it('MATRIX-tree-2 (fixed): selection-mode="none" leaves a clicked row unselected', async () => {
     const vector: TreeVector = { ...DEFAULTS, selectionMode: 'none' };
     tree = await makeTree(vector, nodesFor('nested'));
     const problems = new Problems();
@@ -127,8 +129,8 @@ describe('tree matrix smoke', () => {
     expectClean(problems, 'smoke/none');
   });
 
-  // MATRIX-tree-3: a partially checked parent never becomes indeterminate.
-  it.fails('MATRIX-tree-3: one checked child of two makes the parent indeterminate', async () => {
+  // MATRIX-tree-3 (fixed): a partially checked parent never became indeterminate.
+  it('MATRIX-tree-3 (fixed): one checked child of two makes the parent indeterminate', async () => {
     tree = await makeTree({ showCheckboxes: true }, nodesFor('nested'));
     const box = itemPart(itemFor(tree, 'index'), 'checkbox')!.querySelector('snice-checkbox')!;
     box.dispatchEvent(new CustomEvent('checkbox-change', {
@@ -140,8 +142,9 @@ describe('tree matrix smoke', () => {
     expect(parentBox.indeterminate).toBe(true);
   });
 
-  // MATRIX-tree-4: the programmatic expansion API never reaches the rendered rows.
-  it.fails('MATRIX-tree-4: expandNode() expands the rendered row', async () => {
+  // MATRIX-tree-4 (fixed): the programmatic expansion API never reached the
+  // rendered rows.
+  it('MATRIX-tree-4 (fixed): expandNode() expands the rendered row', async () => {
     tree = await makeTree({}, nodesFor('nested'));
     tree.expandNode('docs');
     await wait(30);

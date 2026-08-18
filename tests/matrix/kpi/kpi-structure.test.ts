@@ -87,21 +87,20 @@ describe('kpi matrix: the documented markup channel', () => {
 
   // ── FINDINGS ──────────────────────────────────────────────────────────────
   //
-  // The three multi-word properties are documented with explicit attribute
-  // names and written as markup in the usage block, but the element observes
-  // and reflects the SQUASHED forms (`trendvalue`, `showsparkline`,
-  // `colorvalue`). Every documented markup example using them is inert: the
-  // attribute is never read, so the property keeps its default, and the
-  // property never writes the attribute a stylesheet or a test would key off.
-  // The assertions below are the documented ones and are NOT weakened.
+  // MATRIX-kpi-1..3 (fixed): the three multi-word properties used to be
+  // declared without an explicit `attribute:` name, so the element observed
+  // and reflected the SQUASHED forms (`trendvalue`, `showsparkline`,
+  // `colorvalue`) and every documented markup example using the kebab names
+  // was inert. The decorators now name the documented attributes, and the
+  // assertions below run unpinned as regression guards.
 
   // MATRIX-kpi-1
-  it.fails('MATRIX-kpi-1: trendValue observes and reflects [trend-value]', async () => {
+  it('MATRIX-kpi-1 (fixed): trendValue observes and reflects [trend-value]', async () => {
     el = await mountKpi(combo('finding', { label: 'L', value: '1', trendValue: '+12.5%' }));
     expect(kpiAttributeProblems(el, 'trendValue')).toEqual([]);
   });
 
-  it.fails('MATRIX-kpi-1: <snice-kpi trend-value="+12.5%"> shows the trend', async () => {
+  it('MATRIX-kpi-1 (fixed): <snice-kpi trend-value="+12.5%"> shows the trend', async () => {
     el = document.createElement('snice-kpi');
     el.setAttribute('label', 'Monthly Revenue');
     el.setAttribute('value', '$54,239');
@@ -114,7 +113,7 @@ describe('kpi matrix: the documented markup channel', () => {
   });
 
   // MATRIX-kpi-2
-  it.fails('MATRIX-kpi-2: showSparkline observes and reflects [show-sparkline]', async () => {
+  it('MATRIX-kpi-2 (fixed): showSparkline observes and reflects [show-sparkline]', async () => {
     el = await mountKpi(combo('finding', { label: 'L', value: '1', showSparkline: true }));
     el.showSparkline = false;
     el.showSparkline = true;
@@ -124,7 +123,7 @@ describe('kpi matrix: the documented markup channel', () => {
 
   // docs/ai/properties.md: `<element enabled="false">` -> false. The KPI docs
   // use exactly that form: `<snice-kpi show-sparkline="false">`.
-  it.fails('MATRIX-kpi-2: <snice-kpi show-sparkline="false"> draws no sparkline', async () => {
+  it('MATRIX-kpi-2 (fixed): <snice-kpi show-sparkline="false"> draws no sparkline', async () => {
     el = document.createElement('snice-kpi');
     el.setAttribute('label', 'Revenue');
     el.setAttribute('value', '$45,231');
@@ -138,14 +137,14 @@ describe('kpi matrix: the documented markup channel', () => {
   });
 
   // MATRIX-kpi-3
-  it.fails('MATRIX-kpi-3: colorValue observes and reflects [color-value]', async () => {
+  it('MATRIX-kpi-3 (fixed): colorValue observes and reflects [color-value]', async () => {
     el = await mountKpi(combo('finding', {
       label: 'L', value: '1', sentiment: 'up', colorValue: true,
     }));
     expect(kpiAttributeProblems(el, 'colorValue')).toEqual([]);
   });
 
-  it.fails('MATRIX-kpi-3: <snice-kpi color-value> colours the value', async () => {
+  it('MATRIX-kpi-3 (fixed): <snice-kpi color-value> colours the value', async () => {
     el = document.createElement('snice-kpi');
     el.setAttribute('label', 'Revenue');
     el.setAttribute('value', '$45,231');

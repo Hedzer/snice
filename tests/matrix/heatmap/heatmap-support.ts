@@ -221,6 +221,22 @@ export function tooltip(el: Heatmap): HTMLElement | null {
   return part(el, 'tooltip');
 }
 
+/**
+ * The component's stylesheet text, whichever channel the engine adopted it
+ * through: constructable sheets land in `adoptedStyleSheets` (happy-dom has no
+ * iterable `shadowRoot.styleSheets`), and a `<style>` fallback element lands
+ * in the tree.
+ */
+export function componentCss(el: Heatmap): string {
+  const root = el.shadowRoot as ShadowRoot & { adoptedStyleSheets?: CSSStyleSheet[] };
+  const sheets = [...(root.adoptedStyleSheets ?? [])];
+  const styleText = [...root.querySelectorAll('style')].map(node => node.textContent ?? '');
+  return sheets
+    .flatMap(sheet => [...sheet.cssRules].map(rule => rule.cssText))
+    .concat(styleText)
+    .join('\n');
+}
+
 // ── Oracles ─────────────────────────────────────────────────────────────────
 
 /**

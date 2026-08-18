@@ -34,6 +34,7 @@ export class SniceCountdown extends HTMLElement implements SniceCountdownElement
   @watch('target')
   onTargetChanged() {
     this.completed = false;
+    this.classList.remove('complete');
     this.restartTimer();
   }
 
@@ -98,15 +99,18 @@ export class SniceCountdown extends HTMLElement implements SniceCountdownElement
 
   @render()
   template() {
+    const totalSeconds = this.days * 86400 + this.hours * 3600 + this.minutes * 60 + this.seconds;
     const segments: Array<{ value: string; label: string }> = [];
 
     if (this.format === 'dhms') {
       segments.push({ value: this.pad(this.days), label: 'Days' });
     }
     if (this.format === 'dhms' || this.format === 'hms') {
-      segments.push({ value: this.pad(this.hours), label: 'Hours' });
+      const hours = this.format === 'hms' ? Math.floor(totalSeconds / 3600) : this.hours;
+      segments.push({ value: this.pad(hours), label: 'Hours' });
     }
-    segments.push({ value: this.pad(this.minutes), label: 'Min' });
+    const minutes = this.format === 'ms' ? Math.floor(totalSeconds / 60) : this.minutes;
+    segments.push({ value: this.pad(minutes), label: 'Min' });
     segments.push({ value: this.pad(this.seconds), label: 'Sec' });
 
     const items = segments.map((seg, i) => {

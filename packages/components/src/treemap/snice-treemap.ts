@@ -98,7 +98,9 @@ function squarify(
         rh = rowSide;
       }
 
-      const colorIndex = colorOffset + rects.length + i;
+      // Computed BEFORE rects.push: rects.length is then this rectangle's
+      // overall ordinal, so the palette advances exactly once per rectangle.
+      const colorIndex = colorOffset + rects.length;
 
       const px = Math.min(padding, rw / 4);
       const py = Math.min(padding, rh / 4);

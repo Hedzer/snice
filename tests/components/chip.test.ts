@@ -206,7 +206,7 @@ describe('snice-chip', () => {
       expect(removeBtn?.getAttribute('aria-label')).toBe('Remove Test');
     });
 
-    it('should not show remove button when disabled', async () => {
+    it('should keep the remove button when disabled (barred, not gone)', async () => {
       chip = await createComponent<SniceChipElement>('snice-chip', {
         label: 'Test',
         removable: true,
@@ -215,7 +215,14 @@ describe('snice-chip', () => {
       await wait(200);
 
       const removeBtn = queryShadow(chip as HTMLElement, '.chip-remove');
-      expect(removeBtn).toBeFalsy();
+      expect(removeBtn).toBeTruthy();
+      expect(removeBtn?.getAttribute('aria-label')).toBe('Remove Test');
+
+      let removeFired = false;
+      (chip as HTMLElement).addEventListener('chip-remove', () => { removeFired = true; });
+      removeBtn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      await wait(20);
+      expect(removeFired, 'a disabled chip is inert').toBe(false);
     });
 
     it('should dispatch chip-remove event when remove button clicked', async () => {
@@ -357,7 +364,7 @@ describe('snice-chip', () => {
       expect(chip.selected).toBe(false);
     });
 
-    it('removable overrides selectable for click toggle (removable primary action)', async () => {
+    it('removable + selectable: body click still toggles selected (independent properties)', async () => {
       chip = await createComponent<SniceChipElement>('snice-chip', {
         label: 'Test',
         selectable: true,
@@ -367,7 +374,7 @@ describe('snice-chip', () => {
       const chipEl = queryShadow(chip as HTMLElement, '.chip') as HTMLElement;
       chipEl.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       await wait(20);
-      expect(chip.selected).toBe(false);
+      expect(chip.selected).toBe(true);
     });
   });
 

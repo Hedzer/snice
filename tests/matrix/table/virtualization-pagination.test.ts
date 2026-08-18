@@ -75,13 +75,14 @@ describe('virtualization × client pagination', () => {
       });
     }
 
-    // MATRIX-virtualization-6 (NEW): with `virtualize` on, the virtual model is
-    // the whole filtered dataset, never the page — snice-table.ts
-    // getVirtualRows() returns getFilteredData() and ignores currentPage /
-    // pageSize. So the spacers reserve 30 rows for a 10-row page, and paging
-    // moves the summary while the body keeps rendering page 1.
+    // MATRIX-virtualization-6 (fixed): with `virtualize` on, the virtual model
+    // used to be the whole filtered dataset, never the page — getVirtualRows()
+    // returned getFilteredData() and ignored currentPage / pageSize, so the
+    // spacers reserved 30 rows for a 10-row page and paging moved the summary
+    // while the body kept rendering page 1. The virtual model is now the
+    // current page's slice, so the window pages with the pager.
     for (const page of [1, 2]) {
-      it.fails(`${mode} / virtualized: page ${page} windows the rows the pager claims`, async () => {
+      it(`${mode} / virtualized: page ${page} windows the rows the pager claims`, async () => {
         const rows = await paginatedTable(remote, true, makeRows(TOTAL));
         if (page !== 1) { table.goToPage(page); await wait(80); }
 

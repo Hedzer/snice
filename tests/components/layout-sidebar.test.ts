@@ -278,9 +278,12 @@ describe('snice-layout-sidebar', () => {
 
     it('below the mobile breakpoint the sidebar overlays via transform with a scrim', async () => {
       const css = await readCss();
-      expect(css).toMatch(/@media \(max-width: 768px\)[\s\S]*\.sidebar[\s\S]*transform: translateX\(/);
+      // The mobile state is driven by a matchMedia listener in the component
+      // (WebKit does not reliably re-evaluate @media in shared constructable
+      // stylesheets) and lands as .layout--mobile.
+      expect(css).toMatch(/\.layout--mobile \.sidebar\s*\{[^}]*transform: translateX\(/);
       expect(css).toMatch(/\.sidebar--mobile-open\s*\{[^}]*transform: translateX\(0\)/);
-      expect(css).toMatch(/\.scrim--visible/);
+      expect(css).toMatch(/\.layout--mobile \.scrim--visible/);
     });
 
     it('never hides the sidebar with display none', async () => {

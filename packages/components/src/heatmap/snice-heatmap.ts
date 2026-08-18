@@ -63,8 +63,9 @@ export class SniceHeatmap extends HTMLElement implements SniceHeatmapElement {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const dayOfWeek = today.getDay();
-    const totalDays = this.weeks * 7 + dayOfWeek + 1;
+    // `weeks` is documented as "Number of weeks to display", so the calendar
+    // is exactly weeks * 7 days, ending today.
+    const totalDays = this.weeks * 7;
     const startDate = new Date(today);
     startDate.setDate(startDate.getDate() - totalDays + 1);
 

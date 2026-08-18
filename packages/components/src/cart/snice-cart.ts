@@ -1,5 +1,12 @@
 import { element, property, query, dispatch, watch, render, styles, html, css } from 'snice';
 import cssContent from './snice-cart.css?inline';
+// The template renders these as child elements; importing them here keeps the
+// documented single-import usage (`import 'snice/components/cart/snice-cart'`)
+// from leaving the controls inert.
+import '../button/snice-button';
+import '../step-input/snice-step-input';
+import '../input/snice-input';
+import '../divider/snice-divider';
 import type {
   SniceCartElement,
   CartItem,

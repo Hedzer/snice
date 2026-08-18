@@ -211,16 +211,12 @@ const COMBOS: Combo[] = [
 
   // ── split: both directions × every documented ratio ──────────────────────
   //
-  // FINDING VISUAL-MATRIX-layout-4 — every VERTICAL split with a non-default ratio.
-  // `snice-layout-split.css` scopes its direction rule
-  // (`:host([direction="vertical"]) .layout { grid-template-columns: 1fr }`)
-  // but NOT its ratio rules (`:host([ratio="60-40"]) .layout {
-  // grid-template-columns: 60fr 1px 40fr }`). Same specificity, later wins —
-  // so asking for a vertical 60-40 restores three COLUMNS and the panes go
-  // side by side, in the direction the author explicitly turned off. Only
-  // `50-50` escapes, because its column track list happens to be symmetrical.
-  // The DOM tier cannot see it: nothing about the markup changes, only the
-  // cascade. The assertions stay correct and the combos are marked.
+  // VISUAL-MATRIX-layout-4 (fixed): `snice-layout-split.css` used to scope its
+  // direction rule but not its ratio rules, so a vertical split with a
+  // non-default ratio restored three columns and the panes went side by side.
+  // The ratio rules are now scoped per direction (`:not([direction="vertical"])`
+  // guards on the horizontal ones, dedicated `grid-template-rows` rules for the
+  // vertical ones), so the pin is unwrapped and every combo asserts normally.
   ...(['horizontal', 'vertical'] as const).flatMap(direction =>
     ([['50-50', [50, 50]], ['60-40', [60, 40]], ['70-30', [70, 30]],
       ['33-67', [33, 67]], ['67-33', [67, 33]]] as const).map(([ratio, parts]) => combo({
@@ -228,8 +224,6 @@ const COMBOS: Combo[] = [
       shell: 'split',
       attrs: { direction, ratio },
       expect: { ratio: parts as unknown as [number, number], direction },
-      finding: direction === 'vertical' && ratio !== '50-50'
-        ? 'VISUAL-MATRIX-layout-4' : undefined,
     }))),
 
   // ── card: every column count, and every gap ──────────────────────────────

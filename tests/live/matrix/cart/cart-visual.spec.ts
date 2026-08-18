@@ -231,12 +231,16 @@ test.describe('cart visual matrix: layer 1', () => {
 // ── MATRIX-cart-1, as the shopper meets it ──────────────────────────────────
 //
 // A FRESH page, so the module registry holds exactly what the documented import
-// pulls in. Pinned with `test.fail()`: the assertion is the documented one — a
-// cart loaded the documented way shows a checkout button — and is not weakened.
+// pulls in. The assertion is the documented one — a cart loaded the documented
+// way shows a checkout button — and is not weakened.
+//
+// (fixed) The cart template renders `<snice-button>` (and friends) as child
+// elements; the documented single-import usage left them unregistered, so the
+// button never upgraded. `snice-cart.ts` now side-effect-imports button,
+// step-input, input, and divider, and the pin is removed with the fix.
 
 test.describe('cart visual matrix: the documented import', () => {
   test('the checkout button paints a real button [MATRIX-cart-1]', async ({ browser }) => {
-    test.fail();
     const fresh = await browser.newPage({ viewport: { width: 1280, height: 900 } });
     try {
       await fresh.goto(FIXTURE);

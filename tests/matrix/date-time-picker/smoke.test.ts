@@ -147,9 +147,9 @@ describe('date-time-picker matrix smoke', () => {
     expect(sequence(seen)).toEqual(['datetimepicker-clear', 'datetime-change']);
   });
 
-  // The marquee regression, kept at full strength. See
-  // matrix/date-time-picker/events.test.ts (MATRIX-date-time-picker-1).
-  it.fails('MATRIX-date-time-picker-1 open() announces one open', async () => {
+  // The marquee regression, kept at full strength and unpinned since its fix.
+  // See matrix/date-time-picker/events.test.ts (MATRIX-date-time-picker-1).
+  it('MATRIX-date-time-picker-1 (fixed) open() announces one open', async () => {
     const el = await mountPicker({});
     const seen = collectEvents(el, ['datetimepicker-open']);
 

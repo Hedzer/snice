@@ -5,14 +5,14 @@
 :host {
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-  /* `contain: paint` would establish a containing block for position: fixed
-     descendants, breaking the tooltip's viewport coordinates. Keep the
-     weaker `layout style` containment for perf without that side-effect. */
-  contain: layout style;
+  /* `contain: paint` AND `contain: layout` both make this host a containing
+     block for fixed-position descendants, which would re-resolve the tooltip's
+     viewport coordinates against the host box and displace it by the host's
+     own page position. No form of containment that does that may be used. */
   --cell-size: 12px;
   --cell-gap: 3px;
-  
-  /* Heatmap intensity scales — use HSL primitive scales so each level is a
+
+  /* Heatmap intensity scales – use HSL primitive scales so each level is a
    * distinct step on the hue's brightness axis. These auto-invert in dark
    * mode because the primitives themselves are theme-aware if overridden
    * by presets, but default primitives are shared. */
@@ -26,11 +26,12 @@
   --heatmap-blue-3: hsl(var(--snice-color-blue-500, 217 91% 60%));
   --heatmap-blue-4: hsl(var(--snice-color-blue-700, 217 77% 48%));
 
-  /* Purple scheme (falls back to blue if no purple primitives shipped) */
-  --heatmap-purple-1: hsl(var(--snice-color-blue-100, 214 95% 93%));
-  --heatmap-purple-2: hsl(var(--snice-color-blue-400, 213 94% 68%));
-  --heatmap-purple-3: hsl(var(--snice-color-blue-600, 217 83% 53%));
-  --heatmap-purple-4: hsl(var(--snice-color-blue-800, 217 71% 40%));
+  /* Purple scheme — a purple ramp, not a re-labelling of the blue one; the
+     literal steps apply until the theme ships purple primitives. */
+  --heatmap-purple-1: hsl(var(--snice-color-purple-100, 270 89% 94%));
+  --heatmap-purple-2: hsl(var(--snice-color-purple-300, 270 80% 76%));
+  --heatmap-purple-3: hsl(var(--snice-color-purple-500, 271 77% 57%));
+  --heatmap-purple-4: hsl(var(--snice-color-purple-700, 273 71% 42%));
 
   --heatmap-orange-1: hsl(var(--snice-color-yellow-100, 55 97% 88%));
   --heatmap-orange-2: hsl(var(--snice-color-yellow-300, 50 98% 64%));

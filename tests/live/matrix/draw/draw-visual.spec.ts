@@ -33,32 +33,26 @@ test.describe('snice-draw visual matrix (layer 1)', () => {
   test.afterAll(async () => { await page?.close(); });
 
   /**
-   * FINDING VISUAL-MATRIX-draw-4 (engines with devicePixelRatio ≠ 1).
+   * FINDING VISUAL-MATRIX-draw-4 (FIXED, engines with devicePixelRatio ≠ 1).
    *
    * The buffer claim this layer owns — "the drawing buffer matches the box in
-   * device pixels" — is broken for real wherever the device grid is finer
-   * than 1:1. `initCanvas()` sizes the bitmap to box × devicePixelRatio and
-   * then assigns `this.width`/`this.height` (both `@property`), and the render
-   * those writes schedule re-emits the canvas's `width`/`height` ATTRIBUTES at
-   * the LOGICAL size — which per the HTML spec resets the bitmap. At dpr 1
-   * that stomp is invisible in geometry and only the transparency half shows
-   * (that is FINDING VISUAL-MATRIX-draw-3 below). At dpr ≠ 1 — Playwright's WebKit
-   * on a scaled display reports 2 — the same defect clamps the buffer back to
-   * 1× FOREVER, so the still-applied `ctx.scale(dpr, dpr)` paints every
-   * stroke at the wrong scale and ink lands away from the pointer.
+   * device pixels" — used to be broken for real wherever the device grid is
+   * finer than 1:1. `initCanvas()` sized the bitmap to box × devicePixelRatio
+   * and then assigned `this.width`/`this.height` (both `@property`), and the
+   * render those writes scheduled re-emitted the canvas's `width`/`height`
+   * ATTRIBUTES at the LOGICAL size — which per the HTML spec resets the
+   * bitmap. At dpr ≠ 1 — Playwright's WebKit on a scaled display reports 2 —
+   * that stomp clamped the buffer back to 1× FOREVER, so the still-applied
+   * `ctx.scale(dpr, dpr)` painted every stroke at the wrong scale and ink
+   * landed away from the pointer.
    *
-   * Chromium, this tier's default engine, runs at dpr 1 and cannot expose it,
-   * which is why the DOM tier never saw it either. The assertion stays as
-   * written; the affected engines pin it, and a fixed component turns the pin
-   * red ("expected to fail but passed") exactly like VISUAL-MATRIX-draw-3's.
+   * Fixed: the template no longer emits canvas width/height attributes at all;
+   * the backing store is sized exactly once, imperatively, in `initCanvas()`.
    */
   for (const tool of TOOLS) {
     for (const disabled of [false, true]) {
       const id = `${tool}/${disabled ? 'disabled' : 'enabled'}`;
       test(id, async () => {
-        test.fail(await page.evaluate(() => window.devicePixelRatio !== 1),
-          'VISUAL-MATRIX-draw-4: the re-emitted 1× width/height attributes'
-          + ' stomp the devicePixelRatio-sized buffer (see the finding comment)');
         await mount(page, { id, tool, disabled, strokes: 'many' });
 
         expect(await collectChartProblems(page, {
@@ -147,23 +141,23 @@ test.describe('snice-draw visual matrix (layer 2: painted pixels)', () => {
   test.afterAll(async () => { await page?.close(); });
 
   /**
-   * FINDING VISUAL-MATRIX-draw-3 (browser-only).
+   * FINDING VISUAL-MATRIX-draw-3 (FIXED, browser-only).
    *
    * `backgroundColor: string = '#ffffff'` is documented as the canvas's
    * background — it is what an exported PNG shows behind the strokes and what
-   * the eraser paints with. `initCanvas()` does fill it, and then immediately
-   * loses it: the same method assigns `this.width` and `this.height` (both
-   * `@property`), and the render those writes schedule re-emits the canvas's
-   * `width`/`height` ATTRIBUTES, which resets the bitmap to fully transparent
-   * per the HTML spec. A freshly mounted canvas is therefore transparent, and
-   * `toDataURL()` on it exports a transparent PNG rather than the documented
-   * background, until the first `clear()` or stroke repaints it.
+   * the eraser paints with. `initCanvas()` filled it, then immediately lost
+   * it: the same method assigned `this.width` and `this.height` (both
+   * `@property`), and the render those writes scheduled re-emitted the
+   * canvas's `width`/`height` ATTRIBUTES, which reset the bitmap to fully
+   * transparent per the HTML spec. A freshly mounted canvas was therefore
+   * transparent, and `toDataURL()` on it exported a transparent PNG rather
+   * than the documented background, until the first `clear()` or stroke
+   * repainted it.
    *
-   * (happy-dom cannot see this: its 2D context is a call recorder with no
-   * bitmap to reset, which is exactly why the finding belongs to this tier.)
+   * Fixed together with VISUAL-MATRIX-draw-4: the template no longer emits
+   * the attributes, so nothing after `initCanvas()` resets the bitmap.
    */
-  test('VISUAL-MATRIX-draw-3: the background colour fills the whole canvas', async () => {
-    test.fail();
+  test('VISUAL-MATRIX-draw-3 (fixed): the background colour fills the whole canvas', async () => {
     await mount(page, { id: 'px-background', backgroundColor: '#102030', strokes: 'none' });
     const probe = `(host) => { const b = host.shadowRoot.querySelector('canvas').getBoundingClientRect();
       return [{ x: b.left + 4, y: b.top + 4 },
@@ -175,21 +169,6 @@ test.describe('snice-draw visual matrix (layer 2: painted pixels)', () => {
     for (const pixel of pixels) {
       expect(pixel, `painted ${pixel}`).toEqual([16, 32, 48]);
     }
-  });
-
-  test('VISUAL-MATRIX-draw-3 reproduces: a freshly mounted canvas is transparent', async () => {
-    await mount(page, { id: 'px-background-repro', backgroundColor: '#102030', strokes: 'none' });
-    const fresh = await page.evaluate(() => (window as any).matrix.pixel(10, 10));
-    expect(fresh, 'alpha 0 everywhere').toEqual([0, 0, 0, 0]);
-
-    // The very first repaint restores it, which is why the defect is easy to
-    // miss: only the untouched canvas is wrong.
-    await page.evaluate(async () => {
-      (window as any).matrix.el.clear();
-      await (window as any).matrix.settle();
-    });
-    expect(await page.evaluate(() => (window as any).matrix.pixel(10, 10)))
-      .toEqual([16, 32, 48, 255]);
   });
 
   test('a repainted canvas fills the documented background everywhere', async () => {

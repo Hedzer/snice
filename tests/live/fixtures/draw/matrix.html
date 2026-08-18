@@ -101,15 +101,17 @@
           };
         },
 
-        /** Draw one stroke with real pointer events, in canvas coordinates. */
+        /** Draw one stroke with real pointer events, in logical canvas
+            coordinates (the canvas's CSS box — what getPointerPosition
+            maps back from). */
         async draw(points) {
           const el = current?.el;
           if (!el) return 0;
           const canvas = el.shadowRoot.querySelector('canvas');
           const box = canvas.getBoundingClientRect();
           const at = ([px, py]) => ({
-            clientX: box.left + (px / canvas.width) * box.width,
-            clientY: box.top + (py / canvas.height) * box.height,
+            clientX: box.left + px,
+            clientY: box.top + py,
           });
           const fire = (type, p) => canvas.dispatchEvent(new PointerEvent(type, {
             pointerId: 1, isPrimary: true, pressure: 0.5,
@@ -123,12 +125,19 @@
           return el.getStrokes().length;
         },
 
-        /** Read the pixel the component itself painted, in canvas space. */
+        /** Read the pixel the component itself painted, in logical canvas
+            coordinates. getImageData addresses the BITMAP, which is the box
+            scaled by devicePixelRatio (2 on scaled WebKit displays), so the
+            logical point is mapped through the live bitmap/box ratio. */
         pixel(x, y) {
           const el = current?.el;
           if (!el) return null;
           const canvas = el.shadowRoot.querySelector('canvas');
-          const data = canvas.getContext('2d').getImageData(x, y, 1, 1).data;
+          const box = canvas.getBoundingClientRect();
+          const scaleX = canvas.width / box.width;
+          const scaleY = canvas.height / box.height;
+          const data = canvas.getContext('2d')
+            .getImageData(Math.round(x * scaleX), Math.round(y * scaleY), 1, 1).data;
           return [data[0], data[1], data[2], data[3]];
         },
 

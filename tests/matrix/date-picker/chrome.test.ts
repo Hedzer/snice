@@ -21,8 +21,9 @@
  *   · "`labels` is live and returned in document order."
  *   · "The popup is separately named `<accessible name> calendar`."
  *
- * it.fails policy: MATRIX-date-picker-2 is pinned here — the calendar popup
- * carries no accessible name at all.
+ * it.fails policy: no finding is pinned in this file. (MATRIX-date-picker-2,
+ * the unnamed calendar popup, was fixed and its rows run unpinned as the
+ * regression guard.)
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
@@ -237,17 +238,15 @@ describe('date-picker matrix: chrome', () => {
       .toEqual(['First']);
   });
 
-  // ── FINDING MATRIX-date-picker-2 ──────────────────────────────────────────
+  // ── MATRIX-date-picker-2 (fixed) ──────────────────────────────────────────
   //
   // "The popup is separately named `<accessible name> calendar`." The calendar
-  // is rendered as `<div class="calendar" part="calendar" popover="manual">`
-  // with no `aria-label` and no `role`, so a screen reader entering the popup
-  // announces nothing at all — and the promise that it is named SEPARATELY
-  // from the field is exactly what makes the omission invisible from the
-  // field's own (correct) name. The sibling `snice-date-time-picker` names its
-  // panel; this one does not.
-  it.fails(
-    'MATRIX-date-picker-2: the calendar popup is named "<accessible name> calendar"',
+  // used to render with no `aria-label` and no `role`, so a screen reader
+  // entering the popup announced nothing at all. Fixed the way the sibling
+  // `snice-date-time-picker` names its panel; these run unpinned as the
+  // regression guard.
+  it(
+    'MATRIX-date-picker-2 (fixed): the calendar popup is named "<accessible name> calendar"',
     async () => {
       const el = await mountPicker({ attrs: { label: 'Arrival', open: true } });
       await wait(SETTLE);
@@ -255,8 +254,8 @@ describe('date-picker matrix: chrome', () => {
         'the calendar popup carries no accessible name').toBe('Arrival calendar');
     });
 
-  it.fails(
-    'MATRIX-date-picker-2: an unlabelled picker names its popup "Date calendar"',
+  it(
+    'MATRIX-date-picker-2 (fixed): an unlabelled picker names its popup "Date calendar"',
     async () => {
       const el = await mountPicker({ attrs: { open: true } });
       await wait(SETTLE);

@@ -112,11 +112,14 @@ describe('countdown matrix: retargeting a finished countdown', () => {
       .toEqual(expectedValues('dhms', RUNNING.ms));
   });
 
-  it.fails(
+  // MATRIX-countdown-3 (fixed): retargeting a finished countdown used to
+  // leave `.complete` on the host while it ran again. Unpinned regression
+  // guard.
+  it(
     finding('MATRIX-countdown-3',
-      'retarget/future-after-complete: `.complete` stays on the host while the'
-      + ' countdown is running again — the class documented as "added on finish"'
-      + ' now marks a countdown that has not finished'),
+      'retarget/future-after-complete (fixed): `.complete` is removed while the'
+      + ' countdown runs again — the class documented as "added on finish"'
+      + ' must not mark a countdown that has not finished'),
     async () => {
       const el = await mount<HTMLElement>('snice-countdown', {
         format: 'dhms', target: targetFor(-MINUTE),

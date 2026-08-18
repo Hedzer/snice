@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const LayoutCard = createReactAdapter({
     tagName: 'snice-layout-card',
-    properties: ["columns", "gap", "hasFooter", "hasHeader"],
+    properties: ["columns", "gap", "contained", "hasFooter", "hasHeader"],
     events: {},
     formAssociated: false
 });

@@ -157,10 +157,13 @@ describe('doc matrix: content', () => {
       });
   }
 
-  it('a fresh editor seeds exactly one empty paragraph', async () => {
+  it('a fresh editor mounts empty so the placeholder can paint', async () => {
+    // VISUAL-MATRIX-doc-1 (fixed): the fresh editor used to seed `<p><br></p>`,
+    // which defeats the documented `.doc-editor:empty::before` placeholder.
+    // Only clear() re-seeds the paragraph.
     const el = await mountDoc(COMBO);
-    expect(el.getHTML()).toBe('<p><br></p>');
-    expect(editorOf(el)!.childElementCount).toBe(1);
+    expect(el.getHTML()).toBe('');
+    expect(editorOf(el)!.childElementCount).toBe(0);
   });
 
   it('setHTML before the editor exists is queued and applied on ready', async () => {

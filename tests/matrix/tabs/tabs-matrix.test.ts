@@ -19,10 +19,11 @@
  * overflow behaviour are paint, and belong to the visual tier
  * (tests/live/matrix/tabs/).
  *
- * it.fails policy: three findings are pinned in this file —
- *   MATRIX-tabs-1  a disabled tab's close button still fires;
- *   MATRIX-tabs-2  the documented kebab-case attributes are not observed;
- *   MATRIX-tabs-3  an out-of-range selectTab still announces a tab change.
+  * it.fails policy: findings pinned in this file —
+  *   MATRIX-tabs-1  a disabled tab's close button still fires;
+  *   MATRIX-tabs-2  (fixed) the documented kebab-case attributes are now
+  *                  observed; their guards run unpinned;
+  *   MATRIX-tabs-3  an out-of-range selectTab still announces a tab change.
  */
 import { describe, it, afterEach } from 'vitest';
 import {
@@ -56,14 +57,9 @@ describe('tabs matrix: structure', () => {
     count: ['three', 'five'] as const,
     noScrollControls: [false, true],
   })) {
-    /**
-     * FINDING MATRIX-tabs-2 — the documented kebab-case attributes are not
-     * observed. See the pinned test below `tabs matrix: attributes` for the
-     * full write-up; the half of this product that authors
-     * `no-scroll-controls` in HTML is pinned here because that is the form the
-     * doc's own example uses.
-     */
-    const runner = combo.noScrollControls ? it.fails : it;
+    // MATRIX-tabs-2 (fixed): `no-scroll-controls` used to be authored in HTML
+    // but never observed; it now is, so these combos run unpinned.
+    const runner = it;
 
     runner(combo.id, async () => {
       const s = spec({
@@ -406,33 +402,24 @@ describe('tabs matrix: disabled and closable', () => {
 
 describe('tabs matrix: attributes', () => {
   /**
-   * FINDING MATRIX-tabs-2 — the documented kebab-case attributes are not the
-   * ones the components observe.
+   * FINDING MATRIX-tabs-2 (fixed) — the documented kebab-case attributes used
+   * not to be the ones the components observe.
    *
-   * `docs/ai/components/tabs.md` spells three attributes out explicitly:
+   * `docs/ai/components/tabs.md` spells four attributes out explicitly:
    *
    *     noScrollControls: boolean = false;  // attr: no-scroll-controls
    *     transitionIn: string = '';          // attr: transition-in
    *     transitionOut: string = '';         // attr: transition-out
    *     transitionDuration: number = 300;   // attr: transition-duration
    *
-   * Every one of them is declared as a bare `@property({ … })` with no
-   * `attribute` option. snice's default attribute name is the property name
-   * LOWERCASED, not kebab-cased (`getAttrName` in packages/core/src/utils.ts),
-   * so the observed attributes are `noscrollcontrols`, `transitionin`,
-   * `transitionout` and `transitionduration`. Authoring the documented HTML —
-   * `<snice-tabs no-scroll-controls>` — sets an attribute nobody is listening
-   * to, and the property keeps its default.
-   *
-   * The PROPERTY channel works throughout, which is why the runtime
-   * reconfiguration tests below pass; it is only the documented HTML form that
-   * does nothing.
-   *
-   * combo:    `<snice-tabs no-scroll-controls>` with three tabs
-   * expected: noScrollControls === true, and no [part="scroll-button"]
-   * actual:   noScrollControls === false, and both scroll buttons render
+   * Every one of them was declared without an `attribute` option, and snice's
+   * default attribute name is the property name LOWERCASED, not kebab-cased
+   * (`getAttrName` in packages/core/src/utils.ts), so the observed attributes
+   * were `noscrollcontrols`, `transitionin`, `transitionout` and
+   * `transitionduration`. The decorators now name the documented attributes;
+   * the guards below run unpinned.
    */
-  it.fails('no-scroll-controls reaches the property', async () => {
+  it('no-scroll-controls reaches the property [MATRIX-tabs-2 (fixed)]', async () => {
     const tabs = await mountTabs(spec({ noScrollControls: true }));
     const problems = new Problems();
 
@@ -442,15 +429,14 @@ describe('tabs matrix: attributes', () => {
   });
 
   /**
-   * FINDING MATRIX-tabs-2, the panel half of the same defect.
+   * FINDING MATRIX-tabs-2 (fixed), the panel half of the same defect.
    *
    * combo:    `<snice-tab-panel transition-in="fade" transition-out="fade"
    *            transition-duration="120">`
    * expected: transitionIn === 'fade', transitionOut === 'fade',
    *           transitionDuration === 120
-   * actual:   '', '', 300 — the authored attributes are never read
    */
-  it.fails('transition-in / transition-out / transition-duration reach the panel', async () => {
+  it('transition-in / transition-out / transition-duration reach the panel [MATRIX-tabs-2 (fixed)]', async () => {
     const tabs = await mountTabs(spec());
     const problems = new Problems();
 

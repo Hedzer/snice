@@ -58,8 +58,10 @@
 }
 
 .image--large {
-  width: var(--snice-spacing-3xl, 12rem); /* 192px */
-  height: var(--snice-spacing-3xl, 12rem); /* 192px */
+  /* No theme token is this big (the spacing scale stops at 8rem = medium):
+     large is 1.5x medium so the documented small < medium < large scale holds. */
+  width: calc(var(--snice-spacing-5xl, 8rem) * 1.5); /* 192px */
+  height: calc(var(--snice-spacing-5xl, 8rem) * 1.5); /* 192px */
 }
 
 /* Shape variants */

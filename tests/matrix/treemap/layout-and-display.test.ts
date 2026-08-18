@@ -59,21 +59,14 @@ describe('snice-treemap matrix: colour schemes', () => {
   });
 
   /**
-   * FINDING MATRIX-treemap-1.
-   *
-   * A colour scheme exists so that neighbouring rectangles can be told apart —
-   * that is the whole reason `colorScheme` offers eight named palettes of eight
-   * colours each. The squarified layout computes each rectangle's palette slot
-   * as `colorOffset + rects.length + i` while ALSO pushing into `rects` inside
-   * the same loop, so the index advances twice per rectangle within a row and
-   * then resets against the row's own base. The result is that adjacent
-   * siblings are painted the SAME colour (rainbow over twelve children paints
-   * red, yellow, yellow, blue, blue, brown, brown, red, red, yellow, yellow,
-   * green) and half the palette is never used at all.
-   *
-   * The assertions below are the documented ones and stay as they are.
+   * MATRIX-treemap-1 (fixed): the squarified layout used to compute each
+   * rectangle's palette slot as `colorOffset + rects.length + i` while ALSO
+   * pushing into `rects` inside the same loop, so the index advanced twice per
+   * rectangle — adjacent siblings painted the same colour and half the
+   * palette was never used. The index now advances exactly once per
+   * rectangle. The assertions below are the documented ones and always were.
    */
-  it.fails('MATRIX-treemap-1: no two neighbouring rectangles share a colour', async () => {
+  it('no two neighbouring rectangles share a colour [MATRIX-treemap-1]', async () => {
     const el = await mountTreemap({ tree: 'many', colorScheme: 'rainbow' });
     const painted = fills(el);
     const collisions = painted
@@ -82,18 +75,9 @@ describe('snice-treemap matrix: colour schemes', () => {
     expect(collisions, `painted ${JSON.stringify(painted)}`).toEqual([]);
   });
 
-  it.fails('MATRIX-treemap-1: a palette of eight is used before it repeats', async () => {
+  it('a palette of eight is used before it repeats [MATRIX-treemap-1]', async () => {
     const el = await mountTreemap({ tree: 'many', colorScheme: 'rainbow' });
     expect(new Set(fills(el).slice(0, 8)).size).toBe(8);
-  });
-
-  it('MATRIX-treemap-1 reproduces: the colour index advances twice per rectangle', async () => {
-    const el = await mountTreemap({ tree: 'many', colorScheme: 'rainbow' });
-    const painted = fills(el);
-    expect(painted).toHaveLength(12);
-    // Six distinct colours out of eight, and neighbours doubled up.
-    expect(new Set(painted).size).toBeLessThan(8);
-    expect(painted.some((fill, index) => index > 0 && fill === painted[index - 1])).toBe(true);
   });
 
   it('a named scheme paints something other than the default one', async () => {

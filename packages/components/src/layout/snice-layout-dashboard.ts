@@ -1,4 +1,4 @@
-import { element, query, property, ready, render, styles, html, css } from 'snice';
+import { element, query, property, ready, dispose, render, styles, html, css } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import cssContent from './snice-layout-dashboard.css?inline';
 import '../breadcrumbs/snice-breadcrumbs.ts';
@@ -26,6 +26,27 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
   @property({ attribute: false })
   mobileOpen = false;
 
+  /**
+   * Whether the viewport is below the documented 1024px/768px breakpoints
+   * (rail stacks under main below 1024px; sidebar overlays below 768px).
+   * Driven from `matchMedia` listeners rather than CSS `@media` blocks: the
+   * component's styles live in one constructable stylesheet shared across
+   * every instance's shadow root, and WebKit does not reliably re-evaluate
+   * `@media` rules in such a sheet after viewport changes, while `matchMedia`
+   * listeners stay live. The states land on the template as
+   * `layout--railed-stacked` and `layout--mobile`.
+   */
+  @property({ attribute: false })
+  private stackedViewport = false;
+
+  @property({ attribute: false })
+  private mobileViewport = false;
+
+  private viewportQuery?: MediaQueryList;
+  private mobileQuery?: MediaQueryList;
+  private viewportListener?: (event: MediaQueryListEvent) => void;
+  private mobileListener?: (event: MediaQueryListEvent) => void;
+
   @property({ attribute: false })
   hasRail = false;
 
@@ -42,9 +63,11 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
     const railEmptyClass = this.hasRail ? '' : ' right-sidebar--empty';
     const breadcrumbsHtml = this.getBreadcrumbsHtml();
     const toolbarHiddenClass = this.hasToolbarContent || breadcrumbsHtml ? '' : ' toolbar--hidden';
+    const layoutClasses = `${this.stackedViewport ? ' layout--railed-stacked' : ''}`
+      + `${this.mobileViewport ? ' layout--mobile' : ''}`;
 
     return html/*html*/`
-      <div class="layout">
+      <div class="layout${layoutClasses}">
         <header class="header" part="header">
           <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="${expanded}" @click=${this.handleSidebarToggle}>
             <svg viewBox="0 0 24 24" width="20" height="20">
@@ -89,11 +112,7 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
   }
 
   handleSidebarToggle() {
-    const isMobileViewport = typeof window !== 'undefined'
-      && typeof window.matchMedia === 'function'
-      && window.matchMedia('(max-width: 768px)').matches;
-
-    if (isMobileViewport) {
+    if (this.mobileViewport) {
       this.mobileOpen = !this.mobileOpen;
       return;
     }
@@ -103,6 +122,34 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
 
   handleScrimClick() {
     this.mobileOpen = false;
+  }
+
+  @ready()
+  wireViewportState() {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+    this.viewportQuery = window.matchMedia('(max-width: 1024px)');
+    this.stackedViewport = this.viewportQuery.matches;
+    this.viewportListener = (event) => { this.stackedViewport = event.matches; };
+    this.viewportQuery.addEventListener('change', this.viewportListener);
+
+    this.mobileQuery = window.matchMedia('(max-width: 768px)');
+    this.mobileViewport = this.mobileQuery.matches;
+    this.mobileListener = (event) => { this.mobileViewport = event.matches; };
+    this.mobileQuery.addEventListener('change', this.mobileListener);
+  }
+
+  @dispose()
+  releaseViewportState() {
+    if (this.viewportQuery && this.viewportListener) {
+      this.viewportQuery.removeEventListener('change', this.viewportListener);
+    }
+    if (this.mobileQuery && this.mobileListener) {
+      this.mobileQuery.removeEventListener('change', this.mobileListener);
+    }
+    this.viewportQuery = undefined;
+    this.mobileQuery = undefined;
+    this.viewportListener = undefined;
+    this.mobileListener = undefined;
   }
 
   @ready()

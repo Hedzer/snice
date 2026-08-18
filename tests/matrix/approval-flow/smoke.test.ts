@@ -9,8 +9,8 @@
  *   · the doc's own chain renders name, role, status, comment and timestamp;
  *   · only the current PENDING step offers Approve/Reject;
  *   · both action events carry the step they acted on;
- *   · MATRIX-approval-flow-1 — the documented `step-comment` event has no
- *     producer anywhere in the component.
+ *   · the documented `step-comment` affordance exists on the current step
+ *     (MATRIX-approval-flow-1, fixed).
  *
  * The full cross lives in the sibling files and runs via
  * `npx vitest run --config vitest.matrix.config.ts tests/matrix/approval-flow`.
@@ -55,7 +55,7 @@ describe('approval-flow smoke', () => {
     expect(rejections.map(d => d.step.approver), 'step-reject').toEqual(['Bob Jones']);
   });
 
-  it.fails('the current step can take a comment [MATRIX-approval-flow-1]', async () => {
+  it('the current step can take a comment [MATRIX-approval-flow-1 fixed]', async () => {
     const el = await mount<HTMLElement>(TAG, {}, { currentStep: '2', steps: chain() });
     const current = parts(el, 'step')[1];
     expect(

@@ -25,6 +25,21 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
   @property({ attribute: false })
   mobileOpen = false;
 
+  /**
+   * Whether the viewport is below the documented 768px breakpoint, where the
+   * sidebar leaves the flow and overlays main behind a scrim. Driven from a
+   * `matchMedia` listener rather than a CSS `@media` block: the component's
+   * styles live in one constructable stylesheet shared across every instance's
+   * shadow root, and WebKit does not reliably re-evaluate `@media` rules in
+   * such a sheet after viewport changes, while `matchMedia` listeners stay
+   * live. The state lands on the template as `layout--mobile`.
+   */
+  @property({ attribute: false })
+  private mobileViewport = false;
+
+  private mobileQuery?: MediaQueryList;
+  private mobileListener?: (event: MediaQueryListEvent) => void;
+
   @query('snice-nav')
   navElement!: SniceNav;
 
@@ -42,10 +57,11 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
     const sidebarCollapsedClass = canCollapse && this.collapsed ? ' sidebar--collapsed' : '';
     const sidebarMobileClass = this.mobileOpen ? ' sidebar--mobile-open' : '';
     const scrimClass = this.mobileOpen ? ' scrim--visible' : '';
+    const layoutMobileClass = this.mobileViewport ? ' layout--mobile' : '';
     const expanded = this.mobileOpen || !this.collapsed;
 
     return html/*html*/`
-      <div class="layout">
+      <div class="layout${layoutMobileClass}">
         <header class="header" part="header">
           <if ${canCollapse}>
             <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="${expanded}" @click=${this.handleSidebarToggle}>
@@ -93,11 +109,7 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
   handleSidebarToggle() {
     if (this.collapseMode === 'none') return;
 
-    const isMobileViewport = typeof window !== 'undefined'
-      && typeof window.matchMedia === 'function'
-      && window.matchMedia('(max-width: 768px)').matches;
-
-    if (isMobileViewport) {
+    if (this.mobileViewport) {
       this.mobileOpen = !this.mobileOpen;
       return;
     }
@@ -122,6 +134,24 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
   wireFooterState() {
     this.syncFooterState();
     this.shadowRoot?.addEventListener('slotchange', () => this.syncFooterState());
+  }
+
+  @ready()
+  wireMobileState() {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+    this.mobileQuery = window.matchMedia('(max-width: 768px)');
+    this.mobileViewport = this.mobileQuery.matches;
+    this.mobileListener = (event) => { this.mobileViewport = event.matches; };
+    this.mobileQuery.addEventListener('change', this.mobileListener);
+  }
+
+  @dispose()
+  releaseMobileState() {
+    if (this.mobileQuery && this.mobileListener) {
+      this.mobileQuery.removeEventListener('change', this.mobileListener);
+    }
+    this.mobileQuery = undefined;
+    this.mobileListener = undefined;
   }
 
   private syncFooterState() {

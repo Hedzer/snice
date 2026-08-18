@@ -123,6 +123,10 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
         this.containerWidth = entry.contentRect.width || 600;
         this.containerHeight = entry.contentRect.height || 400;
         this.updateViewBox();
+        // "Responsive via ResizeObserver" — the layouts are functions of the
+        // container's size, so a resize re-lays the graph out, not just the
+        // viewBox it is drawn into.
+        if (this.simInitialized) this.buildSimulation();
       }
     });
     this.resizeObserver.observe(this);
@@ -501,9 +505,11 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
   }
 
   private handleSvgMouseDown(e: MouseEvent) {
-    // Check if clicking on a node
+    // Check if clicking on a node. A press on a node always tracks the node so
+    // a release without movement can report `node-click`; whether the node may
+    // FOLLOW the pointer is what `dragEnabled` gates.
     const nodeGroup = (e.target as Element).closest('.network-graph__node');
-    if (nodeGroup && this.dragEnabled) {
+    if (nodeGroup) {
       e.preventDefault();
       e.stopPropagation();
       const nodeId = nodeGroup.getAttribute('data-node-id');
@@ -534,6 +540,7 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
 
   private handleMouseMove(e: MouseEvent) {
     if (this.dragNode) {
+      if (!this.dragEnabled) return;
       const pos = this.screenToGraph(e.clientX, e.clientY);
       this.dragNode.x = pos.x;
       this.dragNode.y = pos.y;

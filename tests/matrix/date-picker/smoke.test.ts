@@ -140,10 +140,10 @@ describe('date-picker matrix smoke', () => {
     expect(el.value, 'reset restores the current default').toBe('2026-05-05');
   });
 
-  // The marquee regressions, kept at full strength. See
-  // matrix/date-picker/display-formats.test.ts (MATRIX-date-picker-1) and
-  // matrix/date-picker/chrome.test.ts (MATRIX-date-picker-2).
-  it.fails('MATRIX-date-picker-1: yyyy-mm-dd accepts the swapped separator for compatibility', async () => {
+  // The marquee regressions, kept at full strength and unpinned since their
+  // fixes. See matrix/date-picker/display-formats.test.ts (MATRIX-date-picker-1)
+  // and matrix/date-picker/chrome.test.ts (MATRIX-date-picker-2).
+  it('MATRIX-date-picker-1 (fixed): yyyy-mm-dd accepts the swapped separator for compatibility', async () => {
     const sample = valueByName('canonical');
     const el = await mountPicker({ attrs: { format: 'yyyy-mm-dd' }, liveValue: '2026/03/15' });
     expect(el.value,
@@ -151,7 +151,7 @@ describe('date-picker matrix smoke', () => {
       + ' separator is documented as accepted').toBe(canonical(sample.parts));
   });
 
-  it.fails('MATRIX-date-picker-2: the calendar popup is named "<accessible name> calendar"', async () => {
+  it('MATRIX-date-picker-2 (fixed): the calendar popup is named "<accessible name> calendar"', async () => {
     const el = await mountPicker({ attrs: { label: 'Arrival', open: true } });
     await wait(SETTLE);
     expect(readFacts(el).calendarName,

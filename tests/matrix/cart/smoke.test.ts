@@ -13,10 +13,7 @@
  *   · mutation   — `addItem` increments an existing id, `updateQuantity(0)`
  *                  removes;
  *   · events     — `checkout` reports the money the summary shows;
- *   · empty      — the `empty` part, and nothing else;
- *   · MATRIX-cart-1 — the documented single import leaves the controls inert
- *                  (pinned here too, because it is the one defect a shopper
- *                  meets on the first click).
+ *   · empty      — the `empty` part, and nothing else.
  *
  * Every assertion routes through the matrix's own oracle module
  * (matrix/cart/cart-support.ts).

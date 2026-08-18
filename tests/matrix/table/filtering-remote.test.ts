@@ -22,15 +22,6 @@ type MakeRemote = () => Promise<any>;
 
 interface Scenario {
   name: string;
-  /**
-   * Divergence from the documented contract for every pipeline/oracle. Set per
-   * SCENARIO, never per describe block: a block-wide `it.fails` would absorb an
-   * unrelated regression (a dropped row, a blank cell) in every scenario it
-   * covers. Each entry below is paired with a plain `it` guard that asserts the
-   * parts of the same sequence which do work, so the known defect cannot hide
-   * a new one.
-   */
-  knownFail?: string;
   run: (mk: MakeRemote, check: Check, pipeline: PipelineName) => Promise<void>;
 }
 
@@ -113,8 +104,12 @@ const SCENARIOS: Scenario[] = [
     },
   },
   {
+    // MATRIX-filtering-3 (fixed): remote mode used to re-filter the server's
+    // response client-side, dropping delivered rows whose match lived in
+    // fields the table never received. getFilteredData() no longer applies the
+    // client filter engine in remote mode — the model still drives the request
+    // params, and every delivered row renders.
     name: 'column filter on the pipeline column itself',
-    knownFail: 'MATRIX-filtering-3',
     run: async (mk, check, pipeline) => {
       const table = await mk();
       const rows = people();
@@ -131,8 +126,8 @@ const SCENARIOS: Scenario[] = [
     },
   },
   {
+    // MATRIX-filtering-3 (fixed), see above.
     name: 'quick filter whose server result does not satisfy the client predicate',
-    knownFail: 'MATRIX-filtering-3',
     run: async (mk, check) => {
       const table = await mk();
       const rows = people();
@@ -283,26 +278,26 @@ describe('filtering matrix — remote mode', () => {
         };
 
         for (const scenario of SCENARIOS) {
-          // MATRIX-filtering-3: remote mode re-filters the server's response
-          // client-side, dropping delivered rows.
-          const runner = scenario.knownFail ? it.fails : it;
-          runner(scenario.name, async () => {
+          // MATRIX-filtering-3 is fixed (remote mode no longer re-filters the
+          // server's response client-side), so every scenario runs as a plain
+          // it — including the two that used to run under it.fails.
+          it(scenario.name, async () => {
             await scenario.run(mk, check, pipeline as PipelineName);
           });
         }
 
-        // ── Guards for the two MATRIX-filtering-3 scenarios above ──────────
-        // `it.fails` only promises "something threw". These assert everything
-        // in the same sequence that is NOT the known defect, so a regression
-        // inside those combos surfaces here instead of being absorbed.
-        it('MATRIX-filtering-3 guard: the pre-filter delivery renders in full', async () => {
+        // ── Regression guards from the MATRIX-filtering-3 pin era ─────────
+        // These cover the parts of the defective sequences that worked even
+        // then; they stay as ordinary regressions now that the defect is
+        // fixed.
+        it('pre-filter delivery renders in full', async () => {
           await mk();
           const rows = people();
           await deliver(table, rows);
           await check(rows);
         });
 
-        it('MATRIX-filtering-3 guard: the filter reaches the request payload', async () => {
+        it('the filter reaches the request payload', async () => {
           await mk();
           const rows = people();
           await deliver(table, rows);
@@ -324,14 +319,14 @@ describe('filtering matrix — remote mode', () => {
           ]);
         });
 
-        it('MATRIX-filtering-3 guard: clearing the filter restores the full server set', async () => {
+        it('clearing the filter restores the full server set', async () => {
           await mk();
           const rows = people();
           await deliver(table, rows);
           await filterRemote(table, () => table.setQuickFilter('q7-code'),
             [rows[0], rows[2], rows[5]]);
-          // The known defect empties the body here; the recovery path is what
-          // this guard pins, and it must keep working.
+          // While the defect was pinned this emptied the body; the recovery
+          // path is what this guard holds, and it must keep working.
           await filterRemote(table, () => table.clearAllFilters(), rows);
           await check(rows);
         });

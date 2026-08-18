@@ -204,49 +204,51 @@
 }
 
 /* Responsive behavior: below the breakpoint the sidebar leaves the flow and
-   overlays main behind a scrim — content is never display:none'd away. */
-@media (max-width: 768px) {
-  .header {
-    padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
-  }
+   overlays main behind a scrim — content is never display:none'd away.
+   Scoped to .layout--mobile (set from a matchMedia listener in the component)
+   rather than an @media block: WebKit does not reliably re-evaluate @media
+   rules inside a constructable stylesheet shared across shadow roots after
+   viewport changes, so a pure media query can go stale there. */
+.layout--mobile .header {
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+}
 
-  .sidebar {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: var(--snice-z-overlay, 1100);
-    width: min(80vw, 18rem);
-    transform: translateX(-105%);
-    box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
-  }
+.layout--mobile .sidebar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--snice-z-overlay, 1100);
+  width: min(80vw, 18rem);
+  transform: translateX(-105%);
+  box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+}
 
-  /* Desktop collapse does not apply while overlaid */
-  .sidebar--collapsed,
-  .sidebar--rail.sidebar--collapsed {
-    width: min(80vw, 18rem);
-    border-right: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
-  }
+/* Desktop collapse does not apply while overlaid */
+.layout--mobile .sidebar--collapsed,
+.layout--mobile .sidebar--rail.sidebar--collapsed {
+  width: min(80vw, 18rem);
+  border-right: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
+}
 
-  .sidebar--mobile-open {
-    transform: translateX(0);
-  }
+.layout--mobile .sidebar--mobile-open {
+  transform: translateX(0);
+}
 
-  .scrim--visible {
-    display: block;
-    position: absolute;
-    inset: 0;
-    z-index: var(--snice-z-scrim, 1000);
-    background: rgb(0 0 0 / 0.4);
-  }
+.layout--mobile .scrim--visible {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: var(--snice-z-scrim, 1000);
+  background: rgb(0 0 0 / 0.4);
+}
 
-  .main {
-    padding: var(--snice-spacing-md, 1rem);
-  }
+.layout--mobile .main {
+  padding: var(--snice-spacing-md, 1rem);
+}
 
-  .footer {
-    padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
-  }
+.layout--mobile .footer {
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
 }
 @media (prefers-reduced-motion: reduce) {
   * {

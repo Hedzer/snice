@@ -1,4 +1,5 @@
 import { element, property, render, styles, html, css } from 'snice';
+import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import cssContent from './snice-layout-auth-split.css?inline';
 
 /**
@@ -8,7 +9,7 @@ import cssContent from './snice-layout-auth-split.css?inline';
  * form takes the full width, which is what sign-in pages do everywhere.
  */
 @element('snice-layout-auth-split')
-export class SniceLayoutAuthSplit extends HTMLElement {
+export class SniceLayoutAuthSplit extends HTMLElement implements Layout {
   /** Which side the brand panel sits on. */
   @property({ attribute: 'panel-position' })
   panelPosition: 'start' | 'end' = 'end';
@@ -47,5 +48,13 @@ export class SniceLayoutAuthSplit extends HTMLElement {
   @styles()
   styles() {
     return css/*css*/`${cssContent}`;
+  }
+
+  private placards: Placard[] = [];
+  private currentRoute = '';
+
+  update(_appContext: AppContext, placards: Placard[], currentRoute: string, _routeParams: RouteParams): void {
+    this.placards = placards;
+    this.currentRoute = currentRoute;
   }
 }

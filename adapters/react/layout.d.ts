@@ -4,6 +4,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  * Props for the Layout component
  */
 export interface LayoutProps extends SniceBaseProps {
+    contained?: any;
 }
 /**
  * Layout - React adapter for snice-layout

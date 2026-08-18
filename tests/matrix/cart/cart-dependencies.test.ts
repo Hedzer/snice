@@ -22,16 +22,12 @@
  * Dimensions: the four child components the cart renders x the interactions
  * they carry. 6 cases.
  *
- * FINDINGS
- *   MATRIX-cart-1  `snice-cart.ts` renders `<snice-button>`,
+ * MATRIX-cart-1 (fixed): `snice-cart.ts` used to render `<snice-button>`,
  *                  `<snice-step-input>`, `<snice-input>` and `<snice-divider>`
- *                  but imports none of them, so the documented single-import
- *                  usage leaves every control inert: the checkout, remove,
- *                  quantity and coupon paths emit nothing at all. (Its peers do
- *                  import what they render — `snice-table.ts` imports
- *                  `snice-button`, `snice-activity-feed.ts` imports
- *                  `snice-activity-item`.) Pinned below with `it.fails`; the
- *                  assertions are the documented ones and are NOT weakened.
+ *                  while importing none of them, leaving every control inert
+ *                  under the documented single import. The component now
+ *                  imports what it renders; the assertions below are the
+ *                  documented ones, unchanged.
  */
 import { describe, it, afterEach } from 'vitest';
 import { cleanup, part, parts, one, click, record, settle, Problems, expectClean } from './matrix-utils';
@@ -52,7 +48,7 @@ describe('cart matrix: the documented import', () => {
   afterEach(() => cleanup());
 
   for (const tag of CHILDREN) {
-    it.fails(`importing the cart alone registers <${tag}> [MATRIX-cart-1]`, async () => {
+    it(`importing the cart alone registers <${tag}> [MATRIX-cart-1 fixed]`, async () => {
       const p = new Problems();
       p.ok(customElements.get(tag) !== undefined,
         `the cart renders <${tag}> but importing snice-cart does not define it`);
@@ -60,7 +56,7 @@ describe('cart matrix: the documented import', () => {
     });
   }
 
-  it.fails('the checkout button reports checkout when clicked [MATRIX-cart-1]', async () => {
+  it('the checkout button reports checkout when clicked', async () => {
     const el = await mountCart({ items: basket(), taxRate: 8.5 });
     const p = new Problems();
 
@@ -74,7 +70,7 @@ describe('cart matrix: the documented import', () => {
     expectClean(p, 'checkout-click');
   });
 
-  it.fails('the remove button removes its line when clicked [MATRIX-cart-1]', async () => {
+  it('the remove button removes its line when clicked', async () => {
     const items = basket();
     const el = await mountCart({ items });
     const p = new Problems();

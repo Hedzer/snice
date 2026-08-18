@@ -530,7 +530,9 @@ input[type='file'] {
   flex-direction: row-reverse;
 }
 
-:host([layout='bubbles']) .message .message-text {
+/* System rows stay centered in every layout: the bubble inline-block rule
+   must not shrink them to the left of the log (VISUAL-MATRIX-chat-2). */
+:host([layout='bubbles']) .message:not(.system) .message-text {
   display: inline-block;
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
   border-radius: var(--snice-border-radius-lg, 0.5rem);

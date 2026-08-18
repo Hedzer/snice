@@ -18,22 +18,12 @@
  * That is the weakest reading of the documented property that still means it
  * does anything at all: it pins no scale, no padding, and no bar thickness.
  *
- * ── FINDING MATRIX-waterfall-1 ──────────────────────────────────────────────
- * `orientation="horizontal"` renders a chart byte-for-byte identical to
- * `orientation="vertical"`. `handleDisplayChange` watches `orientation` and
- * re-runs `rebuildChart()`, but `rebuildChart()` never reads `this.orientation`
- * — the whole render is hard-coded to the vertical layout.
- *
- *   combo:    data=doc/orientation=horizontal/values/connectors/static
- *   expected: the value-0 axis is a VERTICAL baseline, and successive bars
- *             advance down the page.
- *   actual:   the axis is drawn horizontally at y=254.35 from x=20 to x=380 —
- *             the same line the vertical chart draws — and the bars advance
- *             across the page (dx = +72 each, dy varies with the value), i.e.
- *             the vertical layout, unchanged.
- *
- * The assertion below is the documented one and is NOT weakened; it is marked
- * `it.fails` so the divergence is reported rather than hidden.
+ * ── FINDING MATRIX-waterfall-1 (FIXED) ──────────────────────────────────────
+ * `orientation="horizontal"` used to render a chart byte-for-byte identical
+ * to `orientation="vertical"`: the watcher re-ran `rebuildChart()`, but the
+ * render never read `this.orientation`. `rebuildChart()` now draws a true
+ * horizontal layout — values run across the page from a vertical zero axis,
+ * bars advance down it — so the documented assertion runs unpinned.
  */
 import { describe, it, afterEach } from 'vitest';
 import { removeComponent } from '../../components/test-utils';
@@ -58,13 +48,12 @@ describe('waterfall matrix: orientation', () => {
     });
   }
 
-  // MATRIX-waterfall-1. The assertion is the documented one; only the
-  // expectation of PASSING is inverted.
+  // MATRIX-waterfall-1 (fixed): horizontal now renders its own layout.
   for (const dataset of POPULATED) {
     const c = combo({ dataset, orientation: 'horizontal' });
 
-    it.fails(
-      `MATRIX-waterfall-1 ${comboId(c)}: values run across the page from a vertical baseline`,
+    it(
+      `MATRIX-waterfall-1 (fixed) ${comboId(c)}: values run across the page from a vertical baseline`,
       async () => {
         el = await makeWaterfall(c);
         expectClean(orientationProblems(el, c), comboId(c));

@@ -30,22 +30,24 @@
  *   actually draw glyphs, and a readonly editor must lose its toolbar strip
  *   from the PAINT, not just from the accessibility tree.
  *
- * Known defects pinned, never softened (.ai/fuzzing.md):
- *   VISUAL-MATRIX-doc-1 — a freshly mounted editor seeds `<p><br></p>`,
- *     which defeats the placeholder's `:empty::before` hook, so the
- *     documented `placeholder: string = 'Start typing...'` never shows on a
- *     fresh editor; it only appears once the document is truly emptied.
- *   VISUAL-MATRIX-doc-2 — the editing surface escapes its host. `.doc-editor`
- *     is `width: 100%` on a content-box element carrying `padding: 3.75rem
- *     6.25rem`, so its border box is the host width PLUS 12.5rem: in the
- *     720px fixture stage the editor lays out 920px wide, text lines paint
- *     100px past the host's right edge, and points beyond the host still
- *     hit-test into the editor. Any host narrower than 65.6rem overflows.
- *   VISUAL-MATRIX-doc-3 — Firefox's native editing shortcuts (Ctrl/Cmd+B,
- *     I, U) only reach light-DOM contenteditables, so the documented
- *     shortcuts fire into the page while the selection sits in the shadow
- *     root and nothing is formatted; `execCommand` with the same selection
- *     works. Chromium and WebKit honour the shortcut in shadow content.
+ * Findings history (.ai/fuzzing.md — pins are deleted the day they expire,
+ * never softened):
+ *   VISUAL-MATRIX-doc-1 (fixed) — a freshly mounted editor used to seed
+ *     `<p><br></p>`, which defeats the placeholder's `:empty::before` hook,
+ *     so the documented `placeholder: string = 'Start typing...'` never
+ *     showed on a fresh editor. A fresh editor now mounts empty; `clear()`
+ *     is the one that re-seeds the paragraph.
+ *   VISUAL-MATRIX-doc-2 (fixed) — the editing surface used to escape its
+ *     host: `.doc-editor` was `width: 100%` on a content-box element
+ *     carrying `padding: 3.75rem 6.25rem`, so its border box was the host
+ *     width PLUS 12.5rem. `box-sizing: border-box` now keeps it inside.
+ *   VISUAL-MATRIX-doc-3 (fixed) — Firefox's native editing shortcuts
+ *     (Ctrl/Cmd+B, I, U) only reached light-DOM contenteditables, so the
+ *     documented shortcuts fired into the page while the selection sat in
+ *     the shadow root and nothing was formatted. The component now forwards
+ *     Ctrl/Cmd+B/I/U to execCommand itself (handleEditingShortcuts), in
+ *     every engine, so the documented shortcuts work everywhere and the pin
+ *     is unwrapped.
  */
 import { test, expect, type Page } from '@playwright/test';
 import { capture, contrast, sameColor, type RGB } from '../pixel-probe';
@@ -220,11 +222,6 @@ test.describe('doc visual matrix: layer 1', () => {
 
   for (const combo of combos) {
     test(combo.id, async () => {
-      // FINDING VISUAL-MATRIX-doc-2: the editable editor overflows its host
-      // (content-box `width: 100%` + 12.5rem side padding ⇒ border box =
-      // host + 12.5rem). The containment assertion stays; every editable
-      // combo is pinned until the stylesheet stops overflowing the host.
-      test.fail(!combo.readonly, 'VISUAL-MATRIX-doc-2: the editing surface escapes the host box');
       await page.evaluate(c => (window as any).matrix.mount(c), combo as any);
       expect(await visualProblems(combo), `combo ${combo.id}`).toEqual([]);
     });
@@ -261,10 +258,12 @@ test.describe('doc visual matrix: editing behaviour', () => {
       + ` (content "${placeholder.content}", attr "${placeholder.attr}")`).toBe(true);
   });
 
-  // FINDING VISUAL-MATRIX-doc-1: a FRESH editor seeds <p><br></p>, which is
-  // not :empty, so the documented default placeholder never shows on mount.
-  // The assertion stays at the documented behaviour and is pinned.
-  test.fail('VISUAL-MATRIX-doc-1: a freshly mounted editor shows its placeholder', async () => {
+  // FINDING VISUAL-MATRIX-doc-1 (fixed): a fresh editor used to seed
+  // <p><br></p>, which is not :empty, so the documented default placeholder
+  // never showed on mount. A fresh editor now mounts empty and the
+  // placeholder shows through the :empty::before hook; clear() is the one
+  // that re-seeds the paragraph.
+  test('a freshly mounted editor shows its placeholder', async () => {
     // Mount WITHOUT clearing: the editor keeps its seeded paragraph, which
     // is exactly the state a page author gets from <snice-doc></snice-doc>.
     await page.evaluate(async () => {
@@ -281,9 +280,19 @@ test.describe('doc visual matrix: editing behaviour', () => {
         .shadowRoot.querySelector('[part="editor"]');
       return {
         content: getComputedStyle(editor, '::before').content,
+        attr: editor.getAttribute('data-placeholder'),
       };
     });
-    expect(placeholder.content).toContain('Start typing');
+    // Same engine-aware oracle as the empty-editor test above: Chromium
+    // resolves `content: attr(data-placeholder)` to the literal text;
+    // Firefox reports the declaration itself, unresolved, so the attribute
+    // it reads has to carry the documented default.
+    const literalDrawn = placeholder.content.includes('Start typing');
+    const attrDriven = /attr\(data-placeholder\)/.test(placeholder.content)
+      && placeholder.attr === 'Start typing...';
+    expect(literalDrawn || attrDriven,
+      `the placeholder resolves to neither the text nor a live attr() read`
+      + ` (content "${placeholder.content}", attr "${placeholder.attr}")`).toBe(true);
   });
 
   /**
@@ -305,19 +314,13 @@ test.describe('doc visual matrix: editing behaviour', () => {
     await page.keyboard.press('Control+a');
   }
 
-  // FINDING VISUAL-MATRIX-doc-3 — "Ctrl/Cmd+B - Bold" does not work in
-  // Firefox, and cannot without component changes: Firefox's native editing
-  // shortcuts only reach contenteditables in the light DOM, so the shortcut
-  // fires into the page while the selection sits inside the shadow root and
-  // nothing is formatted. `document.execCommand('bold')` with the same shadow
-  // selection DOES bold (the reproducer below proves it), so the editing
-  // engine is willing — the shortcut layer never reaches it. Chromium and
-  // WebKit honour the shortcut in shadow content. The assertions stay at the
-  // documented behaviour; the day Firefox ships shortcut support (or the
-  // component handles the keys itself) this pin must fail and be deleted.
-  test('Ctrl/Cmd+B, I, and U format the selection through native editing', async ({ browserName }) => {
-    test.fail(browserName === 'firefox',
-      'native editing shortcuts do not reach shadow editables — see VISUAL-MATRIX-doc-3');
+  // FINDING VISUAL-MATRIX-doc-3 (fixed): Firefox's native editing shortcuts
+  // only reached light-DOM contenteditables, so Ctrl/Cmd+B/I/U fired into
+  // the page while the selection sat in the shadow root and nothing was
+  // formatted. The component now forwards the chords to execCommand itself
+  // (handleEditingShortcuts) in every engine, so the documented behaviour
+  // holds on firefox too and the assertions run normally everywhere.
+  test('Ctrl/Cmd+B, I, and U format the selection through native editing', async () => {
     // "Ctrl/Cmd+B - Bold, Ctrl/Cmd+I - Italic, Ctrl/Cmd+U - Underline" —
     // only a real editing engine can answer this.
     await page.evaluate(() => (window as any).matrix.mount({ content: 'html:<p>bold me</p>' }));
@@ -337,21 +340,6 @@ test.describe('doc visual matrix: editing behaviour', () => {
     await page.keyboard.press('Control+u');
     const underlined = await page.evaluate(() => (window as any).matrix.content());
     expect(underlined.toLowerCase()).toContain('<u>');
-  });
-
-  test('VISUAL-MATRIX-doc-3 reproduces: firefox bolds by command, not by shortcut', async ({ browserName }) => {
-    test.skip(browserName !== 'firefox', 'firefox-only finding');
-    await page.evaluate(() => (window as any).matrix.mount({ content: 'html:<p>bold me</p>' }));
-    await selectAllNatively();
-    await page.keyboard.press('Control+b');
-    const afterShortcut = await page.evaluate(() => (window as any).matrix.content());
-    expect(afterShortcut, 'the shortcut unexpectedly worked — delete the pin').toBe('<p>bold me</p>');
-    const byCommand = await page.evaluate(() => {
-      const ok = document.execCommand('bold');
-      return { ok, html: (window as any).matrix.content() };
-    });
-    expect(byCommand.ok, 'execCommand itself failed — the finding is broader than pinned').toBe(true);
-    expect(byCommand.html.toLowerCase(), 'the editing engine bolded the shadow selection').toContain('<b>');
   });
 
   test('the Bold toolbar button formats the selection too', async () => {

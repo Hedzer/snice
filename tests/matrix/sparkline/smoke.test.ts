@@ -15,7 +15,7 @@
  *   · an explicit min/max window, the only property that moves the marks
  *     without changing the data;
  *   · the empty series, the state with no `data[0]` to normalise against;
- *   · the three pinned findings.
+ *   · the three fixed findings.
  *
  * Every assertion routes through the matrix's own oracle, so this file cannot
  * drift into something weaker than the suite it stands in for.
@@ -69,34 +69,37 @@ describe('sparkline matrix smoke', () => {
     expect(markTops(el!, 'bar').every(Number.isFinite)).toBe(true);
   });
 
-  // MATRIX-sparkline-1: a one-point series with `smooth` renders an empty `d`.
-  it.fails('MATRIX-sparkline-1: a smooth one-point line still draws its line', async () => {
+  // MATRIX-sparkline-1 (fixed): a one-point series with `smooth` renders a
+  // path carrying its single vertex instead of an empty `d`.
+  it('MATRIX-sparkline-1 (fixed): a smooth one-point line still draws its line', async () => {
     await check({ type: 'line', data: [42], smooth: true });
   });
 
-  // MATRIX-sparkline-2: a one-point series without `smooth` puts NaN in x.
-  it.fails('MATRIX-sparkline-2: a one-point line places its point', async () => {
+  // MATRIX-sparkline-2 (fixed): a one-point series without `smooth` places
+  // its vertex at a real coordinate instead of NaN.
+  it('MATRIX-sparkline-2 (fixed): a one-point line places its point', async () => {
     await check({ type: 'line', data: [42], showDots: true });
   });
 
-  // MATRIX-sparkline-3: a datum below an explicit `min` gives a bar a negative
-  // height, which is an error in SVG — the bar paints nothing.
-  it.fails('MATRIX-sparkline-3: an under-range bar still draws', async () => {
+  // MATRIX-sparkline-3 (fixed): a datum below an explicit `min` draws a bar
+  // with a non-negative height instead of the SVG error that paints nothing.
+  it('MATRIX-sparkline-3 (fixed): an under-range bar still draws', async () => {
     await check({ type: 'bar', data: [10, 20, 30], min: 15 });
   });
 
-  it('the three findings reproduce exactly as recorded', async () => {
+  it('the three fixed findings render the documented marks', async () => {
     const smoothSingle = await mountSparkline({ type: 'line', data: [42], smooth: true });
-    expect(smoothSingle.shadowRoot!.querySelector('[part~="line"]')!.getAttribute('d')).toBe('');
+    expect(smoothSingle.shadowRoot!.querySelector('[part~="line"]')!.getAttribute('d'))
+      .toMatch(/^M \d+(\.\d+)?,\d+(\.\d+)?$/);
     removeComponent(smoothSingle);
 
     const flatSingle = await mountSparkline({ type: 'line', data: [42] });
-    expect(flatSingle.shadowRoot!.querySelector('[part~="line"]')!.getAttribute('points'))
-      .toContain('NaN');
+    expect(flatSingle.shadowRoot!.querySelector('[part~="line"]')!.getAttribute('points')!)
+      .not.toContain('NaN');
     removeComponent(flatSingle);
 
     el = await mountSparkline({ type: 'bar', data: [10, 20, 30], min: 15 });
     const first = el.shadowRoot!.querySelector('[part~="bar"]')!;
-    expect(parseFloat(first.getAttribute('height')!)).toBeLessThan(0);
+    expect(parseFloat(first.getAttribute('height')!)).toBeGreaterThanOrEqual(0);
   });
 });

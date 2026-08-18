@@ -12,7 +12,7 @@ export class SniceKpi extends HTMLElement implements SniceKpiElement {
   @property({  })
   value: string | number = '';
 
-  @property({  })
+  @property({ attribute: 'trend-value' })
   trendValue?: string | number;
 
   @property({ type: Array, attribute: false })
@@ -24,10 +24,10 @@ export class SniceKpi extends HTMLElement implements SniceKpiElement {
   @property({  })
   size: KpiSize = 'medium';
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, attribute: 'show-sparkline' })
   showSparkline = true;
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, attribute: 'color-value' })
   colorValue = false;
 
   @styles()

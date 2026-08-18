@@ -13,14 +13,14 @@
  * A format therefore chooses the UNITS the remaining time is expressed in. An
  * hours+minutes+seconds reading of three days and four hours is 76 hours, and a
  * minutes+seconds reading of two hours and three minutes is 123 minutes. The
- * component instead computes days/hours/minutes/seconds once and renders only
+ * component instead computed days/hours/minutes/seconds once and rendered only
  * the columns the format names, so the magnitudes above the leading unit are
  * silently dropped and the countdown reads a time that is not the time
  * remaining.
  *
- * Per .ai/fuzzing.md the assertion below is the DOCUMENTED one and is NOT
- * weakened: the tests are declared `it.fails`, so the day the component is
- * fixed this suite goes red and the finding can be closed.
+ * MATRIX-countdown-1 and MATRIX-countdown-2 (fixed): the display now expresses
+ * the whole remaining time in the format's own units. The rows below run
+ * unpinned as the regression guard.
  */
 import { describe, it, beforeEach, afterEach, expect } from 'vitest';
 import { unmountAll, finding } from '../matrix-utils';
@@ -61,7 +61,7 @@ describe('countdown matrix: a short format must still express the whole remainin
         duration: overflow.duration,
       };
 
-      it.fails(finding(overflow.findingId, `${combo.id}: ${overflow.why}`), async () => {
+      it(finding(overflow.findingId, `${combo.id}: ${overflow.why} (fixed)`), async () => {
         const el = await mountCountdown(combo);
         expect(readValues(el), combo.id)
           .toEqual(expectedValues(combo.format, combo.duration.ms));

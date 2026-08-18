@@ -51,8 +51,16 @@ describe('snice-command-palette matrix: recent commands', () => {
         await wait(SETTLE);
       }
 
-      // Documented: most-recent-first, capped at the limit.
-      const expected = ['Delta', 'Gamma', 'Beta', 'Alpha'].slice(0, limit);
+      // Documented: most-recent-first, capped at the limit — and the recents
+      // LEAD the no-query list, with every other command still reachable
+      // below them (MATRIX-command-palette-4/5, now fixed).
+      const executed = ['Delta', 'Gamma', 'Beta', 'Alpha'];
+      const expected = [
+        ...executed.slice(0, limit),
+        ...['Alpha', 'Beta', 'Gamma', 'Delta'].filter(
+          label => !executed.slice(0, limit).includes(label),
+        ),
+      ];
 
       el.showRecentCommands = true;
       el.show();
@@ -106,7 +114,8 @@ describe('snice-command-palette matrix: recent commands', () => {
   });
 
   // Doc: activating a command by CLICK is the same activation as by Enter or by
-  // `executeCommand`, so it must feed recency the same way.
+  // `executeCommand`, so it must feed recency the same way. The clicked
+  // command leads the no-query list; the rest follow (MATRIX-command-palette-5).
   it('a clicked command becomes the most recent one', async () => {
     el = await makePalette({ open: true, commands: CANONICAL, showRecentCommands: false });
     await clickItem(el, 3);   // "Toggle Theme"
@@ -114,41 +123,40 @@ describe('snice-command-palette matrix: recent commands', () => {
     el.showRecentCommands = true;
     el.show();
     await wait(SETTLE);
-    expect(renderedLabels(el)).toEqual(['Toggle Theme']);
+    expect(renderedLabels(el)).toEqual([
+      'Toggle Theme',
+      ...CANONICAL.filter(command => command.id !== 'theme').map(command => command.label),
+    ]);
   });
 
-  // ── FINDING ───────────────────────────────────────────────────────────────
+  // ── FINDING (fixed) ────────────────────────────────────────────────────────
   // Doc "Basic Usage" is the whole contract for a first-run palette: assign
   // `commands`, open it, and the commands are there to be searched. Doc
   // Properties documents `showRecentCommands` as SHOWING recent commands — an
   // additive convenience, defaulting to on.
   //
-  // The implementation instead REPLACES the list: with no query and the flag on,
-  // `filteredCommands` is built only from the remembered ids. On a first run
-  // nothing is remembered, so the documented Basic Usage snippet opens a palette
-  // that says "No results found" over a fully populated `commands` array. The
-  // author cannot discover this from the docs, and the fix (`show-recent-commands
-  // ="false"`) reads like it turns a feature OFF rather than making the palette
-  // work at all.
-  it.fails(finding(
-    'MATRIX-command-palette-4',
-    'with the documented defaults, an opened palette shows "No results found" '
-    + 'instead of its commands until something has been run before',
+  // The implementation used to REPLACE the list: with no query and the flag
+  // on, `filteredCommands` was built only from the remembered ids, so a
+  // first-run palette said "No results found" over a fully populated
+  // `commands` array. The no-query list is now the commands themselves.
+  it(finding(
+    'MATRIX-command-palette-4 (fixed)',
+    'with the documented defaults, an opened palette lists its commands even '
+    + 'before anything has been run',
   ), async () => {
     el = await makePalette({ open: true, commands: CANONICAL });
     expectPaletteMatches(el, { commands: CANONICAL, query: '' });
   });
 
-  // ── FINDING ───────────────────────────────────────────────────────────────
-  // Same defect seen from the other side, and the reason it is worth two tests:
-  // even AFTER a command has been run, the default palette shows only that one
-  // command — the rest of the list is unreachable without typing. Doc
-  // "showRecentCommands" promises recent commands in ADDITION to the list a
-  // palette exists to browse, not instead of it.
-  it.fails(finding(
-    'MATRIX-command-palette-5',
-    'with recent commands remembered, the default no-query list is ONLY the '
-    + 'remembered ids — the rest of `commands` disappears from the palette',
+  // ── FINDING (fixed) ────────────────────────────────────────────────────────
+  // Same defect seen from the other side: even AFTER a command has been run,
+  // the default no-query list used to be only that one command. The recents
+  // now lead the list under their own "Recent" group and the rest of
+  // `commands` stays reachable without typing.
+  it(finding(
+    'MATRIX-command-palette-5 (fixed)',
+    'with recent commands remembered, the most recent leads the list and every '
+    + 'command stays reachable without typing',
   ), async () => {
     el = await makePalette({ open: true, commands: CANONICAL, recent: ['about'] });
     const labels = renderedLabels(el);

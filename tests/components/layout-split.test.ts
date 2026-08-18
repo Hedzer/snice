@@ -34,7 +34,10 @@ describe('snice-layout-split', () => {
       'ships a stylesheet block for ratio %s',
       async (ratio) => {
         const css = readFileSync(resolve(process.cwd(), 'packages/components/src/layout/snice-layout-split.css'), 'utf8');
-        expect(css).toContain(`:host([ratio="${ratio}"])`);
+        // The ratio blocks are horizontal-only (`:not([direction="vertical"])`
+        // guards a vertical split + ratio from restoring columns), so match
+        // the attribute within the selector rather than its exact spelling.
+        expect(css).toContain(`[ratio="${ratio}"]`);
       }
     );
 

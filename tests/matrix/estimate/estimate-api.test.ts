@@ -18,22 +18,21 @@
  * So the cross below is every documented attribute against a value, asserting
  * the property it is documented to set.
  *
- * ── MATRIX-estimate-1, and what THIS tier can see of it ─────────────────────
+ * ── MATRIX-estimate-1 (fixed), and what THIS tier sees of it ────────────────
  *
- * All three kebab-named properties are declared with a bare `@property()`, so
- * the element observes `estimatenumber`, `expirydate` and `taxrate` — not the
- * names the docs publish. In a REAL BROWSER that makes all three documented
- * attributes inert, and the pinned case for that lives in
- * tests/live/matrix/estimate/estimate-visual.spec.ts, because happy-dom hands
+ * All three kebab-named properties used to be declared with a bare
+ * `@property()`, so the element observed `estimatenumber`, `expirydate` and
+ * `taxrate` — not the names the docs publish. In a REAL BROWSER that made all
+ * three documented attributes inert (pinned in
+ * tests/live/matrix/estimate/estimate-visual.spec.ts), because happy-dom hands
  * `attributeChangedCallback` every attribute change whether or not the element
- * observed it. Under happy-dom the values therefore arrive — through a path
- * that skips the `type: Number` converter.
+ * observed it. Under happy-dom the values therefore arrived — through a path
+ * that skipped the `type: Number` converter, so `tax-rate="10"` set `taxRate`
+ * to the STRING `"10"`.
  *
- * So what this tier can honestly pin is the residue: `tax-rate="10"` sets
- * `taxRate` to the STRING `"10"` where the doc declares `taxRate: number = 0`.
- * The string survives arithmetic by coercion, so the rendered summary is right
- * — but `toJSON()` hands a consumer `"10"`, and `estimate.taxRate.toFixed(2)`
- * throws. The assertions stay as documented and are declared `it.fails`.
+ * The decorators now name the documented attributes (`estimate-number`,
+ * `expiry-date`, `tax-rate`), the kebab attributes run their converters, and
+ * every case below runs unpinned as the regression guard.
  */
 import { describe, it, afterEach, expect } from 'vitest';
 import { mount, cross, Problems, expectClean, captureEvents, removeComponent, click, wait }
@@ -72,8 +71,8 @@ const ATTRIBUTES: AttrCase[] = [
   { attribute: 'qr-position', value: 'footer', property: 'qrPosition', expected: 'footer', works: true },
   { attribute: 'estimate-number', value: 'EST-001', property: 'estimateNumber', expected: 'EST-001', works: true },
   { attribute: 'expiry-date', value: '2026-02-15', property: 'expiryDate', expected: '2026-02-15', works: true },
-  // Documented `taxRate: number`. Arrives as the string "10".
-  { attribute: 'tax-rate', value: '10', property: 'taxRate', expected: 10, works: false },
+  // Documented `taxRate: number` (MATRIX-estimate-1, fixed): the converter runs.
+  { attribute: 'tax-rate', value: '10', property: 'taxRate', expected: 10, works: true },
 ];
 
 describe('estimate matrix: every documented attribute reaches its property', () => {
@@ -88,16 +87,15 @@ describe('estimate matrix: every documented attribute reaches its property', () 
     if (item.works) it(title, run); else it.fails(title, run);
   }
 
-  it.fails('toJSON() reports the documented numeric taxRate [MATRIX-estimate-1]', async () => {
+  it('toJSON() reports the documented numeric taxRate [MATRIX-estimate-1 (fixed)]', async () => {
     const el = await mount<any>(TAG, { 'tax-rate': '10' }, { items: REQUIRED_LINES });
     expect(typeof el.toJSON().taxRate, 'toJSON().taxRate type').toBe('number');
   });
 
-  it('the string tax rate still prints the documented tax row', async () => {
-    // Scoping MATRIX-estimate-1: the arithmetic survives coercion, so the
-    // defect is confined to the TYPE a consumer receives, not to the document
-    // the customer reads. This case exists so a future "fix" that changes the
-    // rendered figure cannot hide behind the finding above.
+  it('the attribute-set tax rate still prints the documented tax row', async () => {
+    // Scoping MATRIX-estimate-1 (fixed): the rate used to arrive as a string
+    // that survived arithmetic by coercion. This case stays so a future change
+    // that alters the rendered figure cannot hide behind the type guard above.
     const el = await mount<HTMLElement>(TAG, { 'tax-rate': '10', currency: '$' },
       { items: REQUIRED_LINES });
     const problems = new Problems();

@@ -74,10 +74,9 @@
          * channel exactly as the doc's example writes them. `steps` is an
          * array of data and has no attribute form; `currentStep` goes
          * through the property channel, which is the documented navigation
-         * surface ("Navigate via currentStep property") — the DOM matrix
-         * already pins that the `current-step` attribute does not reach it
-         * (MATRIX-stepper-1), so this tier measures the ladder, not that
-         * known defect.
+         * surface ("Navigate via currentStep property") — the attribute form
+         * is covered unpinned by the DOM matrix (MATRIX-stepper-1, fixed),
+         * so this tier measures the ladder.
          *
          * The step DATA lives here because option/step lists may cross the
          * Playwright boundary as plain data, but nothing carrying a function

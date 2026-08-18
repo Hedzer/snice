@@ -27,9 +27,9 @@ export class SniceListItem extends HTMLElement {
         <div class="list-item__content">
           <if ${this.heading}>
             <div class="list-item__heading">${this.heading}</div>
-            <if ${this.description}>
-              <div class="list-item__description">${this.description}</div>
-            </if>
+          </if>
+          <if ${this.description}>
+            <div class="list-item__description">${this.description}</div>
           </if>
           <slot></slot>
         </div>

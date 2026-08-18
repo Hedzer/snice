@@ -126,7 +126,11 @@
           const el = document.createElement('snice-camera-annotate');
           el.id = 'subject';
           if (combo.mode) el.setAttribute('mode', combo.mode);
-          if (combo.autoStart) el.setAttribute('auto-start', '');
+          // A capture needs a live preview to capture. The component starts
+          // the camera only through the documented opt-in auto-start
+          // (MATRIX-camera-annotate-1), so the fixture opts in for the combos
+          // that take a frame.
+          if (combo.autoStart || combo.capture) el.setAttribute('auto-start', '');
 
           stage.appendChild(el);
           await el.ready;

@@ -287,6 +287,12 @@
   right: 0.625rem;
 }
 
+/* A password toggle occupies the trailing edge, so the suffix icon region
+   (attribute OR slot channel) steps aside instead of stacking on it. */
+.input-container:has(.password-toggle) .icon-slot--suffix {
+  right: 2.5rem; /* 40px */
+}
+
 /* Icons */
 .icon {
   display: flex;

@@ -138,24 +138,15 @@ describe('tree matrix / cascade', () => {
   }
 
   /**
-   * FINDING — MATRIX-tree-3.
-   *
-   * `TreeNode` documents `indeterminate?: boolean`, and a tri-state checkbox
-   * has exactly one meaning: some, but not all, of this node's children are
-   * checked. No combination of documented inputs ever produces it.
-   *
-   * `syncCheckboxes` cascades DOWN over the clones in `nodeMap`, but
-   * `updateAncestors` resolves the parent with `findParentNode`, which searches
-   * `this.nodes` — the caller's array — and then judges `allChecked` /
-   * `allUnchecked` from THOSE children, which the downward cascade never
-   * touched. So the parent is always computed "all unchecked", `indeterminate`
-   * is always false, and `updateCheckboxStatesOnly` reads the clone, which was
-   * never written at all. A half-checked folder renders as unchecked, which is
-   * indistinguishable from "nothing inside is selected".
-   *
-   * The assertion below is the documented one and stays that way.
+   * MATRIX-tree-3 (fixed): no documented input used to produce an
+   * `indeterminate` parent. The downward cascade wrote to the `nodeMap`
+   * clones, but `updateAncestors` resolved the parent from `this.nodes` (the
+   * caller's array) and judged `allChecked`/`allUnchecked` from those
+   * untouched children, while the rendered checkbox read the clone that was
+   * never written. Ancestors are now resolved from the same clone tree, so a
+   * half-checked folder renders indeterminate.
    */
-  it.fails('MATRIX-tree-3: checking one of two children leaves the parent indeterminate, not checked', async () => {
+  it('checking one of two children leaves the parent indeterminate, not checked [MATRIX-tree-3]', async () => {
     tree = await makeTree({ showCheckboxes: true }, nodesFor('nested'));
     const problems = new Problems();
 

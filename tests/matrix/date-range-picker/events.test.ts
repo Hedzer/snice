@@ -26,7 +26,9 @@
  *   · "Invalid `Date` arguments and presets with an impossible endpoint are
  *     ignored atomically without preview, mutation, close, or events."
  *
- * it.fails policy: no finding is pinned in this file.
+ * it.fails policy: no finding is pinned in this file. (MATRIX-date-range-picker-1,
+ * the double daterange-open/daterange-close dispatch, was fixed; its rows run
+ * unpinned as the regression guard.)
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { product } from '../matrix-utils';
@@ -79,16 +81,14 @@ describe('date-range-picker matrix: events and interaction', () => {
     });
 
     if (!blocked) {
-      // FINDING MATRIX-date-range-picker-1 — one open or close announces its
-      // event TWICE: the `show-calendar` watcher dispatches daterange-open /
-      // daterange-close when the property flips, and open()/close() dispatch
-      // the same event again. The doc lists each daterange-* event as THE
-      // notification of its transition ("Clear emits daterange-clear before
-      // daterange-change" schedules exactly one of each); a consumer counts
-      // two opens per open. The assertion below stays at the documented count.
-      it.fails(
+      // MATRIX-date-range-picker-1 (fixed): one open or close used to announce
+      // its event TWICE (the `show-calendar` watcher plus the imperative emit
+      // in open()/close()). The doc lists each daterange-* event as THE
+      // notification of its transition, so exactly one is expected. Unpinned
+      // regression guard.
+      it(
         finding('MATRIX-date-range-picker-1',
-          `${path.name} announces daterange-open exactly once`),
+          `${path.name} announces daterange-open exactly once (fixed)`),
         async () => {
           const el = await mountRange({});
           const seen = recordEvents(el);
@@ -143,13 +143,12 @@ describe('date-range-picker matrix: events and interaction', () => {
     expect(detail.endDate).toBeInstanceOf(Date);
   });
 
-  // FINDING MATRIX-date-range-picker-1: close announces itself twice (the
-  // `show-calendar` watcher and close() both dispatch), so the exact
-  // documented sequence `change -> close` cannot hold yet. Pinned, not
-  // weakened: when the double dispatch is fixed, this passes as written.
-  it.fails(
+  // MATRIX-date-range-picker-1 (fixed): the close after completion used to
+  // announce itself twice, so the exact documented sequence could not hold.
+  // Unpinned regression guard.
+  it(
     finding('MATRIX-date-range-picker-1',
-      'completion emits exactly [daterange-change, daterange-close]'),
+      'completion emits exactly [daterange-change, daterange-close] (fixed)'),
     async () => {
       const el = await mountRange({});
       await viewOn(el, '2026-03-01');
@@ -282,8 +281,8 @@ describe('date-range-picker matrix: events and interaction', () => {
 
       if (spec.applied) {
         // "preset selection emits change before preset" — the documented
-        // ORDER claim. (The close that follows is announced twice; pinned
-        // separately as MATRIX-date-range-picker-1 below.)
+        // ORDER claim. (The single close that follows is asserted as
+        // MATRIX-date-range-picker-1 below.)
         expect(seen[0].type, 'the preset change must come first').toBe('daterange-change');
         expect(seen[1].type, 'the preset event must follow the change').toBe('daterange-preset');
         expect(seen[1].detail).toMatchObject({ label: spec.presets[0].label });
@@ -375,13 +374,13 @@ describe('date-range-picker matrix: events and interaction', () => {
     expect(seen[0].detail.dateRangePicker).toBe(el);
   });
 
-  // FINDING MATRIX-date-range-picker-1 (the preset face of it): a preset
-  // selection closes the calendar, and the close announces itself twice —
-  // watcher plus close() — so the exact documented tail `[change, preset,
-  // close]` cannot hold yet. Pinned, not weakened.
-  it.fails(
+  // MATRIX-date-range-picker-1 (fixed, the preset face of it): a preset
+  // selection used to close with a doubly announced close, so the exact
+  // documented tail `[change, preset, close]` could not hold. Unpinned
+  // regression guard.
+  it(
     finding('MATRIX-date-range-picker-1',
-      'a preset emits exactly [change, preset, close]'),
+      'a preset emits exactly [change, preset, close] (fixed)'),
     async () => {
       const el = await mountRange({
         props: { presets: [{ label: 'April', start: '2026-04-01', end: '2026-04-30' }] },

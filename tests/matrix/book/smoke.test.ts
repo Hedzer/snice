@@ -108,15 +108,16 @@ describe('book matrix smoke', () => {
   });
 
   // The two marquee regressions, kept at full strength. See
-  // matrix/book/cover.test.ts.
-  it.fails('MATRIX-book-1 the title is shown on the cover', async () => {
+  // matrix/book/cover.test.ts. Both fixed — unwrapped so a REGRESSION
+  // surfaces in the everyday loop at once.
+  it('MATRIX-book-1 (fixed) the title is shown on the cover', async () => {
     const c = combo({ pages: 3, title: 'simple' });
     el = await makeBook(c);
     expectClean(coverTextProblems(el, c), comboId(c));
     expect(readFacts(el).visibleText).toContain(TITLES.simple);
   });
 
-  it.fails('MATRIX-book-2 the author is shown on the cover', async () => {
+  it('MATRIX-book-2 (fixed) the author is shown on the cover', async () => {
     const c = combo({ pages: 3, author: 'simple' });
     el = await makeBook(c);
     expectClean(coverTextProblems(el, c), comboId(c));

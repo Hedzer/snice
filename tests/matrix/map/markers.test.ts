@@ -21,15 +21,11 @@
  *
  * ── FINDING ────────────────────────────────────────────────────────────────
  *
- * MATRIX-map-1  `MapMarker.icon` is accepted and ignored.
- *   combo:    markers=icons (one emoji icon, one URL icon), zoom=13
- *   expected: a marker with `icon` renders that icon instead of — or inside —
- *             the default pin, so two markers with different `icon` values do
- *             not draw identically.
- *   actual:   every marker renders the same hard-coded inline `<svg>` pin. No
- *             render path reads `icon`, so the field is inert: an emoji icon,
- *             an image URL and no icon at all produce byte-identical markup.
- *   Pinned with `it.fails` below.
+ * MATRIX-map-1 (fixed)  `MapMarker.icon` used to be accepted and ignored.
+ *   Every marker drew the same hard-coded inline `<svg>` pin; no render path
+ *   read `icon`. An authored icon now replaces the pin — an image URL or data
+ *   URI paints as an image, anything else (emoji, glyph) as text — and the
+ *   default pin stays for markers with no icon. Unpinned below.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import {
@@ -136,8 +132,8 @@ describe('map matrix: markers', () => {
     }
   });
 
-  // ── MATRIX-map-1 ─────────────────────────────────────────────────────────
-  describe('MATRIX-map-1: MapMarker.icon', () => {
+  // ── MATRIX-map-1 (fixed) ─────────────────────────────────────────────────
+  describe('MATRIX-map-1 (fixed): MapMarker.icon', () => {
     const ICON_CASES: Array<[string, MapMarker[]]> = [
       ['emoji', [{ id: 'a', lat: 0, lng: 0, icon: '🏛️' }]],
       ['url', [{ id: 'a', lat: 0, lng: 0, icon: 'https://example.org/pin.svg' }]],
@@ -146,7 +142,7 @@ describe('map matrix: markers', () => {
     ];
 
     for (const [shape, markers] of ICON_CASES) {
-      it.fails(`icon=${shape}: the marker renders its authored icon`, async () => {
+      it(`icon=${shape}: the marker renders its authored icon (fixed)`, async () => {
         const c = combo({ markers: 'bare' });
         el = await makeMap(c, markers);
         const withIcon = readFacts(el).markerIconText[0];
@@ -160,15 +156,20 @@ describe('map matrix: markers', () => {
       });
     }
 
-    it('every marker currently draws the same built-in pin', async () => {
-      // The observable half of the same finding, stated positively so the file
-      // records what IS true today without weakening the claim above.
+    it('each authored icon draws, and only icon-less markers draw the pin', async () => {
+      // After the fix: the emoji and the URL icon render differently from one
+      // another, and a marker with no icon still draws the built-in pin.
       const c = combo({ markers: 'icons' });
       el = await makeMap(c, MARKER_SETS.icons());
       const drawn = readFacts(el).markerIconText;
       expect(drawn).toHaveLength(2);
-      expect(drawn[0]).toBe(drawn[1]);
-      expect(drawn[0]).toContain('<svg');
+      expect(drawn[0], 'the two authored icons draw identically').not.toBe(drawn[1]);
+      expect(drawn[0]).toContain('🏛️');
+      expect(drawn[1]).toContain('example.org/pin.svg');
+
+      removeComponent(el);
+      el = await makeMap(combo({ markers: 'bare' }));
+      expect(readFacts(el).markerIconText[0]).toContain('<svg');
     });
   });
 });

@@ -164,13 +164,13 @@ describe('key-value matrix smoke', () => {
 });
 
 /**
- * The pinned findings, kept where the everyday loop runs them. Both keep the
- * DOCUMENTED assertion and are declared `it.fails`, so the day either one is
- * fixed this file goes red and the finding can be closed.
+ * The pinned findings, kept where the everyday loop runs them. Both are FIXED:
+ * the assertions now run as ordinary green tests, so a regression in either
+ * fails the everyday loop directly.
  */
 describe('key-value matrix smoke: pinned findings', () => {
-  it.fails(
-    'MATRIX-key-value-1: moving `rows` back to 0 restores the single trailing row',
+  it(
+    'MATRIX-key-value-1 (fixed): moving `rows` back to 0 restores the single trailing row',
     async () => {
       const el = await mountKeyValue({ rows: 3, autoExpand: true });
       el.setItems([{ key: 'A', value: '1' }]);
@@ -182,8 +182,8 @@ describe('key-value matrix smoke: pinned findings', () => {
     },
   );
 
-  it.fails(
-    'MATRIX-key-value-2: setCustomValidity renders its message in part="error"',
+  it(
+    'MATRIX-key-value-2 (fixed): setCustomValidity renders its message in part="error"',
     async () => {
       const el = await mountKeyValue({ value: '[{"key":"A","value":"1","description":""}]' });
       await tick(el);

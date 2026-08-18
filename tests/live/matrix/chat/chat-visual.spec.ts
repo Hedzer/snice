@@ -40,27 +40,17 @@
  *   that is actually PAINTED, an author name that is actually IN its colour,
  *   and chips/buttons distinguishable from their neighbours at pixel level.
  *
- * ── Known defects pinned, never softened (.ai/fuzzing.md) ───────────────────
- *   VISUAL-MATRIX-chat-1 mirrors the DOM finding MATRIX-chat-1: the typing
- *   methods touch private state without requesting a render, so the
- *   documented "Show typing indicator" effect of a connected chat never
- *   lands (the layer-1 typing geometry mounts the indicator before the
- *   first render instead, which is the only path that paints it today).
- *   VISUAL-MATRIX-chat-2 — `layout='bubbles'` un-centres system messages.
- *   The stylesheet centres system rows globally (`.message.system {
- *   justify-content: center }` + `text-align: center`), but the bubbles
- *   rule `:host([layout='bubbles']) .message .message-text { display:
- *   inline-block }` also applies to the system text: it shrinks to fit and
- *   sits at the left of its column, so the centre claim only holds in the
- *   default layout. Both bubbles layer-1 combos are pinned.
- *   VISUAL-MATRIX-chat-3 — Enter never sends in a real browser. The
- *   composer's keydown listener lives on the HOST and gates on
- *   `e.target !== this.inputField`, but shadow DOM retargets a composed
- *   keydown's target to the host itself for host-level listeners, so the
- *   guard rejects every real keydown (verified with a physical keyboard:
- *   typing fires `typing-start`, Enter dispatches no `message-send`).
- *   happy-dom does not retarget, which is why the DOM tier's identical
- *   synthetic keydown passes — only this tier can see the breakage.
+ * ── Findings fixed in source, pins unwrapped ────────────────────────────────
+ *   VISUAL-MATRIX-chat-1 (fixed, mirrored DOM finding MATRIX-chat-1): the
+ *   typing methods used to touch a private Map without requesting a render;
+ *   `typingIndicators` is now `@state()` and the methods reassign it, so
+ *   "Show typing indicator" paints on a live chat.
+ *   VISUAL-MATRIX-chat-2 (fixed): `layout='bubbles'` used to un-centre system
+ *   messages — the bubbles `inline-block` rule now carries `:not(.system)`,
+ *   so the system row keeps its documented centring in every layout.
+ *   VISUAL-MATRIX-chat-3 (fixed): the host-level keydown guard used to reject
+ *   the retargeted target of a real keydown; it now accepts the composer via
+ *   `composedPath()`, so Enter really sends.
  */
 import { test, expect, type Page } from '@playwright/test';
 import { capture, contrast, sameColor, type RGB } from '../pixel-probe';
@@ -532,11 +522,9 @@ async function mountAndCheckReflection(combo: Combo): Promise<void> {
 test.describe('chat visual matrix: layer 1 — layout x avatars', () => {
   for (const combo of layoutCombos()) {
     test(combo.id, async () => {
-      // FINDING VISUAL-MATRIX-chat-2: in `layout='bubbles'` the system
-      // message loses its centring (see the header). The centre assertion
-      // stays; both bubbles combos are pinned until the stylesheet keeps
-      // system rows centred in every layout.
-      test.fail(combo.layout === 'bubbles', 'VISUAL-MATRIX-chat-2: bubbles un-centres the system message');
+      // VISUAL-MATRIX-chat-2 (fixed): the bubbles `inline-block` rule is now
+      // scoped `:not(.system)`, so the system message keeps its centring in
+      // every layout and the centre assertion runs unpinned.
       await mountAndCheckReflection(combo);
       expect(await visualProblems(combo), `combo ${combo.id}`).toEqual([]);
     });
@@ -573,13 +561,11 @@ test.describe('chat visual matrix: layer 1 — composer x typing row', () => {
 // ── Real-browser behaviour (the DOM matrix dispatches synthetic events) ─────
 
 test.describe('chat visual matrix: real interaction', () => {
-  // FINDING VISUAL-MATRIX-chat-3: Enter really sends is broken in every
-  // real browser — the host-level keydown listener's `e.target !== input`
-  // guard rejects the retargeted target (see the header). The synthetic
-  // dispatch below behaves exactly like a physical keypress (both retarget),
-  // and the assertions stay at the documented contract; pinned test.fail
-  // until the guard accepts host-level retargeting.
-  test.fail('VISUAL-MATRIX-chat-3: typing Enter really sends, clears the composer, and does not self-add', async () => {
+  // VISUAL-MATRIX-chat-3 (fixed): the host-level keydown guard used to reject
+  // the retargeted target of a real keydown (see the header). It now accepts
+  // the composer via `composedPath()`, so the pin is unwrapped and Enter
+  // really sends.
+  test('typing Enter really sends, clears the composer, and does not self-add', async () => {
     await page.evaluate(() => (window as any).matrix.mount({
       messages: [{ id: 'other', author: 'Alice', content: 'hello' }],
     }));
@@ -609,12 +595,12 @@ test.describe('chat visual matrix: real interaction', () => {
     expect(active, 'the new chip is the current user’s own').toBe(true);
   });
 
-  // FINDING VISUAL-MATRIX-chat-1 (mirrors DOM finding MATRIX-chat-1):
-  // addTypingIndicator() on a connected chat touches private state without
-  // requesting a render, so the documented "Show typing indicator" effect —
-  // the doc's own Basic Usage calls it on a live chat — never paints. The
-  // assertion stays as documented; pinned test.fail until the method renders.
-  test.fail('addTypingIndicator on a live chat shows the typing row', async () => {
+  // VISUAL-MATRIX-chat-1 (fixed, mirrors DOM finding MATRIX-chat-1): the
+  // typing methods used to touch a private Map without requesting a render.
+  // `typingIndicators` is now `@state()` and the methods reassign it, so the
+  // documented "Show typing indicator" effect paints on a live chat. Pin
+  // unwrapped.
+  test('addTypingIndicator on a live chat shows the typing row', async () => {
     await page.evaluate(() => (window as any).matrix.mount({
       messages: [{ id: 'other', author: 'Alice', content: 'hello' }],
     }));

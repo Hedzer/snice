@@ -48,6 +48,9 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
   @query('.flow__minimap-svg')
   private minimapSvgEl?: SVGSVGElement;
 
+  @query('.flow__minimap')
+  private minimapPanelEl?: HTMLElement;
+
   // SVG groups (created manually for SVG namespace)
   private transformGroupEl?: SVGGElement;
   private edgesGroupEl?: SVGGElement;
@@ -168,8 +171,12 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
   }
 
   removeNode(id: string) {
+    const removedEdges = this.edges.filter(e => e.source === id || e.target === id);
     this.nodes = this.nodes.filter(n => n.id !== id);
     this.edges = this.edges.filter(e => e.source !== id && e.target !== id);
+    for (const edge of removedEdges) {
+      this.emitEdgeDisconnect(edge);
+    }
     if (this.selectedNodeId === id) {
       this.selectedNodeId = '';
       this.emitNodeSelect(null);
@@ -379,14 +386,17 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
     this.selectedEdgeId = '';
     this.emitNodeSelect(node);
 
-    // Start drag
-    this.dragNode = node;
-    const pos = this.screenToCanvas(e.clientX, e.clientY);
-    this.dragOffsetX = pos.x - node.x;
-    this.dragOffsetY = pos.y - node.y;
+    // Start drag — only when the editor is editable. Selection is a view
+    // operation and stays available on a read-only diagram.
+    if (this.editable) {
+      this.dragNode = node;
+      const pos = this.screenToCanvas(e.clientX, e.clientY);
+      this.dragOffsetX = pos.x - node.x;
+      this.dragOffsetY = pos.y - node.y;
 
-    document.addEventListener('mousemove', this.boundMouseMove);
-    document.addEventListener('mouseup', this.boundMouseUp);
+      document.addEventListener('mousemove', this.boundMouseMove);
+      document.addEventListener('mouseup', this.boundMouseUp);
+    }
     this.rebuild();
   }
 
@@ -727,6 +737,8 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
   }
 
   private updateMinimap() {
+    const panel = this.minimapPanelEl;
+    if (panel) panel.style.display = this.minimap ? '' : 'none';
     const svg = this.minimapSvgEl;
     if (!svg || !this.minimap) return;
 

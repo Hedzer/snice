@@ -20,13 +20,8 @@
  * in fixed mode though the method itself still works ("Public data methods
  * remain usable while UI is disabled/readonly").
  *
- * Every assertion is the DOCUMENTED expectation. One combo diverges and is
- * pinned rather than softened:
- *
- *   MATRIX-key-value-1 — moving `rows` from a fixed count back to `0` keeps the
- *     empty rows the fixed count had padded in, so a variable auto-expanding
- *     editor holding one entry displays three rows instead of the documented
- *     two (one data row plus one trailing editing row).
+ * Every assertion is the DOCUMENTED expectation. MATRIX-key-value-1 was pinned
+ * here and is fixed.
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { product, expectShape, unmountAll } from '../matrix-utils';
@@ -115,18 +110,13 @@ describe('key-value matrix: changing the row configuration', () => {
   });
 
   /**
-   * FINDING MATRIX-key-value-1.
-   *
-   * `rows` is documented as "0 variable; >0 exact fixed count", and the display
-   * of a VARIABLE editor is documented as its data rows plus one trailing empty
-   * row ("Variable + auto-expand: trailing empty display row"). Moving a fixed
-   * editor back to variable leaves the padding rows the fixed count had
-   * created, so an editor holding one entry displays three rows: one data row
-   * and TWO empty ones. The assertion is not weakened — the documented display
-   * for one entry under `rows = 0` with auto-expand is two rows.
+   * MATRIX-key-value-1 (fixed) — moving a fixed count back to variable used
+   * to keep the padding rows the fixed count had created (the pad step only
+   * appended). The variable+auto-expand display now trims surplus trailing
+   * empty rows and offers exactly one trailing editing row, as documented.
    */
-  it.fails(
-    'MATRIX-key-value-1: turning a fixed count back to variable restores auto-expand',
+  it(
+    'MATRIX-key-value-1 (fixed): turning a fixed count back to variable restores auto-expand',
     async () => {
       const el = await mountKeyValue({ rows: 3, autoExpand: true });
       el.setItems(entries(1));

@@ -143,8 +143,10 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     // Clear existing items
     content.innerHTML = '';
 
-    // Create tree items for root nodes
-    this.nodes.forEach(node => {
+    // Create tree items for root nodes. internalNodes, not this.nodes: the
+    // tree's methods and state syncs write to the clones, so the renderer must
+    // read the same objects or those writes land where nothing looks.
+    this.internalNodes.forEach(node => {
       const item = document.createElement('snice-tree-item');
       if (this.showCheckboxes) item.setAttribute('show-checkbox', '');
       if (this.showIcons) item.setAttribute('show-icon', '');
@@ -159,23 +161,25 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     // Query items directly — they were just appended to the DOM in updateTreeItemsDOM
     const items = this.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item');
     if (items) {
-      const total = this.nodes.length;
+      const total = this.internalNodes.length;
       items.forEach((item, index) => {
-        if (this.nodes[index] && (item as any).setNode) {
+        if (this.internalNodes[index] && (item as any).setNode) {
           (item as any).showCheckbox = this.showCheckboxes;
           (item as any).showIcon = this.showIcons;
-          (item as any).setNode(this.nodes[index], 0, index + 1, total);
+          (item as any).expandOnClick = this.expandOnClick;
+          (item as any).setNode(this.internalNodes[index], 0, index + 1, total);
         }
       });
     }
   }
 
-  @watch('showCheckboxes', 'showIcons', { immediate: false })
+  @watch('showCheckboxes', 'showIcons', 'expandOnClick', { immediate: false })
   private handleDisplayOptionsChange() {
     const items = this.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item');
     items?.forEach(item => {
       (item as any).showCheckbox = this.showCheckboxes;
       (item as any).showIcon = this.showIcons;
+      (item as any).expandOnClick = this.expandOnClick;
     });
   }
 
@@ -254,7 +258,13 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     if (!node) return;
 
     // Check if selection is disabled
-    if (!this.selectable || this.selectionMode === 'none') return;
+    if (!this.selectable || this.selectionMode === 'none') {
+      // The item paints its own selection optimistically before dispatching.
+      // Selection is off, so roll that paint back — the row must not look or
+      // announce selected while `selectedNodes` cannot hold it.
+      this.updateSelectedStatesOnly();
+      return;
+    }
 
     if (this.selectionMode === 'single') {
       // Deselect all nodes first
@@ -463,7 +473,10 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
       return null;
     };
 
-    return findParent(this.nodes, nodeId);
+    // Search the internal clones, not this.nodes: the checked/indeterminate
+    // cascade writes to clones, so ancestors must be judged from the same
+    // objects or the two halves of the cascade never meet.
+    return findParent(this.internalNodes, nodeId);
   }
 
   @on('tree-item-lazy-load')

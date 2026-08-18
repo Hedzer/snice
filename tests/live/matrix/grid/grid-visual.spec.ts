@@ -362,29 +362,29 @@ test.describe('grid visual matrix: cross-combo geometry', () => {
   });
 
   /**
-   * ── FINDING VISUAL-MATRIX-grid-3 ────────────────────────────────────────────────
+   * ── FINDING VISUAL-MATRIX-grid-3 (fixed) ────────────────────────────────────────
    *
    * `setLayout(layout)` is documented as "Apply saved layout (reorder,
    * reposition, hide/show)" — one application of one layout. In a real browser
-   * it never finishes.
+   * it never finished.
    *
-   * `setLayout()` stores the layout in `pendingLayout` and calls
+   * `setLayout()` stored the layout in `pendingLayout` and called
    * `applyPendingLayout()`, which reorders the light-DOM children with
-   * `appendChild`. Those mutations fire `slotchange`, whose handler checks
-   * `pendingLayout` — still set, because nothing ever clears it — and applies
+   * `appendChild`. Those mutations fire `slotchange`, whose handler checked
+   * `pendingLayout` — still set, because nothing ever cleared it — and applied
    * the whole layout again, appending again, firing `slotchange` again. The
-   * recursion runs on the microtask queue and wedges the tab.
+   * recursion ran on the microtask queue and wedged the tab.
    *
-   * The DOM matrix cannot see this: happy-dom dispatches no `slotchange` for a
-   * programmatic reparent, so there the second pass never happens and
-   * `setLayout()` returns cleanly. It is a browser-only defect, which is
+   * The DOM matrix could not see this: happy-dom dispatches no `slotchange` for
+   * a programmatic reparent, so there the second pass never happened and
+   * `setLayout()` returned cleanly. It was a browser-only defect, which is
    * exactly what this tier exists for.
    *
-   * The assertion below is the CORRECT one — the arrangement the docs promise —
-   * and it stays. `test.fail()` records the divergence; the fixture's append
-   * budget is what keeps the page alive long enough to report it.
+   * Fixed: `applyPendingLayout()` now clears `pendingLayout` once its reorders
+   * are applied, so the `slotchange` they fire finds nothing to re-apply. The
+   * assertion below is the documented arrangement and runs unpinned.
    */
-  test.fail('VISUAL-MATRIX-grid-3: setLayout() restores the painted arrangement, hidden items included',
+  test('VISUAL-MATRIX-grid-3: setLayout() restores the painted arrangement, hidden items included',
     async () => {
       await page.evaluate(() => (window as any).matrix.mount({
         items: [

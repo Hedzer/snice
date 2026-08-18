@@ -80,10 +80,10 @@ async function mountWithItems(
  * form every documented example uses (`<snice-masonry columns="3" gap="1rem">`)
  * and the only one the `:host([columns="0"])` rule can see.
  *
- * `minColumnWidth` crosses the property channel here because its documented
- * attribute is broken (MATRIX-masonry-1, asserted on its own below); mixing the
- * two into one combo would hide every other attribute regression behind that
- * one finding.
+ * `minColumnWidth` keeps crossing the property channel here (its documented
+ * attribute is covered unpinned by its own oracle below, MATRIX-masonry-1
+ * fixed); mixing the two into one combo would let an attribute regression in
+ * either property hide behind the other.
  */
 export async function mountMasonry(vector: Vector, itemCount: number): Promise<HTMLElement> {
   return mountWithItems(itemCount, {

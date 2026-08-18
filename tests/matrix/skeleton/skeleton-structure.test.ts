@@ -73,12 +73,13 @@ describe('skeleton matrix: the oracle is not vacuous', () => {
 });
 
 describe('skeleton matrix: accessibility', () => {
-  // MATRIX-skeleton-1 — docs/ai/components/skeleton.md Accessibility:
+  // MATRIX-skeleton-1 (fixed) — docs/ai/components/skeleton.md Accessibility:
   // "Decorative only; use `aria-busy="true"` on container while loading."
-  // The component gives every bone `role="status" aria-label="Loading..."`, so a
-  // documented `count="3"` skeleton is three live regions announcing the same
-  // wait three times. The assertion below is the documented one and STAYS.
-  it.fails('MATRIX-skeleton-1: a decorative skeleton exposes no live-region role', async () => {
+  // The component used to give every bone `role="status"
+  // aria-label="Loading..."`, so a documented `count="3"` skeleton was three
+  // live regions announcing the same wait three times. The bones are now
+  // decorative; the assertion runs unpinned as a regression guard.
+  it('MATRIX-skeleton-1 (fixed): a decorative skeleton exposes no live-region role', async () => {
     el = await mountSkeleton(combo('a11y', { count: 3 }));
     expect(skeletonAriaProblems(el)).toEqual([]);
   });

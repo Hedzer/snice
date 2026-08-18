@@ -9,7 +9,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  * Props for the Layout component
  */
 export interface LayoutProps extends SniceBaseProps {
-
+  contained?: any;
 
 }
 
@@ -31,7 +31,7 @@ export interface LayoutProps extends SniceBaseProps {
  */
 export const Layout: SniceReactComponent<LayoutProps, SniceComponentRef> = createReactAdapter<LayoutProps, false>({
   tagName: 'snice-layout',
-  properties: [],
+  properties: ["contained"],
   events: {},
   formAssociated: false
 });

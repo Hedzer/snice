@@ -57,8 +57,8 @@ describe('doc matrix smoke', () => {
     const el = await mountDoc(c);
     expectShape(readAxes(el, c), expectedAxes(c), 'smoke/readonly axes');
     expect(el.hasAttribute('readonly')).toBe(true);
-    // The editor-side half of the property-channel readonly assignment is a
-    // standing finding (MATRIX-doc-1, pinned in structure.test.ts); the
+    // The editor-side half of the property-channel readonly assignment is
+    // fixed (MATRIX-doc-1, unwrapped in structure.test.ts); the
     // authored-attribute channel is the smoke-level proof here.
     const authored = await mountDoc(combo({ readonly: true }));
     expect(String(editorOf(authored)!.contentEditable)).toBe('false');

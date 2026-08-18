@@ -10,7 +10,7 @@ export class SniceMasonry extends HTMLElement implements SniceMasonryElement {
   @property()
   gap = '1rem';
 
-  @property()
+  @property({ attribute: 'min-column-width' })
   minColumnWidth = '250px';
 
   @render()

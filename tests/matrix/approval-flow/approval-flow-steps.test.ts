@@ -19,14 +19,13 @@
  *
  * ── Why `currentStep` is set as a property here ─────────────────────────────
  *
- * The docs give `currentStep` the attribute `current-step`, and that attribute
- * is INERT in a real browser (MATRIX-approval-flow-2, pinned in
- * tests/live/matrix/approval-flow/approval-flow-visual.spec.ts). This tier
- * cannot see that: happy-dom hands `attributeChangedCallback` every attribute
- * change whether or not the element observed it, so `current-step` appears to
- * work here and only here. Using the property channel keeps this file honest —
- * it tests what a current step DOES, and leaves how you name one to the tier
- * that can tell the truth about it.
+ * The docs give `currentStep` the attribute `current-step`. MATRIX-
+ * approval-flow-2 (that attribute was inert in a real browser) is fixed, but
+ * this tier still uses the property channel on purpose: happy-dom hands
+ * `attributeChangedCallback` every attribute change whether or not the element
+ * observed it, so this tier could never have told the truth about the
+ * attribute channel. It tests what a current step DOES; how you name one is
+ * the browser tier's question (tests/live/matrix/approval-flow/).
  *
  * it.fails policy: nothing here is relaxed.
  */

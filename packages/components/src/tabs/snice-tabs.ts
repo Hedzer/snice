@@ -11,7 +11,7 @@ export class SniceTabs extends HTMLElement {
   @property({  })
   selected = 0;
 
-  @property({ type: Boolean,  })
+  @property({ type: Boolean, attribute: 'no-scroll-controls' })
   noScrollControls = false;
 
   @property({  })

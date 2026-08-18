@@ -98,12 +98,34 @@
   padding: var(--snice-spacing-2xs, 0.25rem) 0;
 }
 
-.product-card--compact .product-card__variants,
+/* Documented regions (variants, badge, favorite-btn) stay on screen; only the
+   undocumented carousel affordances are dropped at this size. */
 .product-card--compact .product-card__gallery-dots,
-.product-card--compact .product-card__badge,
-.product-card--compact .product-card__favorite-btn,
 .product-card--compact .product-card__quick-view {
   display: none;
+}
+
+/* The 5rem gallery cannot seat the default badge/heart side by side; shrink
+   them onto opposite corners so neither swallows the other. */
+.product-card--compact .product-card__badge {
+  top: var(--snice-spacing-3xs, 0.125rem);
+  left: var(--snice-spacing-3xs, 0.125rem);
+  font-size: 0.5625rem;
+  padding: 0 var(--snice-spacing-3xs, 0.125rem);
+  line-height: 1.2;
+}
+
+.product-card--compact .product-card__favorite-btn {
+  top: auto;
+  bottom: var(--snice-spacing-3xs, 0.125rem);
+  right: var(--snice-spacing-3xs, 0.125rem);
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.product-card--compact .product-card__favorite-icon {
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 .product-card--compact .product-card__title {
@@ -203,10 +225,6 @@
   font-weight: var(--snice-font-weight-semibold, 600);
 }
 
-.product-card--minimal .product-card__stock {
-  display: none;
-}
-
 .product-card--minimal .product-card__cta {
   background: transparent;
   color: var(--pc-text);
@@ -248,10 +266,6 @@
 
 .product-card--grid .product-card__price-current {
   font-size: var(--snice-font-size-lg, 1.125rem);
-}
-
-.product-card--grid .product-card__variants {
-  display: none;
 }
 
 .product-card--grid .product-card__cta {

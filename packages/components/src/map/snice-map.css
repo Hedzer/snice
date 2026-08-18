@@ -82,6 +82,19 @@
   filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.3));
 }
 
+/* An authored `MapMarker.icon` replaces the built-in pin: an image URL or
+   data URI paints as an image, anything else (emoji, glyph) as text. */
+.map-marker-icon {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
+  object-fit: contain;
+}
+
 /* Popup */
 .map-popup {
   position: absolute;

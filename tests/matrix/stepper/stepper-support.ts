@@ -145,10 +145,10 @@ export function combo(overrides: Partial<StepperCombo> = {}): StepperCombo {
  * as attributes, `steps` and `currentStep` through the property channel.
  *
  * `steps` is an array, which has no attribute form at all. `currentStep` is
- * assigned as a property here because the attribute the doc names does not
- * reach it — see MATRIX-stepper-1 in `stepper-navigation.test.ts`, which is
- * the finding that pins exactly that. Using the property keeps every other
- * combo measuring the stepper rather than re-reporting one known defect.
+ * assigned as a property here (the documented navigation surface, "Navigate
+ * via currentStep property"); its attribute form is covered unpinned by
+ * MATRIX-stepper-1 (fixed) in `stepper-navigation.test.ts`. Using the property
+ * keeps every combo measuring the stepper rather than the attribute channel.
  */
 export async function makeStepper(c: StepperCombo): Promise<any> {
   const attrs: Record<string, any> = { orientation: c.orientation };

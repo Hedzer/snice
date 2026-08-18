@@ -88,13 +88,13 @@ describe('waterfall matrix smoke', () => {
   // The two marquee regressions, kept at full strength. See
   // matrix/waterfall/waterfall-orientation.test.ts (MATRIX-waterfall-1) and
   // waterfall-a11y.test.ts (MATRIX-waterfall-3).
-  it.fails('MATRIX-waterfall-1 orientation="horizontal" turns the chart', async () => {
+  it('MATRIX-waterfall-1 (fixed) orientation="horizontal" turns the chart', async () => {
     const c = combo({ orientation: 'horizontal' });
     el = await makeWaterfall(c);
     expectClean(orientationProblems(el, c), comboId(c));
   });
 
-  it.fails('MATRIX-waterfall-3 bars carry a role and are focusable', async () => {
+  it('MATRIX-waterfall-3 (fixed) bars carry a role and are focusable', async () => {
     const c = combo();
     el = await makeWaterfall(c);
     expectClean(a11yProblems(el, c), comboId(c));

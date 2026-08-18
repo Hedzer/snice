@@ -93,7 +93,9 @@ describe('flow matrix smoke', () => {
     await wait(REBUILD);
     expect(el.nodes).toHaveLength(3);
     expect(el.edges).toHaveLength(0);   // "and connected edges"
-    expect(seen.filter(event => event.type === 'edge-disconnect')).toHaveLength(1);
+    // One disconnect for the explicit removeEdge, plus one per edge the
+    // removeNode took with it (MATRIX-flow-3, fixed): every removal announces.
+    expect(seen.filter(event => event.type === 'edge-disconnect')).toHaveLength(3);
 
     // "Auto-zoom to fit all nodes" is a view operation over the caller's data.
     el.fitView();
@@ -121,7 +123,7 @@ describe('flow matrix smoke', () => {
 
   // The three marquee regressions, kept at full strength. See
   // matrix/flow/switches.test.ts and matrix/flow/methods.test.ts.
-  it.fails('MATRIX-flow-1 editable=false leaves a dragged node where it was', async () => {
+  it('MATRIX-flow-1 (fixed) editable=false leaves a dragged node where it was', async () => {
     const c = combo({ editable: false });
     const data = graphOf(c);
     const before = { x: data.nodes[0].x, y: data.nodes[0].y };
@@ -134,14 +136,14 @@ describe('flow matrix smoke', () => {
     expect({ x: data.nodes[0].x, y: data.nodes[0].y }).toEqual(before);
   });
 
-  it.fails('MATRIX-flow-2 minimap=false hides the minimap panel', async () => {
+  it('MATRIX-flow-2 (fixed) minimap=false hides the minimap panel', async () => {
     const c = combo({ minimap: false });
     const data = graphOf(c);
     el = await makeFlow(c, data);
     expectClean(minimapProblems(el, c, data), comboId(c));
   });
 
-  it.fails('MATRIX-flow-3 removeNode emits edge-disconnect for the edges it removes', async () => {
+  it('MATRIX-flow-3 (fixed) removeNode emits edge-disconnect for the edges it removes', async () => {
     const c = combo({ graph: 'chain' });
     const data = graphOf(c);
     el = await makeFlow(c, data);

@@ -22,14 +22,15 @@
  *
  * ── Findings pinned by this suite ───────────────────────────────────────────
  *
- *   MATRIX-estimate-1  The doc lists `estimateNumber` with "attribute:
- *                      estimate-number", `expiryDate` with "attribute:
- *                      expiry-date" and `taxRate` with "attribute: tax-rate",
- *                      and the doc's own HTML example writes
- *                      `<snice-estimate estimate-number="EST-001" tax-rate="10">`.
- *                      None of those three attributes reach their property.
- *
- * The finding keeps the documented assertion and is declared `it.fails`.
+ *   MATRIX-estimate-1 (fixed)  The doc lists `estimateNumber` with
+ *                              "attribute: estimate-number", `expiryDate` with
+ *                              "attribute: expiry-date" and `taxRate` with
+ *                              "attribute: tax-rate", and the doc's own HTML
+ *                              example writes
+ *                              `<snice-estimate estimate-number="EST-001" tax-rate="10">`.
+ *                              None of those used to reach their property; the
+ *                              decorators now name the documented attributes
+ *                              and the guards run unpinned.
  */
 import { Problems, text, all } from '../matrix-kit';
 import { exactPart as part, exactParts as parts, partTokens } from '../part-exact';

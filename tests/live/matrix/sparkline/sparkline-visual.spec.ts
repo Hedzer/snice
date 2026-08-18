@@ -114,28 +114,12 @@ interface Waiver {
   matches: RegExp;
 }
 
-const WAIVERS: Waiver[] = [
-  {
-    // MATRIX-sparkline-2, already pinned in the DOM tier
-    // (tests/matrix/sparkline/sparkline-marks.test.ts): a ONE-POINT series
-    // computes its x as `index / (data.length - 1)` — 0/0 — so every x is NaN.
-    // The DOM tier can see the NaN in the attribute; only a browser shows what
-    // it COSTS, which is that the dot is placed at x=0 and paints half outside
-    // the chart's own box.
-    //
-    // Minimal repro: `sparkline.data = [42]; sparkline.showDots = true` — the
-    // circle's box straddles the left edge of the svg.
-    //
-    // Reported, not fixed — see the point mapping in
-    // packages/components/src/sparkline/snice-sparkline.ts.
-    id: 'MATRIX-sparkline-2',
-    // Bars are placed by `index * barWidth`, which is finite for one point, so
-    // a one-point BAR chart is unaffected — the waiver is scoped to the line
-    // and area types, where the 0/0 mapping is used.
-    applies: c => c.dataset === 'single' && c.showDots && c.type !== 'bar',
-    matches: /^a dot mark escapes the chart horizontally \(.*\)$/,
-  },
-];
+// MATRIX-sparkline-2 (fixed): a ONE-POINT series used to compute its x as
+// `index / (data.length - 1)` — 0/0 — so every x was NaN and the dot painted
+// half outside the chart's own box. The single point is centred now, the dot
+// lands whole inside the box, and the waiver that excused the escape was
+// deleted — an empty list is what "no known defects" looks like.
+const WAIVERS: Waiver[] = [];
 
 /**
  * LAYER 1. One evaluate per combo, returning every violation at once so a
@@ -364,15 +348,35 @@ test.describe('sparkline visual matrix: the empty and degenerate series', () => 
       const sr = document.getElementById('subject')!.shadowRoot!;
       const svg = sr.querySelector('[part~="svg"]')!;
       const line = sr.querySelector('[part~="line"]');
+      // The degenerate line is judged on its OWN geometry attribute — the
+      // DOM tier's convention (tests/matrix/sparkline/sparkline-utils.ts) —
+      // because the LAYOUT box of a zero-extent mark is engine-specific:
+      // Chromium reports the geometry box (0x0) while Firefox reports the
+      // stroke extents (~strokeWidth wide), so a getBoundingClientRect width
+      // is noise about the engine, not a fact about what was drawn. One
+      // vertex in the attribute cannot span horizontally in ANY engine.
+      const points = (line?.getAttribute('points') ?? '').trim();
+      const vertices = points ? points.split(/\s+/) : [];
+      const [x, y] = (vertices[0] ?? '').split(',').map(Number);
       return {
         svg: svg.getBoundingClientRect().toJSON(),
-        line: line ? line.getBoundingClientRect().toJSON() : null,
+        hasLine: !!line,
+        vertexCount: vertices.length,
+        x, y,
       };
     });
     expect(shape.svg.width, 'the declared box survives a degenerate series').toBeCloseTo(100, 0);
     expect(shape.svg.height).toBeCloseTo(30, 0);
-    expect(shape.line, 'a one-point series still emits a line mark').not.toBeNull();
-    expect(shape.line!.width, 'a line through one vertex has no horizontal extent').toBe(0);
+    expect(shape.hasLine, 'a one-point series still emits a line mark').toBe(true);
+    expect(shape.vertexCount,
+      'a line through one vertex has no horizontal extent').toBe(1);
+    expect(Number.isFinite(shape.x) && Number.isFinite(shape.y),
+      `the one-point vertex is "${shape.x},${shape.y}", not a place`).toBe(true);
+    expect(shape.x, 'the single vertex is drawn inside the box the svg declares')
+      .toBeGreaterThanOrEqual(0);
+    expect(shape.x).toBeLessThanOrEqual(100);
+    expect(shape.y).toBeGreaterThanOrEqual(0);
+    expect(shape.y).toBeLessThanOrEqual(30);
   });
 
   test('a flat series still paints a line inside the box', async () => {

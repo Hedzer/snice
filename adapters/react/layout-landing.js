@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const LayoutLanding = createReactAdapter({
     tagName: 'snice-layout-landing',
-    properties: ["useNav"],
+    properties: ["useNav", "contained"],
     events: {},
     formAssociated: false
 });

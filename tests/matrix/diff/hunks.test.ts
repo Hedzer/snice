@@ -10,17 +10,16 @@
  * context widths (0, 1, 3 — the default — and 10, wide enough to swallow the
  * whole file) in both modes: 6 x 4 x 2 = 48 combos.
  *
- * `expectedHunks` in `diff-support.ts` is that rule, written from the doc. The
- * component adds an undocumented threshold on top of it — a gap is only
- * collapsed when it is longer than `2 * contextLines` — so the combos where the
- * two disagree are pinned as MATRIX-diff-2 rather than accommodated. Which
- * combos those are is DERIVED (`hasShortGap`), not hand-listed, so the pinned
- * set cannot silently grow.
+ * `expectedHunks` in `diff-support.ts` is that rule, written from the doc.
+ * The component used to add an undocumented threshold on top of it — a gap
+ * was only collapsed when longer than `2 * contextLines` — which MATRIX-diff-2
+ * pinned; the threshold is gone, every combo asserts the documented rule
+ * directly, and the pin is unwrapped below.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import {
   CONTEXTS, DEFAULTS, MODES, Problems, SCENARIOS, SCENARIO_NAMES, checkRender,
-  click, expectClean, expectedHunks, expectedLines, hasShortGap, makeDiff,
+  click, expectClean, expectedHunks, expectedLines, makeDiff,
   removeComponent, separators, unifiedRows, vectorId, wait,
   type Diff, type DiffVector,
 } from './diff-support';
@@ -39,15 +38,9 @@ for (const scenario of SCENARIO_NAMES) {
 
 describe('snice-diff matrix: context width', () => {
   for (const vector of COMBOS) {
-    const lines = expectedLines(SCENARIOS[vector.scenario]);
-    const diverges = hasShortGap(lines, vector.contextLines);
     const id = vectorId(vector);
 
-    // MATRIX-diff-2 (see the pinned test at the bottom of this file): a gap
-    // that is beyond context but no longer than `2 * contextLines` is left
-    // open instead of collapsed. The assertion below stays the documented one.
-    const run = diverges ? it.fails : it;
-    run(diverges ? `MATRIX-diff-2: ${id}` : id, async () => {
+    it(id, async () => {
       el = await makeDiff(vector);
       const problems = new Problems();
       checkRender(problems, el, vector);
@@ -99,19 +92,17 @@ describe('snice-diff matrix: collapsed sections', () => {
 
 // ── Findings ────────────────────────────────────────────────────────────────
 
-describe('snice-diff matrix: findings', () => {
+describe('snice-diff matrix: findings (fixed)', () => {
   /**
-   * MATRIX-diff-1 — a collapsed section cannot be expanded.
+   * MATRIX-diff-1 (fixed) — a collapsed section could not be expanded.
    *
    * `docs/ai/components/diff.md`, Accessibility: "Unchanged sections beyond
-   * context are collapsed; click to expand". The separator row is rendered with
-   * exactly that label and carries a click handler, and the handler flips the
-   * hunk's `collapsed` flag — but the hunk list is a plain private field rather
-   * than a rendered input, so the flip schedules no re-render. Every click on
-   * every collapsed section in every combo leaves the table byte-identical, and
-   * the hidden lines are unreachable for the life of the element.
+   * context are collapsed; click to expand". The separator row's click
+   * handler flipped the hunk's `collapsed` flag, but the hunk list was a
+   * plain private field, so the flip scheduled no re-render. `hunks` is
+   * `@state` now, so the flip re-renders and the hidden lines appear.
    */
-  it.fails('MATRIX-diff-1: clicking a collapsed section reveals its lines', async () => {
+  it('MATRIX-diff-1 (fixed): clicking a collapsed section reveals its lines', async () => {
     el = await makeDiff({ scenario: 'two-far-changes', contextLines: 3 });
     const before = unifiedRows(el, true, true).length;
     const hidden = expectedHunks(expectedLines(SCENARIOS['two-far-changes']), 3)
@@ -127,19 +118,14 @@ describe('snice-diff matrix: findings', () => {
   });
 
   /**
-   * MATRIX-diff-2 — a short section beyond context is not collapsed.
+   * MATRIX-diff-2 (fixed) — a short section beyond context was not collapsed.
    *
    * doc: "Unchanged sections beyond context are collapsed". The component
-   * collapses a run only when it is longer than `2 * contextLines`; a run that
-   * is beyond context but no longer than that is merged into the neighbouring
-   * open hunk instead. The threshold appears nowhere in the documentation, and
-   * it means the same file renders a different number of lines depending on a
-   * rule the reader has no way to know about.
-   *
-   * The combos it affects are pinned above by `hasShortGap`; this test states
-   * the rule itself on the smallest case.
+   * used to collapse a run only when it was longer than `2 * contextLines` —
+   * a threshold that appears nowhere in the documentation. It is gone; the
+   * smallest case states the rule itself.
    */
-  it.fails('MATRIX-diff-2: a two-line gap beyond a one-line context collapses', async () => {
+  it('MATRIX-diff-2 (fixed): a two-line gap beyond a one-line context collapses', async () => {
     // `append`: three unchanged lines then two additions. With
     // `context-lines="1"` only the last unchanged line is context, so the two
     // before it are beyond it and the doc says they collapse.
@@ -149,16 +135,15 @@ describe('snice-diff matrix: findings', () => {
   });
 
   /**
-   * MATRIX-diff-3 — split mode offers no way to reach a collapsed section.
+   * MATRIX-diff-3 (fixed) — split mode offered no way to reach a collapsed
+   * section.
    *
    * doc: "Unchanged sections beyond context are collapsed; click to expand",
-   * stated for the component and not for one of its two modes. The unified view
-   * renders a separator row carrying that invitation; the split view drops the
-   * collapsed lines silently and renders nothing in their place, so in
-   * `mode="split"` the hidden lines have no affordance at all — not even the
-   * inert one MATRIX-diff-1 describes.
+   * stated for the component and not for one of its two modes. The split view
+   * used to drop the collapsed lines silently; it now renders the separator
+   * row in BOTH panes.
    */
-  it.fails('MATRIX-diff-3: split mode marks its collapsed sections too', async () => {
+  it('MATRIX-diff-3 (fixed): split mode marks its collapsed sections too', async () => {
     el = await makeDiff({ scenario: 'two-far-changes', contextLines: 3, mode: 'split' });
     expect(separators(el).length,
       'the split view hides the collapsed lines with no expander at all')

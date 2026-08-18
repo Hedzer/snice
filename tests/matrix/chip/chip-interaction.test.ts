@@ -14,14 +14,13 @@
  *   · `disabled` — an inert chip: no toggle, no events.
  *
  * it.fails policy (never weakened assertions):
- *   MATRIX-chip-3 — `selectable` does NOT toggle `selected` when the chip is
- *     also `removable`. handleChipClick()/handleKeydown() both guard the
- *     toggle with `&& !this.removable`, but the docs describe `selectable`
- *     and `removable` as independent properties.
- *   MATRIX-chip-4 — a `removable` chip dispatches NO `chip-click` on
- *     Enter/Space. The docs say Enter/Space activate the chip and list
- *     `chip-click` unconditionally; the keydown handler dispatches only when
- *     `!this.removable`.
+ *   MATRIX-chip-3 (fixed) — `selectable` used NOT to toggle `selected` when
+ *     the chip was also `removable`: both gesture handlers guarded the toggle
+ *     with `&& !this.removable`, against docs that describe `selectable` and
+ *     `removable` as independent properties.
+ *   MATRIX-chip-4 (fixed) — a `removable` chip used to dispatch NO
+ *     `chip-click` on Enter/Space; the docs list `chip-click` unconditionally
+ *     and say Enter/Space activate the chip.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { removeComponent, wait } from '../../components/test-utils';
@@ -57,17 +56,7 @@ describe('chip matrix: activation', () => {
             ? []
             : [{ type: 'chip-click', detail: { label: LABEL, selected: expectedSelected } }];
 
-          // Two known divergences meet in this product; either one makes the
-          // combo a finding. Enter/Space on a removable chip is MATRIX-chip-4;
-          // any gesture on a selectable+removable chip is MATRIX-chip-3.
-          const keyboardOnRemovable = removable && gesture !== 'click' && !disabled;
-          const selectableRemovable = selectable && removable && !disabled;
-          const finding = keyboardOnRemovable
-            ? 'MATRIX-chip-4'
-            : selectableRemovable ? 'MATRIX-chip-3' : null;
-          const runner = finding ? it.fails : it;
-
-          runner(`${id}: activation ${finding ? `[${finding}]` : 'follows the documented contract'}`, async () => {
+          it(`${id}: activation follows the documented contract`, async () => {
             chip = await makeChip(c);
             const seen = collectEvents(chip);
 
@@ -118,11 +107,7 @@ describe('chip matrix: removal', () => {
   for (const disabled of [false, true]) {
     const c = combo({ removable: true, disabled });
 
-    // MATRIX-chip-2 again, from the behavioural side: with no remove button
-    // rendered, a disabled removable chip has no clickable remove affordance.
-    const runner = disabled ? it.fails : it;
-    runner(`${comboId(c)}: the remove button exists and reports only when enabled`
-      + `${disabled ? ' [MATRIX-chip-2]' : ''}`, async () => {
+    it(`${comboId(c)}: the remove button exists and reports only when enabled`, async () => {
       chip = await makeChip(c);
       const seen = collectEvents(chip);
 

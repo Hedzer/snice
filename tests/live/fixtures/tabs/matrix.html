@@ -68,10 +68,10 @@
         /**
          * `placement` and `selected` cross the ATTRIBUTE channel — the
          * documented HTML form, and what `.tabs--<placement>` is built from.
-         * `noScrollControls` crosses the PROPERTY channel on purpose: the
-         * documented `no-scroll-controls` attribute is not the one the
-         * component observes (MATRIX-tabs-2, pinned in the DOM tier), and this
-         * tier is about paint rather than about re-proving that.
+         * `noScrollControls` also crosses the PROPERTY channel here: this
+         * tier is about paint rather than about the attribute channel, whose
+         * documented `no-scroll-controls` form is covered unpinned in the
+         * DOM matrix (MATRIX-tabs-2, fixed).
          */
         async mount(combo) {
           api.unmount();

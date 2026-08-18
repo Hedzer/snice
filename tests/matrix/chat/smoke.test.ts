@@ -175,10 +175,11 @@ describe('chat matrix smoke', () => {
       .toEqual(['slot msg', 'array msg']);
   });
 
-  // FINDING MATRIX-chat-1 (pinned): the typing methods do not request a
-  // render, so the documented Show/Remove typing-indicator effect of a live
-  // chat does not land on its own. Full story in chat-composer.test.ts.
-  it.fails('a typing indicator appears while someone types and leaves when they stop', async () => {
+  // MATRIX-chat-1 (fixed): the typing methods used to touch a private Map
+  // without requesting a render, so the documented Show/Remove typing
+  // indicator effect of a live chat did not land on its own. The Map is
+  // @state now. Full story in chat-composer.test.ts.
+  it('a typing indicator appears while someone types and leaves when they stop', async () => {
     const combo = base();
     const el = await mountChat(combo, { messages: [msg({ id: 't', author: 'Alice', content: 'hi' })] });
     (el as any).addTypingIndicator('Alice');

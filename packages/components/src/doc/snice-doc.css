@@ -147,6 +147,7 @@
 /* Editor */
 .doc-editor {
   flex: 1;
+  box-sizing: border-box;
   padding: 3.75rem 6.25rem;
   overflow-y: auto;
   outline: none;

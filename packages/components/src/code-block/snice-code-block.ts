@@ -44,6 +44,9 @@ function dedent(text: string): string {
 
 @element('snice-code-block')
 export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement {
+  // Documented "Set via slot or property" — the property channel renders;
+  // no attribute channel (MATRIX-code-block-1).
+  @property({ type: String, attribute: false })
   code = '';
 
   @property({  })
@@ -232,6 +235,24 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
     this.codeEl.setAttribute('data-language', this.language);
   }
 
+  // The internal formatter re-enters through the `code` property; the flag
+  // keeps that self-assignment from scheduling another highlight pass.
+  private formattingInternally = false;
+
+  @watch('code')
+  onCodeChange() {
+    if (!this.formattingInternally) {
+      this.highlight();
+    }
+  }
+
+  // The display axes reach a rendered block without a full re-highlight
+  // (MATRIX-code-block-2).
+  @watch('showLineNumbers', 'startLine', 'highlightLines')
+  onDisplayChange() {
+    this.updateCodeDisplay();
+  }
+
   private escapeHtml(text: string): string {
     const div = document.createElement('div');
     div.textContent = text;
@@ -357,7 +378,12 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
       try {
         const formatted = await formatFn(this.code, this.language);
         if (version !== this.highlightVersion) return;
-        this.code = formatted;
+        this.formattingInternally = true;
+        try {
+          this.code = formatted;
+        } finally {
+          this.formattingInternally = false;
+        }
         this.dispatchAfterFormatEvent();
       } catch (error) {
         console.error('Code formatting failed:', error);

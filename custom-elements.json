@@ -1711,7 +1711,7 @@
           ],
           "attributes": [
             {
-              "name": "currentstep",
+              "name": "current-step",
               "fieldName": "currentStep",
               "type": {
                 "text": "string"
@@ -6523,13 +6523,7 @@
             {
               "kind": "method",
               "name": "handlePointerLeave",
-              "parameters": [
-                {
-                  "name": "event",
-                  "type": "PointerEvent",
-                  "optional": false
-                }
-              ],
+              "parameters": [],
               "return": {
                 "type": {
                   "text": "unknown"
@@ -6551,7 +6545,7 @@
                   "text": "unknown"
                 }
               },
-              "description": "Update --card-mx/--card-my based on cursor position over the card so\nCSS can tilt the card toward the cursor. Only runs for clickable cards\nand only while hovered — plain cards get no events attached."
+              "description": "Update --card-mx/--card-my based on cursor position over the card so\nCSS can tilt the card toward the cursor. Only runs for clickable cards\nand only while hovered — plain cards get no events attached.\n\nThe `@on` handlers are DELEGATED (listener on the shadow root), so\n`event.currentTarget` is the ShadowRoot, not the matched `.card` — the\ntilt is written to the queried card instead."
             },
             {
               "kind": "method",
@@ -9010,6 +9004,14 @@
           },
           "members": [
             {
+              "kind": "field",
+              "name": "code",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
               "kind": "method",
               "name": "copy",
               "parameters": [],
@@ -9094,6 +9096,26 @@
                 "text": "'javascript' | 'typescript' | 'html' | 'css' | 'json' | 'python' | 'bash' | 'plaintext' | string"
               },
               "default": "'plaintext'"
+            },
+            {
+              "kind": "method",
+              "name": "onCodeChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "onDisplayChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",
@@ -15767,7 +15789,7 @@
               "reflects": true
             },
             {
-              "name": "estimatenumber",
+              "name": "estimate-number",
               "fieldName": "estimateNumber",
               "type": {
                 "text": "string"
@@ -15775,7 +15797,7 @@
               "reflects": true
             },
             {
-              "name": "expirydate",
+              "name": "expiry-date",
               "fieldName": "expiryDate",
               "type": {
                 "text": "string"
@@ -15823,7 +15845,7 @@
               "reflects": true
             },
             {
-              "name": "taxrate",
+              "name": "tax-rate",
               "fieldName": "taxRate",
               "type": {
                 "text": "number"
@@ -22468,7 +22490,7 @@
           ],
           "attributes": [
             {
-              "name": "colorvalue",
+              "name": "color-value",
               "fieldName": "colorValue",
               "type": {
                 "text": "boolean"
@@ -22492,7 +22514,7 @@
               "reflects": true
             },
             {
-              "name": "showsparkline",
+              "name": "show-sparkline",
               "fieldName": "showSparkline",
               "type": {
                 "text": "boolean"
@@ -22508,7 +22530,7 @@
               "reflects": true
             },
             {
-              "name": "trendvalue",
+              "name": "trend-value",
               "fieldName": "trendValue",
               "type": {
                 "text": "string | number"
@@ -22617,6 +22639,37 @@
               },
               "default": "'end'",
               "description": "Which side the brand panel sits on."
+            },
+            {
+              "kind": "method",
+              "name": "update",
+              "parameters": [
+                {
+                  "name": "_appContext",
+                  "type": "AppContext",
+                  "optional": false
+                },
+                {
+                  "name": "placards",
+                  "type": "Placard[]",
+                  "optional": false
+                },
+                {
+                  "name": "currentRoute",
+                  "type": "string",
+                  "optional": false
+                },
+                {
+                  "name": "_routeParams",
+                  "type": "RouteParams",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             }
           ],
           "attributes": [
@@ -22700,6 +22753,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Size to the parent element instead of filling the screen."
+            },
+            {
+              "kind": "field",
               "name": "hasSidebar",
               "type": {
                 "text": "boolean"
@@ -22779,6 +22841,15 @@
           ],
           "attributes": [
             {
+              "name": "contained",
+              "fieldName": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Size to the parent element instead of filling the screen."
+            },
+            {
               "name": "use-nav",
               "fieldName": "useNav",
               "type": {
@@ -22843,6 +22914,15 @@
             },
             {
               "kind": "field",
+              "name": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Size to the parent element instead of filling the screen."
+            },
+            {
+              "kind": "field",
               "name": "gap",
               "type": {
                 "text": "'sm' | 'md' | 'lg' | 'xl'"
@@ -22867,6 +22947,37 @@
             },
             {
               "kind": "method",
+              "name": "update",
+              "parameters": [
+                {
+                  "name": "_appContext",
+                  "type": "AppContext",
+                  "optional": false
+                },
+                {
+                  "name": "placards",
+                  "type": "Placard[]",
+                  "optional": false
+                },
+                {
+                  "name": "currentRoute",
+                  "type": "string",
+                  "optional": false
+                },
+                {
+                  "name": "_routeParams",
+                  "type": "RouteParams",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "wireSlotDetection",
               "parameters": [],
               "return": {
@@ -22884,6 +22995,15 @@
                 "text": "'1' | '2' | '3' | '4' | '6'"
               },
               "reflects": true
+            },
+            {
+              "name": "contained",
+              "fieldName": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Size to the parent element instead of filling the screen."
             },
             {
               "name": "gap",
@@ -22936,6 +23056,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Size to the parent element instead of filling the screen."
+            },
+            {
+              "kind": "field",
               "name": "hasBrand",
               "type": {
                 "text": "boolean"
@@ -22949,6 +23078,37 @@
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "update",
+              "parameters": [
+                {
+                  "name": "_appContext",
+                  "type": "AppContext",
+                  "optional": false
+                },
+                {
+                  "name": "placards",
+                  "type": "Placard[]",
+                  "optional": false
+                },
+                {
+                  "name": "currentRoute",
+                  "type": "string",
+                  "optional": false
+                },
+                {
+                  "name": "_routeParams",
+                  "type": "RouteParams",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             },
             {
               "kind": "field",
@@ -22970,6 +23130,15 @@
             }
           ],
           "attributes": [
+            {
+              "name": "contained",
+              "fieldName": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Size to the parent element instead of filling the screen."
+            },
             {
               "name": "width",
               "fieldName": "width",
@@ -23082,6 +23251,16 @@
             },
             {
               "kind": "method",
+              "name": "releaseViewportState",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "update",
               "parameters": [
                 {
@@ -23135,6 +23314,16 @@
             {
               "kind": "method",
               "name": "wireSlotDetection",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wireViewportState",
               "parameters": [],
               "return": {
                 "type": {
@@ -23440,6 +23629,37 @@
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "update",
+              "parameters": [
+                {
+                  "name": "_appContext",
+                  "type": "AppContext",
+                  "optional": false
+                },
+                {
+                  "name": "placards",
+                  "type": "Placard[]",
+                  "optional": false
+                },
+                {
+                  "name": "currentRoute",
+                  "type": "string",
+                  "optional": false
+                },
+                {
+                  "name": "_routeParams",
+                  "type": "RouteParams",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             }
           ],
           "attributes": [
@@ -23505,6 +23725,15 @@
           },
           "members": [
             {
+              "kind": "field",
+              "name": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Size to the parent element instead of filling the screen."
+            },
+            {
               "kind": "method",
               "name": "update",
               "parameters": [
@@ -23566,6 +23795,15 @@
             }
           ],
           "attributes": [
+            {
+              "name": "contained",
+              "fieldName": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Size to the parent element instead of filling the screen."
+            },
             {
               "name": "use-nav",
               "fieldName": "useNav",
@@ -23788,8 +24026,59 @@
           "superclass": {
             "name": "HTMLElement"
           },
-          "members": [],
-          "attributes": [],
+          "members": [
+            {
+              "kind": "field",
+              "name": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Size to the parent element instead of filling the screen."
+            },
+            {
+              "kind": "method",
+              "name": "update",
+              "parameters": [
+                {
+                  "name": "_appContext",
+                  "type": "AppContext",
+                  "optional": false
+                },
+                {
+                  "name": "placards",
+                  "type": "Placard[]",
+                  "optional": false
+                },
+                {
+                  "name": "currentRoute",
+                  "type": "string",
+                  "optional": false
+                },
+                {
+                  "name": "_routeParams",
+                  "type": "RouteParams",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "contained",
+              "fieldName": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Size to the parent element instead of filling the screen."
+            }
+          ],
           "events": [],
           "slots": [
             {
@@ -23916,6 +24205,16 @@
             },
             {
               "kind": "method",
+              "name": "releaseMobileState",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "releaseShortcut",
               "parameters": [],
               "return": {
@@ -23979,6 +24278,16 @@
             {
               "kind": "method",
               "name": "wireFooterState",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wireMobileState",
               "parameters": [],
               "return": {
                 "type": {
@@ -24083,6 +24392,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Size to the parent element instead of filling the screen."
+            },
+            {
+              "kind": "field",
               "name": "direction",
               "type": {
                 "text": "'horizontal' | 'vertical'"
@@ -24096,9 +24414,49 @@
                 "text": "'50-50' | '60-40' | '70-30' | '33-67' | '67-33'"
               },
               "default": "'50-50'"
+            },
+            {
+              "kind": "method",
+              "name": "update",
+              "parameters": [
+                {
+                  "name": "_appContext",
+                  "type": "AppContext",
+                  "optional": false
+                },
+                {
+                  "name": "placards",
+                  "type": "Placard[]",
+                  "optional": false
+                },
+                {
+                  "name": "currentRoute",
+                  "type": "string",
+                  "optional": false
+                },
+                {
+                  "name": "_routeParams",
+                  "type": "RouteParams",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             }
           ],
           "attributes": [
+            {
+              "name": "contained",
+              "fieldName": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Size to the parent element instead of filling the screen."
+            },
             {
               "name": "direction",
               "fieldName": "direction",
@@ -24153,6 +24511,15 @@
             "name": "HTMLElement"
           },
           "members": [
+            {
+              "kind": "field",
+              "name": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Size to the parent element instead of filling the screen."
+            },
             {
               "kind": "method",
               "name": "onReady",
@@ -24226,7 +24593,17 @@
               }
             }
           ],
-          "attributes": [],
+          "attributes": [
+            {
+              "name": "contained",
+              "fieldName": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Size to the parent element instead of filling the screen."
+            }
+          ],
           "events": [],
           "slots": [
             {
@@ -26551,7 +26928,7 @@
               "reflects": true
             },
             {
-              "name": "mincolumnwidth",
+              "name": "min-column-width",
               "fieldName": "minColumnWidth",
               "type": {
                 "text": "string"
@@ -39262,7 +39639,7 @@
               "reflects": true
             },
             {
-              "name": "currentstep",
+              "name": "current-step",
               "fieldName": "currentStep",
               "type": {
                 "text": "number"
@@ -46234,6 +46611,16 @@
             },
             {
               "kind": "method",
+              "name": "handleVirtualBufferChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleVirtualizeChange",
               "parameters": [],
               "return": {
@@ -47552,7 +47939,7 @@
               "reflects": true
             },
             {
-              "name": "transitionduration",
+              "name": "transition-duration",
               "fieldName": "transitionDuration",
               "type": {
                 "text": "number"
@@ -47560,8 +47947,16 @@
               "reflects": true
             },
             {
-              "name": "transitionin",
+              "name": "transition-in",
               "fieldName": "transitionIn",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
+            {
+              "name": "transition-out",
+              "fieldName": "transitionOut",
               "type": {
                 "text": "string"
               },
@@ -47572,14 +47967,6 @@
               "fieldName": "transitioning",
               "type": {
                 "text": "'in' | 'out' | ''"
-              },
-              "reflects": true
-            },
-            {
-              "name": "transitionout",
-              "fieldName": "transitionOut",
-              "type": {
-                "text": "string"
               },
               "reflects": true
             }
@@ -47992,7 +48379,7 @@
           ],
           "attributes": [
             {
-              "name": "noscrollcontrols",
+              "name": "no-scroll-controls",
               "fieldName": "noScrollControls",
               "type": {
                 "text": "boolean"
@@ -50030,6 +50417,9 @@
           ],
           "cssProperties": [
             {
+              "name": "--filled"
+            },
+            {
               "name": "--invalid"
             },
             {
@@ -51345,6 +51735,16 @@
             },
             {
               "kind": "method",
+              "name": "seedInitialState",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "start",
               "parameters": [],
               "return": {
@@ -52150,6 +52550,14 @@
               "default": "false"
             },
             {
+              "kind": "field",
+              "name": "expandOnClick",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
               "kind": "method",
               "name": "finishLoading",
               "parameters": [],
@@ -52275,6 +52683,14 @@
             {
               "name": "checked",
               "fieldName": "checked",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true
+            },
+            {
+              "name": "expand-on-click",
+              "fieldName": "expandOnClick",
               "type": {
                 "text": "boolean"
               },
@@ -54631,7 +55047,7 @@
               "reflects": true
             },
             {
-              "name": "laborrate",
+              "name": "labor-rate",
               "fieldName": "laborRate",
               "type": {
                 "text": "number"

@@ -107,10 +107,16 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
 
     let h = '';
 
-    // Left label: cover image, click resets (closes all)
+    // Left label: cover image + title/author text, click resets (closes all)
     h += `<label for="${resetId}" class="book__page book__page--1">`;
     if (this.coverImage) {
       h += `<img src="${this.esc(this.coverImage)}" alt="${this.esc(this.title || '')}">`;
+    }
+    if (this.title) {
+      h += `<div class="page__content-book-title">${this.esc(this.title)}</div>`;
+    }
+    if (this.author) {
+      h += `<div class="page__content-author">${this.esc(this.author)}</div>`;
     }
     h += `</label>`;
 
@@ -180,6 +186,13 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
       : `${this.radioName}_${this.currentPage}`;
     const radio = this.$book.querySelector(`#${id}`) as HTMLInputElement;
     if (radio) radio.checked = true;
+    // A book at page k has every leaf the reader passed (0 .. k-1) turned
+    // over onto the left-hand side. The radios stay the input/state channel,
+    // but the adjacent-sibling flip rule can only ever reach ONE leaf, so the
+    // turn itself is carried by the class the radios' state syncs here.
+    this.$book.querySelectorAll('.book__page--2').forEach((leaf, index) => {
+      leaf.classList.toggle('turned', index < this.currentPage);
+    });
   }
 
   goToPage(page: number): void {

@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, query, watch, observe, ready, dispose, html, css, unsafeHTML } from 'snice';
+import { element, property, state, render, styles, dispatch, query, watch, observe, ready, dispose, html, css, unsafeHTML } from 'snice';
 import { PENCIL, TRASH, PAPER_CLIP, PAPER_AIRPLANE_SOLID } from '../icons';
 import { FALLBACK_ACCENTS } from '../utils';
 import { ChatLayout, MessageFormat } from './snice-chat.types';
@@ -150,6 +150,9 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   @query('.message-confirm')
   private confirmBox?: HTMLElement;
 
+  // Reactive: the typing methods reassign a new Map so the typing row
+  // re-renders on a connected chat (MATRIX-chat-1).
+  @state()
   private typingIndicators: Map<string, TypingIndicator> = new Map();
   private typingTimeout: number | null = null;
   private fileInput: HTMLInputElement | null = null;
@@ -306,14 +309,18 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
    * Add typing indicator
    */
   addTypingIndicator(user: string): void {
-    this.typingIndicators.set(user, { user, timestamp: new Date() });
+    this.typingIndicators = new Map(this.typingIndicators)
+      .set(user, { user, timestamp: new Date() });
   }
 
   /**
    * Remove typing indicator
    */
   removeTypingIndicator(user: string): void {
-    this.typingIndicators.delete(user);
+    if (!this.typingIndicators.has(user)) return;
+    const next = new Map(this.typingIndicators);
+    next.delete(user);
+    this.typingIndicators = next;
   }
 
   /**
@@ -344,8 +351,14 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   }
 
   private handleKeyDown = (e: KeyboardEvent) => {
-    const target = e.target as HTMLElement;
-    if (target !== this.inputField) return;
+    // Shadow DOM retargets a composed keydown to the host for host-level
+    // listeners, so e.target is the host itself in a real browser. Accept the
+    // composer by target OR by composed path (happy-dom does not retarget).
+    const fromInput = e.target === this.inputField
+      || (typeof e.composedPath === 'function'
+        ? (e.composedPath() as EventTarget[]).includes(this.inputField)
+        : false);
+    if (!fromInput) return;
 
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();

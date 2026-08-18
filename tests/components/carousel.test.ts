@@ -65,9 +65,21 @@ describe('snice-carousel', () => {
 
   it('should go to specific slide', async () => {
     carousel = await createComponent<SniceCarouselElement>('snice-carousel');
-    carousel.goToSlide(3);
+    for (let i = 0; i < 3; i++) {
+      const slide = document.createElement('div');
+      slide.textContent = `Slide ${i}`;
+      carousel.appendChild(slide);
+    }
+    (carousel as unknown as { handleSlotChange: () => void }).handleSlotChange();
     await wait(50);
-    expect(carousel.activeIndex).toBe(3);
+    carousel.goToSlide(2);
+    await wait(50);
+    expect(carousel.activeIndex).toBe(2);
+    // An index past the last reachable slide clamps to the last position,
+    // matching the boundary next()/prev() already enforce.
+    carousel.goToSlide(99);
+    await wait(50);
+    expect(carousel.activeIndex).toBe(2);
   });
 
   it('should support loop', async () => {

@@ -5,7 +5,10 @@
 :host {
   --progress-height: 0.5rem; /* 8px */
   --progress-radius: 4px;
-  --progress-bg: var(--snice-color-border, rgb(226 226 226));
+  /* Lightened one step past the border token: the default fill (primary) on the
+     raw border grey measured 2.99:1 in painted pixels — just under the WCAG
+     1.4.11 3:1 bar for a graphical object that carries meaning. */
+  --progress-bg: color-mix(in srgb, var(--snice-color-border, rgb(226 226 226)) 90%, white);
   --progress-color: var(--snice-color-primary, rgb(37 99 235));
   --progress-animation-duration: 1.5s;
   
@@ -93,8 +96,10 @@
   --progress-color: var(--snice-color-danger, rgb(220 38 38));
 }
 
+/* The theme defines no info token; indigo keeps `info` distinct from `primary`
+   (the same value the spinner's info colour falls back to). */
 :host([color="info"]) {
-  --progress-color: var(--snice-color-primary, rgb(37 99 235));
+  --progress-color: rgb(99 102 241);
 }
 
 /* Striped Pattern */
@@ -147,7 +152,8 @@
   }
 }
 
-/* Label */
+/* Label — a sibling of the bar, centred on the TRACK: the fill's width is the
+   value, so a fill-anchored label is pushed outside the component at 0%. */
 .progress__label {
   position: absolute;
   top: 50%;
@@ -249,8 +255,10 @@
 }
 
 /* Adjust label size for different sizes */
+/* 8px floor: a smaller label is unreadable — the small ring is 24px, and a
+   "50%" set at 8px still fits inside it. */
 :host([size="small"]) .progress__circle-label {
-  font-size: 0.375rem;
+  font-size: 0.5rem;
 }
 
 :host([size="medium"]) .progress__circle-label {

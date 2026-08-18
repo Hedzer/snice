@@ -27,26 +27,23 @@
  *   · "`value-change` -> `{ value, oldValue, component }`" — dispatched for a
  *     step that MOVES the value, and not for one that cannot.
  *
- * Every assertion is the DOCUMENTED expectation. Two combos diverge and are
- * pinned rather than softened:
+ * Every assertion is the DOCUMENTED expectation. The two combos this slice
+ * once pinned as findings are FIXED, and their pins are unwrapped:
  *
- *   MATRIX-step-input-1 — `min=1 max=12 step=5`, no `wrap`, value at the
- *     highest lattice point (11), `increment()`: the step targets `max` (12),
- *     the lattice snaps it straight back to 11, and a `value-change` carrying
- *     `{ value: 11, oldValue: 11 }` is dispatched for a value that never moved.
- *   MATRIX-step-input-2 — the same control at 11: `increment` stays ENABLED
- *     although no step can ever move the value, so the documented "Buttons
- *     disabled at min/max" cue never appears for a range whose width is not a
- *     whole number of steps.
- *
- * Both keep the documented assertion and are declared `it.fails`.
+ *   MATRIX-step-input-1 (fixed) — `min=1 max=12 step=5`, no `wrap`, value at
+ *     the highest lattice point (11), `increment()`: the step targets `max`
+ *     (12), the boundary target is seated on the lattice before the change
+ *     guard, and a step that cannot move the value dispatches nothing.
+ *   MATRIX-step-input-2 (fixed) — the same control at 11: the "Buttons
+ *     disabled at min/max" cue sits on the highest lattice point the range
+ *     admits, so `increment` is disabled there.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { product, click, unmountAll } from '../matrix-utils';
 import {
   mountStepInput, tick, normalize, expectedIncrement, expectedDecrement,
   expectedButtonDisabled, decrementButton, incrementButton, inputPart,
-  recordValueChange, pressKey, emitsPhantomChange, reachableMax,
+  recordValueChange, pressKey, reachableMax,
 } from './step-input-support';
 import '../../../packages/components/src/step-input/snice-step-input';
 
@@ -91,12 +88,10 @@ const STEP_COMBOS = product({
 describe(`step-input matrix: stepping x boundaries x wrap (${STEP_COMBOS.length} combos)`, () => {
   for (const combo of STEP_COMBOS) {
     const { min, max, step } = combo.range;
-    const start = normalize(startValue(combo.range, combo.position), min, max, step);
-    const phantom = emitsPhantomChange(start, min, max, step, combo.wrap, combo.direction);
-    const id = `${phantom ? 'MATRIX-step-input-1: ' : ''}${combo.range.id}`
+    const id = `${combo.range.id}`
       + `/${combo.wrap ? 'wrap' : 'clamp'}/${combo.position}/${combo.direction}`;
 
-    (phantom ? it.fails : it)(id, async () => {
+    it(id, async () => {
       const el = await mountStepInput({
         min, max, step, wrap: combo.wrap,
         defaultValue: startValue(combo.range, combo.position),
@@ -113,7 +108,7 @@ describe(`step-input matrix: stepping x boundaries x wrap (${STEP_COMBOS.length}
         : expectedDecrement(before, min, max, step, combo.wrap);
 
       // The buttons announce the boundary BEFORE anything is pressed.
-      const buttons = expectedButtonDisabled(before, min, max, combo.wrap, false);
+      const buttons = expectedButtonDisabled(before, min, max, step, combo.wrap, false);
       expect(decrementButton(el)?.disabled, `${id} decrement disabled`).toBe(buttons.decrement);
       expect(incrementButton(el)?.disabled, `${id} increment disabled`).toBe(buttons.increment);
 
@@ -153,12 +148,9 @@ describe('step-input matrix: every entry point takes the same step', () => {
     const id = `${combo.range.id}/${combo.wrap ? 'wrap' : 'clamp'}/${combo.position}`;
 
     const { min, max, step } = combo.range;
-    const seated = normalize(startValue(combo.range, combo.position), min, max, step);
-    const phantom = emitsPhantomChange(seated, min, max, step, combo.wrap, 'up')
-      || emitsPhantomChange(seated, min, max, step, combo.wrap, 'down');
 
-    (phantom ? it.fails : it)(
-      `${phantom ? 'MATRIX-step-input-1: ' : ''}${id}: button and ArrowUp/ArrowDown`
+    it(
+      `${id}: button and ArrowUp/ArrowDown`
       + ' agree with increment()/decrement()', async () => {
       const start = startValue(combo.range, combo.position);
 
@@ -239,21 +231,18 @@ describe('step-input matrix: the documented wrap example goes all the way round'
 });
 
 /**
- * FINDING MATRIX-step-input-2.
+ * FINDING MATRIX-step-input-2 (fixed).
  *
  * "Buttons disabled at min/max (unless `wrap` is set)" is the documented
  * boundary cue: when a step can no longer move the value, the button says so.
- * In a range whose width is not a whole number of steps the maximum is not a
- * value the control can hold, so the cue is attached to a state the control can
- * never reach — and at the highest value it CAN hold, the increment button
- * stays enabled and does nothing.
- *
- * The assertion is not weakened: pressing the increment button at the top of a
- * range must either move the value or be disabled.
+ * In a range whose width is not a whole number of steps the raw maximum is not
+ * a value the control can hold; the cue now sits on the highest value it CAN
+ * hold, so pressing increment at the top either moves the value or is
+ * disabled — never a live button that does nothing.
  */
 describe('step-input matrix: the boundary cue at an unreachable maximum', () => {
-  it.fails(
-    'MATRIX-step-input-2: min=1 max=12 step=5 disables increment at its top value (11)',
+  it(
+    'MATRIX-step-input-2 (fixed): min=1 max=12 step=5 disables increment at its top value (11)',
     async () => {
       const el = await mountStepInput({ min: 1, max: 12, step: 5, defaultValue: 12 });
       // 12 is not on the lattice 1, 6, 11 — the control settles on 11.

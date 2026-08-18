@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, ready, dispose, on, watch, query, html, css, unsafeHTML } from 'snice';
+import { element, property, render, styles, dispatch, ready, dispose, on, watch, query, html, css, unsafeHTML, escapeHtml, escapeAttr } from 'snice';
 import type { MapMarker, MapCenter, SniceMapElement } from './snice-map.types';
 import mapStyles from './snice-map.css?inline';
 
@@ -100,6 +100,8 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
             const showPopup = hasPopup && this.activePopupId === mp.marker.id;
             const popupContent = mp.marker.popup || mp.marker.label || '';
             const hasPopupContent = !!popupContent;
+            const icon = mp.marker.icon ?? '';
+            const isImageIcon = /^(https?:|data:image:|\/\/|\/)/.test(icon);
             return html`
               <div
                 class="map-marker"
@@ -107,10 +109,16 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
                 @click=${(e: Event) => { e.stopPropagation(); this.handleMarkerClick(mp.marker); }}
               >
                 <div class="map-marker-pin">
-                  <svg viewBox="0 0 24 36" fill="var(--snice-color-danger, rgb(220 38 38))">
-                    <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"/>
-                    <circle cx="12" cy="12" r="4" fill="white"/>
-                  </svg>
+                  ${icon
+                    ? (isImageIcon
+                      ? html`<img class="map-marker-icon" src="${escapeAttr(icon)}" alt="" loading="lazy" />`
+                      : html`<span class="map-marker-icon">${escapeHtml(icon)}</span>`)
+                    : html`
+                      <svg viewBox="0 0 24 36" fill="var(--snice-color-danger, rgb(220 38 38))">
+                        <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"/>
+                        <circle cx="12" cy="12" r="4" fill="white"/>
+                      </svg>
+                    `}
                 </div>
                 <if ${showPopup && hasPopupContent}>
                   <div class="map-popup">${popupContent}</div>
@@ -174,12 +182,17 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
     const lngDiff = maxLng - minLng;
     const maxDiff = Math.max(latDiff, lngDiff);
 
-    if (maxDiff < 0.005) this.zoom = 16;
-    else if (maxDiff < 0.05) this.zoom = 13;
-    else if (maxDiff < 0.5) this.zoom = 10;
-    else if (maxDiff < 5) this.zoom = 7;
-    else if (maxDiff < 50) this.zoom = 4;
-    else this.zoom = 2;
+    let zoom: number;
+    if (maxDiff < 0.005) zoom = 16;
+    else if (maxDiff < 0.05) zoom = 13;
+    else if (maxDiff < 0.5) zoom = 10;
+    else if (maxDiff < 5) zoom = 7;
+    else if (maxDiff < 50) zoom = 4;
+    else zoom = 2;
+
+    // "map-zoom → { zoom } (zoom level changed)" — route through setZoom so a
+    // level change announces itself like every other zoom path.
+    this.setZoom(zoom);
   }
 
   // --- Private: Tile Calculations ---

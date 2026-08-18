@@ -85,11 +85,14 @@ describe('snice-layout-dashboard', () => {
     });
 
     it('right rail stacks below main under 1024px instead of vanishing', () => {
-      expect(css).toMatch(/@media \(max-width: 1024px\)[\s\S]*"[^"]*main[^"]*"[\s\S]*"[^"]*right-sidebar[^"]*"/);
+      // The stacking state is driven by a matchMedia listener in the component
+      // (WebKit does not reliably re-evaluate @media in shared constructable
+      // stylesheets) and lands as .layout--railed-stacked.
+      expect(css).toMatch(/\.layout--railed-stacked \.content-area--railed\s*\{[^}]*"[^"]*main[^"]*"[\s\S]*"[^"]*right-sidebar[^"]*"/);
     });
 
     it('left sidebar overlays via transform below 768px', () => {
-      expect(css).toMatch(/@media \(max-width: 768px\)[\s\S]*\.sidebar[\s\S]*transform: translateX\(/);
+      expect(css).toMatch(/\.layout--mobile \.sidebar\s*\{[^}]*transform: translateX\(/);
       expect(css).toMatch(/\.sidebar--mobile-open\s*\{[^}]*transform: translateX\(0\)/);
     });
 

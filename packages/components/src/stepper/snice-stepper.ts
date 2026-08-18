@@ -8,7 +8,7 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
   @property({ type: Array, attribute: false })
   steps: Step[] = [];
 
-  @property({ type: Number })
+  @property({ type: Number, attribute: 'current-step' })
   currentStep = 0;
 
   @property({  })

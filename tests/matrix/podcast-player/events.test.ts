@@ -248,9 +248,8 @@ describe('snice-podcast-player matrix: RSS feeds', () => {
 
       const problems: string[] = [];
       // "podcast-feed-loaded → { player, feed: RSSFeedData } - RSS feed parsed".
-      // How MANY times a single feed announces itself is pinned separately, by
-      // the MATRIX-podcast-player-1 finding below; this loop owns WHAT a parsed
-      // feed contains.
+      // One feed, one announcement (MATRIX-podcast-player-1, fixed); this loop
+      // owns WHAT a parsed feed contains.
       if (seen.length < 1) problems.push('no podcast-feed-loaded event');
       else {
         const detail = seen[seen.length - 1];
@@ -275,22 +274,18 @@ describe('snice-podcast-player matrix: RSS feeds', () => {
   }
 
   /**
-   * MATRIX-podcast-player-1 — a declarative `from-rss` fetches the feed TWICE
-   * and announces it twice.
+   * MATRIX-podcast-player-1 (fixed) — a declarative `from-rss` used to fetch
+   * the feed TWICE and announce it twice.
    *
    * The doc's declarative form is
    * `<snice-podcast-player from-rss="https://example.com/feed.xml">`, and
    * `podcast-feed-loaded` is documented as "RSS feed parsed" — one feed, one
-   * announcement. The player instead requests the URL once from its ready
-   * hook and once more from the `fromRss` change reaction that the initial
-   * attribute triggers, so a page pays for two network round-trips and any
-   * listener that appends the feed's episodes to a UI appends them twice.
-   *
-   * Policy (.ai/fuzzing.md): the assertion stays correct and the test is
-   * pinned with `it.fails`, so the day the component stops double-fetching
-   * this suite fails and the finding can be closed.
+   * announcement. The player requested the URL once from its ready hook and
+   * once more from the `fromRss` change reaction that the initial attribute
+   * triggers. The ready hook no longer fetches; the watch reaction is the
+   * single owner of the fetch.
    */
-  it.fails('MATRIX-podcast-player-1: from-rss fetches and announces the feed exactly once', async () => {
+  it('MATRIX-podcast-player-1 (fixed): from-rss fetches and announces the feed exactly once', async () => {
     const xml = feedXml(ITEM('A', '/a.mp3'));
     const fetchMock = vi.fn(async () => ({ text: async () => xml }));
     vi.stubGlobal('fetch', fetchMock);

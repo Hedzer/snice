@@ -1292,26 +1292,11 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     if (!this.interactionDisabled && !this.readonly && this.variant === 'dropdown') {
       this.calendarView = 'days';
       this.showPanel = true;
-      if (this.panel) {
-        this.panel.removeAttribute('hidden');
-        if (typeof (this.panel as any).showPopover === 'function') {
-          (this.panel as any).showPopover();
-        }
-        this.positionPanel();
-      }
-      this.emitOpen();
     }
   }
 
   close() {
     this.showPanel = false;
-    if (this.panel) {
-      this.panel.setAttribute('hidden', '');
-      if (typeof (this.panel as any).hidePopover === 'function') {
-        (this.panel as any).hidePopover();
-      }
-    }
-    this.emitClose();
   }
 
   private positionPanel() {

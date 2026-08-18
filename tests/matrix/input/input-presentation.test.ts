@@ -19,7 +19,8 @@
  *   · the two icon channels: `prefix-icon`/`suffix-icon` ATTRIBUTES for emoji
  *     and URLs, and the slots that "override the property".
  *
- * it.fails policy: one finding is pinned in this file, MATRIX-input-1.
+ * it.fails policy: every assertion here is the documented expectation and no
+ * combo is weakened; MATRIX-input-1 was pinned here and is fixed.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import {
@@ -74,20 +75,12 @@ describe('input matrix: icon channels', () => {
   }
 
   /**
-   * FINDING MATRIX-input-1 — the password toggle deletes the suffix icon.
-   *
-   * `suffixIcon` and `password` are documented as independent properties, with
-   * `suffix-icon` listed as one of eleven CSS parts and `password` described
-   * only as the toggle switch. The template renders the suffix-icon region
-   * inside `<if ${!(type === 'password' && password)}>`, so a password field
-   * with a reveal toggle silently loses its documented suffix icon — the part
-   * is not merely empty, it does not exist.
-   *
-   * combo:    type="password" password suffix-icon="✔"
-   * expected: [part="suffix-icon"] presents "✔", alongside the toggle
-   * actual:   no [part="suffix-icon"] at all
+   * MATRIX-input-1 (fixed) — the password toggle used to delete the suffix
+   * icon: the suffix-icon region was rendered inside
+   * `<if ${!(type === 'password' && password)}>`. The region now renders
+   * unconditionally, so both coexist as the docs describe.
    */
-  it.fails('MATRIX-input-1: a password toggle keeps the documented suffix icon', async () => {
+  it('MATRIX-input-1 (fixed): a password toggle keeps the documented suffix icon', async () => {
     const c = combo({ type: 'password', password: true, icons: 'suffix' });
     const el = await makeInput(c);
 

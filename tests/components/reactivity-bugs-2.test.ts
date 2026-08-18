@@ -91,7 +91,10 @@ describe('camera-annotate: activeColor is reactive', () => {
       await wait(30);
       const after = el.shadowRoot.innerHTML;
       expect(after).not.toBe(before);
-      expect(errorSpy).toHaveBeenCalled();
+      // Since the camera-annotate double-start fix, a bare mount never
+      // requests the camera (opt-in autoStart only), so happy-dom's missing
+      // getUserMedia is never even reached.
+      expect(errorSpy).not.toHaveBeenCalled();
     } finally {
       errorSpy.mockRestore();
     }

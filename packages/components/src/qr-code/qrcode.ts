@@ -905,22 +905,47 @@ class SVGDrawing {
       height: '100%'
     }));
 
-    svg.appendChild(this.createSVGElement('rect', {
-      fill: opts.colorDark,
-      width: '1',
-      height: '1',
-      id: 'template'
-    }));
+    // The module shape honors `dotStyle` in SVG mode exactly as the canvas
+    // backend does: `square` stamps one template rect per dark module via
+    // `<use>`, `dots` draws circles (r = cell/2.2), `rounded` draws rects
+    // with rx = cell/4 — one module is 1x1 in viewBox units.
+    const styled = opts.dotStyle === 'dots' || opts.dotStyle === 'rounded';
+    if (!styled) {
+      svg.appendChild(this.createSVGElement('rect', {
+        fill: opts.colorDark,
+        width: '1',
+        height: '1',
+        id: 'template'
+      }));
+    }
 
     for (let row = 0; row < nCount; row++) {
       for (let col = 0; col < nCount; col++) {
         if (qrCode.isDark(row, col)) {
-          const use = this.createSVGElement('use', {
-            x: String(margin + col),
-            y: String(margin + row)
-          });
-          use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#template');
-          svg.appendChild(use);
+          if (opts.dotStyle === 'dots') {
+            svg.appendChild(this.createSVGElement('circle', {
+              fill: opts.colorDark,
+              cx: String(margin + col + 0.5),
+              cy: String(margin + row + 0.5),
+              r: String(1 / 2.2),
+            }));
+          } else if (opts.dotStyle === 'rounded') {
+            svg.appendChild(this.createSVGElement('rect', {
+              fill: opts.colorDark,
+              x: String(margin + col),
+              y: String(margin + row),
+              width: '1',
+              height: '1',
+              rx: '0.25',
+            }));
+          } else {
+            const use = this.createSVGElement('use', {
+              x: String(margin + col),
+              y: String(margin + row)
+            });
+            use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#template');
+            svg.appendChild(use);
+          }
         }
       }
     }

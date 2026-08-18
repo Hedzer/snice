@@ -48,10 +48,9 @@
         /**
          * Mount one combo. `orientation` crosses the ATTRIBUTE channel;
          * `steps` has no attribute form. `currentStep` is assigned as a
-         * PROPERTY here — the documented `current-step` ATTRIBUTE is inert in
-         * a browser (MATRIX-approval-flow-2), and layer 1 is measuring layout,
-         * not that defect. `mountAuthored` below is the same mount written the
-         * way the docs write it, and is used only by the pinned case.
+         * PROPERTY here so layer 1 measures layout only; `mountAuthored`
+         * below is the same mount written the way the docs write it (every
+         * knob as an attribute, including `current-step`).
          */
         async mount(combo) {
           api.unmount();

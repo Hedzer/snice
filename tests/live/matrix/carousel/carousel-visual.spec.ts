@@ -39,17 +39,14 @@
  *
  * ── FINDINGS (documented contract, observed divergence — pinned, not softened)
  *
- *  VISUAL-MATRIX-carousel-1 — `space-between > 0` breaks every position
- *    after the first. The slides container is translated by
+ *  VISUAL-MATRIX-carousel-1 — FIXED. `space-between > 0` used to break every
+ *    position after the first. The slides container was translated by
  *    `activeIndex · (100 / slidesPerView)%` OF THE CONTAINER'S OWN WIDTH,
  *    but a position's real travel is one slide PLUS one gap
- *    (`slideWidth + spaceBetween`). With any `space-between > 0`, position
- *    `i > 0` lands `i · spaceBetween · (spv−1)/spv` px (spv = 1: simply
- *    `i · spaceBetween` px) short: the first visible slide is clipped by
- *    that much on the left, the last spills past the viewport's right edge,
- *    and the slide after the window peeks in. Derived arithmetically from
- *    the component's own width calc + transform, and pinned on every
- *    `space-between > 0` / `position > 0` combo below.
+ *    (`slideWidth + spaceBetween`). The transform now includes the gap term;
+ *    the combos below are unwrapped and their assertions unchanged.
+ *  VISUAL-MATRIX-carousel-2 — FIXED with the DOM tier's MATRIX-carousel-3
+ *    (same root cause: the initial attribute never reached the transform).
  */
 import { test, expect, type Page } from '@playwright/test';
 import { capture, sameColor, type RGB } from '../pixel-probe';
@@ -394,23 +391,22 @@ async function mountAtPosition(c: Combo): Promise<void> {
 
 test.describe('carousel visual matrix: layer 1 — the window', () => {
   for (const c of windowCombos()) {
-    const declare = c.finding ? test.fail : test;
-    declare(c.finding ? `${c.finding}: ${c.id}` : c.id, async () => {
+    // VISUAL-MATRIX-carousel-1 combos are unwrapped (fixed); the finding id
+    // stays in the title so the formerly-pinned cells stay identifiable.
+    test(c.finding ? `${c.finding} (fixed): ${c.id}` : c.id, async () => {
       await mountAtPosition(c);
       expect(await visualProblems(c), `combo ${c.id}`).toEqual([]);
     });
   }
 
-  // VISUAL-MATRIX-carousel-2 — an initial `active-index` ATTRIBUTE never
-  // reaches the container's transform. The doc (docs/ai/components/
+  // VISUAL-MATRIX-carousel-2 (fixed) — an initial `active-index` ATTRIBUTE
+  // used to never reach the container's transform: the doc (docs/ai/components/
   // carousel.md: `activeIndex // attribute: active-index`) promises
   // "active-index selects the visible slide", but a carousel MOUNTED with
-  // active-index set to a non-zero position only sets the property: the
-  // slides container's transform stays "" and the window paints slide 0
-  // (observed in the autoplay test above, which reaches its start via
-  // goToSlide for exactly this reason). Mounted here through the attribute
-  // channel alone — no goToSlide — and judged by the same window oracle.
-  test.fail('VISUAL-MATRIX-carousel-2: window/attribute/active-index=2', async () => {
+  // active-index set to a non-zero position only set the property while the
+  // window painted slide 0. Mounted here through the attribute channel alone
+  // — no goToSlide — and judged by the same window oracle.
+  test('VISUAL-MATRIX-carousel-2 (fixed): window/attribute/active-index=2', async () => {
     const c = combo({ id: 'window/attribute/active-index=2', position: 2 });
     const mounted = await page.evaluate(x => (window as any).matrix.mount(x), {
       slides: c.slides, slidesPerView: c.slidesPerView, spaceBetween: c.spaceBetween,
@@ -494,11 +490,11 @@ test.describe('carousel visual matrix: real pointers and keys', () => {
     // slides and the reading is not a position at all.
     const sample = async (direction: 'forward' | 'backward') => {
       // Slide 1 is reached through the documented navigation method — the
-      // same channel mountAtPosition below and the DOM matrix use — because
-      // an initial `active-index` ATTRIBUTE is never turned into the
-      // container's transform (observed: property set, transform "", window
-      // still on slide 0). The contract under test is autoplay's direction,
-      // so the starting window is established the documented way.
+      // same channel mountAtPosition above and the DOM matrix use — to keep
+      // this claim about autoplay's direction independent of the
+      // initial-attribute mount (which VISUAL-MATRIX-carousel-2 covers).
+      // The contract under test is autoplay's direction, so the starting
+      // window is established the documented way.
       await page.evaluate(async () => {
         const matrix = (window as any).matrix;
         await matrix.mount({ slides: 5 });

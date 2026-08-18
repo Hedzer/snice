@@ -7,16 +7,16 @@ export class SniceTabPanel extends HTMLElement implements SniceTabPanelElement {
   @property({  })
   name = '';
 
-  @property({  })
+  @property({ attribute: 'transition-in' })
   transitionIn = '';
 
-  @property({  })
+  @property({ attribute: 'transition-out' })
   transitionOut = '';
 
   @property({  })
   transitioning: 'in' | 'out' | '' = '';
 
-  @property({ type: Number,  })
+  @property({ type: Number, attribute: 'transition-duration' })
   transitionDuration = 300;
 
   @watch('transitionIn')

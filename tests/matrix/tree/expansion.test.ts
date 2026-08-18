@@ -52,40 +52,18 @@ function checkAgreement(problems: Problems, tree: any, id: string, expanded: boo
 }
 
 /**
- * FINDING — MATRIX-tree-4.
- *
- * docs/ai/components/tree.md documents five programmatic expansion methods:
- * `expandNode(id)`, `collapseNode(id)`, `toggleNode(id)`, `expandAll()` and
- * `collapseAll()`. None of them changes what is rendered.
- *
- * Each one writes `expanded` onto the CLONE it looks up in `nodeMap`, then
- * re-assigns `this.nodes = [...this.nodes]` to force a re-render. The re-render
- * runs `updateTreeItems()`, which hands each row `this.nodes[index]` — the
- * CALLER's node object, not the clone that was just written. So the new state
- * lands somewhere the renderer never reads: `getNode(id).expanded` reports
- * `true`, `tree-node-expand` fires with the node, and the row still says
- * `aria-expanded="false"` with a collapsed children group.
- *
- * The expander chevron is unaffected — `snice-tree-item.expand()` sets its own
- * `expanded` property — which is why the same combos pass through that entry
- * point and fail through every documented method.
- *
- * A combo is affected exactly when a documented method is asked to CHANGE the
- * state; asking for the state a node already has is a no-op either way. The
- * assertions below are the documented ones and stay that way.
+ * MATRIX-tree-4 (fixed): the five programmatic expansion methods used to
+ * write `expanded` onto the clone in `nodeMap` while the renderer re-seeded
+ * rows from the caller's node objects, so `getNode(id).expanded` reported the
+ * new state and the rendered row kept the old one. Rendering now seeds from
+ * the internal clones (`internalNodes`), the same objects the methods write.
+ * The assertions below are the documented ones and always were.
  */
-const brokenByApi = (entry: string, startsExpanded: boolean) => {
-  if (entry === 'expander') return false;
-  if (entry === 'toggleNode') return true;
-  return entry === 'expandNode' ? !startsExpanded : startsExpanded;
-};
-
 describe('tree matrix / expansion cross', () => {
   for (const shape of SHAPES) {
     for (const entry of ['expandNode', 'collapseNode', 'toggleNode', 'expander'] as const) {
-      const broken = brokenByApi(entry, TARGETS[shape].startsExpanded);
-      const id = `${broken ? 'MATRIX-tree-4: ' : ''}${shape}/${entry}`;
-      (broken ? it.fails : it)(id, async () => {
+      const id = `${shape}/${entry}`;
+      it(id, async () => {
         const target = TARGETS[shape];
         tree = await makeTree({}, nodesFor(shape));
         const problems = new Problems();
@@ -144,17 +122,11 @@ describe('tree matrix / leaves cannot expand', () => {
   }
 });
 
-// MATRIX-tree-4 again, through the two bulk methods. `expandAll()` is affected
-// on any shape that starts with a collapsed parent, `collapseAll()` on any
-// shape that starts with an expanded one — the same "asked to change" rule.
-const EXPAND_ALL_BROKEN = new Set(['nested', 'lazy']);
-const COLLAPSE_ALL_BROKEN = new Set(['nested', 'deep', 'mixed']);
-
+// MATRIX-tree-4 (fixed) again, through the two bulk methods — see the comment
+// above the expansion cross.
 describe('tree matrix / expandAll and collapseAll', () => {
   for (const shape of SHAPES) {
-    const expandBroken = EXPAND_ALL_BROKEN.has(shape);
-    const collapseBroken = COLLAPSE_ALL_BROKEN.has(shape);
-    (expandBroken ? it.fails : it)(`${expandBroken ? 'MATRIX-tree-4: ' : ''}${shape}: expandAll expands every node that has children`, async () => {
+    it(`${shape}: expandAll expands every node that has children`, async () => {
       const nodes = nodesFor(shape);
       tree = await makeTree({}, nodes);
       const problems = new Problems();
@@ -171,7 +143,7 @@ describe('tree matrix / expandAll and collapseAll', () => {
       expectClean(problems, `expandAll/${shape}`);
     });
 
-    (collapseBroken ? it.fails : it)(`${collapseBroken ? 'MATRIX-tree-4: ' : ''}${shape}: collapseAll collapses every node that has children`, async () => {
+    it(`${shape}: collapseAll collapses every node that has children`, async () => {
       tree = await makeTree({}, nodesFor(shape));
       const problems = new Problems();
 

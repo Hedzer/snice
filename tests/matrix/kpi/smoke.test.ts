@@ -68,16 +68,16 @@ describe('kpi matrix smoke', () => {
       .toEqual([]);
   });
 
-  // MATRIX-kpi-1..3: the three documented multi-word attribute names
-  // (trend-value, show-sparkline, color-value) are neither observed nor
-  // reflected — the element uses the squashed forms, so every documented markup
-  // example that sets one is inert.
-  it.fails('MATRIX-kpi-1: trendValue observes and reflects [trend-value]', async () => {
+  // MATRIX-kpi-1..3 (fixed): the three documented multi-word attribute names
+  // (trend-value, show-sparkline, color-value) used to be neither observed nor
+  // reflected — the element used the squashed forms. The decorators now name
+  // the documented attributes; these are the regression guards.
+  it('MATRIX-kpi-1 (fixed): trendValue observes and reflects [trend-value]', async () => {
     el = await mountKpi(combo('smoke', { ...base, trendValue: '+12.5%' }));
     expect(kpiAttributeProblems(el, 'trendValue')).toEqual([]);
   });
 
-  it.fails('MATRIX-kpi-2: <snice-kpi show-sparkline="false"> draws no sparkline', async () => {
+  it('MATRIX-kpi-2 (fixed): <snice-kpi show-sparkline="false"> draws no sparkline', async () => {
     el = document.createElement('snice-kpi');
     el.setAttribute('show-sparkline', 'false');
     document.body.appendChild(el);
@@ -88,7 +88,7 @@ describe('kpi matrix smoke', () => {
     expect(el.shadowRoot.querySelectorAll('[part~="sparkline"]').length).toBe(0);
   });
 
-  it.fails('MATRIX-kpi-3: colorValue observes and reflects [color-value]', async () => {
+  it('MATRIX-kpi-3 (fixed): colorValue observes and reflects [color-value]', async () => {
     el = await mountKpi(combo('smoke', { ...base, sentiment: 'up', colorValue: true }));
     expect(kpiAttributeProblems(el, 'colorValue')).toEqual([]);
   });

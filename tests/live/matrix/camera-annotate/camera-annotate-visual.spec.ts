@@ -204,21 +204,18 @@ test.describe('snice-camera-annotate visual matrix (layer 2: painted pixels)', (
   const isBlueFrame = (px: RGB) => px[2] > px[0] && px[2] > px[1];
 
   /**
-   * FINDING VISUAL-MATRIX-camera-annotate-4 (browser-only).
+   * FINDING VISUAL-MATRIX-camera-annotate-4 (FIXED, browser-only).
    *
-   * `startCamera()` is invoked from `@ready`, and it assigns the granted
-   * `MediaStream` to `this.videoEl` — the `@query('.ca-video')` reference. In a
-   * real engine `getUserMedia` resolves BEFORE the first render has produced
-   * that `<video>`, so the stream is dropped on the floor: the documented live
-   * preview stays blank, `video.videoWidth` stays 0, and the frame `capture()`
-   * encodes is empty. (happy-dom wins the same race the other way round, which
-   * is exactly why this finding belongs to the visual tier.)
-   *
-   * The assertion below is the documented one — the captured frame is the one
-   * the camera was showing — and stays as it is.
+   * `startCamera()` used to run from the immediate `mode` watcher during
+   * initialization — before the first render had produced the `<video>` — and
+   * it assigned the granted `MediaStream` to a stale `@query` reference, so
+   * the stream was dropped on the floor: the documented live preview stayed
+   * blank, `video.videoWidth` stayed 0, and the frame `capture()` encoded was
+   * empty. Fixed with MATRIX-camera-annotate-1/2: the only auto-start path is
+   * the opt-in `autoStart` in `@ready` (after the first render), and the
+   * stream is attached through a live shadow-root query.
    */
-  test('VISUAL-MATRIX-camera-annotate-4: the captured frame is painted onto the annotate canvas', async () => {
-    test.fail();
+  test('VISUAL-MATRIX-camera-annotate-4 (fixed): the captured frame is painted onto the annotate canvas', async () => {
     await mount(page, { id: 'px-frame', capture: true, document: 'none' });
     const probe = `(host) => { const c = host.shadowRoot.querySelector('.ca-draw-canvas');
       const b = c.getBoundingClientRect();
@@ -227,18 +224,6 @@ test.describe('snice-camera-annotate visual matrix (layer 2: painted pixels)', (
     // The synthetic camera paints a saturated blue; a canvas that never drew
     // the captured image cannot be showing it.
     expect(isBlueFrame(centre), `canvas centre painted ${centre}`).toBe(true);
-  });
-
-  test('VISUAL-MATRIX-camera-annotate-4 reproduces: the preview never receives the granted stream', async () => {
-    const state = await mount(page, { id: 'px-frame-repro', capture: false, document: 'none' });
-    expect(state.frame).toEqual({ width: 0, height: 0 });
-
-    const attached = await page.evaluate(() => {
-      const video = document.getElementById('subject')!.shadowRoot!
-        .querySelector('video') as HTMLVideoElement;
-      return { srcObject: !!video.srcObject, readyState: video.readyState };
-    });
-    expect(attached).toEqual({ srcObject: false, readyState: 0 });
   });
 
   test('an annotation stroke paints over the frame in its own colour', async () => {

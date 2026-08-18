@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, watch, html, css, unsafeHTML } from 'snice';
+import { element, property, state, render, styles, dispatch, watch, html, css, unsafeHTML } from 'snice';
 import type { DiffMode, DiffLine, DiffHunk, SniceDiffElement } from './snice-diff.types';
 import diffStyles from './snice-diff.css?inline';
 
@@ -27,7 +27,7 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
   @property({ type: Boolean, attribute: 'show-mode-toggle' })
   showModeToggle: boolean = true;
 
-  private hunks: DiffHunk[] = [];
+  @state() private hunks: DiffHunk[] = [];
   private additions: number = 0;
   private deletions: number = 0;
 
@@ -137,14 +137,36 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
   }
 
   private renderSplitView(showLineNums: boolean) {
-    const pairs = this.buildSplitPairs();
     const showMarkers = this.markers;
 
-    // Pre-build rows for left (old) and right (new) panes
+    // Pre-build rows for left (old) and right (new) panes. Collapsed hunks
+    // render their separator row in BOTH panes — doc: "Unchanged sections
+    // beyond context are collapsed; click to expand", for either mode.
     const leftRows: any[] = [];
     const rightRows: any[] = [];
 
-    for (const pair of pairs) {
+    for (let hunkIdx = 0; hunkIdx < this.hunks.length; hunkIdx++) {
+      const hunk = this.hunks[hunkIdx];
+      if (hunk.collapsed) {
+        const count = hunk.lines.length;
+        leftRows.push(html/*html*/`
+          <tr>
+            <td colspan="3" class="diff-hunk-separator" @click=${() => this.toggleHunk(hunkIdx)}>
+              ... ${count} unchanged lines (click to expand)
+            </td>
+          </tr>
+        `);
+        rightRows.push(html/*html*/`
+          <tr>
+            <td colspan="3" class="diff-hunk-separator" @click=${() => this.toggleHunk(hunkIdx)}>
+              ... ${count} unchanged lines (click to expand)
+            </td>
+          </tr>
+        `);
+        continue;
+      }
+
+      for (const pair of this.pairLines(hunk.lines)) {
       const old = pair.old;
       const nw = pair.new;
 
@@ -169,6 +191,7 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
       const rightGutter = showLineNums ? html`<td class="diff-gutter">${rightNum}</td>` : '';
       const rightMarkerCell = showMarkers ? html`<td class="${rightMarkerClass}">${rightMarker}</td>` : '';
       rightRows.push(html`<tr class="${rightClass}">${rightGutter}${rightMarkerCell}<td class="diff-code">${rightContent}</td></tr>`);
+      }
     }
 
     return html/*html*/`
@@ -183,13 +206,12 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
     `;
   }
 
-  private buildSplitPairs(): { old: DiffLine | null; new: DiffLine | null }[] {
+  private pairLines(hunkLines: DiffLine[]): { old: DiffLine | null; new: DiffLine | null }[] {
     const pairs: { old: DiffLine | null; new: DiffLine | null }[] = [];
-    const allLines = this.hunks.flatMap(h => h.collapsed ? [] : h.lines);
 
     let i = 0;
-    while (i < allLines.length) {
-      const line = allLines[i];
+    while (i < hunkLines.length) {
+      const line = hunkLines[i];
 
       if (line.type === 'unchanged') {
         pairs.push({ old: line, new: line });
@@ -197,13 +219,13 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
       } else if (line.type === 'removed') {
         // Collect consecutive removed lines and pair with following added lines
         const removed: DiffLine[] = [];
-        while (i < allLines.length && allLines[i].type === 'removed') {
-          removed.push(allLines[i]);
+        while (i < hunkLines.length && hunkLines[i].type === 'removed') {
+          removed.push(hunkLines[i]);
           i++;
         }
         const added: DiffLine[] = [];
-        while (i < allLines.length && allLines[i].type === 'added') {
-          added.push(allLines[i]);
+        while (i < hunkLines.length && hunkLines[i].type === 'added') {
+          added.push(hunkLines[i]);
           i++;
         }
         const maxLen = Math.max(removed.length, added.length);
@@ -309,13 +331,10 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
 
     for (let i = 0; i < lines.length; i++) {
       if (changedIndices.has(i)) {
-        // Flush collapsed section
+        // Flush collapsed section — doc: "Unchanged sections beyond context
+        // are collapsed", with no length threshold.
         if (currentCollapsed.length > 0) {
-          if (currentCollapsed.length > 2 * ctx) {
-            hunks.push({ lines: currentCollapsed, collapsed: true });
-          } else {
-            currentHunk.push(...currentCollapsed);
-          }
+          hunks.push({ lines: currentCollapsed, collapsed: true });
           currentCollapsed = [];
         }
         currentHunk.push(lines[i]);

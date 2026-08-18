@@ -70,9 +70,10 @@ describe('snice-treemap matrix smoke', () => {
     expect(text(tooltip(el))).toBe('A: 50');
   });
 
-  // MATRIX-treemap-1: the palette walk paints neighbouring rectangles the same
-  // colour. The guard lives here so the everyday loop notices a fix.
-  it.fails('MATRIX-treemap-1: no two neighbouring rectangles share a colour', async () => {
+  // MATRIX-treemap-1 (fixed): the palette walk used to paint neighbouring
+  // rectangles the same colour. The guard stays so the everyday loop notices
+  // a regression.
+  it('MATRIX-treemap-1 (fixed): no two neighbouring rectangles share a colour', async () => {
     const el = await mountTreemap({ tree: 'many', colorScheme: 'rainbow' });
     const painted = fills(el);
     expect(painted.filter((fill, index) => index > 0 && fill === painted[index - 1])).toEqual([]);

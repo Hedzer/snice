@@ -11,9 +11,9 @@
  * and, from "Properties", `animated: boolean = false`.
  *
  * The last two are asserted in waterfall-structure.test.ts, where the value
- * labels live, and they pass. The first one and `animated` do not.
+ * labels live, and they pass. All findings below are FIXED and unpinned.
  *
- * ── FINDING MATRIX-waterfall-2 ──────────────────────────────────────────────
+ * ── FINDING MATRIX-waterfall-2 (FIXED) ──────────────────────────────────────
  * `animated` is a documented property with no effect. The stylesheet ships the
  * rule it exists for (`.waterfall-bar-animated { animation: waterfall-grow … }`,
  * plus the `prefers-reduced-motion` guard the docs call out), but no code path
@@ -28,7 +28,7 @@
  *             "waterfall-bar-decrease", "waterfall-bar-decrease",
  *             "waterfall-bar-total"] — identical to `animated=false`.
  *
- * ── FINDING MATRIX-waterfall-3 ──────────────────────────────────────────────
+ * ── FINDING MATRIX-waterfall-3 (FIXED) ──────────────────────────────────────
  * Bars carry no role and no tabindex. Each bar is a bare
  * `<rect class="waterfall-bar-…" data-index="…">`; there is no `role`, no
  * `tabindex`, and no accessible name anywhere in the SVG, so a screen-reader
@@ -40,7 +40,7 @@
  *             width="43.2" height="69.57" rx="2" data-index="1">` —
  *             role null, tabindex null, for every bar of every dataset.
  *
- * ── FINDING MATRIX-waterfall-4 ──────────────────────────────────────────────
+ * ── FINDING MATRIX-waterfall-4 (FIXED) ──────────────────────────────────────
  * Bars do not activate by keyboard. The component listens for `click` and
  * `mouseover` on the chart container only; there is no `keydown` handler, so
  * Enter and Space on a bar emit nothing. (This is a separate defect from
@@ -52,8 +52,7 @@
  *             and index, exactly as a pointer click does.
  *   actual:   no event at all — the recorded sequence is [].
  *
- * Every assertion below is the documented expectation, unweakened; the `it.fails`
- * markers only record that the component currently diverges.
+ * Every assertion below is the documented expectation, unweakened.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { removeComponent, wait } from '../../components/test-utils';
@@ -79,7 +78,7 @@ describe('waterfall matrix: accessibility and animation', () => {
     expect(animatedBars, `combo ${comboId(c)}`).toEqual([]);
   });
 
-  it.fails('MATRIX-waterfall-2 animated=true animates the bars', async () => {
+  it('MATRIX-waterfall-2 (fixed) animated=true animates the bars', async () => {
     const c = combo({ animated: true });
     el = await makeWaterfall(c);
     const classes = animationClasses(el);
@@ -88,7 +87,7 @@ describe('waterfall matrix: accessibility and animation', () => {
       .toHaveLength(dataOf(c).length);
   });
 
-  it.fails('MATRIX-waterfall-2 toggling animated after mount animates the bars', async () => {
+  it('MATRIX-waterfall-2 (fixed) toggling animated after mount animates the bars', async () => {
     el = await makeWaterfall(combo({ animated: false }));
     el.animated = true;
     await wait(30);
@@ -107,8 +106,8 @@ describe('waterfall matrix: accessibility and animation', () => {
   for (const dataset of POPULATED) {
     const c = combo({ dataset });
 
-    it.fails(
-      `MATRIX-waterfall-3 ${comboId(c)}: bars carry a role and are focusable`,
+    it(
+      `MATRIX-waterfall-3 (fixed) ${comboId(c)}: bars carry a role and are focusable`,
       async () => {
         el = await makeWaterfall(c);
         expectClean(a11yProblems(el, c), comboId(c));
@@ -130,8 +129,8 @@ describe('waterfall matrix: accessibility and animation', () => {
   });
 
   for (const key of ['Enter', ' ']) {
-    it.fails(
-      `MATRIX-waterfall-4 "${key === ' ' ? 'Space' : key}" on a bar activates it`,
+    it(
+      `MATRIX-waterfall-4 (fixed) "${key === ' ' ? 'Space' : key}" on a bar activates it`,
       async () => {
         const c = combo();
         el = await makeWaterfall(c);

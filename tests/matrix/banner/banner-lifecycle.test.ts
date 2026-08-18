@@ -60,8 +60,7 @@ describe('banner matrix: the documented methods', () => {
       expect(el.open).toBe(true);
       // `:host([open])` is the only rule that brings the banner on screen.
       expect(el.hasAttribute('open'), 'open did not reflect').toBe(true);
-      expect(bannerProblems(el, combo({ variant, open: true }),
-        { fresh: false, allow: ['role'] })).toEqual([]);
+      expect(bannerProblems(el, combo({ variant, open: true }), { fresh: false })).toEqual([]);
 
       el.hide();
       await wait(20);
@@ -221,7 +220,7 @@ describe('banner matrix: transitions', () => {
       el.variant = variant;
       await wait(20);
       expect(bannerProblems(el, combo({ variant, open: true }),
-        { fresh: false, allow: ['role'] }), variant).toEqual([]);
+        { fresh: false }), variant).toEqual([]);
     }
   });
 
@@ -230,11 +229,11 @@ describe('banner matrix: transitions', () => {
     el.label = 'Deployment status';
     await wait(20);
     expect(bannerProblems(el, combo({ variant: 'error', open: true, label: 'Deployment status' }),
-      { fresh: false, allow: ['role'] })).toEqual([]);
+      { fresh: false })).toEqual([]);
     el.label = '';
     await wait(20);
     expect(bannerProblems(el, combo({ variant: 'error', open: true }),
-      { fresh: false, allow: ['role'] })).toEqual([]);
+      { fresh: false })).toEqual([]);
   });
 
   it('dismissible toggling adds and removes the close button', async () => {
@@ -246,7 +245,7 @@ describe('banner matrix: transitions', () => {
     await wait(20);
     expect(partsNamed(el, 'close').length).toBe(1);
     expect(bannerProblems(el, combo({ open: true }),
-      { fresh: false, allow: ['role'] })).toEqual([]);
+      { fresh: false })).toEqual([]);
   });
 
   it('position reflects both ways — it is the whole placement rule', async () => {
@@ -258,6 +257,6 @@ describe('banner matrix: transitions', () => {
     await wait(20);
     expect(el.getAttribute('position')).toBe('top');
     expect(bannerProblems(el, combo({ open: true, position: 'top' }),
-      { fresh: false, allow: ['role'] })).toEqual([]);
+      { fresh: false })).toEqual([]);
   });
 });

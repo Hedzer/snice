@@ -332,19 +332,12 @@ export function checkField(
  * touched. The combos listed here are declared with `it.fails`, so the day the
  * component is fixed the suite turns red and the finding can be closed.
  *
- * MATRIX-data-card-1 — a `type: 'link'` field renders no edit affordance.
- *   The doc marks `editable` a per-field OVERRIDE of the global edit mode and
- *   exempts no value type, and lists `field-edit` as a part of every field. With
- *   `editable` on, every other type renders its `field-edit` button; `link` alone
- *   renders only the anchor, so a link field can never be edited.
+ * MATRIX-data-card-1 (fixed) — a `type: 'link'` field used to render no edit
+ *   affordance. The doc marks `editable` a per-field OVERRIDE of the global
+ *   edit mode and exempts no value type, and lists `field-edit` as a part of
+ *   every field. Link fields now render their `field-edit` button like every
+ *   other type; no findings are currently pinned.
  */
-export function structuralFinding(shape: FieldShape, editable: boolean): string | null {
-  const field = shape.field;
-  if (editable && (field.type === 'link') && field.editable !== false) {
-    return 'MATRIX-data-card-1: an editable type="link" field renders no [part="field-edit"]';
-  }
-  return null;
-}
 
 /** The documented same-origin test — `new URL(href, page)` against this origin. */
 export function isExternal(href: string): boolean {

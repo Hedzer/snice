@@ -147,47 +147,34 @@ export function reachableMax(min: number, max: number, step: number): number {
 }
 
 /**
- * FINDING MATRIX-step-input-1 — the combos that announce a change they did not
- * make.
- *
- * In a range whose width is not a whole number of steps (`min=1 max=12
- * step=5`), the highest value the lattice admits is 11. Incrementing from 11
- * without `wrap` picks `max` (12) as its target, sees `12 !== 11`, commits it —
- * and the documented lattice immediately snaps it back to 11. The value never
- * moves, but a `value-change` is dispatched anyway, carrying
- * `{ value: 11, oldValue: 11 }`.
- *
- * The docs describe `value-change` as the event for a value CHANGE
- * (`{ value, oldValue, component }`), and every other no-op step in this matrix
- * is silent, so the assertion stays "no event" and these combos are `it.fails`.
+ * FINDING MATRIX-step-input-1 (fixed): stepping up from the highest lattice
+ * point of a range whose width is not a whole number of steps (`min=1
+ * max=12 step=5`, value 11) used to dispatch a `value-change` carrying
+ * `{ value: 11, oldValue: 11 }` for a value that never moved. The boundary
+ * target is now seated on the lattice BEFORE the change guard, so a step that
+ * cannot move the value dispatches nothing. The `it.fails` routing this
+ * helper performed went with the defect.
  */
-export function emitsPhantomChange(
-  value: number, min: number, max: number, step: number, wrap: boolean,
-  direction: 'up' | 'down',
-): boolean {
-  if (wrap) return false;
-  if (direction === 'up') {
-    if (!Number.isFinite(max)) return false;
-    if (value + effectiveStep(step) <= max) return false;
-    return max !== value && normalize(max, min, max, step) === value;
-  }
-  if (!Number.isFinite(min)) return false;
-  if (value - effectiveStep(step) >= min) return false;
-  return min !== value && normalize(min, min, max, step) === value;
-}
 
 /**
  * "Buttons disabled at min/max (unless `wrap` is set)", plus the ordinary rule
  * that a disabled control's buttons are disabled. `readonly` is deliberately
  * NOT part of this: the docs disable buttons for exactly two reasons, and a
  * readonly control's refusal to move is asserted on the VALUE instead.
+ *
+ * FINDING MATRIX-step-input-2 (fixed): the max-side cue sits on the highest
+ * lattice point the range can actually hold. A raw maximum the width of the
+ * range does not divide into whole steps (`max=12` with `step=5` from `min=1`)
+ * is not a value this control can ever hold, so the cue belongs to the state
+ * that has nothing left to step to.
  */
 export function expectedButtonDisabled(
-  value: number, min: number, max: number, wrap: boolean, disabled: boolean,
+  value: number, min: number, max: number, step: number, wrap: boolean,
+  disabled: boolean,
 ): { decrement: boolean; increment: boolean } {
   return {
     decrement: disabled || (!wrap && value <= min),
-    increment: disabled || (!wrap && value >= max),
+    increment: disabled || (!wrap && value >= reachableMax(min, max, step)),
   };
 }
 
@@ -273,7 +260,7 @@ export function expectedShape(vector: StepInputVector, value: number): Shape {
   const disabled = vector.disabled ?? DEFAULTS.disabled;
   const readonly = vector.readonly ?? DEFAULTS.readonly;
   const wrap = vector.wrap ?? DEFAULTS.wrap;
-  const buttons = expectedButtonDisabled(value, min, max, wrap, disabled);
+  const buttons = expectedButtonDisabled(value, min, max, step, wrap, disabled);
 
   return {
     parts: DOCUMENTED_PARTS,

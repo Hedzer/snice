@@ -66,7 +66,10 @@ export class SniceOrgChart extends HTMLElement implements SniceOrgChartElement {
   private buildNodeHtml(node: OrgChartNode): any {
     const hasChildren = node.children && node.children.length > 0;
     const isCollapsed = this.collapsedNodes.has(node.id);
-    const initial = node.name.charAt(0).toUpperCase();
+    // Documented: "Avatar placeholders display name initials" — every word's
+    // first letter, so "Carol White" reads "CW", not "C".
+    const initials = node.name.split(/\s+/).filter(Boolean)
+      .map(word => word.charAt(0).toUpperCase()).join('');
     const isCompact = this.compact;
     const hasAvatar = !!node.avatar;
     const hasTitle = !!node.title;
@@ -87,7 +90,7 @@ export class SniceOrgChart extends HTMLElement implements SniceOrgChartElement {
 
     const avatarHtml = hasAvatar
       ? html`<img class="org-avatar ${isCompact ? 'org-avatar--compact' : ''}" src="${node.avatar}" alt="${node.name}" />`
-      : html`<div class="org-avatar-placeholder ${isCompact ? 'org-avatar-placeholder--compact' : ''}">${initial}</div>`;
+      : html`<div class="org-avatar-placeholder ${isCompact ? 'org-avatar-placeholder--compact' : ''}">${initials}</div>`;
 
     const titleHtml = hasTitle
       ? html`<span class="org-node-title">${node.title}</span>`

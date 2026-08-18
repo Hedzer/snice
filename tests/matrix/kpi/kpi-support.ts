@@ -127,10 +127,11 @@ const ATTRIBUTE_OF: Record<string, string> = {
  * writes them as markup (`<snice-kpi show-sparkline="false">`).
  *
  * They are checked by their own oracle rather than inside `kpiProblems` for one
- * reason only: all three currently diverge (MATRIX-kpi-1..3), and folding a
- * known finding into the structural oracle would paint 48 combos red and hide
- * the next structural regression behind it. The assertion itself is the
- * documented one and is NOT weakened — see the `it.fails` tests that own it.
+ * reason only: all three used to diverge (MATRIX-kpi-1..3, since fixed by
+ * naming the documented attributes in the decorators), and folding them into
+ * the structural oracle would paint 48 combos red and hide the next structural
+ * regression behind one finding. The assertion itself is the documented one
+ * and is NOT weakened — see the unpinned regression tests that own it.
  */
 export const DOCUMENTED_ATTRIBUTE_OF: Record<string, string> = {
   trendValue: 'trend-value',

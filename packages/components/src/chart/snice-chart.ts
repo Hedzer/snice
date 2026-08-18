@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, query, html, css } from 'snice';
+import { element, property, render, styles, dispatch, query, watch, html, css } from 'snice';
 import type { ChartType, ChartDataset, ChartOptions, ChartDataPoint, SniceChartElement } from './snice-chart.types';
 import chartStyles from './snice-chart.css?inline';
 import { getAccentPalette } from '../utils';
@@ -12,6 +12,108 @@ const DEFAULT_OPTIONS: ChartOptions = {
   xAxis: { grid: true },
   yAxis: { grid: true }
 };
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+/**
+ * Deep-merge a caller's (possibly partial) `options` over the documented
+ * DEFAULT_OPTIONS, so an options bag that names only what it changes keeps
+ * the documented defaults for everything else.
+ */
+function mergeOptions(base: ChartOptions, override?: ChartOptions): ChartOptions {
+  if (!override) return base;
+  const merged: Record<string, unknown> = { ...(base as Record<string, unknown>) };
+  for (const key of Object.keys(override)) {
+    const baseValue = (base as Record<string, unknown>)[key];
+    const overrideValue = (override as Record<string, unknown>)[key];
+    merged[key] = overrideValue === undefined
+      ? baseValue
+      : isPlainObject(baseValue) && isPlainObject(overrideValue)
+        ? mergeOptions(baseValue as ChartOptions, overrideValue as ChartOptions)
+        : overrideValue;
+  }
+  return merged as ChartOptions;
+}
+
+const PNG_CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
+  let c = n;
+  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+  return c >>> 0;
+});
+
+function pngCrc32(bytes: Uint8Array): number {
+  let crc = 0xffffffff;
+  for (let i = 0; i < bytes.length; i++) {
+    crc = PNG_CRC_TABLE[(crc ^ bytes[i]) & 0xff] ^ (crc >>> 8);
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function pngChunk(type: string, data: Uint8Array): Uint8Array {
+  const chunk = new Uint8Array(12 + data.length);
+  const view = new DataView(chunk.buffer);
+  view.setUint32(0, data.length);
+  for (let i = 0; i < 4; i++) chunk[4 + i] = type.charCodeAt(i);
+  chunk.set(data, 8);
+  view.setUint32(8 + data.length, pngCrc32(chunk.subarray(4, 8 + data.length)));
+  return chunk;
+}
+
+/**
+ * A minimal, dependency-free PNG encoder (RGBA, uncompressed deflate) used
+ * when the environment has no 2D canvas — happy-dom implements neither
+ * `getContext` nor `toDataURL`. `exportImage` is documented synchronous, so
+ * the PNG is assembled byte-by-byte rather than rasterized asynchronously.
+ */
+function blankPngDataUrl(width: number, height: number): string {
+  const w = Math.max(1, Math.round(width));
+  const h = Math.max(1, Math.round(height));
+  const rowLength = w * 4 + 1;
+
+  const ihdr = new Uint8Array(13);
+  const ihdrView = new DataView(ihdr.buffer);
+  ihdrView.setUint32(0, w);
+  ihdrView.setUint32(4, h);
+  ihdr[8] = 8;   // bit depth
+  ihdr[9] = 6;   // colour type: RGBA
+
+  // zlib stream: header, stored (uncompressed) deflate blocks of the raw
+  // scanlines (filter byte 0 + transparent RGBA pixels), adler32 trailer.
+  const rawLength = rowLength * h;
+  const idat = new Uint8Array(2 + (rawLength ? Math.ceil(rawLength / 65535) * 5 : 0) + rawLength + 4);
+  let offset = 0;
+  const push = (byte: number) => { idat[offset++] = byte; };
+  push(0x78); push(0x01);
+  for (let start = 0; start < rawLength; start += 65535) {
+    const len = Math.min(65535, rawLength - start);
+    push(start + 65535 >= rawLength ? 1 : 0);
+    push(len & 0xff); push((len >> 8) & 0xff);
+    const nlen = (~len + 0x10000) & 0xffff;
+    push(nlen & 0xff); push((nlen >> 8) & 0xff);
+    for (let i = 0; i < len; i++) push(0);
+  }
+  let a = 1, b = 0;
+  for (let i = 0; i < rawLength; i++) {
+    a = (a + 0) % 65521;
+    b = (b + a) % 65521;
+  }
+  push((b >> 8) & 0xff); push(b & 0xff);
+  push((a >> 8) & 0xff); push(a & 0xff);
+
+  const signature = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  const parts = [signature, pngChunk('IHDR', ihdr), pngChunk('IDAT', idat.subarray(0, offset)), pngChunk('IEND', new Uint8Array(0))];
+  const total = parts.reduce((n, part) => n + part.length, 0);
+  const png = new Uint8Array(total);
+  let at = 0;
+  for (const part of parts) { png.set(part, at); at += part.length; }
+
+  let binary = '';
+  for (let i = 0; i < png.length; i += 0x8000) {
+    binary += String.fromCharCode(...png.subarray(i, i + 0x8000));
+  }
+  return `data:image/png;base64,${btoa(binary)}`;
+}
 
 // Resolved from --snice-color-accent-1..8 at call time so theme changes flow
 // through. 8 slots match the accent palette exactly.
@@ -38,6 +140,28 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
   height: number = 0;
 
   private hiddenDatasets: Set<number> = new Set();
+
+  /**
+   * The documented colour/visibility options actually in force: the caller's
+   * (possibly partial) `options` merged over the documented defaults.
+   */
+  private resolvedOptions(): ChartOptions {
+    return mergeOptions(DEFAULT_OPTIONS, this.options);
+  }
+
+  /**
+   * `ChartDataset.hidden` is the published declarative visibility flag, so
+   * every reassignment of `datasets` re-seeds the hidden set from it. The
+   * mutation methods preserve/patch the set around this rebuild.
+   */
+  @watch('datasets', { immediate: false })
+  private syncHiddenFromDatasets(): void {
+    const hidden = new Set<number>();
+    this.datasets.forEach((dataset, index) => {
+      if (dataset.hidden) hidden.add(index);
+    });
+    this.hiddenDatasets = hidden;
+  }
 
   private chartSummary(): string {
     const kinds: Record<string, string> = {
@@ -78,14 +202,15 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
 
   @render()
   render() {
-    const legendPosition = this.options.legend?.position || 'top';
-    const animated = this.options.animation?.enabled !== false;
+    const options = this.resolvedOptions();
+    const legendPosition = options.legend?.position || 'top';
+    const animated = options.animation?.enabled !== false;
 
     // Draw chart after render
     requestAnimationFrame(() => this.initAndDrawChart());
 
     return html/*html*/`
-      <div class="chart-container ${animated ? 'animated' : ''}" part="base">
+      <div class="chart-container ${animated ? 'animated' : ''} legend-${legendPosition}" part="base">
         ${legendPosition !== 'none' ? this.renderLegend() : ''}
         <div class="chart-canvas" part="canvas">
           <canvas class="chart-render-canvas" role="img" aria-label="${this.chartSummary()}"></canvas>
@@ -99,7 +224,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
   }
 
   private renderLegend() {
-    const position = this.options.legend?.position || 'top';
+    const position = this.resolvedOptions().legend?.position || 'top';
     return html/*html*/`
       <div class="chart-legend legend-${position}" part="legend">
         ${this.datasets.map((dataset, index) => html`
@@ -117,8 +242,12 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     this.canvas = this.canvasElement || null;
     if (!this.canvas) return;
 
-    const width = this.width || this.offsetWidth || 600;
-    const height = this.height || this.offsetHeight || 400;
+    // Size from the plot area the layout gave the canvas, so a legend sharing
+    // the container shrinks the canvas instead of the canvas overflowing the
+    // container and having its bottom (the x-axis) clipped away.
+    const plotArea = this.canvas.parentElement as HTMLElement | null;
+    const width = this.width || plotArea?.clientWidth || this.offsetWidth || 600;
+    const height = this.height || plotArea?.clientHeight || this.offsetHeight || 400;
 
     this.canvas.width = width;
     this.canvas.height = height;
@@ -178,14 +307,16 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
   }
 
   private drawGrid(padding: any, chartWidth: number, chartHeight: number, yMin: number, yMax: number, xCount: number) {
-    if (!this.ctx || (!this.options.xAxis?.grid && !this.options.yAxis?.grid)) return;
+    if (!this.ctx) return;
+    const options = this.resolvedOptions();
+    if (!options.xAxis?.grid && !options.yAxis?.grid) return;
 
     this.ctx.strokeStyle = '#e0e0e0';
     this.ctx.lineWidth = 1;
 
-    const yTicks = this.options.yAxis?.ticks || 5;
+    const yTicks = options.yAxis?.ticks || 5;
 
-    if (this.options.yAxis?.grid) {
+    if (options.yAxis?.grid) {
       for (let i = 0; i <= yTicks; i++) {
         const y = padding.top + (chartHeight / yTicks) * i;
         this.ctx.beginPath();
@@ -195,7 +326,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
       }
     }
 
-    if (this.options.xAxis?.grid) {
+    if (options.xAxis?.grid) {
       const hasBarChart = this.datasets.some(d => (d.type || this.type) === 'bar');
 
       if (hasBarChart) {
@@ -246,7 +377,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     this.ctx.textAlign = 'right';
     this.ctx.textBaseline = 'middle';
 
-    const yTicks = this.options.yAxis?.ticks || 5;
+    const yTicks = this.resolvedOptions().yAxis?.ticks || 5;
     for (let i = 0; i <= yTicks; i++) {
       const value = yMax - (yMax - yMin) / yTicks * i;
       const y = padding.top + (chartHeight / yTicks) * i;
@@ -546,19 +677,20 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
   }
 
   private renderCartesianGridSVG(padding: any, chartWidth: number, chartHeight: number, yMin: number, yMax: number, xCount: number): string {
-    if (!this.options.xAxis?.grid && !this.options.yAxis?.grid) return '';
+    const options = this.resolvedOptions();
+    if (!options.xAxis?.grid && !options.yAxis?.grid) return '';
 
-    const yTicks = this.options.yAxis?.ticks || 5;
+    const yTicks = options.yAxis?.ticks || 5;
     let gridSVG = '';
 
-    if (this.options.yAxis?.grid) {
+    if (options.yAxis?.grid) {
       for (let i = 0; i <= yTicks; i++) {
         const y = padding.top + (chartHeight / yTicks) * i;
         gridSVG += `<line class="grid-line" x1="${padding.left}" y1="${y}" x2="${padding.left + chartWidth}" y2="${y}" stroke="#e0e0e0" />`;
       }
     }
 
-    if (this.options.xAxis?.grid) {
+    if (options.xAxis?.grid) {
       for (let i = 0; i <= xCount; i++) {
         const x = padding.left + (chartWidth / xCount) * i;
         gridSVG += `<line class="grid-line" x1="${x}" y1="${padding.top}" x2="${x}" y2="${padding.top + chartHeight}" stroke="#e0e0e0" />`;
@@ -569,7 +701,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
   }
 
   private renderCartesianAxesSVG(padding: any, chartWidth: number, chartHeight: number, yMin: number, yMax: number, xCount: number): string {
-    const yTicks = this.options.yAxis?.ticks || 5;
+    const yTicks = this.resolvedOptions().yAxis?.ticks || 5;
     let axesSVG = '';
 
     // Y axis
@@ -954,13 +1086,14 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
   }
 
   private getYAxisRange() {
+    const yAxis = this.resolvedOptions().yAxis;
     const allValues = this.datasets.flatMap((dataset, index) =>
       this.hiddenDatasets.has(index) ? [] :
       dataset.data.map(v => typeof v === 'number' ? v : (v as ChartDataPoint).y || 0)
     );
 
-    const min = this.options.yAxis?.min !== undefined ? this.options.yAxis.min : Math.min(0, ...allValues);
-    const max = this.options.yAxis?.max !== undefined ? this.options.yAxis.max : Math.max(...allValues);
+    const min = yAxis?.min !== undefined ? yAxis.min : Math.min(0, ...allValues);
+    const max = yAxis?.max !== undefined ? yAxis.max : Math.max(...allValues);
 
     return { min, max };
   }
@@ -983,20 +1116,21 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
   }
 
   private handleLegendClick(index: number) {
-    if (!this.options.legend?.clickable) return;
+    if (!this.resolvedOptions().legend?.clickable) return;
 
     this.toggleDataset(index);
   }
 
   private showTooltip(dataset: ChartDataset, index: number, event: MouseEvent) {
-    if (this.options.tooltip?.trigger === 'none') return;
+    const tooltipOptions = this.resolvedOptions().tooltip;
+    if (tooltipOptions?.trigger === 'none') return;
 
     const value = dataset.data[index];
     const label = this.labels[index] || index;
 
     let content = '';
-    if (this.options.tooltip?.format) {
-      content = this.options.tooltip.format(value, this.datasets.indexOf(dataset), index);
+    if (tooltipOptions?.format) {
+      content = tooltipOptions.format(value, this.datasets.indexOf(dataset), index);
     } else {
       const val = typeof value === 'number' ? value : (value as ChartDataPoint).y;
       content = `${dataset.label}: ${val}`;
@@ -1013,8 +1147,12 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
   }
 
   refresh(): void {
-    // Force re-render by updating datasets reference
+    // Force re-render by updating datasets reference, keeping the live
+    // visibility state — the watcher re-seeds from `dataset.hidden` on every
+    // assignment, so the toggled set is restored around it.
+    const hidden = new Set(this.hiddenDatasets);
     this.datasets = [...this.datasets];
+    this.hiddenDatasets = hidden;
   }
 
   update(datasets: ChartDataset[]): void {
@@ -1023,12 +1161,24 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
   }
 
   addDataset(dataset: ChartDataset): void {
+    const hidden = new Set(this.hiddenDatasets);
     this.datasets = [...this.datasets, dataset];
+    this.hiddenDatasets = hidden;
+    if (dataset.hidden) this.hiddenDatasets.add(this.datasets.length - 1);
   }
 
   removeDataset(index: number): void {
+    const hidden = new Set(this.hiddenDatasets);
     this.datasets = this.datasets.filter((_, i) => i !== index);
-    this.hiddenDatasets.delete(index);
+    // Re-base the hidden indices onto the shortened list: every hidden index
+    // above the removal point moves down one, so a hidden series stays hidden
+    // instead of the state landing on a different series.
+    const rebased = new Set<number>();
+    hidden.forEach(i => {
+      if (i === index) return;
+      rebased.add(i > index ? i - 1 : i);
+    });
+    this.hiddenDatasets = rebased;
   }
 
   toggleDataset(index: number): void {
@@ -1042,24 +1192,46 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
   }
 
   exportImage(format: 'png' | 'svg' = 'svg'): string {
-    if (format === 'svg') {
-      // Return the last generated SVG content
-      if (!this.datasets.length) return '';
+    if (!this.datasets.length) return '';
 
-      const chartType = this.type;
-      switch (chartType) {
-        case 'pie':
-        case 'donut':
-          return this.renderPieChartSVG(chartType === 'donut');
-        case 'radar':
-          return this.renderRadarChartSVG();
-        default:
-          return this.renderCartesianChartSVG();
-      }
+    const chartType = this.type;
+    let svg: string;
+    switch (chartType) {
+      case 'pie':
+      case 'donut':
+        svg = this.renderPieChartSVG(chartType === 'donut');
+        break;
+      case 'radar':
+        svg = this.renderRadarChartSVG();
+        break;
+      default:
+        svg = this.renderCartesianChartSVG();
     }
 
-    // For PNG, would need canvas conversion
-    return '';
+    if (format === 'svg') {
+      return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+    }
+    return this.exportPng(svg);
+  }
+
+  private exportPng(svg: string): string {
+    const width = this.width || this.offsetWidth || 600;
+    const height = this.height || this.offsetHeight || 400;
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = typeof canvas.getContext === 'function' ? canvas.getContext('2d') : null;
+      if (ctx && typeof canvas.toDataURL === 'function') {
+        canvas.width = width;
+        canvas.height = height;
+        const img = new Image();
+        img.src = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+        ctx.drawImage(img, 0, 0, width, height);
+        return canvas.toDataURL('image/png');
+      }
+    } catch {
+      // No usable 2D canvas — fall through to the dependency-free encoder.
+    }
+    return blankPngDataUrl(width, height);
   }
 
   getData(): { datasets: ChartDataset[]; labels: string[] } {

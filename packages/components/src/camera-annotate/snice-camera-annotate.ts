@@ -238,13 +238,17 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
 
   private async startCamera(): Promise<void> {
     try {
+      // Release any prior stream before requesting a new one: reassigning
+      // this.stream without stopping it would orphan live tracks.
+      this.stopCamera();
       this.stream = await navigator.mediaDevices.getUserMedia({
         audio: false,
         video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' }
       });
-      if (this.videoEl) {
-        this.videoEl.srcObject = this.stream;
-        await this.videoEl.play();
+      const video = this.shadowRoot?.querySelector('.ca-video') as HTMLVideoElement | null;
+      if (video) {
+        video.srcObject = this.stream;
+        await video.play();
       }
     } catch (err) {
       console.error('Camera access error:', err);
@@ -255,6 +259,10 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
     if (this.stream) {
       this.stream.getTracks().forEach(t => t.stop());
       this.stream = null;
+    }
+    const video = this.shadowRoot?.querySelector('.ca-video');
+    if (video) {
+      (video as HTMLVideoElement).srcObject = null;
     }
   }
 
@@ -651,7 +659,7 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
     this.emitAnnotationChange();
   }
 
-  @watch('mode')
+  @watch('mode', { immediate: false })
   async handleModeChange() {
     // Wait for microtask render to complete so DOM reflects the new mode
     await Promise.resolve();

@@ -30,6 +30,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   @property({ type: Boolean })
   disabled: boolean = false;
 
+  @property({ type: Array, attribute: false })
   private colorsList: string[] = DEFAULT_COLORS;
   private customSelectColors: string[] = [];
   private customSelectUsed: Set<number> = new Set();

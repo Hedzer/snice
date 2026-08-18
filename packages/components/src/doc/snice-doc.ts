@@ -1,4 +1,4 @@
-import { element, property, styles, ready, dispose, reconnect, css } from 'snice';
+import { element, property, styles, ready, dispose, reconnect, watch, css } from 'snice';
 import cssContent from './snice-doc.css?inline';
 import { ICONS } from '../icons';
 import type { DocIconSet, DocDownloadFormat } from './snice-doc.types.js';
@@ -72,6 +72,15 @@ export class SniceDoc extends HTMLElement {
     return css/*css*/`${cssContent}`;
   }
 
+  // A property-channel readonly assignment must reach the imperatively built
+  // editor, not only the :host([readonly]) stylesheet channel (MATRIX-doc-1).
+  @watch('readonly')
+  private syncEditability() {
+    if (this.editor) {
+      this.editor.contentEditable = String(!this.readonly);
+    }
+  }
+
   @ready()
   init() {
     this.initializeDOM();
@@ -108,11 +117,12 @@ export class SniceDoc extends HTMLElement {
     this.editor.contentEditable = String(!this.readonly);
     this.editor.setAttribute('data-placeholder', this.placeholder);
 
-    const p = document.createElement('p');
-    p.innerHTML = '<br>';
-    this.editor.appendChild(p);
+    // A fresh editor mounts EMPTY: the documented placeholder paints through
+    // `.doc-editor:empty::before`, and a seeded `<p><br></p>` would defeat it
+    // (VISUAL-MATRIX-doc-1). clear() is the one that re-seeds the paragraph.
 
     this.editor.addEventListener('paste', this.handlePaste);
+    this.editor.addEventListener('keydown', this.handleEditingShortcuts);
     this.editor.addEventListener('keyup', this.saveCurrentSelection);
     this.editor.addEventListener('mouseup', this.saveCurrentSelection);
     this.editor.addEventListener('click', this.saveCurrentSelection);
@@ -514,6 +524,26 @@ export class SniceDoc extends HTMLElement {
     }
     this.editor.focus();
   }
+
+  /**
+   * Firefox's native editing shortcuts only reach light-DOM contenteditables:
+   * the key fires into the page while the selection sits inside the shadow
+   * root and nothing is formatted. Forward the documented Ctrl/Cmd+B/I/U to
+   * execCommand ourselves — Chromium/WebKit native handling is prevented and
+   * replaced with the identical command, so every engine behaves the same.
+   */
+  private handleEditingShortcuts = (e: KeyboardEvent) => {
+    if (this.readonly) return;
+    if (e.altKey || !(e.ctrlKey || e.metaKey)) return;
+    const key = e.key.toLowerCase();
+    const command = key === 'b' ? 'bold'
+      : key === 'i' ? 'italic'
+      : key === 'u' ? 'underline'
+      : '';
+    if (!command) return;
+    e.preventDefault();
+    document.execCommand(command, false);
+  };
 
   private handlePaste = (e: ClipboardEvent) => {
     if (this.readonly) return;

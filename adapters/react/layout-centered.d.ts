@@ -5,6 +5,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  */
 export interface LayoutCenteredProps extends SniceBaseProps {
     width?: any;
+    contained?: any;
     hasBrand?: any;
     hasFooter?: any;
 }

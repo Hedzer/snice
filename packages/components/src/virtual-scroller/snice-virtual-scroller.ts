@@ -51,6 +51,10 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
     if (!this.cachedRenderItem) {
       this.cachedRenderItem = this.renderItem;
     }
+    // The scroll port is :host (`overflow: auto` in the stylesheet); `scroll`
+    // does not bubble, so a binding on the shadow `.scroller` alone never
+    // hears a user scroll of the host.
+    this.addEventListener('scroll', this.handleScroll);
     this.updateVisibleRange();
   }
 
@@ -66,14 +70,35 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
     }
   }
 
+  /** The documented per-item height: `item.height` when given, else itemHeight. */
+  private itemHeightOf(item: VirtualScrollerItem): number {
+    return item.height || this.itemHeight;
+  }
+
+  /** Distance from the top of the list to item `index` (prefix sum). */
+  private offsetOf(index: number): number {
+    let offset = 0;
+    for (let i = 0; i < index && i < this.cachedItems.length; i++) {
+      offset += this.itemHeightOf(this.cachedItems[i]);
+    }
+    return offset;
+  }
+
+  private totalContentHeight(): number {
+    return this.offsetOf(this.cachedItems.length);
+  }
+
   scrollToIndex(index: number): void {
     if (index < 0 || index >= this.cachedItems.length) return;
 
-    const offset = index * this.itemHeight;
+    const offset = this.offsetOf(index);
     this.cachedScrollTop = offset;
     if (this.scrollerElement) {
       this.scrollerElement.scrollTop = offset;
     }
+    // `.scroller` has no overflow of its own, so assigning its scrollTop is a
+    // no-op — the host is the element the browser actually scrolls.
+    this.scrollTop = offset;
     this.scrollTick++;
   }
 
@@ -97,11 +122,11 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
   }
 
   private handleScroll = () => {
-    if (this.scrollerElement) {
-      this.cachedScrollTop = this.scrollerElement.scrollTop;
-      this.updateVisibleRange();
-      this.scrollTick++;
-    }
+    // Read the port that actually moved: the host by default, or the inner
+    // `.scroller` when a consumer has styled it to overflow instead.
+    this.cachedScrollTop = this.scrollTop || (this.scrollerElement ? this.scrollerElement.scrollTop : 0);
+    this.updateVisibleRange();
+    this.scrollTick++;
   };
 
   @on('keydown', '.scroller')
@@ -109,7 +134,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
     const scroller = this.scrollerElement;
     if (!scroller) return;
     const containerHeight = scroller.clientHeight || 400;
-    const totalHeight = this.cachedItems.length * this.itemHeight;
+    const totalHeight = this.totalContentHeight();
     let next: number | null = null;
     if (e.key === 'PageDown') {
       next = Math.min(totalHeight, scroller.scrollTop + containerHeight);
@@ -133,12 +158,27 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
   private updateVisibleRange() {
     const containerHeight = this.offsetHeight || 400;
     const scrollTop = this.cachedScrollTop;
+    const items = this.cachedItems;
 
-    const start = Math.floor(scrollTop / this.itemHeight);
-    const visibleCount = Math.ceil(containerHeight / this.itemHeight);
+    // The first row whose bottom edge passes the top of the port.
+    let start = 0;
+    let top = 0;
+    for (; start < items.length; start++) {
+      const bottom = top + this.itemHeightOf(items[start]);
+      if (bottom > scrollTop) break;
+      top = bottom;
+    }
+
+    // Rows through the bottom of the port.
+    let end = start;
+    let covered = top;
+    while (end < items.length && covered < scrollTop + containerHeight) {
+      covered += this.itemHeightOf(items[end]);
+      end++;
+    }
 
     this.visibleStart = Math.max(0, start - this.bufferSize);
-    this.visibleEnd = Math.min(this.cachedItems.length, start + visibleCount + this.bufferSize);
+    this.visibleEnd = Math.min(items.length, end + this.bufferSize);
   }
 
   @render()
@@ -147,15 +187,17 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
 
     const items = this.cachedItems;
     const renderFn = this.cachedRenderItem;
-    const totalHeight = items.length * this.itemHeight;
+    const totalHeight = this.totalContentHeight();
+    const windowOffset = this.offsetOf(this.visibleStart);
     const visibleItems = items.slice(this.visibleStart, this.visibleEnd);
 
     return html/*html*/`
       <div part="base" class="scroller" tabindex="0" @scroll=${this.handleScroll}>
         <div class="scroller__spacer" style="height: ${totalHeight}px;"></div>
-        <div class="scroller__viewport" style="transform: translateY(${this.visibleStart * this.itemHeight}px);">
+        <div class="scroller__viewport" style="transform: translateY(${windowOffset}px);">
           ${visibleItems.map((item, idx) => {
             const actualIndex = this.visibleStart + idx;
+            const itemTop = this.offsetOf(actualIndex) - windowOffset;
             const itemContent = typeof renderFn === 'function'
               ? renderFn(item, actualIndex)
               : this.renderItem(item, actualIndex);
@@ -164,7 +206,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
               return html/*html*/`
                 <div
                   class="scroller__item"
-                  style="top: ${idx * this.itemHeight}px; height: ${item.height || this.itemHeight}px;"
+                  style="top: ${itemTop}px; height: ${this.itemHeightOf(item)}px;"
                   data-index="${actualIndex}">
                   ${unsafeHTML(itemContent)}
                 </div>
@@ -175,7 +217,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
             return html/*html*/`
               <div
                 class="scroller__item"
-                style="top: ${idx * this.itemHeight}px; height: ${item.height || this.itemHeight}px;"
+                style="top: ${itemTop}px; height: ${this.itemHeightOf(item)}px;"
                 data-index="${actualIndex}">${itemContent as any}</div>
             `;
           })}

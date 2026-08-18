@@ -154,7 +154,7 @@ Use `theme` to override auto-detection.
 Use `format="pretty"` with a grammar that includes formatters.
 
 ```html
-<snice-code-block grammar="grammars/json.json" format="pretty" code='{"a":1,"b":[2,3]}'></snice-code-block>
+<snice-code-block grammar="grammars/json.json" format="pretty">{"a":1,"b":[2,3]}</snice-code-block>
 ```
 
 Grammar formatters format authored code — they do not re-flow it. Author line breaks and blank lines are preserved; leading indentation is renormalized; spacing rules apply within a line. Rule-driven breaks (e.g. after `;`) fire only where they do not duplicate an author break and are suppressed inside parentheses/brackets. One-liners like the JSON example above are still pretty-printed.
@@ -271,7 +271,7 @@ The `fetch-mode` attribute controls how the component loads grammar JSON when th
 ### Native Mode (default)
 
 ```html
-<snice-code-block grammar="grammars/typescript.json" code="const x = 1"></snice-code-block>
+<snice-code-block grammar="grammars/typescript.json">const x = 1</snice-code-block>
 ```
 
 In native mode, the component uses the browser's built-in `fetch()` API to load the grammar JSON directly from the URL. This is the simplest approach and requires no additional setup.
@@ -286,7 +286,7 @@ In native mode, the component uses the browser's built-in `fetch()` API to load 
 ### Virtual Mode
 
 ```html
-<snice-code-block grammar="grammars/typescript.json" fetch-mode="virtual" code="const x = 1"></snice-code-block>
+<snice-code-block grammar="grammars/typescript.json" fetch-mode="virtual">const x = 1</snice-code-block>
 ```
 
 In virtual mode, the component uses Snice's `@request/@respond` pattern to load grammars. It sends a request on the `snice/code-block/load-grammar` channel, and a controller or page must provide a `@respond` handler to fulfill the request.
@@ -324,7 +324,7 @@ class GrammarController implements IController {
 ### Event Mode
 
 ```html
-<snice-code-block id="cb" grammar="grammars/typescript.json" fetch-mode="event" code="const x = 1"></snice-code-block>
+<snice-code-block id="cb" grammar="grammars/typescript.json" fetch-mode="event">const x = 1</snice-code-block>
 <script>
   document.getElementById('cb').addEventListener('grammar-request', async (e) => {
     const grammar = await fetch(e.detail.url).then(r => r.json());

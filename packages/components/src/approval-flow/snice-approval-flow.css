@@ -172,6 +172,7 @@
 /* Actions row */
 .step__actions {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--snice-spacing-xs, 0.5rem);
   margin-top: var(--snice-spacing-xs, 0.5rem);
 }
@@ -202,6 +203,24 @@
 .step__btn--reject {
   background: var(--snice-color-danger, rgb(220 38 38));
   color: var(--snice-color-text-inverse, rgb(255 255 255));
+}
+
+/* The documented comment affordance: Enter commits a `step-comment`. */
+.step__comment-input {
+  flex: 1 1 8rem;
+  min-width: 0;
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  font-family: inherit;
+  color: var(--snice-color-text, rgb(23 23 23));
+  background: var(--snice-color-surface, rgb(255 255 255));
+}
+
+.step__comment-input:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
 }
 
 /* Status: pending */

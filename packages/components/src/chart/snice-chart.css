@@ -18,6 +18,19 @@
   flex-direction: column;
 }
 
+/* A left/right legend sits BESIDE the plot as a flex item, not on top of it:
+   an absolutely-positioned legend shares paint order with the canvas and ends
+   up underneath it — invisible and unclickable. */
+.chart-container.legend-left,
+.chart-container.legend-right {
+  flex-direction: row;
+  align-items: center;
+}
+
+.chart-container.legend-right {
+  flex-direction: row-reverse;
+}
+
 .chart-canvas {
   flex: 1;
   position: relative;
@@ -34,6 +47,7 @@ svg {
   gap: var(--snice-spacing-md, 1rem);
   padding: var(--snice-spacing-sm, 0.75rem);
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .chart-legend.legend-top {
@@ -44,20 +58,9 @@ svg {
   order: 1;
 }
 
-.chart-legend.legend-left {
-  flex-direction: column;
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
+.chart-legend.legend-left,
 .chart-legend.legend-right {
   flex-direction: column;
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
 }
 
 .legend-item {

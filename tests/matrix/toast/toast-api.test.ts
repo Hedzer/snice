@@ -180,27 +180,22 @@ describe('snice-toast matrix — static API', () => {
   });
 
   /**
-   * MATRIX-toast-1.
+   * MATRIX-toast-1 (fixed).
    *
    * Documented: `<snice-toast-container>` "Positions and manages toasts" — one
    * stack — and `Toast.show()` returns a `Promise<string>` id that
    * `Toast.hide(id)` accepts. Nothing in the API is documented as
    * single-flight, and a promise-returning API invites `Promise.all`.
    *
-   * Actual: `Toast.show` creates its container synchronously but only registers
-   * it globally when that container becomes ready, so every call made before
-   * the first one settles builds ANOTHER container. Four concurrent calls
-   * produce four stacked containers, each holding one toast and each starting
-   * its own id counter — so all four ids come back as `"toast-1"`, and
-   * `Toast.hide("toast-1")` can only ever reach whichever container won the
-   * global slot. The other three toasts are unreachable by the documented API.
-   *
-   * Combo: `Promise.all(['a','b','c','d'].map(m => Toast.show(m, {duration: 0})))`.
-   * Expected: 4 distinct ids, 1 container, 4 toasts in it.
-   * Actual:   `["toast-1","toast-1","toast-1","toast-1"]`, 4 containers,
-   *           1 toast in each.
+   * `Toast.show` used to create its container synchronously but only register
+   * it globally when that container became ready, so every call made before
+   * the first one settled built ANOTHER container: four concurrent calls
+   * produced four stacked containers, each holding one toast and each starting
+   * its own id counter (all four ids came back as `"toast-1"`). The created
+   * container now claims the global slot immediately, so the whole burst
+   * shares one stack and one counter.
    */
-  it.fails('MATRIX-toast-1: a burst of toasts all land in the one stack', async () => {
+  it('MATRIX-toast-1 (fixed): a burst of toasts all land in the one stack', async () => {
     const ids = await Promise.all(
       ['a', 'b', 'c', 'd'].map(message => Toast.show(message, { duration: 0 })),
     );

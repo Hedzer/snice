@@ -221,11 +221,10 @@ export function labelText(chip: any): string {
 }
 
 /**
- * `aria-selected` is a KNOWN divergence (MATRIX-chip-1) that would otherwise
- * fail every combo in the suite and drown the dimensions each file is actually
- * about. It is held out of the bulk comparison and asserted on its own, under
- * its finding id, in chip-a11y.test.ts — the assertion is not weakened, it is
- * relocated so exactly one test reports it.
+ * `aria-selected` was a KNOWN divergence (MATRIX-chip-1, fixed: the template
+ * now renders it from first paint). It stays held out of the bulk comparison
+ * and asserted on its own in chip-a11y.test.ts — a reporting-layout choice,
+ * not a weakening: exactly one test owns the claim.
  */
 const HELD_OUT: ReadonlyArray<keyof ChipFacts> = ['ariaSelected'];
 

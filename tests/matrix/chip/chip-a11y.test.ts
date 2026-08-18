@@ -12,13 +12,13 @@
  *   · "Remove button has aria-label"
  *
  * it.fails policy (never weakened assertions):
- *   MATRIX-chip-1 — a freshly rendered chip carries NO `aria-selected` at all.
- *   render() emits `aria-pressed` instead, and `aria-selected` only appears
- *   once the `selected`/`variant` watcher happens to run. The documented
- *   attribute is asserted at full strength here and every first-paint combo is
- *   pinned; the same assertion is held out of the shared fact bundle
- *   (chip-support.ts `HELD_OUT`) purely so it is reported once rather than 100
- *   times.
+ *   MATRIX-chip-1 (fixed) — a freshly rendered chip used to carry NO
+ *   `aria-selected` at all: render() emitted `aria-pressed` instead, and
+ *   `aria-selected` only appeared once the `selected`/`variant` watcher
+ *   happened to run. The template now renders the documented attribute from
+ *   first paint; the assertion runs unpinned as a regression guard. It stays
+ *   out of the shared fact bundle (chip-support.ts `HELD_OUT`) purely so it
+ *   is reported once rather than 100 times.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { removeComponent, wait } from '../../components/test-utils';
@@ -34,7 +34,7 @@ describe('chip matrix: ARIA surface', () => {
         for (const disabled of [false, true]) {
           const c = combo({ selected, selectable, removable, disabled });
 
-          it.fails(`${comboId(c)}: exposes aria-selected on first paint [MATRIX-chip-1]`, async () => {
+          it(`MATRIX-chip-1 (fixed): ${comboId(c)}: exposes aria-selected on first paint`, async () => {
             chip = await makeChip(c);
             expectAriaSelected(chip, c);
           });

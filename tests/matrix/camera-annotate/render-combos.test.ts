@@ -141,43 +141,31 @@ describe('snice-camera-annotate matrix: the color palette', () => {
 
 describe('snice-camera-annotate matrix: auto-start', () => {
   /**
-   * FINDING MATRIX-camera-annotate-1.
+   * FINDING MATRIX-camera-annotate-1 (FIXED).
    *
    * `autoStart: boolean = false` is documented as opt-in, and `.ai/gotchas.md`
    * states the house rule it exists for: "Never auto-request camera permission
    * on page load". Mounting the documented bare markup
    * (`<snice-camera-annotate></snice-camera-annotate>`) nevertheless calls
-   * `getUserMedia` during `@ready`, because the `mode` watcher runs for the
-   * initial value and its `mode === 'camera'` branch starts the camera. With
-   * `auto-start` the device is opened TWICE — once by `init()`, once by that
-   * watcher.
-   *
-   * The assertions below are the documented ones and stay as they are.
+   * FIXED: the `mode` watcher is change-only (`{ immediate: false }`), so the
+   * initial value no longer starts anything; the single auto-start path is the
+   * opt-in `auto-start` handled in `@ready`.
    */
-  it.fails(
-    'MATRIX-camera-annotate-1: without auto-start nothing touches the camera',
+  it(
+    'MATRIX-camera-annotate-1 (fixed): without auto-start nothing touches the camera',
     async () => {
       await mountAnnotator({});
       expect(media.requests).toEqual([]);
     },
   );
 
-  it.fails(
-    'MATRIX-camera-annotate-1: auto-start opens the camera exactly once, on mount',
+  it(
+    'MATRIX-camera-annotate-1 (fixed): auto-start opens the camera exactly once, on mount',
     async () => {
       await mountAnnotator({ autoStart: true });
       expect(media.requests).toHaveLength(1);
     },
   );
-
-  it('MATRIX-camera-annotate-1 reproduces: the bare element opens the camera once, auto-start twice', async () => {
-    await mountAnnotator({});
-    expect(media.requests, 'bare element').toHaveLength(1);
-
-    const before = media.requests.length;
-    await mountAnnotator({ autoStart: true });
-    expect(media.requests.length - before, 'auto-start element').toBe(2);
-  });
 
   it('every request the component does make asks for video only', async () => {
     // Whatever triggers it, the constraints are a documented promise of a

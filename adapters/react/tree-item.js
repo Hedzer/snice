@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const TreeItem = createReactAdapter({
     tagName: 'snice-tree-item',
-    properties: ["expanded", "selected", "checked", "showCheckbox", "showIcon", "loading", "indeterminate"],
+    properties: ["expanded", "selected", "checked", "showCheckbox", "showIcon", "expandOnClick", "loading", "indeterminate"],
     events: { "tree-item-toggle": "onTreeItemToggle", "tree-item-select": "onTreeItemSelect", "tree-item-check": "onTreeItemCheck", "tree-item-lazy-load": "onTreeItemLazyLoad" },
     formAssociated: false
 });

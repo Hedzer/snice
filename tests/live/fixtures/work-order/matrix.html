@@ -51,9 +51,10 @@
          * `status`, `variant`, `description`, `notes`, `qr-position` cross the
          * ATTRIBUTE channel — the doc's own example markup. `customer`,
          * `asset`, `tasks`, `parts` have no attribute form. `laborRate` and
-         * `showQr` are assigned as PROPERTIES here: the DOM tier already pins
-         * what the documented `labor-rate` attribute does to the rate line
-         * (MATRIX-work-order-1), and this page is measuring layout.
+         * `showQr` are assigned as PROPERTIES here: this page is measuring
+         * layout, and the attribute channels are owned elsewhere
+         * (`labor-rate` unpinned since MATRIX-work-order-1 was fixed;
+         * `show-qr` still pinned as MATRIX-work-order-2 in the visual tier).
          */
         async mount(combo) {
           api.unmount();

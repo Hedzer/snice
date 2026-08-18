@@ -2429,6 +2429,15 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     this.scheduleRender('body');
   }
 
+  @watch('virtualBuffer', { immediate: false })
+  handleVirtualBufferChange() {
+    // The property is live (docs: "extra virtualized pixels rendered above and
+    // below the viewport"). Re-publish it so an attached virtualizer widens or
+    // narrows its window instead of keeping the buffer captured at attach()
+    // time (MATRIX-virtualization-5).
+    if (this.virtualizer.isEnabled()) this.virtualizer.setBuffer(this.virtualBuffer);
+  }
+
   @watch('columnResize', { immediate: false })
   handleColumnResizeChange() {
     this.scheduleRender('header');
@@ -4555,6 +4564,23 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.treeData.isEnabled()) {
       return this.getTreeDisplayRows(true);
     }
+    // MATRIX-virtualization-6: client pagination pages the virtual model too.
+    // The pager claims the current page's rows and "the body always shows the
+    // rows the summary claims" — virtualized or not — so the window (and the
+    // spacers, which must reserve the page's height, not the whole dataset's)
+    // slices the current page exactly like the ordinary body path. Same
+    // re-clamp, same empty-set exception (a render before the rows arrive must
+    // not rewrite the host's declared starting page).
+    if (this.pagination && this.paginationMode === 'client') {
+      const totalPages = filtered.length > 0
+        ? Math.ceil(filtered.length / this.pageSize)
+        : this.currentPage;
+      const page = Math.max(1, Math.min(this.currentPage, totalPages));
+      this.clampCurrentPage(page);
+      const start = (page - 1) * this.pageSize;
+      return filtered.slice(start, start + this.pageSize)
+        .map((data) => ({ data, index: this.indexOfRow(data) }));
+    }
     return filtered.map((data) => ({ data, index: this.indexOfRow(data) }));
   }
 
@@ -4768,7 +4794,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // `this.data` reference (catches a direct `table.data = [...]` assignment).
     this.ensureRowIndex();
     if (this.filteredCache) return this.filteredCache;
-    const filteredDataOp = !this.filterEngine.hasActiveFilters()
+    // MATRIX-filtering-3: in remote mode the SERVER owns the row set (docs:
+    // "In remote mode, search, filter, sort, and server-page changes request
+    // `table/data`"). The client filter model still drives the request params
+    // (getTableData reads getFilterModel()), but re-filtering the response here
+    // would drop rows the server deliberately returned — rows whose match
+    // lives in fields the table never received.
+    const filteredDataOp = !this.filterEngine.hasActiveFilters() || this.mode === 'remote'
       ? this.data
       : this.filterEngine.applyFilters(this.data, this.columns);
     this.filteredCache = filteredDataOp;

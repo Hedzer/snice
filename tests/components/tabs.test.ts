@@ -414,7 +414,7 @@ describe('snice-tab-panel', () => {
   });
 
   it('should support transitionDuration property', async () => {
-    panel = await createComponent('snice-tab-panel', { transitionDuration: 500 });
+    panel = await createComponent('snice-tab-panel', { 'transition-duration': 500 });
     expect(panel.transitionDuration).toBe(500);
   });
 

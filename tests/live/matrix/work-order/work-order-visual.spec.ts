@@ -351,28 +351,25 @@ test.describe('work-order visual matrix: toggling a task', () => {
   });
 });
 
-// ── MATRIX-work-order-1 and -2, as a page author meets them ─────────────────
+// ── MATRIX-work-order-1 (fixed) and -2, as a page author meets them ─────────
 //
-// The doc's Basic Usage is a single block of markup, and two of its attributes
-// are inert in a browser:
+// The doc's Basic Usage is a single block of markup:
 //
-//   labor-rate="75"  -> `laborRate` is declared with a bare
-//                       `@property({ type: Number })`, so the element observes
-//                       `laborrate`. The rate never arrives: the sheet shows
-//                       no rate line, and `getTotalLaborCost()` returns 0 for
-//                       six hours of work.
-//   show-qr          -> `showQr` is declared the same way (observed: `showqr`),
+//   labor-rate="75"  -> (fixed) `laborRate` now declares
+//                       `attribute: 'labor-rate'`, so the rate arrives as the
+//                       documented number and the sheet prices six hours of
+//                       work at $450.
+//   show-qr          -> `showQr` is still declared with a bare
+//                       `@property({ type: Boolean })` (observed: `showqr`),
 //                       so no QR block is painted however `qr-position` is set.
+//                       MATRIX-work-order-2 remains pinned.
 //
-// The DOM matrix cannot see either one — happy-dom hands
+// The DOM matrix cannot see the second one — happy-dom hands
 // `attributeChangedCallback` every attribute change whether or not the element
-// observed it, so there the value arrives (untyped; see
-// tests/matrix/work-order/work-order-interaction.test.ts). Pinned here with
-// `test.fail()`; the assertions are the documented ones.
+// observed it (see tests/matrix/work-order/work-order-interaction.test.ts).
 
 test.describe('work-order visual matrix: the documented markup', () => {
-  test('labor-rate="75" prices six hours of work [MATRIX-work-order-1]', async () => {
-    test.fail();
+  test('labor-rate="75" prices six hours of work [MATRIX-work-order-1 (fixed)]', async () => {
     const authored = await page.evaluate(() => (window as any).matrix.mountAuthored());
     expect(authored.laborRate, 'labor-rate -> laborRate').toBe(75);
     expect(authored.totalLaborCost, 'getTotalLaborCost() for 6h at $75').toBe(450);

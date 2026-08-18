@@ -305,26 +305,23 @@ test.describe('textarea visual matrix: the documented scales are real', () => {
 
 test.describe('textarea visual matrix: marquee pixels', () => {
   /**
-   * VISUAL-MATRIX-textarea-2.
+   * VISUAL-MATRIX-textarea-2 (fixed).
    *
    * Documented: `variant: 'outlined'|'filled'|'underlined' = 'outlined'`, a
    * first-class appearance property with its own row in the Properties table
    * and its own example in Basic Usage (`<snice-textarea variant="filled">`).
    *
-   * The render pass generates the `textarea--outlined` / `textarea--filled` /
-   * `textarea--underlined` class faithfully — the DOM matrix asserts that and is
-   * green — but snice-textarea.css contains NO rule for any of the three. All
-   * three values resolve to identical computed style (background
+   * The render pass generated the `textarea--outlined` / `textarea--filled` /
+   * `textarea--underlined` class faithfully — the DOM matrix asserted that and
+   * was green — but snice-textarea.css contained NO rule for any of the three,
+   * so all three values resolved to identical computed style (background
    * `rgb(255,255,255)`, a 1px `rgb(209,209,209)` border on all four sides) and
-   * therefore paint identical pixels. A documented appearance axis has no
-   * effect at all.
-   *
-   * Per .ai/fuzzing.md the assertion stays at full strength and the component is
-   * NOT changed: this test fails the day the three variants get their rules,
-   * which is how the finding gets closed.
+   * painted identical pixels. Fixed: the stylesheet now mirrors snice-input —
+   * outlined is a full border, filled a tinted box with a bottom rule,
+   * underlined a bottom rule only — and the pin is removed. The assertion stays
+   * at full strength.
    */
   test('VISUAL-MATRIX-textarea-2: the three variants paint three distinguishable fields', async () => {
-    test.fail();
     const painted: Record<string, string> = {};
     for (const variant of VARIANTS) {
       await page.evaluate(v => (window as any).matrix.mount({

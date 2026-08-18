@@ -230,30 +230,30 @@ test.describe('virtual-scroller visual matrix: layer 1', () => {
 
 // ── FINDINGS ────────────────────────────────────────────────────────────────
 //
-// Both of these are documented behaviours that a real scroll port refutes, and
-// both are structurally invisible to the DOM tier: happy-dom has no scrolling,
-// so the component's own `cachedScrollTop` bookkeeping is the only thing there
-// is to check, and that bookkeeping is exactly what is wrong here.
+// Both of these were documented behaviours that a real scroll port refuted,
+// invisible to the DOM tier: happy-dom has no scrolling, so the component's own
+// `cachedScrollTop` bookkeeping was the only thing there was to check, and that
+// bookkeeping was exactly what was wrong.
 //
-// The assertions below are the documented ones and stay that way.
+// (fixed) The component now scrolls the host (the real port) in
+// `scrollToIndex()` and listens for `scroll` on the host; both findings are
+// closed and the assertions below run unpinned. They stay at documented
+// strength — a regression re-fails them.
 
 test.describe('virtual-scroller visual matrix: findings', () => {
   /**
-   * VISUAL-MATRIX-virtual-scroller-1 — `scrollToIndex()` does not scroll.
+   * VISUAL-MATRIX-virtual-scroller-1 (fixed) — `scrollToIndex()` did not scroll.
    *
    * docs/ai/components/virtual-scroller.md: "scrollToIndex(index) - Scroll to
    * item at index", with `scroller.scrollToIndex(500)` as the documented call.
    *
-   * The stylesheet puts `overflow: auto` on `:host`, so the HOST is the scroll
-   * port. `scrollToIndex()` assigns `this.scrollerElement.scrollTop`, and
-   * `.scroller` is `position: relative` with no overflow of its own — assigning
-   * its `scrollTop` is a no-op. The rendered WINDOW moves (the component also
-   * sets its private `cachedScrollTop`), so the DOM tier is satisfied, but the
-   * port never moves: the requested rows are rendered thousands of pixels below
-   * the visible band and the user is left looking at blank space.
+   * The stylesheet put `overflow: auto` on `:host`, so the HOST was the scroll
+   * port, but `scrollToIndex()` assigned `this.scrollerElement.scrollTop` — a
+   * no-op on `.scroller`, which has no overflow of its own. The rendered WINDOW
+   * moved while the port stood still. Fixed: `scrollToIndex()` now also assigns
+   * the host's `scrollTop` (and per-item heights are prefix-summed).
    */
   test('VISUAL-MATRIX-virtual-scroller-1: scrollToIndex(500) puts row 500 in view', async () => {
-    test.fail();
     await page.evaluate(() => (window as any).matrix.mount({
       itemHeight: 50, bufferSize: 5, total: 1000, viewportHeight: 400,
     }));
@@ -280,20 +280,18 @@ test.describe('virtual-scroller visual matrix: findings', () => {
   });
 
   /**
-   * VISUAL-MATRIX-virtual-scroller-2 — a user scroll never updates the window.
+   * VISUAL-MATRIX-virtual-scroller-2 (fixed) — a user scroll never updated the
+   * window.
    *
    * docs/ai/components/virtual-scroller.md: "Efficiently renders large lists by
    * only displaying visible items." The window is therefore a function of the
    * scroll position, and the user is the primary thing that changes it.
    *
-   * The component binds `@scroll` on `.scroller`, but the element the browser
-   * scrolls is `:host` (the one with `overflow: auto`). `scroll` events do not
-   * bubble, so the handler never runs: scrolling down leaves `getVisibleRange()`
-   * frozen and the user scrolls straight off the end of the rendered window
-   * into empty space.
+   * The component bound `@scroll` on `.scroller`, but the element the browser
+   * scrolls is `:host` (the one with `overflow: auto`), and `scroll` does not
+   * bubble. Fixed: the host itself now carries the listener.
    */
   test('VISUAL-MATRIX-virtual-scroller-2: scrolling the port updates the window', async () => {
-    test.fail();
     await page.evaluate(() => (window as any).matrix.mount({
       itemHeight: 50, bufferSize: 5, total: 1000, viewportHeight: 400,
     }));

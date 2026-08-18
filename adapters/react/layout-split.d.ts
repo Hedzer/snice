@@ -6,6 +6,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
 export interface LayoutSplitProps extends SniceBaseProps {
     direction?: any;
     ratio?: any;
+    contained?: any;
 }
 /**
  * LayoutSplit - React adapter for snice-layout-split

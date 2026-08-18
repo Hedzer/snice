@@ -111,23 +111,18 @@ describe('snice-paint matrix: the palette', () => {
   });
 
   /**
-   * FINDING MATRIX-paint-1.
+   * FINDING MATRIX-paint-1 (FIXED).
    *
-   * `colors: string[]` is documented as a "getter/setter" with the eight-colour
-   * default, and the swatch row is documented to be the palette. The setter
-   * writes a plain private field — `colors` is not a `@property`, and nothing
-   * watches it — so no render is ever scheduled: the element reports the new
-   * palette while the toolbar keeps painting the previous one. The same is true
-   * of the `colors` ATTRIBUTE, which `@ready` parses after the first render has
-   * already drawn the defaults.
-   *
-   * The assertions below are the documented ones and stay as they are.
+   * `colors` used to write a plain private field no render ever watched. It is
+   * now backed by a reactive `@property` list the getter/setter funnels into,
+   * so both the property setter and the `colors` ATTRIBUTE (parsed in `@ready`)
+   * schedule the repaint that draws the new palette.
    */
   for (const colors of [
     ['#000000'],
     ['#ff0000', '#00ff00', '#0000ff'],
   ]) {
-    it.fails(`MATRIX-paint-1: a palette of ${colors.length} renders ${colors.length} swatches`, async () => {
+    it(`MATRIX-paint-1 (fixed): a palette of ${colors.length} renders ${colors.length} swatches`, async () => {
       const el = await mountPaint({ colors });
       expect(el.colors).toEqual(colors);
       expect(swatches(el)).toHaveLength(colors.length);
@@ -140,13 +135,7 @@ describe('snice-paint matrix: the palette', () => {
     expect(swatches(el)).toHaveLength(DEFAULT_COLORS.length);
   });
 
-  it('MATRIX-paint-1 reproduces: the element reports the new palette, the toolbar keeps the old one', async () => {
-    const el = await mountPaint({ colors: ['#ff0000', '#00ff00', '#0000ff'] });
-    expect(el.colors, 'the property took the value').toEqual(['#ff0000', '#00ff00', '#0000ff']);
-    expect(swatches(el), 'the render did not').toHaveLength(DEFAULT_COLORS.length);
-  });
-
-  it.fails('MATRIX-paint-1: the palette can be replaced through the property setter', async () => {
+  it('MATRIX-paint-1 (fixed): the palette can be replaced through the property setter', async () => {
     const el = await mountPaint({});
     el.colors = ['#111111', '#222222'];
     await wait(SETTLE);

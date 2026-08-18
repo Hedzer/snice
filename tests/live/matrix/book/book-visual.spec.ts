@@ -33,26 +33,17 @@
  *
  * ── FINDING ────────────────────────────────────────────────────────────────
  *
- * VISUAL-MATRIX-book-3  only the current leaf is turned; the pages before it are not.
- *   combo:    pages=4, currentPage=3 (and every currentPage > 1 at every page
- *             count above 1)
- *   expected: at page k, the k leaves the reader has passed are all turned —
- *             that is what "Page-flipping book component" and a `currentPage`
- *             that `nextPage()` advances one at a time mean. Measured as
- *             rotation about Y: [-180, -180, -180, 0] at page 3 of 4.
- *   actual:   [0, 0, -180, 0] — leaf 3 alone is turned and leaves 1 and 2 are
- *             still lying flat on the right-hand side, so the spread shows page
- *             3's leaf mid-book with two unturned leaves stacked over it. The
- *             cause is the CSS-only flip mechanism: the stylesheet's single
- *             rule is `input[type="radio"]:checked + .book__page { transform:
- *             rotateY(-180deg) }`, and the adjacent-sibling combinator reaches
- *             exactly ONE leaf — the one immediately after the checked radio.
- *             Because only one radio in the group can be checked at a time, no
- *             arrangement of that rule can turn a run of leaves.
- *             Jumping to page 1 and to the last page both look right, which is
- *             why the defect survives a casual look.
- *   Pinned with `test.fail()` below. The page-1 and page-0 cases are asserted
- *   unpinned in the same block, which is what localises the defect.
+ * VISUAL-MATRIX-book-3  only the current leaf was turned; the pages before it
+ *   were not. FIXED: at page k, the k leaves the reader has passed are all
+ *   turned — measured as rotation about Y: [-180, -180, -180, 0] at page 3
+ *   of 4. The cause was the CSS-only flip mechanism: the stylesheet's single
+ *   rule was `input[type="radio"]:checked + .book__page { transform:
+ *   rotateY(-180deg) }`, and the adjacent-sibling combinator reaches exactly
+ *   ONE leaf — the one immediately after the checked radio. Because only one
+ *   radio in the group can be checked at a time, no arrangement of that rule
+ *   can turn a run of leaves. The turn is now carried by a class synced from
+ *   currentPage, so every leaf before the current page swings over. The
+ *   pinned tests below are unwrapped; their assertions are unchanged.
  */
 import { test, expect, type Page } from '@playwright/test';
 import { capture, contrast, sameColor, type RGB } from '../pixel-probe';
@@ -72,7 +63,7 @@ interface Combo {
  * documented properties and one render path — the point of this tier is that
  * the turn mechanism and the cover paint get a real browser, not that the
  * product is large. The intermediate pages are where VISUAL-MATRIX-book-3 lives and
- * they get their own pinned block.
+ * they get their own block.
  */
 function generateCombos(): Combo[] {
   const combos: Combo[] = [];
@@ -294,7 +285,7 @@ test('layer1 the page turn really is animated', async ({ browser }) => {
   }
 });
 
-// ── VISUAL-MATRIX-book-3: how many leaves are turned at page k ────────────────────
+// ── VISUAL-MATRIX-book-3 (fixed): how many leaves are turned at page k ─────
 
 async function rotationsAt(pages: number, currentPage: number): Promise<number[]> {
   return page.evaluate(async ({ pages, currentPage }) => {
@@ -305,8 +296,8 @@ async function rotationsAt(pages: number, currentPage: number): Promise<number[]
 }
 
 test('a closed book turns nothing, and page 1 turns exactly the first leaf', async () => {
-  // The two positions the current mechanism gets right, asserted unpinned so
-  // the finding below is localised to the intermediate pages.
+  // The two positions the old mechanism got right, still asserted so the
+  // fixed block below cannot regress them.
   expect(await rotationsAt(4, 0)).toEqual([0, 0, 0, 0]);
   const atOne = await rotationsAt(4, 1);
   expect(Math.abs(atOne[0])).toBeGreaterThan(90);
@@ -314,8 +305,7 @@ test('a closed book turns nothing, and page 1 turns exactly the first leaf', asy
 });
 
 for (const [pages, currentPage] of [[4, 2], [4, 3], [6, 3], [6, 5], [2, 2]] as const) {
-  test(`VISUAL-MATRIX-book-3 pages=${pages}/page=${currentPage}: every leaf before the current one is turned`, async () => {
-    test.fail();
+  test(`VISUAL-MATRIX-book-3 (fixed) pages=${pages}/page=${currentPage}: every leaf before the current one is turned`, async () => {
     const rotations = await rotationsAt(pages, currentPage);
     const turned = rotations.map(r => Math.abs(r) > 90);
     // At page k of n, the first k leaves are behind the reader and the rest
@@ -325,13 +315,13 @@ for (const [pages, currentPage] of [[4, 2], [4, 3], [6, 3], [6, 5], [2, 2]] as c
   });
 }
 
-test('VISUAL-MATRIX-book-3: exactly one leaf is turned at any page', async () => {
-  // The mechanism, stated positively. This is what IS true today; the pinned
-  // tests above are what a page-flipping book has to do. A fix flips both.
+test('VISUAL-MATRIX-book-3 (fixed): the number of turned leaves matches the page', async () => {
+  // The old mechanism's signature was exactly one turned leaf at ANY page;
+  // the fix turns one leaf per page the reader has passed.
   for (const currentPage of [1, 2, 3, 4]) {
     const rotations = await rotationsAt(4, currentPage);
     const turned = rotations.filter(r => Math.abs(r) > 90).length;
-    expect(turned, `at page ${currentPage}: ${JSON.stringify(rotations)}`).toBe(1);
+    expect(turned, `at page ${currentPage}: ${JSON.stringify(rotations)}`).toBe(currentPage);
   }
 });
 

@@ -199,21 +199,20 @@ test.describe('snice-diff visual matrix (layer 1)', () => {
   });
 
   /**
-   * MATRIX-diff-1 — a collapsed section cannot be expanded.
+   * MATRIX-diff-1 (fixed) — a collapsed section could not be expanded.
    *
    * `docs/ai/components/diff.md`, Accessibility: "Unchanged sections beyond
    * context are collapsed; click to expand". The separator row is rendered with
    * exactly that invitation and carries a click handler, but the handler only
-   * flips a private field, which schedules no re-render — so a real click in a
-   * real browser leaves the table byte-identical and the hidden lines
+   * flipped a private field, which scheduled no re-render — so a real click in
+   * a real browser left the table byte-identical and the hidden lines
    * unreachable.
    *
-   * Policy (.ai/fuzzing.md): the assertion stays correct and the combo is
-   * pinned, so the day the component is fixed this suite fails and the finding
-   * can be closed.
+   * Policy (.ai/fuzzing.md): the assertion stayed correct while the combo was
+   * pinned; `hunks` is now `@state`, the click re-renders, and the pin is
+   * removed with the fix.
    */
   test('MATRIX-diff-1: clicking a collapsed section reveals its lines', async () => {
-    test.fail();
     await mount(page, { scenario: 'two-far-changes', mode: 'unified', contextLines: 3 });
     const counts = await page.evaluate(() => (window as any).matrix.expandFirst());
     expect(counts.after, 'the row count did not change when the section was clicked')
@@ -221,15 +220,16 @@ test.describe('snice-diff visual matrix (layer 1)', () => {
   });
 
   /**
-   * MATRIX-diff-3 — split mode offers no way to reach a collapsed section.
+   * MATRIX-diff-3 (fixed) — split mode offered no way to reach a collapsed
+   * section.
    *
    * The same doc sentence is stated for the component, not for one of its
-   * modes. The unified view at least renders the invitation; the split view
-   * drops the collapsed lines silently, so in `mode="split"` there is nothing
-   * on screen to click at all.
+   * modes. The unified view at least rendered the invitation; the split view
+   * dropped the collapsed lines silently, so in `mode="split"` there was
+   * nothing on screen to click at all. Fixed: the split view now renders the
+   * same separator row in both panes.
    */
   test('MATRIX-diff-3: split mode marks its collapsed sections too', async () => {
-    test.fail();
     await mount(page, { scenario: 'two-far-changes', mode: 'split', contextLines: 3 });
     const separators = await page.evaluate(() => document.getElementById('subject')!
       .shadowRoot!.querySelectorAll('.diff-hunk-separator').length);

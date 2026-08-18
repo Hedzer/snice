@@ -20,16 +20,6 @@ import {
   SHELLS, checkShell, expectNoProblems, makeShell, shell, wait,
 } from './layout-support';
 
-/**
- * The single option value whose region damage is a recorded finding
- * (MATRIX-layout-3, asserted in shells.test.ts): `use-nav` swaps the documented
- * `nav` region out for the placard-driven nav, so the region stops existing.
- * Skipped here so one defect is reported once, in the file that owns it.
- */
-function isKnownRegionFinding(tag: string, property: string, value: unknown): boolean {
-  return tag === 'snice-layout-landing' && property === 'useNav' && value === true;
-}
-
 describe('layout matrix — documented defaults', () => {
   afterEach(() => unmountAll());
 
@@ -64,12 +54,7 @@ describe('layout matrix — option values', () => {
 
           expect((el as any)[property], `${property} did not cross the attribute channel`)
             .toBe(value);
-          // The shell's documented regions are unaffected by any option —
-          // except for the one combination MATRIX-layout-3 pins (see
-          // shells.test.ts), which is asserted there rather than twice.
-          if (!isKnownRegionFinding(spec.tag, property, value)) {
-            expectNoProblems(checkShell(el, spec), `${spec.tag} ${option.attribute}=${String(value)}`);
-          }
+          expectNoProblems(checkShell(el, spec), `${spec.tag} ${option.attribute}=${String(value)}`);
         });
       }
     }
@@ -126,7 +111,6 @@ describe('layout matrix — options through the property channel', () => {
         if ((el as any)[property] !== next) {
           problems.push(`${property} did not take the value ${JSON.stringify(next)}`);
         }
-        if (isKnownRegionFinding(spec.tag, property, next)) continue;
         problems.push(...checkShell(el, spec).map(problem => `after ${property}=${String(next)}: ${problem}`));
       }
       expectNoProblems(problems, `${spec.tag} property channel`);

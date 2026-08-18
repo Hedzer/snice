@@ -123,7 +123,7 @@ describe('snice-command-palette matrix: keyboard activation', () => {
     expect(el.open, 'Ctrl+K did not reopen a closed palette').toBe(true);
   });
 
-  // ── FINDING ───────────────────────────────────────────────────────────────
+  // ── FINDING (fixed) ────────────────────────────────────────────────────────
   // Doc "Keyboard Navigation" opens with "Cmd+K / Ctrl+K - Toggle palette" for a
   // component whose one-line description is "Searchable command palette overlay
   // (Cmd+K / Ctrl+K) for quick command access" — a GLOBAL shortcut, which is the
@@ -131,13 +131,14 @@ describe('snice-command-palette matrix: keyboard activation', () => {
   // shadow content, so there is nothing inside it that can hold focus and no way
   // for the user to deliver a keydown to it.
   //
-  // `connectedCallback` binds the handler to `this` rather than to the document,
-  // so the shortcut only fires when the event's path already includes the
-  // palette. Pressing Cmd+K anywhere on the page does nothing.
-  it.fails(finding(
-    'MATRIX-command-palette-1',
-    'Cmd+K on the document does not open the palette — the documented global '
-    + 'shortcut is bound to the element, which holds no focus while closed',
+  // `connectedCallback` used to bind the handler to `this` rather than to the
+  // document, so the shortcut only fired when the event's path already included
+  // the palette. The listener now lives on the document (and is removed on
+  // disconnect); a keydown aimed at an editable element the PAGE owns is left
+  // alone.
+  it(finding(
+    'MATRIX-command-palette-1 (fixed)',
+    'Cmd+K on the document opens the palette — the documented global shortcut',
   ), async () => {
     el = await makePalette({ commands: CANONICAL, showRecentCommands: false });
     expect(el.open).toBe(false);
@@ -150,18 +151,16 @@ describe('snice-command-palette matrix: keyboard activation', () => {
     expect(el.open, 'Meta+K on the document did not open the palette').toBe(true);
   });
 
-  // ── FINDING ───────────────────────────────────────────────────────────────
+  // ── FINDING (fixed) ────────────────────────────────────────────────────────
   // Doc Events: "`command-select` -> { command, palette } - Command highlighted".
   // Highlighting is what ArrowUp/ArrowDown do; the event is the only way an
   // application can follow the highlight (to preview the command, to scroll a
-  // side panel). The component instead fires `command-select` from
-  // `selectCommand`, i.e. only on EXECUTION, one microtask before
-  // `command-execute` — so the documented "highlighted" event never fires for a
-  // highlight, and fires twice-over for an execution.
-  it.fails(finding(
-    'MATRIX-command-palette-2',
-    'command-select is documented as "Command highlighted" but never fires for '
-    + 'arrow navigation — it fires only alongside command-execute',
+  // side panel). The component used to fire `command-select` only from
+  // `selectCommand`, i.e. on EXECUTION. Arrow navigation now announces the
+  // newly highlighted command.
+  it(finding(
+    'MATRIX-command-palette-2 (fixed)',
+    'command-select fires for the command each arrow key highlights',
   ), async () => {
     el = await makePalette({ open: true, commands: CANONICAL, showRecentCommands: false });
     const seen = captureEvents(el, ['command-select']);
@@ -182,20 +181,19 @@ describe('snice-command-palette matrix: listbox a11y', () => {
   beforeEach(() => { clearRecent(); });
   afterEach(() => { if (el) removeComponent(el); el = undefined; });
 
-  // ── FINDING ───────────────────────────────────────────────────────────────
+  // ── FINDING (fixed) ────────────────────────────────────────────────────────
   // Doc "Accessibility": "ARIA labels and roles" and "Screen reader
   // announcements", on a widget the component itself builds as a
   // `role="combobox"` input wired by `aria-controls` to a `role="listbox"`.
   // That pairing has exactly one documented meaning: the options carry
   // `role="option"` and the input names the highlighted one with
-  // `aria-activedescendant`. The component renders bare `<button>`s inside the
-  // listbox and never sets `aria-activedescendant`, so a screen-reader user is
-  // told a listbox is open and then hears nothing at all as they arrow through
-  // it — the highlight the CSS shows is invisible to assistive technology.
-  it.fails(finding(
-    'MATRIX-command-palette-3',
-    'the results listbox exposes no role="option" items and the combobox never '
-    + 'sets aria-activedescendant, so the arrow-key highlight is unannounced',
+  // `aria-activedescendant`. The component used to render bare `<button>`s
+  // inside the listbox and never set `aria-activedescendant`; both are in
+  // place now.
+  it(finding(
+    'MATRIX-command-palette-3 (fixed)',
+    'the results listbox exposes role="option" items and the combobox tracks '
+    + 'the highlight with aria-activedescendant',
   ), async () => {
     el = await makePalette({ open: true, commands: CANONICAL, showRecentCommands: false });
     const problems: string[] = [];

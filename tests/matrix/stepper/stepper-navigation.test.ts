@@ -169,7 +169,7 @@ describe('snice-stepper matrix — navigation', () => {
   });
 
   /**
-   * MATRIX-stepper-1.
+   * MATRIX-stepper-1 (fixed).
    *
    * Documented: `currentStep: number = 0;  // attr: current-step`. That comment
    * is the doc's own notation for "this property is settable from markup under
@@ -177,17 +177,16 @@ describe('snice-stepper matrix — navigation', () => {
    * kebab attribute in the library (`show-first`, `no-header`, `close-on-select`),
    * and it is the only way `<snice-stepper current-step="2">` can work.
    *
-   * Actual: the element's observed attributes are
-   * `controller, autofocus, currentstep, orientation, clickable`. There is no
-   * `current-step`, so the documented markup is inert: the attribute is written
-   * to the DOM, ignored, and the stepper stays on step 0. A page authored
-   * exactly as the doc describes shows the wrong step with no error anywhere.
+   * The property used to be declared with a bare `@property({ type: Number })`,
+   * so the element observed `currentstep` and the documented markup was inert:
+   * the attribute was written to the DOM, ignored, and the stepper stayed on
+   * step 0. The decorator now names `current-step`, and this case runs
+   * unpinned as the regression guard.
    *
    * Combo: `<snice-stepper current-step="2">` with three steps.
    * Expected: `currentStep === 2`, step 2 active.
-   * Actual:   `currentStep === 0`, step 0 active.
    */
-  it.fails('MATRIX-stepper-1: the documented current-step attribute sets currentStep', async () => {
+  it('MATRIX-stepper-1 (fixed): the documented current-step attribute sets currentStep', async () => {
     const el = await mount<any>('snice-stepper', { 'current-step': 2 }, '', { steps: SAMPLE });
     await wait(SETTLE);
 

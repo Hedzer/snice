@@ -396,7 +396,17 @@ a.player-track-artist.is-linked:hover {
   padding: var(--snice-spacing-sm, 0.75rem);
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--snice-spacing-md, 1rem);
+}
+
+/* The one-line layout is for the artwork, track info and transport. The
+   playlist — an independent switch that defaults to on — cannot fit on that
+   line, so it takes a full-width line of its own inside the player instead
+   of hanging past its right edge. */
+.player-container--compact .player-playlist {
+  flex: 1 0 100%;
+  min-width: 0;
 }
 
 .player-container--compact .player-info {

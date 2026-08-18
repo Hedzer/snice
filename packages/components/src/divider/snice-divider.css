@@ -4,6 +4,10 @@
 
 :host {
   display: block;
+  /* The documented default spacing is 'medium', and an untouched default
+     reflects no attribute — so the medium margin lives here, on the host
+     itself, where the default actually lands. */
+  margin: 1rem 0; /* 16px 0 */
   --divider-color: var(--snice-color-border, rgb(226 226 226));
   --divider-thickness: 1px;
   --divider-text-bg: transparent;
@@ -14,6 +18,7 @@
 :host([orientation="vertical"]) {
   display: inline-block;
   height: 100%;
+  margin: 0 1rem; /* 0 16px — the medium default, on the vertical axis */
 }
 
 .divider {

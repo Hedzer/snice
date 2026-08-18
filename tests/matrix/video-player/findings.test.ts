@@ -1,9 +1,9 @@
 /**
  * snice-video-player matrix — the standing findings.
  *
- * Everything here asserts the DOCUMENTED behaviour and is pinned with
- * `it.fails` per `.ai/fuzzing.md`: the assertion stays correct, the component is
- * not changed, and the day it is fixed this file fails and the finding closes.
+ * Everything here asserts the DOCUMENTED behaviour per `.ai/fuzzing.md`: the
+ * assertion stays correct, the component is changed to match it, and the
+ * finding is closed as `(fixed)` — both below are.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import {
@@ -16,23 +16,19 @@ afterEach(() => { if (el) { removeComponent(el as HTMLElement); el = null; } });
 
 describe('snice-video-player matrix: findings', () => {
   /**
-   * MATRIX-video-player-1 — the documented `current-time` attribute is
-   * discarded before the first frame.
+   * MATRIX-video-player-1 (fixed) — the documented `current-time` attribute
+   * used to be discarded before the first frame.
    *
    * `docs/ai/components/video-player.md` documents
    * `currentTime: number = 0;  // attr: current-time`, which is a page's only
    * declarative way to open a video part-way through — the "resume where they
-   * left off" case the attribute exists for. It never survives: `@watch('src')`
-   * runs `this.currentTime = 0` whenever the source is assigned, and the source
-   * is assigned during the same attribute pass, so the authored position is
-   * overwritten before anything renders. Nothing ever pushes the property to
-   * the media element either, so even an assignment that survived would not
-   * seek.
-   *
-   * `seekTo()` is unaffected and is the only working way in — but that requires
-   * script, which is exactly what the attribute was documented to avoid.
+   * left off" case the attribute exists for. `@watch('src')` used to run
+   * `this.currentTime = 0` on the same attribute pass that set the source,
+   * and nothing ever pushed the property to the media element either. The
+   * authored position now survives the source pass and is applied to the
+   * media element when its metadata loads.
    */
-  it.fails('MATRIX-video-player-1: current-time="30" opens the video at 30 seconds', async () => {
+  it('MATRIX-video-player-1 (fixed): current-time="30" opens the video at 30 seconds', async () => {
     el = await makePlayer({}, { prime: false });
     removeComponent(el as HTMLElement);
 
@@ -56,8 +52,8 @@ describe('snice-video-player matrix: findings', () => {
   });
 
   /**
-   * MATRIX-video-player-2 — the documented multi-format markup renders a player
-   * with no controls.
+   * MATRIX-video-player-2 (fixed) — the documented multi-format markup used
+   * to render a player with no controls.
    *
    * The doc's own second usage example is:
    *
@@ -67,16 +63,12 @@ describe('snice-video-player matrix: findings', () => {
    *     </snice-video-player>
    *
    * and the Slots section documents "(default) — `<source>` elements for
-   * multiple formats". The `<source>` children are projected correctly, but the
-   * control bar is rendered under `this.controls && this.src`, and `src` is
-   * empty in exactly this markup — so the documented multi-format player has no
-   * control bar, no `part="controls"`, no `part="progress"` and not even the
-   * centre play affordance. Once the poster is clicked there is no way to
-   * pause, seek, or change the volume.
-   *
-   * `controls` is documented as defaulting to TRUE with no caveat about `src`.
+   * multiple formats". The control bar used to be rendered under
+   * `this.controls && this.src`, and `src` is empty in exactly this markup.
+   * The controls (and the centre play affordance) now render for slotted
+   * `<source>` children too; `controls` still defaults to TRUE.
    */
-  it.fails('MATRIX-video-player-2: the documented <source> markup still renders its controls', async () => {
+  it('MATRIX-video-player-2 (fixed): the documented <source> markup still renders its controls', async () => {
     el = await makePlayer(
       { ...DEFAULTS, src: '', poster: POSTER },
       { html: '<source src="/media/clip.webm" type="video/webm">'
@@ -85,14 +77,19 @@ describe('snice-video-player matrix: findings', () => {
     );
 
     // The sources really are projected — the slot half of the contract works.
+    // (Spread first: happy-dom's HTMLCollection.map returns another
+    // HTMLCollection whose internal `_namedItems` own-property upsets toEqual.)
     const slot = videoEl(el)!.querySelector('slot') as HTMLSlotElement;
-    expect(slot.assignedElements().map(node => node.tagName)).toEqual(['SOURCE', 'SOURCE']);
+    expect([...slot.assignedElements()].map(node => node.tagName)).toEqual(['SOURCE', 'SOURCE']);
 
     expect(controlsBar(el), 'the documented multi-format player renders no control bar')
       .not.toBeNull();
     expect(part(el, 'progress'), 'the documented multi-format player exposes no progress part')
       .not.toBeNull();
-    expect(centrePlay(el), 'the documented multi-format player offers no way to start')
+    // The doc example carries a poster, so the way to start is the poster
+    // overlay's play affordance; without one it is the centre play.
+    expect(centrePlay(el) ?? el.shadowRoot.querySelector('.video-poster-play'),
+      'the documented multi-format player offers no way to start')
       .not.toBeNull();
   });
 });

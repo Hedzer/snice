@@ -22,27 +22,24 @@ describe('banner matrix: generated cross', () => {
   for (const combo of combos) {
     it(combo.id, async () => {
       el = await makeBanner(combo);
-      // `allow: ['role']` suppresses exactly ONE claim — the `role="alert"`
-      // one — and only because it is pinned as MATRIX-banner-1 in its own
-      // `it.fails` test below, where the correct assertion is kept in full.
-      // Every other documented claim stays live in every combo: a divergence
-      // that affects all 32 combos must not be allowed to blind the other
-      // thirty assertions each of them makes.
-      expectBanner(el, combo, { allow: ['role'] });
+      // Every documented claim is live in every combo, `role="alert"`
+      // included: MATRIX-banner-1 is fixed and asserted unpinned below.
+      expectBanner(el, combo);
     });
   }
 });
 
-// MATRIX-banner-1: the banner container is `role="region"`, not the documented
-// `role="alert"`. docs/ai/components/banner.md's Accessibility section states
-// `role="alert"` on the banner container, and docs/components/banner.md repeats
-// it. The difference is not cosmetic: `alert` is an assertive live region, so a
-// banner that appears while the user is elsewhere on the page is announced;
-// `region` is a landmark and announces nothing. The assertion below stays
-// correct and unweakened.
-describe('banner matrix: MATRIX-banner-1 (documented role)', () => {
+// MATRIX-banner-1 (fixed): the banner container used to be `role="region"`,
+// not the documented `role="alert"`. docs/ai/components/banner.md's
+// Accessibility section states `role="alert"` on the banner container, and
+// docs/components/banner.md repeats it. The difference is not cosmetic:
+// `alert` is an assertive live region, so a banner that appears while the
+// user is elsewhere on the page is announced; `region` is a landmark and
+// announces nothing. The template now renders the documented role; the
+// assertions run unpinned as regression guards.
+describe('banner matrix: MATRIX-banner-1 (fixed, documented role)', () => {
   for (const variant of VARIANTS) {
-    it.fails(`MATRIX-banner-1 ${variant}: the banner container is role="alert"`, async () => {
+    it(`MATRIX-banner-1 (fixed) ${variant}: the banner container is role="alert"`, async () => {
       const combo = {
         id: `role/${variant}`, variant, position: 'top' as const, dismissible: true,
         actionText: '', iconMode: 'default' as const, message: 'hello', label: '',
@@ -86,7 +83,7 @@ describe('banner matrix: the documented defaults', () => {
       id: 'defaults', variant: DEFAULTS.variant, position: DEFAULTS.position,
       dismissible: true, actionText: '', iconMode: 'default', message: '',
       label: '', open: false,
-    }, { allow: ['role'] });
+    });
     if (partsNamed(el, 'close').length !== 1) {
       throw new Error('the default banner has no close button');
     }
@@ -99,7 +96,7 @@ describe('banner matrix: the oracle is not vacuous', () => {
     const problems = bannerProblems(el, {
       id: 'probe', variant: 'info', position: 'top', dismissible: true,
       actionText: '', iconMode: 'default', message: 'x', label: '', open: false,
-    }, { allow: ['role'] });
+    });
     if (problems.length === 0) {
       throw new Error('oracle accepted a banner with no close button where one was documented');
     }
@@ -111,7 +108,7 @@ describe('banner matrix: the oracle is not vacuous', () => {
       id: 'probe', variant: 'error', position: 'top', dismissible: true,
       actionText: '', iconMode: 'default', message: 'x',
       label: 'Something else entirely', open: false,
-    }, { allow: ['role'] });
+    });
     if (problems.length === 0) {
       throw new Error('oracle accepted a banner whose accessible name is not its label');
     }

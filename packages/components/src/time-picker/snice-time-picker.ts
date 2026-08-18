@@ -1001,28 +1001,11 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
   open() {
     if (!this.interactionDisabled && !this.readonly && this.variant === 'dropdown') {
       this.showDropdown = true;
-      if (this.dropdown) {
-        this.dropdown.removeAttribute('hidden');
-        this.dropdown.classList.add('dropdown--open');
-        if (typeof this.dropdown.showPopover === 'function') {
-          this.dropdown.showPopover();
-        }
-        this.positionDropdown();
-      }
-      this.emitOpen();
     }
   }
 
   close() {
     this.showDropdown = false;
-    if (this.dropdown) {
-      this.dropdown.classList.remove('dropdown--open');
-      if (typeof this.dropdown.hidePopover === 'function') {
-        this.dropdown.hidePopover();
-      }
-      this.dropdown.setAttribute('hidden', '');
-    }
-    this.emitClose();
   }
 
   private positionDropdown() {

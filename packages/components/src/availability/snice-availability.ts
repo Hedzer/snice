@@ -92,9 +92,14 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
       const startMinute = startH * 60 + startM;
       const endMinute = endH * 60 + endM;
 
-      for (let m = startMinute; m < endMinute; m += this.granularity) {
-        const slotIndex = (m - this.startHour * 60) / this.granularity;
-        if (slotIndex >= 0 && slotIndex < this.totalSlots) {
+      // A slot is available when it lies ENTIRELY inside the range. Range
+      // bounds may land off the granularity grid ("09:15" at 30-minute
+      // slots), so slots are enumerated — not stepped from the range start,
+      // which would produce fractional slot keys matching no cell.
+      for (let slotIndex = 0; slotIndex < this.totalSlots; slotIndex++) {
+        const slotStart = this.startHour * 60 + slotIndex * this.granularity;
+        const slotEnd = slotStart + this.granularity;
+        if (slotStart >= startMinute && slotEnd <= endMinute) {
           this.activeCells.add(`${range.day}-${slotIndex}`);
         }
       }

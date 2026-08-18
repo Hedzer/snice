@@ -96,15 +96,13 @@ describe('doc matrix: structure', () => {
     }
   }
 
-  // FINDING MATRIX-doc-1: assigning `readonly = true` through the PROPERTY
-  // channel reflects the attribute (`:host([readonly])` hides the toolbar),
-  // but the editor stays contentEditable — the imperative DOM built in @ready
-  // reads `readonly` once and no watcher updates it. docs/ai/properties.md:
-  // declared properties "Trigger re-renders when changed", and the component
-  // derives the editor's editability from `readonly`; the assertion stays at
-  // the documented behaviour and is pinned, not weakened.
-  it.fails(
-    'MATRIX-doc-1: a property-channel readonly assignment bars editing',
+  // MATRIX-doc-1 (fixed): assigning `readonly = true` through the PROPERTY
+  // channel used to leave the editor contentEditable — the imperative DOM
+  // built in @ready read `readonly` once and nothing updated it. A `@watch`
+  // on `readonly` now re-syncs the editor's contentEditable, so the
+  // documented behaviour holds and the pin is unwrapped.
+  it(
+    'MATRIX-doc-1 (fixed): a property-channel readonly assignment bars editing',
     async () => {
       const el = await mountDoc({
         icons: 'default', readonly: true, placeholder: DEFAULTS.placeholder, channel: 'prop',

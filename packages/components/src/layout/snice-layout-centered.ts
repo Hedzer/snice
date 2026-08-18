@@ -1,10 +1,15 @@
 import { element, property, ready, render, styles, html, css } from 'snice';
+import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import cssContent from './snice-layout-centered.css?inline';
 
 @element('snice-layout-centered')
-export class SniceLayoutCentered extends HTMLElement {
+export class SniceLayoutCentered extends HTMLElement implements Layout {
   @property({  })
   width: 'sm' | 'md' | 'lg' | 'xl' = 'md';
+
+  /** Size to the parent element instead of filling the screen. */
+  @property({ type: Boolean })
+  contained = false;
 
   @property({ attribute: false })
   hasBrand = false;
@@ -47,5 +52,13 @@ export class SniceLayoutCentered extends HTMLElement {
   @styles()
   styles() {
     return css/*css*/`${cssContent}`;
+  }
+
+  private placards: Placard[] = [];
+  private currentRoute = '';
+
+  update(_appContext: AppContext, placards: Placard[], currentRoute: string, _routeParams: RouteParams): void {
+    this.placards = placards;
+    this.currentRoute = currentRoute;
   }
 }

@@ -300,28 +300,20 @@ async function visualProblems(combo: Combo): Promise<string[]> {
 const combos = generateCombos();
 
 /**
- * The findings this tier pinned, as a predicate over the combo.
- *
- * VISUAL-MATRIX-divider-3 — the documented default `spacing: 'medium'` produces NO
- * margin at all. Every margin this component has lives under
- * `:host([spacing="…"])`, and an untouched default reflects no attribute
- * (docs/ai/properties.md), so `<snice-divider></snice-divider>` — the docs' own
- * first example — renders flush against its neighbours while the property
- * reads `'medium'`. Only an explicitly written `spacing="medium"` produces the
- * documented "Vertical margin". Per .ai/fuzzing.md the assertion is NOT
- * weakened and the component is NOT changed: the affected combos are declared
- * `test.fail()`, so the suite goes red the day it is fixed.
+ * FINDING VISUAL-MATRIX-divider-3 (fixed). The documented default
+ * `spacing: 'medium'` used to produce NO margin at all: every margin this
+ * component had lived under `:host([spacing="…"])`, and an untouched default
+ * reflects no attribute (docs/ai/properties.md), so
+ * `<snice-divider></snice-divider>` — the docs' own first example — rendered
+ * flush against its neighbours while the property read `'medium'`. The medium
+ * margin now lives on `:host` itself (and on the vertical orientation rule),
+ * where the default actually lands; the explicit `:host([spacing="…"])`
+ * rules still override it, on the correct axis.
  */
-function pinnedFindings(combo: Combo): string[] {
-  return combo.spacing === 'medium' ? ['VISUAL-MATRIX-divider-3'] : [];
-}
 
 test.describe('divider visual matrix: layer 1', () => {
   for (const combo of combos) {
-    const findings = pinnedFindings(combo);
-    const title = findings.length ? `${findings.join(' ')} ${combo.id}` : combo.id;
-    test(title, async () => {
-      if (findings.length) test.fail();
+    test(combo.id, async () => {
       const mounted = await page.evaluate(c => (window as any).matrix.mount(c), combo as any);
       expect(mounted.orientation).toBe(combo.orientation);
       expect(await visualProblems(combo), `combo ${combo.id}`).toEqual([]);
@@ -330,10 +322,10 @@ test.describe('divider visual matrix: layer 1', () => {
 });
 
 test.describe('divider visual matrix: the spacing scale', () => {
-  // The finding above is about the DEFAULT, not about the scale: an explicitly
-  // written spacing must still produce its documented margin, on the documented
-  // axis. This is the check that keeps VISUAL-MATRIX-divider-3 honest — if the whole
-  // scale were broken, pinning the default alone would hide it.
+  // The scale checks stay now that VISUAL-MATRIX-divider-3 is fixed: an
+  // explicitly written spacing must still produce its documented margin, on
+  // the documented axis — the check that keeps the host-level default from
+  // ever hiding a broken `:host([spacing="…"])` scale.
   for (const spacing of ['none', 'small', 'large'] as Spacing[]) {
     test(`spacing="${spacing}" applies ${SPACING_PX[spacing]}px of vertical margin`, async () => {
       await page.evaluate(c => (window as any).matrix.mount(c), {
@@ -351,9 +343,9 @@ test.describe('divider visual matrix: the spacing scale', () => {
     });
   }
 
-  // VISUAL-MATRIX-divider-3 at its most direct: the documented default, alone.
-  test('VISUAL-MATRIX-divider-3: a default divider carries its documented medium margin', async () => {
-    test.fail();
+  // The fixed VISUAL-MATRIX-divider-3 contract at its most direct: the
+  // documented default, alone.
+  test('a default divider carries its documented medium margin', async () => {
     await page.evaluate(() => (window as any).matrix.mount({}));
     const margin = await page.evaluate(() =>
       getComputedStyle(document.getElementById('subject')!).marginTop);

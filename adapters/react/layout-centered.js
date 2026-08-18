@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const LayoutCentered = createReactAdapter({
     tagName: 'snice-layout-centered',
-    properties: ["width", "hasBrand", "hasFooter"],
+    properties: ["width", "contained", "hasBrand", "hasFooter"],
     events: {},
     formAssociated: false
 });

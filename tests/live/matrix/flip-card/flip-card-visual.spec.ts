@@ -319,21 +319,16 @@ test.describe('flip-card visual matrix: marquee pixels', () => {
     }
   });
 
-  // FINDING VISUAL-MATRIX-flip-card-1 — a flipped card paints its front, not
-  // its back, in Firefox and WebKit. `snice-flip-card.css` gives `.front` a
-  // `z-index: 2`, and a z-index on a child of a `preserve-3d` element forces
-  // a stacking context that flattens the 3D sorting in those two engines, so
-  // `backface-visibility: hidden` stops hiding the turned front face and the
-  // z-index keeps it ON TOP of the back — the card never visually flips.
-  // Chromium tolerates the z-index, which is why only it passes. Isolated
-  // with a minimal preserve-3d fixture: drop the z-index and all three
-  // engines paint the back face. Reported, not fixed — the fix (remove the
-  // z-index from snice-flip-card.css) is a component-source change, out of
-  // scope here. The assertion stays; the day the z-index is removed this pin
-  // must fail and be deleted.
-  test('a flipped card paints its back face', async ({ browserName }) => {
-    test.fail(browserName === 'firefox' || browserName === 'webkit',
-      'front-face z-index flattens the 3D flip — see VISUAL-MATRIX-flip-card-1');
+  // FINDING VISUAL-MATRIX-flip-card-1 — FIXED. A flipped card used to paint
+  // its front, not its back, in Firefox and WebKit. `snice-flip-card.css`
+  // gave `.front` a `z-index: 2`, and a z-index on a child of a
+  // `preserve-3d` element forces a stacking context that flattens the 3D
+  // sorting in those two engines, so `backface-visibility: hidden` stopped
+  // hiding the turned front face and the z-index kept it ON TOP of the back —
+  // the card never visually flipped. The z-index is replaced by a
+  // `translateZ(1px)` lift, which stacks the front over the back in Chromium
+  // without flattening the 3D context; the assertions below are unchanged.
+  test('a flipped card paints its back face (fixed: VISUAL-MATRIX-flip-card-1)', async () => {
     await page.evaluate(() => (window as any).matrix.mount({ flipped: true, duration: 120 }));
     const [centre, corner] = await capture(page, '#subject', 'flip-card-back', centreProbe);
     for (const [name, pixel] of [['centre', centre], ['corner', corner]] as const) {
@@ -341,12 +336,10 @@ test.describe('flip-card visual matrix: marquee pixels', () => {
     }
   });
 
-  // FINDING VISUAL-MATRIX-flip-card-1 (vertical variant) — same root cause as
-  // the horizontal pin above: the `.front` z-index flattens the 3D context in
-  // Firefox and WebKit, so the turned front face stays on screen.
-  test('a vertical flip also lands on the back face', async ({ browserName }) => {
-    test.fail(browserName === 'firefox' || browserName === 'webkit',
-      'front-face z-index flattens the 3D flip — see VISUAL-MATRIX-flip-card-1');
+  // FINDING VISUAL-MATRIX-flip-card-1 (vertical variant, fixed) — same root
+  // cause as the horizontal pin above: the `.front` z-index flattened the 3D
+  // context in Firefox and WebKit, so the turned front face stayed on screen.
+  test('a vertical flip also lands on the back face (fixed: VISUAL-MATRIX-flip-card-1)', async () => {
     await page.evaluate(() => (window as any).matrix.mount({
       flipped: true, direction: 'vertical', duration: 120,
     }));

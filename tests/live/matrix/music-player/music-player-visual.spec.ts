@@ -90,11 +90,10 @@ test.describe('snice-music-player visual matrix (layer 1)', () => {
   test.afterAll(async () => { await page?.close(); });
 
   for (const { id, combo } of VECTORS) {
-    // VISUAL-MATRIX-music-player-1 (documented in full at the bottom of this
-    // describe): the compact container lays its playlist outside its own box.
-    // The assertion below stays the correct one and the combo is pinned.
-    test(id === 'compact' ? `VISUAL-MATRIX-music-player-1: ${id}` : id, async () => {
-      if (id === 'compact') test.fail();
+    // VISUAL-MATRIX-music-player-1 (fixed, documented in full at the bottom of
+    // this describe): the compact container used to lay its playlist outside
+    // its own box; the playlist now wraps onto a line of its own inside it.
+    test(id === 'compact' ? 'compact [VISUAL-MATRIX-music-player-1 (fixed)]' : id, async () => {
       await mount(page, combo);
       expect(await collectChartProblems(page, PROBE), id).toEqual([]);
 
@@ -266,29 +265,23 @@ test.describe('snice-music-player visual matrix (layer 1)', () => {
   });
 
   /**
-   * VISUAL-MATRIX-music-player-1 — `compact` lays the playlist outside the player.
+   * VISUAL-MATRIX-music-player-1 (fixed) — `compact` used to lay the playlist
+   * outside the player.
    *
    * `docs/ai/components/music-player.md` documents `compact: boolean = false`
    * and `showPlaylist: boolean = true` as independent switches, with no note
-   * that one excludes the other. `.player-container--compact` turns the
-   * container into a horizontal flex row so the artwork, the track info and the
-   * transport sit on one line — and the playlist, still rendered because its
-   * own switch defaults to true, becomes a fourth flex item on that same line.
-   * It does not fit: it starts past the container's right edge and, with the
-   * container at `overflow: visible`, is painted over whatever the page put
-   * beside the player.
+   * that one excludes the other. `.player-container--compact` turned the
+   * container into a horizontal flex row so the artwork, the track info and
+   * the transport sat on one line — and the playlist, still rendered because
+   * its own switch defaults to true, became a fourth flex item on that same
+   * line. It did not fit: it started past the container's right edge and,
+   * with the container at `overflow: visible`, was painted over whatever the
+   * page put beside the player.
    *
-   * A page that writes `<snice-music-player compact>` — the documented way to
-   * ask for the small player — gets a playlist hanging off the side of it.
-   * `show-playlist="false"` is the workaround, but nothing documents that it
-   * is required.
-   *
-   * Policy (.ai/fuzzing.md): the assertion stays correct and the combo is
-   * pinned, so the day the layout is fixed this suite fails and the finding can
-   * be closed.
+   * The compact container now wraps, and the playlist takes a full-width
+   * line of its own inside the player.
    */
-  test('VISUAL-MATRIX-music-player-1: a compact player keeps its playlist inside itself', async () => {
-    test.fail();
+  test('VISUAL-MATRIX-music-player-1 (fixed): a compact player keeps its playlist inside itself', async () => {
     await mount(page, { compact: true });
     const escape = await page.evaluate(() => {
       const sr = document.getElementById('subject')!.shadowRoot!;

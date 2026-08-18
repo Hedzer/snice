@@ -7,10 +7,10 @@
  * imply: nothing set, one weekday band, several days at once, a band that runs
  * past `end-hour`, and a band that starts before `start-hour`.
  *
- * 30 combos + 3 findings.
+ * 30 combos + 2 closed findings.
  */
 import { describe, it, afterEach } from 'vitest';
-import { unmountAll, finding } from '../matrix-utils';
+import { unmountAll } from '../matrix-utils';
 import type { AvailabilityRange } from '../../../packages/components/src/availability/snice-availability.types';
 import {
   GRANULARITIES,
@@ -45,7 +45,7 @@ describe('availability matrix — value mapping', () => {
     }
   }
 
-  // ── Findings ──────────────────────────────────────────────────────────────
+  // ── Closed findings (fixed; assertions kept) ──────────────────────────────
 
   /**
    * A range whose bounds do not land on a slot boundary still fully contains
@@ -53,8 +53,8 @@ describe('availability matrix — value mapping', () => {
    * the slot size, not as a constraint on the values `value` may carry — the
    * bounds are plain `"HH:MM"` strings.
    */
-  it.fails(
-    finding('MATRIX-availability-1', 'a range offset from the slot grid marks no slots available at all'),
+  it(
+    'a range offset from the slot grid still marks the slots it fully contains [MATRIX-availability-1 fixed]',
     async () => {
       const c = combo({ granularity: 30, window: [9, 17], ranges: [{ day: 0, start: '09:15', end: '11:15' }] });
       const el = await makeAvailability(c);
@@ -68,8 +68,8 @@ describe('availability matrix — value mapping', () => {
    * grid, so an on-the-hour range is off-grid whenever the window does not start
    * on a slot boundary of its own.
    */
-  it.fails(
-    finding('MATRIX-availability-2', 'an hour-aligned range is dropped when granularity is 15 and the range starts mid-slot'),
+  it(
+    'a mid-slot range still marks the slots it fully contains [MATRIX-availability-2 fixed]',
     async () => {
       const c = combo({ granularity: 15, window: [9, 12], ranges: [{ day: 1, start: '09:05', end: '10:05' }] });
       const el = await makeAvailability(c);

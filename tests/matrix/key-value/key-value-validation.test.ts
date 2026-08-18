@@ -203,18 +203,13 @@ describe('key-value matrix: custom validity', () => {
   });
 
   /**
-   * FINDING MATRIX-key-value-2.
-   *
-   * "`customError`: non-empty `setCustomValidity()`" and "message uses
-   * `part="error"` and `role="alert"`" — so an application rule must reach the
-   * user, not only `validity`. `setCustomValidity()` updates the internals and
-   * the inputs' `aria-invalid` imperatively but schedules no render, so the
-   * `part="error"` block never appears for a control that was otherwise valid,
-   * and keeps the PREVIOUS message for one that was not. The assertion is not
-   * weakened: the documented message must be the one the user can read.
+   * MATRIX-key-value-2 (fixed) — `setCustomValidity()` used to update the
+   * internals and the inputs' `aria-invalid` imperatively but left the message
+   * on a non-reactive field, so no render ever showed it. The message is now
+   * reactive state, and the documented message is the one the user can read.
    */
-  it.fails(
-    'MATRIX-key-value-2: setCustomValidity renders its message in part="error"',
+  it(
+    'MATRIX-key-value-2 (fixed): setCustomValidity renders its message in part="error"',
     async () => {
       const el = await mountKeyValue({ value: '[{"key":"A","value":"1","description":""}]' });
       await tick(el);
@@ -225,8 +220,8 @@ describe('key-value matrix: custom validity', () => {
     },
   );
 
-  it.fails(
-    'MATRIX-key-value-2: a custom message replaces the message already shown',
+  it(
+    'MATRIX-key-value-2 (fixed): a custom message replaces the message already shown',
     async () => {
       const el = await mountKeyValue({ value: '[]', required: true });
       await tick(el);

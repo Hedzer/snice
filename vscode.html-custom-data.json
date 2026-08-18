@@ -320,7 +320,7 @@
       "description": "SniceApprovalFlow custom element.",
       "attributes": [
         {
-          "name": "currentstep",
+          "name": "current-step",
           "description": "currentStep: string"
         },
         {
@@ -3706,11 +3706,11 @@
           "description": "discount: number"
         },
         {
-          "name": "estimatenumber",
+          "name": "estimate-number",
           "description": "estimateNumber: string"
         },
         {
-          "name": "expirydate",
+          "name": "expiry-date",
           "description": "expiryDate: string"
         },
         {
@@ -3762,7 +3762,7 @@
           ]
         },
         {
-          "name": "taxrate",
+          "name": "tax-rate",
           "description": "taxRate: number"
         },
         {
@@ -4832,7 +4832,7 @@
       "description": "SniceKpi custom element.",
       "attributes": [
         {
-          "name": "colorvalue",
+          "name": "color-value",
           "description": "colorValue: boolean"
         },
         {
@@ -4855,7 +4855,7 @@
           ]
         },
         {
-          "name": "showsparkline",
+          "name": "show-sparkline",
           "description": "showSparkline: boolean"
         },
         {
@@ -4874,7 +4874,7 @@
           ]
         },
         {
-          "name": "trendvalue",
+          "name": "trend-value",
           "description": "trendValue: string | number"
         },
         {
@@ -4904,7 +4904,12 @@
     {
       "name": "snice-layout",
       "description": "SniceLayout custom element.",
-      "attributes": []
+      "attributes": [
+        {
+          "name": "contained",
+          "description": "Size to the parent element instead of filling the screen."
+        }
+      ]
     },
     {
       "name": "snice-layout-auth-split",
@@ -4932,6 +4937,10 @@
       "name": "snice-layout-blog",
       "description": "SniceLayoutBlog custom element.",
       "attributes": [
+        {
+          "name": "contained",
+          "description": "Size to the parent element instead of filling the screen."
+        },
         {
           "name": "use-nav",
           "description": "useNav: boolean"
@@ -4964,6 +4973,10 @@
           ]
         },
         {
+          "name": "contained",
+          "description": "Size to the parent element instead of filling the screen."
+        },
+        {
           "name": "gap",
           "description": "gap: 'sm' | 'md' | 'lg' | 'xl'",
           "values": [
@@ -4987,6 +5000,10 @@
       "name": "snice-layout-centered",
       "description": "SniceLayoutCentered custom element.",
       "attributes": [
+        {
+          "name": "contained",
+          "description": "Size to the parent element instead of filling the screen."
+        },
         {
           "name": "width",
           "description": "width: 'sm' | 'md' | 'lg' | 'xl'",
@@ -5050,6 +5067,10 @@
       "description": "SniceLayoutLanding custom element.",
       "attributes": [
         {
+          "name": "contained",
+          "description": "Size to the parent element instead of filling the screen."
+        },
+        {
           "name": "use-nav",
           "description": "useNav: boolean"
         }
@@ -5072,7 +5093,12 @@
     {
       "name": "snice-layout-minimal",
       "description": "SniceLayoutMinimal custom element.",
-      "attributes": []
+      "attributes": [
+        {
+          "name": "contained",
+          "description": "Size to the parent element instead of filling the screen."
+        }
+      ]
     },
     {
       "name": "snice-layout-sidebar",
@@ -5096,6 +5122,10 @@
       "name": "snice-layout-split",
       "description": "SniceLayoutSplit custom element.",
       "attributes": [
+        {
+          "name": "contained",
+          "description": "Size to the parent element instead of filling the screen."
+        },
         {
           "name": "direction",
           "description": "direction: 'horizontal' | 'vertical'",
@@ -5569,7 +5599,7 @@
           "description": "gap: string"
         },
         {
-          "name": "mincolumnwidth",
+          "name": "min-column-width",
           "description": "minColumnWidth: string"
         }
       ]
@@ -7728,7 +7758,7 @@
           "description": "clickable: boolean"
         },
         {
-          "name": "currentstep",
+          "name": "current-step",
           "description": "currentStep: number"
         },
         {
@@ -7843,12 +7873,16 @@
           "description": "name: string"
         },
         {
-          "name": "transitionduration",
+          "name": "transition-duration",
           "description": "transitionDuration: number"
         },
         {
-          "name": "transitionin",
+          "name": "transition-in",
           "description": "transitionIn: string"
+        },
+        {
+          "name": "transition-out",
+          "description": "transitionOut: string"
         },
         {
           "name": "transitioning",
@@ -7861,10 +7895,6 @@
               "name": "out"
             }
           ]
-        },
-        {
-          "name": "transitionout",
-          "description": "transitionOut: string"
         }
       ]
     },
@@ -8095,7 +8125,7 @@
       "description": "SniceTabs custom element.",
       "attributes": [
         {
-          "name": "noscrollcontrols",
+          "name": "no-scroll-controls",
           "description": "noScrollControls: boolean"
         },
         {
@@ -8822,6 +8852,10 @@
           "description": "checked: boolean"
         },
         {
+          "name": "expand-on-click",
+          "description": "expandOnClick: boolean"
+        },
+        {
           "name": "expanded",
           "description": "expanded: boolean"
         },
@@ -9118,7 +9152,7 @@
           "description": "dueDate: string"
         },
         {
-          "name": "laborrate",
+          "name": "labor-rate",
           "description": "laborRate: number"
         },
         {

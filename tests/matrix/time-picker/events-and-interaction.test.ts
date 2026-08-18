@@ -56,7 +56,7 @@ describe('time-picker matrix: opening and closing', () => {
   }
 
   /**
-   * MATRIX-time-picker-1
+   * MATRIX-time-picker-1 (fixed)
    *
    * Combo:    every open and every close, in both variants, by every documented
    *           opener (input click, clock click, Enter, ArrowDown, `open()`) and
@@ -64,18 +64,15 @@ describe('time-picker matrix: opening and closing', () => {
    * Expected: § Events lists `timepicker-open` and `timepicker-close` as the
    *           announcements of opening and closing — one announcement per
    *           transition, like every other event this component documents.
-   * Actual:   each transition announces itself TWICE. `open()` emits directly
-   *           AND sets `showDropdown`, whose `@watch('show-dropdown')` handler
-   *           emits again; `close()` does the same with `timepicker-close`. A
-   *           listener that counts opens (analytics, a focus trap, a "seen it
-   *           once" flag) counts double.
+   * Was:      each transition announced itself TWICE (`open()` emitted
+   *           directly AND through the `@watch('show-dropdown')` handler).
+   *           Fixed by keeping the watcher as the single dispatch path.
    *
-   * The assertion below is the documented one and is NOT weakened; it is
-   * declared `it.fails`, so it goes red the day the duplicate is removed and
-   * this finding can be closed.
+   * The assertion below is the documented one; it runs unpinned as the
+   * regression guard.
    */
-  it.fails(finding('MATRIX-time-picker-1',
-    'opening announces itself exactly once'), async () => {
+  it(finding('MATRIX-time-picker-1',
+    'opening announces itself exactly once (fixed)'), async () => {
     const c = picker({ defaultValue: '14:05', step: 5, name: 'when' });
     const el = await mountPicker(c);
     const events = captureEvents(el, ['timepicker-open', 'timepicker-close']);

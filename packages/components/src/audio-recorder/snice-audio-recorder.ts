@@ -120,7 +120,9 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
             </div>
           </div>
 
-          <div class="recorder-timer">${this.formatTime(this.playbackTime)}</div>
+          <if ${this.showTimer}>
+            <div class="recorder-timer">${this.formatTime(this.playbackTime)}</div>
+          </if>
 
           <div class="playback-progress" part="progress" @click=${(e: MouseEvent) => this.handleSeek(e)}>
             <div class="playback-progress-fill" style="width: ${this.duration > 0 ? (this.playbackTime / this.duration) * 100 : 0}%"></div>

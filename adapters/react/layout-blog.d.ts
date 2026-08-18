@@ -6,6 +6,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
 export interface LayoutBlogProps extends SniceBaseProps {
     useNav?: any;
     hasSidebar?: any;
+    contained?: any;
 }
 /**
  * LayoutBlog - React adapter for snice-layout-blog

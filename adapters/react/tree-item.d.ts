@@ -9,6 +9,7 @@ export interface TreeItemProps extends SniceBaseProps {
     checked?: any;
     showCheckbox?: any;
     showIcon?: any;
+    expandOnClick?: any;
     loading?: any;
     indeterminate?: any;
     onTreeItemToggle?: (event: any) => void;

@@ -26,14 +26,17 @@
  *                "role/aria not explicitly set on task bars"   ← a documented
  *                ABSENCE, and therefore just as assertable as a presence.
  *
- * Findings raised against this component (each pinned with `it.fails` in the
- * slice named beside it):
+ * Findings raised against this component (each unpinned at full strength in
+ * the slice named beside it):
  *
- *   MATRIX-gantt-1  dependencies.test.ts — `showDependencies` (documented, and
- *                   defaulting to true) draws nothing. `GanttTask.dependencies`
- *                   is accepted and ignored.
- *   MATRIX-gantt-2  dependencies.test.ts — `task-link` is documented as
- *                   "Dependency link created" but no interaction can produce it.
+ *   MATRIX-gantt-1 (fixed)  dependencies.test.ts — `showDependencies`
+ *                   (documented, defaulting to true) used to draw nothing.
+ *                   `GanttTask.dependencies` now renders one link per declared
+ *                   edge when the switch is on, none when it is off.
+ *   MATRIX-gantt-2 (fixed)  dependencies.test.ts — `task-link` is documented
+ *                   as "Dependency link created" but no interaction could
+ *                   produce it. Dragging from a task's right edge and clicking
+ *                   the target bar now creates and announces the link.
  */
 import { expect } from 'vitest';
 import {

@@ -54,11 +54,14 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
   private listboxId = `snice-command-palette-list-${Math.random().toString(36).slice(2, 10)}`;
 
   connectedCallback() {
-    this.addEventListener('keydown', this.boundKeydown);
+    // Doc: "Cmd+K / Ctrl+K - Toggle palette" is a GLOBAL shortcut. While the
+    // palette is closed nothing inside it can hold focus, so the listener must
+    // live on the document, not on this element.
+    document.addEventListener('keydown', this.boundKeydown);
   }
 
   disconnectedCallback() {
-    this.removeEventListener('keydown', this.boundKeydown);
+    document.removeEventListener('keydown', this.boundKeydown);
   }
 
   @ready()
@@ -124,13 +127,24 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
     this.saveRecentCommands();
   }
 
+  private recentItems(): CommandItem[] {
+    if (!this.showRecentCommands || this.searchQuery.trim()) return [];
+    return this.recentCommands
+      .map(id => this.commandMap.get(id))
+      .filter(Boolean) as CommandItem[];
+  }
+
   private updateFilteredCommands() {
     if (!this.searchQuery.trim()) {
-      // Show recent commands when no search query
-      if (this.showRecentCommands) {
-        this.filteredCommands = this.recentCommands
-          .map(id => this.commandMap.get(id))
-          .filter(Boolean) as CommandItem[];
+      // No query: the recently used commands lead the list under their own
+      // "Recent" group, and every other command stays reachable below them.
+      const recents = this.recentItems();
+      if (recents.length) {
+        const recentIds = new Set(recents.map(command => command.id));
+        const rest = this.commands
+          .filter(command => !recentIds.has(command.id))
+          .slice(0, Math.max(0, this.maxResults - recents.length));
+        this.filteredCommands = [...recents, ...rest];
       } else {
         this.filteredCommands = this.commands.slice(0, this.maxResults);
       }
@@ -152,9 +166,23 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
     this.dispatchSearchEvent();
   }
 
+  /**
+   * Whether a keydown's target is an editable element the PAGE owns. The
+   * global chord stays available everywhere inside this palette (shadow events
+   * retarget to the host), but a page's own text field may need Cmd+K itself.
+   */
+  private isForeignEditableTarget(target: EventTarget | null): boolean {
+    if (!(target instanceof HTMLElement)) return false;
+    if (target.closest('snice-command-palette')) return false;
+    const tag = target.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT'
+      || target.isContentEditable;
+  }
+
   private handleGlobalKeydown(e: KeyboardEvent) {
     // Command+K or Ctrl+K to toggle palette
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if (this.isForeignEditableTarget(e.target)) return;
       e.preventDefault();
       this.toggle();
       return;
@@ -169,19 +197,29 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
       return;
     }
 
-    // Arrow navigation
+    // Arrow navigation. Doc: `command-select` -> "Command highlighted", so
+    // every highlight change announces the newly highlighted command.
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      this.activeIndex = Math.min(this.activeIndex + 1, this.filteredCommands.length - 1);
+      this.setActiveIndex(Math.min(this.activeIndex + 1, this.filteredCommands.length - 1));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      this.activeIndex = Math.max(this.activeIndex - 1, 0);
+      this.setActiveIndex(Math.max(this.activeIndex - 1, 0));
     } else if (e.key === 'Enter') {
       e.preventDefault();
       const command = this.filteredCommands[this.activeIndex];
       if (command && !command.disabled) {
         this.selectCommand(command);
       }
+    }
+  }
+
+  private setActiveIndex(index: number): void {
+    if (index === this.activeIndex) return;
+    this.activeIndex = index;
+    const command = this.filteredCommands[index];
+    if (command) {
+      this.dispatchSelectEvent(command);
     }
   }
 
@@ -245,8 +283,18 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
     return { query: this.searchQuery, results: this.filteredCommands, palette: this };
   }
 
-  private renderGroups(categories: string[], grouped: Map<string, CommandItem[]>): unknown {
+  private optionId(index: number): string {
+    return `${this.listboxId}-option-${index}`;
+  }
+
+  private renderGroups(recents: CommandItem[], categories: string[], grouped: Map<string, CommandItem[]>): unknown {
     const out: unknown[] = [];
+    if (recents.length) {
+      out.push(html/*html*/`<div class="command-palette__category" part="category">Recent</div>`);
+      for (const command of recents) {
+        out.push(this.renderItem(command));
+      }
+    }
     for (const category of categories) {
       const commands = grouped.get(category) || [];
       if (category) {
@@ -271,6 +319,8 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
       <button
         class="${itemClasses}"
         part="item"
+        role="option"
+        id="${this.optionId(globalIndex)}"
         @click="${() => this.handleItemClick(command)}"
         @mouseenter="${() => { this.activeIndex = globalIndex; }}">
 
@@ -317,9 +367,12 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
       this.open ? 'command-palette--open' : ''
     ].filter(Boolean).join(' ');
 
-    // Group commands by category
+    // Group commands by category. The recent commands lead the list under
+    // their own "Recent" header; the rest keep their documented grouping.
+    const recents = this.recentItems();
+    const rest = recents.length ? this.filteredCommands.slice(recents.length) : this.filteredCommands;
     const grouped = new Map<string, CommandItem[]>();
-    for (const command of this.filteredCommands) {
+    for (const command of rest) {
       const category = command.category || '';
       if (!grouped.has(category)) {
         grouped.set(category, []);
@@ -343,6 +396,7 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
                 role="combobox"
                 aria-expanded="true"
                 aria-controls="${this.listboxId}"
+                aria-activedescendant="${this.filteredCommands.length ? this.optionId(this.activeIndex) : ''}"
                 aria-autocomplete="list"
                 aria-label="${this.placeholder}"
                 placeholder="${this.placeholder}"
@@ -360,7 +414,7 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
               </if>
 
               <if ${this.filteredCommands.length > 0}>
-                ${this.renderGroups(categories, grouped)}
+                ${this.renderGroups(recents, categories, grouped)}
               </if>
             </div>
           </div>

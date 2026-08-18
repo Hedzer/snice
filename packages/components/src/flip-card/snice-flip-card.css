@@ -51,10 +51,34 @@
   height: 100%;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  /* Face selection is ALSO keyed on the host state, not only on
+     backface-visibility: some WebKit builds never cull a turned face's PAINT
+     (while still hit-testing it correctly), so an unflipped card would show
+     the back face's own colour over the front. visibility interpolates
+     discretely — visible for the whole interval whenever either endpoint is
+     visible — so the swap lands at the transition's end, and the turning
+     face stays paintable mid-flip exactly as backface culling keeps it in
+     engines that honour it. */
+  transition: visibility var(--flip-duration) ease-in-out;
 }
 
+/* The face the card is NOT showing is invisible to paint, pointer and
+   accessibility tree alike. */
+:host([flipped]) .front {
+  visibility: hidden;
+}
+
+:host(:not([flipped])) .back {
+  visibility: hidden;
+}
+
+/* Stack the front over the back WITHOUT a z-index: a z-index on a child of a
+   preserve-3d element forces a stacking context that flattens the 3D sorting
+   in Firefox and WebKit, so backface-visibility stops hiding the turned front
+   face and the card never visually flips. translateZ keeps the faces in the
+   shared 3D space while still lifting the front toward the viewer. */
 .front {
-  z-index: 2;
+  transform: translateZ(1px);
 }
 
 /* Horizontal back */

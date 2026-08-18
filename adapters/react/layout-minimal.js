@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const LayoutMinimal = createReactAdapter({
     tagName: 'snice-layout-minimal',
-    properties: [],
+    properties: ["contained"],
     events: {},
     formAssociated: false
 });

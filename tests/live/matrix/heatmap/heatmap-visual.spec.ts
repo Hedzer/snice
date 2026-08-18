@@ -206,30 +206,18 @@ test.describe('snice-heatmap visual matrix (layer 1)', () => {
   });
 
   /**
-   * VISUAL-MATRIX-heatmap-3 — the tooltip is placed relative to the host, not the
-   * viewport, so it lands over the cell it is describing.
+   * VISUAL-MATRIX-heatmap-3 (fixed) — the tooltip now sits directly above the
+   * cell it describes.
    *
-   * `docs/ai/components/heatmap.md` promises a "Tooltip on hover with date and
-   * value" and gives it its own part. The component positions it from VIEWPORT
-   * coordinates — `left: rect.left + width/2`, `top: rect.top - 8`, with
-   * `position: fixed` and `translate(-50%, -100%)` — which is correct only
-   * while the host is not a containing block for fixed descendants. The host
-   * carries `contain: layout style`, and layout containment makes an element a
-   * containing block for absolutely AND fixed positioned descendants, so those
-   * viewport coordinates are resolved against the host's own border box
-   * instead. (The stylesheet's own comment says only `contain: paint` has that
-   * effect; `layout` has it too.)
-   *
-   * The consequence scales with the page: the tooltip is displaced by exactly
-   * the host's position, so a heatmap 24px from the corner is 24px out and a
-   * heatmap 600px down the page puts its tooltip 600px below the cursor.
-   *
-   * Policy (.ai/fuzzing.md): the assertion stays correct and the combo is
-   * pinned, so the day the containment is fixed this suite fails and the
-   * finding can be closed.
+   * The component positions the tooltip from VIEWPORT coordinates with
+   * `position: fixed` and `translate(-50%, -100%)`. The host used to carry
+   * `contain: layout style`, and layout containment makes an element a
+   * containing block for absolutely AND fixed positioned descendants, so
+   * those viewport coordinates were resolved against the host's own border
+   * box instead — displacing the tooltip by exactly the host's page position.
+   * The containment is gone; the pinned assertion now guards the placement.
    */
-  test('VISUAL-MATRIX-heatmap-3: the tooltip sits directly above the cell it describes', async () => {
-    test.fail();
+  test('VISUAL-MATRIX-heatmap-3 (fixed): the tooltip sits directly above the cell it describes', async () => {
     await mount(page, { weeks: 4 });
     await page.evaluate(() => (window as any).matrix.hover(20));
     const placed = await page.evaluate(() => {
@@ -248,12 +236,11 @@ test.describe('snice-heatmap visual matrix (layer 1)', () => {
     });
     await page.evaluate(() => (window as any).matrix.unhover(20));
 
-    // The displacement IS the host's own page position, which is the signature
-    // of the containing-block bug rather than of a rounding error.
-    expect(Math.abs(placed.driftY - placed.hostTop) < 2
-      && Math.abs(placed.driftX - placed.hostLeft) < 2,
-    `the tooltip is displaced by the host's origin (${placed.driftX.toFixed(1)}, `
-    + `${placed.driftY.toFixed(1)}) rather than placed in the viewport`).toBe(false);
+    // The displacement used to BE the host's own page position — the signature
+    // of the containing-block bug. It must now be a rounding error at most.
+    expect(Math.abs(placed.driftY) < 2 && Math.abs(placed.driftX) < 2,
+      `the tooltip is displaced (${placed.driftX.toFixed(1)}, ${placed.driftY.toFixed(1)})`
+      + ` from the cell it describes`).toBe(true);
     expect(placed.gap, 'the tooltip overlaps the cell it describes').toBeGreaterThanOrEqual(0);
   });
 
@@ -326,31 +313,26 @@ test.describe('snice-heatmap visual matrix (layer 2: painted pixels)', () => {
   });
 
   /**
-   * MATRIX-heatmap-2 — `color-scheme="purple"` paints the blue ramp.
+   * MATRIX-heatmap-2 (fixed) — `color-scheme="purple"` paints its own ramp.
    *
    * `docs/ai/components/heatmap.md` offers five schemes:
-   * `colorScheme: 'green'|'blue'|'purple'|'orange'|'red' = 'green'`. That is a
-   * promise that choosing one of them changes the colour on screen. The
-   * stylesheet defines `--heatmap-purple-1…4` from `--snice-color-blue-100`,
-   * `-400`, `-600`, `-800` — the same family the `blue` scheme uses — and the
-   * two schemes' level 1 is defined from the IDENTICAL token, so it paints the
-   * identical pixel. A page using `blue` and `purple` to tell two heatmaps
-   * apart gets two blue heatmaps.
-   *
-   * Policy (.ai/fuzzing.md): the assertion stays correct and the combo is
-   * pinned, so the day the palette is fixed this suite fails and the finding
-   * can be closed.
+   * `colorScheme: 'green'|'blue'|'purple'|'orange'|'red' = 'green'`. That is
+   * a promise that choosing one of them changes the colour on screen. The
+   * stylesheet used to define `--heatmap-purple-1…4` from the blue tokens, so
+   * a page using `blue` and `purple` to tell two heatmaps apart got two blue
+   * ones. Level 0 — the documented empty-cell colour — is deliberately
+   * scheme-independent (`--snice-color-border`), so only levels 1–4 are
+   * compared here; each must paint a different pixel in the two schemes.
    */
-  test('MATRIX-heatmap-2: the purple scheme paints a different ramp from the blue one', async () => {
-    test.fail();
+  test('MATRIX-heatmap-2 (fixed): the purple scheme paints a different ramp from the blue one', async () => {
     await mount(page, { weeks: 4, colorScheme: 'blue', cellSize: 20, cellGap: 3 });
     const blue = await capture(page, '#subject', 'heatmap-ramp-blue', LEVEL_POINTS);
     await mount(page, { weeks: 4, colorScheme: 'purple', cellSize: 20, cellGap: 3 });
     const purple = await capture(page, '#subject', 'heatmap-ramp-purple', LEVEL_POINTS);
 
-    const shared = blue.filter((colour: RGB, i: number) => sameColor(colour, purple[i]));
+    const shared = blue.slice(1).filter((colour: RGB, i: number) => sameColor(colour, purple[i + 1]));
     expect(shared.length,
-      `${shared.length} of the five purple levels paint the identical blue pixel`)
+      `${shared.length} of the four painted purple levels paint the identical blue pixel`)
       .toBe(0);
   });
 });

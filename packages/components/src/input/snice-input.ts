@@ -1,4 +1,4 @@
-import { element, property, state, query, watch, dispatch, ready, reconnect, dispose, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, reconnect, dispose, render, styles, html, css, nothing } from 'snice';
 import { renderIcon } from '../utils';
 import cssContent from './snice-input.css?inline';
 import type { InputType, InputSize, InputVariant, SniceInputElement } from './snice-input.types';
@@ -165,6 +165,11 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   passwordToggle?: HTMLButtonElement;
 
   private showPassword = false;
+
+  /** Whether the `suffix-icon` SLOT carries assigned content. */
+  @state()
+  private slottedSuffixIcon = false;
+
   // Stable per-instance ids for label + aria-describedby wiring.
   private inputId = `snice-input-${Math.random().toString(36).slice(2, 10)}`;
   private descId = `${this.inputId}-desc`;
@@ -177,6 +182,8 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   render() {
     const displayedInvalid = this.invalid || this.constraintInvalid;
     const accessibleName = this.labelAssociation.accessibleName;
+    const hasSuffixAdornment = Boolean(this.suffixIcon) || this.slottedSuffixIcon
+      || (this.type === 'password' && this.password) || this.loading;
     const inputClasses = [
       'input',
       `input--${this.size}`,
@@ -184,12 +191,12 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
       displayedInvalid ? 'input--invalid' : '',
       this.loading ? 'input--loading' : '',
       this.prefixIcon ? 'input--with-prefix-icon' : '',
-      this.suffixIcon || (this.type === 'password' && this.password) || this.loading ? 'input--with-suffix-icon' : '',
+      hasSuffixAdornment ? 'input--with-suffix-icon' : '',
       this.clearable ? 'input--clearable' : ''
     ].filter(Boolean).join(' ');
 
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
-    const clearButtonClasses = ['clear-button', this.suffixIcon || (this.type === 'password' && this.password) ? 'clear-button--with-suffix' : ''].filter(Boolean).join(' ');
+    const clearButtonClasses = ['clear-button', this.suffixIcon || this.slottedSuffixIcon || (this.type === 'password' && this.password) ? 'clear-button--with-suffix' : ''].filter(Boolean).join(' ');
 
     return html/*html*/`
       <div class="input-wrapper" part="wrapper">
@@ -220,12 +227,12 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
             aria-label="${accessibleName}"
             aria-invalid="${displayedInvalid ? 'true' : 'false'}"
             aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
-            min=${this.min || null}
-            max=${this.max || null}
-            step=${this.step || null}
-            pattern=${this.pattern || null}
-            maxlength=${this.maxlength > 0 ? this.maxlength : null}
-            minlength=${this.minlength > 0 ? this.minlength : null}
+            min=${this.min || nothing}
+            max=${this.max || nothing}
+            step=${this.step || nothing}
+            pattern=${this.pattern || nothing}
+            maxlength=${this.maxlength > 0 ? this.maxlength : nothing}
+            minlength=${this.minlength > 0 ? this.minlength : nothing}
             autocomplete="${this.autocomplete || ''}"
             name="${this.name || ''}"
             part="input"
@@ -272,15 +279,13 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
               </svg>
             </button>
           </if>
-          <if ${!(this.type === 'password' && this.password)}>
-            <span class="icon-slot icon-slot--suffix" part="suffix-icon">
-              <slot name="suffix-icon">
-                <if ${this.suffixIcon}>
-                  ${renderIcon(this.suffixIcon, 'icon icon--suffix')}
-                </if>
-              </slot>
-            </span>
-          </if>
+          <span class="icon-slot icon-slot--suffix" part="suffix-icon">
+            <slot name="suffix-icon" @slotchange=${this.handleSuffixSlotChange}>
+              <if ${this.suffixIcon}>
+                ${renderIcon(this.suffixIcon, 'icon icon--suffix')}
+              </if>
+            </slot>
+          </span>
         </div>
 
         <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
@@ -454,6 +459,12 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
 
   handleClear(e: Event) {
     this.clear();
+  }
+
+  private handleSuffixSlotChange(e: Event) {
+    const slot = e.target as HTMLSlotElement;
+    this.slottedSuffixIcon = slot.assignedNodes({ flatten: false })
+      .some(node => node.nodeType === 1 || (node.textContent ?? '').trim() !== '');
   }
 
   handlePasswordToggle(e: Event) {

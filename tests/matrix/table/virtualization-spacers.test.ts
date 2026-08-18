@@ -177,13 +177,13 @@ describe('virtualization × virtual-buffer', () => {
       expect(sizes[2]).toBeGreaterThan(sizes[0]);
     });
 
-    // MATRIX-virtualization-5 (NEW): `virtualBuffer` is a documented live
-    // property (attribute `virtual-buffer`), but the virtualizer reads
-    // `bufferPx` once, at attach() time (snice-table.ts setupVirtualization →
-    // virtualizer.attach), and nothing re-attaches it. Raising the buffer after
-    // delivery therefore changes nothing — not on the next scroll notification,
-    // not on the next delivery — so the window stays as narrow as it was.
-    it.fails(`${mode}: raising virtual-buffer after delivery widens the window`, async () => {
+    // MATRIX-virtualization-5 (fixed): `virtualBuffer` is a documented live
+    // property (attribute `virtual-buffer`), but the virtualizer read
+    // `bufferPx` once, at attach() time, and nothing re-applied it — raising
+    // the buffer after delivery changed nothing. A @watch now republishes the
+    // value (virtualizer.setBuffer), so the window widens/narrows after
+    // delivery too.
+    it(`${mode}: raising virtual-buffer after delivery widens the window`, async () => {
       const rows = makeRows(60);
       table = await virtualTable(remote, rows, { 'virtual-buffer': 0 });
       const before = readWindow(table).rows.length;

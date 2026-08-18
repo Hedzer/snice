@@ -91,9 +91,8 @@ describe('snice-paint matrix smoke', () => {
     expect(events).toEqual([]);
   });
 
-  // MATRIX-paint-1: assigning `colors` never repaints the palette. The guard
-  // lives here so the everyday loop notices the day it changes.
-  it.fails('MATRIX-paint-1: a custom palette renders its own swatches', async () => {
+  // MATRIX-paint-1 (fixed): assigning `colors` repaints the palette.
+  it('MATRIX-paint-1 (fixed): a custom palette renders its own swatches', async () => {
     const el = await mountPaint({ colors: ['#ff0000', '#00ff00', '#0000ff'] });
     expect(swatches(el)).toHaveLength(3);
   });

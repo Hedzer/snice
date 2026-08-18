@@ -4,6 +4,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  * Props for the LayoutMinimal component
  */
 export interface LayoutMinimalProps extends SniceBaseProps {
+    contained?: any;
 }
 /**
  * LayoutMinimal - React adapter for snice-layout-minimal

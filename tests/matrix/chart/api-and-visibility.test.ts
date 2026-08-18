@@ -133,17 +133,13 @@ describe('snice-chart matrix: list mutation methods', () => {
     expectChartMatches(el, { type: 'line', datasets: CANONICAL, options });
   });
 
-  // ── FINDING ───────────────────────────────────────────────────────────────
-  // Doc: `removeDataset(index)` - "Remove by index", and `toggleDataset(index)`
-  // - "Toggle visibility". Visibility is stored as a set of INDICES, and
-  // removing a dataset only deletes that one index from it; every hidden index
-  // above the removal point still refers to its old slot. So hiding series 2 and
-  // then removing series 0 leaves the hidden mark on what is now series 2 — the
-  // wrong series disappears, and the one the user hid comes back.
-  it.fails(finding(
-    'MATRIX-chart-1',
-    'removeDataset does not re-base the hidden-dataset indices, so removing a '
-    + 'dataset transfers a hidden series\' state to a different series',
+  // MATRIX-chart-1 (fixed): `removeDataset` re-bases the hidden-dataset
+  // indices onto the shortened list, so a hidden series stays hidden at its
+  // new index instead of the state landing on a different series.
+  it(finding(
+    'MATRIX-chart-1 (fixed)',
+    'removeDataset re-bases the hidden-dataset indices, so removing a '
+    + 'dataset keeps the hidden mark on the series the user hid',
   ), async () => {
     const datasets = series(4);
     el = await makeChart({ type: 'line', datasets, labels: ['a', 'b', 'c', 'd'], options });
@@ -161,17 +157,15 @@ describe('snice-chart matrix: list mutation methods', () => {
       .toEqual([false, true, false]);
   });
 
-  // ── FINDING ───────────────────────────────────────────────────────────────
-  // Doc `ChartDataset.hidden?: boolean` is part of the published dataset
-  // contract in `snice-chart.types.ts` — the declarative way to start a series
-  // hidden, and the only way to restore a saved visibility state when
-  // re-assigning `datasets`. The component never reads it: visibility lives
-  // entirely in a private index set, so `hidden: true` renders a fully visible
-  // series with a fully lit legend entry.
-  it.fails(finding(
-    'MATRIX-chart-2',
-    'ChartDataset.hidden is ignored — a dataset declared hidden renders and its '
-    + 'legend entry is not marked hidden',
+  // MATRIX-chart-2 (fixed): `ChartDataset.hidden` is part of the published
+  // dataset contract in `snice-chart.types.ts` — the declarative way to start
+  // a series hidden, and the way a saved visibility state is restored when
+  // `datasets` is re-assigned. The component re-seeds its hidden set from the
+  // flag on every datasets assignment.
+  it(finding(
+    'MATRIX-chart-2 (fixed)',
+    'ChartDataset.hidden is honored — a dataset declared hidden renders with a '
+    + 'hidden legend entry, both initially and after reassignment',
   ), async () => {
     const datasets = [
       { label: 'Visible', data: [1, 2, 3] },
@@ -180,5 +174,14 @@ describe('snice-chart matrix: list mutation methods', () => {
     ];
     el = await makeChart({ type: 'line', datasets, labels: ['a', 'b', 'c'], options });
     expect(hiddenLegendFlags(el)).toEqual([false, true, false]);
+
+    // Reactive: re-assigning `datasets` re-applies the declared state.
+    const restored = [
+      { label: 'Visible', data: [1, 2, 3] },
+      { label: 'Hidden', data: [4, 5, 6], hidden: true },
+    ];
+    el.datasets = restored;
+    await wait(SETTLE);
+    expect(hiddenLegendFlags(el)).toEqual([false, true]);
   });
 });

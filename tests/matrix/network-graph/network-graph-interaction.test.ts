@@ -310,14 +310,15 @@ describe('network-graph matrix: hover tooltip and dimming', () => {
 // ── FINDINGS ────────────────────────────────────────────────────────────────
 
 describe('network-graph matrix: findings', () => {
-  it.fails(
-    'MATRIX-network-graph-1: `node-click` never fires when drag-enabled is off',
+  it(
+    'MATRIX-network-graph-1 (fixed): `node-click` fires when drag-enabled is off',
     async () => {
       // docs: `node-click` -> { node: NetworkNode } is an unconditional event,
       // and the docs' own "Static display" example is
       // `<snice-network-graph zoom-enabled="false" drag-enabled="false">`.
-      // The click is emitted from the DRAG release path, so turning dragging
-      // off silently removes selection from the graph as well.
+      // The press used to be gated on `dragEnabled` itself, so turning
+      // dragging off silently removed selection from the graph as well; a
+      // press-and-release now reports the node whatever the drag switch says.
       const c = combo('static display', FIXTURE['star'], {
         dragEnabled: false, zoomEnabled: false, layout: 'grid',
       });

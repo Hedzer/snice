@@ -1350,15 +1350,6 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       this.calendarView = 'days';
       if (this.startDate) this.viewDate = new Date(this.startDate);
       this.updateCalendarGrid();
-      if (this.calendarEl) {
-        this.calendarEl.removeAttribute('hidden');
-        this.calendarEl.classList.add('calendar--open');
-        if (typeof (this.calendarEl as any).showPopover === 'function') {
-          (this.calendarEl as any).showPopover();
-        }
-        this.positionCalendar();
-      }
-      this.dispatchOpenEvent();
     }
   }
 
@@ -1368,14 +1359,6 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       this.selectionPhase = 'idle';
       this.hoverDate = null;
     }
-    if (this.calendarEl) {
-      this.calendarEl.classList.remove('calendar--open');
-      if (typeof (this.calendarEl as any).hidePopover === 'function') {
-        (this.calendarEl as any).hidePopover();
-      }
-      this.calendarEl.setAttribute('hidden', '');
-    }
-    this.dispatchCloseEvent();
   }
 
   private positionCalendar() {

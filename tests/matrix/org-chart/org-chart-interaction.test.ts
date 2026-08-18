@@ -229,14 +229,14 @@ describe('org-chart matrix: expandAll / collapseAll', () => {
 // ── FINDINGS ────────────────────────────────────────────────────────────────
 
 describe('org-chart matrix: findings', () => {
-  it.fails(
-    'MATRIX-org-chart-1: an avatar placeholder shows one letter, not the name initials',
+  it(
+    'MATRIX-org-chart-1 (fixed): an avatar placeholder shows the name initials',
     async () => {
       // docs/components/org-chart.md: "Avatar placeholders display name initials
-      // when no image is provided" — initials, plural. The component takes
-      // `name.charAt(0)`, so "Carol White" is rendered as "C" rather than "CW",
-      // and two colleagues who share a first initial are indistinguishable in
-      // the chart.
+      // when no image is provided" — initials, plural. The component used to
+      // take `name.charAt(0)`, so "Carol White" rendered as "C" rather than
+      // "CW"; it now renders every word's first letter, and the assertion runs
+      // unpinned as a regression guard.
       const c = combo('initials', FIXTURE['doc-example']);
       chart = await mountChart(c);
 
@@ -250,9 +250,10 @@ describe('org-chart matrix: findings', () => {
     },
   );
 
-  it('shares a placeholder letter between colleagues with the same first initial', async () => {
-    // The consequence of the finding above, stated as a fact about the current
-    // component so the finding's cost is on the record even while it is open.
+  it('colleagues who share a first initial get distinct placeholders', async () => {
+    // The consequence MATRIX-org-chart-1 used to cost, on the record the other
+    // way: with one-letter placeholders, "Sam Adams" and "Sam Baker" were both
+    // "S". Initials keep them distinguishable.
     const c = combo('ambiguous initials', {
       id: 'same-initial', why: 'two names, one first letter',
       data: {
@@ -266,6 +267,6 @@ describe('org-chart matrix: findings', () => {
     chart = await mountChart(c);
     const placeholders = [...sr(chart).querySelectorAll('.org-avatar-placeholder')]
       .map(node => (node.textContent ?? '').trim());
-    expect(placeholders.slice(1)).toEqual(['S', 'S']);
+    expect(placeholders.slice(1)).toEqual(['SA', 'SB']);
   });
 });

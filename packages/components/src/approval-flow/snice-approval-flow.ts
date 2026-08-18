@@ -18,7 +18,7 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
   @property()
   orientation: ApprovalOrientation = 'horizontal';
 
-  @property()
+  @property({ attribute: 'current-step' })
   currentStep = '';
 
   @dispatch('step-approve', { bubbles: true, composed: true })
@@ -65,6 +65,15 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
 
   private handleReject(step: ApprovalStep) {
     this.emitReject(step);
+  }
+
+  private handleComment(e: KeyboardEvent, step: ApprovalStep) {
+    if (e.key !== 'Enter') return;
+    const input = e.target as HTMLInputElement;
+    const comment = input.value.trim();
+    if (!comment) return;
+    this.emitComment(step, comment);
+    input.value = '';
   }
 
   @render()
@@ -120,6 +129,13 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
             <div class="step__actions" part="actions">
               <button class="step__btn step__btn--approve" @click=${() => this.handleApprove(step)}>Approve</button>
               <button class="step__btn step__btn--reject" @click=${() => this.handleReject(step)}>Reject</button>
+              <input
+                class="step__comment-input"
+                type="text"
+                placeholder="Add a comment"
+                aria-label="Add a comment to this step"
+                @keydown=${(e: KeyboardEvent) => this.handleComment(e, step)}
+              />
             </div>
           </if>
         </div>

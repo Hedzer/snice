@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const LayoutSplit = createReactAdapter({
     tagName: 'snice-layout-split',
-    properties: ["direction", "ratio"],
+    properties: ["direction", "ratio", "contained"],
     events: {},
     formAssociated: false
 });

@@ -303,17 +303,18 @@ test.describe('empty-state visual matrix: size really scales', () => {
     expect(small.height).toBeLessThan(large.height);
   });
 
-  // VISUAL-MATRIX-empty-state-1: `size="large"` renders a SMALLER icon than
-  // `size="medium"`, and exactly the same icon as `size="small"`.
-  // snice-empty-state.css sizes the large icon from
+  // VISUAL-MATRIX-empty-state-1 (fixed): `size="large"` used to render a
+  // SMALLER icon than `size="medium"`, and exactly the same icon as
+  // `size="small"`. snice-empty-state.css sized the large icon from
   // `var(--snice-font-size-3xl, 5rem)` — the same token the SMALL rule uses
   // (`var(--snice-font-size-3xl, 3rem)`), with only the unused fallback
   // changed — while medium uses `--snice-font-size-4xl`. Whenever the theme
-  // defines `--snice-font-size-3xl` (it does), large and small resolve
-  // identically and the documented small/medium/large scale inverts at its top
-  // end. Measured here: 30px / 36px / 30px. The assertion below stays correct.
+  // defined `--snice-font-size-3xl` (it does), large and small resolved
+  // identically and the documented small/medium/large scale inverted at its top
+  // end. Measured then: 30px / 36px / 30px. Fixed: the large rule now scales
+  // from `--snice-font-size-4xl` (1.5x, past the top of the font-size scale),
+  // and the pin is removed.
   test('VISUAL-MATRIX-empty-state-1: the icon grows with size', async () => {
-    test.fail();
     const small = await measure('small');
     const medium = await measure('medium');
     const large = await measure('large');

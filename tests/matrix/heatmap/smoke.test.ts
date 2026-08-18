@@ -9,15 +9,16 @@
  *
  * The marquee combos: the documented default calendar, the labels switch, a
  * data point landing on its own day, the click event, the hover tooltip, and
- * the two standing findings.
+ * the two fixed findings.
  *
  * BUDGET: under 1s.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import {
   DEFAULTS, Problems, captureClicks, cells, checkCalendar, checkIntensity, checkLabels,
-  checkShell, clickCell, daysAgo, expectClean, expectedDates, expectedLabel, gridColumns,
-  hoverCell, makeHeatmap, removeComponent, text, tooltip, type Heatmap, type HeatmapVector,
+  checkShell, clickCell, componentCss, daysAgo, expectClean, expectedDates, expectedLabel,
+  gridColumns, hoverCell, makeHeatmap, removeComponent, text, tooltip,
+  type Heatmap, type HeatmapVector,
 } from './heatmap-support';
 
 let el: Heatmap | null = null;
@@ -76,22 +77,19 @@ describe('heatmap matrix smoke', () => {
     expectClean(problems, 'smoke/geometry');
   });
 
-  // ── Standing findings — see tests/matrix/heatmap/findings.test.ts ──────────
+  // ── Fixed findings — see tests/matrix/heatmap/findings.test.ts ────────────
 
-  // MATRIX-heatmap-1: the grid is `weeks` complete weeks PLUS the current
-  // partial one, so it always renders one column more than it names.
-  it.fails('MATRIX-heatmap-1: weeks=4 displays 4 weeks', async () => {
+  // MATRIX-heatmap-1 (fixed): the grid is exactly `weeks` weeks — no extra
+  // column for the current partial week.
+  it('MATRIX-heatmap-1 (fixed): weeks=4 displays 4 weeks', async () => {
     el = await makeHeatmap({ weeks: 4 });
     expect(gridColumns(el)).toBe(4);
     expect(cells(el).length).toBe(28);
   });
 
-  // MATRIX-heatmap-2: the purple ramp is built out of the blue colour tokens.
-  it.fails('MATRIX-heatmap-2: the purple scheme is defined from purple tokens', async () => {
+  // MATRIX-heatmap-2 (fixed): the purple ramp is built from purple tokens.
+  it('MATRIX-heatmap-2 (fixed): the purple scheme is defined from purple tokens', async () => {
     el = await makeHeatmap({ weeks: 2, colorScheme: 'purple' });
-    const sheet = [...el.shadowRoot.styleSheets]
-      .flatMap(styles => [...styles.cssRules].map(rule => rule.cssText))
-      .join('\n');
-    expect(/--heatmap-purple-1:[^;]+;/.exec(sheet)?.[0] ?? '').not.toMatch(/blue/);
+    expect(/--heatmap-purple-1:[^;]+;/.exec(componentCss(el))?.[0] ?? '').not.toMatch(/blue/);
   });
 });

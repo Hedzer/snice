@@ -17,28 +17,13 @@
  * documented shape for a selection made in each of the three panel surfaces
  * (calendar day, hour column, period column).
  *
- * ── FINDING MATRIX-date-time-picker-1 ───────────────────────────────────────
- * A single open dispatches `datetimepicker-open` TWICE, and a single close
- * dispatches `datetimepicker-close` twice. `open()` emits the event itself and
- * ALSO sets `showPanel = true`, whose `@watch('show-panel')` handler emits the
- * same event again; `close()` is the mirror image.
- *
- *   combo:    variant=dropdown, enabled, open() called once
- *   expected: ['datetimepicker-open']
- *   actual:   ['datetimepicker-open', 'datetimepicker-open']
- *
- *   combo:    variant=dropdown, open, close() called once
- *   expected: ['datetimepicker-close']
- *   actual:   ['datetimepicker-close', 'datetimepicker-close']
- *
- *   combo:    variant=dropdown, enabled, the toggle button clicked once
- *   expected: ['datetimepicker-open']
- *   actual:   ['datetimepicker-open', 'datetimepicker-open']
- *
- * Any host that counts opens — an analytics hook, a "load the slots once the
- * calendar appears" fetch — fires twice per interaction. The assertions below
- * are the documented ones and are NOT weakened; they are marked `it.fails` so
- * the divergence is reported.
+ * ── FINDING MATRIX-date-time-picker-1 (fixed) ──────────────────────────────
+ * A single open used to dispatch `datetimepicker-open` TWICE, and a single
+ * close `datetimepicker-close` twice. `open()` emitted the event itself and
+ * ALSO set `showPanel = true`, whose `@watch('show-panel')` handler emitted
+ * the same event again; `close()` was the mirror image. Fixed by keeping the
+ * watcher as the single dispatch path; the rows below run unpinned as the
+ * regression guard.
  *
  * Everything else in this file passes.
  */
@@ -53,9 +38,9 @@ describe('date-time-picker matrix: events', () => {
   beforeEach(() => installInternalsMock());
   afterEach(() => { cleanupPickers(); restoreInternalsMock(); });
 
-  // ── MATRIX-date-time-picker-1 ─────────────────────────────────────────────
+  // ── MATRIX-date-time-picker-1 (fixed) ─────────────────────────────────────
 
-  it.fails('MATRIX-date-time-picker-1 open() announces one open', async () => {
+  it('MATRIX-date-time-picker-1 (fixed) open() announces one open', async () => {
     const el = await mountPicker({});
     const seen = collectEvents(el, ['datetimepicker-open']);
 
@@ -66,7 +51,7 @@ describe('date-time-picker matrix: events', () => {
     expect(sequence(seen)).toEqual(['datetimepicker-open']);
   });
 
-  it.fails('MATRIX-date-time-picker-1 close() announces one close', async () => {
+  it('MATRIX-date-time-picker-1 (fixed) close() announces one close', async () => {
     const el = await mountPicker({});
     el.open();
     await wait(SETTLE);
@@ -79,7 +64,7 @@ describe('date-time-picker matrix: events', () => {
     expect(sequence(seen)).toEqual(['datetimepicker-close']);
   });
 
-  it.fails('MATRIX-date-time-picker-1 the toggle button announces one open', async () => {
+  it('MATRIX-date-time-picker-1 (fixed) the toggle button announces one open', async () => {
     const el = await mountPicker({});
     const seen = collectEvents(el, ['datetimepicker-open']);
 

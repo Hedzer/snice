@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, html, css, query, dispose } from 'snice';
+import { element, property, render, styles, dispatch, html, css, query, dispose, ready } from 'snice';
 import type { TimerMode, SniceTimerElement } from './snice-timer.types';
 import timerStyles from './snice-timer.css?inline';
 
@@ -22,6 +22,14 @@ export class SniceTimer extends HTMLElement implements SniceTimerElement {
 
   @query('.timer-display')
   private displayElement?: HTMLElement;
+
+  @ready()
+  seedInitialState() {
+    // "initial-time … seconds (for timer mode)": an authored countdown stands
+    // at its initial time; a stopwatch stands at 0. Writing the reactive
+    // field re-renders the display.
+    this.time = this.mode === 'timer' ? this.initialTime : 0;
+  }
 
   @styles()
   styles() {

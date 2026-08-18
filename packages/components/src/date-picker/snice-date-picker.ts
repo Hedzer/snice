@@ -225,7 +225,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             <span class="spinner" part="spinner"></span>
           </if>
 
-          <div class="calendar" part="calendar" popover="manual" ?hidden=${!this.open} @click=${(e: Event) => this.handleCalendarClick(e)}>
+          <div class="calendar" part="calendar" popover="manual" role="group" aria-label="${accessibleName} calendar" ?hidden=${!this.open} @click=${(e: Event) => this.handleCalendarClick(e)}>
             <case ${this.calendarView}>
               <when value="years">
                 <div class="calendar-header">
@@ -452,7 +452,9 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
         if (match) [, month, day, year] = match.map(Number);
         break;
       case 'yyyy-mm-dd':
-        return null;
+        match = dateString.match(/^(\d{4,})[\/-](\d{1,2})[\/-](\d{1,2})$/);
+        if (match) [, year, month, day] = match.map(Number);
+        break;
     }
 
     return match ? this.createLocalDate(year, month, day) : null;

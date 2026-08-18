@@ -128,14 +128,14 @@ describe('gantt matrix smoke', () => {
 
   // The two marquee regressions, kept at full strength. See
   // matrix/gantt/dependencies.test.ts.
-  it.fails('MATRIX-gantt-1 show-dependencies draws one link per declared dependency', async () => {
+  it('MATRIX-gantt-1 (fixed) show-dependencies draws one link per declared dependency', async () => {
     const c = combo({ dataset: 'chained' });
     const tasks = tasksOf(c);
     el = await makeGantt(c, tasks);
     expectClean(dependencyProblems(el, c, tasks), comboId(c));
   });
 
-  it.fails('MATRIX-gantt-2 task-link is reachable through a documented gesture', async () => {
+  it('MATRIX-gantt-2 (fixed) task-link is reachable through a documented gesture', async () => {
     const c = combo({ dataset: 'chained' });
     el = await makeGantt(c);
     const seen = collectEvents(el);

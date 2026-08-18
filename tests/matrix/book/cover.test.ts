@@ -15,26 +15,13 @@
  *
  * ── FINDINGS ───────────────────────────────────────────────────────────────
  *
- * MATRIX-book-1  `title` is never shown on the cover.
- *   combo:    pages=3, title="My Book" (and every other title in the set),
- *             with and without a cover image
- *   expected: the title text is readable somewhere in the rendered book, which
- *             is the plain meaning of "Book title shown on cover".
- *   actual:   the string appears nowhere a reader can see it. `title` is used
- *             for exactly one thing — the `alt` attribute of the cover `<img>`
- *             — so with no `coverImage` it is not in the DOM at all, and with
- *             one it is alternative text for an image that is present, which no
- *             sighted reader sees and no screen reader announces as a title.
+ * MATRIX-book-1  `title` was never shown on the cover. FIXED — the title now
+ *   renders on the cover with and without a cover image (it still reaches the
+ *   cover image's alt as well).
+ * MATRIX-book-2  `author` was never rendered at all. FIXED — the author now
+ *   renders on the cover with and without a cover image.
  *
- * MATRIX-book-2  `author` is never rendered at all.
- *   combo:    pages=3, author="Jane Doe", with and without a cover image
- *   expected: the author's name is readable somewhere in the rendered book.
- *   actual:   the property is declared and reflected, and no render path reads
- *             it. Unlike `title` it does not even reach an `alt`. Note that the
- *             stylesheet's `.page__content-author` rule styles content authored
- *             INSIDE a `<snice-book-page>`, not this property.
- *
- * Both are pinned with `it.fails` below and kept at full strength.
+ * Both pins are unwrapped below; their assertions are unchanged.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import {
@@ -77,12 +64,12 @@ describe('book matrix: cover', () => {
     });
   });
 
-  // ── MATRIX-book-1 ────────────────────────────────────────────────────────
+  // ── MATRIX-book-1 (fixed) ────────────────────────────────────────────────
   describe('MATRIX-book-1: title', () => {
     for (const title of TITLE_NAMES.filter(name => name !== 'none')) {
       const c = combo({ title, pages: 3 });
 
-      it.fails(`${comboId(c)}: the title is shown on the cover`, async () => {
+      it(`${comboId(c)}: the title is shown on the cover (fixed)`, async () => {
         el = await makeBook(c);
         expectClean(coverTextProblems(el, c), comboId(c));
       });
@@ -94,30 +81,30 @@ describe('book matrix: cover', () => {
       expectClean(coverTextProblems(el, c), comboId(c));
     });
 
-    it('the title currently only reaches the cover image alt text', async () => {
-      // The mechanism, stated positively so this file records what IS true
-      // without weakening the claim above.
+    it('the title reaches both the visible cover and the cover image alt text', async () => {
       const c = combo({ title: 'simple', coverImage: 'url', pages: 3 });
       el = await makeBook(c);
       const facts = readFacts(el);
 
       expect(facts.coverImageAlts).toContain(TITLES.simple);
-      expect(facts.visibleText).not.toContain(TITLES.simple);
+      expect(facts.visibleText).toContain(TITLES.simple);
     });
 
-    it('with no cover image the title is not in the shadow tree at all', async () => {
+    it('with no cover image the title is still on the cover', async () => {
+      // The original defect: without a cover image the title never entered
+      // the shadow tree at all.
       const c = combo({ title: 'simple', coverImage: 'none', pages: 3 });
       el = await makeBook(c);
-      expect(el.shadowRoot.innerHTML).not.toContain(TITLES.simple);
+      expect(el.shadowRoot.innerHTML).toContain(TITLES.simple);
     });
   });
 
-  // ── MATRIX-book-2 ────────────────────────────────────────────────────────
+  // ── MATRIX-book-2 (fixed) ────────────────────────────────────────────────
   describe('MATRIX-book-2: author', () => {
     for (const author of AUTHOR_NAMES.filter(name => name !== 'none')) {
       const c = combo({ author, pages: 3 });
 
-      it.fails(`${comboId(c)}: the author is shown on the cover`, async () => {
+      it(`${comboId(c)}: the author is shown on the cover (fixed)`, async () => {
         el = await makeBook(c);
         expectClean(coverTextProblems(el, c), comboId(c));
       });
@@ -129,11 +116,11 @@ describe('book matrix: cover', () => {
       expectClean(coverTextProblems(el, c), comboId(c));
     });
 
-    it('the author is nowhere in the shadow tree, with or without a cover image', async () => {
+    it('the author is on the cover, with or without a cover image', async () => {
       for (const coverImage of ['none', 'url'] as const) {
         const c = combo({ author: 'simple', coverImage, pages: 3 });
         el = await makeBook(c);
-        expect(el.shadowRoot.innerHTML).not.toContain(AUTHORS.simple);
+        expect(el.shadowRoot.innerHTML).toContain(AUTHORS.simple);
         removeComponent(el);
         el = null;
       }
@@ -151,11 +138,9 @@ describe('book matrix: cover', () => {
     for (const [title, author] of PAIRS) {
       const c = combo({ title, author, coverImage: 'url', pages: 3 });
       const authored = TITLES[title] || AUTHORS[author];
-      // The empty pair is the only one the current build satisfies.
-      const pin = authored ? it.fails : it;
 
-      pin(`${comboId(c)}: both are shown on the cover${
-        authored ? ' [MATRIX-book-1, MATRIX-book-2]' : ''}`, async () => {
+      it(`${comboId(c)}: both are shown on the cover${
+        authored ? ' (fixed: MATRIX-book-1, MATRIX-book-2)' : ''}`, async () => {
         el = await makeBook(c);
         expectClean(coverTextProblems(el, c), comboId(c));
       });

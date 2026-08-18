@@ -1121,7 +1121,7 @@ export const ANALYZER_CONTRACTS = {
       "sourceModule": "dist/components/approval-flow/snice-approval-flow.js",
       "family": "approval-flow",
       "attributes": {
-        "currentstep": {
+        "current-step": {
           "property": "currentStep",
           "type": "string",
           "literals": []
@@ -1138,7 +1138,7 @@ export const ANALYZER_CONTRACTS = {
       "properties": {
         "currentStep": {
           "type": "string",
-          "attribute": "currentstep",
+          "attribute": "current-step",
           "structured": false
         },
         "orientation": {
@@ -5922,6 +5922,11 @@ export const ANALYZER_CONTRACTS = {
         }
       },
       "properties": {
+        "code": {
+          "type": "string",
+          "attribute": null,
+          "structured": false
+        },
         "copyable": {
           "type": "boolean",
           "attribute": "copyable",
@@ -8884,12 +8889,12 @@ export const ANALYZER_CONTRACTS = {
           "type": "number",
           "literals": []
         },
-        "estimatenumber": {
+        "estimate-number": {
           "property": "estimateNumber",
           "type": "string",
           "literals": []
         },
-        "expirydate": {
+        "expiry-date": {
           "property": "expiryDate",
           "type": "string",
           "literals": []
@@ -8929,7 +8934,7 @@ export const ANALYZER_CONTRACTS = {
             "expired"
           ]
         },
-        "taxrate": {
+        "tax-rate": {
           "property": "taxRate",
           "type": "number",
           "literals": []
@@ -8969,12 +8974,12 @@ export const ANALYZER_CONTRACTS = {
         },
         "estimateNumber": {
           "type": "string",
-          "attribute": "estimatenumber",
+          "attribute": "estimate-number",
           "structured": false
         },
         "expiryDate": {
           "type": "string",
-          "attribute": "expirydate",
+          "attribute": "expiry-date",
           "structured": false
         },
         "from": {
@@ -9014,7 +9019,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "taxRate": {
           "type": "number",
-          "attribute": "taxrate",
+          "attribute": "tax-rate",
           "structured": false
         },
         "terms": {
@@ -11305,7 +11310,7 @@ export const ANALYZER_CONTRACTS = {
       "sourceModule": "dist/components/kpi/snice-kpi.js",
       "family": "kpi",
       "attributes": {
-        "colorvalue": {
+        "color-value": {
           "property": "colorValue",
           "type": "boolean",
           "literals": []
@@ -11324,7 +11329,7 @@ export const ANALYZER_CONTRACTS = {
             "neutral"
           ]
         },
-        "showsparkline": {
+        "show-sparkline": {
           "property": "showSparkline",
           "type": "boolean",
           "literals": []
@@ -11338,7 +11343,7 @@ export const ANALYZER_CONTRACTS = {
             "large"
           ]
         },
-        "trendvalue": {
+        "trend-value": {
           "property": "trendValue",
           "type": "string | number",
           "literals": []
@@ -11352,7 +11357,7 @@ export const ANALYZER_CONTRACTS = {
       "properties": {
         "colorValue": {
           "type": "boolean",
-          "attribute": "colorvalue",
+          "attribute": "color-value",
           "structured": false
         },
         "label": {
@@ -11367,7 +11372,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "showSparkline": {
           "type": "boolean",
-          "attribute": "showsparkline",
+          "attribute": "show-sparkline",
           "structured": false
         },
         "size": {
@@ -11382,7 +11387,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "trendValue": {
           "type": "string | number",
-          "attribute": "trendvalue",
+          "attribute": "trend-value",
           "structured": false
         },
         "value": {
@@ -11450,8 +11455,20 @@ export const ANALYZER_CONTRACTS = {
       "modulePath": "snice/components/layout/snice-layout",
       "sourceModule": "dist/components/layout/snice-layout.js",
       "family": "layout",
-      "attributes": {},
-      "properties": {},
+      "attributes": {
+        "contained": {
+          "property": "contained",
+          "type": "boolean",
+          "literals": []
+        }
+      },
+      "properties": {
+        "contained": {
+          "type": "boolean",
+          "attribute": "contained",
+          "structured": false
+        }
+      },
       "structuredProperties": [],
       "events": [],
       "slots": [
@@ -11509,6 +11526,11 @@ export const ANALYZER_CONTRACTS = {
       "sourceModule": "dist/components/layout/snice-layout-blog.js",
       "family": "layout",
       "attributes": {
+        "contained": {
+          "property": "contained",
+          "type": "boolean",
+          "literals": []
+        },
         "use-nav": {
           "property": "useNav",
           "type": "boolean",
@@ -11516,6 +11538,11 @@ export const ANALYZER_CONTRACTS = {
         }
       },
       "properties": {
+        "contained": {
+          "type": "boolean",
+          "attribute": "contained",
+          "structured": false
+        },
         "hasSidebar": {
           "type": "boolean",
           "attribute": null,
@@ -11555,6 +11582,11 @@ export const ANALYZER_CONTRACTS = {
             "6"
           ]
         },
+        "contained": {
+          "property": "contained",
+          "type": "boolean",
+          "literals": []
+        },
         "gap": {
           "property": "gap",
           "type": "'sm' | 'md' | 'lg' | 'xl'",
@@ -11570,6 +11602,11 @@ export const ANALYZER_CONTRACTS = {
         "columns": {
           "type": "'1' | '2' | '3' | '4' | '6'",
           "attribute": "columns",
+          "structured": false
+        },
+        "contained": {
+          "type": "boolean",
+          "attribute": "contained",
           "structured": false
         },
         "gap": {
@@ -11603,6 +11640,11 @@ export const ANALYZER_CONTRACTS = {
       "sourceModule": "dist/components/layout/snice-layout-centered.js",
       "family": "layout",
       "attributes": {
+        "contained": {
+          "property": "contained",
+          "type": "boolean",
+          "literals": []
+        },
         "width": {
           "property": "width",
           "type": "'sm' | 'md' | 'lg' | 'xl'",
@@ -11615,6 +11657,11 @@ export const ANALYZER_CONTRACTS = {
         }
       },
       "properties": {
+        "contained": {
+          "type": "boolean",
+          "attribute": "contained",
+          "structured": false
+        },
         "hasBrand": {
           "type": "boolean",
           "attribute": null,
@@ -11777,6 +11824,11 @@ export const ANALYZER_CONTRACTS = {
       "sourceModule": "dist/components/layout/snice-layout-landing.js",
       "family": "layout",
       "attributes": {
+        "contained": {
+          "property": "contained",
+          "type": "boolean",
+          "literals": []
+        },
         "use-nav": {
           "property": "useNav",
           "type": "boolean",
@@ -11784,6 +11836,11 @@ export const ANALYZER_CONTRACTS = {
         }
       },
       "properties": {
+        "contained": {
+          "type": "boolean",
+          "attribute": "contained",
+          "structured": false
+        },
         "useNav": {
           "type": "boolean",
           "attribute": "use-nav",
@@ -11852,8 +11909,20 @@ export const ANALYZER_CONTRACTS = {
       "modulePath": "snice/components/layout/snice-layout-minimal",
       "sourceModule": "dist/components/layout/snice-layout-minimal.js",
       "family": "layout",
-      "attributes": {},
-      "properties": {},
+      "attributes": {
+        "contained": {
+          "property": "contained",
+          "type": "boolean",
+          "literals": []
+        }
+      },
+      "properties": {
+        "contained": {
+          "type": "boolean",
+          "attribute": "contained",
+          "structured": false
+        }
+      },
       "structuredProperties": [],
       "events": [],
       "slots": [
@@ -11922,6 +11991,11 @@ export const ANALYZER_CONTRACTS = {
       "sourceModule": "dist/components/layout/snice-layout-split.js",
       "family": "layout",
       "attributes": {
+        "contained": {
+          "property": "contained",
+          "type": "boolean",
+          "literals": []
+        },
         "direction": {
           "property": "direction",
           "type": "'horizontal' | 'vertical'",
@@ -11943,6 +12017,11 @@ export const ANALYZER_CONTRACTS = {
         }
       },
       "properties": {
+        "contained": {
+          "type": "boolean",
+          "attribute": "contained",
+          "structured": false
+        },
         "direction": {
           "type": "'horizontal' | 'vertical'",
           "attribute": "direction",
@@ -12914,7 +12993,7 @@ export const ANALYZER_CONTRACTS = {
           "type": "string",
           "literals": []
         },
-        "mincolumnwidth": {
+        "min-column-width": {
           "property": "minColumnWidth",
           "type": "string",
           "literals": []
@@ -12933,7 +13012,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "minColumnWidth": {
           "type": "string",
-          "attribute": "mincolumnwidth",
+          "attribute": "min-column-width",
           "structured": false
         }
       },
@@ -17786,7 +17865,7 @@ export const ANALYZER_CONTRACTS = {
           "type": "boolean",
           "literals": []
         },
-        "currentstep": {
+        "current-step": {
           "property": "currentStep",
           "type": "number",
           "literals": []
@@ -17808,7 +17887,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "currentStep": {
           "type": "number",
-          "attribute": "currentstep",
+          "attribute": "current-step",
           "structured": false
         },
         "orientation": {
@@ -18091,13 +18170,18 @@ export const ANALYZER_CONTRACTS = {
           "type": "string",
           "literals": []
         },
-        "transitionduration": {
+        "transition-duration": {
           "property": "transitionDuration",
           "type": "number",
           "literals": []
         },
-        "transitionin": {
+        "transition-in": {
           "property": "transitionIn",
+          "type": "string",
+          "literals": []
+        },
+        "transition-out": {
+          "property": "transitionOut",
           "type": "string",
           "literals": []
         },
@@ -18109,11 +18193,6 @@ export const ANALYZER_CONTRACTS = {
             "out",
             ""
           ]
-        },
-        "transitionout": {
-          "property": "transitionOut",
-          "type": "string",
-          "literals": []
         }
       },
       "properties": {
@@ -18124,12 +18203,12 @@ export const ANALYZER_CONTRACTS = {
         },
         "transitionDuration": {
           "type": "number",
-          "attribute": "transitionduration",
+          "attribute": "transition-duration",
           "structured": false
         },
         "transitionIn": {
           "type": "string",
-          "attribute": "transitionin",
+          "attribute": "transition-in",
           "structured": false
         },
         "transitioning": {
@@ -18139,7 +18218,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "transitionOut": {
           "type": "string",
-          "attribute": "transitionout",
+          "attribute": "transition-out",
           "structured": false
         }
       },
@@ -18709,7 +18788,7 @@ export const ANALYZER_CONTRACTS = {
       "sourceModule": "dist/components/tabs/snice-tabs.js",
       "family": "tabs",
       "attributes": {
-        "noscrollcontrols": {
+        "no-scroll-controls": {
           "property": "noScrollControls",
           "type": "boolean",
           "literals": []
@@ -18738,7 +18817,7 @@ export const ANALYZER_CONTRACTS = {
       "properties": {
         "noScrollControls": {
           "type": "boolean",
-          "attribute": "noscrollcontrols",
+          "attribute": "no-scroll-controls",
           "structured": false
         },
         "placement": {
@@ -20311,6 +20390,11 @@ export const ANALYZER_CONTRACTS = {
           "type": "boolean",
           "literals": []
         },
+        "expand-on-click": {
+          "property": "expandOnClick",
+          "type": "boolean",
+          "literals": []
+        },
         "expanded": {
           "property": "expanded",
           "type": "boolean",
@@ -20351,6 +20435,11 @@ export const ANALYZER_CONTRACTS = {
         "expanded": {
           "type": "boolean",
           "attribute": "expanded",
+          "structured": false
+        },
+        "expandOnClick": {
+          "type": "boolean",
+          "attribute": "expand-on-click",
           "structured": false
         },
         "indeterminate": {
@@ -20972,7 +21061,7 @@ export const ANALYZER_CONTRACTS = {
           "type": "string",
           "literals": []
         },
-        "laborrate": {
+        "labor-rate": {
           "property": "laborRate",
           "type": "number",
           "literals": []
@@ -21070,7 +21159,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "laborRate": {
           "type": "number",
-          "attribute": "laborrate",
+          "attribute": "labor-rate",
           "structured": false
         },
         "notes": {
@@ -23743,6 +23832,7 @@ export const ANALYZER_CONTRACTS = {
         "family": "code-block",
         "componentModulePath": "snice/components/code-block/snice-code-block",
         "properties": [
+          "code",
           "language",
           "showLineNumbers",
           "startLine",
@@ -23764,6 +23854,7 @@ export const ANALYZER_CONTRACTS = {
           "grammar-loaded": "onGrammarLoaded"
         },
         "interfaceProps": [
+          "code",
           "language",
           "showLineNumbers",
           "startLine",
@@ -25339,9 +25430,13 @@ export const ANALYZER_CONTRACTS = {
         "tagName": "snice-layout",
         "family": "layout",
         "componentModulePath": "snice/components/layout/snice-layout",
-        "properties": [],
+        "properties": [
+          "contained"
+        ],
         "events": {},
-        "interfaceProps": [],
+        "interfaceProps": [
+          "contained"
+        ],
         "formAssociated": false
       },
       "LayoutAuthSplit": {
@@ -25369,12 +25464,14 @@ export const ANALYZER_CONTRACTS = {
         "componentModulePath": "snice/components/layout/snice-layout-blog",
         "properties": [
           "useNav",
-          "hasSidebar"
+          "hasSidebar",
+          "contained"
         ],
         "events": {},
         "interfaceProps": [
           "useNav",
-          "hasSidebar"
+          "hasSidebar",
+          "contained"
         ],
         "formAssociated": false
       },
@@ -25387,6 +25484,7 @@ export const ANALYZER_CONTRACTS = {
         "properties": [
           "columns",
           "gap",
+          "contained",
           "hasFooter",
           "hasHeader"
         ],
@@ -25394,6 +25492,7 @@ export const ANALYZER_CONTRACTS = {
         "interfaceProps": [
           "columns",
           "gap",
+          "contained",
           "hasFooter",
           "hasHeader"
         ],
@@ -25407,12 +25506,14 @@ export const ANALYZER_CONTRACTS = {
         "componentModulePath": "snice/components/layout/snice-layout-centered",
         "properties": [
           "width",
+          "contained",
           "hasBrand",
           "hasFooter"
         ],
         "events": {},
         "interfaceProps": [
           "width",
+          "contained",
           "hasBrand",
           "hasFooter"
         ],
@@ -25482,11 +25583,13 @@ export const ANALYZER_CONTRACTS = {
         "family": "layout",
         "componentModulePath": "snice/components/layout/snice-layout-landing",
         "properties": [
-          "useNav"
+          "useNav",
+          "contained"
         ],
         "events": {},
         "interfaceProps": [
-          "useNav"
+          "useNav",
+          "contained"
         ],
         "formAssociated": false
       },
@@ -25516,9 +25619,13 @@ export const ANALYZER_CONTRACTS = {
         "tagName": "snice-layout-minimal",
         "family": "layout",
         "componentModulePath": "snice/components/layout/snice-layout-minimal",
-        "properties": [],
+        "properties": [
+          "contained"
+        ],
         "events": {},
-        "interfaceProps": [],
+        "interfaceProps": [
+          "contained"
+        ],
         "formAssociated": false
       },
       "LayoutSidebar": {
@@ -25550,12 +25657,14 @@ export const ANALYZER_CONTRACTS = {
         "componentModulePath": "snice/components/layout/snice-layout-split",
         "properties": [
           "direction",
-          "ratio"
+          "ratio",
+          "contained"
         ],
         "events": {},
         "interfaceProps": [
           "direction",
-          "ratio"
+          "ratio",
+          "contained"
         ],
         "formAssociated": false
       },
@@ -28149,6 +28258,7 @@ export const ANALYZER_CONTRACTS = {
           "checked",
           "showCheckbox",
           "showIcon",
+          "expandOnClick",
           "loading",
           "indeterminate"
         ],
@@ -28164,6 +28274,7 @@ export const ANALYZER_CONTRACTS = {
           "checked",
           "showCheckbox",
           "showIcon",
+          "expandOnClick",
           "loading",
           "indeterminate",
           "onTreeItemToggle",

@@ -9,7 +9,7 @@
  * member reports a calculated error, and `checked` decides that error with it.
  */
 import { describe, it, afterEach, beforeEach, expect } from 'vitest';
-import { unmountAll, product, comboId, expectShape, finding } from '../matrix-utils';
+import { unmountAll, product, comboId, expectShape } from '../matrix-utils';
 import { installInternalsMock, restoreInternalsMock } from '../internals-mock';
 import {
   SIZES, VARIANTS, GATES, DESCRIPTION, mountGroup, expectedShape, readShape,
@@ -54,14 +54,13 @@ describe('radio matrix: the suffix slot', () => {
 
   it('block: the suffix slot projects its content', () => assertSuffix('block'));
 
-  // FINDING MATRIX-radio-1. The docs list `suffix` as a slot of the component,
-  // with no variant qualification; the example that uses it happens to be a
-  // block radio, but nothing says the slot belongs to that presentation. The
-  // render function only emits `<slot name="suffix">` inside its `block`
-  // branch, so a default-variant radio silently drops authored suffix content.
-  // The assertion is the documented one and stays as it is.
-  it.fails(
-    finding('MATRIX-radio-1', 'variant="default" renders no suffix slot, so slotted suffix content is dropped'),
+  // MATRIX-radio-1 (fixed) — the docs list `suffix` as a slot of the
+  // component with no variant qualification, and the render function used to
+  // emit `<slot name="suffix">` only inside its `block` branch, silently
+  // dropping authored suffix content from a default-variant radio. The slot is
+  // now emitted unconditionally.
+  it(
+    'MATRIX-radio-1 (fixed): variant="default" renders its suffix slot',
     () => assertSuffix('default'),
   );
 });

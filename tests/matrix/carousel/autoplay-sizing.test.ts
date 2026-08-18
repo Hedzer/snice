@@ -44,15 +44,19 @@ describe('snice-carousel matrix: autoplay cross', () => {
         await vi.advanceTimersByTimeAsync(350);
 
         const moves = seen.map(detail => detail.activeIndex);
-        expect(moves.length, 'autoplay never advanced').toBeGreaterThan(0);
 
         if (direction === 'forward') {
           const expected = loop ? [1, 2, 3] : [1, 2, 3];
           expect(moves.slice(0, 3)).toEqual(expected);
+        } else if (loop) {
+          // Backward from 0 wraps to the last slide when looping.
+          expect(moves.length, 'autoplay never advanced').toBeGreaterThan(0);
+          expect(moves[0]).toBe(3);
         } else {
-          // Backward from 0: wraps to the last slide when looping, and stays
-          // put when it does not.
-          expect(moves[0]).toBe(loop ? 3 : 0);
+          // Not looping and already on the first slide, backward autoplay
+          // changes nothing — and a change that never happens emits nothing
+          // (carousel-slide-change marks a CHANGE of slide).
+          expect(moves).toEqual([]);
         }
         el.pause();
       });
@@ -160,23 +164,19 @@ describe('snice-carousel matrix: slide sizing cross', () => {
     });
   }
 
-  // ── FINDING ───────────────────────────────────────────────────────────────
-  // Doc Properties: `activeIndex: number = 0; // attribute: active-index`. An
-  // attribute is the declarative way to start a carousel on a slide other than
-  // the first, and the doc gives no hint that it behaves differently from
-  // `goToSlide`.
-  //
-  // The translate is applied from `@watch('activeIndex')`, which runs while the
-  // initial attribute is being reflected — before the first render has produced
-  // the `.carousel__container` the watcher writes to. Nothing re-applies it, so
-  // the carousel boots showing SLIDE 0 while `activeIndex` reports 2 and the
-  // third indicator is lit: the state and the picture disagree from the first
-  // frame, and only a later navigation repairs it.
-  it.fails(finding(
+  // ── FIXED (was MATRIX-carousel-3) ─────────────────────────────────────────
+  // Doc Properties: `activeIndex: number = 0; // attribute: active-index`.
+  // The translate used to be applied only from `@watch('activeIndex')`, which
+  // ran while the initial attribute was being reflected — before the first
+  // render produced the `.carousel__container` the watcher writes to — and
+  // nothing re-applied it, so the carousel booted showing slide 0 while
+  // `activeIndex` reported otherwise. Fixed by re-applying the transform
+  // after the first render.
+  it(finding(
     'MATRIX-carousel-3',
     'an initial active-index attribute never reaches the slides transform — the '
     + 'carousel boots showing slide 0 while reporting a different active index',
-  ), async () => {
+  ) + ' (fixed)', async () => {
     el = await makeCarousel({ slides: 4, activeIndex: 2 });
     expect(el.activeIndex).toBe(2);
     expectCarouselMatches(el, withDefaults({ slides: 4, activeIndex: 2 }));

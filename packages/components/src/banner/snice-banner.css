@@ -35,6 +35,12 @@
   align-items: center;
   gap: var(--snice-spacing-md, 1rem);
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.5rem);
+}
+
+/* The shadow is part of the OPEN state only: a closed banner sits fully off
+   screen with its bottom edge at the viewport boundary, and a downward
+   box-shadow would still darken the page it is supposed to have left. */
+:host([open]) .banner {
   box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
 }
 

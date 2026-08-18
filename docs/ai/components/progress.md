@@ -37,7 +37,7 @@ Circular: `base`, `circle`, `circle-bg`, `circle-bar`, `label`
 ```css
 --progress-height: 0.5rem;
 --progress-radius: 4px;
---progress-bg: var(--snice-color-border, rgb(226 226 226));
+--progress-bg: color-mix(in srgb, var(--snice-color-border, rgb(226 226 226)) 90%, white); /* track; lightened past the border token so the default fill/track pair clears WCAG 1.4.11's 3:1 */
 --progress-color: var(--snice-color-primary, rgb(37 99 235));
 --progress-track-opacity: 0.2;  /* circular track ring; raise to 1 on dark surfaces — 0.2 of any color vanishes on near-black */
 --progress-animation-duration: 1.5s;

@@ -12,7 +12,8 @@
  *   · the loading state with a non-default skeleton count, the branch that
  *     replaces the body;
  *   · the no-results fallback, the other branch that replaces the body;
- *   · a fully-formed item, and the ONE pinned finding (MATRIX-list-1);
+ *   · a fully-formed item, and the fixed finding (MATRIX-list-1) — a
+ *     description with no heading still renders;
  *   · the `list/search` request, including the documented 300ms debounce —
  *     the component's whole application-facing contract.
  *
@@ -21,7 +22,7 @@
  * BUDGET: under ~1s. New combinations belong in the matrix, not here.
  */
 import { describe, it, expect, afterEach } from 'vitest';
-import { expectClean, removeComponent, shadow, textOf, wait } from '../matrix-common';
+import { expectClean, removeComponent, shadow, wait } from '../matrix-common';
 import {
   checkItem, checkList, itemComboId, listComboId, mountItem, mountList,
   respondTo, typeSearch, type ListCombo,
@@ -70,18 +71,14 @@ describe('list matrix smoke', () => {
     expectClean(checkItem(el, combo), itemComboId(combo));
   });
 
-  // MATRIX-list-1: `description` is documented as its own property, but the
-  // template nests it inside the heading's `<if>`, so an item with a
-  // description and no heading renders nothing at all.
-  it.fails('MATRIX-list-1: a description with no heading still renders', async () => {
+  // MATRIX-list-1 (fixed): `description` is documented as its own property,
+  // but the template used to nest it inside the heading's `<if>`, so an item
+  // with a description and no heading rendered nothing at all. The blocks are
+  // siblings now.
+  it('MATRIX-list-1 (fixed): a description with no heading still renders', async () => {
     const combo = { heading: '', description: '3 unread', selected: false, disabled: false };
     el = await mountItem(combo);
     expectClean(checkItem(el, combo), itemComboId(combo));
-  });
-
-  it('MATRIX-list-1 reproduces: the headless description leaves the item blank', async () => {
-    el = await mountItem({ heading: '', description: '3 unread', selected: false, disabled: false });
-    expect(textOf(shadow(el).querySelector('.list-item__content'))).toBe('');
   });
 
   it('typing sends { query, list } on list/search after the documented 300ms', async () => {

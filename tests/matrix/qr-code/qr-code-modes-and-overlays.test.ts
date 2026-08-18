@@ -6,7 +6,7 @@
  *   live render-mode switching                          =  2 combos
  *   centre text (size x colours x mode)                 =  8 combos
  *   the export surface (toSVGString/toDataURL/toBlob)   =  4 combos
- *   dot-style in SVG mode (findings)                    =  2 combos
+ *   dot-style in SVG mode (fixed finding)               =  2 combos
  *                                                        ── 20 combos
  *
  * The documented rules (docs/ai/components/qr-code.md):
@@ -25,7 +25,7 @@
  * is mounted, and that `toSVGString()` is scoped the way the docs scope it.
  */
 import { describe, it, expect, afterEach } from 'vitest';
-import { expectShape, unmountAll, finding, wait } from '../matrix-utils';
+import { expectShape, unmountAll, wait } from '../matrix-utils';
 import {
   RENDER_MODES, SHORT, mountQr, svgOf, canvasOf, container, viewBoxSize,
   overlayTexts, expectedRenderMode, readRenderMode, type RenderMode,
@@ -173,16 +173,17 @@ describe('qr-code matrix: the export surface', () => {
 describe('qr-code matrix: dot-style must reach the module shape in every render mode', () => {
   afterEach(() => unmountAll());
 
-  // `dotStyle` is documented as a property of the component, alongside
-  // `renderMode` and with no restriction to one of its values — the docs' own
-  // example pairs `dot-style="rounded"` with nothing else. In SVG mode the
-  // symbol is drawn from one square template rect that no dot style ever
-  // touches, so `rounded` and `dots` render markup identical to `square`.
+  // FINDING MATRIX-qr-code-1 (fixed). `dotStyle` is documented as a property
+  // of the component, alongside `renderMode` and with no restriction to one
+  // of its values — the docs' own example pairs `dot-style="rounded"` with
+  // nothing else. The SVG backend used to draw every module from one square
+  // template rect that no dot style ever touched, so `rounded` and `dots`
+  // rendered markup identical to `square`. It now draws circles (r = cell/2.2)
+  // for `dots` and rx-rounded rects (cell/4) for `rounded`, the same shapes
+  // the canvas backend paints.
   for (const dotStyle of ['rounded', 'dots'] as const) {
-    it.fails(
-      finding('MATRIX-qr-code-1',
-        `svg/dot-style:${dotStyle}: the SVG renderer ignores dot-style — its symbol`
-        + ' is byte-for-byte the square one'),
+    it(
+      `MATRIX-qr-code-1 (fixed): svg/dot-style:${dotStyle}: the symbol is no longer the square one`,
       async () => {
         const square = await mountQr({
           value: SHORT, 'render-mode': 'svg', 'dot-style': 'square',

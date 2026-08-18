@@ -41,6 +41,13 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
   @property({ type: Number, attribute: false }) private bufferedPercent: number = 0;
   private previousVolume: number = 1;
   @property({ type: Boolean, attribute: false }) private isSeeking: boolean = false;
+  /**
+   * Whether the `current-time` attribute was authored on this element.
+   * Captured on the first `@watch('src')` reaction (which runs after the
+   * initial attribute pass but before any playback), so a page-authored
+   * starting position survives a source assignment.
+   */
+  private authoredCurrentTime: boolean | null = null;
 
   @query('.video-container') private container?: HTMLElement;
   @query('video') private videoEl?: HTMLVideoElement;
@@ -66,9 +73,17 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
 
   @watch('src')
   handleSrcChange() {
+    if (this.authoredCurrentTime === null) {
+      this.authoredCurrentTime = this.hasAttribute('current-time');
+    }
     this.showPoster = !!this.poster;
     this.playing = false;
-    this.currentTime = 0;
+    // A source change restarts the media — unless the page authored a
+    // starting position with `current-time`, which must survive to be
+    // applied once the new media's metadata loads.
+    if (!this.authoredCurrentTime) {
+      this.currentTime = 0;
+    }
     this.duration = 0;
     this.loading = false;
     this.bufferedPercent = 0;
@@ -108,6 +123,11 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
     if (!this.videoEl) return;
     this.duration = this.videoEl.duration;
     this.loading = false;
+    // An authored `current-time` (or any position held before the media was
+    // ready) lands on the media element now that it can be seeked.
+    if (this.currentTime > 0 && this.videoEl.currentTime !== this.currentTime) {
+      this.videoEl.currentTime = this.currentTime;
+    }
   }
 
   private handleVideoPlay() {
@@ -436,6 +456,10 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
     ].filter(Boolean).join(' ');
 
     const isMutedOrZero = this.muted || this.volume === 0;
+    // The documented `<source>` markup supplies the media through the default
+    // slot instead of the `src` property; the controls belong to whichever
+    // source channel the page used.
+    const hasSource = !!this.src || !!this.querySelector('source');
 
     return html`
       <div
@@ -489,7 +513,7 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
           </div>
         </if>
 
-        <if ${!isPlaying && !this.showPoster && this.src}>
+        <if ${!isPlaying && !this.showPoster && hasSource}>
           <div class="video-center-play">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7z"/>
@@ -497,7 +521,7 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
           </div>
         </if>
 
-        <if ${this.controls && this.src}>
+        <if ${this.controls && hasSource}>
           <div part="controls" class="video-controls">
             <div
               class="video-progress-container"

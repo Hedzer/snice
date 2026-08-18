@@ -234,25 +234,20 @@ describe('snice-audio-recorder matrix: the timer', () => {
   }
 
   /**
-   * FINDING MATRIX-audio-recorder-1.
+   * FINDING MATRIX-audio-recorder-1 (fixed).
    *
    * `showTimer: boolean = true` is documented as the switch that decides
    * whether the recorder shows an elapsed-time readout. The playback view
-   * renders its `.recorder-timer` unconditionally, so a recorder mounted with
-   * `show-timer` OFF grows a timer the moment a recording finishes.
+   * used to render its `.recorder-timer` unconditionally, so a recorder
+   * mounted with `show-timer` OFF grew a timer the moment a recording
+   * finished. The playback view now honours the switch, like the recording
+   * view always did.
    */
-  it.fails('MATRIX-audio-recorder-1: show-timer off keeps the timer hidden in the playback view', async () => {
+  it('MATRIX-audio-recorder-1 (fixed): show-timer off keeps the timer hidden in the playback view', async () => {
     const el = await mountRecorder({ showTimer: false });
     await startRecording(el);
     await stopRecording(el);
     expect(timerText(el)).toBeNull();
-  });
-
-  it('MATRIX-audio-recorder-1 reproduces: the playback view times its own progress', async () => {
-    const el = await mountRecorder({ showTimer: false });
-    await startRecording(el);
-    await stopRecording(el);
-    expect(timerText(el)).toBe('00:00');
   });
 
   it('the timer reads mm:ss', async () => {

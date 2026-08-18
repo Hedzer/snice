@@ -96,17 +96,18 @@ describe('pricing-table matrix: variant x annual x plan set x delivery', () => {
 });
 
 /**
- * MATRIX-pricing-table-1 — the table variant's CTA buttons carry no
- * part="cta". The doc lists the part without a variant carve-out
+ * MATRIX-pricing-table-1 (fixed) — the table variant's CTA buttons used to
+ * carry no part="cta". The doc lists the part without a variant carve-out
  * (docs/ai/components/pricing-table.md: "`cta` - Call-to-action button"), and
- * the cards template honours it; the table template's buttons do not, so a
- * consumer styling `::part(cta)` loses every call-to-action the moment the
- * layout flips. `checkCtaParts` (see pricing-table-support.ts) is the
- * documented oracle, kept apart from `checkPricing` so this one divergence
- * does not blind the rest of the layout cross above.
+ * the cards template honours it; the table template's buttons did not, so a
+ * consumer styling `::part(cta)` lost every call-to-action the moment the
+ * layout flipped. Both templates now expose the part. `checkCtaParts`
+ * (see pricing-table-support.ts) is the documented oracle, kept apart from
+ * `checkPricing` so a regression here cannot blind the rest of the layout
+ * cross above.
  */
 describe('pricing-table matrix: the cta CSS part', () => {
-  it.fails('MATRIX-pricing-table-1: every CTA button exposes part="cta", in either variant', async () => {
+  it('MATRIX-pricing-table-1 (fixed): every CTA button exposes part="cta", in either variant', async () => {
     for (const variant of VARIANTS as readonly PricingVariant[]) {
       const combo: PricingCombo = { plans: DOC_PLANS, variant, annual: false, declarative: false };
       el = await mountPricing(combo);

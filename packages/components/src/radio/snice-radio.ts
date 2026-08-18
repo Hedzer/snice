@@ -147,7 +147,6 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
               </span>
             </if>
           </span>
-          <slot name="suffix"></slot>
         </if>
 
         <if ${!isBlock}>
@@ -157,6 +156,8 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
             </span>
           </if>
         </if>
+
+        <slot name="suffix"></slot>
       </label>
     `;
   }

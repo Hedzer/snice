@@ -11,6 +11,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
 export interface LayoutBlogProps extends SniceBaseProps {
   useNav?: any;
   hasSidebar?: any;
+  contained?: any;
 
 }
 
@@ -32,7 +33,7 @@ export interface LayoutBlogProps extends SniceBaseProps {
  */
 export const LayoutBlog: SniceReactComponent<LayoutBlogProps, SniceComponentRef> = createReactAdapter<LayoutBlogProps, false>({
   tagName: 'snice-layout-blog',
-  properties: ["useNav","hasSidebar"],
+  properties: ["useNav","hasSidebar","contained"],
   events: {},
   formAssociated: false
 });

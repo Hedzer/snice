@@ -9,8 +9,8 @@
  *   · the four documented totals agree with each other and with `toJSON()`;
  *   · tasks, parts, labor and costs appear with their data and not before;
  *   · task-toggle, status-change and wo-sign all reach the page;
- *   · MATRIX-work-order-1 — `labor-rate="75"`, straight out of the doc's own
- *     example, prints "75/hr" instead of "$75.00/hr".
+ *   · MATRIX-work-order-1 (fixed) — `labor-rate="75"`, straight out of the
+ *     doc's own example, now prints "$75.00/hr".
  *
  * The full cross lives in the sibling files and runs via
  * `npx vitest run --config vitest.matrix.config.ts tests/matrix/work-order`.
@@ -78,7 +78,7 @@ describe('work-order smoke', () => {
     expect(signed.map(d => d.woNumber), 'wo-sign').toEqual(['WO-2024-001']);
   });
 
-  it.fails('labor-rate="75" prints as money [MATRIX-work-order-1]', async () => {
+  it('labor-rate="75" prints as money [MATRIX-work-order-1 (fixed)]', async () => {
     const el = await mount<any>(TAG, { 'labor-rate': '75' }, { tasks: TASK_SETS.mixed });
     expect(part(el, 'labor-rate')?.textContent?.trim(), 'the rendered labor rate')
       .toBe(`${money(75)}/hr`);

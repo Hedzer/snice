@@ -21,8 +21,9 @@
  * include days above 12 (where day/month order is decidable) and both edges of
  * a month (where an off-by-one is visible).
  *
- * it.fails policy: MATRIX-date-picker-1 is pinned here — see the comment above
- * the separator-compatibility loop.
+ * it.fails policy: no finding is pinned in this file. (MATRIX-date-picker-1,
+ * the `yyyy-mm-dd` swapped-separator rejection, was fixed and its rows run
+ * unpinned as the regression guard.)
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
@@ -72,25 +73,18 @@ describe('date-picker matrix: display formats', () => {
 
   // ── "numeric `/` and `-` separators remain accepted for compatibility" ────
   //
-  // FINDING MATRIX-date-picker-1 — the `yyyy-mm-dd` format alone rejects the
-  // swapped separator. `parseDate()` gives every other numeric format a
-  // `[\/-]` branch, and gives `yyyy-mm-dd` a bare `return null`, so
-  // "2026/03/15" is refused under `yyyy-mm-dd` while the mirror-image
-  // "2026-03-15" is accepted under `yyyy/mm/dd`. (The canonical spelling still
-  // parses, through the format-independent canonical path — which is what
-  // makes the gap easy to miss.) The assertion stays correct and the rows are
-  // marked.
+  // MATRIX-date-picker-1 (fixed): `yyyy-mm-dd` used to reject the swapped
+  // separator (`parseDate()` gave it a bare `return null` while every other
+  // numeric format had a `[\/-]` branch). Its rows run unpinned as the
+  // regression guard.
   for (const format of FORMATS) {
     for (const sample of PARSEABLE) {
       const swapped = withSwappedSeparator(sample.parts!, format);
       if (swapped === null) continue; // "mmmm dd, yyyy" has no numeric form
-      // Under `yyyy-mm-dd` the swapped form is the ONLY thing the compatibility
-      // clause is about, because the un-swapped form is the canonical one.
-      const declare = format === 'yyyy-mm-dd' ? it.fails : it;
       const title = format === 'yyyy-mm-dd'
-        ? `MATRIX-date-picker-1: ${format}/${sample.name}: "${swapped}" is accepted for compatibility`
+        ? `MATRIX-date-picker-1 (fixed): ${format}/${sample.name}: "${swapped}" is accepted for compatibility`
         : `${format}/${sample.name}: "${swapped}" is accepted for compatibility`;
-      declare(title, async () => {
+      it(title, async () => {
         const el = await mountPicker({ attrs: { format }, liveValue: swapped });
         expect(el.value,
           `"${swapped}" was rejected under "${format}" — the compatibility`

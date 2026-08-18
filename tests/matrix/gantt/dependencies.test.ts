@@ -18,28 +18,21 @@
  *
  * ── FINDINGS ───────────────────────────────────────────────────────────────
  *
- * MATRIX-gantt-1  `show-dependencies` renders nothing at all.
- *   combo:    shape=chain/zoom=day|week/show-dependencies=true (2 declared edges)
- *   expected: 4 dependency link elements in the timeline; 0 when the switch
- *             is off, so the documented default of `true` is observable.
- *   actual:   0 elements either way. `showDependencies` is declared as a
- *             property and never read by the render, and `GanttTask.dependencies`
- *             is accepted and discarded. The stylesheet still ships the
- *             `.gantt-dependencies`, `.gantt-dependency-arrow` and
- *             `.gantt-dependency-arrowhead` rules the render never emits, so
- *             the feature is half-built rather than undocumented.
+ * MATRIX-gantt-1 (fixed)  `show-dependencies` used to render nothing at all.
+ *   `showDependencies` is declared as a property and used to be read by
+ *   nothing in the render, and `GanttTask.dependencies` was accepted and
+ *   discarded. The timeline now draws one dependency link per declared edge
+ *   when the switch is on (its documented default), none when it is off.
  *
- * MATRIX-gantt-2  `task-link` is unreachable.
- *   combo:    dataset=chained/zoom=week/show-dependencies=true
- *   expected: some documented interaction creates a dependency link and emits
- *             `task-link` with `{ source, target }`.
- *   actual:   no port, handle or drop target exists to create a link with, and
- *             the emitter is never called from any code path, so no sequence of
- *             user gestures can produce the event.
+ * MATRIX-gantt-2 (fixed)  `task-link` used to be unreachable.
+ *   No port, handle or drop target existed to create a link with. The
+ *   documented gesture is now: drag from a task's right edge (its finish
+ *   handle) to arm that task as a link source, then click the target bar —
+ *   the link is created, added to the target's `dependencies` and announced
+ *   as `task-link` with `{ source, target }`.
  *
- * Both assertions below are the DOCUMENTED expectation at full strength and are
- * pinned with `it.fails`. Fixing the component turns them green and this file
- * red, which is the signal to unpin them.
+ * Both formerly pinned assertions below are unpinned at full strength as the
+ * regression guard.
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import {
@@ -94,12 +87,9 @@ describe('gantt matrix: dependencies', () => {
           const tasks = SHAPES[shape]();
           const edges = tasks.reduce((sum, task) => sum + (task.dependencies?.length ?? 0), 0);
 
-          // The no-edge shape has nothing to draw either way, so it is the one
-          // combination the current build satisfies honestly.
-          const pin = edges > 0 && showDependencies ? it.fails : it;
-
-          pin(`${id}: draws ${showDependencies ? edges : 0} dependency links${
-            edges > 0 && showDependencies ? ' [MATRIX-gantt-1]' : ''}`, async () => {
+          // The no-edge shape has nothing to draw either way.
+          it(`${id}: draws ${showDependencies ? edges : 0} dependency links${
+            edges > 0 && showDependencies ? ' [MATRIX-gantt-1 (fixed)]' : ''}`, async () => {
             el = await makeGantt(c, tasks);
             expectClean(dependencyProblems(el, { ...c, showDependencies }, tasks), id);
           });
@@ -108,8 +98,8 @@ describe('gantt matrix: dependencies', () => {
     }
   });
 
-  describe('MATRIX-gantt-1: the documented default', () => {
-    it.fails('show-dependencies defaults to true, so links are drawn unasked', async () => {
+  describe('MATRIX-gantt-1 (fixed): the documented default', () => {
+    it('show-dependencies defaults to true, so links are drawn unasked (fixed)', async () => {
       const tasks = SHAPES.chain();
       // No attribute at all — the property default is documented as `true`.
       el = await makeGantt({ dataset: 'chained', zoom: 'week', showDependencies: true }, tasks);
@@ -135,8 +125,8 @@ describe('gantt matrix: dependencies', () => {
     });
   });
 
-  describe('MATRIX-gantt-2: task-link reachability', () => {
-    it.fails('some documented gesture creates a link and emits task-link', async () => {
+  describe('MATRIX-gantt-2 (fixed): task-link reachability', () => {
+    it('the documented gesture creates a link and emits task-link (fixed)', async () => {
       const tasks = SHAPES['no-edges']();
       const c = combo({ dataset: 'chained' });
       el = await makeGantt(c, tasks);
@@ -152,9 +142,10 @@ describe('gantt matrix: dependencies', () => {
       expect(seen.filter(event => event.type === 'task-link')).toHaveLength(1);
     });
 
-    it('no port or link affordance is rendered on any bar', async () => {
-      // The observable half of the same finding, stated positively so the file
-      // records what IS true today without weakening the claim above.
+    it('the link gesture needs no separate port element on any bar', async () => {
+      // After the fix the affordance is the task's own right edge (its finish
+      // handle) plus a click on the target bar — the doc names no port, and
+      // none is rendered.
       el = await makeGantt(combo({ dataset: 'chained' }));
       const ports = el.shadowRoot.querySelectorAll(
         '.gantt-port, .gantt-bar-port, [part~="port"], [data-port]',

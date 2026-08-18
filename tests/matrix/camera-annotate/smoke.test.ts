@@ -85,10 +85,8 @@ describe('snice-camera-annotate matrix smoke', () => {
     expect(el.exportAnnotations().annotations).toEqual([]);
   });
 
-  // MATRIX-camera-annotate-1: the bare element must not open the camera. The
-  // regression guard stays here so the everyday loop notices the day it changes
-  // in either direction.
-  it.fails('MATRIX-camera-annotate-1: a bare element does not request the camera', async () => {
+  // MATRIX-camera-annotate-1 (fixed): the bare element does not open the camera.
+  it('MATRIX-camera-annotate-1 (fixed): a bare element does not request the camera', async () => {
     await mountAnnotator({});
     expect(media.requests).toEqual([]);
   });

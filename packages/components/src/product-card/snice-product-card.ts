@@ -122,7 +122,7 @@ export class SniceProductCard extends HTMLElement implements SniceProductCardEle
     if (!this.inStock || this.loading) return;
     this.emitAddToCart({
       name: this.name,
-      price: this.salePrice ?? this.price,
+      price: this.price,
       salePrice: this.salePrice,
       selectedVariants: { ...this.selectedVariants }
     });
@@ -393,7 +393,7 @@ export class SniceProductCard extends HTMLElement implements SniceProductCardEle
   }
 
   private renderStock(): unknown {
-    const hasLowStock = this.stockCount > 0 && this.stockCount < 5;
+    const hasLowStock = this.stockCount !== -1 && this.stockCount < 5;
 
     return html/*html*/`
       <div class="product-card__stock ${this.inStock ? 'product-card__stock--in' : 'product-card__stock--out'}" part="stock">

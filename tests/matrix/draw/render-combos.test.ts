@@ -115,22 +115,17 @@ describe('snice-draw matrix: the canvas is initialised for drawing', () => {
   });
 
   /**
-   * FINDING MATRIX-draw-1.
+   * FINDING MATRIX-draw-1 (FIXED).
    *
-   * `width: number = 800` and `height: number = 600` are documented properties
-   * with the doc's own markup setting them (`<snice-draw width="800"
-   * height="600">`). `initCanvas()` OVERWRITES both with the measured display
-   * box of the canvas — which the component's own stylesheet stretches to
-   * `100%` of the host — so the value an author sets is discarded on the first
-   * frame and reading the property back reports the layout instead.
+   * `initCanvas()` no longer overwrites the documented `width`/`height`
+   * properties with the measured display box; the measured size lives in
+   * private fields that size the backing store and map pointer coordinates.
+   * This is also the root fix of the visual-tier VISUAL-MATRIX-draw-3/4
+   * bitmap-reset findings: the template no longer emits canvas width/height
+   * attributes for the property writes to re-emit.
    */
-  it.fails('MATRIX-draw-1: the documented width and height survive initialisation', async () => {
+  it('MATRIX-draw-1 (fixed): the documented width and height survive initialisation', async () => {
     const el = await mountDraw({ width: 400, height: 300 });
     expect({ width: el.width, height: el.height }).toEqual({ width: 400, height: 300 });
-  });
-
-  it('MATRIX-draw-1 reproduces: width and height are replaced by the measured box', async () => {
-    const el = await mountDraw({ width: 400, height: 300 });
-    expect({ width: el.width, height: el.height }).toEqual(BOX);
   });
 });

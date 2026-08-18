@@ -116,24 +116,27 @@
   height: var(--snice-font-size-3xl, 3rem);
 }
 
+/* The theme's font-size scale stops at --snice-font-size-4xl (the medium
+   icon); large is 1.5x that so the documented small < medium < large scale
+   holds on the icon as well as the padding. */
 .empty-state--large .empty-state__icon-wrapper {
   margin-bottom: var(--snice-spacing-xl, 2rem);
-  width: calc(var(--snice-font-size-3xl, 5rem) * 1.8);
-  height: calc(var(--snice-font-size-3xl, 5rem) * 1.8);
+  width: calc(var(--snice-font-size-4xl, 3.375rem) * 1.5 * 1.8);
+  height: calc(var(--snice-font-size-4xl, 3.375rem) * 1.5 * 1.8);
 }
 
 .empty-state--large .empty-state__icon {
-  font-size: var(--snice-font-size-3xl, 5rem);
+  font-size: calc(var(--snice-font-size-4xl, 3.375rem) * 1.5);
 }
 
 .empty-state--large .empty-state__icon-wrapper ::slotted(*) {
-  font-size: var(--snice-font-size-3xl, 5rem);
+  font-size: calc(var(--snice-font-size-4xl, 3.375rem) * 1.5);
 }
 
 .empty-state--large .empty-state__icon-wrapper ::slotted(svg),
 .empty-state--large .empty-state__icon-wrapper ::slotted(img) {
-  width: var(--snice-font-size-3xl, 5rem);
-  height: var(--snice-font-size-3xl, 5rem);
+  width: calc(var(--snice-font-size-4xl, 3.375rem) * 1.5);
+  height: calc(var(--snice-font-size-4xl, 3.375rem) * 1.5);
 }
 
 .empty-state__title {

@@ -175,20 +175,13 @@ const ATTRIBUTE_OF: Record<string, string> = {
 
 export interface OracleOptions {
   fresh?: boolean;
-  /**
-   * The finding this combo is allowed to exhibit. `role` suppresses the
-   * `role="alert"` check ONLY for the tests that are pinned to
-   * MATRIX-banner-1, so every other assertion in those combos stays live
-   * instead of the whole test being written off.
-   */
-  allow?: Array<'role'>;
 }
 
 /** Every divergence from the documented contract, collected at once. */
 export function bannerProblems(
   el: any,
   combo: BannerCombo,
-  { fresh = true, allow = [] }: OracleOptions = {},
+  { fresh = true }: OracleOptions = {},
 ): string[] {
   const problems: string[] = [];
   const say = (m: string) => problems.push(m);
@@ -203,7 +196,7 @@ export function bannerProblems(
   const banner = banners[0];
 
   // ── Accessibility, straight from the doc's own section ───────────────────
-  if (!allow.includes('role') && banner.getAttribute('role') !== 'alert') {
+  if (banner.getAttribute('role') !== 'alert') {
     say(`part="banner" role is "${banner.getAttribute('role')}",`
       + ' documented as role="alert"');
   }

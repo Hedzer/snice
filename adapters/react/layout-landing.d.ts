@@ -5,6 +5,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  */
 export interface LayoutLandingProps extends SniceBaseProps {
     useNav?: any;
+    contained?: any;
 }
 /**
  * LayoutLanding - React adapter for snice-layout-landing

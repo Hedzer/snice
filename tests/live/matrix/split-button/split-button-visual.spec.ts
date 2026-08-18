@@ -331,19 +331,16 @@ test.describe('split-button visual matrix: live behaviour', () => {
     }
   });
 
-  // FINDING VISUAL-MATRIX-split-button-1 — in WebKit a dismissed menu never
-  // stops occupying a box. The menu closes by the book (`hidePopover()`; the
-  // element leaves the top layer, `:popover-open` goes false, opacity and
-  // transform transitions run), but the stylesheet's
-  // `transition: display … allow-discrete` keeps `display: block` and WebKit
-  // never applies the UA sheet's closed-popover `display: none` — seconds
-  // later the invisible menu still paints a 52x84 box with
-  // pointer-events: none. Chromium flips to none. The assertions stay; the
-  // pin must fail and be deleted the day WebKit's discrete display
-  // transition lands.
-  test('Escape closes the open menu', async ({ browserName }) => {
-    test.fail(browserName === 'webkit',
-      'closed popover keeps display:block — see VISUAL-MATRIX-split-button-1');
+  // FINDING VISUAL-MATRIX-split-button-1 — FIXED. In WebKit a dismissed menu
+  // used to never stop occupying a box. The menu closed by the book
+  // (`hidePopover()`; the element left the top layer, `:popover-open` went
+  // false), but the stylesheet's `transition: display … allow-discrete` kept
+  // `display: block` and WebKit never applied the UA sheet's closed-popover
+  // `display: none` — seconds later the invisible menu still painted a 52x84
+  // box with pointer-events: none. The transition now lives only on the open
+  // state, so a dismissal hides immediately in every engine; Chromium loses
+  // only the outgoing fade. The assertions are unchanged.
+  test('Escape closes the open menu (fixed: VISUAL-MATRIX-split-button-1)', async () => {
     await page.evaluate(c => (window as any).matrix.mount(c), plain as any);
     expect((await page.evaluate(() => (window as any).matrix.open())).open).toBe(true);
     const closed = await page.evaluate(() => (window as any).matrix.pressEscape());

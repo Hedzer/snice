@@ -9,7 +9,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  * Props for the LayoutMinimal component
  */
 export interface LayoutMinimalProps extends SniceBaseProps {
-
+  contained?: any;
 
 }
 
@@ -31,7 +31,7 @@ export interface LayoutMinimalProps extends SniceBaseProps {
  */
 export const LayoutMinimal: SniceReactComponent<LayoutMinimalProps, SniceComponentRef> = createReactAdapter<LayoutMinimalProps, false>({
   tagName: 'snice-layout-minimal',
-  properties: [],
+  properties: ["contained"],
   events: {},
   formAssociated: false
 });

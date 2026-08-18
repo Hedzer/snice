@@ -40,27 +40,25 @@ describe('banner matrix smoke', () => {
   it('the default banner is info, closed and dismissible', async () => {
     const c = combo();
     el = await makeBanner(c);
-    // `allow: ['role']` covers MATRIX-banner-1 only; it is asserted in full by
-    // the dedicated failing test at the bottom of this file.
-    expect(bannerProblems(el, c, { allow: ['role'] })).toEqual([]);
+    expect(bannerProblems(el, c)).toEqual([]);
   });
 
   it('each variant labels its own region and paints its own class', async () => {
     const c = combo({ variant: 'error', open: true, position: 'bottom' });
     el = await makeBanner(c);
-    expect(bannerProblems(el, c, { allow: ['role'] })).toEqual([]);
+    expect(bannerProblems(el, c)).toEqual([]);
   });
 
   it('an icon slot overrides the default variant icon', async () => {
     const c = combo({ variant: 'success', iconMode: 'slot', open: true });
     el = await makeBanner(c);
-    expect(bannerProblems(el, c, { allow: ['role'] })).toEqual([]);
+    expect(bannerProblems(el, c)).toEqual([]);
   });
 
   it('action-text adds the action button; dismissible=false removes the close button', async () => {
     const c = combo({ actionText: 'Update Now', dismissible: false, open: true });
     el = await makeBanner(c);
-    expect(bannerProblems(el, c, { allow: ['role'] })).toEqual([]);
+    expect(bannerProblems(el, c)).toEqual([]);
   });
 
   it('show()/hide() reflect `open` and fire the documented events', async () => {
@@ -78,8 +76,8 @@ describe('banner matrix smoke', () => {
     expect(seen).toEqual(['banner-open', 'banner-close']);
   });
 
-  // MATRIX-banner-1: the container is role="region", documented as role="alert".
-  it.fails('MATRIX-banner-1: the banner container is role="alert"', async () => {
+  // MATRIX-banner-1 (fixed): the container is now the documented role="alert".
+  it('MATRIX-banner-1 (fixed): the banner container is role="alert"', async () => {
     const c = combo({ open: true });
     el = await makeBanner(c);
     expect(bannerProblems(el, c)).toEqual([]);

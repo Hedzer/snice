@@ -17,9 +17,13 @@
  *
  * it.fails policy (never weakened assertions): every assertion is the DOCUMENTED
  * expectation and runs in every pipeline — no pipeline is exempt.
- *   MATRIX-columns-5 (open) resizing a pinned column does not update the sticky
- *                    offsets of the pinned columns after it; a later body-only
- *                    re-render then leaves header and body disagreeing.
+ *   MATRIX-columns-5 (fixed) resizing a pinned column used to leave the sticky
+ *                    offsets of the pinned columns after it stale (they were
+ *                    only recomputed when a cell was created); a later
+ *                    body-only re-render then left header and body
+ *                    disagreeing. A drag-resize now repaints the pinned
+ *                    offsets of both edges onto the existing header and body
+ *                    cells, so they always agree.
  *   MATRIX-columns-7 (fixed) autoSizeColumn()/autoSizeAllColumns() re-rendered
  *                    only the header, so the header cell took the new width
  *                    while every body cell of that column kept the old one —
@@ -210,9 +214,10 @@ describe('columns matrix: resized columns', () => {
         expectNoBlankCells(table, rows.length);
       });
 
-      // MATRIX-columns-5: resizing the first column of a pinned-left run must
-      // push the sticky offset of the pinned columns after it.
-      it.fails(`${combo}: resizing a pinned column updates the next pinned offset [MATRIX-columns-5]`, async () => {
+      // MATRIX-columns-5 (fixed): resizing the first column of a pinned-left
+      // run pushes the sticky offset of the pinned columns after it, on both
+      // the header and the body cells.
+      it(`${combo}: resizing a pinned column updates the next pinned offset [MATRIX-columns-5]`, async () => {
         const cols = columnsFor(KEYS, pipeline);
         const rows = rowsFor(pipeline, SPECS);
         table = await makeDelivered({ columns: cols, rows, remote, attrs: RESIZE_ATTRS });
@@ -228,9 +233,10 @@ describe('columns matrix: resized columns', () => {
         expect({ header: header!.left, cell: cell!.left }).toEqual({ header: '250px', cell: '250px' });
       });
 
-      // MATRIX-columns-5: after a body-only re-render the body picks up the new
-      // offsets while the header keeps the stale ones.
-      it.fails(`${combo}: pinned offsets agree between header and body after resize + re-delivery [MATRIX-columns-5]`, async () => {
+      // MATRIX-columns-5 (fixed): header and body used to disagree after a
+      // body-only re-render — the body picked up the new offsets while the
+      // header kept the stale ones.
+      it(`${combo}: pinned offsets agree between header and body after resize + re-delivery [MATRIX-columns-5]`, async () => {
         const cols = columnsFor(KEYS, pipeline);
         const rows = rowsFor(pipeline, SPECS);
         table = await makeDelivered({ columns: cols, rows, remote, attrs: RESIZE_ATTRS });
@@ -244,8 +250,8 @@ describe('columns matrix: resized columns', () => {
         expect({ header: header!.left, cell: cell!.left }).toEqual({ header: '250px', cell: '250px' });
       });
 
-      // MATRIX-columns-5, right edge.
-      it.fails(`${combo}: resizing a right-pinned column updates the offsets to its left [MATRIX-columns-5]`, async () => {
+      // MATRIX-columns-5 (fixed), right edge.
+      it(`${combo}: resizing a right-pinned column updates the offsets to its left [MATRIX-columns-5]`, async () => {
         const cols = columnsFor(KEYS, pipeline);
         const rows = rowsFor(pipeline, SPECS);
         table = await makeDelivered({ columns: cols, rows, remote, attrs: RESIZE_ATTRS });

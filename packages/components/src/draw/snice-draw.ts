@@ -226,6 +226,9 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   private rafId: number | null = null;
   private mouseX: number = 0;
   private mouseY: number = 0;
+  /** Measured logical drawing surface size (display pixels). */
+  private canvasWidth: number = 0;
+  private canvasHeight: number = 0;
 
   constructor() {
     super();
@@ -256,11 +259,13 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
 
   @render()
   render() {
+    // No width/height attributes here: the canvas backing store is sized
+    // imperatively in initCanvas(). Re-emitting these attributes on every
+    // property-driven render resets the bitmap (HTML spec) and would clear
+    // the context transform, dropping ink away from the cursor at dpr ≠ 1.
     return html/*html*/`
       <div class="draw-container" part="base">
         <canvas
-          width="${this.width}"
-          height="${this.height}"
           class="draw-canvas tool-${this.tool} ${this.disabled ? 'disabled' : ''}"
           part="canvas"
           role="img"
@@ -284,13 +289,16 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     // Handle high DPI displays
     const dpr = window.devicePixelRatio || 1;
 
-    // Set canvas buffer size (accounting for DPI)
+    // Set canvas buffer size (accounting for DPI). Setting canvas.width/
+    // canvas.height imperatively is the ONE place the backing store is sized:
+    // the template deliberately emits no width/height attributes, so no later
+    // re-render can reset the bitmap.
     this.canvas.width = displayWidth * dpr;
     this.canvas.height = displayHeight * dpr;
 
-    // Store logical dimensions for coordinate mapping
-    this.width = displayWidth;
-    this.height = displayHeight;
+    // Store logical dimensions for coordinate mapping and repaints
+    this.canvasWidth = displayWidth;
+    this.canvasHeight = displayHeight;
 
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
     if (!this.ctx) return;
@@ -304,7 +312,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
 
     // Set background
     this.ctx.fillStyle = this.backgroundColor;
-    this.ctx.fillRect(0, 0, this.width, this.height);
+    this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
     // Flush any commands queued before canvas was ready
     this.flushQueue();
@@ -325,7 +333,14 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
 
     this.isPressing = true;
 
-    this.canvas?.setPointerCapture(e.pointerId);
+    // Firefox throws NotFoundError for a pointerId it never saw as an active
+    // pointer; losing the gesture entirely over a capture nicety would leave
+    // the stroke unstarted, so capture is best-effort.
+    try {
+      this.canvas?.setPointerCapture(e.pointerId);
+    } catch {
+      // drawing continues without capture
+    }
 
     this.startLoop();
     this.emitDrawStart(point);
@@ -374,7 +389,11 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
       this.emitDrawEnd(stroke);
     }
 
-    this.canvas?.releasePointerCapture(e.pointerId);
+    try {
+      this.canvas?.releasePointerCapture(e.pointerId);
+    } catch {
+      // no capture was held
+    }
     this.stopLoop();
   }
 
@@ -384,8 +403,8 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     const rect = this.canvas.getBoundingClientRect();
 
     // Map from screen coordinates to logical canvas coordinates
-    const x = (e.clientX - rect.left) * (this.width / rect.width);
-    const y = (e.clientY - rect.top) * (this.height / rect.height);
+    const x = (e.clientX - rect.left) * (this.canvasWidth / rect.width);
+    const y = (e.clientY - rect.top) * (this.canvasHeight / rect.height);
 
     return {
       x,
@@ -437,7 +456,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     if (this.isDrawing) {
       // Clear canvas and fill background
       this.ctx.fillStyle = this.backgroundColor;
-      this.ctx.fillRect(0, 0, this.width, this.height);
+      this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
       // Redraw all completed strokes
       this.strokes.forEach(stroke => {
@@ -479,7 +498,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
 
     // Clear and set background
     this.ctx.fillStyle = this.backgroundColor;
-    this.ctx.fillRect(0, 0, this.width, this.height);
+    this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
     // Redraw all strokes
     this.strokes.forEach(stroke => {
@@ -534,7 +553,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     this.strokes = [];
     this.undoneStrokes = [];
     this.ctx.fillStyle = this.backgroundColor;
-    this.ctx.fillRect(0, 0, this.width, this.height);
+    this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
     this.emitDrawClear();
   }
@@ -601,7 +620,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
       img.crossOrigin = 'anonymous';
 
       img.onload = () => {
-        this.ctx!.drawImage(img, 0, 0, this.width, this.height);
+        this.ctx!.drawImage(img, 0, 0, this.canvasWidth, this.canvasHeight);
         resolve();
       };
 

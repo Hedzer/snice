@@ -83,6 +83,9 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
   @property({ type: Boolean, attribute: 'show-icon' })
   showIcon = true;
 
+  @property({ type: Boolean, attribute: 'expand-on-click' })
+  expandOnClick = false;
+
   @property({ type: Boolean })
   loading = false;
 
@@ -128,6 +131,10 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
     this.showIcon = show;
   }
 
+  private set treeitemexpandclick(expand: boolean) {
+    this.expandOnClick = expand;
+  }
+
   private set treeitemrevision(revision: number) {
     if (revision === this.inheritedRevision) return;
     this.inheritedRevision = revision;
@@ -152,6 +159,7 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
     const size = takeOwn('treeitemsize');
     const checkbox = takeOwn('treeitemcheckbox');
     const icon = takeOwn('treeitemicon');
+    const expandOnClick = takeOwn('treeitemexpandclick');
     const revision = takeOwn('treeitemrevision');
 
     if (node && typeof node === 'object') this.treeitemnode = node as TreeNode;
@@ -160,6 +168,7 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
     if (typeof size === 'number') this.treeitemsize = size;
     if (typeof checkbox === 'boolean') this.treeitemcheckbox = checkbox;
     if (typeof icon === 'boolean') this.treeitemicon = icon;
+    if (typeof expandOnClick === 'boolean') this.treeitemexpandclick = expandOnClick;
     if (typeof revision === 'number') this.treeitemrevision = revision;
   }
 
@@ -324,6 +333,7 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
                 .treeitemsize=${children.length}
                 .treeitemcheckbox=${this.showCheckbox}
                 .treeitemicon=${this.showIcon}
+                .treeitemexpandclick=${this.expandOnClick}
                 .treeitemrevision=${this.version}
               ></snice-tree-item>
             `
@@ -343,6 +353,12 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
 
   private handleContentClick() {
     if (this.node.disabled) return;
+    // With expand-on-click, a row click on an expandable node toggles it
+    // instead of only selecting; leaves have nothing to toggle and select.
+    if (this.expandOnClick && this.hasChildren) {
+      this.toggle();
+      return;
+    }
     if (this.selected) this.deselect();
     else this.select();
   }

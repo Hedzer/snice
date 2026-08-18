@@ -199,6 +199,10 @@ export class Toast {
     // not create the attribute consumed by the host positioning selectors.
     container.setAttribute('position', position);
     document.body.appendChild(container);
+    // Claim the global slot NOW, not at @ready: a burst of awaited `show()`
+    // calls before the first container becomes ready would otherwise each
+    // build their own container and their own id counter.
+    (globalThis as any)[TOAST_CONTAINER] = container;
     return container;
   }
 

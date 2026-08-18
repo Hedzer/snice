@@ -169,13 +169,10 @@ describe('grid matrix: rule 2 — push-right-then-down', () => {
 
   /**
    * Rule 2 names "multiple occupants" as a case where SWAP FAILS and the
-   * incoming item takes the push-right-then-down fallback instead. The resolver
-   * swaps anyway: it displaces every occupant, plants the incoming item on the
-   * target, and scatters the occupants — so the two static items move even
-   * though the documented algorithm leaves them exactly where they are.
+   * incoming item takes the push-right-then-down fallback instead.
    */
-  it.fails(
-    finding('MATRIX-grid-1', 'a target area with MULTIPLE occupants swaps instead of taking the documented push-right-then-down fallback'),
+  it(
+    `${finding('MATRIX-grid-1', 'a target area with MULTIPLE occupants swaps instead of taking the documented push-right-then-down fallback')} (fixed)`,
     async () => {
       mounted = await makeGrid(BASE, [
         { name: 'a', col: 0, row: 0 },
@@ -200,11 +197,10 @@ describe('grid matrix: rule 2 — push-right-then-down', () => {
    * The other half of rule 2's parenthesis — "occupant doesn't fit at swap
    * position". Here the single occupant cannot go where the incoming item came
    * from (the incoming item's new area covers it), so the swap fails and the
-   * INCOMING item should be pushed. Instead the incoming item keeps the target
-   * and the occupant is pushed out of the way.
+   * INCOMING item is pushed.
    */
-  it.fails(
-    finding('MATRIX-grid-2', 'when the occupant does not fit at the swap position the OCCUPANT is pushed, not the incoming item'),
+  it(
+    `${finding('MATRIX-grid-2', 'when the occupant does not fit at the swap position the OCCUPANT is pushed, not the incoming item')} (fixed)`,
     async () => {
       mounted = await makeGrid(BASE, [
         { name: 'a', col: 0, row: 0 },

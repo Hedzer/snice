@@ -49,9 +49,9 @@ describe('skeleton matrix smoke', () => {
     expect(skeletonProblems(el, combo('smoke', { count: 2 }), { fresh: false })).toEqual([]);
   });
 
-  // MATRIX-skeleton-1: bones carry role="status", one live region per bone,
-  // against a documented "decorative only" contract.
-  it.fails('MATRIX-skeleton-1: a decorative skeleton exposes no live-region role', async () => {
+  // MATRIX-skeleton-1 (fixed): bones used to carry role="status", one live
+  // region per bone, against a documented "decorative only" contract.
+  it('MATRIX-skeleton-1 (fixed): a decorative skeleton exposes no live-region role', async () => {
     el = await mountSkeleton(combo('smoke', { count: 3 }));
     expect(skeletonAriaProblems(el)).toEqual([]);
   });
