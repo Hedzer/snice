@@ -93,6 +93,10 @@
         many: Array.from({ length: 30 }, (_, i) => ({
           value: `opt-${i + 1}`, label: `Option ${i + 1}`,
         })),
+        longlabels: [
+          { value: 'apple', label: 'A very long option label that runs past the trigger edge' },
+          { value: 'banana', label: 'Banana' },
+        ],
         empty: [],
       };
 

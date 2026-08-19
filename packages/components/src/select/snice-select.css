@@ -94,6 +94,14 @@ img[src=""] {
   min-height: 3rem; /* 48px */
 }
 
+/* The absolute icon block is clear (18px) + gap (4px) + chevron (12px) at
+   8px from the edge = 42px; the size paddings above only reserve room for
+   the chevron alone. While the clear button paints, widen the right padding
+   so the value area's clip edge stays left of the icons. */
+.select-trigger--clear-visible {
+  padding-right: 2.75rem; /* 44px */
+}
+
 .select-trigger:hover:not(.select-trigger--disabled) {
   border-color: var(--snice-color-border-hover, rgb(180 180 180));
 }

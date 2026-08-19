@@ -63,7 +63,7 @@ interface Combo {
   invalid?: boolean;
   required?: boolean;
   maxHeight?: string;
-  optionSet?: 'fruits' | 'extras' | 'many' | 'empty';
+  optionSet?: 'fruits' | 'extras' | 'many' | 'empty' | 'longlabels';
   source?: 'array' | 'children';
   /** The combo asserts the OPEN listbox (the spec opens it first). */
   open?: boolean;
@@ -202,6 +202,20 @@ function listCross(): Combo[] {
   ];
 }
 
+function longValueCross(): Combo[] {
+  // A label wider than the value area: the visible ink clips at the wrapper's
+  // edge, and the right-end affordances must still stay clear of it. The
+  // clear-visible padding is uniform across sizes, but the icon block's
+  // shortfall of the size paddings is not (small is worst), so the size axis
+  // is crossed here, not left to medium alone.
+  const combos: Combo[] = [];
+  for (const size of SIZES) {
+    combos.push(base({ id: `long-value/${size}`, size, value: 'apple', label: 'Fruit', optionSet: 'longlabels' }));
+    combos.push(base({ id: `long-value/${size}/clearable`, size, clearable: true, value: 'apple', label: 'Fruit', optionSet: 'longlabels' }));
+  }
+  return combos;
+}
+
 const ALL_COMBOS = [
   ...closedCross(),
   ...stateCross(),
@@ -209,6 +223,7 @@ const ALL_COMBOS = [
   ...openCross(),
   ...tagCross(),
   ...listCross(),
+  ...longValueCross(),
 ];
 
 let page: Page;
@@ -332,12 +347,31 @@ async function visualProblems(combo: Combo): Promise<string[]> {
       // track (by design, so the ellipsis has room); the affordances must not
       // overlap the value's CONTENT — the single label, the tag row, or the
       // placeholder — which is what "overlaps the value" has always meant.
-      const valueContent = sr.querySelector(
-        '.select-value--single, .select-value--multiple, .select-placeholder',
+      // Measure the ink, not the row containers: `.select-value--single` and
+      // `--multiple` are full-width block-level flex boxes that stretch under
+      // the absolute icons by construction, so their boxes can never satisfy
+      // this check. A clipped long value's visible ink ends at the wrapper's
+      // clip edge, so clamp to it.
+      const valueWrapper = partNamed('value');
+      const singleRow = sr.querySelector('.select-value--single');
+      const chips = sr.querySelectorAll('.select-tag');
+      const valueInk = (
+        (singleRow ? singleRow.querySelector('span:last-child') : null)
+        || (chips.length ? chips[chips.length - 1] : null)
+        || sr.querySelector('.select-placeholder')
       ) as HTMLElement | null;
-      const valueBox = valueContent
-        ? rect(valueContent)
+      const rawBox = valueInk
+        ? rect(valueInk)
         : rect(partNamed('value')!);
+      // DOMRect properties are getter-only — copy to a plain object before
+      // the clamp below can write to it.
+      const valueBox = {
+        left: rawBox.left, top: rawBox.top, right: rawBox.right,
+        bottom: rawBox.bottom, width: rawBox.width, height: rawBox.height,
+      };
+      if (valueWrapper) {
+        valueBox.right = Math.min(valueBox.right, rect(valueWrapper).right);
+      }
       const arrow = sr.querySelector('.select-arrow') as HTMLElement | null;
       if (combo.loading) {
         const spinner = withBox(partNamed('spinner'));

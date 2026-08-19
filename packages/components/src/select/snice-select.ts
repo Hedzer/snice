@@ -1270,6 +1270,10 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
     const shouldShow = this.clearable && selectedOptions.length > 0 && !this.interactionDisabled && !this.readonly;
     this.clearButton.style.display = shouldShow ? '' : 'none';
+    // The absolute icon block (clear + chevron) is wider than the chevron
+    // alone, so the trigger widens its right padding while the clear button
+    // paints — otherwise the value area's clip edge runs under the icons.
+    this.trigger?.classList.toggle('select-trigger--clear-visible', shouldShow);
   }
 
   private updateDropdownContent() {
