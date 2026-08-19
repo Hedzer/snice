@@ -161,7 +161,12 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
     const svgWidth = 400;
     const stageHeight = 50;
     const gap = 4;
-    const svgHeight = count * stageHeight + (count - 1) * gap;
+    // The percentage row of the LAST stage sits 20px below the stage's
+    // centre line; without a reserve it overflows the viewBox bottom under
+    // taller font metrics (Firefox measures a taller descent than Chromium
+    // and WebKit, clipping the row to nothing at the chart box edge).
+    const labelReserve = this.showLabels && this.showPercentages ? 14 : 0;
+    const svgHeight = count * stageHeight + (count - 1) * gap + labelReserve;
     const maxWidth = svgWidth * 0.85;
     const minWidth = maxWidth * 0.25;
     const labelX = svgWidth - 10;

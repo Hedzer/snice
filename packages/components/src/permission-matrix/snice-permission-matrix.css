@@ -131,6 +131,14 @@ case, when, default, if {
 /* ===== Checkbox cell ===== */
 .matrix-cell {
   position: relative;
+  /* Flex-centre the grant control: the checkbox's inline-flex baseline
+     measures differently per engine (Firefox's line box for a 20px
+     inline-flex checkbox is 43px tall where Chromium's is 35px), so
+     baseline alignment parked the box 1.5-2px high and never exactly
+     centred in any engine. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .matrix-checkbox {

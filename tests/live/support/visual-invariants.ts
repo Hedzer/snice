@@ -80,8 +80,16 @@ export async function collectVisualViolations(page: Page): Promise<string[]> {
       if (!root) return;
       const hostRect = host.getBoundingClientRect();
       const hostCs = getComputedStyle(host);
+      // Firefox reports the computed `display` of a host whose `:host {
+      // display: none }` rule is adopted via a constructable stylesheet as ""
+      // instead of "none" (the pricing-table's snice-plan/snice-feature data
+      // carriers) while the element is genuinely hidden — no box, no
+      // offsetParent. The offsetParent + zero-box signature is the
+      // engine-consistent way to recognise that state.
+      const hostCollapsed = hostRect.width === 0 && hostRect.height === 0
+        && (host as HTMLElement).offsetParent === null;
       const hostVisible = hostCs.display !== 'none' && hostCs.visibility !== 'hidden'
-        && !(host as HTMLElement).hidden;
+        && !(host as HTMLElement).hidden && !hostCollapsed;
 
       if (hostVisible && root.children.length > 0
           && hostRect.width === 0 && hostRect.height === 0) {

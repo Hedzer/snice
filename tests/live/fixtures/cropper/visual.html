@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-cropper visual fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every cropper is a fixed, known box with a
+         LOCAL data-URL image — zero network, so decode timing can never make
+         the crop box land on a half-decoded frame (the showcase's picsum
+         images did exactly that under parallel load). The sources span
+         distinct natural aspect ratios so the letterboxing checks have
+         something to assert. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      body > section { padding: 1rem 1.5rem; }
+      body > section h2 {
+        margin: 0 0 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--snice-color-text-tertiary);
+      }
+      .box { width: 480px; height: 320px; }
+      snice-cropper { display: block; }
+    </style>
+  </head>
+  <body>
+    <section>
+      <h2>Default frame</h2>
+      <div class="box"><snice-cropper id="crop-default" src=""></snice-cropper></div>
+    </section>
+
+    <section>
+      <h2>Aspect ratios</h2>
+      <div class="box"><snice-cropper id="crop-square" src="" aspect-ratio="1"></snice-cropper></div>
+      <div class="box"><snice-cropper id="crop-wide" src="" aspect-ratio="1.777"></snice-cropper></div>
+      <div class="box"><snice-cropper id="crop-tall" src="" aspect-ratio="0.75"></snice-cropper></div>
+    </section>
+
+    <section>
+      <h2>Min size</h2>
+      <div class="box"><snice-cropper id="crop-min" src="" min-width="100" min-height="100"></snice-cropper></div>
+    </section>
+
+    <section>
+      <h2>Empty state</h2>
+      <div class="box"><snice-cropper id="crop-empty"></snice-cropper></div>
+    </section>
+
+    <script type="module">
+      import '/packages/components/src/cropper/snice-cropper.ts';
+
+      /**
+       * A local photo, drawn once per size. Distinct sizes and shapes so the
+       * letterboxing test can verify the natural aspect ratio is preserved.
+       * The left half is red, the right half blue, so crop pixel samples
+       * would have something to discriminate (kept for parity with the
+       * matrix fixture's PHOTO).
+       */
+      function photo(width, height) {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        const grad = ctx.createLinearGradient(0, 0, width, 0);
+        grad.addColorStop(0, 'rgb(217, 45, 45)');
+        grad.addColorStop(1, 'rgb(37, 99, 235)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, width, height);
+        return canvas.toDataURL('image/png');
+      }
+
+      const SOURCES = {
+        landscape: photo(600, 400),     // 1.5
+        square: photo(500, 500),        // 1.0
+        panorama: photo(1200, 480),     // 2.5
+        portrait: photo(360, 600),      // 0.6
+      };
+
+      document.getElementById('crop-default').setAttribute('src', SOURCES.landscape);
+      document.getElementById('crop-square').setAttribute('src', SOURCES.square);
+      document.getElementById('crop-wide').setAttribute('src', SOURCES.panorama);
+      document.getElementById('crop-tall').setAttribute('src', SOURCES.portrait);
+      document.getElementById('crop-min').setAttribute('src', SOURCES.landscape);
+
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-pricing-table visual fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. The hosts the visual-integrity spec
+         asserts on: the declarative card rail (with annual prices and a
+         highlighted plan so the toggle test has something to switch), and
+         the JS-fed table/annual variants. All data is inline. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      body > h2 {
+        margin: 1rem 1.5rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--snice-color-text-tertiary);
+      }
+      body > section { padding: 0 1.5rem 1rem; }
+      snice-pricing-table { display: block; }
+    </style>
+  </head>
+  <body>
+    <h2>Variant: cards (default) - Declarative</h2>
+    <section>
+      <snice-pricing-table variant="cards">
+        <snice-plan name="Free" price="0" cta="Get Started">
+          <snice-feature>5 projects</snice-feature>
+          <snice-feature>1GB storage</snice-feature>
+          <snice-feature excluded>API access</snice-feature>
+          <snice-feature excluded>Priority support</snice-feature>
+        </snice-plan>
+        <snice-plan name="Pro" price="29" annual-price="24" highlighted badge="Popular" cta="Start Trial" description="For growing teams">
+          <snice-feature>Unlimited projects</snice-feature>
+          <snice-feature value="100GB">Storage</snice-feature>
+          <snice-feature>API access</snice-feature>
+          <snice-feature excluded>Priority support</snice-feature>
+        </snice-plan>
+        <snice-plan name="Enterprise" price="99" annual-price="79" cta="Contact Sales" cta-variant="outline" description="For large organizations">
+          <snice-feature>Unlimited projects</snice-feature>
+          <snice-feature value="Unlimited">Storage</snice-feature>
+          <snice-feature>API access</snice-feature>
+          <snice-feature>Priority support</snice-feature>
+        </snice-plan>
+      </snice-pricing-table>
+    </section>
+
+    <h2>Variant: table</h2>
+    <section>
+      <snice-pricing-table id="pt-table" variant="table"></snice-pricing-table>
+    </section>
+
+    <h2>Annual billing toggled on</h2>
+    <section>
+      <snice-pricing-table id="pt-annual" variant="cards" annual></snice-pricing-table>
+    </section>
+
+    <h2>Table variant with annual toggle</h2>
+    <section>
+      <snice-pricing-table id="pt-table-annual" variant="table"></snice-pricing-table>
+    </section>
+
+    <script type="module">
+      import '/packages/components/src/pricing-table/snice-pricing-table.ts';
+
+      const plans = [
+        { name: 'Free', price: 0, cta: 'Get Started', features: [
+          '5 projects', '1GB storage'
+        ] },
+        { name: 'Pro', price: 29, annualPrice: 24, cta: 'Start Trial', highlighted: true, badge: 'Popular', features: [
+          'Unlimited projects', '100GB storage', 'API access'
+        ] },
+        { name: 'Enterprise', price: 99, annualPrice: 79, cta: 'Contact Sales', ctaVariant: 'outline', features: [
+          'Unlimited projects', 'Unlimited storage', 'API access', 'Priority support'
+        ] },
+      ];
+      document.getElementById('pt-table').plans = plans;
+      document.getElementById('pt-annual').plans = plans;
+      document.getElementById('pt-table-annual').plans = plans;
+
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

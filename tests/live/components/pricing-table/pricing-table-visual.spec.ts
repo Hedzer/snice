@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/pricing-table/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/pricing-table/visual.html';
 
 test.describe('Snice Pricing Table visual integrity', () => {
   test.beforeEach(async ({ page }) => {

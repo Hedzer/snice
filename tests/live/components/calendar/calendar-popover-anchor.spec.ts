@@ -11,7 +11,7 @@ import { test, expect } from '@playwright/test';
 // and invisible on screen. Only real layout can catch either half, so this
 // lives here instead of the happy-dom suite.
 
-const demoPath = '/components/calendar/demo.html';
+const demoPath = '/tests/live/fixtures/calendar/visual.html';
 
 /** Adjacency budget between a bar and its overlay, in px. */
 const GAP = 8;
@@ -128,6 +128,20 @@ test.describe('Snice Calendar overlay anchoring', () => {
 
     const tooltip = page.locator('#cal-default .calendar__tooltip');
     await expect(tooltip).toBeVisible();
+
+    // The tooltip fades/slides in; toBeVisible fires at the START of that
+    // transition, when the tip is still moving toward its anchor. Under
+    // parallel-load contention the transition can still be mid-flight at
+    // measurement time, so wait for the anchor to actually hold instead of
+    // measuring an arbitrary frame.
+    await expect(async () => {
+      const barBox = (await bar.boundingBox())!;
+      const tipBox = (await tooltip.boundingBox())!;
+      const above = barBox.y - (tipBox.y + tipBox.height);
+      const below = tipBox.y - (barBox.y + barBox.height);
+      expect(Math.min(Math.abs(above), Math.abs(below))).toBeLessThanOrEqual(GAP);
+      expect(Math.abs(tipBox.x - barBox.x)).toBeLessThanOrEqual(GAP);
+    }).toPass();
 
     const barBox = (await bar.boundingBox())!;
     const tipBox = (await tooltip.boundingBox())!;

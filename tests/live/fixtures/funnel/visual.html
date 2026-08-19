@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-funnel visual fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Same funnels the visual-integrity spec
+         asserts on: the flag matrix (show-*), orientations, animation, and
+         custom-colour stages. All data is inline; nothing remote. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      body > h2 {
+        margin: 1rem 1.5rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--snice-color-text-tertiary);
+      }
+      snice-funnel {
+        display: block;
+        max-width: 500px;
+        margin: 0 1.5rem 1rem;
+        padding: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Variant: default</h2>
+    <snice-funnel data-default variant="default"></snice-funnel>
+
+    <h2>Variant: gradient</h2>
+    <snice-funnel data-default variant="gradient"></snice-funnel>
+
+    <h2>Orientation: vertical (default)</h2>
+    <snice-funnel data-default orientation="vertical"></snice-funnel>
+
+    <h2>Orientation: horizontal</h2>
+    <snice-funnel data-default orientation="horizontal" style="max-width: 600px;"></snice-funnel>
+
+    <h2>show-labels: true (default)</h2>
+    <snice-funnel data-default show-labels></snice-funnel>
+
+    <h2>show-labels: false</h2>
+    <snice-funnel data-default show-labels="false"></snice-funnel>
+
+    <h2>show-values: true (default)</h2>
+    <snice-funnel data-default show-values></snice-funnel>
+
+    <h2>show-values: false</h2>
+    <snice-funnel data-default show-values="false"></snice-funnel>
+
+    <h2>show-percentages: true (default)</h2>
+    <snice-funnel data-default show-percentages></snice-funnel>
+
+    <h2>show-percentages: false</h2>
+    <snice-funnel data-default show-percentages="false"></snice-funnel>
+
+    <h2>All labels/values/percentages hidden</h2>
+    <snice-funnel data-default show-labels="false" show-values="false" show-percentages="false"></snice-funnel>
+
+    <h2>Animation: true</h2>
+    <snice-funnel data-default animation></snice-funnel>
+
+    <h2>Custom stage colors</h2>
+    <snice-funnel data-colored></snice-funnel>
+
+    <h2>Gradient + Horizontal</h2>
+    <snice-funnel data-default variant="gradient" orientation="horizontal" style="max-width: 600px;"></snice-funnel>
+
+    <h2>Default + Horizontal + Animation</h2>
+    <snice-funnel data-default variant="default" orientation="horizontal" animation style="max-width: 600px;"></snice-funnel>
+
+    <h2>Two stages</h2>
+    <snice-funnel id="f-two"></snice-funnel>
+
+    <h2>Many stages</h2>
+    <snice-funnel id="f-many"></snice-funnel>
+
+    <script type="module">
+      import '/packages/components/src/funnel/snice-funnel.ts';
+
+      const stages = [
+        { label: 'Visitors', value: 10000 },
+        { label: 'Leads', value: 6500 },
+        { label: 'Qualified', value: 3200 },
+        { label: 'Proposals', value: 1800 },
+        { label: 'Closed', value: 900 },
+      ];
+      const coloredStages = [
+        { label: 'Visitors', value: 10000, color: '#2563eb' },
+        { label: 'Leads', value: 6500, color: '#7c3aed' },
+        { label: 'Qualified', value: 3200, color: '#db2777' },
+        { label: 'Proposals', value: 1800, color: '#ea580c' },
+        { label: 'Closed', value: 900, color: '#16a34a' },
+      ];
+      const twoStages = [
+        { label: 'Start', value: 5000 },
+        { label: 'End', value: 1000 },
+      ];
+      const manyStages = [
+        { label: 'Awareness', value: 50000 },
+        { label: 'Interest', value: 35000 },
+        { label: 'Consideration', value: 20000 },
+        { label: 'Intent', value: 12000 },
+        { label: 'Evaluation', value: 8000 },
+        { label: 'Purchase', value: 5000 },
+        { label: 'Retention', value: 3500 },
+        { label: 'Advocacy', value: 2000 },
+      ];
+
+      document.querySelectorAll('[data-default]').forEach(el => { el.data = stages; });
+      document.querySelectorAll('[data-colored]').forEach(el => { el.data = coloredStages; });
+      document.getElementById('f-two').data = twoStages;
+      document.getElementById('f-many').data = manyStages;
+
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-comments visual fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. The hosts below reproduce the sections the
+         visual-integrity spec asserts on: a depth-2 threaded feed for the
+         nesting/reply-composer tests, and the flag variants for the host-wide
+         checks. No remote avatars — the component renders initials badges
+         instead, which the avatar geometry checks are just as happy with. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      body > section { padding: 1rem 1.5rem; }
+      body > section h2 {
+        margin: 0 0 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--snice-color-text-tertiary);
+      }
+      snice-comments { display: block; }
+    </style>
+  </head>
+  <body>
+    <section>
+      <h2>Threaded: avatars, likes, nested replies (max-depth="3" default)</h2>
+      <snice-comments id="comments-threaded"></snice-comments>
+    </section>
+
+    <section>
+      <h2>allow-replies="false"</h2>
+      <snice-comments id="comments-no-replies" allow-replies="false"></snice-comments>
+    </section>
+
+    <section>
+      <h2>allow-likes="false"</h2>
+      <snice-comments id="comments-no-likes" allow-likes="false"></snice-comments>
+    </section>
+
+    <section>
+      <h2>max-depth="1" (shallow nesting)</h2>
+      <snice-comments id="comments-shallow"></snice-comments>
+    </section>
+
+    <section>
+      <h2>current-user enables delete on own comments</h2>
+      <snice-comments id="comments-own"></snice-comments>
+    </section>
+
+    <section>
+      <h2>allow-replies="false" + allow-likes="false"</h2>
+      <snice-comments id="comments-readonly" allow-replies="false" allow-likes="false"></snice-comments>
+    </section>
+
+    <section>
+      <h2>Empty (no comments)</h2>
+      <snice-comments id="comments-empty"></snice-comments>
+    </section>
+
+    <script type="module">
+      import '/packages/components/src/comments/snice-comments.ts';
+
+      const c1 = document.getElementById('comments-threaded');
+      c1.currentUser = 'Alice';
+      c1.comments = [
+        {
+          id: '1', author: 'Alice',
+          text: 'Great feature! Threaded replies are excellent.', timestamp: new Date(Date.now() - 3600000).toISOString(),
+          likes: 5, liked: false,
+          replies: [
+            {
+              id: '2', author: 'Bob',
+              text: 'Agreed, the nesting makes conversations easy to follow.', timestamp: new Date(Date.now() - 1800000).toISOString(),
+              likes: 2, liked: true,
+              replies: [
+                { id: '3', author: 'Alice', text: 'Thanks Bob!', timestamp: new Date(Date.now() - 600000).toISOString(), likes: 0, liked: false }
+              ]
+            }
+          ]
+        },
+        { id: '4', author: 'Charlie', text: 'No avatar shows initials instead.', timestamp: new Date(Date.now() - 7200000).toISOString(), likes: 1, liked: false }
+      ];
+
+      const c2 = document.getElementById('comments-no-replies');
+      c2.currentUser = 'Me';
+      c2.comments = [
+        { id: 'a', author: 'User A', text: 'Reply button is hidden.', timestamp: new Date().toISOString(), likes: 0 },
+        { id: 'b', author: 'User B', text: 'Cannot reply to this.', timestamp: new Date().toISOString(), likes: 3 },
+      ];
+
+      const c3 = document.getElementById('comments-no-likes');
+      c3.currentUser = 'Me';
+      c3.comments = [
+        { id: 'x', author: 'User X', text: 'Like button is hidden.', timestamp: new Date().toISOString() },
+        { id: 'y', author: 'User Y', text: 'No hearts here.', timestamp: new Date().toISOString() },
+      ];
+
+      const c4 = document.getElementById('comments-shallow');
+      c4.currentUser = 'Alice';
+      c4.maxDepth = 1;
+      c4.comments = [
+        { id: 'm1', author: 'Alice', text: 'Top level', timestamp: new Date().toISOString(), likes: 0,
+          replies: [
+            { id: 'm2', author: 'Bob', text: 'Reply (depth 1) - no further nesting allowed', timestamp: new Date().toISOString(), likes: 0 }
+          ]
+        },
+      ];
+
+      const c5 = document.getElementById('comments-own');
+      c5.currentUser = 'Me';
+      c5.comments = [
+        { id: 'o1', author: 'Me', text: 'I can delete this (my own comment).', timestamp: new Date().toISOString(), likes: 0 },
+        { id: 'o2', author: 'Other', text: 'I cannot delete this.', timestamp: new Date().toISOString(), likes: 2 },
+      ];
+
+      const c6 = document.getElementById('comments-readonly');
+      c6.currentUser = 'Me';
+      c6.comments = [
+        { id: 'r1', author: 'Admin', text: 'Read-only feed: no likes, no replies.', timestamp: new Date().toISOString() },
+      ];
+
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>
