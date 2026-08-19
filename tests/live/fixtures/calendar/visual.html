@@ -39,6 +39,29 @@
   </head>
   <body>
     <section>
+      <h2>highlight-today: true (default) vs false</h2>
+      <div class="side-by-side">
+        <div><snice-calendar highlight-today></snice-calendar></div>
+        <div><snice-calendar highlight-today="false"></snice-calendar></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>show-week-numbers</h2>
+      <snice-calendar show-week-numbers></snice-calendar>
+    </section>
+
+    <section>
+      <h2>locale: ja-JP</h2>
+      <snice-calendar locale="ja-JP"></snice-calendar>
+    </section>
+
+    <section>
+      <h2>Multiple colored events on same date</h2>
+      <snice-calendar id="cal-multi-events" style="height: 46rem; max-width: 30rem"></snice-calendar>
+    </section>
+
+    <section>
       <h2>Event popovers (click an event)</h2>
       <snice-calendar id="cal-popover"></snice-calendar>
     </section>
@@ -66,12 +89,30 @@
         month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
       }).format(date);
 
+      /** A locally generated avatar so the chip's image really loads. */
+      function avatar(hex, name) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 40;
+        canvas.height = 40;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = hex;
+        ctx.beginPath();
+        ctx.arc(20, 20, 20, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(name[0], 20, 21);
+        return canvas.toDataURL('image/png');
+      }
+
       const calDefault = document.getElementById('cal-default');
       calDefault.events = [
-        { id: 'd1', title: 'Design sync', start: addDays(today, 1), color: '#2563eb' },
+        { id: 'd1', title: 'Design sync', start: addDays(today, 1), color: '#2563eb', avatar: { src: avatar('#2563eb', 'Dana Ives'), name: 'Dana Ives' } },
         { id: 'd2', title: 'Offsite', start: addDays(today, 2), end: addDays(today, 9), color: '#0891b2', tooltip: 'Team offsite — Lisbon', popover: true },
         { id: 'd3', title: 'Release', start: addDays(today, 6), color: '#16a34a', popover: 'Ships v7.6 — changelog in #releases' },
-        { id: 'd4', title: 'On call', start: addDays(today, 12), end: addDays(today, 15), color: '#7c3aed' },
+        { id: 'd4', title: 'On call', start: addDays(today, 12), end: addDays(today, 15), color: '#7c3aed', avatar: { src: avatar('#7c3aed', 'Sam Reyes'), name: 'Sam Reyes' } },
       ];
       calDefault.eventPopover = async (event) => {
         await new Promise((r) => setTimeout(r, 200));
@@ -99,6 +140,12 @@
       document.getElementById('cal-noselect').events = [
         { id: 'n1', title: 'All hands', start: addDays(today, 2), color: '#2563eb' },
         { id: 'n2', title: 'Freeze', start: addDays(today, 4), end: addDays(today, 8), color: '#dc2626' },
+      ];
+
+      document.getElementById('cal-multi-events').events = [
+        { id: 'm1', title: 'Standup', start: addDays(today, 1), color: '#2563eb' },
+        { id: 'm2', title: 'Review', start: addDays(today, 1), color: '#16a34a' },
+        { id: 'm3', title: 'Retro', start: addDays(today, 1), color: '#7c3aed' },
       ];
 
       document.documentElement.dataset.fixtureReady = 'true';

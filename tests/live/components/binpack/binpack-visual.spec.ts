@@ -11,7 +11,12 @@ const demoPath = 'http://localhost:5566/tests/live/fixtures/binpack/visual.html'
 test.describe('Snice Binpack visual integrity', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(demoPath);
-    await page.waitForLoadState('networkidle');
+    // The fixture is static (no fetches); WebKit's networkidle can hang on
+    // the vite HMR socket, so the deterministic readiness is the fixture
+    // flag plus the component definition.
+    await page.waitForFunction(() =>
+      document.documentElement.dataset.fixtureReady === 'true'
+      && !!customElements.get('snice-binpack'));
     await page.waitForTimeout(400);
   });
 
