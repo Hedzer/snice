@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Popover</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .btn { padding: 0.5rem 1rem; border: 1px solid var(--snice-color-border); border-radius: 6px; background: var(--snice-color-surface); color: var(--snice-color-text); cursor: pointer; font-size: 0.8rem; }
+    .btn:hover { background: var(--snice-color-surface-hover); }
+    .panel-body { display: flex; flex-direction: column; gap: 0.5rem; min-width: 12rem; }
+    .panel-body h4 { margin: 0; font-size: 0.875rem; }
+    .panel-body p { margin: 0; font-size: 0.8rem; color: var(--snice-color-text-secondary); }
+    .spacer { padding: 3rem 0; }
+  </style>
+</head>
+<body>
+
+<div class="spacer">
+
+<h2>Default (bottom-end)</h2>
+<div class="row">
+  <snice-popover id="po-default">
+    <button class="btn" slot="trigger">Open popover</button>
+    <div class="panel-body">
+      <h4>Popover panel</h4>
+      <p>Interactive content lives here. Click outside or press Escape to dismiss.</p>
+    </div>
+  </snice-popover>
+</div>
+
+<h2>Placements</h2>
+<div class="row" style="padding: 2rem 0;">
+  <snice-popover placement="top">
+    <button class="btn" slot="trigger">top</button>
+    <div class="panel-body"><p>Placement: top</p></div>
+  </snice-popover>
+  <snice-popover placement="bottom-start">
+    <button class="btn" slot="trigger">bottom-start</button>
+    <div class="panel-body"><p>Placement: bottom-start</p></div>
+  </snice-popover>
+  <snice-popover placement="right">
+    <button class="btn" slot="trigger">right</button>
+    <div class="panel-body"><p>Placement: right</p></div>
+  </snice-popover>
+  <snice-popover placement="left">
+    <button class="btn" slot="trigger">left</button>
+    <div class="panel-body"><p>Placement: left</p></div>
+  </snice-popover>
+</div>
+
+<h2>Dismissal Options</h2>
+<div class="row">
+  <snice-popover no-outside-dismiss>
+    <button class="btn" slot="trigger">No outside dismiss</button>
+    <div class="panel-body"><p>Only Escape or the trigger closes this.</p></div>
+  </snice-popover>
+  <snice-popover no-escape-dismiss>
+    <button class="btn" slot="trigger">No escape dismiss</button>
+    <div class="panel-body"><p>Escape is ignored; click outside instead.</p></div>
+  </snice-popover>
+</div>
+
+<h2>Open by Default</h2>
+<div class="row" style="padding-bottom: 6rem;">
+  <snice-popover open placement="bottom-start">
+    <button class="btn" slot="trigger">Already open</button>
+    <div class="panel-body">
+      <h4>Opens on load</h4>
+      <p>Authored with the open attribute.</p>
+    </div>
+  </snice-popover>
+</div>
+
+</div>
+
+<script type="module">
+  import '/packages/components/src/popover/snice-popover.ts';
+</script>
+
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

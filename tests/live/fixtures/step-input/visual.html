@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Step Input</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .state-matrix { display: grid; grid-template-columns: repeat(3, max-content); gap: 0.75rem; align-items: center; }
+    .contract-form { box-sizing: border-box; display: grid; gap: var(--snice-spacing-sm, 0.75rem); max-width: 28rem; padding: var(--snice-spacing-md, 1rem); border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: var(--snice-border-radius-lg, 0.5rem); }
+    .contract-actions { display: flex; gap: var(--snice-spacing-xs, 0.5rem); flex-wrap: wrap; }
+    .contract-actions button { padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); }
+    .contract-form output { color: var(--snice-color-text-secondary, rgb(82 82 82)); }
+    @media (max-width: 44rem) {
+      .state-matrix { grid-template-columns: max-content; }
+    }
+  </style>
+</head>
+<body>
+
+<h2>Sizes</h2>
+<div class="row">
+  <snice-step-input size="small" value="5"></snice-step-input>
+  <snice-step-input size="medium" value="5"></snice-step-input>
+  <snice-step-input size="large" value="5"></snice-step-input>
+</div>
+
+<h2>Default Value</h2>
+<div class="row">
+  <snice-step-input value="0"></snice-step-input>
+  <snice-step-input value="10"></snice-step-input>
+  <snice-step-input value="100"></snice-step-input>
+  <snice-step-input value="-5"></snice-step-input>
+</div>
+
+<h2>Min and Max</h2>
+<div class="row">
+  <snice-step-input min="0" max="10" value="5"></snice-step-input>
+  <snice-step-input min="-10" max="10" value="0"></snice-step-input>
+  <snice-step-input min="0" max="100" value="50"></snice-step-input>
+</div>
+
+<h2>At Boundaries</h2>
+<div class="row">
+  <snice-step-input min="0" max="10" value="0"></snice-step-input>
+  <snice-step-input min="0" max="10" value="10"></snice-step-input>
+</div>
+
+<h2>Custom Step</h2>
+<div class="row">
+  <snice-step-input step="1" value="5" min="0" max="20"></snice-step-input>
+  <snice-step-input step="5" value="10" min="0" max="100"></snice-step-input>
+  <snice-step-input step="10" value="50" min="0" max="100"></snice-step-input>
+  <snice-step-input step="0.1" value="1.5" min="0" max="5"></snice-step-input>
+  <snice-step-input step="0.25" value="2.5" min="0" max="10"></snice-step-input>
+</div>
+
+<h2>Disabled</h2>
+<div class="row">
+  <snice-step-input disabled value="5" size="small"></snice-step-input>
+  <snice-step-input disabled value="5" size="medium"></snice-step-input>
+  <snice-step-input disabled value="5" size="large"></snice-step-input>
+</div>
+
+<h2>Readonly</h2>
+<div class="row">
+  <snice-step-input readonly value="42" size="small"></snice-step-input>
+  <snice-step-input readonly value="42" size="medium"></snice-step-input>
+  <snice-step-input readonly value="42" size="large"></snice-step-input>
+</div>
+
+<h2>Wrap (Cycles min/max)</h2>
+<div class="row">
+  <snice-step-input wrap min="0" max="5" value="5"></snice-step-input>
+  <snice-step-input wrap min="1" max="12" value="12" step="1"></snice-step-input>
+</div>
+
+<h2>No Min/Max (Unbounded)</h2>
+<div class="row">
+  <snice-step-input value="0"></snice-step-input>
+</div>
+
+<h2>Sizes x States</h2>
+<div class="state-matrix">
+  <snice-step-input size="small" value="5"></snice-step-input>
+  <snice-step-input size="small" disabled value="5"></snice-step-input>
+  <snice-step-input size="small" readonly value="5"></snice-step-input>
+
+  <snice-step-input size="medium" value="5"></snice-step-input>
+  <snice-step-input size="medium" disabled value="5"></snice-step-input>
+  <snice-step-input size="medium" readonly value="5"></snice-step-input>
+
+  <snice-step-input size="large" value="5"></snice-step-input>
+  <snice-step-input size="large" disabled value="5"></snice-step-input>
+  <snice-step-input size="large" readonly value="5"></snice-step-input>
+</div>
+
+<h2>Large Numbers</h2>
+<div class="row">
+  <snice-step-input value="99999" step="1000"></snice-step-input>
+  <snice-step-input value="-99999" step="1000"></snice-step-input>
+</div>
+
+<h2>Validated Form Contract</h2>
+<form id="step-contract-form" class="contract-form">
+  <label for="step-contract-control">Seats</label>
+  <snice-step-input id="step-contract-control" name="seats" min="1" max="9" step="2" value="2"></snice-step-input>
+  <div class="contract-actions">
+    <button type="submit">Submit normalized value</button>
+    <button id="step-contract-error" type="button">Set business-rule error</button>
+    <button type="reset">Reset</button>
+  </div>
+  <output id="step-contract-output" aria-live="polite">Current normalized value: 3</output>
+</form>
+
+<script type="module">
+  import '/packages/components/src/step-input/snice-step-input.ts';
+
+  const form = document.getElementById('step-contract-form');
+  const stepper = document.getElementById('step-contract-control');
+  const errorButton = document.getElementById('step-contract-error');
+  const output = document.getElementById('step-contract-output');
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    output.textContent = `Submitted seats=${new FormData(form).get('seats')}`;
+  });
+  form.addEventListener('reset', () => queueMicrotask(() => {
+    stepper.setCustomValidity('');
+    errorButton.textContent = 'Set business-rule error';
+    output.textContent = `Reset seats=${stepper.value}`;
+  }));
+  stepper.addEventListener('invalid', () => {
+    output.textContent = stepper.validationMessage;
+  });
+  errorButton.addEventListener('click', () => {
+    const clearing = !stepper.validity.valid;
+    stepper.setCustomValidity(clearing ? '' : 'This party size requires approval.');
+    errorButton.textContent = clearing ? 'Set business-rule error' : 'Clear business-rule error';
+    output.textContent = clearing ? `Valid seats=${stepper.value}` : stepper.validationMessage;
+  });
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

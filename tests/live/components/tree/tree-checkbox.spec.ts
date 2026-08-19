@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Tree Component Checkbox', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:5566/components/tree/demo.html');
+    await page.goto('http://localhost:5566/tests/live/fixtures/tree/visual.html');
     await page.waitForLoadState('networkidle');
     await page.waitForFunction(() => {
       const tree = document.querySelector('#tree-check');

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sparkline</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+<h2>Types</h2>
+<div class="row" id="types"></div>
+
+<h2>Colors</h2>
+<div class="row" id="colors"></div>
+
+<h2>Type x Color Matrix</h2>
+<div style="display: grid; grid-template-columns: repeat(5, auto); gap: 1rem; align-items: center;" id="matrix"></div>
+
+<h2>Show Dots</h2>
+<div class="row" id="dots"></div>
+
+<h2>Show Area</h2>
+<div class="row" id="area"></div>
+
+<h2>Smooth</h2>
+<div class="row" id="smooth"></div>
+
+<h2>Smooth + Show Area</h2>
+<div class="row" id="smooth-area"></div>
+
+<h2>Smooth + Show Dots</h2>
+<div class="row" id="smooth-dots"></div>
+
+<h2>Smooth + Show Area + Show Dots</h2>
+<div class="row" id="all-options"></div>
+
+<h2>Custom Sizes</h2>
+<div class="row" id="sizes"></div>
+
+<h2>Custom Stroke Width</h2>
+<div class="row" id="stroke"></div>
+
+<h2>Custom Color</h2>
+<div class="row" id="custom-color"></div>
+
+<h2>Custom Min/Max</h2>
+<div class="row" id="minmax"></div>
+
+<h2>Edge Cases</h2>
+<div class="row" id="edge"></div>
+
+<script type="module">
+  import '/packages/components/src/sparkline/snice-sparkline.ts';
+
+  const data = [10, 25, 15, 30, 20, 35, 28, 40, 32, 45];
+  const flatData = [20, 20, 20, 20, 20];
+  const singlePoint = [42];
+  const twoPoints = [10, 50];
+  const negativeData = [-10, 5, -20, 15, -5, 10];
+
+  function spark(props) {
+    const el = document.createElement('snice-sparkline');
+    el.data = props.data || data;
+    if (props.type) el.type = props.type;
+    if (props.color) el.color = props.color;
+    if (props.customColor) el.customColor = props.customColor;
+    if (props.width) el.width = props.width;
+    if (props.height) el.height = props.height;
+    if (props.strokeWidth) el.strokeWidth = props.strokeWidth;
+    if (props.showDots) el.showDots = true;
+    if (props.showArea) el.showArea = true;
+    if (props.smooth) el.smooth = true;
+    if (props.min !== undefined) el.min = props.min;
+    if (props.max !== undefined) el.max = props.max;
+    return el;
+  }
+
+  function label(text) {
+    const el = document.createElement('span');
+    el.style.fontSize = '0.8rem';
+    el.style.color = 'var(--snice-color-text-secondary)';
+    el.style.minWidth = '60px';
+    el.textContent = text;
+    return el;
+  }
+
+  // Types
+  const types = document.getElementById('types');
+  ['line', 'bar', 'area'].forEach(t => {
+    const wrap = document.createElement('div');
+    wrap.appendChild(label(t));
+    wrap.appendChild(spark({ type: t }));
+    types.appendChild(wrap);
+  });
+
+  // Colors
+  const colors = document.getElementById('colors');
+  ['primary', 'success', 'warning', 'danger', 'muted'].forEach(c => {
+    const wrap = document.createElement('div');
+    wrap.appendChild(label(c));
+    wrap.appendChild(spark({ color: c }));
+    colors.appendChild(wrap);
+  });
+
+  // Matrix
+  const matrix = document.getElementById('matrix');
+  ['primary', 'success', 'warning', 'danger', 'muted'].forEach(c => {
+    ['line', 'bar', 'area'].forEach(t => {
+      matrix.appendChild(spark({ type: t, color: c }));
+    });
+  });
+
+  // Dots
+  const dots = document.getElementById('dots');
+  dots.appendChild(spark({ showDots: true }));
+  dots.appendChild(spark({ showDots: true, color: 'success' }));
+
+  // Area
+  const area = document.getElementById('area');
+  area.appendChild(spark({ showArea: true }));
+  area.appendChild(spark({ showArea: true, color: 'danger' }));
+
+  // Smooth
+  const smooth = document.getElementById('smooth');
+  smooth.appendChild(spark({ smooth: true }));
+  smooth.appendChild(spark({ smooth: true, color: 'warning' }));
+
+  // Smooth + Area
+  const smoothArea = document.getElementById('smooth-area');
+  smoothArea.appendChild(spark({ smooth: true, showArea: true }));
+  smoothArea.appendChild(spark({ smooth: true, showArea: true, color: 'success' }));
+
+  // Smooth + Dots
+  const smoothDots = document.getElementById('smooth-dots');
+  smoothDots.appendChild(spark({ smooth: true, showDots: true }));
+  smoothDots.appendChild(spark({ smooth: true, showDots: true, color: 'danger' }));
+
+  // All options
+  const allOpts = document.getElementById('all-options');
+  allOpts.appendChild(spark({ smooth: true, showArea: true, showDots: true }));
+  allOpts.appendChild(spark({ smooth: true, showArea: true, showDots: true, color: 'success' }));
+
+  // Sizes
+  const sizes = document.getElementById('sizes');
+  [[60, 20], [100, 30], [150, 40], [200, 50]].forEach(([w, h]) => {
+    const wrap = document.createElement('div');
+    wrap.appendChild(label(`${w}x${h}`));
+    wrap.appendChild(spark({ width: w, height: h }));
+    sizes.appendChild(wrap);
+  });
+
+  // Stroke width
+  const stroke = document.getElementById('stroke');
+  [1, 2, 3, 4, 5].forEach(sw => {
+    const wrap = document.createElement('div');
+    wrap.appendChild(label(`stroke=${sw}`));
+    wrap.appendChild(spark({ strokeWidth: sw }));
+    stroke.appendChild(wrap);
+  });
+
+  // Custom color
+  const customColor = document.getElementById('custom-color');
+  ['#ff6b6b', '#51cf66', '#339af0', '#fcc419', '#845ef7'].forEach(c => {
+    customColor.appendChild(spark({ customColor: c }));
+  });
+
+  // Min/Max
+  const minmax = document.getElementById('minmax');
+  minmax.appendChild(spark({ min: 0, max: 100 }));
+  minmax.appendChild(spark({ min: -50, max: 50, data: negativeData }));
+
+  // Edge cases
+  const edge = document.getElementById('edge');
+  const wrap1 = document.createElement('div');
+  wrap1.appendChild(label('empty'));
+  wrap1.appendChild(spark({ data: [] }));
+  edge.appendChild(wrap1);
+
+  const wrap2 = document.createElement('div');
+  wrap2.appendChild(label('single'));
+  wrap2.appendChild(spark({ data: singlePoint }));
+  edge.appendChild(wrap2);
+
+  const wrap3 = document.createElement('div');
+  wrap3.appendChild(label('two'));
+  wrap3.appendChild(spark({ data: twoPoints }));
+  edge.appendChild(wrap3);
+
+  const wrap4 = document.createElement('div');
+  wrap4.appendChild(label('flat'));
+  wrap4.appendChild(spark({ data: flatData }));
+  edge.appendChild(wrap4);
+
+  const wrap5 = document.createElement('div');
+  wrap5.appendChild(label('negative'));
+  wrap5.appendChild(spark({ data: negativeData }));
+  edge.appendChild(wrap5);
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

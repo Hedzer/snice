@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('pagination component visual test', async ({ page }) => {
-  await page.goto('http://localhost:5566/components/pagination/demo.html');
+  await page.goto('http://localhost:5566/tests/live/fixtures/pagination/visual.html');
   await page.waitForLoadState('networkidle');
   await page.waitForSelector('snice-pagination', { timeout: 10000 });
 

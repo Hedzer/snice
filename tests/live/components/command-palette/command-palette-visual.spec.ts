@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/command-palette/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/command-palette/visual.html';
 
 async function openPalette(page: import('@playwright/test').Page, id: string) {
   await page.evaluate(pid => (document.getElementById(pid) as any).show(), id);

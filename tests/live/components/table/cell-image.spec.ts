@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/table/full-showcase.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/table/visual.html';
 
 test.describe('Snice Cell Image', () => {
   test.beforeEach(async ({ page }) => {

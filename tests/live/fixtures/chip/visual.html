@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>Chip</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+  </style>
+  <script type="module">import '/packages/components/src/chip/snice-chip.ts';</script>
+</head>
+<body>
+
+<section>
+  <h2>All variants</h2>
+  <div class="row">
+    <snice-chip label="Default" variant="default"></snice-chip>
+    <snice-chip label="Primary" variant="primary"></snice-chip>
+    <snice-chip label="Success" variant="success"></snice-chip>
+    <snice-chip label="Warning" variant="warning"></snice-chip>
+    <snice-chip label="Error" variant="error"></snice-chip>
+    <snice-chip label="Info" variant="info"></snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>All variants x Selected</h2>
+  <div class="row">
+    <snice-chip label="Default" variant="default" selected></snice-chip>
+    <snice-chip label="Primary" variant="primary" selected></snice-chip>
+    <snice-chip label="Success" variant="success" selected></snice-chip>
+    <snice-chip label="Warning" variant="warning" selected></snice-chip>
+    <snice-chip label="Error" variant="error" selected></snice-chip>
+    <snice-chip label="Info" variant="info" selected></snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>All sizes</h2>
+  <div class="row">
+    <snice-chip label="Small" size="small"></snice-chip>
+    <snice-chip label="Medium" size="medium"></snice-chip>
+    <snice-chip label="Large" size="large"></snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>Sizes x Variants (primary)</h2>
+  <div class="row">
+    <snice-chip label="Small Primary" size="small" variant="primary"></snice-chip>
+    <snice-chip label="Medium Primary" size="medium" variant="primary"></snice-chip>
+    <snice-chip label="Large Primary" size="large" variant="primary"></snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>Selectable (click to toggle)</h2>
+  <div class="row">
+    <snice-chip label="Default" variant="default" selectable></snice-chip>
+    <snice-chip label="Primary" variant="primary" selectable></snice-chip>
+    <snice-chip label="Success" variant="success" selectable></snice-chip>
+    <snice-chip label="Warning" variant="warning" selectable></snice-chip>
+    <snice-chip label="Error" variant="error" selectable></snice-chip>
+    <snice-chip label="Info" variant="info" selectable></snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>All shapes</h2>
+  <div class="row">
+    <snice-chip label="Pill" shape="pill"></snice-chip>
+    <snice-chip label="Rounded" shape="rounded"></snice-chip>
+    <snice-chip label="Square" shape="square"></snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>Shapes x Variants</h2>
+  <div class="row">
+    <snice-chip label="Pill Primary" shape="pill" variant="primary"></snice-chip>
+    <snice-chip label="Rounded Success" shape="rounded" variant="success"></snice-chip>
+    <snice-chip label="Square Error" shape="square" variant="error"></snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>Removable</h2>
+  <div class="row">
+    <snice-chip label="Default" removable></snice-chip>
+    <snice-chip label="Primary" variant="primary" removable></snice-chip>
+    <snice-chip label="Success" variant="success" removable></snice-chip>
+    <snice-chip label="Warning" variant="warning" removable></snice-chip>
+    <snice-chip label="Error" variant="error" removable></snice-chip>
+    <snice-chip label="Info" variant="info" removable></snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>Removable x Sizes</h2>
+  <div class="row">
+    <snice-chip label="Small" size="small" removable></snice-chip>
+    <snice-chip label="Medium" size="medium" removable></snice-chip>
+    <snice-chip label="Large" size="large" removable></snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>Disabled</h2>
+  <div class="row">
+    <snice-chip label="Disabled" disabled></snice-chip>
+    <snice-chip label="Disabled Primary" variant="primary" disabled></snice-chip>
+    <snice-chip label="Disabled Removable" removable disabled></snice-chip>
+    <snice-chip label="Disabled Selected" selected disabled></snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>Icon property (emoji)</h2>
+  <div class="row">
+    <snice-chip label="Star" icon="&#11088;"></snice-chip>
+    <snice-chip label="Heart" icon="&#10084;&#65039;" variant="error"></snice-chip>
+    <snice-chip label="Check" icon="&#10003;" variant="success"></snice-chip>
+    <snice-chip label="Warning" icon="&#9888;&#65039;" variant="warning"></snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>Icon slot (Material Symbols)</h2>
+  <div class="row">
+    <snice-chip label="Label">
+      <span slot="icon" class="material-symbols-outlined" style="font-size:16px">label</span>
+    </snice-chip>
+    <snice-chip label="Home">
+      <span slot="icon" class="material-symbols-outlined" style="font-size:16px">home</span>
+    </snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>Avatar</h2>
+  <div class="row">
+    <snice-chip label="Alice" avatar="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2240%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"></snice-chip>
+    <snice-chip label="Bob" avatar="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2240%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E" removable></snice-chip>
+    <snice-chip label="Charlie" avatar="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2240%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E" variant="primary"></snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>Avatar x Sizes</h2>
+  <div class="row">
+    <snice-chip label="Small" avatar="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2240%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E" size="small"></snice-chip>
+    <snice-chip label="Medium" avatar="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2240%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E" size="medium"></snice-chip>
+    <snice-chip label="Large" avatar="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2240%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E" size="large"></snice-chip>
+  </div>
+</section>
+
+<section>
+  <h2>Edge: long text</h2>
+  <snice-chip label="This is an extremely long chip label that should handle overflow gracefully"></snice-chip>
+</section>
+
+<section>
+  <h2>Edge: single character</h2>
+  <snice-chip label="X"></snice-chip>
+</section>
+
+<section>
+  <h2>Edge: empty label</h2>
+  <snice-chip label=""></snice-chip>
+</section>
+
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

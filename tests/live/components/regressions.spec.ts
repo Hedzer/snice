@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Regression Tests', () => {
   test('button should have active state on mouse down', async ({ page }) => {
-    await page.goto('http://localhost:5566/components/button/demo.html', { waitUntil: 'domcontentloaded' });
+    await page.goto('http://localhost:5566/tests/live/fixtures/button/visual.html', { waitUntil: 'domcontentloaded' });
 
     const button = page.locator('snice-button[variant="primary"]').first();
 
@@ -28,7 +28,7 @@ test.describe('Regression Tests', () => {
   });
 
   test('checkbox should toggle on click', async ({ page }) => {
-    await page.goto('http://localhost:5566/components/checkbox/demo.html', { waitUntil: 'domcontentloaded' });
+    await page.goto('http://localhost:5566/tests/live/fixtures/checkbox/visual.html', { waitUntil: 'domcontentloaded' });
 
     const checkbox = page.locator('snice-checkbox').first();
     const initialChecked = await checkbox.evaluate((el: any) => el.checked);
@@ -41,7 +41,7 @@ test.describe('Regression Tests', () => {
   });
 
   test('card demo should use snice-button components', async ({ page }) => {
-    await page.goto('http://localhost:5566/components/card/demo.html', { waitUntil: 'domcontentloaded' });
+    await page.goto('http://localhost:5566/tests/live/fixtures/card/visual.html', { waitUntil: 'domcontentloaded' });
 
     // Check that snice-button elements exist in cards
     const sniceButtons = await page.locator('snice-card snice-button').count();

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('controller works with correct import order (controller first)', async ({ page }) => {
   // demo.html imports controller before component - this works
-  await page.goto('http://localhost:5566/components/terminal/demo.html');
+  await page.goto('http://localhost:5566/tests/live/fixtures/terminal/visual.html');
   await page.waitForTimeout(1000);
 
   // Try executing a command to verify controller is attached and functional

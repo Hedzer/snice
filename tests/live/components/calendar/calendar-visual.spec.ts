@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/calendar/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/calendar/visual.html';
 
 // Complements calendar.spec.ts (week-row tiling) with header/column alignment
 // and header-chrome containment. No screenshot baselines.

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Range Slider</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 1.5rem; }
+    snice-range-slider { display: block; width: 100%; max-width: 400px; }
+    snice-range-slider[orientation="vertical"] { width: auto; height: 200px; }
+    .contract-form { box-sizing: border-box; display: grid; gap: var(--snice-spacing-sm, 0.75rem); max-width: 32rem; padding: var(--snice-spacing-md, 1rem); border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: var(--snice-border-radius-lg, 0.5rem); }
+    .contract-actions { display: flex; gap: var(--snice-spacing-xs, 0.5rem); flex-wrap: wrap; }
+    .contract-actions button { padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); }
+    .contract-form output { color: var(--snice-color-text-secondary, rgb(82 82 82)); }
+  </style>
+</head>
+<body>
+
+<h2>Default (0-100, horizontal)</h2>
+<section><snice-range-slider value-low="20" value-high="80"></snice-range-slider></section>
+
+<h2>Orientation: horizontal (default)</h2>
+<section><snice-range-slider orientation="horizontal" value-low="30" value-high="70"></snice-range-slider></section>
+
+<h2>Orientation: vertical</h2>
+<section><snice-range-slider orientation="vertical" value-low="30" value-high="70"></snice-range-slider></section>
+
+<h2>show-tooltip</h2>
+<section><snice-range-slider show-tooltip value-low="25" value-high="75"></snice-range-slider></section>
+
+<h2>show-labels</h2>
+<section><snice-range-slider show-labels value-low="20" value-high="80"></snice-range-slider></section>
+
+<h2>show-tooltip + show-labels</h2>
+<section><snice-range-slider show-tooltip show-labels value-low="30" value-high="60"></snice-range-slider></section>
+
+<h2>Disabled</h2>
+<section><snice-range-slider disabled value-low="20" value-high="60"></snice-range-slider></section>
+
+<h2>Step: 1 (default)</h2>
+<section><snice-range-slider step="1" show-tooltip value-low="10" value-high="90"></snice-range-slider></section>
+
+<h2>Step: 5</h2>
+<section><snice-range-slider step="5" show-tooltip value-low="20" value-high="80"></snice-range-slider></section>
+
+<h2>Step: 10</h2>
+<section><snice-range-slider step="10" show-tooltip value-low="30" value-high="70"></snice-range-slider></section>
+
+<h2>Step: 25</h2>
+<section><snice-range-slider step="25" show-tooltip value-low="25" value-high="75"></snice-range-slider></section>
+
+<h2>Custom range: min=0 max=1000</h2>
+<section><snice-range-slider min="0" max="1000" value-low="200" value-high="800" show-labels show-tooltip></snice-range-slider></section>
+
+<h2>Custom range: min=-50 max=50</h2>
+<section><snice-range-slider min="-50" max="50" value-low="-20" value-high="20" show-labels show-tooltip></snice-range-slider></section>
+
+<h2>Narrow range (thumbs close)</h2>
+<section><snice-range-slider value-low="45" value-high="55" show-tooltip></snice-range-slider></section>
+
+<h2>Full range (thumbs at extremes)</h2>
+<section><snice-range-slider value-low="0" value-high="100" show-tooltip show-labels></snice-range-slider></section>
+
+<h2>Same value (collapsed)</h2>
+<section><snice-range-slider value-low="50" value-high="50" show-tooltip></snice-range-slider></section>
+
+<h2>Vertical + show-tooltip</h2>
+<section class="row">
+  <snice-range-slider orientation="vertical" show-tooltip value-low="20" value-high="80"></snice-range-slider>
+</section>
+
+<h2>Vertical + disabled</h2>
+<section class="row">
+  <snice-range-slider orientation="vertical" disabled value-low="30" value-high="60"></snice-range-slider>
+</section>
+
+<h2>Vertical + show-labels</h2>
+<section class="row">
+  <snice-range-slider orientation="vertical" show-labels value-low="10" value-high="90"></snice-range-slider>
+</section>
+
+<h2>Validated Form Contract</h2>
+<form id="range-contract-form" class="contract-form">
+  <label for="range-contract-control">Budget range</label>
+  <snice-range-slider
+    id="range-contract-control"
+    name="budget"
+    min="1"
+    max="9"
+    step="2"
+    value-low="2"
+    value-high="8"
+    show-labels
+    show-tooltip
+  ></snice-range-slider>
+  <div class="contract-actions">
+    <button type="submit">Submit normalized range</button>
+    <button id="range-contract-error" type="button">Set business-rule error</button>
+    <button type="reset">Reset</button>
+  </div>
+  <output id="range-contract-output" aria-live="polite">Current normalized range: 3,9</output>
+</form>
+
+<script type="module">
+  import '/packages/components/src/range-slider/snice-range-slider.ts';
+
+  const form = document.getElementById('range-contract-form');
+  const range = document.getElementById('range-contract-control');
+  const errorButton = document.getElementById('range-contract-error');
+  const output = document.getElementById('range-contract-output');
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    output.textContent = `Submitted budget=${new FormData(form).get('budget')}`;
+  });
+  form.addEventListener('reset', () => queueMicrotask(() => {
+    range.setCustomValidity('');
+    errorButton.textContent = 'Set business-rule error';
+    output.textContent = `Reset budget=${range.valueLow},${range.valueHigh}`;
+  }));
+  range.addEventListener('invalid', () => {
+    output.textContent = range.validationMessage;
+  });
+  errorButton.addEventListener('click', () => {
+    const clearing = !range.validity.valid;
+    range.setCustomValidity(clearing ? '' : 'This budget range needs approval.');
+    errorButton.textContent = clearing ? 'Set business-rule error' : 'Clear business-rule error';
+    output.textContent = clearing ? `Valid budget=${range.valueLow},${range.valueHigh}` : range.validationMessage;
+  });
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

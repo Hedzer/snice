@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Date Picker</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui; margin: 0; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); overflow-wrap: anywhere; }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; max-width: 700px; }
+    .form-demo { display: flex; flex-direction: column; gap: 0.875rem; width: min(100%, 36rem); }
+    .form-demo fieldset { display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; margin: 0; padding: 0.75rem; border: 1px solid var(--snice-color-border, #475569); border-radius: 0.5rem; }
+    .form-demo legend { padding: 0 0.35rem; color: var(--snice-color-text-secondary, #cbd5e1); }
+    .form-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .form-actions button { padding: 0.5rem 0.75rem; border: 1px solid var(--snice-color-border, #475569); border-radius: 0.375rem; background: var(--snice-color-surface-raised, #1e293b); color: var(--snice-color-text, #f8fafc); cursor: pointer; }
+    .label-demo { display: grid; gap: 1rem; width: min(100%, 38rem); }
+    .label-row { display: flex; gap: 0.35rem; align-items: baseline; flex-wrap: wrap; }
+    output { display: block; min-height: 1.5rem; padding: 0.625rem 0.75rem; border-radius: 0.375rem; background: var(--snice-color-surface-raised, #1e293b); color: var(--snice-color-text-secondary, #cbd5e1); font: 0.8125rem/1.45 ui-monospace, monospace; }
+    @media (max-width: 480px) { body { padding: 1rem; } }
+  </style>
+  <script type="module">import '/packages/components/src/date-picker/snice-date-picker.ts';</script>
+</head>
+<body>
+
+<section>
+  <h2>Default</h2>
+  <snice-date-picker label="Select date"></snice-date-picker>
+</section>
+
+<section>
+  <h2>With value</h2>
+  <snice-date-picker label="Pre-filled" value="2026-03-15"></snice-date-picker>
+</section>
+
+<section>
+  <h2>All formats</h2>
+  <div class="row">
+    <snice-date-picker label="mm/dd/yyyy" format="mm/dd/yyyy" value="2026-03-06"></snice-date-picker>
+    <snice-date-picker label="dd/mm/yyyy" format="dd/mm/yyyy" value="2026-03-06"></snice-date-picker>
+  </div>
+  <div class="row" style="margin-top:0.75rem">
+    <snice-date-picker label="yyyy-mm-dd" format="yyyy-mm-dd" value="2026-03-06"></snice-date-picker>
+    <snice-date-picker label="yyyy/mm/dd" format="yyyy/mm/dd" value="2026-03-06"></snice-date-picker>
+  </div>
+  <div class="row" style="margin-top:0.75rem">
+    <snice-date-picker label="dd-mm-yyyy" format="dd-mm-yyyy" value="2026-03-06"></snice-date-picker>
+    <snice-date-picker label="mm-dd-yyyy" format="mm-dd-yyyy" value="2026-03-06"></snice-date-picker>
+  </div>
+  <div class="row" style="margin-top:0.75rem">
+    <snice-date-picker label="mmmm dd, yyyy" format="mmmm dd, yyyy" value="2026-03-06"></snice-date-picker>
+  </div>
+</section>
+
+<section>
+  <h2>Sizes</h2>
+  <div class="row">
+    <snice-date-picker label="Small" size="small"></snice-date-picker>
+    <snice-date-picker label="Medium" size="medium"></snice-date-picker>
+    <snice-date-picker label="Large" size="large"></snice-date-picker>
+  </div>
+</section>
+
+<section>
+  <h2>Variants</h2>
+  <div class="row">
+    <snice-date-picker label="Outlined" variant="outlined"></snice-date-picker>
+    <snice-date-picker label="Filled" variant="filled"></snice-date-picker>
+    <snice-date-picker label="Underlined" variant="underlined"></snice-date-picker>
+  </div>
+</section>
+
+<section>
+  <h2>Sizes x Variants</h2>
+  <div class="row">
+    <snice-date-picker label="Small Filled" size="small" variant="filled"></snice-date-picker>
+    <snice-date-picker label="Large Underlined" size="large" variant="underlined"></snice-date-picker>
+  </div>
+</section>
+
+<section>
+  <h2>clearable</h2>
+  <snice-date-picker label="Clearable" value="2026-06-15" clearable></snice-date-picker>
+</section>
+
+<section>
+  <h2>min + max</h2>
+  <snice-date-picker label="Dec 2026 only" min="2026-12-01" max="2026-12-31" helper-text="Only December 2026"></snice-date-picker>
+</section>
+
+<section>
+  <h2>Disabled</h2>
+  <snice-date-picker label="Disabled" disabled value="2026-03-06"></snice-date-picker>
+</section>
+
+<section>
+  <h2>Readonly</h2>
+  <snice-date-picker label="Readonly" readonly value="2026-03-06"></snice-date-picker>
+</section>
+
+<section>
+  <h2>Loading</h2>
+  <snice-date-picker label="Loading" loading></snice-date-picker>
+</section>
+
+<section>
+  <h2>Required</h2>
+  <snice-date-picker label="Required" required helper-text="This field is required"></snice-date-picker>
+</section>
+
+<section>
+  <h2>Invalid + error-text</h2>
+  <snice-date-picker label="Invalid" invalid error-text="Please select a valid date"></snice-date-picker>
+</section>
+
+<section>
+  <h2>helper-text</h2>
+  <snice-date-picker label="With helper" helper-text="Choose your birth date"></snice-date-picker>
+</section>
+
+<section>
+  <h2>Custom placeholder</h2>
+  <snice-date-picker label="Custom" placeholder="Pick a date..."></snice-date-picker>
+</section>
+
+<section>
+  <h2>first-day-of-week="1" (Monday)</h2>
+  <snice-date-picker label="Monday start" first-day-of-week="1"></snice-date-picker>
+</section>
+
+<section>
+  <h2>Form: name + required</h2>
+  <snice-date-picker label="Birthdate" name="birthdate" required></snice-date-picker>
+</section>
+
+<section>
+  <h2>Disabled + value + clearable (clear hidden when disabled)</h2>
+  <snice-date-picker label="Disabled clearable" disabled value="2026-01-01" clearable></snice-date-picker>
+</section>
+
+<section id="date-picker-label-lifecycle">
+  <h2>External Label Lifecycle</h2>
+  <div class="label-demo">
+    <div>
+      <div class="label-row">
+        <label id="date-showcase-primary-label" for="date-showcase-labelled">Arrival date</label>
+        <label id="date-showcase-secondary-label" for="date-showcase-labelled">required</label>
+      </div>
+      <snice-date-picker
+        id="date-showcase-labelled"
+        label="Internal date fallback"
+        helper-text="Used to schedule local delivery."
+        required
+      ></snice-date-picker>
+    </div>
+    <label>
+      Wrapped departure date
+      <snice-date-picker id="date-showcase-wrapped" helper-text="Wrapping labels work too."></snice-date-picker>
+    </label>
+    <div>
+      <label for="date-showcase-disabled">Disabled date</label>
+      <snice-date-picker id="date-showcase-disabled" disabled></snice-date-picker>
+    </div>
+    <div class="form-actions">
+      <button id="date-showcase-change-label" type="button">Change label</button>
+      <button id="date-showcase-toggle-error" type="button">Show error</button>
+      <button id="date-showcase-toggle-labels" type="button">Remove external labels</button>
+    </div>
+    <output id="date-showcase-label-status" aria-live="polite">Accessible name: Arrival date required</output>
+  </div>
+</section>
+
+<section id="date-picker-form-contract">
+  <h2>Native form integration, canonical values, validation, reset, and fieldset rules</h2>
+  <form id="date-picker-showcase-form" class="form-demo">
+    <snice-date-picker
+      id="date-picker-showcase-delivery"
+      name="delivery-date"
+      value="2026-03-15"
+      format="dd/mm/yyyy"
+      min="2026-03-10"
+      max="2026-03-20"
+      label="Delivery date"
+      helper-text="Displayed as DD/MM/YYYY; submitted as YYYY-MM-DD"
+      clearable
+      required
+    ></snice-date-picker>
+    <snice-date-picker
+      id="date-picker-showcase-readonly"
+      name="confirmed-date"
+      value="2026-03-16"
+      format="mmmm dd, yyyy"
+      label="Confirmed date"
+      readonly
+    ></snice-date-picker>
+    <fieldset disabled>
+      <legend>
+        Disabled fieldset
+        <snice-date-picker
+          id="date-picker-showcase-legend"
+          name="legend-date"
+          value="2026-03-12"
+          label="First legend remains enabled"
+        ></snice-date-picker>
+      </legend>
+      <snice-date-picker
+        id="date-picker-showcase-fieldset"
+        name="disabled-date"
+        value="2026-03-13"
+        label="Descendant is effectively disabled and omitted"
+      ></snice-date-picker>
+    </fieldset>
+    <div class="form-actions">
+      <button type="submit">Submit form</button>
+      <button type="reset">Reset defaults</button>
+    </div>
+    <output id="date-picker-form-status" aria-live="polite">Ready — edit or select a delivery date.</output>
+  </form>
+</section>
+
+<script>
+  const form = document.querySelector('#date-picker-showcase-form');
+  const formStatus = document.querySelector('#date-picker-form-status');
+  const describeFormData = () => Array.from(new FormData(form).entries())
+    .map(([name, value]) => `${name}=${String(value)}`)
+    .join(', ') || '(empty)';
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    formStatus.textContent = `Submitted: ${describeFormData()}`;
+  });
+  form.addEventListener('reset', () => {
+    requestAnimationFrame(() => { formStatus.textContent = `Reset: ${describeFormData()}`; });
+  });
+
+  const labelledPicker = document.querySelector('#date-showcase-labelled');
+  const primaryLabel = document.querySelector('#date-showcase-primary-label');
+  const secondaryLabel = document.querySelector('#date-showcase-secondary-label');
+  const labelStatus = document.querySelector('#date-showcase-label-status');
+  let labelsAttached = true;
+  const updateLabelStatus = () => requestAnimationFrame(() => {
+    labelStatus.textContent = `Accessible name: ${labelledPicker.shadowRoot?.querySelector('.input')?.getAttribute('aria-label') || ''}`;
+  });
+  document.querySelector('#date-showcase-change-label').addEventListener('click', () => {
+    primaryLabel.textContent = primaryLabel.textContent === 'Arrival date' ? 'Departure date' : 'Arrival date';
+    updateLabelStatus();
+  });
+  document.querySelector('#date-showcase-toggle-error').addEventListener('click', event => {
+    const showing = labelledPicker.errorText !== '';
+    labelledPicker.invalid = !showing;
+    labelledPicker.errorText = showing ? '' : 'Choose an available date.';
+    event.currentTarget.textContent = showing ? 'Show error' : 'Clear error';
+    updateLabelStatus();
+  });
+  document.querySelector('#date-showcase-toggle-labels').addEventListener('click', event => {
+    labelsAttached = !labelsAttached;
+    primaryLabel.htmlFor = labelsAttached ? labelledPicker.id : '';
+    secondaryLabel.htmlFor = labelsAttached ? labelledPicker.id : '';
+    event.currentTarget.textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
+    updateLabelStatus();
+  });
+</script>
+
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

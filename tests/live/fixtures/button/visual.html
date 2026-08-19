@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Button</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <script>
+    // The showcase's theme-preset script (localStorage) is stripped from the
+    // fixture; keep the deterministic half the specs drive: a fixed dark
+    // start and the snice-theme postMessage channel.
+    document.documentElement.setAttribute('data-theme', 'dark');
+    window.addEventListener('message', function (e) {
+      if (e.data && e.data.type === 'snice-theme') {
+        document.documentElement.setAttribute('data-theme', e.data.theme);
+      }
+    });
+  </script>
+  
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .matrix {
+      display: grid;
+      grid-template-columns: auto repeat(6, auto);
+      gap: 0.5rem;
+      align-items: center;
+      max-width: 100%;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+    }
+    .matrix-label {
+      font-size: 0.7rem;
+      color: var(--snice-color-text-secondary, #aaa);
+      text-align: right;
+      padding-right: 0.5rem;
+    }
+    .policy-note {
+      max-width: 52rem;
+      margin: -0.25rem 0 0.75rem;
+      color: var(--snice-color-text-secondary, #aaa);
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+    #button-navigation-status {
+      display: block;
+      margin-top: 0.75rem;
+      color: var(--snice-color-text-secondary, #aaa);
+      font-size: 0.82rem;
+    }
+    .lifecycle-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-width: 52rem;
+    }
+    .lifecycle-form fieldset {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-width: 0;
+      border: 1px solid var(--snice-color-border, #ddd);
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+    }
+    .lifecycle-form output {
+      color: var(--snice-color-text-secondary, #aaa);
+      font-size: 0.82rem;
+    }
+    snice-button.long-label {
+      max-width: 100%;
+    }
+    snice-button.long-label::part(base) {
+      max-width: 100%;
+    }
+    snice-button.long-label::part(label) {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Material Symbols Outlined, subset to the five ligatures the
+       showcase uses (home/check/delete/search/add), embedded as a data
+       URL: the fixture must not fetch fonts.googleapis.com. The glyphs are
+       addressed through their private-use codepoints, so the GSUB liga
+       lookups (and the ASCII base letters they map) stay out of the subset. */
+    @font-face {
+      font-family: 'Material Symbols Outlined';
+      font-style: normal;
+      font-weight: 400;
+      src: url(data:font/woff2;base64,d09GMgABAAAAAANQAA4AAAAABvAAAAL7AAL2hwAAAAAAAAAAAAAAAAAAAAAAAAAAHCoGYD9TVEFUcABUEQgKgmyCTwE2AiQDDgsOAAQgBYR6ByAMBxvNBRGVmwVBfiaYp3y6o46FI0S3L57NG5i7Bv9kznxfUjJeu8DMJ0Q8NVvig3kNqVwok9P8RB7A/qdvLB0APv/3k++P4w/s96JFh5hpUTis41X2ccbZOJCNdDQdUNpm2w2msPWQUpcmEf/+EQT4ZCILpkKlGg2I1aPtgF4kwQH8BwAAOHtccwgheiFfVgbIcQDuWLl27cocf1Hx/V6X5v8acJloDgjAHrfHgTRkRwgPByTAAQUwP378lgIq1ytbQUK9+/QfJoMZ3LnLAFksHglIQw4EGPkACFkwJCBJ2mLZdg6YwwDTwAIJsOjJzysDxMDD4F5UfHPxfb/3097v/Q8wP9WxZEUTz048PHENhFwKCP1HbADCAMTgjEFYCuDAISEMQth4vnN+XD8cIwrHt592VCFfgQICfDfmsB+K4caOVUzw7QLrN000kg86cHij9bf9aXfH3gum32HM7SwN202/N/Zum3N7zJ32jeo37Fy3c7I0fmN9i23UoIlt39bEkE9zydLEg9N+SOtlqXM+S3SW83WyePbyJnM8YA5QunadLnVWd74cHqmNBwCQlyG/f9+rmTxHz0WLHlK8Z89RyJG85kh3yaVn1bt0WdRD1ZXdjIy8ejVl48Zevaawb1/0IxoFIueGoBg9pEtk1+Rq73teOhJ/nmRzNHNL5jUCzLfJKW9vLtA6domvnrHHAd4uLbFKu7j+0v+5vWxPAGEMAIJPLm6P7yP1cSSOfNXnWcMQlmkPERBWe9IBIPq2mKzDIhcFtAFLFvloIxtiMU+2NGCN7CjHFzlEMhWSwpRSHROBp1my8LVINiTRGtkSQ/vhs6dvEeDJum427dZnSToCS7MiuE2TlBFcFm+SQPQyD6/I4GCfFw1RP0chefVGXzrzYsa9t8pvSh53n8Yyq5sjiz/xvnLp9SypiJzm3u+ulreRmtMQAt2uahhw8BfvH5g0tbfOXtaWdLKDL90eYe29HbOg1tpsj/7Ru6++NX11T5rlY1S42FPlfpm43Q0=) format('woff2');
+    }
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+</head>
+<body>
+
+  <section>
+    <h2>All variants</h2>
+    <div class="row">
+      <snice-button variant="default">Default</snice-button>
+      <snice-button variant="primary">Primary</snice-button>
+      <snice-button variant="success">Success</snice-button>
+      <snice-button variant="warning">Warning</snice-button>
+      <snice-button variant="danger">Danger</snice-button>
+      <snice-button variant="text">Text</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>All sizes</h2>
+    <div class="row">
+      <snice-button size="small">Small</snice-button>
+      <snice-button size="medium">Medium</snice-button>
+      <snice-button size="large">Large</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Variant x Size matrix</h2>
+    <div class="matrix">
+      <div class="matrix-label">small</div>
+      <snice-button variant="default" size="small">Default</snice-button>
+      <snice-button variant="primary" size="small">Primary</snice-button>
+      <snice-button variant="success" size="small">Success</snice-button>
+      <snice-button variant="warning" size="small">Warning</snice-button>
+      <snice-button variant="danger" size="small">Danger</snice-button>
+      <snice-button variant="text" size="small">Text</snice-button>
+
+      <div class="matrix-label">medium</div>
+      <snice-button variant="default" size="medium">Default</snice-button>
+      <snice-button variant="primary" size="medium">Primary</snice-button>
+      <snice-button variant="success" size="medium">Success</snice-button>
+      <snice-button variant="warning" size="medium">Warning</snice-button>
+      <snice-button variant="danger" size="medium">Danger</snice-button>
+      <snice-button variant="text" size="medium">Text</snice-button>
+
+      <div class="matrix-label">large</div>
+      <snice-button variant="default" size="large">Default</snice-button>
+      <snice-button variant="primary" size="large">Primary</snice-button>
+      <snice-button variant="success" size="large">Success</snice-button>
+      <snice-button variant="warning" size="large">Warning</snice-button>
+      <snice-button variant="danger" size="large">Danger</snice-button>
+      <snice-button variant="text" size="large">Text</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Outline variants</h2>
+    <div class="row">
+      <snice-button variant="default" outline>Default</snice-button>
+      <snice-button variant="primary" outline>Primary</snice-button>
+      <snice-button variant="success" outline>Success</snice-button>
+      <snice-button variant="warning" outline>Warning</snice-button>
+      <snice-button variant="danger" outline>Danger</snice-button>
+      <snice-button variant="text" outline>Text</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Variant x Outline matrix</h2>
+    <div class="matrix">
+      <div class="matrix-label">filled</div>
+      <snice-button variant="default">Default</snice-button>
+      <snice-button variant="primary">Primary</snice-button>
+      <snice-button variant="success">Success</snice-button>
+      <snice-button variant="warning">Warning</snice-button>
+      <snice-button variant="danger">Danger</snice-button>
+      <snice-button variant="text">Text</snice-button>
+
+      <div class="matrix-label">outline</div>
+      <snice-button variant="default" outline>Default</snice-button>
+      <snice-button variant="primary" outline>Primary</snice-button>
+      <snice-button variant="success" outline>Success</snice-button>
+      <snice-button variant="warning" outline>Warning</snice-button>
+      <snice-button variant="danger" outline>Danger</snice-button>
+      <snice-button variant="text" outline>Text</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Pill shape</h2>
+    <div class="row">
+      <snice-button variant="primary" pill>Pill Button</snice-button>
+      <snice-button variant="success" pill outline>Pill Outline</snice-button>
+      <snice-button variant="danger" pill size="small">Small Pill</snice-button>
+      <snice-button variant="warning" pill size="large">Large Pill</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Circle shape</h2>
+    <div class="row">
+      <snice-button variant="primary" circle size="small">+</snice-button>
+      <snice-button variant="primary" circle size="medium">+</snice-button>
+      <snice-button variant="primary" circle size="large">+</snice-button>
+      <snice-button variant="danger" circle>X</snice-button>
+      <snice-button variant="success" circle outline>V</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Disabled</h2>
+    <div class="row">
+      <snice-button variant="default" disabled>Default</snice-button>
+      <snice-button variant="primary" disabled>Primary</snice-button>
+      <snice-button variant="success" disabled>Success</snice-button>
+      <snice-button variant="danger" disabled outline>Outline</snice-button>
+      <snice-button variant="text" disabled>Text</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Loading</h2>
+    <div class="row">
+      <snice-button variant="default" loading>Default</snice-button>
+      <snice-button variant="primary" loading>Primary</snice-button>
+      <snice-button variant="success" loading>Success</snice-button>
+      <snice-button variant="danger" loading outline>Outline</snice-button>
+      <snice-button variant="text" loading>Text</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Icon property (emoji)</h2>
+    <div class="row">
+      <snice-button variant="primary" icon="⭐">Star</snice-button>
+      <snice-button variant="success" icon="✔️">Done</snice-button>
+      <snice-button variant="danger" icon="🗑️">Delete</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Icon property (Material Symbols ligature)</h2>
+    <div class="row">
+      <snice-button variant="primary" icon="home">Home</snice-button>
+      <snice-button variant="success" icon="check">Confirm</snice-button>
+      <snice-button variant="danger" icon="delete">Remove</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Icon slot (Material Symbols)</h2>
+    <div class="row">
+      <snice-button variant="primary" size="small">
+        <span class="material-symbols-outlined" slot="icon">&#xE88A;</span>
+        Home
+      </snice-button>
+      <snice-button variant="primary" size="medium">
+        <span class="material-symbols-outlined" slot="icon">&#xE88A;</span>
+        Home
+      </snice-button>
+      <snice-button variant="primary" size="large">
+        <span class="material-symbols-outlined" slot="icon">&#xE88A;</span>
+        Home
+      </snice-button>
+    </div>
+    <div class="row">
+      <snice-button variant="success">
+        <span class="material-symbols-outlined" slot="icon">&#xE5CA;</span>
+        Confirm
+      </snice-button>
+      <snice-button variant="danger">
+        <span class="material-symbols-outlined" slot="icon">&#xE872;</span>
+        Remove
+      </snice-button>
+      <snice-button variant="primary">
+        <span class="material-symbols-outlined" slot="icon">&#xE8B6;</span>
+        Search
+      </snice-button>
+      <snice-button variant="success">
+        <span class="material-symbols-outlined" slot="icon">&#xE145;</span>
+        Add
+      </snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>icon-placement: start (default) vs end</h2>
+    <div class="row">
+      <snice-button variant="primary" icon="arrow-right" icon-placement="start">Start</snice-button>
+      <snice-button variant="primary" icon="arrow-right" icon-placement="end">End</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>All button types</h2>
+    <div class="row">
+      <snice-button type="button">type=button</snice-button>
+      <snice-button type="submit" variant="primary">type=submit</snice-button>
+      <snice-button type="reset" variant="default">type=reset</snice-button>
+    </div>
+  </section>
+
+  <section id="button-safe-destination">
+    <h2>Safe and isolated link buttons (href)</h2>
+    <p class="policy-note">Relative URLs and HTTP, HTTPS, email, and telephone links are accepted. Same-context navigation stays in place. Blank and named targets open without access to <code>window.opener</code>; isolated named targets intentionally open a new context instead of reusing an earlier window. Downloads remain downloads even when a target is present. Malformed URLs and unsafe schemes are blocked before navigation, downloads, form actions, or success events.</p>
+    <div class="row">
+      <snice-button id="button-showcase-same" variant="primary" href="#button-safe-destination">Same context</snice-button>
+      <snice-button id="button-showcase-blank" variant="primary" href="#button-blank-target" target="_blank">Isolated blank target</snice-button>
+      <snice-button id="button-showcase-named" variant="primary" href="#button-named-target" target="snice-button-showcase-window">Isolated named target</snice-button>
+      <snice-button id="button-showcase-download" variant="success" href="/images/snice-logo.png" target="_blank" download="snice-logo.png">Download without popup</snice-button>
+      <snice-button id="button-showcase-blocked" variant="danger" outline href="javascript:globalThis.__sniceUnsafeShowcase = true">Unsafe scheme (blocked)</snice-button>
+    </div>
+    <output id="button-navigation-status" aria-live="polite">Activate a button to inspect button-click.</output>
+  </section>
+
+  <section>
+    <h2>Edge case: empty button</h2>
+    <div class="row">
+      <snice-button variant="primary"></snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Edge case: very long text</h2>
+    <div class="row">
+      <snice-button class="long-label" variant="primary">This is a very long button label that should demonstrate text overflow handling in buttons</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Edge case: single character</h2>
+    <div class="row">
+      <snice-button variant="primary" size="small">A</snice-button>
+      <snice-button variant="primary" size="medium">B</snice-button>
+      <snice-button variant="primary" size="large">C</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>All boolean states combined</h2>
+    <div class="row">
+      <snice-button variant="primary" pill outline>Pill + Outline</snice-button>
+      <snice-button variant="primary" pill loading>Pill + Loading</snice-button>
+      <snice-button variant="primary" outline disabled>Outline + Disabled</snice-button>
+      <snice-button variant="primary" pill outline disabled>Pill + Outline + Disabled</snice-button>
+      <snice-button variant="primary" circle loading>L</snice-button>
+    </div>
+  </section>
+
+  <section id="button-fieldset-lifecycle">
+    <h2>Disabled fieldset lifecycle</h2>
+    <p class="policy-note">The first legend follows the native exception and remains enabled. Every button in the fieldset body is effectively disabled without changing its authored <code>disabled</code> property.</p>
+    <form id="button-lifecycle-form" class="lifecycle-form">
+      <input id="button-lifecycle-input" value="authored value" aria-label="Reset lifecycle value">
+      <fieldset id="button-lifecycle-fieldset" disabled>
+        <legend>
+          Fieldset actions
+          <snice-button id="button-lifecycle-legend">First legend action</snice-button>
+        </legend>
+        <div class="row">
+          <snice-button id="button-lifecycle-ordinary">Ordinary action</snice-button>
+          <snice-button id="button-lifecycle-submit" type="submit" variant="primary">Submit action</snice-button>
+          <snice-button id="button-lifecycle-reset" type="reset">Reset action</snice-button>
+          <snice-button id="button-lifecycle-nav" href="#button-fieldset-lifecycle" target="_blank">Navigate action</snice-button>
+        </div>
+      </fieldset>
+      <div class="row">
+        <snice-button id="button-lifecycle-toggle" type="button">Enable fieldset</snice-button>
+      </div>
+      <output id="button-lifecycle-status" aria-live="polite">Disabled fieldset blocks every body action.</output>
+    </form>
+  </section>
+
+  <script type="module">
+    import '/packages/components/src/button/snice-button.ts';
+
+    const navigationStatus = document.querySelector('#button-navigation-status');
+    for (const button of document.querySelectorAll('#button-safe-destination snice-button')) {
+      button.addEventListener('button-click', () => {
+        navigationStatus.textContent = `button-click: ${button.textContent.trim()}`;
+      });
+    }
+
+    const lifecycleForm = document.querySelector('#button-lifecycle-form');
+    const lifecycleFieldset = document.querySelector('#button-lifecycle-fieldset');
+    const lifecycleToggle = document.querySelector('#button-lifecycle-toggle');
+    const lifecycleStatus = document.querySelector('#button-lifecycle-status');
+    document.querySelector('#button-lifecycle-legend').addEventListener('button-click', () => {
+      lifecycleStatus.textContent = 'First legend action accepted.';
+    });
+    document.querySelector('#button-lifecycle-ordinary').addEventListener('button-click', () => {
+      lifecycleStatus.textContent = 'Ordinary action accepted.';
+    });
+    lifecycleToggle.addEventListener('button-click', () => {
+      lifecycleFieldset.toggleAttribute('disabled');
+      lifecycleToggle.textContent = lifecycleFieldset.hasAttribute('disabled')
+        ? 'Enable fieldset'
+        : 'Disable fieldset';
+      lifecycleStatus.textContent = lifecycleFieldset.hasAttribute('disabled')
+        ? 'Disabled fieldset blocks every body action.'
+        : 'Fieldset body actions are enabled.';
+    });
+    lifecycleForm.addEventListener('submit', event => {
+      event.preventDefault();
+      lifecycleStatus.textContent = 'Submit action accepted.';
+    });
+    lifecycleForm.addEventListener('reset', () => {
+      requestAnimationFrame(() => {
+        lifecycleStatus.textContent = 'Reset action accepted.';
+      });
+    });
+  </script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

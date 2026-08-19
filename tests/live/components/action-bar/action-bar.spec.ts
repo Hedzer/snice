@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/action-bar/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/action-bar/visual.html';
 
 // The first pill bar on the demo page holds six snice-button children.
 const BAR = 'snice-action-bar[variant="pill"][position="bottom"]:not([size])';

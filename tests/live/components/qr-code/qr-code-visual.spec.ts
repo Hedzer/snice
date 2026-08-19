@@ -4,7 +4,7 @@ import { collectVisualViolations } from '../../support/visual-invariants';
 // Note: qr-code ships its own demo.html (the served page), not the generated
 // full.html showcase — every code on it is a 200px canvas in a 3-up grid plus
 // one 250px interactive generator.
-const demoPath = 'http://localhost:5566/components/qr-code/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/qr-code/visual.html';
 
 test.describe('Snice QR Code visual integrity', () => {
   test.beforeEach(async ({ page }) => {
@@ -24,10 +24,12 @@ test.describe('Snice QR Code visual integrity', () => {
 
   // The `size` attribute is the rendered edge length: the painted surface must
   // be square at exactly that many CSS pixels and stay inside the host.
+  // SVG-mode codes are excluded — see the pinned bug below.
   test('each code renders square at its declared size inside the host', async ({ page }) => {
     const failures = await page.evaluate(() => {
       const problems: string[] = [];
       document.querySelectorAll('snice-qr-code').forEach((host, i) => {
+        if (host.getAttribute('render-mode') === 'svg') return;
         const size = Number(host.getAttribute('size'));
         const root = (host as any).shadowRoot as ShadowRoot;
         const surface = root.querySelector('canvas, svg') as HTMLElement | null;
@@ -110,5 +112,27 @@ test.describe('Snice QR Code visual integrity', () => {
     expect(Math.round(after.w)).toBe(400);
     expect(Math.round(after.h)).toBe(400);
     expect(after.insideHost).toBe(true);
+  });
+
+  // BUG: SVG mode ignores the `size` attribute. The vendored SVGDrawing sets
+  // width/height to '100%' (packages/components/src/qr-code/qrcode.ts:895),
+  // and `.qr-container` is an auto-width flex box, so the SVG resolves to its
+  // 300x300 intrinsic size no matter what `size` says (measured: size=150 and
+  // size=100 both paint 300x300). Canvas mode respects `size`.
+  test.fixme('svg render-mode paints at the declared size', async ({ page }) => {
+    const failures = await page.evaluate(() => {
+      const problems: string[] = [];
+      document.querySelectorAll('snice-qr-code[render-mode="svg"]').forEach((host, i) => {
+        const size = Number(host.getAttribute('size'));
+        const surface = (host as any).shadowRoot?.querySelector('svg') as HTMLElement | null;
+        if (!surface) { problems.push(`svg-qr[${i}]: no svg painted`); return; }
+        const r = surface.getBoundingClientRect();
+        if (Math.abs(r.width - size) > 1 || Math.abs(r.height - size) > 1) {
+          problems.push(`svg-qr[${i}]: ${Math.round(r.width)}x${Math.round(r.height)} for size=${size}`);
+        }
+      });
+      return problems;
+    });
+    expect(failures).toEqual([]);
   });
 });

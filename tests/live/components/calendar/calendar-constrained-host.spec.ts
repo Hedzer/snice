@@ -98,7 +98,7 @@ function readFit(page: import('@playwright/test').Page) {
 
 test.describe('Snice Calendar in a height-constrained host', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/components/calendar/demo.html');
+    await page.goto('/tests/live/fixtures/calendar/visual.html');
     await page.waitForFunction(() => !!customElements.get('snice-calendar'));
   });
 

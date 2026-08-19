@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Badge</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .box {
+      width: 3rem;
+      height: 3rem;
+      background: var(--snice-color-surface-container-high, #f0f0f0);
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .matrix {
+      display: grid;
+      grid-template-columns: auto repeat(6, 1fr);
+      gap: 1rem;
+      align-items: center;
+    }
+    .matrix-label {
+      font-size: 0.7rem;
+      color: var(--snice-color-text-secondary, #aaa);
+      text-align: right;
+      padding-right: 0.5rem;
+    }
+    .grid-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .grid-item span {
+      font-size: 0.65rem;
+      color: var(--snice-color-text-tertiary, #888);
+    }
+  </style>
+</head>
+<body>
+
+  <section>
+    <h2>All variants</h2>
+    <div class="row">
+      <snice-badge content="5" variant="default"><div class="box"><span class="material-symbols-outlined">inventory_2</span></div></snice-badge>
+      <snice-badge content="5" variant="primary"><div class="box"><span class="material-symbols-outlined">inventory_2</span></div></snice-badge>
+      <snice-badge content="5" variant="success"><div class="box"><span class="material-symbols-outlined">inventory_2</span></div></snice-badge>
+      <snice-badge content="5" variant="warning"><div class="box"><span class="material-symbols-outlined">inventory_2</span></div></snice-badge>
+      <snice-badge content="5" variant="error"><div class="box"><span class="material-symbols-outlined">inventory_2</span></div></snice-badge>
+      <snice-badge content="5" variant="info"><div class="box"><span class="material-symbols-outlined">inventory_2</span></div></snice-badge>
+    </div>
+  </section>
+
+  <section>
+    <h2>All sizes</h2>
+    <div class="row">
+      <snice-badge content="3" variant="error" size="small"><div class="box"><span class="material-symbols-outlined">notifications</span></div></snice-badge>
+      <snice-badge content="3" variant="error" size="medium"><div class="box"><span class="material-symbols-outlined">notifications</span></div></snice-badge>
+      <snice-badge content="3" variant="error" size="large"><div class="box"><span class="material-symbols-outlined">notifications</span></div></snice-badge>
+    </div>
+  </section>
+
+  <section>
+    <h2>Variant x Size matrix</h2>
+    <div class="matrix">
+      <div class="matrix-label">small</div>
+      <snice-badge content="1" variant="default" size="small"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="primary" size="small"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="success" size="small"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="warning" size="small"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="error" size="small"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="info" size="small"><div class="box">A</div></snice-badge>
+
+      <div class="matrix-label">medium</div>
+      <snice-badge content="1" variant="default" size="medium"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="primary" size="medium"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="success" size="medium"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="warning" size="medium"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="error" size="medium"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="info" size="medium"><div class="box">A</div></snice-badge>
+
+      <div class="matrix-label">large</div>
+      <snice-badge content="1" variant="default" size="large"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="primary" size="large"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="success" size="large"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="warning" size="large"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="error" size="large"><div class="box">A</div></snice-badge>
+      <snice-badge content="1" variant="info" size="large"><div class="box">A</div></snice-badge>
+    </div>
+  </section>
+
+  <section>
+    <h2>All positions</h2>
+    <div class="row">
+      <div class="grid-item">
+        <snice-badge content="1" variant="error" position="top-right"><div class="box"><span class="material-symbols-outlined">square</span></div></snice-badge>
+        <span>top-right</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge content="2" variant="error" position="top-left"><div class="box"><span class="material-symbols-outlined">square</span></div></snice-badge>
+        <span>top-left</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge content="3" variant="error" position="bottom-right"><div class="box"><span class="material-symbols-outlined">square</span></div></snice-badge>
+        <span>bottom-right</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge content="4" variant="error" position="bottom-left"><div class="box"><span class="material-symbols-outlined">square</span></div></snice-badge>
+        <span>bottom-left</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Dot mode</h2>
+    <div class="row">
+      <snice-badge dot variant="default"><div class="box"><span class="material-symbols-outlined">chat_bubble</span></div></snice-badge>
+      <snice-badge dot variant="primary"><div class="box"><span class="material-symbols-outlined">chat_bubble</span></div></snice-badge>
+      <snice-badge dot variant="success"><div class="box"><span class="material-symbols-outlined">chat_bubble</span></div></snice-badge>
+      <snice-badge dot variant="warning"><div class="box"><span class="material-symbols-outlined">chat_bubble</span></div></snice-badge>
+      <snice-badge dot variant="error"><div class="box"><span class="material-symbols-outlined">chat_bubble</span></div></snice-badge>
+      <snice-badge dot variant="info"><div class="box"><span class="material-symbols-outlined">chat_bubble</span></div></snice-badge>
+    </div>
+  </section>
+
+  <section>
+    <h2>Pulse animation</h2>
+    <div class="row">
+      <snice-badge dot pulse variant="error"><div class="box"><span class="material-symbols-outlined">notifications</span></div></snice-badge>
+      <snice-badge content="!" pulse variant="error"><div class="box"><span class="material-symbols-outlined">notifications</span></div></snice-badge>
+      <snice-badge content="3" pulse variant="primary"><div class="box"><span class="material-symbols-outlined">notifications</span></div></snice-badge>
+    </div>
+  </section>
+
+  <section>
+    <h2>Count property with max</h2>
+    <div class="row">
+      <div class="grid-item">
+        <snice-badge count="5" variant="error"><div class="box"><span class="material-symbols-outlined">mail</span></div></snice-badge>
+        <span>count=5</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge count="42" variant="error"><div class="box"><span class="material-symbols-outlined">mail</span></div></snice-badge>
+        <span>count=42</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge count="99" variant="error"><div class="box"><span class="material-symbols-outlined">mail</span></div></snice-badge>
+        <span>count=99</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge count="100" variant="error"><div class="box"><span class="material-symbols-outlined">mail</span></div></snice-badge>
+        <span>count=100 (99+)</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge count="999" variant="error"><div class="box"><span class="material-symbols-outlined">mail</span></div></snice-badge>
+        <span>count=999 (99+)</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Live count bump + show-zero</h2>
+    <div class="row">
+      <div class="grid-item">
+        <snice-badge id="bump-badge" count="3" show-zero variant="primary" label="3 notifications"><div class="box"><span class="material-symbols-outlined">notifications</span></div></snice-badge>
+        <span>
+          <button id="bump-inc">+1</button>
+          <button id="bump-dec">-1</button>
+        </span>
+      </div>
+      <div class="grid-item">
+        <snice-badge count="0" show-zero variant="default"><div class="box"><span class="material-symbols-outlined">mail</span></div></snice-badge>
+        <span>count=0 show-zero</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Custom max</h2>
+    <div class="row">
+      <div class="grid-item">
+        <snice-badge count="10" max="9" variant="error"><div class="box"><span class="material-symbols-outlined">chat_bubble</span></div></snice-badge>
+        <span>max=9, count=10</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge count="1000" max="999" variant="error"><div class="box"><span class="material-symbols-outlined">chat_bubble</span></div></snice-badge>
+        <span>max=999, count=1000</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Content property (text)</h2>
+    <div class="row">
+      <snice-badge content="NEW" variant="primary"><div class="box"><span class="material-symbols-outlined">featured_seasonal_and_gifts</span></div></snice-badge>
+      <snice-badge content="HOT" variant="error"><div class="box"><span class="material-symbols-outlined">local_fire_department</span></div></snice-badge>
+      <snice-badge content="BETA" variant="warning"><div class="box"><span class="material-symbols-outlined">settings</span></div></snice-badge>
+      <snice-badge content="!" variant="error"><div class="box"><span class="material-symbols-outlined">warning</span></div></snice-badge>
+    </div>
+  </section>
+
+  <section>
+    <h2>Inline mode</h2>
+    <div class="row">
+      <snice-badge content="5" variant="error" inline></snice-badge>
+      <snice-badge content="NEW" variant="primary" inline></snice-badge>
+      <snice-badge dot variant="success" inline></snice-badge>
+      <snice-badge content="99+" variant="warning" inline></snice-badge>
+    </div>
+  </section>
+
+  <section>
+    <h2>Offset values</h2>
+    <div class="row">
+      <div class="grid-item">
+        <snice-badge content="0" variant="error" offset="0"><div class="box">A</div></snice-badge>
+        <span>offset=0</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge content="4" variant="error" offset="4"><div class="box">A</div></snice-badge>
+        <span>offset=4</span>
+      </div>
+      <div class="grid-item">
+        <snice-badge content="8" variant="error" offset="8"><div class="box">A</div></snice-badge>
+        <span>offset=8</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Edge case: no badge shown (count=0, no content, no dot)</h2>
+    <snice-badge variant="error"><div class="box"><span class="material-symbols-outlined">inventory_2</span></div></snice-badge>
+  </section>
+
+  <section>
+    <h2>Dot x Position matrix</h2>
+    <div class="row">
+      <snice-badge dot variant="error" position="top-right"><div class="box">TR</div></snice-badge>
+      <snice-badge dot variant="error" position="top-left"><div class="box">TL</div></snice-badge>
+      <snice-badge dot variant="error" position="bottom-right"><div class="box">BR</div></snice-badge>
+      <snice-badge dot variant="error" position="bottom-left"><div class="box">BL</div></snice-badge>
+    </div>
+  </section>
+
+  <script type="module">
+    import '/packages/components/src/badge/snice-badge.ts';
+
+    const bumpBadge = document.getElementById('bump-badge');
+    document.getElementById('bump-inc').addEventListener('click', () => {
+      bumpBadge.count += 1;
+      bumpBadge.label = `${bumpBadge.count} notifications`;
+    });
+    document.getElementById('bump-dec').addEventListener('click', () => {
+      bumpBadge.count = Math.max(0, bumpBadge.count - 1);
+      bumpBadge.label = `${bumpBadge.count} notifications`;
+    });
+  </script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

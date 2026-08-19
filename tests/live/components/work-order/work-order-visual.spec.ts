@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/work-order/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/work-order/visual.html';
 
 // The template gallery renders work orders inside a `transform: scale(0.32)`
 // stage, so absolute pixel sizes are meaningless there. Geometry that is

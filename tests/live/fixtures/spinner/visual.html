@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spinner</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+<h2>Sizes</h2>
+<div class="row">
+  <snice-spinner size="small"></snice-spinner>
+  <snice-spinner size="medium"></snice-spinner>
+  <snice-spinner size="large"></snice-spinner>
+  <snice-spinner size="xl"></snice-spinner>
+</div>
+
+<h2>Colors</h2>
+<div class="row">
+  <snice-spinner color="primary"></snice-spinner>
+  <snice-spinner color="success"></snice-spinner>
+  <snice-spinner color="warning"></snice-spinner>
+  <snice-spinner color="error"></snice-spinner>
+  <snice-spinner color="info"></snice-spinner>
+</div>
+
+<h2>Size x Color Matrix</h2>
+<div style="display: grid; grid-template-columns: repeat(5, auto); gap: 1rem; align-items: center;">
+  <snice-spinner size="small" color="primary"></snice-spinner>
+  <snice-spinner size="small" color="success"></snice-spinner>
+  <snice-spinner size="small" color="warning"></snice-spinner>
+  <snice-spinner size="small" color="error"></snice-spinner>
+  <snice-spinner size="small" color="info"></snice-spinner>
+
+  <snice-spinner size="medium" color="primary"></snice-spinner>
+  <snice-spinner size="medium" color="success"></snice-spinner>
+  <snice-spinner size="medium" color="warning"></snice-spinner>
+  <snice-spinner size="medium" color="error"></snice-spinner>
+  <snice-spinner size="medium" color="info"></snice-spinner>
+
+  <snice-spinner size="large" color="primary"></snice-spinner>
+  <snice-spinner size="large" color="success"></snice-spinner>
+  <snice-spinner size="large" color="warning"></snice-spinner>
+  <snice-spinner size="large" color="error"></snice-spinner>
+  <snice-spinner size="large" color="info"></snice-spinner>
+
+  <snice-spinner size="xl" color="primary"></snice-spinner>
+  <snice-spinner size="xl" color="success"></snice-spinner>
+  <snice-spinner size="xl" color="warning"></snice-spinner>
+  <snice-spinner size="xl" color="error"></snice-spinner>
+  <snice-spinner size="xl" color="info"></snice-spinner>
+</div>
+
+<h2>With Label</h2>
+<div class="row">
+  <snice-spinner label="Loading..."></snice-spinner>
+  <snice-spinner label="Please wait" color="success"></snice-spinner>
+  <snice-spinner label="Processing" size="large" color="primary"></snice-spinner>
+  <snice-spinner label="Saving data" size="xl" color="warning"></snice-spinner>
+</div>
+
+<h2>Custom Thickness</h2>
+<div class="row">
+  <snice-spinner thickness="2" size="large"></snice-spinner>
+  <snice-spinner thickness="4" size="large"></snice-spinner>
+  <snice-spinner thickness="6" size="large"></snice-spinner>
+  <snice-spinner thickness="8" size="large"></snice-spinner>
+  <snice-spinner thickness="10" size="large"></snice-spinner>
+</div>
+
+<h2>Thickness x Size</h2>
+<div class="row">
+  <snice-spinner thickness="2" size="small"></snice-spinner>
+  <snice-spinner thickness="2" size="medium"></snice-spinner>
+  <snice-spinner thickness="2" size="large"></snice-spinner>
+  <snice-spinner thickness="2" size="xl"></snice-spinner>
+  <snice-spinner thickness="6" size="small"></snice-spinner>
+  <snice-spinner thickness="6" size="medium"></snice-spinner>
+  <snice-spinner thickness="6" size="large"></snice-spinner>
+  <snice-spinner thickness="6" size="xl"></snice-spinner>
+</div>
+
+<h2>No Label (default)</h2>
+<div class="row">
+  <snice-spinner></snice-spinner>
+</div>
+
+<h2>On Dark Background</h2>
+<div style="background: #1a1a2e; padding: 1.5rem; border-radius: 8px;" class="row">
+  <snice-spinner color="primary"></snice-spinner>
+  <snice-spinner color="success"></snice-spinner>
+  <snice-spinner color="warning"></snice-spinner>
+  <snice-spinner color="error"></snice-spinner>
+  <snice-spinner color="info" label="Loading..." style="color: white;"></snice-spinner>
+</div>
+
+<script type="module">
+  import '/packages/components/src/spinner/snice-spinner.ts';
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

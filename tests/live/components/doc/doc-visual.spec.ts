@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/doc/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/doc/visual.html';
 
 test.describe('Snice Doc visual integrity', () => {
   test.beforeEach(async ({ page }) => {
@@ -18,6 +18,10 @@ test.describe('Snice Doc visual integrity', () => {
     const failures = await page.evaluate(() => {
       const problems: string[] = [];
       document.querySelectorAll('snice-doc').forEach((host, i) => {
+        // A readonly doc hides its toolbar by design
+        // (`:host([readonly]) .toolbar { display: none }` in snice-doc.css),
+        // so there is nothing to measure there.
+        if (host.hasAttribute('readonly')) return;
         const root = (host as HTMLElement).shadowRoot;
         const toolbar = root?.querySelector('.toolbar') as HTMLElement | null;
         const editor = root?.querySelector('.doc-editor') as HTMLElement | null;
@@ -44,8 +48,11 @@ test.describe('Snice Doc visual integrity', () => {
           }
           tops.add(Math.round(r.top));
         });
-        // The showcase is wide enough for a single unwrapped toolbar row.
-        if (tops.size > 1) {
+        // The toolbar wraps by design (flex-wrap: wrap), and the material /
+        // fontawesome icon sets render wider glyphs, so a single unwrapped row
+        // is only guaranteed for the default icon set at showcase width.
+        const iconSet = host.getAttribute('icons') ?? 'default';
+        if (iconSet === 'default' && tops.size > 1) {
           problems.push(`doc[${i}]: toolbar buttons on ${tops.size} rows (${[...tops].join(',')})`);
         }
       });
@@ -58,6 +65,9 @@ test.describe('Snice Doc visual integrity', () => {
     const failures = await page.evaluate(() => {
       const problems: string[] = [];
       document.querySelectorAll('snice-doc').forEach((host, i) => {
+        // Skip readonly hosts: their toolbar is hidden by design, so every
+        // icon measures 0x0 and would be reported collapsed.
+        if (host.hasAttribute('readonly')) return;
         const root = (host as HTMLElement).shadowRoot;
         (root?.querySelectorAll('.toolbar-btn svg') as NodeListOf<SVGElement> | undefined)
           ?.forEach((svg, n) => {

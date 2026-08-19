@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/audio-recorder/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/audio-recorder/visual.html';
 
 test.describe('Snice Audio Recorder', () => {
   test.beforeEach(async ({ page }) => {

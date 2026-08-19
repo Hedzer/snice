@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
+    }
+    .row {
+      display: flex;
+      align-items: start;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .page-content {
+      padding: 1.5rem;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .page-content h3 {
+      margin: 0 0 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+  <section>
+    <h2>Default (no cover image)</h2>
+    <snice-book>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 1</h3><p>Front of page one.</p></div>
+        <div slot="back" class="page-content"><h3>Page 1 (back)</h3><p>Back of page one.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 2</h3><p>Front of page two.</p></div>
+        <div slot="back" class="page-content"><h3>Page 2 (back)</h3><p>Back of page two.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 3</h3><p>Front of page three.</p></div>
+        <div slot="back" class="page-content"><h3>Page 3 (back)</h3><p>Back of page three.</p></div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>With cover-image</h2>
+    <snice-book cover-image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22400%22%3E%3Crect%20width%3D%22300%22%20height%3D%22400%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%22150%22%20cy%3D%22200%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E" title="My Book" author="Author Name">
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Chapter 1</h3><p>The story begins here.</p></div>
+        <div slot="back" class="page-content"><p>Continued on the next page...</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Chapter 2</h3><p>The plot thickens.</p></div>
+        <div slot="back" class="page-content"><p>To be continued.</p></div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>With title and author</h2>
+    <snice-book title="The Great Adventure" author="Jane Doe" cover-image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22400%22%3E%3Crect%20width%3D%22300%22%20height%3D%22400%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%22150%22%20cy%3D%22200%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E">
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Prologue</h3><p>It was a dark and stormy night...</p></div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>current-page property (start on page 1)</h2>
+    <snice-book current-page="1" cover-image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22400%22%3E%3Crect%20width%3D%22300%22%20height%3D%22400%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%22150%22%20cy%3D%22200%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E">
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 1</h3><p>You start here because current-page=1.</p></div>
+        <div slot="back" class="page-content"><p>Back of page 1.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 2</h3><p>Page two content.</p></div>
+        <div slot="back" class="page-content"><p>Back of page 2.</p></div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>Many pages (5)</h2>
+    <snice-book cover-image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22400%22%3E%3Crect%20width%3D%22300%22%20height%3D%22400%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%22150%22%20cy%3D%22200%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E">
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 1</h3><p>Content one.</p></div>
+        <div slot="back" class="page-content"><p>Back one.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 2</h3><p>Content two.</p></div>
+        <div slot="back" class="page-content"><p>Back two.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 3</h3><p>Content three.</p></div>
+        <div slot="back" class="page-content"><p>Back three.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 4</h3><p>Content four.</p></div>
+        <div slot="back" class="page-content"><p>Back four.</p></div>
+      </snice-book-page>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Page 5</h3><p>Content five.</p></div>
+        <div slot="back" class="page-content"><p>Back five.</p></div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>Single page</h2>
+    <snice-book>
+      <snice-book-page>
+        <div slot="front" class="page-content"><h3>Only Page</h3><p>A book with just one page.</p></div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>Rich content in pages</h2>
+    <snice-book cover-image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22400%22%3E%3Crect%20width%3D%22300%22%20height%3D%22400%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%22150%22%20cy%3D%22200%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E">
+      <snice-book-page>
+        <div slot="front" class="page-content">
+          <h3>Rich Content</h3>
+          <p><strong>Bold text</strong>, <em>italic text</em>, and <a href="#">a link</a>.</p>
+          <ul>
+            <li>List item one</li>
+            <li>List item two</li>
+          </ul>
+        </div>
+        <div slot="back" class="page-content">
+          <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22250%22%20height%3D%22150%22%3E%3Crect%20width%3D%22250%22%20height%3D%22150%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%22125%22%20cy%3D%2275%22%20r%3D%2250%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E" alt="Sample" style="width: 100%; border-radius: 4px;">
+          <p>An image on the back.</p>
+        </div>
+      </snice-book-page>
+    </snice-book>
+  </section>
+
+  <section>
+    <h2>Edge case: no pages</h2>
+    <snice-book cover-image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22400%22%3E%3Crect%20width%3D%22300%22%20height%3D%22400%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%22150%22%20cy%3D%22200%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"></snice-book>
+  </section>
+
+  <script type="module">
+    import '/packages/components/src/book/snice-book.ts';
+  </script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Date Range Picker</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui; margin: 0; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); overflow-wrap: anywhere; }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; max-width: 800px; }
+    .label-demo { display: grid; gap: 1rem; width: min(100%, 42rem); }
+    .label-row { display: flex; gap: 0.35rem; align-items: baseline; flex-wrap: wrap; }
+    .demo-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .demo-actions button { padding: 0.5rem 0.75rem; }
+    output { display:block; min-height:1.5rem; padding:.625rem .75rem; border-radius:.375rem; background:var(--snice-color-surface-raised, #1e293b); font:.8125rem/1.45 ui-monospace, monospace; }
+    @media (max-width: 480px) { body { padding: 1rem; } }
+  </style>
+  <script type="module">
+    import '/packages/components/src/date-range-picker/snice-date-range-picker.ts';
+
+    await customElements.whenDefined('snice-date-range-picker');
+
+    // Presets
+    const today = new Date();
+    const presetPicker = document.getElementById('drp-presets');
+    presetPicker.presets = [
+      { label: 'Last 7 days', start: new Date(Date.now() - 7 * 86400000), end: today },
+      { label: 'Last 30 days', start: new Date(Date.now() - 30 * 86400000), end: today },
+      { label: 'This month', start: new Date(today.getFullYear(), today.getMonth(), 1), end: new Date(today.getFullYear(), today.getMonth() + 1, 0) },
+      { label: 'Last month', start: new Date(today.getFullYear(), today.getMonth() - 1, 1), end: new Date(today.getFullYear(), today.getMonth(), 0) },
+    ];
+
+    // Dual + presets
+    const dualPresets = document.getElementById('drp-dual-presets');
+    dualPresets.presets = [
+      { label: 'Last 7 days', start: new Date(Date.now() - 7 * 86400000), end: today },
+      { label: 'This month', start: new Date(today.getFullYear(), today.getMonth(), 1), end: new Date(today.getFullYear(), today.getMonth() + 1, 0) },
+    ];
+
+    // Native form lifecycle
+    const form = document.getElementById('drp-form');
+    const output = document.getElementById('drp-form-output');
+    const describeData = () => Array.from(new FormData(form).entries())
+      .map(([name, value]) => `${name}=${String(value)}`)
+      .join(', ') || '(empty)';
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted: ${describeData()}`;
+    });
+    form.addEventListener('reset', () => {
+      requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+    });
+    document.getElementById('drp-form-picker').addEventListener('daterange-change', event => {
+      output.textContent = event.detail.startIso && event.detail.endIso
+        ? `Changed: ${event.detail.startIso} → ${event.detail.endIso}`
+        : 'Changed: incomplete range';
+    });
+
+    const labelledPicker = document.getElementById('range-showcase-labelled');
+    const primaryLabel = document.getElementById('range-showcase-primary-label');
+    const secondaryLabel = document.getElementById('range-showcase-secondary-label');
+    const labelStatus = document.getElementById('range-showcase-label-status');
+    let labelsAttached = true;
+    const updateLabelStatus = () => requestAnimationFrame(() => {
+      labelStatus.textContent = `Accessible name: ${labelledPicker.shadowRoot?.querySelector('.input')?.getAttribute('aria-label') || ''}`;
+    });
+    document.getElementById('range-showcase-change-label').addEventListener('click', () => {
+      primaryLabel.textContent = primaryLabel.textContent === 'Booking dates' ? 'Travel window' : 'Booking dates';
+      updateLabelStatus();
+    });
+    document.getElementById('range-showcase-toggle-error').addEventListener('click', event => {
+      const showing = labelledPicker.errorText !== '';
+      labelledPicker.invalid = !showing;
+      labelledPicker.errorText = showing ? '' : 'Choose a complete available range.';
+      event.currentTarget.textContent = showing ? 'Show error' : 'Clear error';
+      updateLabelStatus();
+    });
+    document.getElementById('range-showcase-toggle-labels').addEventListener('click', event => {
+      labelsAttached = !labelsAttached;
+      primaryLabel.htmlFor = labelsAttached ? labelledPicker.id : '';
+      secondaryLabel.htmlFor = labelsAttached ? labelledPicker.id : '';
+      event.currentTarget.textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
+      updateLabelStatus();
+    });
+  </script>
+</head>
+<body>
+
+<section>
+  <h2>Default (single column)</h2>
+  <snice-date-range-picker label="Date Range"></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>With start + end values</h2>
+  <snice-date-range-picker label="Pre-filled" start="2026-03-01" end="2026-03-15"></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>columns="2" (dual calendar)</h2>
+  <snice-date-range-picker label="Dual Calendar" columns="2"></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>With presets (single column)</h2>
+  <snice-date-range-picker id="drp-presets" label="Report Period" clearable></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>columns="2" + presets</h2>
+  <snice-date-range-picker id="drp-dual-presets" label="Booking Dates" columns="2" clearable></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>Sizes</h2>
+  <div class="row">
+    <snice-date-range-picker label="Small" size="small"></snice-date-range-picker>
+    <snice-date-range-picker label="Medium" size="medium"></snice-date-range-picker>
+    <snice-date-range-picker label="Large" size="large"></snice-date-range-picker>
+  </div>
+</section>
+
+<section>
+  <h2>Variants</h2>
+  <div class="row">
+    <snice-date-range-picker label="Outlined" variant="outlined"></snice-date-range-picker>
+    <snice-date-range-picker label="Filled" variant="filled"></snice-date-range-picker>
+    <snice-date-range-picker label="Underlined" variant="underlined"></snice-date-range-picker>
+  </div>
+</section>
+
+<section>
+  <h2>All formats</h2>
+  <snice-date-range-picker label="mm/dd/yyyy" format="mm/dd/yyyy" start="2026-03-01" end="2026-03-15"></snice-date-range-picker>
+  <snice-date-range-picker label="dd/mm/yyyy" format="dd/mm/yyyy" start="2026-03-01" end="2026-03-15" style="margin-top:0.5rem"></snice-date-range-picker>
+  <snice-date-range-picker label="yyyy-mm-dd" format="yyyy-mm-dd" start="2026-03-01" end="2026-03-15" style="margin-top:0.5rem"></snice-date-range-picker>
+  <snice-date-range-picker label="yyyy/mm/dd" format="yyyy/mm/dd" start="2026-03-01" end="2026-03-15" style="margin-top:0.5rem"></snice-date-range-picker>
+  <snice-date-range-picker label="dd-mm-yyyy" format="dd-mm-yyyy" start="2026-03-01" end="2026-03-15" style="margin-top:0.5rem"></snice-date-range-picker>
+  <snice-date-range-picker label="mm-dd-yyyy" format="mm-dd-yyyy" start="2026-03-01" end="2026-03-15" style="margin-top:0.5rem"></snice-date-range-picker>
+  <snice-date-range-picker label="mmmm dd, yyyy" format="mmmm dd, yyyy" start="2026-01-12" end="2026-02-16" style="margin-top:0.5rem"></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>clearable</h2>
+  <snice-date-range-picker label="Clearable" start="2026-03-01" end="2026-03-31" clearable></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>min + max</h2>
+  <snice-date-range-picker label="March 2026 only" min="2026-03-01" max="2026-03-31" helper-text="Constrained to March 2026"></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>Disabled</h2>
+  <snice-date-range-picker label="Disabled" disabled start="2026-03-01" end="2026-03-15"></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>Readonly</h2>
+  <snice-date-range-picker label="Readonly" readonly start="2026-03-01" end="2026-03-15"></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>Loading</h2>
+  <snice-date-range-picker label="Loading" loading></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>Required</h2>
+  <snice-date-range-picker label="Required" required helper-text="Required field"></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>Invalid + error-text</h2>
+  <snice-date-range-picker label="Invalid" invalid error-text="Invalid date range"></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>helper-text</h2>
+  <snice-date-range-picker label="Trip Dates" helper-text="Select check-in and check-out dates"></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>first-day-of-week="1" (Monday)</h2>
+  <snice-date-range-picker label="Monday start" first-day-of-week="1"></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>Form: name</h2>
+  <snice-date-range-picker label="Vacation" name="vacation" required clearable></snice-date-range-picker>
+</section>
+
+<section id="date-range-picker-label-lifecycle">
+  <h2>External Label Lifecycle</h2>
+  <div class="label-demo">
+    <div>
+      <div class="label-row">
+        <label id="range-showcase-primary-label" for="range-showcase-labelled">Booking dates</label>
+        <label id="range-showcase-secondary-label" for="range-showcase-labelled">required</label>
+      </div>
+      <snice-date-range-picker
+        id="range-showcase-labelled"
+        label="Internal range fallback"
+        helper-text="Choose check-in and check-out."
+        required
+      ></snice-date-range-picker>
+    </div>
+    <label>
+      Wrapped reporting window
+      <snice-date-range-picker id="range-showcase-wrapped" helper-text="One named range field."></snice-date-range-picker>
+    </label>
+    <div>
+      <label for="range-showcase-disabled">Disabled range</label>
+      <snice-date-range-picker id="range-showcase-disabled" disabled></snice-date-range-picker>
+    </div>
+    <div class="demo-actions">
+      <button id="range-showcase-change-label" type="button">Change label</button>
+      <button id="range-showcase-toggle-error" type="button">Show error</button>
+      <button id="range-showcase-toggle-labels" type="button">Remove external labels</button>
+    </div>
+    <output id="range-showcase-label-status" aria-live="polite">Accessible name: Booking dates required</output>
+  </div>
+</section>
+
+<section>
+  <h2>Native form lifecycle</h2>
+  <form id="drp-form" style="display:flex;flex-direction:column;gap:.75rem">
+    <snice-date-range-picker
+      id="drp-form-picker"
+      name="booking"
+      label="Booking dates"
+      start="2026-03-10"
+      end="2026-03-20"
+      format="dd/mm/yyyy"
+      min="2026-03-01"
+      max="2026-03-31"
+      helper-text="Submits booking-start and booking-end as YYYY-MM-DD"
+      columns="2"
+      clearable
+      required
+    ></snice-date-range-picker>
+    <div class="row">
+      <button type="submit">Submit canonical range</button>
+      <button type="reset">Reset defaults</button>
+    </div>
+    <output id="drp-form-output" aria-live="polite">Ready</output>
+  </form>
+</section>
+
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

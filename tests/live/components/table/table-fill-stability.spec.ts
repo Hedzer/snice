@@ -10,7 +10,7 @@ import { test, expect } from '@playwright/test';
 // The invariant these specs pin: a table's height must come to rest. Nothing
 // here asserts a particular height — only that the page stops moving.
 const fixture = 'http://localhost:5566/tests/live/fixtures/table/fill-content-driven.html';
-const showcase = 'http://localhost:5566/components/table/demo.html';
+const showcase = 'http://localhost:5566/tests/live/fixtures/table/visual.html';
 
 async function settleThenSample(page: any, ids: string[], ms: number) {
   const read = () => page.evaluate((list: string[]) =>

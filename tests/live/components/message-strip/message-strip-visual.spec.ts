@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/message-strip/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/message-strip/visual.html';
 
 test.describe('Snice Message Strip visual integrity', () => {
   test.beforeEach(async ({ page }) => {

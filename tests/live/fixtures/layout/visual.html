@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layout</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    snice-layout { display: block; border: 1px solid var(--snice-color-border, #ddd); border-radius: 8px; overflow: hidden; height: 300px; }
+    .brand-logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.125rem; }
+    .page-content { padding: 1.5rem; color: var(--snice-color-text-secondary, #666); }
+    .footer-content { padding: 0.75rem 1.5rem; font-size: 0.875rem; color: var(--snice-color-text-tertiary, #888); }
+  </style>
+</head>
+<body>
+
+<h2>Slots: brand, page, footer</h2>
+<snice-layout contained>
+  <div slot="brand">
+    <div class="brand-logo">MyApp</div>
+  </div>
+  <div slot="page">
+    <div class="page-content">Main page content area. The layout provides header with integrated snice-nav, main content, and footer regions.</div>
+  </div>
+  <div slot="footer">
+    <div class="footer-content">&copy; 2026 My Company</div>
+  </div>
+</snice-layout>
+
+<h2>Brand slot with icon</h2>
+<snice-layout contained>
+  <div slot="brand">
+    <div class="brand-logo"><span style="font-size:1.5rem">&#x1F680;</span> Rocket App</div>
+  </div>
+  <div slot="page">
+    <div class="page-content">Brand slot supports any content: text, images, icons.</div>
+  </div>
+</snice-layout>
+
+<h2>No brand slot (default fallback)</h2>
+<snice-layout contained>
+  <div slot="page">
+    <div class="page-content">Without a brand slot, the default "App" heading is shown.</div>
+  </div>
+</snice-layout>
+
+<h2>No footer slot</h2>
+<snice-layout contained>
+  <div slot="brand">
+    <div class="brand-logo">No Footer</div>
+  </div>
+  <div slot="page">
+    <div class="page-content">Footer slot is empty, so footer area collapses.</div>
+  </div>
+</snice-layout>
+
+<h2>All slots populated</h2>
+<snice-layout contained>
+  <div slot="brand">
+    <div class="brand-logo"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%232563eb'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3C/svg%3E" alt="" style="width:24px;height:24px"> Brand</div>
+  </div>
+  <div slot="page">
+    <div class="page-content">
+      <p>Full layout with brand image, page content, and footer.</p>
+      <p>The integrated snice-nav renders navigation items via the update() method from the router.</p>
+    </div>
+  </div>
+  <div slot="footer">
+    <div class="footer-content">Footer &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></div>
+  </div>
+</snice-layout>
+
+<h2>App shell: snice-layout-sidebar (persistent sidebar, slotted nav)</h2>
+<snice-layout-sidebar contained style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
+  <div slot="brand"><div class="brand-logo">Acme Admin</div></div>
+  <div slot="header"><span style="font-size:0.875rem;color:var(--snice-color-text-secondary,#888)">actions</span></div>
+  <nav slot="sidebar" style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem">
+    <a href="#">Dashboard</a>
+    <a href="#">Orders</a>
+    <a href="#">Customers</a>
+    <a href="#">Settings</a>
+  </nav>
+  <div slot="page"><div class="page-content">Sidebar sits in flow; the header toggle collapses it and main reflows. Below 768px it overlays behind a scrim.</div></div>
+  <div slot="footer"><div class="footer-content">&copy; Acme</div></div>
+</snice-layout-sidebar>
+
+<h2>App shell: snice-layout-dashboard (header actions, right rail)</h2>
+<snice-layout-dashboard contained style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
+  <div slot="brand"><h1 style="margin:0;font-size:1.125rem">Analytics</h1></div>
+  <div slot="header"><input type="search" placeholder="Search..." style="padding:0.35rem 0.6rem"></div>
+  <nav slot="sidebar" style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem">
+    <a href="#">Overview</a>
+    <a href="#">Reports</a>
+  </nav>
+  <div slot="page"><div class="page-content">Main content. The right rail stacks below on narrow screens instead of disappearing.</div></div>
+  <div slot="right-sidebar"><strong>Activity</strong><p style="font-size:0.875rem">Deploy finished 4m ago.</p></div>
+</snice-layout-dashboard>
+
+<h2>Auth page: snice-layout-centered (brand above, footer links below)</h2>
+<snice-layout-centered contained style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:420px">
+  <div slot="brand">&#9670; Acme</div>
+  <div slot="page">
+    <h3 style="margin-top:0">Sign in</h3>
+    <input placeholder="Email" style="width:100%;padding:0.5rem;margin-bottom:0.5rem;box-sizing:border-box">
+    <button style="width:100%;padding:0.6rem">Continue</button>
+  </div>
+  <div slot="footer"><a href="#">Privacy</a> &middot; <a href="#">Terms</a></div>
+</snice-layout-centered>
+
+<h2>Article: snice-layout-blog (centered measure, no sidebar)</h2>
+<snice-layout-blog contained style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
+  <div slot="brand">The Ledger</div>
+  <nav slot="nav"><a href="#">Essays</a> <a href="#">About</a></nav>
+  <div slot="page"><h1>On Building Layouts</h1><p>Without sidebar content the article keeps a centered reading measure instead of reserving an empty rail.</p></div>
+  <div slot="footer"><div class="footer-content">&copy; The Ledger</div></div>
+</snice-layout-blog>
+
+<h2>Master detail: snice-layout-master-detail (list beside detail)</h2>
+<snice-layout-master-detail contained style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
+  <div slot="brand">Inbox</div>
+  <div slot="list" style="padding:0.5rem">
+    <div style="padding:0.5rem;border-radius:6px;background:var(--snice-color-primary-alpha,rgba(59,130,246,0.1))"><strong>Quarterly report</strong><div style="font-size:0.8rem;opacity:0.7">Priya &middot; 9:14</div></div>
+    <div style="padding:0.5rem"><strong>Deploy finished</strong><div style="font-size:0.8rem;opacity:0.7">CI &middot; 8:02</div></div>
+    <div style="padding:0.5rem"><strong>Design review</strong><div style="font-size:0.8rem;opacity:0.7">Sam &middot; Yesterday</div></div>
+  </div>
+  <article slot="detail"><h3 style="margin-top:0">Quarterly report</h3><p>Below 641px the list fills the screen until an item is chosen, then the detail takes over with a back control.</p></article>
+</snice-layout-master-detail>
+
+<h2>Documentation: snice-layout-docs (nav tree, prose, on-this-page rail)</h2>
+<snice-layout-docs contained style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
+  <div slot="brand">Snice Docs</div>
+  <a slot="sidebar" href="#" aria-current="page">Getting started</a>
+  <a slot="sidebar" href="#">Components</a>
+  <a slot="sidebar" href="#">Routing</a>
+  <div slot="page"><h1>Getting started</h1><p>Prose keeps a reading measure between the navigation tree and the rail. The rail leaves at 1152px, the tree becomes a drawer at 996px.</p></div>
+  <nav slot="toc"><div style="font-weight:600;margin-bottom:0.5rem">On this page</div><a href="#" style="display:block;color:inherit">Install</a><a href="#" style="display:block;color:inherit">Usage</a></nav>
+</snice-layout-docs>
+
+<h2>Auth split: snice-layout-auth-split (form beside a brand panel)</h2>
+<snice-layout-auth-split contained style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
+  <div slot="brand">&#9670; Acme</div>
+  <div slot="page">
+    <h3 style="margin-top:0">Sign in</h3>
+    <input placeholder="Email" style="width:100%;padding:0.5rem;margin-bottom:0.5rem;box-sizing:border-box">
+    <button style="width:100%;padding:0.6rem">Continue</button>
+  </div>
+  <div slot="footer"><a href="#">Privacy</a> &middot; <a href="#">Terms</a></div>
+  <div slot="panel" style="width:100%;height:100%;background:linear-gradient(135deg,#264,#127)"></div>
+</snice-layout-auth-split>
+
+<script type="module">
+import '/packages/components/src/layout/snice-layout.ts';
+import '/packages/components/src/layout/snice-layout-master-detail.ts';
+import '/packages/components/src/layout/snice-layout-docs.ts';
+import '/packages/components/src/layout/snice-layout-auth-split.ts';
+import '/packages/components/src/layout/snice-layout-sidebar.ts';
+import '/packages/components/src/layout/snice-layout-dashboard.ts';
+import '/packages/components/src/layout/snice-layout-centered.ts';
+import '/packages/components/src/layout/snice-layout-blog.ts';
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

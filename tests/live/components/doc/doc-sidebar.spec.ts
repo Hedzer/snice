@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('doc insertion controls are visible and functional', async ({ page }) => {
-  await page.goto('/components/doc/demo.html');
+  await page.goto('/tests/live/fixtures/doc/visual.html');
   const doc = page.locator('snice-doc').first();
   const toolbar = doc.locator('.toolbar');
   await expect(toolbar).toBeVisible();

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Tree Demo Page', () => {
   test('should render demo page correctly', async ({ page }) => {
-    await page.goto('http://localhost:5566/components/tree/demo.html');
+    await page.goto('http://localhost:5566/tests/live/fixtures/tree/visual.html');
     await page.waitForFunction(() => {
       const tree = document.querySelector('#tree-single');
       const imageTree = document.querySelector('#tree-image-icons');

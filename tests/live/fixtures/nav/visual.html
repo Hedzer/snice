@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nav</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-nav { display: block; border: 1px solid var(--snice-color-border, #ddd); border-radius: 8px; padding: 0.5rem; }
+  </style>
+</head>
+<body>
+
+<h2>Variant: flat + Orientation: horizontal</h2>
+<snice-nav id="nav-flat-h" variant="flat" orientation="horizontal"></snice-nav>
+
+<h2>Variant: flat + Orientation: vertical</h2>
+<snice-nav id="nav-flat-v" variant="flat" orientation="vertical" style="max-width:220px;"></snice-nav>
+
+<h2>Variant: grouped + Orientation: horizontal</h2>
+<snice-nav id="nav-grouped-h" variant="grouped" orientation="horizontal"></snice-nav>
+
+<h2>Variant: grouped + Orientation: vertical</h2>
+<snice-nav id="nav-grouped-v" variant="grouped" orientation="vertical" style="max-width:220px;"></snice-nav>
+
+<h2>Variant: hierarchical + Orientation: horizontal</h2>
+<snice-nav id="nav-hier-h" variant="hierarchical" orientation="horizontal"></snice-nav>
+
+<h2>Variant: hierarchical + Orientation: vertical</h2>
+<snice-nav id="nav-hier-v" variant="hierarchical" orientation="vertical" style="max-width:220px;"></snice-nav>
+
+<h2>Active route: home</h2>
+<snice-nav id="nav-active-home" variant="flat" orientation="horizontal"></snice-nav>
+
+<h2>Active route: products</h2>
+<snice-nav id="nav-active-products" variant="flat" orientation="horizontal"></snice-nav>
+
+<h2>With icons</h2>
+<snice-nav id="nav-icons" variant="flat" orientation="horizontal"></snice-nav>
+
+<h2>With icons (vertical)</h2>
+<snice-nav id="nav-icons-v" variant="flat" orientation="vertical" style="max-width:220px;"></snice-nav>
+
+<h2>Grouped with icons (vertical)</h2>
+<snice-nav id="nav-grouped-icons" variant="grouped" orientation="vertical" style="max-width:220px;"></snice-nav>
+
+<h2>Hierarchical with children</h2>
+<snice-nav id="nav-hier-children" variant="hierarchical" orientation="vertical" style="max-width:250px;"></snice-nav>
+
+<h2>Single item</h2>
+<snice-nav id="nav-single" variant="flat" orientation="horizontal"></snice-nav>
+
+<h2>Empty (no placards)</h2>
+<snice-nav id="nav-empty" variant="flat" orientation="horizontal"></snice-nav>
+
+<h2>Many items</h2>
+<snice-nav id="nav-many" variant="flat" orientation="horizontal"></snice-nav>
+
+<h2>Ordered items</h2>
+<snice-nav id="nav-ordered" variant="flat" orientation="horizontal"></snice-nav>
+
+<h2>Items with descriptions/tooltips</h2>
+<snice-nav id="nav-desc" variant="flat" orientation="horizontal"></snice-nav>
+
+<script type="module">
+  import '/packages/components/src/nav/snice-nav.ts';
+
+  const basicPlacards = [
+    { name: 'home', title: 'Home', order: 0 },
+    { name: 'products', title: 'Products', order: 1 },
+    { name: 'about', title: 'About', order: 2 },
+    { name: 'contact', title: 'Contact', order: 3 },
+  ];
+
+  const iconPlacards = [
+    { name: 'home', title: 'Home', icon: 'home', order: 0 },
+    { name: 'products', title: 'Products', icon: 'cube', order: 1 },
+    { name: 'settings', title: 'Settings', icon: 'cog-6-tooth', order: 2 },
+    { name: 'profile', title: 'Profile', icon: 'user', order: 3 },
+  ];
+
+  const groupedPlacards = [
+    { name: 'home', title: 'Home', icon: 'home', group: 'Main', order: 0 },
+    { name: 'dashboard', title: 'Dashboard', icon: 'chart-bar', group: 'Main', order: 1 },
+    { name: 'users', title: 'Users', icon: 'users', group: 'Admin', order: 0 },
+    { name: 'settings', title: 'Settings', icon: 'cog-6-tooth', group: 'Admin', order: 1 },
+    { name: 'logs', title: 'Logs', icon: 'pencil', group: 'Admin', order: 2 },
+  ];
+
+  const hierPlacards = [
+    { name: 'products', title: 'Products', order: 0 },
+    { name: 'products/electronics', title: 'Electronics', parent: 'products', order: 0 },
+    { name: 'products/clothing', title: 'Clothing', parent: 'products', order: 1 },
+    { name: 'products/books', title: 'Books', parent: 'products', order: 2 },
+    { name: 'services', title: 'Services', order: 1 },
+    { name: 'services/consulting', title: 'Consulting', parent: 'services', order: 0 },
+    { name: 'services/support', title: 'Support', parent: 'services', order: 1 },
+  ];
+
+  const descPlacards = [
+    { name: 'home', title: 'Home', description: 'Go to the homepage', tooltip: 'Navigate to home', order: 0 },
+    { name: 'docs', title: 'Docs', description: 'API documentation', tooltip: 'View documentation', order: 1 },
+    { name: 'help', title: 'Help', description: 'Get help and support', order: 2 },
+  ];
+
+  // Flat horizontal/vertical
+  document.getElementById('nav-flat-h').update(basicPlacards, undefined, 'home');
+  document.getElementById('nav-flat-v').update(basicPlacards, undefined, 'home');
+
+  // Grouped
+  document.getElementById('nav-grouped-h').update(groupedPlacards, undefined, 'home');
+  document.getElementById('nav-grouped-v').update(groupedPlacards, undefined, 'home');
+
+  // Hierarchical
+  document.getElementById('nav-hier-h').update(basicPlacards, undefined, 'home');
+  document.getElementById('nav-hier-v').update(basicPlacards, undefined, 'home');
+
+  // Active routes
+  document.getElementById('nav-active-home').update(basicPlacards, undefined, 'home');
+  document.getElementById('nav-active-products').update(basicPlacards, undefined, 'products');
+
+  // Icons
+  document.getElementById('nav-icons').update(iconPlacards, undefined, 'home');
+  document.getElementById('nav-icons-v').update(iconPlacards, undefined, 'home');
+  document.getElementById('nav-grouped-icons').update(groupedPlacards, undefined, 'dashboard');
+
+  // Hierarchical with children
+  document.getElementById('nav-hier-children').update(hierPlacards, undefined, 'products/electronics');
+
+  // Single
+  document.getElementById('nav-single').update([{ name: 'home', title: 'Home', order: 0 }], undefined, 'home');
+
+  // Empty
+  document.getElementById('nav-empty').update([]);
+
+  // Many
+  const manyPlacards = Array.from({ length: 8 }, (_, i) => ({
+    name: `page-${i}`,
+    title: `Page ${i + 1}`,
+    order: i,
+  }));
+  document.getElementById('nav-many').update(manyPlacards, undefined, 'page-2');
+
+  // Ordered
+  const orderedPlacards = [
+    { name: 'z', title: 'Z (order 3)', order: 3 },
+    { name: 'a', title: 'A (order 1)', order: 1 },
+    { name: 'm', title: 'M (order 2)', order: 2 },
+    { name: 'first', title: 'First (order 0)', order: 0 },
+  ];
+  document.getElementById('nav-ordered').update(orderedPlacards, undefined, 'first');
+
+  // Descriptions
+  document.getElementById('nav-desc').update(descPlacards, undefined, 'docs');
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

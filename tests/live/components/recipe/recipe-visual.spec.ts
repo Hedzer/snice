@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/recipe/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/recipe/visual.html';
 
 test.describe('Snice Recipe visual integrity', () => {
   test.beforeEach(async ({ page }) => {

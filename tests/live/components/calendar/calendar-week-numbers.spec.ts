@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const demoPath = process.env.CALENDAR_SHOWCASE_URL
-  || 'http://localhost:5566/components/calendar/demo.html';
+  || 'http://localhost:5566/tests/live/fixtures/calendar/visual.html';
 
 /**
  * Showcase-level guards for the parts of the calendar page that only real

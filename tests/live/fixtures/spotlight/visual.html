@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotlight</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .demo-area {
+      border: 1px solid var(--snice-color-border, #e2e2e2);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .target {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--snice-color-border, #e2e2e2);
+      border-radius: 4px;
+      background: var(--snice-color-surface-container-high, #fcfbf9);
+      margin: 0.5rem;
+    }
+    button.trigger {
+      padding: 0.5rem 1rem;
+      background: var(--snice-color-primary, #2563eb);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Basic Tour (3 Steps)</h2>
+<div class="demo-area">
+  <div class="row">
+    <div id="target-1" class="target">Step 1 Target</div>
+    <div id="target-2" class="target">Step 2 Target</div>
+    <div id="target-3" class="target">Step 3 Target</div>
+  </div>
+  <button class="trigger" onclick="document.getElementById('tour-basic').start()">Start Basic Tour</button>
+</div>
+<snice-spotlight id="tour-basic"></snice-spotlight>
+
+<h2>Single Step</h2>
+<div class="demo-area">
+  <div id="target-single" class="target">Single Target</div>
+  <button class="trigger" onclick="document.getElementById('tour-single').start()">Start Single Step</button>
+</div>
+<snice-spotlight id="tour-single"></snice-spotlight>
+
+<h2>Positions (top, bottom, left, right)</h2>
+<div class="demo-area">
+  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; padding: 3rem;">
+    <div id="pos-top" class="target" style="justify-self: center;">Top Position</div>
+    <div id="pos-bottom" class="target" style="justify-self: center;">Bottom Position</div>
+    <div id="pos-left" class="target" style="justify-self: center;">Left Position</div>
+    <div id="pos-right" class="target" style="justify-self: center;">Right Position</div>
+  </div>
+  <button class="trigger" onclick="document.getElementById('tour-positions').start()">Start Position Tour</button>
+</div>
+<snice-spotlight id="tour-positions"></snice-spotlight>
+
+<h2>Auto Position</h2>
+<div class="demo-area">
+  <div id="pos-auto" class="target">Auto Position</div>
+  <button class="trigger" onclick="document.getElementById('tour-auto').start()">Start Auto Tour</button>
+</div>
+<snice-spotlight id="tour-auto"></snice-spotlight>
+
+<h2>Many Steps Tour</h2>
+<div class="demo-area">
+  <div class="row">
+    <div id="multi-1" class="target">Step 1</div>
+    <div id="multi-2" class="target">Step 2</div>
+    <div id="multi-3" class="target">Step 3</div>
+    <div id="multi-4" class="target">Step 4</div>
+    <div id="multi-5" class="target">Step 5</div>
+  </div>
+  <button class="trigger" onclick="document.getElementById('tour-many').start()">Start 5-Step Tour</button>
+</div>
+<snice-spotlight id="tour-many"></snice-spotlight>
+
+<script type="module">
+  import '/packages/components/src/spotlight/snice-spotlight.ts';
+
+  // Basic tour
+  document.getElementById('tour-basic').steps = [
+    { target: '#target-1', title: 'First Step', description: 'This is the first element in the tour.' },
+    { target: '#target-2', title: 'Second Step', description: 'Now highlighting the second element.' },
+    { target: '#target-3', title: 'Third Step', description: 'The final element in this tour.' },
+  ];
+
+  // Single step
+  document.getElementById('tour-single').steps = [
+    { target: '#target-single', title: 'Only Step', description: 'This tour has just one step.' },
+  ];
+
+  // Positions
+  document.getElementById('tour-positions').steps = [
+    { target: '#pos-top', title: 'Top Position', description: 'Popover appears above the target.', position: 'top' },
+    { target: '#pos-bottom', title: 'Bottom Position', description: 'Popover appears below the target.', position: 'bottom' },
+    { target: '#pos-left', title: 'Left Position', description: 'Popover appears to the left.', position: 'left' },
+    { target: '#pos-right', title: 'Right Position', description: 'Popover appears to the right.', position: 'right' },
+  ];
+
+  // Auto position
+  document.getElementById('tour-auto').steps = [
+    { target: '#pos-auto', title: 'Auto Position', description: 'The popover automatically picks the best position.', position: 'auto' },
+  ];
+
+  // Many steps
+  document.getElementById('tour-many').steps = [
+    { target: '#multi-1', title: 'Step 1 of 5', description: 'First element.' },
+    { target: '#multi-2', title: 'Step 2 of 5', description: 'Second element.' },
+    { target: '#multi-3', title: 'Step 3 of 5', description: 'Third element.' },
+    { target: '#multi-4', title: 'Step 4 of 5', description: 'Fourth element.' },
+    { target: '#multi-5', title: 'Step 5 of 5', description: 'Fifth and final element.' },
+  ];
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

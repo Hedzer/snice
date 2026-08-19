@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/modal/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/modal/visual.html';
 
 /** Opens one modal by id and waits for the panel to settle at its open size. */
 async function openModal(page: import('@playwright/test').Page, id: string) {

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 const showcaseUrl = process.env.TABLE_SHOWCASE_URL
-  || '/components/table/full-showcase.html';
+  || '/tests/live/fixtures/table/visual.html';
 
 test.describe('table full showcase', () => {
   let runtimeErrors: string[];

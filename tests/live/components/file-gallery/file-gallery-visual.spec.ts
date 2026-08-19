@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/file-gallery/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/file-gallery/visual.html';
 
 test.describe('Snice File Gallery visual integrity', () => {
   test.beforeEach(async ({ page }) => {

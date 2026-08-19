@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>File Gallery</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .box { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+  </style>
+  <script type="module">import '/packages/components/src/file-gallery/snice-file-gallery.ts';</script>
+</head>
+<body>
+
+<!-- View: grid (default) -->
+<h2>View: grid (default)</h2>
+<div class="box"><snice-file-gallery view="grid"></snice-file-gallery></div>
+
+<!-- View: list -->
+<h2>View: list</h2>
+<div class="box"><snice-file-gallery view="list"></snice-file-gallery></div>
+
+<!-- Multiple: true (default) -->
+<h2>Multiple: true (default)</h2>
+<div class="box"><snice-file-gallery multiple></snice-file-gallery></div>
+
+<!-- Multiple: false -->
+<h2>Multiple: false (single file)</h2>
+<div class="box"><snice-file-gallery multiple="false"></snice-file-gallery></div>
+
+<!-- Accept filter -->
+<h2>Accept: images only</h2>
+<div class="box"><snice-file-gallery accept="image/*"></snice-file-gallery></div>
+
+<h2>Accept: PDFs only</h2>
+<div class="box"><snice-file-gallery accept=".pdf"></snice-file-gallery></div>
+
+<h2>Accept: images + PDFs</h2>
+<div class="box"><snice-file-gallery accept="image/*,.pdf"></snice-file-gallery></div>
+
+<!-- Max size -->
+<h2>Max Size: 1MB</h2>
+<div class="box"><snice-file-gallery max-size="1048576"></snice-file-gallery></div>
+
+<!-- Max files -->
+<h2>Max Files: 3</h2>
+<div class="box"><snice-file-gallery max-files="3"></snice-file-gallery></div>
+
+<!-- Disabled -->
+<h2>Disabled</h2>
+<div class="box"><snice-file-gallery disabled></snice-file-gallery></div>
+
+<!-- show-progress: false -->
+<h2>show-progress: false</h2>
+<div class="box"><snice-file-gallery show-progress="false"></snice-file-gallery></div>
+
+<!-- allow-pause: false -->
+<h2>allow-pause: false</h2>
+<div class="box"><snice-file-gallery allow-pause="false"></snice-file-gallery></div>
+
+<!-- allow-delete: false -->
+<h2>allow-delete: false</h2>
+<div class="box"><snice-file-gallery allow-delete="false"></snice-file-gallery></div>
+
+<!-- auto-upload: false -->
+<h2>auto-upload: false</h2>
+<div class="box"><snice-file-gallery auto-upload="false"></snice-file-gallery></div>
+
+<!-- show-dropzone: false -->
+<h2>show-dropzone: false</h2>
+<div class="box"><snice-file-gallery show-dropzone="false" show-add-button></snice-file-gallery></div>
+
+<!-- show-add-button -->
+<h2>show-add-button: true</h2>
+<div class="box"><snice-file-gallery show-add-button></snice-file-gallery></div>
+
+<!-- show-header: false -->
+<h2>show-header: false</h2>
+<div class="box"><snice-file-gallery show-header="false"></snice-file-gallery></div>
+
+<!-- Combinations -->
+<h2>Grid + Max 5 Files + Images Only + 2MB Max</h2>
+<div class="box"><snice-file-gallery view="grid" max-files="5" accept="image/*" max-size="2097152"></snice-file-gallery></div>
+
+<h2>List + No Dropzone + Add Button + No Auto Upload</h2>
+<div class="box"><snice-file-gallery view="list" show-dropzone="false" show-add-button auto-upload="false"></snice-file-gallery></div>
+
+<h2>Single File + No Delete + No Pause</h2>
+<div class="box"><snice-file-gallery multiple="false" allow-delete="false" allow-pause="false"></snice-file-gallery></div>
+
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

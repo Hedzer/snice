@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spreadsheet</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    snice-spreadsheet { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 6px; overflow: hidden; }
+  </style>
+</head>
+<body>
+
+<h2>Basic (No Columns Defined)</h2>
+<snice-spreadsheet id="basic" style="height: 250px;"></snice-spreadsheet>
+
+<h2>With Column Definitions</h2>
+<snice-spreadsheet id="with-columns" style="height: 250px;"></snice-spreadsheet>
+
+<h2>Column Types: Text, Number, Date, Boolean</h2>
+<snice-spreadsheet id="typed-columns" style="height: 250px;"></snice-spreadsheet>
+
+<h2>Column Type: Select</h2>
+<snice-spreadsheet id="select-columns" style="height: 200px;"></snice-spreadsheet>
+
+<h2>Custom Column Widths</h2>
+<snice-spreadsheet id="custom-widths" style="height: 200px;"></snice-spreadsheet>
+
+<h2>Readonly</h2>
+<snice-spreadsheet id="readonly-sheet" readonly style="height: 200px;"></snice-spreadsheet>
+
+<h2>Empty Spreadsheet</h2>
+<snice-spreadsheet id="empty-sheet" style="height: 150px;"></snice-spreadsheet>
+
+<h2>With Formulas</h2>
+<snice-spreadsheet id="formulas" style="height: 250px;"></snice-spreadsheet>
+
+<h2>Large Dataset</h2>
+<snice-spreadsheet id="large-data" style="height: 300px;"></snice-spreadsheet>
+
+<h2>Single Row</h2>
+<snice-spreadsheet id="single-row" style="height: 120px;"></snice-spreadsheet>
+
+<h2>Single Column</h2>
+<snice-spreadsheet id="single-col" style="height: 200px;"></snice-spreadsheet>
+
+<h2>Frozen Panes</h2>
+<snice-spreadsheet id="frozen-panes" style="height: 280px; width: 600px;"></snice-spreadsheet>
+
+<script type="module">
+  import '/packages/components/src/spreadsheet/snice-spreadsheet.ts';
+
+  // Basic
+  document.getElementById('basic').data = [
+    ['Alice', 30, 'Engineering'],
+    ['Bob', 25, 'Marketing'],
+    ['Charlie', 35, 'Sales'],
+    ['Diana', 28, 'Engineering'],
+  ];
+
+  // With columns
+  const withCols = document.getElementById('with-columns');
+  withCols.columns = [
+    { header: 'Name' },
+    { header: 'Age', type: 'number' },
+    { header: 'Department' },
+    { header: 'Active', type: 'boolean' },
+  ];
+  withCols.data = [
+    ['Alice', 30, 'Engineering', true],
+    ['Bob', 25, 'Marketing', false],
+    ['Charlie', 35, 'Sales', true],
+    ['Diana', 28, 'Design', true],
+  ];
+
+  // Typed columns
+  const typed = document.getElementById('typed-columns');
+  typed.columns = [
+    { header: 'Employee', type: 'text' },
+    { header: 'Salary', type: 'number' },
+    { header: 'Start Date', type: 'date' },
+    { header: 'Full-time', type: 'boolean' },
+  ];
+  typed.data = [
+    ['Alice Johnson', 85000, '2022-03-15', true],
+    ['Bob Smith', 72000, '2023-01-10', true],
+    ['Charlie Brown', 45000, '2023-06-01', false],
+    ['Diana Prince', 95000, '2021-11-20', true],
+  ];
+
+  // Select columns
+  const selectCols = document.getElementById('select-columns');
+  selectCols.columns = [
+    { header: 'Task' },
+    { header: 'Status', type: 'select', options: ['To Do', 'In Progress', 'Done', 'Blocked'] },
+    { header: 'Priority', type: 'select', options: ['Low', 'Medium', 'High', 'Critical'] },
+  ];
+  selectCols.data = [
+    ['Fix login bug', 'In Progress', 'High'],
+    ['Update docs', 'To Do', 'Low'],
+    ['Deploy v2.0', 'Done', 'Critical'],
+  ];
+
+  // Custom widths
+  const customW = document.getElementById('custom-widths');
+  customW.columns = [
+    { header: 'ID', width: 60 },
+    { header: 'Description', width: 300 },
+    { header: 'Amount', type: 'number', width: 120 },
+  ];
+  customW.data = [
+    [1, 'Office supplies', 150.50],
+    [2, 'Software license renewal', 2400.00],
+    [3, 'Team lunch', 89.99],
+  ];
+
+  // Readonly
+  const ro = document.getElementById('readonly-sheet');
+  ro.columns = [
+    { header: 'Metric' },
+    { header: 'Value', type: 'number' },
+  ];
+  ro.data = [
+    ['Revenue', 125000],
+    ['Expenses', 87000],
+    ['Profit', 38000],
+  ];
+
+  // Empty
+  // No data set intentionally
+
+  // Formulas
+  const formulas = document.getElementById('formulas');
+  formulas.columns = [
+    { header: 'Item' },
+    { header: 'Q1', type: 'number' },
+    { header: 'Q2', type: 'number' },
+    { header: 'Q3', type: 'number' },
+    { header: 'Q4', type: 'number' },
+    { header: 'Total', type: 'number' },
+  ];
+  formulas.data = [
+    ['Product A', 100, 150, 200, 180, '=SUM(B1:E1)'],
+    ['Product B', 80, 120, 90, 110, '=SUM(B2:E2)'],
+    ['Product C', 200, 180, 220, 250, '=SUM(B3:E3)'],
+    ['Average', '=AVG(B1:B3)', '=AVG(C1:C3)', '=AVG(D1:D3)', '=AVG(E1:E3)', ''],
+  ];
+
+  // Large dataset
+  const large = document.getElementById('large-data');
+  large.columns = [
+    { header: '#', type: 'number', width: 50 },
+    { header: 'Name' },
+    { header: 'Score', type: 'number' },
+    { header: 'Grade' },
+  ];
+  const grades = ['A', 'B', 'C', 'D', 'F'];
+  const names = ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank', 'Grace', 'Hank', 'Ivy', 'Jack'];
+  large.data = Array.from({ length: 50 }, (_, i) => [
+    i + 1,
+    names[i % names.length] + ' ' + (Math.floor(i / names.length) + 1),
+    Math.floor(50 + (i * 7 % 50)),
+    grades[(i * 3) % grades.length],
+  ]);
+
+  // Single row
+  const singleRow = document.getElementById('single-row');
+  singleRow.columns = [{ header: 'A' }, { header: 'B' }, { header: 'C' }];
+  singleRow.data = [['Only', 'One', 'Row']];
+
+  // Single column
+  const singleCol = document.getElementById('single-col');
+  singleCol.columns = [{ header: 'Values', type: 'number' }];
+  singleCol.data = [[10], [20], [30], [40], [50]];
+
+  // Frozen panes
+  const frozen = document.getElementById('frozen-panes');
+  frozen.fixedRowsTop = 1;
+  frozen.fixedColumnsLeft = 1;
+  frozen.columns = [
+    { header: 'Region', width: 160 },
+    { header: 'Q1', type: 'currency', format: { currency: 'USD', decimals: 0 } },
+    { header: 'Q2', type: 'currency', format: { currency: 'USD', decimals: 0 } },
+    { header: 'Q3', type: 'currency', format: { currency: 'USD', decimals: 0 } },
+    { header: 'Q4', type: 'currency', format: { currency: 'USD', decimals: 0 } },
+    { header: '2024 Total', type: 'currency', format: { currency: 'USD', decimals: 0 } },
+    { header: 'YoY %', type: 'percent', format: { decimals: 1 } },
+    { header: 'Owner' },
+  ];
+  const regions = ['NA East', 'NA West', 'EMEA', 'LATAM', 'APAC', 'Japan', 'Australia', 'India', 'China', 'SE Asia', 'Africa', 'Middle East'];
+  frozen.data = Array.from({ length: 60 }, (_, i) => {
+    const region = regions[i % regions.length];
+    return [
+      `${region} ${i + 1}`,
+      120000 + i * 7300,
+      135000 + i * 6100,
+      150000 + i * 8900,
+      165000 + i * 9100,
+      570000 + i * 31400,
+      0.05 + (i % 12) * 0.012,
+      ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'][i % 5],
+    ];
+  });
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

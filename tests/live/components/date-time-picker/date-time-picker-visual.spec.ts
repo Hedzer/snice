@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/date-time-picker/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/date-time-picker/visual.html';
 
 test.describe('Snice Date Time Picker visual integrity', () => {
   test.beforeEach(async ({ page }) => {

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const showcaseUrl = 'http://localhost:5566/website/showcases/select/full.html';
+const showcaseUrl = 'http://localhost:5566/tests/live/fixtures/select/visual.html';
 
 test('select full showcase renders and exercises its external-label lifecycle', async ({ page }) => {
   test.setTimeout(120_000);

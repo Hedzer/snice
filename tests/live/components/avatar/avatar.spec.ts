@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/avatar/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/avatar/visual.html';
 
 test.describe('Snice Avatar', () => {
   test.beforeEach(async ({ page }) => {

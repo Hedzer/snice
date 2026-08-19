@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/flip-card/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/flip-card/visual.html';
 
 test.describe('Snice Flip Card visual integrity', () => {
   test.beforeEach(async ({ page }) => {

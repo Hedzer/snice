@@ -13,7 +13,7 @@ async function placeCursor(doc: Locator, text: string, offset: number) {
 
 test.describe('snice-doc insertion at the cursor', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/components/doc/demo.html');
+    await page.goto('/tests/live/fixtures/doc/visual.html');
     await page.waitForSelector('snice-doc');
   });
 

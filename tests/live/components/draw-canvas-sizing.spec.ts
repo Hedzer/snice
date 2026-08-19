@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/draw/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/draw/visual.html';
 
 test.describe('Draw Canvas Sizing', () => {
   test('canvas should fill host element and match container size', async ({ page }) => {

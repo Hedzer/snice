@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/binpack/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/binpack/visual.html';
 
 // The showcase packs absolutely-positioned light-DOM items into each
 // <snice-binpack>. The two things that must always hold are: packed items

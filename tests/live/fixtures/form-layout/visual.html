@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>Form Layout</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .box { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .field { display: flex; flex-direction: column; gap: 0.25rem; }
+    .field label { font-size: 0.875rem; font-weight: 500; color: var(--snice-color-text); }
+    .field input, .field select, .field textarea { padding: 0.5rem; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 4px; font-size: 0.875rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+  </style>
+  <script type="module">import '/packages/components/src/form-layout/snice-form-layout.ts';</script>
+</head>
+<body>
+
+<!-- Columns -->
+<h2>Columns: 1 (default)</h2>
+<div class="box">
+  <snice-form-layout columns="1">
+    <div class="field"><label>First Name</label><input type="text" placeholder="John"></div>
+    <div class="field"><label>Last Name</label><input type="text" placeholder="Doe"></div>
+    <div class="field"><label>Email</label><input type="email" placeholder="john@example.com"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Columns: 2</h2>
+<div class="box">
+  <snice-form-layout columns="2">
+    <div class="field"><label>First Name</label><input type="text" placeholder="John"></div>
+    <div class="field"><label>Last Name</label><input type="text" placeholder="Doe"></div>
+    <div class="field"><label>Email</label><input type="email" placeholder="john@example.com"></div>
+    <div class="field"><label>Phone</label><input type="tel" placeholder="(555) 123-4567"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Columns: 3</h2>
+<div class="box">
+  <snice-form-layout columns="3">
+    <div class="field"><label>City</label><input type="text" placeholder="New York"></div>
+    <div class="field"><label>State</label><input type="text" placeholder="NY"></div>
+    <div class="field"><label>Zip</label><input type="text" placeholder="10001"></div>
+    <div class="field"><label>Country</label><input type="text" placeholder="USA"></div>
+    <div class="field"><label>Region</label><input type="text" placeholder="Northeast"></div>
+    <div class="field"><label>County</label><input type="text" placeholder="Manhattan"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Columns: 4</h2>
+<div class="box">
+  <snice-form-layout columns="4">
+    <div class="field"><label>Q1</label><input type="number" placeholder="0"></div>
+    <div class="field"><label>Q2</label><input type="number" placeholder="0"></div>
+    <div class="field"><label>Q3</label><input type="number" placeholder="0"></div>
+    <div class="field"><label>Q4</label><input type="number" placeholder="0"></div>
+  </snice-form-layout>
+</div>
+
+<!-- Label Position -->
+<h2>Label Position: top (default)</h2>
+<div class="box">
+  <snice-form-layout label-position="top" columns="2">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Label Position: left</h2>
+<div class="box">
+  <snice-form-layout label-position="left" columns="1">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+    <div class="field"><label>Phone</label><input type="tel"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Label Position: right</h2>
+<div class="box">
+  <snice-form-layout label-position="right" columns="1">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+    <div class="field"><label>Phone</label><input type="tel"></div>
+  </snice-form-layout>
+</div>
+
+<!-- Label Width -->
+<h2>Label Width: 6rem</h2>
+<div class="box">
+  <snice-form-layout label-position="left" label-width="6rem" columns="1">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Label Width: 12rem</h2>
+<div class="box">
+  <snice-form-layout label-position="left" label-width="12rem" columns="1">
+    <div class="field"><label>Full Name</label><input type="text"></div>
+    <div class="field"><label>Email Address</label><input type="email"></div>
+  </snice-form-layout>
+</div>
+
+<!-- Gap -->
+<h2>Gap: small</h2>
+<div class="box">
+  <snice-form-layout gap="small" columns="2">
+    <div class="field"><label>A</label><input type="text"></div>
+    <div class="field"><label>B</label><input type="text"></div>
+    <div class="field"><label>C</label><input type="text"></div>
+    <div class="field"><label>D</label><input type="text"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Gap: medium (default)</h2>
+<div class="box">
+  <snice-form-layout gap="medium" columns="2">
+    <div class="field"><label>A</label><input type="text"></div>
+    <div class="field"><label>B</label><input type="text"></div>
+    <div class="field"><label>C</label><input type="text"></div>
+    <div class="field"><label>D</label><input type="text"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Gap: large</h2>
+<div class="box">
+  <snice-form-layout gap="large" columns="2">
+    <div class="field"><label>A</label><input type="text"></div>
+    <div class="field"><label>B</label><input type="text"></div>
+    <div class="field"><label>C</label><input type="text"></div>
+    <div class="field"><label>D</label><input type="text"></div>
+  </snice-form-layout>
+</div>
+
+<!-- Variant -->
+<h2>Variant: default</h2>
+<div class="box">
+  <snice-form-layout variant="default" columns="2">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Variant: compact</h2>
+<div class="box">
+  <snice-form-layout variant="compact" columns="2">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+  </snice-form-layout>
+</div>
+
+<h2>Variant: inline</h2>
+<div class="box">
+  <snice-form-layout variant="inline" columns="3">
+    <div class="field"><label>Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+    <div class="field"><label>Phone</label><input type="tel"></div>
+  </snice-form-layout>
+</div>
+
+<!-- Combinations -->
+<h2>3 Columns + Left Labels + Small Gap + Compact</h2>
+<div class="box">
+  <snice-form-layout columns="3" label-position="left" gap="small" variant="compact" label-width="5rem">
+    <div class="field"><label>City</label><input type="text"></div>
+    <div class="field"><label>State</label><input type="text"></div>
+    <div class="field"><label>Zip</label><input type="text"></div>
+    <div class="field"><label>Country</label><select><option>USA</option><option>Canada</option></select></div>
+    <div class="field"><label>Region</label><input type="text"></div>
+    <div class="field"><label>Notes</label><textarea rows="2"></textarea></div>
+  </snice-form-layout>
+</div>
+
+<h2>2 Columns + Large Gap + Inline Variant</h2>
+<div class="box">
+  <snice-form-layout columns="2" gap="large" variant="inline">
+    <div class="field"><label>First Name</label><input type="text"></div>
+    <div class="field"><label>Last Name</label><input type="text"></div>
+    <div class="field"><label>Email</label><input type="email"></div>
+    <div class="field"><label>Company</label><input type="text"></div>
+  </snice-form-layout>
+</div>
+
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Preview</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-link-preview { max-width: 360px; }
+  </style>
+</head>
+<body>
+
+<h2>Variant: vertical (default)</h2>
+<snice-link-preview
+  url="https://example.com/article"
+  title="How to Build Web Components"
+  description="A comprehensive guide to creating reusable custom elements with modern web standards."
+  image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%23059669%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"
+  site-name="Example Blog"
+  favicon="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%3E%3Crect%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%222%22%20fill%3D%22%232563eb%22%2F%3E%3C%2Fsvg%3E">
+</snice-link-preview>
+
+<h2>Variant: horizontal</h2>
+<snice-link-preview
+  variant="horizontal"
+  url="https://example.com/news"
+  title="Breaking: Web Components Adoption Surges"
+  description="New survey shows 65% of developers now use web components in production."
+  image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%232563eb%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"
+  site-name="Tech News"
+  favicon="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%3E%3Crect%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%222%22%20fill%3D%22%232563eb%22%2F%3E%3C%2Fsvg%3E">
+</snice-link-preview>
+
+<h2>Size: small</h2>
+<div class="row">
+  <snice-link-preview size="small"
+    url="https://example.com" title="Small Vertical" description="Brief description." image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%2316a34a%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E" site-name="Site">
+  </snice-link-preview>
+  <snice-link-preview variant="horizontal" size="small"
+    url="https://example.com" title="Small Horizontal" description="Brief description." image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%23ea580c%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E" site-name="Site">
+  </snice-link-preview>
+</div>
+
+<h2>Size: medium (default)</h2>
+<div class="row">
+  <snice-link-preview size="medium"
+    url="https://example.com" title="Medium Vertical" description="Medium-length description of the linked content." image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%237c3aed%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E" site-name="Site">
+  </snice-link-preview>
+  <snice-link-preview variant="horizontal" size="medium"
+    url="https://example.com" title="Medium Horizontal" description="Medium-length description of the linked content." image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%23dc2626%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E" site-name="Site">
+  </snice-link-preview>
+</div>
+
+<h2>Size: large</h2>
+<div class="row">
+  <snice-link-preview size="large"
+    url="https://example.com" title="Large Vertical" description="A much longer description that demonstrates how the large size accommodates more text content in the preview card." image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%230d9488%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E" site-name="Site">
+  </snice-link-preview>
+  <snice-link-preview variant="horizontal" size="large"
+    url="https://example.com" title="Large Horizontal" description="A much longer description that demonstrates how the large size accommodates more text content in the preview card." image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%23ca8a04%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E" site-name="Site">
+  </snice-link-preview>
+</div>
+
+<h2>No image (placeholder icon)</h2>
+<div class="row">
+  <snice-link-preview
+    url="https://example.com"
+    title="No Image Provided"
+    description="This preview has no image, showing the link placeholder icon."
+    site-name="Example">
+  </snice-link-preview>
+  <snice-link-preview variant="horizontal"
+    url="https://example.com"
+    title="No Image Horizontal"
+    description="Horizontal variant with placeholder."
+    site-name="Example">
+  </snice-link-preview>
+</div>
+
+<h2>No description</h2>
+<snice-link-preview
+  url="https://example.com"
+  title="Title Only, No Description"
+  image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"
+  site-name="Example">
+</snice-link-preview>
+
+<h2>No title</h2>
+<snice-link-preview
+  url="https://example.com"
+  description="This preview has a description but no title."
+  image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"
+  site-name="Example">
+</snice-link-preview>
+
+<h2>No site-name (domain extracted from URL)</h2>
+<snice-link-preview
+  url="https://developer.mozilla.org/en-US/docs/Web/API"
+  title="Web APIs"
+  description="Web APIs documentation on MDN."
+  image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%234f46e5%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E">
+</snice-link-preview>
+
+<h2>With favicon, no site-name</h2>
+<snice-link-preview
+  url="https://github.com/example"
+  title="GitHub Repository"
+  description="Open source project."
+  favicon="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%3E%3Crect%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%222%22%20fill%3D%22%232563eb%22%2F%3E%3C%2Fsvg%3E">
+</snice-link-preview>
+
+<h2>With site-name and favicon</h2>
+<snice-link-preview
+  url="https://example.com"
+  title="Full Footer Info"
+  description="Both site name and favicon displayed in footer."
+  image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%23059669%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"
+  site-name="My Blog"
+  favicon="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%3E%3Crect%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%222%22%20fill%3D%22%232563eb%22%2F%3E%3C%2Fsvg%3E">
+</snice-link-preview>
+
+<h2>Long title and description (clamping)</h2>
+<snice-link-preview
+  url="https://example.com"
+  title="This is a very long title that should be clamped to two lines to prevent the card from becoming too tall and breaking the layout"
+  description="This is a very long description that should be clamped to three lines. It contains enough text to demonstrate the line clamping behavior of the description element within the link preview card component."
+  image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%232563eb%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"
+  site-name="Example"
+  favicon="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%3E%3Crect%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%222%22%20fill%3D%22%232563eb%22%2F%3E%3C%2Fsvg%3E">
+</snice-link-preview>
+
+<h2>Minimal (url only)</h2>
+<snice-link-preview url="https://example.com"></snice-link-preview>
+
+<h2>Empty (no props)</h2>
+<snice-link-preview></snice-link-preview>
+
+<h2>Variant x Size matrix</h2>
+<div class="row">
+  <snice-link-preview variant="vertical" size="small" url="https://example.com" title="V+S" description="Vertical small" image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%234f46e5%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"></snice-link-preview>
+  <snice-link-preview variant="vertical" size="medium" url="https://example.com" title="V+M" description="Vertical medium" image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%23059669%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"></snice-link-preview>
+  <snice-link-preview variant="vertical" size="large" url="https://example.com" title="V+L" description="Vertical large" image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%232563eb%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"></snice-link-preview>
+</div>
+<div class="row" style="margin-top:0.75rem">
+  <snice-link-preview variant="horizontal" size="small" url="https://example.com" title="H+S" description="Horizontal small" image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%2316a34a%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"></snice-link-preview>
+  <snice-link-preview variant="horizontal" size="medium" url="https://example.com" title="H+M" description="Horizontal medium" image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%23ea580c%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"></snice-link-preview>
+  <snice-link-preview variant="horizontal" size="large" url="https://example.com" title="H+L" description="Horizontal large" image="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22300%22%3E%3Crect%20width%3D%22600%22%20height%3D%22300%22%20fill%3D%22%237c3aed%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22150%22%20r%3D%22100%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"></snice-link-preview>
+</div>
+
+<script type="module">import '/packages/components/src/link-preview/snice-link-preview.ts';</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

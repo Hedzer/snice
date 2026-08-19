@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>Color Picker</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    .label-lifecycle { display: grid; gap: 1rem; max-width: 42rem; }
+    .label-row, .lifecycle-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: baseline; }
+    .lifecycle-controls button { padding: 0.45rem 0.7rem; }
+    .contract-form { box-sizing: border-box; display: grid; gap: var(--snice-spacing-sm, 0.75rem); max-width: 34rem; padding: var(--snice-spacing-md, 1rem); border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: var(--snice-border-radius-lg, 0.5rem); }
+    .contract-actions { display: flex; gap: var(--snice-spacing-xs, 0.5rem); flex-wrap: wrap; }
+    .contract-actions button { padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); }
+    .contract-form output { color: var(--snice-color-text-secondary, rgb(82 82 82)); overflow-wrap: anywhere; }
+  </style>
+  <script type="module">import '/packages/components/src/color-picker/snice-color-picker.ts';</script>
+</head>
+<body>
+
+<section>
+  <h2>Default</h2>
+  <snice-color-picker label="Default"></snice-color-picker>
+</section>
+
+<section>
+  <h2>With value</h2>
+  <snice-color-picker label="Blue" value="#3b82f6"></snice-color-picker>
+</section>
+
+<section>
+  <h2>Formats</h2>
+  <div class="row">
+    <snice-color-picker format="hex" label="Hex" value="#ff0000"></snice-color-picker>
+    <snice-color-picker format="rgb" label="RGB" value="#00ff00"></snice-color-picker>
+    <snice-color-picker format="hsl" label="HSL" value="#0000ff"></snice-color-picker>
+  </div>
+</section>
+
+<section>
+  <h2>Sizes</h2>
+  <div class="row">
+    <snice-color-picker size="small" label="Small" value="#f87171"></snice-color-picker>
+    <snice-color-picker size="medium" label="Medium" value="#fb923c"></snice-color-picker>
+    <snice-color-picker size="large" label="Large" value="#fbbf24"></snice-color-picker>
+  </div>
+</section>
+
+<section>
+  <h2>Sizes x Formats</h2>
+  <div class="row">
+    <snice-color-picker size="small" format="hex" label="Small Hex" value="#8b5cf6"></snice-color-picker>
+    <snice-color-picker size="medium" format="rgb" label="Medium RGB" value="#8b5cf6"></snice-color-picker>
+    <snice-color-picker size="large" format="hsl" label="Large HSL" value="#8b5cf6"></snice-color-picker>
+  </div>
+</section>
+
+<section>
+  <h2>show-presets</h2>
+  <snice-color-picker label="With presets" show-presets value="#60a5fa"></snice-color-picker>
+</section>
+
+<section>
+  <h2>show-input="false"</h2>
+  <snice-color-picker label="No input" show-input="false" value="#10b981"></snice-color-picker>
+</section>
+
+<section>
+  <h2>show-input="false" + show-presets</h2>
+  <snice-color-picker label="Presets only" show-input="false" show-presets value="#f59e0b"></snice-color-picker>
+</section>
+
+<section>
+  <h2>helper-text</h2>
+  <snice-color-picker label="Theme Color" helper-text="Choose your primary brand color"></snice-color-picker>
+</section>
+
+<section>
+  <h2>Disabled</h2>
+  <snice-color-picker label="Disabled" disabled value="#9ca3af"></snice-color-picker>
+</section>
+
+<section>
+  <h2>Required</h2>
+  <snice-color-picker label="Required" required></snice-color-picker>
+</section>
+
+<section>
+  <h2>Invalid + error-text</h2>
+  <snice-color-picker label="Invalid" invalid error-text="Please select a valid color"></snice-color-picker>
+</section>
+
+<section>
+  <h2>Loading</h2>
+  <div class="row">
+    <snice-color-picker label="Loading" loading value="#3b82f6"></snice-color-picker>
+    <snice-color-picker label="Loading small" loading size="small" value="#ef4444"></snice-color-picker>
+    <snice-color-picker label="Loading large" loading size="large" value="#10b981"></snice-color-picker>
+  </div>
+</section>
+
+<section>
+  <h2>Form: name</h2>
+  <snice-color-picker label="Brand Color" name="brand_color" value="#6366f1"></snice-color-picker>
+</section>
+
+<section>
+  <h2>Disabled + presets</h2>
+  <snice-color-picker label="Disabled with presets" disabled show-presets value="#f472b6"></snice-color-picker>
+</section>
+
+<section>
+  <h2>Required + invalid + error-text</h2>
+  <snice-color-picker label="All validation states" required invalid error-text="Color is required"></snice-color-picker>
+</section>
+
+<section id="color-picker-label-lifecycle">
+  <h2>External Label Lifecycle</h2>
+  <div class="label-lifecycle">
+    <div>
+      <div class="label-row">
+        <label id="color-showcase-primary-label" for="color-showcase-labelled">Brand color</label>
+        <label id="color-showcase-secondary-label" for="color-showcase-labelled">required</label>
+      </div>
+      <snice-color-picker
+        id="color-showcase-labelled"
+        label="Internal color fallback"
+        helper-text="Use an approved brand color."
+        show-presets
+        required
+      ></snice-color-picker>
+    </div>
+    <div>
+      <label for="color-showcase-swatch">Swatch color</label>
+      <snice-color-picker
+        id="color-showcase-swatch"
+        show-input="false"
+        helper-text="The swatch is the primary label target."
+      ></snice-color-picker>
+    </div>
+    <div>
+      <label for="color-showcase-disabled">Disabled color</label>
+      <snice-color-picker id="color-showcase-disabled" disabled show-input="false"></snice-color-picker>
+    </div>
+    <div class="lifecycle-controls">
+      <button id="color-showcase-change-label" type="button">Change label</button>
+      <button id="color-showcase-toggle-error" type="button">Show error</button>
+      <button id="color-showcase-toggle-labels" type="button">Remove external labels</button>
+    </div>
+    <output id="color-showcase-label-output" aria-live="polite">Accessible name: Brand color required</output>
+  </div>
+</section>
+
+<section>
+  <h2>Validated Form Contract</h2>
+  <form id="color-contract-form" class="contract-form">
+    <snice-color-picker
+      id="color-contract-control"
+      name="brand-color"
+      label="Brand color"
+      value=""
+      format="rgb"
+      required
+      helper-text="Enter strict hex, RGB, or HSL. Valid values submit as six-digit hex."
+    ></snice-color-picker>
+    <div class="contract-actions">
+      <button type="submit">Submit canonical color</button>
+      <button id="color-contract-malformed" type="button">Assign malformed text</button>
+      <button id="color-contract-error" type="button">Set contrast error</button>
+      <button type="reset">Reset</button>
+    </div>
+    <output id="color-contract-output" aria-live="polite">A color is required.</output>
+  </form>
+</section>
+
+<script>
+  (() => {
+    const picker = document.getElementById('color-showcase-labelled');
+    const primary = document.getElementById('color-showcase-primary-label');
+    const secondary = document.getElementById('color-showcase-secondary-label');
+    const output = document.getElementById('color-showcase-label-output');
+    let labelsAttached = true;
+    const updateOutput = () => requestAnimationFrame(() => {
+      output.textContent = `Accessible name: ${picker.shadowRoot?.querySelector('.color-input')?.getAttribute('aria-label') || ''}`;
+    });
+    document.getElementById('color-showcase-change-label').addEventListener('click', () => {
+      primary.textContent = primary.textContent === 'Brand color' ? 'Surface color' : 'Brand color';
+      updateOutput();
+    });
+    document.getElementById('color-showcase-toggle-error').addEventListener('click', event => {
+      const showing = picker.errorText !== '';
+      picker.invalid = !showing;
+      picker.errorText = showing ? '' : 'Choose a color with sufficient contrast.';
+      event.currentTarget.textContent = showing ? 'Show error' : 'Clear error';
+      updateOutput();
+    });
+    document.getElementById('color-showcase-toggle-labels').addEventListener('click', event => {
+      labelsAttached = !labelsAttached;
+      primary.htmlFor = labelsAttached ? picker.id : '';
+      secondary.htmlFor = labelsAttached ? picker.id : '';
+      event.currentTarget.textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
+      updateOutput();
+    });
+  })();
+
+  (() => {
+    const form = document.getElementById('color-contract-form');
+    const picker = document.getElementById('color-contract-control');
+    const errorButton = document.getElementById('color-contract-error');
+    const output = document.getElementById('color-contract-output');
+    let contrastError = false;
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted brand-color=${new FormData(form).get('brand-color')}`;
+    });
+    form.addEventListener('reset', () => queueMicrotask(() => {
+      contrastError = false;
+      picker.setCustomValidity('');
+      errorButton.textContent = 'Set contrast error';
+      output.textContent = `Reset value=${JSON.stringify(picker.value)}`;
+    }));
+    picker.addEventListener('invalid', () => {
+      output.textContent = picker.validationMessage;
+    });
+    document.getElementById('color-contract-malformed').addEventListener('click', () => {
+      picker.value = 'rgb(300, 0, 0)';
+      output.textContent = picker.validationMessage;
+    });
+    errorButton.addEventListener('click', () => {
+      contrastError = !contrastError;
+      picker.setCustomValidity(contrastError ? 'This color does not meet the contrast requirement.' : '');
+      errorButton.textContent = contrastError ? 'Clear contrast error' : 'Set contrast error';
+      output.textContent = contrastError ? picker.validationMessage : `Current validity: ${picker.checkValidity()}`;
+    });
+  })();
+</script>
+
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

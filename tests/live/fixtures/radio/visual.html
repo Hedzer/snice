@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radio</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <script>
+    // The showcase's theme-preset script (localStorage) is stripped from the
+    // fixture; keep the deterministic half the specs drive: a fixed dark
+    // start and the snice-theme postMessage channel.
+    document.documentElement.setAttribute('data-theme', 'dark');
+    window.addEventListener('message', function (e) {
+      if (e.data && e.data.type === 'snice-theme') {
+        document.documentElement.setAttribute('data-theme', e.data.theme);
+      }
+    });
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui; margin: 0; padding: 1.5rem; background: var(--snice-color-surface, #111827); color: var(--snice-color-text, #f8fafc); overflow-wrap: anywhere; }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .column { display: flex; flex-direction: column; gap: 0.5rem; width: min(100%, 28rem); }
+    section { margin-bottom: 2rem; }
+    .form-demo { display: flex; flex-direction: column; gap: 0.875rem; width: min(100%, 36rem); }
+    .form-demo fieldset { display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; margin: 0; padding: 0.75rem; border: 1px solid var(--snice-color-border, #475569); border-radius: 0.5rem; }
+    .form-demo legend { padding: 0 0.35rem; color: var(--snice-color-text-secondary, #cbd5e1); }
+    .form-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .form-actions button { padding: 0.5rem 0.75rem; border: 1px solid var(--snice-color-border, #475569); border-radius: 0.375rem; background: var(--snice-color-surface-raised, #1e293b); color: var(--snice-color-text, #f8fafc); cursor: pointer; }
+    .external-label { width: fit-content; color: var(--snice-color-text-secondary, #cbd5e1); text-decoration: underline; cursor: pointer; }
+    output { display: block; min-height: 1.5rem; padding: 0.625rem 0.75rem; border-radius: 0.375rem; background: var(--snice-color-surface-raised, #1e293b); color: var(--snice-color-text-secondary, #cbd5e1); font: 0.8125rem/1.45 ui-monospace, monospace; }
+    @media (max-width: 480px) { body { padding: 1rem; } }
+  </style>
+  <script type="module">import '/packages/components/src/radio/snice-radio.ts';</script>
+</head>
+<body>
+
+<section>
+  <h2>Variant: default</h2>
+  <div class="row">
+    <snice-radio name="v-default" value="a" label="Option A" checked></snice-radio>
+    <snice-radio name="v-default" value="b" label="Option B"></snice-radio>
+    <snice-radio name="v-default" value="c" label="Option C"></snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>Variant: block</h2>
+  <div class="column">
+    <snice-radio variant="block" name="v-block" value="free" label="Free Plan" description="For individuals and side projects" checked>
+      <span slot="suffix">$0/mo</span>
+    </snice-radio>
+    <snice-radio variant="block" name="v-block" value="pro" label="Pro Plan" description="For growing teams">
+      <span slot="suffix">$12/mo</span>
+    </snice-radio>
+    <snice-radio variant="block" name="v-block" value="ent" label="Enterprise" description="Custom solutions for large organizations">
+      <span slot="suffix">Contact us</span>
+    </snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>Size: small</h2>
+  <div class="row">
+    <snice-radio name="s-small" value="a" label="Small A" size="small" checked></snice-radio>
+    <snice-radio name="s-small" value="b" label="Small B" size="small"></snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>Size: medium (default)</h2>
+  <div class="row">
+    <snice-radio name="s-med" value="a" label="Medium A" size="medium" checked></snice-radio>
+    <snice-radio name="s-med" value="b" label="Medium B" size="medium"></snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>Size: large</h2>
+  <div class="row">
+    <snice-radio name="s-large" value="a" label="Large A" size="large" checked></snice-radio>
+    <snice-radio name="s-large" value="b" label="Large B" size="large"></snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>All sizes</h2>
+  <div class="row">
+    <snice-radio name="all-sizes" value="s" label="Small" size="small"></snice-radio>
+    <snice-radio name="all-sizes" value="m" label="Medium" size="medium" checked></snice-radio>
+    <snice-radio name="all-sizes" value="l" label="Large" size="large"></snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>Checked: true</h2>
+  <snice-radio label="Checked" checked></snice-radio>
+</section>
+
+<section>
+  <h2>Checked: false</h2>
+  <snice-radio label="Unchecked"></snice-radio>
+</section>
+
+<section>
+  <h2>Disabled</h2>
+  <div class="row">
+    <snice-radio label="Disabled unchecked" disabled></snice-radio>
+    <snice-radio label="Disabled checked" disabled checked></snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>Loading</h2>
+  <div class="row">
+    <snice-radio label="Loading unchecked" loading></snice-radio>
+    <snice-radio label="Loading checked" loading checked></snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>Required</h2>
+  <snice-radio label="Required field" required></snice-radio>
+</section>
+
+<section>
+  <h2>Invalid</h2>
+  <div class="row">
+    <snice-radio label="Invalid field" invalid></snice-radio>
+    <snice-radio label="Invalid checked" invalid checked></snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>No label</h2>
+  <div class="row">
+    <snice-radio name="no-label" value="a" checked></snice-radio>
+    <snice-radio name="no-label" value="b"></snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>Block variant with description</h2>
+  <div class="column">
+    <snice-radio variant="block" name="block-desc" value="a" label="With description" description="This is helpful supporting text" checked></snice-radio>
+    <snice-radio variant="block" name="block-desc" value="b" label="No description"></snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>Block variant: disabled</h2>
+  <div class="column">
+    <snice-radio variant="block" label="Disabled block" description="Cannot be selected" disabled></snice-radio>
+    <snice-radio variant="block" label="Disabled checked block" description="Already selected" disabled checked></snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>Block variant: loading</h2>
+  <div class="column">
+    <snice-radio variant="block" label="Loading block" description="Processing..." loading></snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>Block variant: sizes</h2>
+  <div class="column">
+    <snice-radio variant="block" name="block-size" value="s" label="Small block" description="size=small" size="small" checked></snice-radio>
+    <snice-radio variant="block" name="block-size" value="m" label="Medium block" description="size=medium" size="medium"></snice-radio>
+    <snice-radio variant="block" name="block-size" value="l" label="Large block" description="size=large" size="large"></snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>Suffix slot (block variant)</h2>
+  <div class="column">
+    <snice-radio variant="block" name="suffix" value="a" label="Option A" checked>
+      <span slot="suffix" style="font-weight:600;color:var(--snice-color-primary,#3b82f6)">$9.99</span>
+    </snice-radio>
+    <snice-radio variant="block" name="suffix" value="b" label="Option B">
+      <span slot="suffix" style="font-weight:600;color:var(--snice-color-primary,#3b82f6)">$19.99</span>
+    </snice-radio>
+  </div>
+</section>
+
+<section>
+  <h2>State matrix: size x disabled/loading/invalid</h2>
+  <div class="column">
+    <div class="row">
+      <snice-radio label="Small disabled" size="small" disabled></snice-radio>
+      <snice-radio label="Small loading" size="small" loading></snice-radio>
+      <snice-radio label="Small invalid" size="small" invalid></snice-radio>
+    </div>
+    <div class="row">
+      <snice-radio label="Medium disabled" size="medium" disabled></snice-radio>
+      <snice-radio label="Medium loading" size="medium" loading></snice-radio>
+      <snice-radio label="Medium invalid" size="medium" invalid></snice-radio>
+    </div>
+    <div class="row">
+      <snice-radio label="Large disabled" size="large" disabled></snice-radio>
+      <snice-radio label="Large loading" size="large" loading></snice-radio>
+      <snice-radio label="Large invalid" size="large" invalid></snice-radio>
+    </div>
+  </div>
+</section>
+
+<section id="radio-form-contract">
+  <h2>Native form integration, group validation, reset, and fieldset rules</h2>
+  <form id="radio-showcase-form" class="form-demo">
+    <fieldset>
+      <legend>Choose a plan (required)</legend>
+      <snice-radio
+        id="radio-showcase-basic"
+        name="plan"
+        value="basic"
+        label="Basic"
+        required
+      ></snice-radio>
+      <snice-radio
+        id="radio-showcase-pro"
+        name="plan"
+        value="pro"
+        label="Pro"
+      ></snice-radio>
+    </fieldset>
+    <fieldset disabled>
+      <legend>
+        Disabled fieldset
+        <snice-radio
+          id="radio-showcase-legend"
+          name="legend-plan"
+          value="kept"
+          label="First legend remains enabled"
+          checked
+        ></snice-radio>
+      </legend>
+      <snice-radio
+        id="radio-showcase-fieldset"
+        name="disabled-plan"
+        value="omitted"
+        label="Descendant is effectively disabled and omitted"
+        checked
+      ></snice-radio>
+    </fieldset>
+    <div class="form-actions">
+      <button type="submit">Submit form</button>
+      <button type="reset">Reset defaults</button>
+    </div>
+    <output id="radio-form-status" aria-live="polite">Ready — choose a plan and submit.</output>
+  </form>
+</section>
+
+<section id="radio-event-contract">
+  <h2>Activation event order and arrow navigation</h2>
+  <div class="form-demo">
+    <div class="row">
+      <snice-radio id="radio-showcase-event-a" name="event-plan" value="a" label="Event A" checked></snice-radio>
+      <snice-radio id="radio-showcase-event-b" name="event-plan" value="b" label="Event B"></snice-radio>
+    </div>
+    <label class="external-label" for="radio-showcase-event-b">Select Event B through an external label</label>
+    <output id="radio-event-status" aria-live="polite">No selection change yet — expected order: input → change → radio-change.</output>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector('#radio-showcase-form');
+  const formStatus = document.querySelector('#radio-form-status');
+  const describeFormData = () => Array.from(new FormData(form).entries())
+    .map(([name, value]) => `${name}=${String(value)}`)
+    .join(', ') || '(empty)';
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    formStatus.textContent = `Submitted: ${describeFormData()}`;
+  });
+  form.addEventListener('reset', () => {
+    requestAnimationFrame(() => { formStatus.textContent = `Reset: ${describeFormData()}`; });
+  });
+
+  const eventRadios = Array.from(document.querySelectorAll('[name="event-plan"]'));
+  const eventStatus = document.querySelector('#radio-event-status');
+  const observedEvents = [];
+  for (const radio of eventRadios) {
+    for (const type of ['input', 'change', 'radio-change']) {
+      radio.addEventListener(type, () => {
+        if (type === 'input') observedEvents.length = 0;
+        observedEvents.push(type);
+        eventStatus.textContent = `${observedEvents.join(' → ')}; value=${radio.value}`;
+      });
+    }
+  }
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/time-range-picker/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/time-range-picker/visual.html';
 
 test.describe('Snice Time Range Picker visual integrity', () => {
   test.beforeEach(async ({ page }) => {

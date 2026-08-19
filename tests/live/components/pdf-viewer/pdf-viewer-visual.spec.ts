@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/pdf-viewer/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/pdf-viewer/visual.html';
 
 // The showcase pulls a sample PDF from mozilla.github.io. Every assertion here
 // is written to hold in the loaded, the empty, and the error state so the spec

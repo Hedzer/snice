@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('doc component renders and is interactive', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto('/components/doc/demo.html');
+  await page.goto('/tests/live/fixtures/doc/visual.html');
   const doc = page.locator('snice-doc').first();
   const editor = doc.locator('.doc-editor');
   await expect(doc).toBeVisible();

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Terminal with @request/@respond', () => {
   test('should execute commands using @request/@respond pattern', async ({ page }) => {
-    await page.goto('http://localhost:5566/components/terminal/demo.html');
+    await page.goto('http://localhost:5566/tests/live/fixtures/terminal/visual.html');
     await page.waitForTimeout(1000);
 
     const term = page.locator('snice-terminal#terminal-1').first();
@@ -91,7 +91,7 @@ test.describe('Terminal with @request/@respond', () => {
   });
 
   test('should support writeLines for streaming', async ({ page }) => {
-    await page.goto('http://localhost:5566/components/terminal/demo.html');
+    await page.goto('http://localhost:5566/tests/live/fixtures/terminal/visual.html');
     await page.waitForTimeout(1000);
 
     const term = page.locator('snice-terminal#terminal-4').first();
@@ -126,7 +126,7 @@ test.describe('Terminal with @request/@respond', () => {
   });
 
   test('should clear terminal', async ({ page }) => {
-    await page.goto('http://localhost:5566/components/terminal/demo.html');
+    await page.goto('http://localhost:5566/tests/live/fixtures/terminal/visual.html');
     await page.waitForTimeout(1000);
 
     const term = page.locator('snice-terminal#terminal-1').first();

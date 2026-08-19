@@ -1,12 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/video-player/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/video-player/visual.html';
 
-// The showcase points 17 players at a multi-megabyte sample MP4 on
-// commondatastorage.googleapis.com. Those requests are aborted so this stays a
-// layout test rather than a bandwidth test — the player chrome (poster overlay,
-// controls bar, progress track) renders identically either way.
+// The fixture points all players at the local fixture-clip.webm, so playback
+// never leaves the dev server. The remote-asset abort below is a no-op kept
+// as a guard in case a showcase copy ever regresses the fixture.
 test.describe('Snice Video Player visual integrity', () => {
   test.beforeEach(async ({ page }) => {
     await page.route('**commondatastorage.googleapis.com/**', route => route.abort());

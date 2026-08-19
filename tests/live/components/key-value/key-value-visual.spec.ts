@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/key-value/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/key-value/visual.html';
 
 test.describe('Snice Key Value visual integrity', () => {
   test.beforeEach(async ({ page }) => {

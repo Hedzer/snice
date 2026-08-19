@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/avatar-group/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/avatar-group/visual.html';
 
 test.describe('Snice AvatarGroup visual integrity', () => {
   test.beforeEach(async ({ page }) => {

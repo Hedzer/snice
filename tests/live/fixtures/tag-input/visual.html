@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tag Input</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    snice-tag-input { max-width: 400px; }
+    .contract-form { box-sizing: border-box; display: grid; gap: var(--snice-spacing-sm, 0.75rem); max-width: 32rem; padding: var(--snice-spacing-md, 1rem); border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: var(--snice-border-radius-lg, 0.5rem); }
+    .contract-actions { display: flex; gap: var(--snice-spacing-xs, 0.5rem); flex-wrap: wrap; }
+    .contract-actions button { padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); }
+    .contract-form output { color: var(--snice-color-text-secondary, rgb(82 82 82)); overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+
+<h2>Default (Empty)</h2>
+<snice-tag-input placeholder="Add a tag..."></snice-tag-input>
+
+<h2>With Label</h2>
+<snice-tag-input label="Skills" placeholder="Add skills..."></snice-tag-input>
+
+<h2>Pre-populated Tags</h2>
+<snice-tag-input id="prepop" label="Technologies"></snice-tag-input>
+
+<h2>With Suggestions</h2>
+<snice-tag-input id="with-suggestions" label="Programming Languages" placeholder="Type to see suggestions..."></snice-tag-input>
+
+<h2>Max Tags (3)</h2>
+<snice-tag-input id="max-tags" label="Max 3 tags" max-tags="3" placeholder="Max 3 tags..."></snice-tag-input>
+
+<h2>Max Tags (1)</h2>
+<snice-tag-input id="max-one" label="Max 1 tag" max-tags="1" placeholder="Only one tag..."></snice-tag-input>
+
+<h2>Allow Duplicates</h2>
+<snice-tag-input id="allow-dups" label="Duplicates allowed" allow-duplicates placeholder="Duplicates OK..."></snice-tag-input>
+
+<h2>Disabled</h2>
+<snice-tag-input id="disabled-input" label="Disabled" disabled></snice-tag-input>
+
+<h2>Readonly</h2>
+<snice-tag-input id="readonly-input" label="Readonly" readonly></snice-tag-input>
+
+<h2>Custom Placeholder</h2>
+<snice-tag-input placeholder="Enter keywords separated by comma..."></snice-tag-input>
+
+<h2>Named (Form Integration)</h2>
+<snice-tag-input name="tags" label="Form tags (name=tags)" placeholder="Add tags..."></snice-tag-input>
+
+<h2>No Label</h2>
+<snice-tag-input placeholder="No label tag input..."></snice-tag-input>
+
+<h2>Pre-populated at Max</h2>
+<snice-tag-input id="at-max" label="At max (3/3)" max-tags="3"></snice-tag-input>
+
+<h2>With Suggestions + Pre-populated</h2>
+<snice-tag-input id="sug-prepop" label="Frameworks" placeholder="Add frameworks..."></snice-tag-input>
+
+<h2>Many Tags</h2>
+<snice-tag-input id="many-tags" label="Many tags"></snice-tag-input>
+
+<h2>Validated Form Contract</h2>
+<form id="tag-contract-form" class="contract-form">
+  <snice-tag-input id="tag-contract-control" name="skills" label="Skills" max-tags="2" placeholder="Add up to two unique skills"></snice-tag-input>
+  <div class="contract-actions">
+    <button type="submit">Submit JSON value</button>
+    <button id="tag-contract-overflow" type="button">Assign too many tags</button>
+    <button id="tag-contract-duplicates" type="button">Assign duplicates</button>
+    <button type="reset">Reset</button>
+  </div>
+  <output id="tag-contract-output" aria-live="polite">Current value: []</output>
+</form>
+
+<script type="module">
+  import '/packages/components/src/tag-input/snice-tag-input.ts';
+
+  // Pre-populated
+  document.getElementById('prepop').value = ['JavaScript', 'TypeScript', 'React'];
+
+  // With suggestions
+  const ws = document.getElementById('with-suggestions');
+  ws.suggestions = ['JavaScript', 'TypeScript', 'Python', 'Go', 'Rust', 'Ruby', 'Java', 'C#', 'C++', 'Swift', 'Kotlin', 'PHP'];
+
+  // Max tags
+  document.getElementById('max-tags').value = ['HTML', 'CSS'];
+
+  // Max one
+  document.getElementById('max-one').value = [];
+
+  // Allow duplicates
+  document.getElementById('allow-dups').value = ['same', 'same'];
+
+  // Disabled
+  document.getElementById('disabled-input').value = ['Tag 1', 'Tag 2'];
+
+  // Readonly
+  document.getElementById('readonly-input').value = ['Read', 'Only'];
+
+  // At max
+  document.getElementById('at-max').value = ['One', 'Two', 'Three'];
+
+  // Suggestions + prepopulated
+  const sp = document.getElementById('sug-prepop');
+  sp.value = ['React'];
+  sp.suggestions = ['React', 'Vue', 'Angular', 'Svelte', 'Solid', 'Preact', 'Next.js', 'Nuxt', 'Remix'];
+
+  // Many tags
+  document.getElementById('many-tags').value = [
+    'Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo',
+    'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet'
+  ];
+
+  const contractForm = document.getElementById('tag-contract-form');
+  const contractTags = document.getElementById('tag-contract-control');
+  const contractOutput = document.getElementById('tag-contract-output');
+  contractForm.addEventListener('submit', event => {
+    event.preventDefault();
+    contractOutput.textContent = `Submitted skills=${new FormData(contractForm).get('skills')}`;
+  });
+  contractForm.addEventListener('reset', () => queueMicrotask(() => {
+    contractOutput.textContent = `Reset skills=${JSON.stringify(contractTags.value)}`;
+  }));
+  contractTags.addEventListener('invalid', () => {
+    contractOutput.textContent = contractTags.validationMessage;
+  });
+  document.getElementById('tag-contract-overflow').addEventListener('click', () => {
+    contractTags.value = ['HTML', 'CSS', 'TypeScript'];
+    contractOutput.textContent = contractTags.validationMessage;
+  });
+  document.getElementById('tag-contract-duplicates').addEventListener('click', () => {
+    contractTags.value = ['TypeScript', 'TypeScript'];
+    contractOutput.textContent = contractTags.validationMessage;
+  });
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

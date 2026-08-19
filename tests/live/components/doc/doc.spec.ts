@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+const demoPath = 'http://localhost:5566/tests/live/fixtures/doc/visual.html';
+
 test('doc component renders', async ({ page }) => {
-  await page.goto('http://localhost:5566/components/doc/demo.html');
+  await page.goto(demoPath);
 
   // Wait for component to be defined
   await page.waitForFunction(() => customElements.get('snice-doc'));

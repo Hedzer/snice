@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/alert/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/alert/visual.html';
 
 test.describe('Snice Alert visual integrity', () => {
   test.beforeEach(async ({ page }) => {

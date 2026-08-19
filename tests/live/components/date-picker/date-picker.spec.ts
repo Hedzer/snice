@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/date-picker/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/date-picker/visual.html';
 
 test.describe('Snice Date Picker', () => {
   test.beforeEach(async ({ page }) => {

@@ -1,27 +1,32 @@
 /**
  * Spreadsheet end-to-end visual regression suite.
  *
- * Hits live Storybook stories on :6006 and drives the same interactions a
- * real user would: click, drag, keypress. Asserts on DOM state inside the
- * shadow root rather than pixel-comparing screenshots — that keeps the test
- * useful across theme tweaks while still catching the structural breakage
- * (selection ring vanished, fill handle wrong, sort not firing, etc.) that
- * unit tests miss because they don't run in a real browser.
+ * Hits the deterministic fixture page (tests/live/fixtures/spreadsheet/visual.html)
+ * and drives the same interactions a real user would: click, drag, keypress.
+ * Asserts on DOM state inside the shadow root rather than pixel-comparing
+ * screenshots — that keeps the test useful across theme tweaks while still
+ * catching the structural breakage (selection ring vanished, fill handle
+ * wrong, sort not firing, etc.) that unit tests miss because they don't run
+ * in a real browser.
  */
 import { test, expect, type Page, type Locator } from '@playwright/test';
 
-const STORYBOOK = 'http://localhost:6006';
+const FIXTURE = 'http://localhost:5566/tests/live/fixtures/spreadsheet/visual.html';
+const SHEET_ID: Record<string, string> = {
+  'spreadsheet--with-formulas': 'formulas',
+  'spreadsheet--frozen-panes': 'frozen-panes',
+};
 
-/** Wait for the spreadsheet element inside the storybook iframe to mount. */
+/** Wait for the spreadsheet element inside the fixture page to mount. */
 async function gotoStory(page: Page, storyId: string): Promise<Locator> {
-  await page.goto(`${STORYBOOK}/iframe.html?id=${storyId}&viewMode=story`);
-  const sheet = page.locator('snice-spreadsheet').first();
-  await sheet.waitFor({ state: 'attached' });
-  // wait for first render
-  await page.waitForFunction(() => {
-    const el = document.querySelector('snice-spreadsheet') as any;
+  await page.goto(FIXTURE, { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction((sheetId) => {
+    const el = document.getElementById(sheetId) as any;
     return !!(el && el.shadowRoot && el.shadowRoot.querySelector('.spreadsheet-td'));
-  });
+  }, SHEET_ID[storyId]);
+  const sheet = page.locator(`#${SHEET_ID[storyId]}`);
+  await sheet.evaluate(el => (el as HTMLElement).scrollIntoView({ block: 'center' }));
+  await page.waitForTimeout(100);
   return sheet;
 }
 

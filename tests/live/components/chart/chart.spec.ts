@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/chart/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/chart/visual.html';
 
 test.describe('Snice Chart', () => {
   test.beforeEach(async ({ page }) => {
@@ -14,20 +14,19 @@ test.describe('Snice Chart', () => {
   });
 
   test('should render line chart', async ({ page }) => {
-    const lineChart = page.locator('snice-chart#line-chart');
+    const lineChart = page.locator('snice-chart#line');
     expect(await lineChart.count()).toBe(1);
     expect(await lineChart.getAttribute('type')).toBe('line');
   });
 
   test('should render bar chart', async ({ page }) => {
-    const barChart = page.locator('snice-chart#bar-chart');
+    const barChart = page.locator('snice-chart#bar');
     expect(await barChart.count()).toBe(1);
     expect(await barChart.getAttribute('type')).toBe('bar');
-    await barChart.screenshot({ path: '/tmp/bar-chart-debug.png' });
   });
 
   test('should render pie chart', async ({ page }) => {
-    const pieChart = page.locator('snice-chart#pie-chart');
+    const pieChart = page.locator('snice-chart#pie');
     expect(await pieChart.count()).toBe(1);
     expect(await pieChart.getAttribute('type')).toBe('pie');
   });

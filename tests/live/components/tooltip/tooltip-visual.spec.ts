@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-// Note: tooltip ships its own demo.html (the served page) rather than the
-// generated full.html showcase. Tooltips render into a `div.snice-tooltip`
-// portal appended to the document, not into the component's shadow root.
-const demoPath = 'http://localhost:5566/components/tooltip/demo.html';
+// Note: the tooltip fixture is built from the component's own demo.html (the
+// served page) rather than the generated full.html showcase. Tooltips render
+// into a `div.snice-tooltip` portal appended to the document, not into the
+// component's shadow root.
+const demoPath = 'http://localhost:5566/tests/live/fixtures/tooltip/visual.html';
 
 const openTooltip = async (
   page: import('@playwright/test').Page,

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/theme/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/theme/visual.html';
 
 // The theme showcase has no custom elements — it is the token system itself
 // rendered as swatches, scales and type samples. The geometry that can break

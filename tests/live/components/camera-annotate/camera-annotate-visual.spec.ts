@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/camera-annotate/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/camera-annotate/visual.html';
 
 test.describe('Snice Camera Annotate visual integrity', () => {
   test.beforeEach(async ({ page, context }, testInfo) => {

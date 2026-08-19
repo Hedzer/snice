@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    snice-select { width: min(100%, 220px); max-width: 100%; }
+    .label-lifecycle { display: grid; gap: 1rem; width: min(100%, 720px); }
+    .label-examples { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 1rem; }
+    .label-example, .wrapping-label { display: grid; gap: 0.4rem; min-width: 0; }
+    .label-example > label, .wrapping-label > span { font-weight: 600; }
+    .label-example snice-select, .wrapping-label snice-select { width: 100%; }
+    .label-line { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.35rem; }
+    .secondary-label { color: var(--snice-color-text-secondary); font-size: 0.8rem; font-weight: 500; }
+    .label-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .label-actions button { max-width: 100%; padding: 0.45rem 0.75rem; border: 1px solid var(--snice-color-border); border-radius: 0.4rem; background: var(--snice-color-surface-raised, var(--snice-color-surface)); color: var(--snice-color-text); cursor: pointer; white-space: normal; }
+    .label-lifecycle output, .label-lifecycle p { margin: 0; color: var(--snice-color-text-secondary); overflow-wrap: anywhere; }
+    .state-matrix { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0.75rem; }
+    .contract-form { box-sizing: border-box; display: grid; gap: var(--snice-spacing-sm, 0.75rem); width: min(100%, 32rem); padding: var(--snice-spacing-md, 1rem); border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: var(--snice-border-radius-lg, 0.5rem); }
+    .contract-form > * { min-width: 0; }
+    .contract-form snice-select { width: 100%; }
+    .contract-actions { display: flex; gap: var(--snice-spacing-xs, 0.5rem); flex-wrap: wrap; }
+    .contract-actions button { padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); }
+    .contract-form output { color: var(--snice-color-text-secondary, rgb(82 82 82)); overflow-wrap: anywhere; }
+    @media (max-width: 300px) {
+      .label-lifecycle, .label-example { display: block; }
+      .label-lifecycle > * + *, .label-example > * + * { margin-top: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<h2>Sizes</h2>
+<div class="row">
+  <snice-select size="small" label="Small" placeholder="Small select">
+    <snice-option value="a">Alpha</snice-option>
+    <snice-option value="b">Bravo</snice-option>
+    <snice-option value="c">Charlie</snice-option>
+  </snice-select>
+  <snice-select size="medium" label="Medium" placeholder="Medium select">
+    <snice-option value="a">Alpha</snice-option>
+    <snice-option value="b">Bravo</snice-option>
+    <snice-option value="c">Charlie</snice-option>
+  </snice-select>
+  <snice-select size="large" label="Large" placeholder="Large select">
+    <snice-option value="a">Alpha</snice-option>
+    <snice-option value="b">Bravo</snice-option>
+    <snice-option value="c">Charlie</snice-option>
+  </snice-select>
+</div>
+
+<h2>Boolean States</h2>
+<div class="row">
+  <snice-select label="Disabled" disabled value="a">
+    <snice-option value="a">Alpha</snice-option>
+    <snice-option value="b">Bravo</snice-option>
+  </snice-select>
+  <snice-select label="Readonly" readonly value="b">
+    <snice-option value="a">Alpha</snice-option>
+    <snice-option value="b">Bravo</snice-option>
+  </snice-select>
+  <snice-select label="Required" required placeholder="Required field">
+    <snice-option value="a">Alpha</snice-option>
+    <snice-option value="b">Bravo</snice-option>
+  </snice-select>
+  <snice-select label="Invalid" invalid value="a">
+    <snice-option value="a">Alpha</snice-option>
+    <snice-option value="b">Bravo</snice-option>
+  </snice-select>
+  <snice-select label="Loading" loading placeholder="Loading...">
+    <snice-option value="a">Alpha</snice-option>
+    <snice-option value="b">Bravo</snice-option>
+  </snice-select>
+</div>
+
+<h2>Clearable</h2>
+<div class="row">
+  <snice-select label="Clearable" clearable value="b">
+    <snice-option value="a">Alpha</snice-option>
+    <snice-option value="b">Bravo</snice-option>
+    <snice-option value="c">Charlie</snice-option>
+  </snice-select>
+  <snice-select label="Clearable (empty)" clearable placeholder="Select...">
+    <snice-option value="a">Alpha</snice-option>
+    <snice-option value="b">Bravo</snice-option>
+  </snice-select>
+</div>
+
+<h2>Searchable</h2>
+<div class="row">
+  <snice-select id="searchable-select" label="Searchable" searchable placeholder="Type to search...">
+    <snice-option value="js">JavaScript</snice-option>
+    <snice-option value="ts">TypeScript</snice-option>
+    <snice-option value="py">Python</snice-option>
+    <snice-option value="go">Go</snice-option>
+    <snice-option value="rs">Rust</snice-option>
+    <snice-option value="rb">Ruby</snice-option>
+    <snice-option value="java">Java</snice-option>
+    <snice-option value="cpp">C++</snice-option>
+  </snice-select>
+  <snice-select label="Searchable + Clearable" searchable clearable value="ts">
+    <snice-option value="js">JavaScript</snice-option>
+    <snice-option value="ts">TypeScript</snice-option>
+    <snice-option value="py">Python</snice-option>
+    <snice-option value="go">Go</snice-option>
+  </snice-select>
+</div>
+
+<h2>Multiple Selection</h2>
+<div class="row">
+  <snice-select label="Multiple" multiple placeholder="Choose items..." style="width: 300px;">
+    <snice-option value="html">HTML</snice-option>
+    <snice-option value="css">CSS</snice-option>
+    <snice-option value="js">JavaScript</snice-option>
+    <snice-option value="react">React</snice-option>
+    <snice-option value="vue">Vue</snice-option>
+  </snice-select>
+  <snice-select label="Multiple + Searchable + Clearable" multiple searchable clearable placeholder="Search & select..." style="width: 300px;">
+    <snice-option value="node">Node.js</snice-option>
+    <snice-option value="deno">Deno</snice-option>
+    <snice-option value="bun">Bun</snice-option>
+    <snice-option value="python">Python</snice-option>
+    <snice-option value="ruby">Ruby</snice-option>
+  </snice-select>
+</div>
+
+<h2>Multiple + Pre-selected</h2>
+<div class="row">
+  <snice-select label="Pre-selected tags" multiple clearable value="html,css,js" style="width: 300px;">
+    <snice-option value="html">HTML</snice-option>
+    <snice-option value="css">CSS</snice-option>
+    <snice-option value="js">JavaScript</snice-option>
+    <snice-option value="ts">TypeScript</snice-option>
+  </snice-select>
+</div>
+
+<h2>Disabled Options</h2>
+<div class="row">
+  <snice-select id="basic-select" label="With disabled options" placeholder="Some disabled">
+    <snice-option value="a">Available</snice-option>
+    <snice-option value="b" disabled>Disabled option</snice-option>
+    <snice-option value="c">Available</snice-option>
+    <snice-option value="d" disabled>Also disabled</snice-option>
+    <snice-option value="e">Available</snice-option>
+  </snice-select>
+</div>
+
+<h2>Options with Icons</h2>
+<div class="row">
+  <snice-select label="Country selector" searchable clearable placeholder="Choose country...">
+    <snice-option value="us" icon="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2240%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E">United States</snice-option>
+    <snice-option value="gb" icon="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2240%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E">United Kingdom</snice-option>
+    <snice-option value="ca" icon="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2240%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E">Canada</snice-option>
+    <snice-option value="de" icon="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2240%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E">Germany</snice-option>
+    <snice-option value="fr" icon="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2240%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E">France</snice-option>
+    <snice-option value="jp" icon="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2240%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E">Japan</snice-option>
+  </snice-select>
+</div>
+
+<h2>Editable (Combobox)</h2>
+<div class="row">
+  <snice-select label="Editable" editable placeholder="Type or select...">
+    <snice-option value="red">Red</snice-option>
+    <snice-option value="green">Green</snice-option>
+    <snice-option value="blue">Blue</snice-option>
+    <snice-option value="yellow">Yellow</snice-option>
+  </snice-select>
+  <snice-select label="Editable + allow-free-text" editable allow-free-text placeholder="Type anything...">
+    <snice-option value="red">Red</snice-option>
+    <snice-option value="green">Green</snice-option>
+    <snice-option value="blue">Blue</snice-option>
+  </snice-select>
+</div>
+
+<h2>Editable States</h2>
+<div class="row">
+  <snice-select label="Editable disabled" editable disabled value="red">
+    <snice-option value="red">Red</snice-option>
+    <snice-option value="green">Green</snice-option>
+  </snice-select>
+  <snice-select label="Editable readonly" editable readonly value="green">
+    <snice-option value="red">Red</snice-option>
+    <snice-option value="green">Green</snice-option>
+  </snice-select>
+</div>
+
+<h2>Custom max-height</h2>
+<div class="row">
+  <snice-select label="max-height: 100px" max-height="100px" placeholder="Short dropdown">
+    <snice-option value="1">Option 1</snice-option>
+    <snice-option value="2">Option 2</snice-option>
+    <snice-option value="3">Option 3</snice-option>
+    <snice-option value="4">Option 4</snice-option>
+    <snice-option value="5">Option 5</snice-option>
+    <snice-option value="6">Option 6</snice-option>
+    <snice-option value="7">Option 7</snice-option>
+    <snice-option value="8">Option 8</snice-option>
+  </snice-select>
+  <snice-select label="max-height: 400px" max-height="400px" placeholder="Tall dropdown">
+    <snice-option value="1">Option 1</snice-option>
+    <snice-option value="2">Option 2</snice-option>
+    <snice-option value="3">Option 3</snice-option>
+    <snice-option value="4">Option 4</snice-option>
+    <snice-option value="5">Option 5</snice-option>
+  </snice-select>
+</div>
+
+<h2>Custom Placeholder</h2>
+<div class="row">
+  <snice-select label="Default placeholder" placeholder="Select an option">
+    <snice-option value="a">Alpha</snice-option>
+  </snice-select>
+  <snice-select label="Custom placeholder" placeholder="Pick your favorite...">
+    <snice-option value="a">Alpha</snice-option>
+  </snice-select>
+</div>
+
+<h2>No Label</h2>
+<div class="row">
+  <snice-select placeholder="No label">
+    <snice-option value="a">Alpha</snice-option>
+    <snice-option value="b">Bravo</snice-option>
+  </snice-select>
+</div>
+
+<h2>Pre-selected Value</h2>
+<div class="row">
+  <snice-select label="Pre-selected" value="c">
+    <snice-option value="a">Alpha</snice-option>
+    <snice-option value="b">Bravo</snice-option>
+    <snice-option value="c">Charlie</snice-option>
+  </snice-select>
+</div>
+
+<h2>Sizes x States Matrix</h2>
+<div class="state-matrix">
+  <snice-select size="small" label="Small + disabled" disabled value="a">
+    <snice-option value="a">Alpha</snice-option>
+  </snice-select>
+  <snice-select size="medium" label="Medium + disabled" disabled value="a">
+    <snice-option value="a">Alpha</snice-option>
+  </snice-select>
+  <snice-select size="large" label="Large + disabled" disabled value="a">
+    <snice-option value="a">Alpha</snice-option>
+  </snice-select>
+
+  <snice-select size="small" label="Small + invalid" invalid value="a">
+    <snice-option value="a">Alpha</snice-option>
+  </snice-select>
+  <snice-select size="medium" label="Medium + invalid" invalid value="a">
+    <snice-option value="a">Alpha</snice-option>
+  </snice-select>
+  <snice-select size="large" label="Large + invalid" invalid value="a">
+    <snice-option value="a">Alpha</snice-option>
+  </snice-select>
+
+  <snice-select size="small" label="Small + loading" loading>
+    <snice-option value="a">Alpha</snice-option>
+  </snice-select>
+  <snice-select size="medium" label="Medium + loading" loading>
+    <snice-option value="a">Alpha</snice-option>
+  </snice-select>
+  <snice-select size="large" label="Large + loading" loading>
+    <snice-option value="a">Alpha</snice-option>
+  </snice-select>
+</div>
+
+<h2>Empty Options</h2>
+<div class="row">
+  <snice-select label="No options" placeholder="Nothing here"></snice-select>
+</div>
+
+<h2>Programmatic Options (via JS)</h2>
+<div class="row">
+  <snice-select id="programmatic" label="Set via .options" placeholder="Programmatic options" searchable clearable></snice-select>
+</div>
+
+<h2>External Label Lifecycle</h2>
+<section id="select-label-lifecycle" class="label-lifecycle">
+  <p>Explicit, wrapping, multiple, dynamic, disabled, helper, and error label states use the real shadow control.</p>
+  <div class="label-examples">
+    <div class="label-example">
+      <div class="label-line">
+        <label id="select-showcase-primary-label" for="select-showcase-standard">Shipping country</label>
+        <label id="select-showcase-secondary-label" class="secondary-label" for="select-showcase-standard" aria-label="required">(required)</label>
+      </div>
+      <snice-select id="select-showcase-standard" name="shipping-country" required helper-text="Used to calculate delivery options." placeholder="Choose a country">
+        <snice-option value="ca">Canada</snice-option>
+        <snice-option value="us">United States</snice-option>
+        <snice-option value="jp">Japan</snice-option>
+      </snice-select>
+    </div>
+    <label id="select-showcase-wrapping-label" class="wrapping-label">
+      <span>Editable destination</span>
+      <snice-select id="select-showcase-editable" editable allow-free-text helper-text="Choose a suggestion or type a destination." placeholder="Type or select">
+        <snice-option value="paris">Paris</snice-option>
+        <snice-option value="tokyo">Tokyo</snice-option>
+        <snice-option value="toronto">Toronto</snice-option>
+      </snice-select>
+    </label>
+    <div class="label-example">
+      <label for="select-showcase-disabled">Unavailable destination</label>
+      <snice-select id="select-showcase-disabled" disabled value="offline">
+        <snice-option value="offline">Offline</snice-option>
+      </snice-select>
+    </div>
+  </div>
+  <div class="label-actions">
+    <button id="select-showcase-change-label" type="button">Change label</button>
+    <button id="select-showcase-toggle-labels" type="button">Remove external labels</button>
+    <button id="select-showcase-toggle-error" type="button">Show error</button>
+  </div>
+  <output id="select-showcase-label-status" aria-live="polite">Accessible name: Shipping country required</output>
+</section>
+
+<h2>Validated Form Contract</h2>
+<form id="select-contract-form" class="contract-form">
+  <snice-select id="select-contract-control" name="region" label="Region" required clearable helper-text="A selection is required for validated submission." placeholder="Choose a region">
+    <snice-option value="americas">Americas</snice-option>
+    <snice-option value="emea">Europe, Middle East, and Africa</snice-option>
+    <snice-option value="apac">Asia Pacific</snice-option>
+  </snice-select>
+  <div class="contract-actions">
+    <button type="submit">Submit</button>
+    <button id="select-contract-error" type="button">Set availability error</button>
+    <button type="reset">Reset</button>
+  </div>
+  <output id="select-contract-output" aria-live="polite">Choose a region, then submit.</output>
+</form>
+
+<script type="module">
+  import '/packages/components/src/select/snice-select.ts';
+
+  const prog = document.getElementById('programmatic');
+  prog.options = [
+    { value: 'node', label: 'Node.js' },
+    { value: 'deno', label: 'Deno' },
+    { value: 'bun', label: 'Bun' },
+    { value: 'workers', label: 'Cloudflare Workers', disabled: true },
+  ];
+
+  const labelledSelect = document.getElementById('select-showcase-standard');
+  const primaryLabel = document.getElementById('select-showcase-primary-label');
+  const secondaryLabel = document.getElementById('select-showcase-secondary-label');
+  const changeLabel = document.getElementById('select-showcase-change-label');
+  const toggleLabels = document.getElementById('select-showcase-toggle-labels');
+  const toggleError = document.getElementById('select-showcase-toggle-error');
+  const labelStatus = document.getElementById('select-showcase-label-status');
+  let billing = false;
+  let associated = true;
+  let showingError = false;
+
+  changeLabel.addEventListener('click', () => {
+    billing = !billing;
+    primaryLabel.textContent = billing ? 'Billing country' : 'Shipping country';
+    labelStatus.textContent = `Accessible name: ${primaryLabel.textContent} required`;
+  });
+  toggleLabels.addEventListener('click', () => {
+    associated = !associated;
+    for (const label of [primaryLabel, secondaryLabel]) {
+      if (associated) label.htmlFor = labelledSelect.id;
+      else label.removeAttribute('for');
+    }
+    toggleLabels.textContent = associated ? 'Remove external labels' : 'Restore external labels';
+    labelStatus.textContent = associated
+      ? `Accessible name: ${primaryLabel.textContent} required`
+      : 'Accessible name fallback: Select';
+  });
+  toggleError.addEventListener('click', () => {
+    showingError = !showingError;
+    labelledSelect.invalid = showingError;
+    labelledSelect.errorText = showingError ? 'Choose an available country.' : '';
+    toggleError.textContent = showingError ? 'Clear error' : 'Show error';
+    labelStatus.textContent = showingError
+      ? 'Error replaces the helper description.'
+      : 'Helper description restored.';
+  });
+
+  const contractForm = document.getElementById('select-contract-form');
+  const contractSelect = document.getElementById('select-contract-control');
+  const contractErrorButton = document.getElementById('select-contract-error');
+  const contractOutput = document.getElementById('select-contract-output');
+  let availabilityError = false;
+  contractForm.addEventListener('submit', event => {
+    event.preventDefault();
+    contractOutput.textContent = `Submitted region=${new FormData(contractForm).get('region')}`;
+  });
+  contractForm.addEventListener('reset', () => queueMicrotask(() => {
+    availabilityError = false;
+    contractSelect.setCustomValidity('');
+    contractErrorButton.textContent = 'Set availability error';
+    contractOutput.textContent = `Reset value=${JSON.stringify(contractSelect.value)}`;
+  }));
+  contractSelect.addEventListener('invalid', () => {
+    contractOutput.textContent = contractSelect.validationMessage;
+  });
+  contractErrorButton.addEventListener('click', () => {
+    availabilityError = !availabilityError;
+    contractSelect.setCustomValidity(availabilityError ? 'This region is temporarily unavailable.' : '');
+    contractErrorButton.textContent = availabilityError ? 'Clear availability error' : 'Set availability error';
+    contractOutput.textContent = availabilityError
+      ? contractSelect.validationMessage
+      : `Current validity: ${contractSelect.checkValidity()}`;
+  });
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

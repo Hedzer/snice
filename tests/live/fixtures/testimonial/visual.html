@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testimonial</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-testimonial { max-width: 350px; }
+  </style>
+</head>
+<body>
+
+<h2>Variants</h2>
+<div class="row">
+  <snice-testimonial
+    variant="card"
+    quote="This product changed the way we work. Highly recommended."
+    author="Alice Johnson"
+    role="CTO"
+    company="TechCorp"
+  ></snice-testimonial>
+  <snice-testimonial
+    variant="minimal"
+    quote="Simple yet powerful. Exactly what we needed."
+    author="Bob Smith"
+    role="Designer"
+    company="DesignCo"
+  ></snice-testimonial>
+  <snice-testimonial
+    variant="featured"
+    quote="Outstanding quality and support. Five stars all around."
+    author="Charlie Brown"
+    role="CEO"
+    company="StartupInc"
+  ></snice-testimonial>
+</div>
+
+<h2>With Rating (0-5)</h2>
+<div class="row">
+  <snice-testimonial
+    variant="card"
+    quote="Rating 0 stars"
+    author="Reviewer"
+    rating="0"
+  ></snice-testimonial>
+  <snice-testimonial
+    variant="card"
+    quote="Rating 1 star"
+    author="Reviewer"
+    rating="1"
+  ></snice-testimonial>
+  <snice-testimonial
+    variant="card"
+    quote="Rating 2 stars"
+    author="Reviewer"
+    rating="2"
+  ></snice-testimonial>
+  <snice-testimonial
+    variant="card"
+    quote="Rating 3 stars"
+    author="Reviewer"
+    rating="3"
+  ></snice-testimonial>
+  <snice-testimonial
+    variant="card"
+    quote="Rating 4 stars"
+    author="Reviewer"
+    rating="4"
+  ></snice-testimonial>
+  <snice-testimonial
+    variant="card"
+    quote="Rating 5 stars"
+    author="Reviewer"
+    rating="5"
+  ></snice-testimonial>
+</div>
+
+<h2>With Avatar</h2>
+<div class="row">
+  <snice-testimonial
+    variant="card"
+    quote="Great experience working with this team."
+    author="Diana Prince"
+    role="Product Manager"
+    company="Acme Corp"
+    avatar="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2240%22%20r%3D%2227%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"
+    rating="5"
+  ></snice-testimonial>
+  <snice-testimonial
+    variant="minimal"
+    quote="The best tool we have used this year."
+    author="Eve Wilson"
+    role="Engineer"
+    company="DevShop"
+    avatar="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2240%22%20r%3D%2227%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"
+    rating="4"
+  ></snice-testimonial>
+  <snice-testimonial
+    variant="featured"
+    quote="Transformed our workflow completely."
+    author="Frank Miller"
+    role="VP Engineering"
+    company="BigTech"
+    avatar="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2240%22%20r%3D%2227%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"
+    rating="5"
+  ></snice-testimonial>
+</div>
+
+<h2>Author Only (No Role/Company)</h2>
+<div class="row">
+  <snice-testimonial
+    variant="card"
+    quote="Clean and intuitive interface."
+    author="Grace Lee"
+  ></snice-testimonial>
+</div>
+
+<h2>Role Only (No Company)</h2>
+<div class="row">
+  <snice-testimonial
+    variant="card"
+    quote="Perfect for our use case."
+    author="Hank Davis"
+    role="Senior Developer"
+  ></snice-testimonial>
+</div>
+
+<h2>Company Only (No Role)</h2>
+<div class="row">
+  <snice-testimonial
+    variant="card"
+    quote="Would use again without hesitation."
+    author="Ivy Chen"
+    company="GlobalCo"
+  ></snice-testimonial>
+</div>
+
+<h2>Minimal Content (Quote + Author Only)</h2>
+<div class="row">
+  <snice-testimonial
+    variant="card"
+    quote="Love it."
+    author="Jack"
+  ></snice-testimonial>
+  <snice-testimonial
+    variant="minimal"
+    quote="Love it."
+    author="Jack"
+  ></snice-testimonial>
+  <snice-testimonial
+    variant="featured"
+    quote="Love it."
+    author="Jack"
+  ></snice-testimonial>
+</div>
+
+<h2>Long Quote</h2>
+<div class="row">
+  <snice-testimonial
+    variant="card"
+    quote="This is a much longer testimonial that spans multiple lines to test how the component handles longer content. It should wrap gracefully and maintain proper spacing and readability throughout the entire quote block."
+    author="Katherine Williams"
+    role="Head of Operations"
+    company="Enterprise Solutions Ltd"
+    avatar="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2240%22%20r%3D%2227%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"
+    rating="5"
+  ></snice-testimonial>
+</div>
+
+<h2>All Variants with Full Data</h2>
+<div class="row">
+  <snice-testimonial
+    variant="card"
+    quote="Card variant with all properties set."
+    author="User A"
+    role="Manager"
+    company="Company A"
+    avatar="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2240%22%20r%3D%2227%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"
+    rating="4"
+  ></snice-testimonial>
+  <snice-testimonial
+    variant="minimal"
+    quote="Minimal variant with all properties set."
+    author="User B"
+    role="Director"
+    company="Company B"
+    avatar="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2240%22%20r%3D%2227%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"
+    rating="5"
+  ></snice-testimonial>
+  <snice-testimonial
+    variant="featured"
+    quote="Featured variant with all properties set."
+    author="User C"
+    role="Founder"
+    company="Company C"
+    avatar="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2280%22%20height%3D%2280%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2240%22%20r%3D%2227%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E"
+    rating="3"
+  ></snice-testimonial>
+</div>
+
+<h2>Ratings x Variants</h2>
+<div style="display: grid; grid-template-columns: repeat(3, 350px); gap: 0.75rem;">
+  <snice-testimonial variant="card" quote="3 stars card" author="A" rating="3"></snice-testimonial>
+  <snice-testimonial variant="minimal" quote="3 stars minimal" author="A" rating="3"></snice-testimonial>
+  <snice-testimonial variant="featured" quote="3 stars featured" author="A" rating="3"></snice-testimonial>
+
+  <snice-testimonial variant="card" quote="5 stars card" author="B" rating="5"></snice-testimonial>
+  <snice-testimonial variant="minimal" quote="5 stars minimal" author="B" rating="5"></snice-testimonial>
+  <snice-testimonial variant="featured" quote="5 stars featured" author="B" rating="5"></snice-testimonial>
+</div>
+
+<h2>No Rating</h2>
+<div class="row">
+  <snice-testimonial
+    variant="card"
+    quote="No rating provided"
+    author="No Stars"
+    role="Tester"
+  ></snice-testimonial>
+</div>
+
+<script type="module">
+  import '/packages/components/src/testimonial/snice-testimonial.ts';
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

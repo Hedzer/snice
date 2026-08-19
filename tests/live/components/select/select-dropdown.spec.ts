@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Select Component Dropdown Rendering', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:5566/components/select/demo.html');
+    await page.goto('http://localhost:5566/tests/live/fixtures/select/visual.html');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
   });
@@ -34,9 +34,6 @@ test.describe('Select Component Dropdown Rendering', () => {
 
     // Should have 5 options (including one disabled)
     expect(optionsCount).toBe(5);
-
-    // Take screenshot for visual verification
-    await page.screenshot({ path: '/tmp/select-dropdown-first-open.png' });
   });
 
   test('should show options immediately when opened', async ({ page }) => {

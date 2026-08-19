@@ -1,16 +1,16 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/input/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/input/visual.html';
 
 test.describe('Input Theme Visual Tests', () => {
   test('input and select follow live light-dark-light theme changes', async ({ page }) => {
     const cases = [
-      { path: 'input', host: 'snice-input', control: 'input' },
-      { path: 'select', host: 'snice-select', control: '.select-trigger' },
+      { path: 'http://localhost:5566/tests/live/fixtures/input/visual.html', host: 'snice-input', control: 'input' },
+      { path: 'http://localhost:5566/tests/live/fixtures/select/visual.html', host: 'snice-select', control: '.select-trigger' },
     ];
 
     for (const entry of cases) {
-      await page.goto(`http://localhost:5566/components/${entry.path}/demo.html`);
+      await page.goto(entry.path);
       const control = page.locator(entry.host).first().locator(entry.control);
       await expect(control).toBeVisible();
 

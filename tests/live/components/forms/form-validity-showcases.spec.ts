@@ -1,6 +1,6 @@
 import { expect, test, type Locator } from '@playwright/test';
 
-const base = 'http://localhost:5566/website/showcases';
+const base = 'http://localhost:5566/tests/live/fixtures';
 
 async function expectInvalidSubmissionFocus(
   control: Locator,
@@ -24,7 +24,7 @@ test('public full showcases exercise every new form-validity contract', async ({
   await page.setViewportSize({ width: 900, height: 900 });
 
   await test.step('input forwards native email and required validity', async () => {
-    await page.goto(`${base}/input/full.html`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${base}/input/visual.html`, { waitUntil: 'domcontentloaded' });
     const control = page.locator('#input-contract-control');
     await expect(control.locator('.input')).toBeVisible();
     await page.locator('#input-contract-form button[type="submit"]').click();
@@ -38,7 +38,7 @@ test('public full showcases exercise every new form-validity contract', async ({
   });
 
   await test.step('textarea forwards trusted minlength validity', async () => {
-    await page.goto(`${base}/textarea/full.html`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${base}/textarea/visual.html`, { waitUntil: 'domcontentloaded' });
     const control = page.locator('#textarea-contract-control');
     await expect(control.locator('.textarea')).toBeVisible();
     await control.locator('.textarea').fill('short');
@@ -51,7 +51,7 @@ test('public full showcases exercise every new form-validity contract', async ({
   });
 
   await test.step('select required validity clears after customer selection', async () => {
-    await page.goto(`${base}/select/full.html`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${base}/select/visual.html`, { waitUntil: 'domcontentloaded' });
     const control = page.locator('#select-contract-control');
     await expect(control.locator('.select-trigger')).toBeVisible();
     await page.locator('#select-contract-form button[type="submit"]').click();
@@ -63,7 +63,7 @@ test('public full showcases exercise every new form-validity contract', async ({
   });
 
   await test.step('switch emits native change and satisfies required validity', async () => {
-    await page.goto(`${base}/switch/full.html`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${base}/switch/visual.html`, { waitUntil: 'domcontentloaded' });
     const control = page.locator('#switch-contract-control');
     await expect(control.locator('.switch-input')).toBeAttached();
     await page.locator('#switch-contract-form button[type="submit"]').click();
@@ -76,7 +76,7 @@ test('public full showcases exercise every new form-validity contract', async ({
   });
 
   await test.step('file upload validates required, size, count, and successful files', async () => {
-    await page.goto(`${base}/file-upload/full.html`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${base}/file-upload/visual.html`, { waitUntil: 'domcontentloaded' });
     const control = page.locator('#file-contract-control');
     const input = control.locator('.file-input');
     await expect(input).toBeAttached();
@@ -92,7 +92,7 @@ test('public full showcases exercise every new form-validity contract', async ({
   });
 
   await test.step('color picker preserves malformed text and submits canonical color', async () => {
-    await page.goto(`${base}/color-picker/full.html`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${base}/color-picker/visual.html`, { waitUntil: 'domcontentloaded' });
     const control = page.locator('#color-contract-control');
     const input = control.locator('.color-input');
     await expect(input).toBeVisible();
@@ -113,7 +113,7 @@ test('public full showcases exercise every new form-validity contract', async ({
     { component: 'step-input', control: '#step-contract-control', form: '#step-contract-form', output: '#step-contract-output', name: 'seats', value: '3', error: '#step-contract-error' }
   ]) {
     await test.step(`${numeric.component} normalizes and reports custom form errors`, async () => {
-      await page.goto(`${base}/${numeric.component}/full.html`, { waitUntil: 'domcontentloaded' });
+      await page.goto(`${base}/${numeric.component}/visual.html`, { waitUntil: 'domcontentloaded' });
       const control = page.locator(numeric.control);
       await control.waitFor({ state: 'attached' });
       await page.waitForFunction(selector => typeof (document.querySelector(selector) as any)?.checkValidity === 'function', numeric.control);
@@ -130,7 +130,7 @@ test('public full showcases exercise every new form-validity contract', async ({
   }
 
   await test.step('tag input exposes aggregate constraint failures and JSON submission', async () => {
-    await page.goto(`${base}/tag-input/full.html`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${base}/tag-input/visual.html`, { waitUntil: 'domcontentloaded' });
     const control = page.locator('#tag-contract-control');
     await expect(control.locator('.tag-input-container')).toBeVisible();
     await page.locator('#tag-contract-overflow').click();
@@ -149,7 +149,7 @@ test('public full showcases exercise every new form-validity contract', async ({
       'input', 'textarea', 'select', 'switch', 'file-upload',
       'color-picker', 'slider', 'range-slider', 'step-input', 'tag-input'
     ]) {
-      await page.goto(`${base}/${component}/full.html`, { waitUntil: 'domcontentloaded' });
+      await page.goto(`${base}/${component}/visual.html`, { waitUntil: 'domcontentloaded' });
       await page.locator('.contract-form').waitFor({ state: 'visible' });
       expect(await page.evaluate(() => ({
         client: document.documentElement.clientWidth,

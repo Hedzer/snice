@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/heatmap/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/heatmap/visual.html';
 
 test.describe('Snice Heatmap visual integrity', () => {
   test.beforeEach(async ({ page }) => {

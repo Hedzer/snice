@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/link-preview/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/link-preview/visual.html';
 
 // The showcase pulls thumbnails from picsum.photos, so the page never reaches
 // networkidle offline. Geometry comes from the CSS aspect-ratio/fixed-width

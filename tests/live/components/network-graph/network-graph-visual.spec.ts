@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/network-graph/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/network-graph/visual.html';
 
 test.describe('Snice Network Graph visual integrity', () => {
   test.beforeEach(async ({ page }) => {

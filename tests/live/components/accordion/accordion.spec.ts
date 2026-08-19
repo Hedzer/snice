@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/accordion/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/accordion/visual.html';
 
 // Height of an item's content region, measured inside its shadow root.
 async function contentHeight(page: import('@playwright/test').Page, itemId: string): Promise<number> {

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/camera/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/camera/visual.html';
 
 test.describe('Snice Camera', () => {
   test.beforeEach(async ({ page }) => {

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/calendar/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/calendar/visual.html';
 
 // Geometry regression guard: event-lane sizing must never make cells in a
 // week row diverge in height, leave gaps between rows, or let cells/bars

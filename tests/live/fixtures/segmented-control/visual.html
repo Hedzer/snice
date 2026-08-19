@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Segmented Control</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+
+<h2>Size: small</h2>
+<section class="row"><snice-segmented-control id="sc-small" size="small"></snice-segmented-control></section>
+
+<h2>Size: medium (default)</h2>
+<section class="row"><snice-segmented-control id="sc-medium" size="medium"></snice-segmented-control></section>
+
+<h2>Size: large</h2>
+<section class="row"><snice-segmented-control id="sc-large" size="large"></snice-segmented-control></section>
+
+<h2>All sizes</h2>
+<section>
+  <div class="row" style="margin-bottom:0.75rem"><snice-segmented-control id="sc-all-s" size="small"></snice-segmented-control></div>
+  <div class="row" style="margin-bottom:0.75rem"><snice-segmented-control id="sc-all-m" size="medium"></snice-segmented-control></div>
+  <div class="row"><snice-segmented-control id="sc-all-l" size="large"></snice-segmented-control></div>
+</section>
+
+<h2>Disabled</h2>
+<section class="row"><snice-segmented-control id="sc-disabled" disabled></snice-segmented-control></section>
+
+<h2>Individual option disabled</h2>
+<section class="row"><snice-segmented-control id="sc-opt-disabled"></snice-segmented-control></section>
+
+<h2>Two options</h2>
+<section class="row"><snice-segmented-control id="sc-two"></snice-segmented-control></section>
+
+<h2>Three options</h2>
+<section class="row"><snice-segmented-control id="sc-three"></snice-segmented-control></section>
+
+<h2>Four options</h2>
+<section class="row"><snice-segmented-control id="sc-four"></snice-segmented-control></section>
+
+<h2>Five options</h2>
+<section class="row"><snice-segmented-control id="sc-five"></snice-segmented-control></section>
+
+<h2>Pre-selected value</h2>
+<section class="row"><snice-segmented-control id="sc-preselect" value="month"></snice-segmented-control></section>
+
+<h2>Long labels</h2>
+<section class="row"><snice-segmented-control id="sc-long"></snice-segmented-control></section>
+
+<h2>Short labels</h2>
+<section class="row"><snice-segmented-control id="sc-short"></snice-segmented-control></section>
+
+<h2>Size x Option count matrix</h2>
+<section>
+  <div class="row" style="margin-bottom:0.75rem"><snice-segmented-control id="sc-mx-s2" size="small"></snice-segmented-control><span style="font-size:0.7rem">small / 2 opts</span></div>
+  <div class="row" style="margin-bottom:0.75rem"><snice-segmented-control id="sc-mx-s3" size="small"></snice-segmented-control><span style="font-size:0.7rem">small / 3 opts</span></div>
+  <div class="row" style="margin-bottom:0.75rem"><snice-segmented-control id="sc-mx-m2" size="medium"></snice-segmented-control><span style="font-size:0.7rem">medium / 2 opts</span></div>
+  <div class="row" style="margin-bottom:0.75rem"><snice-segmented-control id="sc-mx-m3" size="medium"></snice-segmented-control><span style="font-size:0.7rem">medium / 3 opts</span></div>
+  <div class="row" style="margin-bottom:0.75rem"><snice-segmented-control id="sc-mx-l2" size="large"></snice-segmented-control><span style="font-size:0.7rem">large / 2 opts</span></div>
+  <div class="row"><snice-segmented-control id="sc-mx-l3" size="large"></snice-segmented-control><span style="font-size:0.7rem">large / 3 opts</span></div>
+</section>
+
+<script type="module">
+  import '/packages/components/src/segmented-control/snice-segmented-control.ts';
+
+  const viewOpts = [
+    { value: 'day', label: 'Day' },
+    { value: 'week', label: 'Week' },
+    { value: 'month', label: 'Month' }
+  ];
+
+  const twoOpts = [
+    { value: 'on', label: 'On' },
+    { value: 'off', label: 'Off' }
+  ];
+
+  const fourOpts = [
+    { value: 'all', label: 'All' },
+    { value: 'active', label: 'Active' },
+    { value: 'draft', label: 'Draft' },
+    { value: 'archived', label: 'Archived' }
+  ];
+
+  const fiveOpts = [
+    { value: '1', label: 'One' },
+    { value: '2', label: 'Two' },
+    { value: '3', label: 'Three' },
+    { value: '4', label: 'Four' },
+    { value: '5', label: 'Five' }
+  ];
+
+  const longOpts = [
+    { value: 'personal', label: 'Personal Information' },
+    { value: 'settings', label: 'Account Settings' },
+    { value: 'notifications', label: 'Notification Preferences' }
+  ];
+
+  const shortOpts = [
+    { value: 's', label: 'S' },
+    { value: 'm', label: 'M' },
+    { value: 'l', label: 'L' },
+    { value: 'xl', label: 'XL' }
+  ];
+
+  const disabledOptOpts = [
+    { value: 'a', label: 'Enabled' },
+    { value: 'b', label: 'Disabled', disabled: true },
+    { value: 'c', label: 'Enabled' }
+  ];
+
+  // Size demos
+  document.getElementById('sc-small').options = viewOpts;
+  document.getElementById('sc-medium').options = viewOpts;
+  document.getElementById('sc-large').options = viewOpts;
+  document.getElementById('sc-all-s').options = viewOpts;
+  document.getElementById('sc-all-m').options = viewOpts;
+  document.getElementById('sc-all-l').options = viewOpts;
+
+  // States
+  document.getElementById('sc-disabled').options = viewOpts;
+  document.getElementById('sc-opt-disabled').options = disabledOptOpts;
+
+  // Option counts
+  document.getElementById('sc-two').options = twoOpts;
+  document.getElementById('sc-three').options = viewOpts;
+  document.getElementById('sc-four').options = fourOpts;
+  document.getElementById('sc-five').options = fiveOpts;
+
+  // Pre-selected
+  document.getElementById('sc-preselect').options = viewOpts;
+
+  // Label lengths
+  document.getElementById('sc-long').options = longOpts;
+  document.getElementById('sc-short').options = shortOpts;
+
+  // Matrix
+  document.getElementById('sc-mx-s2').options = twoOpts;
+  document.getElementById('sc-mx-s3').options = viewOpts;
+  document.getElementById('sc-mx-m2').options = twoOpts;
+  document.getElementById('sc-mx-m3').options = viewOpts;
+  document.getElementById('sc-mx-l2').options = twoOpts;
+  document.getElementById('sc-mx-l3').options = viewOpts;
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

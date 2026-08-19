@@ -5,7 +5,7 @@ const visibleTooltip = (page: Page, content: string) =>
 
 test.describe('Tooltip Demo', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/components/tooltip/demo.html');
+    await page.goto('/tests/live/fixtures/tooltip/visual.html');
   });
 
   for (const [label, content] of [

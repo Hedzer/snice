@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .note { max-width: 52rem; color: var(--snice-color-text-secondary, #777); line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+<h2>Variant: default</h2>
+<div class="row">
+  <snice-link href="/about">Default Link</snice-link>
+</div>
+
+<h2>Variant: primary</h2>
+<div class="row">
+  <snice-link href="/page" variant="primary">Primary Link</snice-link>
+</div>
+
+<h2>Variant: secondary</h2>
+<div class="row">
+  <snice-link href="/page" variant="secondary">Secondary Link</snice-link>
+</div>
+
+<h2>Variant: muted</h2>
+<div class="row">
+  <snice-link href="/page" variant="muted">Muted Link</snice-link>
+</div>
+
+<h2>All variants side-by-side</h2>
+<div class="row">
+  <snice-link href="#" variant="default">Default</snice-link>
+  <snice-link href="#" variant="primary">Primary</snice-link>
+  <snice-link href="#" variant="secondary">Secondary</snice-link>
+  <snice-link href="#" variant="muted">Muted</snice-link>
+</div>
+
+<h2>Disabled</h2>
+<div class="row">
+  <snice-link href="/page" disabled>Disabled Default</snice-link>
+  <snice-link href="/page" variant="primary" disabled>Disabled Primary</snice-link>
+  <snice-link href="/page" variant="secondary" disabled>Disabled Secondary</snice-link>
+  <snice-link href="/page" variant="muted" disabled>Disabled Muted</snice-link>
+</div>
+
+<h2>Underline</h2>
+<div class="row">
+  <snice-link href="/docs" underline>Underlined Default</snice-link>
+  <snice-link href="/docs" variant="primary" underline>Underlined Primary</snice-link>
+  <snice-link href="/docs" variant="secondary" underline>Underlined Secondary</snice-link>
+  <snice-link href="/docs" variant="muted" underline>Underlined Muted</snice-link>
+</div>
+
+<h2>External (auto _blank + noopener + arrow icon)</h2>
+<div class="row">
+  <snice-link href="https://example.com" external>External Default</snice-link>
+  <snice-link href="https://example.com" variant="primary" external>External Primary</snice-link>
+  <snice-link href="https://example.com" variant="secondary" external>External Secondary</snice-link>
+  <snice-link href="https://example.com" variant="muted" external>External Muted</snice-link>
+</div>
+
+<section id="link-safe-destination">
+  <h2>Safe link destinations</h2>
+  <p class="note">Accepted destinations stay native anchors with keyboard and context-menu behavior. Malformed URLs and unsafe or obfuscated schemes render without an executable href.</p>
+  <div class="row">
+    <snice-link href="#link-safe-destination">Relative / hash</snice-link>
+    <snice-link href="https://example.com" external>HTTPS external</snice-link>
+    <snice-link href="javascript:globalThis.__sniceUnsafeLinkShowcase = 1">Unsafe scheme blocked</snice-link>
+  </div>
+</section>
+
+<h2>External + Underline</h2>
+<div class="row">
+  <snice-link href="https://example.com" external underline>External + Underline</snice-link>
+</div>
+
+<h2>External + Disabled</h2>
+<div class="row">
+  <snice-link href="https://example.com" external disabled>External + Disabled</snice-link>
+</div>
+
+<h2>Hash routing (auto-prepend #)</h2>
+<div class="row">
+  <snice-link href="home" hash>Hash: home</snice-link>
+  <snice-link href="settings" hash variant="primary">Hash: settings</snice-link>
+  <snice-link href="profile" hash variant="secondary">Hash: profile</snice-link>
+</div>
+
+<h2>Target values</h2>
+<div class="row">
+  <snice-link href="/page" target="_self">_self (default)</snice-link>
+  <snice-link href="/page" target="_blank">_blank</snice-link>
+  <snice-link href="/page" target="_parent">_parent</snice-link>
+  <snice-link href="/page" target="_top">_top</snice-link>
+</div>
+
+<h2>Empty href</h2>
+<div class="row">
+  <snice-link>No href</snice-link>
+  <snice-link href="">Empty href</snice-link>
+</div>
+
+<h2>Disabled + Underline</h2>
+<div class="row">
+  <snice-link href="/page" disabled underline>Disabled + Underline</snice-link>
+</div>
+
+<h2>Variant x Disabled x Underline matrix</h2>
+<div class="row">
+  <snice-link href="#" variant="default" disabled underline>Default Dis+UL</snice-link>
+  <snice-link href="#" variant="primary" disabled underline>Primary Dis+UL</snice-link>
+  <snice-link href="#" variant="secondary" disabled underline>Secondary Dis+UL</snice-link>
+  <snice-link href="#" variant="muted" disabled underline>Muted Dis+UL</snice-link>
+</div>
+
+<h2>Inline with text</h2>
+<p>Read the <snice-link href="/docs" variant="primary" underline>documentation</snice-link> for more details, or visit the <snice-link href="https://example.com" external variant="primary">project page</snice-link>.</p>
+
+<script type="module">import '/packages/components/src/link/snice-link.ts';</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const demoPath = '/components/checkbox/demo.html';
+const demoPath = '/tests/live/fixtures/checkbox/visual.html';
 
 async function openShowcase(page: Page, pageErrors: string[]) {
   page.on('pageerror', error => pageErrors.push(error.message));

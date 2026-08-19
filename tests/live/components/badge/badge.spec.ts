@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/badge/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/badge/visual.html';
 
 test.describe('Snice Badge', () => {
   test.beforeEach(async ({ page }) => {

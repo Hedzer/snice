@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-pagination visual fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. One default pagination control at page 1 of
+         10, so the interaction spec has a deterministic starting state and
+         data-page targets. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      .stage { padding: 2rem; }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <snice-pagination current="1" total="10"></snice-pagination>
+    </div>
+
+    <script type="module">
+      import '/packages/components/src/pagination/snice-pagination.ts';
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

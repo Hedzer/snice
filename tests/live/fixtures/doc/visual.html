@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>Doc</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    section { margin-bottom: 2rem; }
+    snice-doc { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; min-height: 200px; }
+  </style>
+  <script type="module">
+    import '/packages/components/src/doc/snice-doc.ts';
+    import '/packages/components/src/modal/snice-modal.ts';
+    import '/packages/components/src/input/snice-input.ts';
+    import '/packages/components/src/button/snice-button.ts';
+
+    await customElements.whenDefined('snice-doc');
+
+    // Pre-filled
+    const prefilled = document.getElementById('doc-prefilled');
+    prefilled.setHTML(`
+      <h1>Document Title</h1>
+      <p>This is a paragraph with <b>bold</b>, <i>italic</i>, and <u>underlined</u> text.</p>
+      <h2>Section Heading</h2>
+      <p>A paragraph under a subheading with a <a href="https://example.com">link</a>.</p>
+      <ul>
+        <li>Bullet item one</li>
+        <li>Bullet item two</li>
+      </ul>
+      <ol>
+        <li>Numbered item one</li>
+        <li>Numbered item two</li>
+      </ol>
+      <hr>
+      <p>Content after a divider.</p>
+    `);
+  </script>
+</head>
+<body>
+
+<section>
+  <h2>Default (empty, icons="default")</h2>
+  <snice-doc></snice-doc>
+</section>
+
+<section>
+  <h2>Custom placeholder</h2>
+  <snice-doc placeholder="Write your story here..."></snice-doc>
+</section>
+
+<section>
+  <h2>Pre-filled content (setHTML)</h2>
+  <snice-doc id="doc-prefilled"></snice-doc>
+</section>
+
+<section>
+  <h2>readonly</h2>
+  <snice-doc id="doc-readonly" readonly placeholder="Cannot edit this"></snice-doc>
+</section>
+
+<section>
+  <h2>icons="default" (text/emoji icons)</h2>
+  <snice-doc icons="default"></snice-doc>
+</section>
+
+<section>
+  <h2>icons="material" (Material Symbols - requires font loaded)</h2>
+  <snice-doc icons="material"></snice-doc>
+</section>
+
+<section>
+  <h2>icons="fontawesome" (Font Awesome - requires font loaded)</h2>
+  <snice-doc icons="fontawesome"></snice-doc>
+</section>
+
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/color-picker/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/color-picker/visual.html';
 
 test.describe('Snice Color Picker visual integrity', () => {
   test.beforeEach(async ({ page }) => {

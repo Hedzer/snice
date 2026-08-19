@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tag</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+<h2>Variants</h2>
+<div class="row">
+  <snice-tag variant="default">Default</snice-tag>
+  <snice-tag variant="primary">Primary</snice-tag>
+  <snice-tag variant="success">Success</snice-tag>
+  <snice-tag variant="warning">Warning</snice-tag>
+  <snice-tag variant="danger">Danger</snice-tag>
+  <snice-tag variant="info">Info</snice-tag>
+</div>
+
+<h2>Sizes</h2>
+<div class="row">
+  <snice-tag size="small">Small</snice-tag>
+  <snice-tag size="medium">Medium</snice-tag>
+  <snice-tag size="large">Large</snice-tag>
+</div>
+
+<h2>Variant x Size Matrix</h2>
+<div style="display: grid; grid-template-columns: repeat(3, auto); gap: 0.5rem; align-items: center;">
+  <snice-tag variant="default" size="small">default sm</snice-tag>
+  <snice-tag variant="default" size="medium">default md</snice-tag>
+  <snice-tag variant="default" size="large">default lg</snice-tag>
+
+  <snice-tag variant="primary" size="small">primary sm</snice-tag>
+  <snice-tag variant="primary" size="medium">primary md</snice-tag>
+  <snice-tag variant="primary" size="large">primary lg</snice-tag>
+
+  <snice-tag variant="success" size="small">success sm</snice-tag>
+  <snice-tag variant="success" size="medium">success md</snice-tag>
+  <snice-tag variant="success" size="large">success lg</snice-tag>
+
+  <snice-tag variant="warning" size="small">warning sm</snice-tag>
+  <snice-tag variant="warning" size="medium">warning md</snice-tag>
+  <snice-tag variant="warning" size="large">warning lg</snice-tag>
+
+  <snice-tag variant="danger" size="small">danger sm</snice-tag>
+  <snice-tag variant="danger" size="medium">danger md</snice-tag>
+  <snice-tag variant="danger" size="large">danger lg</snice-tag>
+
+  <snice-tag variant="info" size="small">info sm</snice-tag>
+  <snice-tag variant="info" size="medium">info md</snice-tag>
+  <snice-tag variant="info" size="large">info lg</snice-tag>
+</div>
+
+<h2>Removable</h2>
+<div class="row">
+  <snice-tag variant="default" removable>Default</snice-tag>
+  <snice-tag variant="primary" removable>Primary</snice-tag>
+  <snice-tag variant="success" removable>Success</snice-tag>
+  <snice-tag variant="warning" removable>Warning</snice-tag>
+  <snice-tag variant="danger" removable>Danger</snice-tag>
+  <snice-tag variant="info" removable>Info</snice-tag>
+</div>
+
+<h2>Outline</h2>
+<div class="row">
+  <snice-tag variant="default" outline>Default</snice-tag>
+  <snice-tag variant="primary" outline>Primary</snice-tag>
+  <snice-tag variant="success" outline>Success</snice-tag>
+  <snice-tag variant="warning" outline>Warning</snice-tag>
+  <snice-tag variant="danger" outline>Danger</snice-tag>
+  <snice-tag variant="info" outline>Info</snice-tag>
+</div>
+
+<h2>Pill</h2>
+<div class="row">
+  <snice-tag variant="default" pill>Default</snice-tag>
+  <snice-tag variant="primary" pill>Primary</snice-tag>
+  <snice-tag variant="success" pill>Success</snice-tag>
+  <snice-tag variant="warning" pill>Warning</snice-tag>
+  <snice-tag variant="danger" pill>Danger</snice-tag>
+  <snice-tag variant="info" pill>Info</snice-tag>
+</div>
+
+<h2>Outline + Pill</h2>
+<div class="row">
+  <snice-tag variant="default" outline pill>Default</snice-tag>
+  <snice-tag variant="primary" outline pill>Primary</snice-tag>
+  <snice-tag variant="success" outline pill>Success</snice-tag>
+  <snice-tag variant="warning" outline pill>Warning</snice-tag>
+  <snice-tag variant="danger" outline pill>Danger</snice-tag>
+  <snice-tag variant="info" outline pill>Info</snice-tag>
+</div>
+
+<h2>Removable + Pill</h2>
+<div class="row">
+  <snice-tag variant="primary" removable pill>Removable Pill</snice-tag>
+  <snice-tag variant="success" removable pill>Removable Pill</snice-tag>
+  <snice-tag variant="danger" removable pill>Removable Pill</snice-tag>
+</div>
+
+<h2>Removable + Outline + Pill</h2>
+<div class="row">
+  <snice-tag variant="primary" removable outline pill>All modifiers</snice-tag>
+  <snice-tag variant="success" removable outline pill>All modifiers</snice-tag>
+  <snice-tag variant="danger" removable outline pill>All modifiers</snice-tag>
+</div>
+
+<h2>With Icon Slot (Emoji)</h2>
+<div class="row">
+  <snice-tag variant="primary"><span slot="icon">&#x1F4BB;</span> Development</snice-tag>
+  <snice-tag variant="success"><span slot="icon">&#x2705;</span> Approved</snice-tag>
+  <snice-tag variant="danger"><span slot="icon">&#x1F6A8;</span> Critical</snice-tag>
+  <snice-tag variant="warning"><span slot="icon">&#x26A0;</span> Caution</snice-tag>
+  <snice-tag variant="info"><span slot="icon">&#x2139;</span> Note</snice-tag>
+</div>
+
+<h2>With Icon Slot (Material Symbols)</h2>
+
+<div class="row">
+  <snice-tag variant="primary"><span slot="icon" class="material-symbols-outlined" style="font-size: 16px;">code</span> Code</snice-tag>
+  <snice-tag variant="success"><span slot="icon" class="material-symbols-outlined" style="font-size: 16px;">check_circle</span> Done</snice-tag>
+  <snice-tag variant="danger"><span slot="icon" class="material-symbols-outlined" style="font-size: 16px;">error</span> Error</snice-tag>
+  <snice-tag variant="warning"><span slot="icon" class="material-symbols-outlined" style="font-size: 16px;">warning</span> Warning</snice-tag>
+</div>
+
+<h2>Sizes x Removable x Outline x Pill</h2>
+<div style="display: flex; flex-direction: column; gap: 0.5rem;">
+  <div class="row">
+    <snice-tag size="small" removable outline pill variant="primary">Small all</snice-tag>
+    <snice-tag size="medium" removable outline pill variant="primary">Medium all</snice-tag>
+    <snice-tag size="large" removable outline pill variant="primary">Large all</snice-tag>
+  </div>
+</div>
+
+<h2>Long Text</h2>
+<div class="row">
+  <snice-tag variant="primary">This is a very long tag label text</snice-tag>
+  <snice-tag variant="primary" removable>Long removable tag label</snice-tag>
+</div>
+
+<script type="module">
+  import '/packages/components/src/tag/snice-tag.ts';
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

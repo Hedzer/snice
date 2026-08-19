@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/login/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/login/visual.html';
 
 test.describe('Snice Login visual integrity', () => {
   test.beforeEach(async ({ page }) => {
@@ -90,7 +90,11 @@ test.describe('Snice Login visual integrity', () => {
         if (remember && forgot) {
           const rr = remember.getBoundingClientRect();
           const fr = forgot.getBoundingClientRect();
-          if (fr.left < rr.right) {
+          // 1px tolerance: Firefox lays out the two spans with a sub-pixel
+          // (<=0.0001px) negative gap between adjacent text boxes at some
+          // widths — a rounding artifact, not a visible collision. A real
+          // overlap is still > 1px.
+          if (fr.left < rr.right - 1) {
             problems.push(`${id}: forgot-password overlaps remember-me`);
           }
           // space-between: remember hugs the left edge, forgot the right.

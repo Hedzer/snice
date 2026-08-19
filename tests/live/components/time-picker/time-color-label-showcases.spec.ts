@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 const showcases = [
   {
     component: 'time picker',
-    url: 'http://localhost:5566/website/showcases/time-picker/full.html',
+    url: 'http://localhost:5566/tests/live/fixtures/time-picker/visual.html',
     section: '#time-picker-label-lifecycle',
     host: '#time-showcase-labelled',
     primary: '#time-showcase-primary-label',
@@ -18,7 +18,7 @@ const showcases = [
   },
   {
     component: 'color picker',
-    url: 'http://localhost:5566/website/showcases/color-picker/full.html',
+    url: 'http://localhost:5566/tests/live/fixtures/color-picker/visual.html',
     section: '#color-picker-label-lifecycle',
     host: '#color-showcase-labelled',
     primary: '#color-showcase-primary-label',
@@ -92,11 +92,11 @@ for (const showcase of showcases) {
     await expect.poll(() => page.evaluate(() =>
       document.documentElement.scrollWidth <= document.documentElement.clientWidth
     )).toBe(true);
-    await page.evaluate(() => localStorage.setItem('snice-theme', 'light'));
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    // The fixture has no localStorage theme script; the deterministic
+    // channel is the attribute itself.
+    await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'light'));
     await page.waitForFunction(({ host, target }) =>
-      document.documentElement.getAttribute('data-theme') === 'light'
-      && Boolean(
+      Boolean(
         document.querySelector(host)?.shadowRoot?.querySelector(target)
         && (document.querySelector(host) as any).labels?.length === 2
       ), showcase);

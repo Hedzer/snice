@@ -10,7 +10,7 @@ import { expect, test } from '@playwright/test';
  * lives in tests/components/table-column-fit.test.ts.
  */
 const showcaseUrl = process.env.TABLE_SHOWCASE_URL
-  || '/components/table/full-showcase.html';
+  || '/tests/live/fixtures/table/visual.html';
 
 type Box = { frame: number; table: number; lastColumnRight: number; tableRight: number };
 

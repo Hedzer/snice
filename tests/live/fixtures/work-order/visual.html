@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work Order</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 1.5rem; }
+    .label { font-size: 0.7rem; color: var(--snice-color-text-tertiary); margin-bottom: 0.25rem; }
+
+    .tpl-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+    .tpl-card { position: relative; display: block; border: 1px solid var(--snice-color-border, #444); border-radius: 8px; background: var(--snice-color-surface-container-low, rgb(30 30 34)); padding: 0; cursor: zoom-in; overflow: hidden; height: 300px; text-align: left; }
+    .tpl-card:hover { border-color: var(--snice-color-primary, #3b82f6); }
+    .tpl-card:focus-visible { outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)); outline-offset: 2px; }
+    .tpl-card__stage { transform: scale(0.32); transform-origin: top left; width: 700px; pointer-events: none; padding: 12px; }
+    .tpl-card__name { position: absolute; bottom: 0; left: 0; right: 0; padding: 0.4rem 0.75rem; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; background: color-mix(in srgb, var(--snice-color-surface, #111) 85%, transparent); color: var(--snice-color-text, #eee); backdrop-filter: blur(4px); }
+    #tpl-modal-body > * { max-width: 700px; margin: 0 auto; }
+  </style>
+</head>
+<body>
+
+
+
+<h2>Slots: title, before-tasks, notes</h2>
+<snice-work-order wo-number="WO-070" date="2026-07-24" priority="high" status="open" description="Line 3 conveyor bearing replacement.">
+  <span slot="title">Job Ticket</span>
+  <div slot="before-tasks" style="font-size:0.8rem;padding:0.5rem 0.75rem;border:1px dashed var(--snice-color-border);border-radius:6px">⚠ Lockout/tagout required before starting. Permit #LT-2211.</div>
+  <div slot="notes" style="font-size:0.8rem;color:var(--snice-color-text-tertiary)">Customer requests completion before Friday shift change.</div>
+</snice-work-order>
+
+<h2>Template gallery - click any sheet to zoom</h2>
+<div class="tpl-gallery">
+  <button class="tpl-card" data-variant="standard" aria-label="Zoom standard template">
+    <div class="tpl-card__stage"><snice-work-order data-tpl variant="standard" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold." show-qr qr-data="https://ops.example.com/WO-1907"></snice-work-order></div>
+    <span class="tpl-card__name">standard</span>
+  </button>
+  <button class="tpl-card" data-variant="compact" aria-label="Zoom compact template">
+    <div class="tpl-card__stage"><snice-work-order data-tpl variant="compact" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold." show-qr qr-data="https://ops.example.com/WO-1907"></snice-work-order></div>
+    <span class="tpl-card__name">compact</span>
+  </button>
+  <button class="tpl-card" data-variant="field-service" aria-label="Zoom field-service template">
+    <div class="tpl-card__stage"><snice-work-order data-tpl variant="field-service" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold." show-qr qr-data="https://ops.example.com/WO-1907"></snice-work-order></div>
+    <span class="tpl-card__name">field-service</span>
+  </button>
+  <button class="tpl-card" data-variant="maintenance" aria-label="Zoom maintenance template">
+    <div class="tpl-card__stage"><snice-work-order data-tpl variant="maintenance" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold." show-qr qr-data="https://ops.example.com/WO-1907"></snice-work-order></div>
+    <span class="tpl-card__name">maintenance</span>
+  </button>
+  <button class="tpl-card" data-variant="detailed" aria-label="Zoom detailed template">
+    <div class="tpl-card__stage"><snice-work-order data-tpl variant="detailed" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold." show-qr qr-data="https://ops.example.com/WO-1907"></snice-work-order></div>
+    <span class="tpl-card__name">detailed</span>
+  </button>
+  <button class="tpl-card" data-variant="paper" aria-label="Zoom paper template">
+    <div class="tpl-card__stage"><snice-work-order data-tpl variant="paper" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold." show-qr qr-data="https://ops.example.com/WO-1907"></snice-work-order></div>
+    <span class="tpl-card__name">paper</span>
+  </button>
+</div>
+<snice-modal id="tpl-modal" size="large" no-footer label="Template preview">
+  <div id="tpl-modal-body"></div>
+</snice-modal>
+
+<h2>Priority: all values</h2>
+<div class="grid">
+  <snice-work-order id="wo-low" wo-number="WO-001" date="2024-03-01" priority="low" status="open" description="Low priority task"></snice-work-order>
+  <snice-work-order id="wo-med" wo-number="WO-002" date="2024-03-01" priority="medium" status="open" description="Medium priority task"></snice-work-order>
+  <snice-work-order id="wo-high" wo-number="WO-003" date="2024-03-01" priority="high" status="open" description="High priority task"></snice-work-order>
+  <snice-work-order id="wo-urgent" wo-number="WO-004" date="2024-03-01" priority="urgent" status="open" description="Urgent priority task"></snice-work-order>
+</div>
+
+<h2>Status: all values</h2>
+<div class="grid">
+  <snice-work-order wo-number="WO-010" date="2024-03-01" priority="medium" status="open" description="Open status"></snice-work-order>
+  <snice-work-order wo-number="WO-011" date="2024-03-01" priority="medium" status="in-progress" description="In progress status"></snice-work-order>
+  <snice-work-order wo-number="WO-012" date="2024-03-01" priority="medium" status="completed" description="Completed status"></snice-work-order>
+  <snice-work-order wo-number="WO-013" date="2024-03-01" priority="medium" status="cancelled" description="Cancelled status"></snice-work-order>
+</div>
+
+<h2>Variant: standard (default)</h2>
+<snice-work-order id="wo-standard" variant="standard"></snice-work-order>
+
+<h2>Variant: compact</h2>
+<snice-work-order id="wo-compact" variant="compact"></snice-work-order>
+
+<h2>Variant: field-service</h2>
+<snice-work-order id="wo-field" variant="field-service"></snice-work-order>
+
+<h2>Variant: maintenance</h2>
+<snice-work-order id="wo-maint" variant="maintenance"></snice-work-order>
+
+<h2>Variant: detailed</h2>
+<snice-work-order id="wo-detailed" variant="detailed"></snice-work-order>
+
+<h2>With Customer</h2>
+<snice-work-order id="wo-customer" wo-number="WO-020" date="2024-03-10" priority="high" status="open" description="HVAC repair needed"></snice-work-order>
+
+<h2>With Asset</h2>
+<snice-work-order id="wo-asset" wo-number="WO-021" date="2024-03-10" priority="medium" status="in-progress" description="Annual maintenance"></snice-work-order>
+
+<h2>With Tasks</h2>
+<snice-work-order id="wo-tasks" wo-number="WO-022" date="2024-03-12" priority="high" status="in-progress" description="Replace air handler unit"></snice-work-order>
+
+<h2>With Parts</h2>
+<snice-work-order id="wo-parts" wo-number="WO-023" date="2024-03-12" priority="medium" status="open" description="Electrical panel upgrade"></snice-work-order>
+
+<h2>With Labor Rate + Tasks (cost calculation)</h2>
+<snice-work-order id="wo-labor" wo-number="WO-024" date="2024-03-15" priority="medium" status="in-progress" description="Plumbing repair"></snice-work-order>
+
+<h2>With Notes</h2>
+<snice-work-order wo-number="WO-025" date="2024-03-15" priority="low" status="open" description="General inspection" notes="Customer prefers morning appointments. Access code: 1234. Park in visitor lot."></snice-work-order>
+
+<h2>With Due Date</h2>
+<snice-work-order wo-number="WO-026" date="2024-03-15" due-date="2024-03-20" priority="urgent" status="open" description="Emergency boiler repair"></snice-work-order>
+
+<h2>QR Code: show-qr with positions</h2>
+<div class="grid">
+  <div>
+    <div class="label">qr-position=top-right</div>
+    <snice-work-order wo-number="WO-030" date="2024-03-15" priority="medium" status="open" show-qr qr-position="top-right" qr-data="https://app.example.com/wo/030" description="QR at top-right">
+      <div slot="qr" style="width: 4rem; height: 4rem; background: var(--snice-color-border); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; border-radius: 4px;">QR</div>
+    </snice-work-order>
+  </div>
+  <div>
+    <div class="label">qr-position=header</div>
+    <snice-work-order wo-number="WO-031" date="2024-03-15" priority="medium" status="open" show-qr qr-position="header" description="QR at header">
+      <div slot="qr" style="width: 4rem; height: 4rem; background: var(--snice-color-border); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; border-radius: 4px;">QR</div>
+    </snice-work-order>
+  </div>
+  <div>
+    <div class="label">qr-position=footer</div>
+    <snice-work-order wo-number="WO-032" date="2024-03-15" priority="medium" status="open" show-qr qr-position="footer" description="QR at footer">
+      <div slot="qr" style="width: 4rem; height: 4rem; background: var(--snice-color-border); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; border-radius: 4px;">QR</div>
+    </snice-work-order>
+  </div>
+</div>
+
+<h2>Slots: signature and footer</h2>
+<snice-work-order wo-number="WO-040" date="2024-03-18" priority="medium" status="completed" description="Completed work with signature">
+  <div slot="signature" style="padding: 0.5rem; font-style: italic; color: var(--snice-color-text-secondary);">Digital signature placeholder</div>
+  <div slot="footer" style="font-size: 0.75rem; color: var(--snice-color-text-tertiary); text-align: center; padding: 0.5rem;">Generated by WorkOrder System v2.0</div>
+</snice-work-order>
+
+<h2>Default Slot (additional content)</h2>
+<snice-work-order wo-number="WO-041" date="2024-03-18" priority="low" status="open" description="Work order with extra content">
+  <div style="padding: 1rem; border-top: 1px solid var(--snice-color-border); font-size: 0.8rem; color: var(--snice-color-text-secondary);">
+    Custom slotted content appears at the bottom of the work order.
+  </div>
+</snice-work-order>
+
+<h2>Full Work Order (all sections populated)</h2>
+<snice-work-order id="wo-full" variant="standard"></snice-work-order>
+
+<h2>Paper (textural)</h2>
+<snice-work-order id="wo-paper" variant="paper" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold."></snice-work-order>
+
+<h2>Minimal (just WO number)</h2>
+<snice-work-order wo-number="WO-099"></snice-work-order>
+
+<h2>No WO Number</h2>
+<snice-work-order status="open" priority="medium" description="Work order without a number"></snice-work-order>
+
+<h2>Priority x Status Matrix</h2>
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; font-size: 0.7rem;">
+  <snice-work-order wo-number="L-Open" priority="low" status="open"></snice-work-order>
+  <snice-work-order wo-number="L-InProg" priority="low" status="in-progress"></snice-work-order>
+  <snice-work-order wo-number="L-Done" priority="low" status="completed"></snice-work-order>
+  <snice-work-order wo-number="L-Cancel" priority="low" status="cancelled"></snice-work-order>
+  <snice-work-order wo-number="M-Open" priority="medium" status="open"></snice-work-order>
+  <snice-work-order wo-number="M-InProg" priority="medium" status="in-progress"></snice-work-order>
+  <snice-work-order wo-number="M-Done" priority="medium" status="completed"></snice-work-order>
+  <snice-work-order wo-number="M-Cancel" priority="medium" status="cancelled"></snice-work-order>
+  <snice-work-order wo-number="H-Open" priority="high" status="open"></snice-work-order>
+  <snice-work-order wo-number="H-InProg" priority="high" status="in-progress"></snice-work-order>
+  <snice-work-order wo-number="H-Done" priority="high" status="completed"></snice-work-order>
+  <snice-work-order wo-number="H-Cancel" priority="high" status="cancelled"></snice-work-order>
+  <snice-work-order wo-number="U-Open" priority="urgent" status="open"></snice-work-order>
+  <snice-work-order wo-number="U-InProg" priority="urgent" status="in-progress"></snice-work-order>
+  <snice-work-order wo-number="U-Done" priority="urgent" status="completed"></snice-work-order>
+  <snice-work-order wo-number="U-Cancel" priority="urgent" status="cancelled"></snice-work-order>
+</div>
+
+<script type="module">
+  import '/packages/components/src/work-order/snice-work-order.ts';
+
+  const customer = { name: 'Acme Corp', address: '123 Main St, Suite 200', phone: '+1 555-1234', email: 'ops@acme.com' };
+  const asset = { id: 'HVAC-301', name: 'Rooftop Unit #3', location: '3rd Floor', serial: 'SN-2019-4521', lastService: '2024-01-15' };
+  const tasks = [
+    { description: 'Inspect unit', assignee: 'John', completed: true, hours: 1 },
+    { description: 'Replace filters', assignee: 'John', completed: true, hours: 0.5 },
+    { description: 'Test operation', assignee: 'Jane', completed: false, hours: 1 },
+    { description: 'Document findings', assignee: 'Jane', completed: false, hours: 0.5 },
+  ];
+  const parts = [
+    { name: 'Air Filter (20x20)', partNumber: 'AF-2020', quantity: 4, unitCost: 12.50 },
+    { name: 'Belt (V-type)', partNumber: 'BLT-V42', quantity: 1, unitCost: 28.00 },
+    { name: 'Refrigerant R-410A', partNumber: 'REF-410', quantity: 2, unitCost: 75.00 },
+  ];
+
+  // Variants
+  for (const v of ['standard', 'compact', 'field', 'maint', 'detailed']) {
+    const variant = v === 'field' ? 'field-service' : v === 'maint' ? 'maintenance' : v;
+    const el = document.getElementById(`wo-${v}`);
+    el.woNumber = `WO-V-${v.toUpperCase()}`;
+    el.date = '2024-03-15';
+    el.dueDate = '2024-03-20';
+    el.priority = 'high';
+    el.status = 'in-progress';
+    el.customer = customer;
+    el.description = 'Annual HVAC maintenance and filter replacement';
+    el.tasks = JSON.parse(JSON.stringify(tasks));
+    el.parts = JSON.parse(JSON.stringify(parts));
+    el.asset = asset;
+    el.laborRate = 75;
+    el.notes = 'Customer prefers morning appointments';
+  }
+
+  // Customer
+  document.getElementById('wo-customer').customer = customer;
+
+  // Asset
+  document.getElementById('wo-asset').asset = asset;
+
+  // Tasks
+  document.getElementById('wo-tasks').tasks = JSON.parse(JSON.stringify(tasks));
+
+  // Parts
+  const woParts = document.getElementById('wo-parts');
+  woParts.parts = JSON.parse(JSON.stringify(parts));
+
+  // Labor
+  const woLabor = document.getElementById('wo-labor');
+  woLabor.tasks = JSON.parse(JSON.stringify(tasks));
+  woLabor.laborRate = 85;
+
+  // Full
+  const woFull = document.getElementById('wo-full');
+  woFull.woNumber = 'WO-2024-FULL';
+  woFull.date = '2024-03-15';
+  woFull.dueDate = '2024-03-22';
+  woFull.priority = 'high';
+  woFull.status = 'in-progress';
+  woFull.customer = customer;
+  woFull.description = 'Complete HVAC system overhaul including compressor replacement, duct cleaning, and thermostat upgrade for the third floor office suite.';
+  woFull.tasks = JSON.parse(JSON.stringify(tasks));
+  woFull.parts = JSON.parse(JSON.stringify(parts));
+  woFull.asset = asset;
+  woFull.laborRate = 95;
+  woFull.notes = 'Access through loading dock. Security escort required after 6 PM. Customer has approved overtime if needed.';
+
+  const woPaper = document.getElementById('wo-paper');
+  woPaper.customer = customer;
+  woPaper.tasks = JSON.parse(JSON.stringify(tasks));
+  woPaper.parts = JSON.parse(JSON.stringify(parts));
+  woPaper.laborRate = 95;
+</script>
+<script type="module">
+  import '/packages/components/src/modal/snice-modal.ts';
+
+  const tplCustomer = { name: 'Acme Corp', address: '123 Main St, Suite 200', phone: '+1 555-1234', email: 'ops@acme.com' };
+  const tplTasks = [
+    { description: 'Drain refrigerant and lock out power', completed: true, hours: 1.5 },
+    { description: 'Replace compressor bearing', completed: false, hours: 3 },
+    { description: 'Recalibrate intake manifold', completed: false, hours: 2 },
+  ];
+  const tplParts = [
+    { name: 'Compressor bearing', partNumber: 'CB-4402', quantity: 1, unitCost: 240 },
+    { name: 'Gasket kit', partNumber: 'GK-115', quantity: 2, unitCost: 35 },
+  ];
+
+  const feed = el => { el.customer = tplCustomer; el.tasks = JSON.parse(JSON.stringify(tplTasks)); el.parts = JSON.parse(JSON.stringify(tplParts)); el.laborRate = 95; };
+  document.querySelectorAll('[data-tpl]').forEach(feed);
+
+  const modal = document.getElementById('tpl-modal');
+  const body = document.getElementById('tpl-modal-body');
+  document.querySelectorAll('.tpl-card').forEach(card => {
+    card.addEventListener('click', () => {
+      body.innerHTML = '';
+      const clone = card.querySelector('[data-tpl]').cloneNode(false);
+      clone.removeAttribute('data-tpl');
+      feed(clone);
+      body.appendChild(clone);
+      modal.show();
+    });
+  });
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

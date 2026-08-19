@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Treemap</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1.5rem; }
+    snice-treemap { height: 300px; display: block; }
+    .label { font-size: 0.7rem; color: var(--snice-color-text-tertiary); margin-bottom: 0.25rem; }
+  </style>
+</head>
+<body>
+
+<h2>Color Scheme: default</h2>
+<snice-treemap id="tm-default" show-labels color-scheme="default"></snice-treemap>
+
+<h2>All Color Schemes</h2>
+<div class="grid">
+  <div><div class="label">default</div><snice-treemap id="tm-cs-default" show-labels color-scheme="default" style="height:200px"></snice-treemap></div>
+  <div><div class="label">blue</div><snice-treemap id="tm-cs-blue" show-labels color-scheme="blue" style="height:200px"></snice-treemap></div>
+  <div><div class="label">green</div><snice-treemap id="tm-cs-green" show-labels color-scheme="green" style="height:200px"></snice-treemap></div>
+  <div><div class="label">purple</div><snice-treemap id="tm-cs-purple" show-labels color-scheme="purple" style="height:200px"></snice-treemap></div>
+  <div><div class="label">orange</div><snice-treemap id="tm-cs-orange" show-labels color-scheme="orange" style="height:200px"></snice-treemap></div>
+  <div><div class="label">warm</div><snice-treemap id="tm-cs-warm" show-labels color-scheme="warm" style="height:200px"></snice-treemap></div>
+  <div><div class="label">cool</div><snice-treemap id="tm-cs-cool" show-labels color-scheme="cool" style="height:200px"></snice-treemap></div>
+  <div><div class="label">rainbow</div><snice-treemap id="tm-cs-rainbow" show-labels color-scheme="rainbow" style="height:200px"></snice-treemap></div>
+</div>
+
+<h2>Show Labels: true vs false</h2>
+<div class="grid">
+  <div><div class="label">show-labels</div><snice-treemap id="tm-labels-on" show-labels style="height:200px"></snice-treemap></div>
+  <div><div class="label">no show-labels</div><snice-treemap id="tm-labels-off" style="height:200px"></snice-treemap></div>
+</div>
+
+<h2>Show Values: true vs false</h2>
+<div class="grid">
+  <div><div class="label">show-values</div><snice-treemap id="tm-values-on" show-labels show-values style="height:200px"></snice-treemap></div>
+  <div><div class="label">show-labels only</div><snice-treemap id="tm-values-off" show-labels style="height:200px"></snice-treemap></div>
+</div>
+
+<h2>Padding Values</h2>
+<div class="grid">
+  <div><div class="label">padding=0</div><snice-treemap id="tm-pad0" show-labels padding="0" style="height:200px"></snice-treemap></div>
+  <div><div class="label">padding=2 (default)</div><snice-treemap id="tm-pad2" show-labels padding="2" style="height:200px"></snice-treemap></div>
+  <div><div class="label">padding=5</div><snice-treemap id="tm-pad5" show-labels padding="5" style="height:200px"></snice-treemap></div>
+  <div><div class="label">padding=10</div><snice-treemap id="tm-pad10" show-labels padding="10" style="height:200px"></snice-treemap></div>
+</div>
+
+<h2>Animation: true (default) vs false</h2>
+<div class="grid">
+  <div><div class="label">animation=true</div><snice-treemap id="tm-anim-on" show-labels animation style="height:200px"></snice-treemap></div>
+  <div><div class="label">animation=false</div><snice-treemap id="tm-anim-off" show-labels style="height:200px"></snice-treemap></div>
+</div>
+
+<h2>Drill-Down (click a cell with children)</h2>
+<snice-treemap id="tm-drill" show-labels show-values style="height:350px"></snice-treemap>
+
+<h2>Custom Node Colors</h2>
+<snice-treemap id="tm-custom-colors" show-labels show-values style="height:250px"></snice-treemap>
+
+<h2>Many Items (20+)</h2>
+<snice-treemap id="tm-many" show-labels style="height:350px"></snice-treemap>
+
+<h2>Single Item</h2>
+<snice-treemap id="tm-single" show-labels show-values style="height:150px"></snice-treemap>
+
+<h2>Two Items (extreme ratio)</h2>
+<snice-treemap id="tm-ratio" show-labels show-values style="height:200px"></snice-treemap>
+
+<script type="module">
+  import '/packages/components/src/treemap/snice-treemap.ts';
+
+  const sampleData = {
+    label: 'Portfolio', value: 0,
+    children: [
+      { label: 'Stocks', value: 450 },
+      { label: 'Bonds', value: 280 },
+      { label: 'Real Estate', value: 200 },
+      { label: 'Crypto', value: 120 },
+      { label: 'Cash', value: 80 },
+      { label: 'Commodities', value: 60 },
+    ]
+  };
+
+  // Color scheme demos
+  const schemes = ['default', 'blue', 'green', 'purple', 'orange', 'warm', 'cool', 'rainbow'];
+  for (const s of schemes) {
+    document.getElementById(`tm-cs-${s}`).data = JSON.parse(JSON.stringify(sampleData));
+  }
+
+  document.getElementById('tm-default').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-labels-on').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-labels-off').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-values-on').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-values-off').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-pad0').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-pad2').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-pad5').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-pad10').data = JSON.parse(JSON.stringify(sampleData));
+  document.getElementById('tm-anim-on').data = JSON.parse(JSON.stringify(sampleData));
+
+  const animOff = document.getElementById('tm-anim-off');
+  animOff.animation = false;
+  animOff.data = JSON.parse(JSON.stringify(sampleData));
+
+  // Drill-down
+  document.getElementById('tm-drill').data = {
+    label: 'Company', value: 0,
+    children: [
+      { label: 'Engineering', value: 0, children: [
+        { label: 'Frontend', value: 300 },
+        { label: 'Backend', value: 250 },
+        { label: 'DevOps', value: 150 },
+        { label: 'QA', value: 100 },
+      ]},
+      { label: 'Sales', value: 0, children: [
+        { label: 'Enterprise', value: 400 },
+        { label: 'SMB', value: 200 },
+      ]},
+      { label: 'Marketing', value: 180 },
+      { label: 'HR', value: 90 },
+    ]
+  };
+
+  // Custom colors
+  document.getElementById('tm-custom-colors').data = {
+    label: 'Status', value: 0,
+    children: [
+      { label: 'Passed', value: 85, color: '#22c55e' },
+      { label: 'Failed', value: 10, color: '#ef4444' },
+      { label: 'Skipped', value: 5, color: '#eab308' },
+    ]
+  };
+
+  // Many items
+  document.getElementById('tm-many').data = {
+    label: 'Countries', value: 0,
+    children: Array.from({ length: 20 }, (_, i) => ({
+      label: `Country ${String.fromCharCode(65 + i)}`,
+      value: Math.floor(Math.random() * 500) + 50,
+    }))
+  };
+
+  // Single
+  document.getElementById('tm-single').data = {
+    label: 'Root', value: 0,
+    children: [{ label: 'Only child', value: 100 }]
+  };
+
+  // Extreme ratio
+  document.getElementById('tm-ratio').data = {
+    label: 'Root', value: 0,
+    children: [
+      { label: 'Large', value: 950 },
+      { label: 'Tiny', value: 5 },
+    ]
+  };
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

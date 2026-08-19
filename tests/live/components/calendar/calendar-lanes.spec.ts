@@ -78,7 +78,7 @@ function readLanes(page: import('@playwright/test').Page) {
 
 test.describe('Snice Calendar adaptive event lanes', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/components/calendar/demo.html');
+    await page.goto('/tests/live/fixtures/calendar/visual.html');
     await page.waitForFunction(() => !!customElements.get('snice-calendar'));
   });
 

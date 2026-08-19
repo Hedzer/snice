@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>Cart</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    section { margin-bottom: 2rem; max-width: 500px; }
+  </style>
+  <script type="module">
+    import '/packages/components/src/cart/snice-cart.ts';
+    import '/packages/components/src/button/snice-button.ts';
+    import '/packages/components/src/input/snice-input.ts';
+    import '/packages/components/src/step-input/snice-step-input.ts';
+    import '/packages/components/src/divider/snice-divider.ts';
+
+    await customElements.whenDefined('snice-cart');
+
+    // Empty cart
+    document.getElementById('cart-empty').items = [];
+
+    // Single item, no image
+    document.getElementById('cart-single').items = [
+      { id: '1', name: 'Widget', price: 9.99, quantity: 1 }
+    ];
+
+    // Multiple items with images and variants
+    const full = document.getElementById('cart-full');
+    full.items = [
+      { id: '1', name: 'Premium Running Shoes', image: 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%232563eb%22%2F%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2233%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E', price: 89.99, quantity: 1, variant: 'Size: M, Color: Black' },
+      { id: '2', name: 'Classic Watch', image: 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%23ea580c%22%2F%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2233%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E', price: 249.00, quantity: 2 },
+      { id: '3', name: 'Wireless Earbuds', price: 59.99, quantity: 3, variant: 'White' }
+    ];
+
+    // With tax
+    const taxCart = document.getElementById('cart-tax');
+    taxCart.items = [
+      { id: '1', name: 'Laptop', price: 999.00, quantity: 1 },
+      { id: '2', name: 'Mouse', price: 29.99, quantity: 1 }
+    ];
+    taxCart.taxRate = 8.5;
+
+    // With discount + coupon
+    const discountCart = document.getElementById('cart-discount');
+    discountCart.items = [
+      { id: '1', name: 'Shirt', price: 45.00, quantity: 2 },
+      { id: '2', name: 'Pants', price: 65.00, quantity: 1 }
+    ];
+    discountCart.discount = 15.50;
+    discountCart.couponCode = 'SAVE15';
+    discountCart.taxRate = 7;
+
+    // Currency: euro
+    const euroCart = document.getElementById('cart-euro');
+    euroCart.currency = '€';
+    euroCart.items = [
+      { id: '1', name: 'Baguette', price: 2.50, quantity: 3 },
+      { id: '2', name: 'Croissant', price: 1.80, quantity: 6 }
+    ];
+
+    // Currency: pound
+    const poundCart = document.getElementById('cart-pound');
+    poundCart.currency = '£';
+    poundCart.items = [
+      { id: '1', name: 'Tea Set', price: 34.99, quantity: 1 }
+    ];
+
+    // High quantity / long names
+    const edgeCart = document.getElementById('cart-edge');
+    edgeCart.items = [
+      { id: '1', name: 'Extraordinarily Long Product Name That Should Wrap Gracefully in the Cart Item Layout', price: 12345.67, quantity: 99 },
+      { id: '2', name: 'X', price: 0.01, quantity: 1 }
+    ];
+    edgeCart.taxRate = 10;
+    edgeCart.discount = 100;
+    edgeCart.couponCode = 'BIG';
+
+    // Tax + discount + coupon combined
+    const comboCart = document.getElementById('cart-combo');
+    comboCart.items = [
+      { id: '1', name: 'Item A', image: 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2233%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E', price: 50.00, quantity: 1, variant: 'Red' },
+      { id: '2', name: 'Item B', image: 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%234f46e5%22%2F%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2233%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E', price: 75.00, quantity: 2, variant: 'Large' },
+      { id: '3', name: 'Item C', price: 25.00, quantity: 1 },
+    ];
+    comboCart.taxRate = 9.25;
+    comboCart.discount = 20;
+    comboCart.couponCode = 'COMBO20';
+  </script>
+</head>
+<body>
+
+<section>
+  <h2>Empty cart</h2>
+  <snice-cart id="cart-empty"></snice-cart>
+</section>
+
+<section>
+  <h2>Single item, no image, no tax, no discount</h2>
+  <snice-cart id="cart-single"></snice-cart>
+</section>
+
+<section>
+  <h2>Multiple items with images and variants</h2>
+  <snice-cart id="cart-full"></snice-cart>
+</section>
+
+<section>
+  <h2>tax-rate="8.5"</h2>
+  <snice-cart id="cart-tax"></snice-cart>
+</section>
+
+<section>
+  <h2>discount + coupon-code + tax-rate</h2>
+  <snice-cart id="cart-discount"></snice-cart>
+</section>
+
+<section>
+  <h2>currency="€" (Euro)</h2>
+  <snice-cart id="cart-euro"></snice-cart>
+</section>
+
+<section>
+  <h2>currency="£" (Pound)</h2>
+  <snice-cart id="cart-pound"></snice-cart>
+</section>
+
+<section>
+  <h2>Edge: long name, high quantity, large price, low price, discount, tax</h2>
+  <snice-cart id="cart-edge"></snice-cart>
+</section>
+
+<section>
+  <h2>All features: images, variants, tax, discount, coupon</h2>
+  <snice-cart id="cart-combo"></snice-cart>
+</section>
+
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

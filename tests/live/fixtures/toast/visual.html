@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toast</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+    button { padding: 0.5rem 1rem; border: 1px solid var(--snice-color-border); border-radius: 6px; background: var(--snice-color-surface); color: var(--snice-color-text); cursor: pointer; font-size: 0.8rem; }
+    button:hover { background: var(--snice-color-surface-hover); }
+    .static-toast { pointer-events: auto; }
+  </style>
+</head>
+<body>
+
+<h2>Static Toast Elements: All Types</h2>
+<div style="display: flex; flex-direction: column; gap: 0.75rem; max-width: 350px;">
+  <snice-toast class="static-toast" type="info" message="Info: This is an informational message"></snice-toast>
+  <snice-toast class="static-toast" type="success" message="Success: Operation completed successfully"></snice-toast>
+  <snice-toast class="static-toast" type="warning" message="Warning: Low disk space remaining"></snice-toast>
+  <snice-toast class="static-toast" type="error" message="Error: Failed to save changes"></snice-toast>
+</div>
+
+<h2>Closable: true (default) vs false</h2>
+<div style="display: flex; flex-direction: column; gap: 0.75rem; max-width: 350px;">
+  <snice-toast class="static-toast" type="info" message="Closable (default)" closable></snice-toast>
+  <snice-toast class="static-toast" type="info" message="Not closable" closable="false"></snice-toast>
+</div>
+
+<h2>Icon: true (default) vs false</h2>
+<div style="display: flex; flex-direction: column; gap: 0.75rem; max-width: 350px;">
+  <snice-toast class="static-toast" type="success" message="With icon (default)" icon></snice-toast>
+  <snice-toast class="static-toast" type="success" message="Without icon" icon="false"></snice-toast>
+</div>
+
+<h2>No Icon + No Close Button</h2>
+<div style="display: flex; flex-direction: column; gap: 0.75rem; max-width: 350px;">
+  <snice-toast class="static-toast" type="info" message="Plain text only" icon="false" closable="false"></snice-toast>
+</div>
+
+<h2>Long Messages</h2>
+<div style="display: flex; flex-direction: column; gap: 0.75rem; max-width: 350px;">
+  <snice-toast class="static-toast" type="info" message="This is a longer message that should wrap to multiple lines within the toast container to test how wrapping behaves"></snice-toast>
+  <snice-toast class="static-toast" type="error" message="A very short msg"></snice-toast>
+</div>
+
+<h2>Type x Closable x Icon Matrix</h2>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; max-width: 720px;">
+  <snice-toast class="static-toast" type="info" message="Info + icon + closable"></snice-toast>
+  <snice-toast class="static-toast" type="info" message="Info, no icon, no close" icon="false" closable="false"></snice-toast>
+  <snice-toast class="static-toast" type="success" message="Success + icon + closable"></snice-toast>
+  <snice-toast class="static-toast" type="success" message="Success, no icon, no close" icon="false" closable="false"></snice-toast>
+  <snice-toast class="static-toast" type="warning" message="Warning + icon + closable"></snice-toast>
+  <snice-toast class="static-toast" type="warning" message="Warning, no icon, no close" icon="false" closable="false"></snice-toast>
+  <snice-toast class="static-toast" type="error" message="Error + icon + closable"></snice-toast>
+  <snice-toast class="static-toast" type="error" message="Error, no icon, no close" icon="false" closable="false"></snice-toast>
+</div>
+
+<h2>Container Positions (click buttons to test)</h2>
+<div class="row">
+  <button onclick="showToast('top-left')">Top Left</button>
+  <button onclick="showToast('top-center')">Top Center</button>
+  <button onclick="showToast('top-right')">Top Right</button>
+  <button onclick="showToast('bottom-left')">Bottom Left</button>
+  <button onclick="showToast('bottom-center')">Bottom Center</button>
+  <button onclick="showToast('bottom-right')">Bottom Right</button>
+</div>
+
+<h2>Toast API: Type Methods</h2>
+<div class="row">
+  <button onclick="apiSuccess()">Toast.success()</button>
+  <button onclick="apiError()">Toast.error()</button>
+  <button onclick="apiWarning()">Toast.warning()</button>
+  <button onclick="apiInfo()">Toast.info()</button>
+</div>
+
+<h2>Duration Options</h2>
+<div class="row">
+  <button onclick="durationTest(1000)">1s duration</button>
+  <button onclick="durationTest(3000)">3s duration</button>
+  <button onclick="durationTest(5000)">5s duration</button>
+  <button onclick="durationTest(0)">No auto-dismiss (duration=0)</button>
+</div>
+
+<h2>Programmatic Hide & Clear</h2>
+<div class="row">
+  <button onclick="showPersistent()">Show persistent toast</button>
+  <button onclick="hideLatest()">Hide latest</button>
+  <button onclick="clearAll()">Clear all</button>
+</div>
+
+<script type="module">
+  import '/packages/components/src/toast/snice-toast.ts';
+  import { Toast } from '/packages/components/src/toast/snice-toast-container.ts';
+
+  let lastId = null;
+
+  window.showToast = async (position) => {
+    await Toast.show(`Toast at ${position}`, { position, duration: 3000 });
+  };
+
+  window.apiSuccess = () => Toast.success('Operation completed');
+  window.apiError = () => Toast.error('Something went wrong');
+  window.apiWarning = () => Toast.warning('Please review changes');
+  window.apiInfo = () => Toast.info('New update available');
+
+  window.durationTest = (ms) => {
+    Toast.show(`Duration: ${ms}ms`, { duration: ms, type: 'info' });
+  };
+
+  window.showPersistent = async () => {
+    lastId = await Toast.show('This stays until dismissed', { duration: 0, type: 'info' });
+  };
+
+  window.hideLatest = () => {
+    if (lastId) { Toast.hide(lastId); lastId = null; }
+  };
+
+  window.clearAll = () => Toast.clear();
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

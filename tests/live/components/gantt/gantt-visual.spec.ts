@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/gantt/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/gantt/visual.html';
 
 const ROW = 36; // .gantt-timeline-rows lays bars out on a 2.25rem grid
 

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('ANSI color parsing', async ({ page }) => {
-  await page.goto('http://localhost:5566/components/terminal/demo.html');
+  await page.goto('http://localhost:5566/tests/live/fixtures/terminal/visual.html');
   await page.waitForTimeout(1000);
 
   // Click the ANSI colors button

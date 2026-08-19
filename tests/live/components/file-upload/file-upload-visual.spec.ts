@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/file-upload/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/file-upload/visual.html';
 
 test.describe('Snice File Upload visual integrity', () => {
   test.beforeEach(async ({ page }) => {

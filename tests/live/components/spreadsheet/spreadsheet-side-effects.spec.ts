@@ -8,15 +8,23 @@
  */
 import { test, expect, type Page, type Locator } from '@playwright/test';
 
-const STORYBOOK = 'http://localhost:6006';
+const FIXTURE = 'http://localhost:5566/tests/live/fixtures/spreadsheet/visual.html';
+const SHEET_ID: Record<string, string> = {
+  'spreadsheet--with-formulas': 'formulas',
+  'spreadsheet--frozen-panes': 'frozen-panes',
+};
 
 async function gotoStory(page: Page, id: string): Promise<Locator> {
-  await page.goto(`${STORYBOOK}/iframe.html?id=${id}&viewMode=story`);
-  await page.waitForFunction(() => {
-    const el = document.querySelector('snice-spreadsheet') as any;
+  await page.goto(FIXTURE, { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction((sheetId) => {
+    const el = document.getElementById(sheetId) as any;
     return !!(el && el.shadowRoot && el.shadowRoot.querySelector('.spreadsheet-td'));
-  });
-  return page.locator('snice-spreadsheet').first();
+  }, SHEET_ID[id]);
+  const sheet = page.locator(`#${SHEET_ID[id]}`);
+  // Mouse interactions use viewport coordinates; keep the sheet on screen.
+  await sheet.evaluate(el => (el as HTMLElement).scrollIntoView({ block: 'center' }));
+  await page.waitForTimeout(100);
+  return sheet;
 }
 
 async function cellRect(sheet: Locator, row: number, col: number) {

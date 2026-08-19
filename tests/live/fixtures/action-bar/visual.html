@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Action Bar - Full Showcase</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, rgb(136 136 136));
+      margin: 0 0 0.75rem;
+    }
+    .row {
+      display: flex;
+      align-items: stretch;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .card {
+      position: relative;
+      width: 14rem;
+      height: 9rem;
+      background: var(--snice-color-surface-container-high, rgb(252 251 249));
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: var(--snice-border-radius-lg, 0.5rem);
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--snice-color-text-secondary, rgb(82 82 82));
+      font-size: 0.75rem;
+    }
+    .card-lg {
+      width: 20rem;
+      height: 12rem;
+    }
+    .label {
+      text-align: center;
+      font-size: 0.65rem;
+      color: var(--snice-color-text-tertiary, rgb(136 136 136));
+      margin-top: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+
+  <section>
+    <h2>Variants</h2>
+    <div class="row">
+      <div>
+        <div class="card"
+             onmouseenter="this.querySelector('snice-action-bar').show()"
+             onmouseleave="this.querySelector('snice-action-bar').hide()">
+          Default
+          <snice-action-bar position="bottom" variant="default">
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></snice-button>
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></snice-button>
+            <snice-button variant="danger" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></snice-button>
+          </snice-action-bar>
+        </div>
+        <div class="label">default</div>
+      </div>
+      <div>
+        <div class="card"
+             onmouseenter="this.querySelector('snice-action-bar').show()"
+             onmouseleave="this.querySelector('snice-action-bar').hide()">
+          Pill
+          <snice-action-bar position="bottom" variant="pill">
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></snice-button>
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></snice-button>
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg></snice-button>
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg></snice-button>
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></snice-button>
+            <snice-button variant="danger" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></snice-button>
+          </snice-action-bar>
+        </div>
+        <div class="label">pill</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sizes</h2>
+    <div class="row">
+      <div>
+        <div class="card"
+             onmouseenter="this.querySelector('snice-action-bar').show()"
+             onmouseleave="this.querySelector('snice-action-bar').hide()">
+          Small
+          <snice-action-bar position="bottom" size="small" variant="pill">
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></snice-button>
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></snice-button>
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg></snice-button>
+          </snice-action-bar>
+        </div>
+        <div class="label">small</div>
+      </div>
+      <div>
+        <div class="card"
+             onmouseenter="this.querySelector('snice-action-bar').show()"
+             onmouseleave="this.querySelector('snice-action-bar').hide()">
+          Medium
+          <snice-action-bar position="bottom" size="medium" variant="pill">
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></snice-button>
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></snice-button>
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg></snice-button>
+          </snice-action-bar>
+        </div>
+        <div class="label">medium</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>All positions (hover to reveal)</h2>
+    <div class="row">
+      <div>
+        <div class="card"
+             onmouseenter="this.querySelector('snice-action-bar').show()"
+             onmouseleave="this.querySelector('snice-action-bar').hide()">
+          top
+          <snice-action-bar position="top" size="small" variant="pill"><snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg></snice-button></snice-action-bar>
+        </div>
+        <div class="label">top</div>
+      </div>
+      <div>
+        <div class="card"
+             onmouseenter="this.querySelector('snice-action-bar').show()"
+             onmouseleave="this.querySelector('snice-action-bar').hide()">
+          bottom
+          <snice-action-bar position="bottom" size="small" variant="pill"><snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg></snice-button></snice-action-bar>
+        </div>
+        <div class="label">bottom</div>
+      </div>
+      <div>
+        <div class="card"
+             onmouseenter="this.querySelector('snice-action-bar').show()"
+             onmouseleave="this.querySelector('snice-action-bar').hide()">
+          left
+          <snice-action-bar position="left" size="small" variant="pill"><snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></snice-button></snice-action-bar>
+        </div>
+        <div class="label">left</div>
+      </div>
+      <div>
+        <div class="card"
+             onmouseenter="this.querySelector('snice-action-bar').show()"
+             onmouseleave="this.querySelector('snice-action-bar').hide()">
+          right
+          <snice-action-bar position="right" size="small" variant="pill"><snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></snice-button></snice-action-bar>
+        </div>
+        <div class="label">right</div>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <div class="card"
+             onmouseenter="this.querySelector('snice-action-bar').show()"
+             onmouseleave="this.querySelector('snice-action-bar').hide()">
+          top-left
+          <snice-action-bar position="top-left" size="small" variant="pill"><snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/></svg></snice-button></snice-action-bar>
+        </div>
+        <div class="label">top-left</div>
+      </div>
+      <div>
+        <div class="card"
+             onmouseenter="this.querySelector('snice-action-bar').show()"
+             onmouseleave="this.querySelector('snice-action-bar').hide()">
+          top-right
+          <snice-action-bar position="top-right" size="small" variant="pill"><snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></snice-button></snice-action-bar>
+        </div>
+        <div class="label">top-right</div>
+      </div>
+      <div>
+        <div class="card"
+             onmouseenter="this.querySelector('snice-action-bar').show()"
+             onmouseleave="this.querySelector('snice-action-bar').hide()">
+          bottom-left
+          <snice-action-bar position="bottom-left" size="small" variant="pill"><snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></snice-button></snice-action-bar>
+        </div>
+        <div class="label">bottom-left</div>
+      </div>
+      <div>
+        <div class="card"
+             onmouseenter="this.querySelector('snice-action-bar').show()"
+             onmouseleave="this.querySelector('snice-action-bar').hide()">
+          bottom-right
+          <snice-action-bar position="bottom-right" size="small" variant="pill"><snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></snice-button></snice-action-bar>
+        </div>
+        <div class="label">bottom-right</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Always visible (no-animation)</h2>
+    <div class="row">
+      <div>
+        <div class="card">
+          Always visible
+          <snice-action-bar no-animation position="top-right" size="small">
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></snice-button>
+            <snice-button variant="danger" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></snice-button>
+          </snice-action-bar>
+        </div>
+        <div class="label">no-animation</div>
+      </div>
+      <div>
+        <div class="card">
+          Pill always visible
+          <snice-action-bar no-animation position="bottom" variant="pill">
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg></snice-button>
+            <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></snice-button>
+          </snice-action-bar>
+        </div>
+        <div class="label">no-animation + pill</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Keyboard navigation</h2>
+    <div class="row">
+      <div class="card card-lg">
+        <div style="text-align:center">
+          <p style="margin:0 0 0.5rem">Focus a button, then use arrow keys</p>
+          <p style="margin:0;font-size:0.65rem;color:var(--snice-color-text-tertiary, rgb(136 136 136))">(Escape closes the bar)</p>
+        </div>
+        <snice-action-bar open position="bottom" variant="pill">
+          <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></snice-button>
+          <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></snice-button>
+          <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg></snice-button>
+          <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg></snice-button>
+        </snice-action-bar>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Programmatic control</h2>
+    <div class="row">
+      <div class="card card-lg">
+        <div style="display:flex;gap:0.5rem">
+          <snice-button size="small" onclick="document.getElementById('prog-bar').show()">show()</snice-button>
+          <snice-button size="small" onclick="document.getElementById('prog-bar').hide()">hide()</snice-button>
+          <snice-button size="small" onclick="document.getElementById('prog-bar').toggle()">toggle()</snice-button>
+        </div>
+        <snice-action-bar id="prog-bar" position="bottom" variant="pill">
+          <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></snice-button>
+          <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 4h-2c-.88 0-1.68.39-2.23 1.06L14.17 1 13.06 2.11c-.27.27-.44.65-.44 1.06l.03.32.95 4.57H7c-.55 0-1 .45-1 1v1c0 .28.11.53.29.71.19.18.44.29.71.29h7.09l-2.03 5.31c-.12.32-.04.68.18.93l.69.71 5.66-5.66c.37-.37.59-.88.59-1.41V5c0-1.1-.9-2-2-2zM5 19H1V7h4v12z"/></svg></snice-button>
+          <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg></snice-button>
+        </snice-action-bar>
+      </div>
+    </div>
+  </section>
+
+  <script type="module">
+    import '/packages/components/src/action-bar/snice-action-bar.ts';
+    import '/packages/components/src/button/snice-button.ts';
+  </script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

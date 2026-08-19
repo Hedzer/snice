@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/timeline/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/timeline/visual.html';
 
 test.describe('Snice Timeline visual integrity', () => {
   test.beforeEach(async ({ page }) => {

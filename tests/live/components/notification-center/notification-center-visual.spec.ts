@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/notification-center/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/notification-center/visual.html';
 
 test.describe('Snice Notification Center visual integrity', () => {
   test.beforeEach(async ({ page }) => {

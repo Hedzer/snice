@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Tree Lazy Loading', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:5566/components/tree/demo.html');
+    await page.goto('http://localhost:5566/tests/live/fixtures/tree/visual.html');
     await page.waitForFunction(() => {
       const tree = document.querySelector('#tree-lazy') as any;
       return tree?.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item').length === 2;

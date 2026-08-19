@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+  <title>Invoice</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    snice-invoice { display: block; max-width: 700px; margin-bottom: 1.5rem; }
+
+    /* Template gallery: zoomed-out stacked sheets, click to zoom in a modal */
+    .tpl-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+    .tpl-card { position: relative; display: block; border: 1px solid var(--snice-color-border, #444); border-radius: 8px; background: var(--snice-color-surface-container-low, rgb(30 30 34)); padding: 0; cursor: zoom-in; overflow: hidden; height: 300px; text-align: left; }
+    .tpl-card:hover { border-color: var(--snice-color-primary, #3b82f6); }
+    .tpl-card:focus-visible { outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)); outline-offset: 2px; }
+    .tpl-card__stage { transform: scale(0.32); transform-origin: top left; width: 700px; pointer-events: none; padding: 12px; }
+    .tpl-card__name { position: absolute; bottom: 0; left: 0; right: 0; padding: 0.4rem 0.75rem; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; background: color-mix(in srgb, var(--snice-color-surface, #111) 85%, transparent); color: var(--snice-color-text, #eee); backdrop-filter: blur(4px); }
+    #tpl-modal [slot] snice-invoice, #tpl-modal-body > * { max-width: 700px; margin: 0 auto; }
+  </style>
+  <script type="module">
+    import '/packages/components/src/invoice/snice-invoice.ts';
+
+    const from = { name: 'Acme Corp', address: '123 Business Ave, Suite 100, New York, NY 10001', email: 'billing@acme.com', phone: '(555) 123-4567' };
+    const to = { name: 'Client Industries', address: '456 Oak Street, Chicago, IL 60601', email: 'ap@client.com', phone: '(555) 987-6543' };
+    const items = [
+      { description: 'Web Development', quantity: 40, unitPrice: 150 },
+      { description: 'UI/UX Design', quantity: 20, unitPrice: 120 },
+      { description: 'Hosting (annual)', quantity: 1, unitPrice: 500 },
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('[data-inv]').forEach(el => {
+        el.from = from; el.to = to; el.items = items;
+      });
+      document.querySelectorAll('[data-qr]').forEach(el => {
+        el.from = from; el.to = to; el.items = items;
+      });
+
+      // Tax + discount
+      document.getElementById('inv-tax').from = from;
+      document.getElementById('inv-tax').to = to;
+      document.getElementById('inv-tax').items = items;
+
+      // Notes
+      document.getElementById('inv-notes').from = from;
+      document.getElementById('inv-notes').to = to;
+      document.getElementById('inv-notes').items = items;
+
+      // No parties
+      document.getElementById('inv-noparty').items = items;
+
+      // Empty
+      document.getElementById('inv-empty').from = from;
+      document.getElementById('inv-empty').to = to;
+
+      // Currency
+      document.getElementById('inv-gbp').from = from;
+      document.getElementById('inv-gbp').to = to;
+      document.getElementById('inv-gbp').items = items;
+    });
+  </script>
+</head>
+<body>
+
+<!-- Status variants -->
+
+
+<h2>Slots: title, status, before-items, notes</h2>
+<snice-invoice data-inv invoice-number="INV-070" date="2026-07-24" status="sent" tax-rate="8.6">
+  <span slot="title">Tax Invoice</span>
+  <span slot="status" style="display:inline-flex;align-items:center;gap:0.35rem">⚡ Rush</span>
+  <div slot="before-items" style="font-size:0.8rem;padding:0.5rem 0.75rem;border:1px dashed var(--snice-color-border);border-radius:6px;margin-bottom:0.75rem">Purchase order <strong>PO-4477</strong> attached — net 15 terms apply.</div>
+  <div slot="notes" style="font-size:0.8rem;color:var(--snice-color-text-tertiary);margin-top:0.75rem">Wire details sent separately. Reference the invoice number.</div>
+</snice-invoice>
+
+<h2>Template gallery - click any sheet to zoom</h2>
+<div class="tpl-gallery">
+  <button class="tpl-card" data-variant="standard" aria-label="Zoom standard template">
+    <div class="tpl-card__stage"><snice-invoice data-tpl variant="standard" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6" show-qr qr-position="footer" qr-data="https://pay.example.com/INV-1907"></snice-invoice></div>
+    <span class="tpl-card__name">standard</span>
+  </button>
+  <button class="tpl-card" data-variant="modern" aria-label="Zoom modern template">
+    <div class="tpl-card__stage"><snice-invoice data-tpl variant="modern" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6" show-qr qr-position="footer" qr-data="https://pay.example.com/INV-1907"></snice-invoice></div>
+    <span class="tpl-card__name">modern</span>
+  </button>
+  <button class="tpl-card" data-variant="classic" aria-label="Zoom classic template">
+    <div class="tpl-card__stage"><snice-invoice data-tpl variant="classic" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6" show-qr qr-position="footer" qr-data="https://pay.example.com/INV-1907"></snice-invoice></div>
+    <span class="tpl-card__name">classic</span>
+  </button>
+  <button class="tpl-card" data-variant="minimal" aria-label="Zoom minimal template">
+    <div class="tpl-card__stage"><snice-invoice data-tpl variant="minimal" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6" show-qr qr-position="footer" qr-data="https://pay.example.com/INV-1907"></snice-invoice></div>
+    <span class="tpl-card__name">minimal</span>
+  </button>
+  <button class="tpl-card" data-variant="detailed" aria-label="Zoom detailed template">
+    <div class="tpl-card__stage"><snice-invoice data-tpl variant="detailed" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6" show-qr qr-position="footer" qr-data="https://pay.example.com/INV-1907"></snice-invoice></div>
+    <span class="tpl-card__name">detailed</span>
+  </button>
+  <button class="tpl-card" data-variant="paper" aria-label="Zoom paper template">
+    <div class="tpl-card__stage"><snice-invoice data-tpl variant="paper" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6" show-qr qr-position="footer" qr-data="https://pay.example.com/INV-1907"></snice-invoice></div>
+    <span class="tpl-card__name">paper</span>
+  </button>
+</div>
+<snice-modal id="tpl-modal" size="large" no-footer label="Template preview">
+  <div id="tpl-modal-body"></div>
+</snice-modal>
+
+<h2>Status: draft</h2>
+<snice-invoice data-inv invoice-number="INV-001" date="2026-03-01" status="draft"></snice-invoice>
+
+<h2>Status: sent</h2>
+<snice-invoice data-inv invoice-number="INV-002" date="2026-03-01" due-date="2026-04-01" status="sent"></snice-invoice>
+
+<h2>Status: paid</h2>
+<snice-invoice data-inv invoice-number="INV-003" date="2026-02-01" status="paid"></snice-invoice>
+
+<h2>Status: overdue</h2>
+<snice-invoice data-inv invoice-number="INV-004" date="2026-01-01" due-date="2026-02-01" status="overdue"></snice-invoice>
+
+<h2>Status: cancelled</h2>
+<snice-invoice data-inv invoice-number="INV-005" date="2026-01-15" status="cancelled"></snice-invoice>
+
+<!-- Variant: standard (default) -->
+<h2>Variant: standard (default)</h2>
+<snice-invoice data-inv invoice-number="INV-010" date="2026-03-06" variant="standard"></snice-invoice>
+
+<!-- Variant: modern -->
+<h2>Variant: modern</h2>
+<snice-invoice data-inv invoice-number="INV-011" date="2026-03-06" variant="modern"></snice-invoice>
+
+<!-- Variant: classic -->
+<h2>Variant: classic</h2>
+<snice-invoice data-inv invoice-number="INV-012" date="2026-03-06" variant="classic"></snice-invoice>
+
+<!-- Variant: minimal -->
+<h2>Variant: minimal</h2>
+<snice-invoice data-inv invoice-number="INV-013" date="2026-03-06" variant="minimal"></snice-invoice>
+
+<!-- Variant: detailed -->
+<h2>Variant: detailed</h2>
+<snice-invoice data-inv invoice-number="INV-014" date="2026-03-06" variant="detailed"></snice-invoice>
+
+<!-- Tax + Discount -->
+<h2>Tax Rate (8%) + Discount (10%)</h2>
+<snice-invoice id="inv-tax" invoice-number="INV-020" date="2026-03-06" tax-rate="8" discount="10"></snice-invoice>
+
+<!-- Notes -->
+<h2>Notes</h2>
+<snice-invoice id="inv-notes" invoice-number="INV-021" date="2026-03-06" notes="Payment is due within 30 days. Late payments incur a 1.5% monthly fee."></snice-invoice>
+
+<!-- QR positions -->
+<h2>QR Position: top-right</h2>
+<snice-invoice data-qr invoice-number="INV-030" date="2026-03-06" show-qr qr-position="top-right">
+  <div slot="qr" style="width:80px;height:80px;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:0.7rem;border-radius:4px;">QR</div>
+</snice-invoice>
+
+<h2>QR Position: bottom-right</h2>
+<snice-invoice data-qr invoice-number="INV-031" date="2026-03-06" show-qr qr-position="bottom-right">
+  <div slot="qr" style="width:80px;height:80px;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:0.7rem;border-radius:4px;">QR</div>
+</snice-invoice>
+
+<h2>QR Position: bottom-left</h2>
+<snice-invoice data-qr invoice-number="INV-032" date="2026-03-06" show-qr qr-position="bottom-left">
+  <div slot="qr" style="width:80px;height:80px;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:0.7rem;border-radius:4px;">QR</div>
+</snice-invoice>
+
+<h2>QR Position: footer</h2>
+<snice-invoice data-qr invoice-number="INV-033" date="2026-03-06" show-qr qr-position="footer">
+  <div slot="qr" style="width:80px;height:80px;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:0.7rem;border-radius:4px;">QR</div>
+</snice-invoice>
+
+<!-- Currency -->
+<h2>Currency: GBP</h2>
+<snice-invoice id="inv-gbp" invoice-number="INV-040" date="2026-03-06" currency="GBP"></snice-invoice>
+
+<!-- Due date -->
+<h2>Due Date</h2>
+<snice-invoice data-inv invoice-number="INV-050" date="2026-03-01" due-date="2026-04-15" status="sent"></snice-invoice>
+
+<h2>Paper (textural)</h2>
+<snice-invoice data-inv variant="paper" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid"></snice-invoice>
+
+<!-- Footer slot -->
+<h2>Slot: Default (footer content)</h2>
+<snice-invoice data-inv invoice-number="INV-060" date="2026-03-06">
+  <div style="text-align: center; font-size: 0.75rem; color: var(--snice-color-text-tertiary); padding: 1rem 0;">
+    Thank you for your business! Contact billing@acme.com for questions.
+  </div>
+</snice-invoice>
+
+<!-- Edge: no parties -->
+<h2>Edge: No Parties</h2>
+<snice-invoice id="inv-noparty" invoice-number="INV-070" date="2026-03-06"></snice-invoice>
+
+<!-- Edge: no items -->
+<h2>Edge: No Items</h2>
+<snice-invoice id="inv-empty" invoice-number="INV-071" date="2026-03-06"></snice-invoice>
+
+<script type="module">
+  import '/packages/components/src/modal/snice-modal.ts';
+
+  const tplFrom = { name: 'Acme Corp', address: '123 Business Ave, Suite 100, New York, NY 10001', email: 'billing@acme.com', phone: '(555) 123-4567' };
+  const tplTo = { name: 'Client Industries', address: '456 Oak Street, Chicago, IL 60601', email: 'ap@client.com', phone: '(555) 987-6543' };
+  const tplItems = [
+    { description: 'Web Development', quantity: 40, unitPrice: 150 },
+    { description: 'UI/UX Design', quantity: 20, unitPrice: 120 },
+    { description: 'Hosting (annual)', quantity: 1, unitPrice: 500 },
+  ];
+
+  const feed = el => { el.from = tplFrom; el.to = tplTo; el.items = JSON.parse(JSON.stringify(tplItems)); };
+  document.querySelectorAll('[data-tpl]').forEach(feed);
+
+  const modal = document.getElementById('tpl-modal');
+  const body = document.getElementById('tpl-modal-body');
+  document.querySelectorAll('.tpl-card').forEach(card => {
+    card.addEventListener('click', () => {
+      body.innerHTML = '';
+      const clone = card.querySelector('[data-tpl]').cloneNode(false);
+      clone.removeAttribute('data-tpl');
+      feed(clone);
+      body.appendChild(clone);
+      modal.show();
+    });
+  });
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

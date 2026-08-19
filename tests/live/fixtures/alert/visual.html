@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alert</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .matrix {
+      display: grid;
+      grid-template-columns: auto repeat(4, 1fr);
+      gap: 0.75rem;
+      align-items: start;
+    }
+    .matrix-label {
+      font-size: 0.7rem;
+      color: var(--snice-color-text-secondary, #aaa);
+      text-align: right;
+      padding-right: 0.5rem;
+      padding-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <section>
+    <h2>All variants</h2>
+    <div class="stack">
+      <snice-alert variant="info">Info alert with default icon.</snice-alert>
+      <snice-alert variant="success">Success alert with default icon.</snice-alert>
+      <snice-alert variant="warning">Warning alert with default icon.</snice-alert>
+      <snice-alert variant="error">Error alert with default icon.</snice-alert>
+    </div>
+  </section>
+
+  <section>
+    <h2>Accent appearance (neutral background, colored left bar)</h2>
+    <div class="stack">
+      <snice-alert appearance="accent" variant="info" title="Heads up">Accent info alert.</snice-alert>
+      <snice-alert appearance="accent" variant="success" title="Deployed">Accent success alert.</snice-alert>
+      <snice-alert appearance="accent" variant="warning" title="Disk space low">Accent warning alert.</snice-alert>
+      <snice-alert appearance="accent" variant="error" title="Build failed">Accent error alert.</snice-alert>
+    </div>
+  </section>
+
+  <section>
+    <h2>Auto-dismiss with duration (hover to pause)</h2>
+    <div class="stack">
+      <button id="spawn-timed-alert" style="align-self:flex-start">Show a 5s alert</button>
+      <div id="timed-alert-slot"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>All sizes</h2>
+    <div class="stack">
+      <snice-alert variant="info" size="small">Small alert.</snice-alert>
+      <snice-alert variant="info" size="medium">Medium alert (default).</snice-alert>
+      <snice-alert variant="info" size="large">Large alert.</snice-alert>
+    </div>
+  </section>
+
+  <section>
+    <h2>Variant x Size matrix</h2>
+    <div class="matrix">
+      <div class="matrix-label">small</div>
+      <snice-alert variant="info" size="small">Info</snice-alert>
+      <snice-alert variant="success" size="small">Success</snice-alert>
+      <snice-alert variant="warning" size="small">Warning</snice-alert>
+      <snice-alert variant="error" size="small">Error</snice-alert>
+
+      <div class="matrix-label">medium</div>
+      <snice-alert variant="info" size="medium">Info</snice-alert>
+      <snice-alert variant="success" size="medium">Success</snice-alert>
+      <snice-alert variant="warning" size="medium">Warning</snice-alert>
+      <snice-alert variant="error" size="medium">Error</snice-alert>
+
+      <div class="matrix-label">large</div>
+      <snice-alert variant="info" size="large">Info</snice-alert>
+      <snice-alert variant="success" size="large">Success</snice-alert>
+      <snice-alert variant="warning" size="large">Warning</snice-alert>
+      <snice-alert variant="error" size="large">Error</snice-alert>
+    </div>
+  </section>
+
+  <section>
+    <h2>With title</h2>
+    <div class="stack">
+      <snice-alert variant="info" title="Information">This is an informational message with a title.</snice-alert>
+      <snice-alert variant="success" title="Success">Operation completed successfully.</snice-alert>
+      <snice-alert variant="warning" title="Warning">Please review before proceeding.</snice-alert>
+      <snice-alert variant="error" title="Error">Something went wrong.</snice-alert>
+    </div>
+  </section>
+
+  <section>
+    <h2>Dismissible</h2>
+    <div class="stack">
+      <snice-alert variant="info" dismissible>Dismissible info alert. Click the X to dismiss.</snice-alert>
+      <snice-alert variant="success" dismissible title="Dismissible">Dismissible with title.</snice-alert>
+      <snice-alert variant="warning" dismissible>Dismissible warning.</snice-alert>
+      <snice-alert variant="error" dismissible>Dismissible error.</snice-alert>
+    </div>
+  </section>
+
+  <section>
+    <h2>Custom icon (emoji)</h2>
+    <div class="stack">
+      <snice-alert variant="info" icon="light-bulb">Custom lightbulb icon.</snice-alert>
+      <snice-alert variant="success" icon="sparkles">Custom party icon.</snice-alert>
+      <snice-alert variant="warning" icon="fire">Custom fire icon.</snice-alert>
+      <snice-alert variant="error" icon="bell-alert">Custom siren icon.</snice-alert>
+    </div>
+  </section>
+
+  <section>
+    <h2>Custom icon (Material Symbols via slot)</h2>
+    <div class="stack">
+      <snice-alert variant="info">
+        <span class="material-symbols-outlined" slot="icon">info</span>
+        Material Symbols icon via slot.
+      </snice-alert>
+      <snice-alert variant="success">
+        <span class="material-symbols-outlined" slot="icon">check_circle</span>
+        Material Symbols check_circle via slot.
+      </snice-alert>
+    </div>
+  </section>
+
+  <section>
+    <h2>Icon suppressed (icon="none")</h2>
+    <div class="stack">
+      <snice-alert variant="info" icon="none">Info alert with no icon.</snice-alert>
+      <snice-alert variant="error" icon="none">Error alert with no icon.</snice-alert>
+    </div>
+  </section>
+
+  <section>
+    <h2>Edge case: no content (empty body)</h2>
+    <snice-alert variant="info" title="Title Only"></snice-alert>
+  </section>
+
+  <section>
+    <h2>Edge case: very long text</h2>
+    <snice-alert variant="warning" title="Long Content Alert" dismissible>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </snice-alert>
+  </section>
+
+  <section>
+    <h2>Edge case: single character</h2>
+    <snice-alert variant="error">!</snice-alert>
+  </section>
+
+  <section>
+    <h2>All combinations: variant x dismissible</h2>
+    <div class="stack">
+      <snice-alert variant="info">Non-dismissible info</snice-alert>
+      <snice-alert variant="info" dismissible>Dismissible info</snice-alert>
+      <snice-alert variant="success">Non-dismissible success</snice-alert>
+      <snice-alert variant="success" dismissible>Dismissible success</snice-alert>
+      <snice-alert variant="warning">Non-dismissible warning</snice-alert>
+      <snice-alert variant="warning" dismissible>Dismissible warning</snice-alert>
+      <snice-alert variant="error">Non-dismissible error</snice-alert>
+      <snice-alert variant="error" dismissible>Dismissible error</snice-alert>
+    </div>
+  </section>
+
+  <script type="module">
+    import '/packages/components/src/alert/snice-alert.ts';
+
+    document.getElementById('spawn-timed-alert').addEventListener('click', () => {
+      const slot = document.getElementById('timed-alert-slot');
+      slot.innerHTML = '';
+      const el = document.createElement('snice-alert');
+      el.setAttribute('variant', 'success');
+      el.setAttribute('duration', '5000');
+      el.setAttribute('dismissible', '');
+      el.setAttribute('title', 'Saved');
+      el.textContent = 'This alert dismisses itself in 5 seconds — hover it to pause the countdown.';
+      slot.appendChild(el);
+    });
+  </script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

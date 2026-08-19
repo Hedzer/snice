@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    snice-recipe { display: block; max-width: 700px; }
+  </style>
+</head>
+<body>
+
+<h2>Variant: full (default)</h2>
+<section><snice-recipe id="r-full" variant="full"></snice-recipe></section>
+
+<h2>Variant: card</h2>
+<section><snice-recipe id="r-card" variant="card"></snice-recipe></section>
+
+<h2>Difficulty: easy</h2>
+<section><snice-recipe id="r-easy"></snice-recipe></section>
+
+<h2>Difficulty: medium</h2>
+<section><snice-recipe id="r-medium"></snice-recipe></section>
+
+<h2>Difficulty: hard</h2>
+<section><snice-recipe id="r-hard"></snice-recipe></section>
+
+<h2>With hero image</h2>
+<section><snice-recipe id="r-image"></snice-recipe></section>
+
+<h2>Without image</h2>
+<section><snice-recipe id="r-no-image"></snice-recipe></section>
+
+<h2>With nutrition facts</h2>
+<section><snice-recipe id="r-nutrition"></snice-recipe></section>
+
+<h2>With tags + cuisine</h2>
+<section><snice-recipe id="r-tags"></snice-recipe></section>
+
+<h2>Grouped ingredients</h2>
+<section><snice-recipe id="r-groups"></snice-recipe></section>
+
+<h2>Steps with timers</h2>
+<section><snice-recipe id="r-timers"></snice-recipe></section>
+
+<h2>Steps with tips</h2>
+<section><snice-recipe id="r-tips"></snice-recipe></section>
+
+<h2>Minimal (title + ingredients only)</h2>
+<section><snice-recipe id="r-minimal"></snice-recipe></section>
+
+<h2>With author</h2>
+<section><snice-recipe id="r-author"></snice-recipe></section>
+
+<h2>Many servings (12)</h2>
+<section><snice-recipe id="r-servings"></snice-recipe></section>
+
+<h2>Long prep/cook times</h2>
+<section><snice-recipe id="r-long-time"></snice-recipe></section>
+
+<script type="module">
+  import '/packages/components/src/recipe/snice-recipe.ts';
+
+  const baseIngredients = [
+    { name: 'Spaghetti', amount: 400, unit: 'g' },
+    { name: 'Pancetta', amount: 200, unit: 'g' },
+    { name: 'Eggs', amount: 4, unit: '' },
+    { name: 'Parmesan', amount: 100, unit: 'g' },
+    { name: 'Black pepper', amount: 2, unit: 'tsp' }
+  ];
+
+  const baseSteps = [
+    { text: 'Bring a large pot of salted water to a boil. Cook spaghetti according to package directions.', time: 10 },
+    { text: 'While pasta cooks, cut pancetta into small cubes and fry in a large skillet over medium heat until crispy.' },
+    { text: 'In a bowl, whisk together eggs and grated Parmesan cheese.' },
+    { text: 'Drain pasta, reserving 1 cup of pasta water. Immediately toss hot pasta with pancetta.' },
+    { text: 'Remove from heat and pour egg mixture over pasta, tossing quickly. Add pasta water as needed.' }
+  ];
+
+  function setup(id, overrides = {}) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.title = overrides.title || 'Pasta Carbonara';
+    el.prepTime = overrides.prepTime !== undefined ? overrides.prepTime : 10;
+    el.cookTime = overrides.cookTime !== undefined ? overrides.cookTime : 20;
+    el.servings = overrides.servings || 4;
+    el.difficulty = overrides.difficulty || 'medium';
+    el.ingredients = overrides.ingredients || baseIngredients;
+    el.steps = overrides.steps || baseSteps;
+    if (overrides.image) el.image = overrides.image;
+    if (overrides.author) el.author = overrides.author;
+    if (overrides.cuisine) el.cuisine = overrides.cuisine;
+    if (overrides.variant) el.variant = overrides.variant;
+    if (overrides.tags) el.tags = overrides.tags;
+    if (overrides.nutrition) el.nutrition = overrides.nutrition;
+    if (overrides.description) el.description = overrides.description;
+  }
+
+  setup('r-full', { description: 'A classic Roman pasta dish with a creamy egg and cheese sauce.' });
+  setup('r-card', { variant: 'card', image: 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22700%22%20height%3D%22400%22%3E%3Crect%20width%3D%22700%22%20height%3D%22400%22%20fill%3D%22%23db2777%22%2F%3E%3Ccircle%20cx%3D%22350%22%20cy%3D%22200%22%20r%3D%22133%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E', description: 'Rich and creamy Italian classic.' });
+
+  setup('r-easy', { difficulty: 'easy', title: 'Simple Toast' });
+  setup('r-medium', { difficulty: 'medium' });
+  setup('r-hard', { difficulty: 'hard', title: 'Beef Wellington', prepTime: 45, cookTime: 90 });
+
+  setup('r-image', { image: 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22700%22%20height%3D%22400%22%3E%3Crect%20width%3D%22700%22%20height%3D%22400%22%20fill%3D%22%237c3aed%22%2F%3E%3Ccircle%20cx%3D%22350%22%20cy%3D%22200%22%20r%3D%22133%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E' });
+  setup('r-no-image');
+
+  setup('r-nutrition', { nutrition: { calories: 650, protein: 28, carbs: 72, fat: 24, fiber: 3, sodium: 890 } });
+
+  setup('r-tags', { cuisine: 'Italian', tags: ['Pasta', 'Quick', 'Comfort Food', 'Dinner'] });
+
+  setup('r-groups', {
+    ingredients: [
+      { name: 'Spaghetti', amount: 400, unit: 'g', group: 'Pasta' },
+      { name: 'Salt', amount: 1, unit: 'tbsp', group: 'Pasta' },
+      { name: 'Eggs', amount: 4, unit: '', group: 'Sauce' },
+      { name: 'Parmesan', amount: 100, unit: 'g', group: 'Sauce' },
+      { name: 'Pancetta', amount: 200, unit: 'g', group: 'Toppings' },
+      { name: 'Black pepper', amount: 2, unit: 'tsp', group: 'Toppings' }
+    ]
+  });
+
+  setup('r-timers', {
+    steps: [
+      { text: 'Boil water and cook pasta.', time: 10 },
+      { text: 'Fry pancetta until crispy.', time: 8 },
+      { text: 'Mix eggs and cheese.' },
+      { text: 'Combine everything off heat.' },
+      { text: 'Let rest before serving.', time: 2 }
+    ]
+  });
+
+  setup('r-tips', {
+    steps: [
+      { text: 'Boil pasta in salted water.', tip: 'Use 1 tablespoon of salt per liter of water for best flavor.' },
+      { text: 'Fry pancetta until crispy.', tip: 'Use medium-low heat to render the fat slowly for maximum crispness.' },
+      { text: 'Mix eggs and Parmesan.', tip: 'Room temperature eggs emulsify better and reduce the risk of scrambling.' },
+      { text: 'Toss everything together off heat.' }
+    ]
+  });
+
+  setup('r-minimal', {
+    title: 'Quick Guacamole',
+    prepTime: 5, cookTime: 0,
+    difficulty: 'easy',
+    ingredients: [
+      { name: 'Avocado', amount: 2, unit: '' },
+      { name: 'Lime juice', amount: 1, unit: 'tbsp' },
+      { name: 'Salt', amount: 0.5, unit: 'tsp' }
+    ],
+    steps: []
+  });
+
+  setup('r-author', { author: 'Chef Mario Rossi' });
+  setup('r-servings', { servings: 12 });
+  setup('r-long-time', { prepTime: 120, cookTime: 480, title: 'Slow-Cooked Brisket', difficulty: 'hard' });
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

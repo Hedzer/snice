@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>Kanban</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    snice-kanban { display: block; min-height: 300px; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; margin-bottom: 1.5rem; }
+  </style>
+  <script type="module">
+    import '/packages/components/src/kanban/snice-kanban.ts';
+
+    const basicColumns = [
+      { id: 'todo', title: 'To Do', cards: [
+        { id: 'c1', title: 'Research competitors', description: 'Analyze top 5 competitors.' },
+        { id: 'c2', title: 'Write user stories', description: 'Document requirements.' },
+      ]},
+      { id: 'progress', title: 'In Progress', cards: [
+        { id: 'c3', title: 'Design mockups', description: 'Create Figma prototypes.', assignee: 'Alice' },
+      ]},
+      { id: 'done', title: 'Done', cards: [
+        { id: 'c4', title: 'Set up repository', description: 'Initialize Git repo and CI.' },
+      ]},
+    ];
+
+    const labelColumns = [
+      { id: 'backlog', title: 'Backlog', color: '#6b7280', cards: [
+        { id: 'l1', title: 'Implement auth', labels: ['Backend', 'Security'], assignee: 'Bob' },
+        { id: 'l2', title: 'Add dark mode', labels: ['Frontend', 'UI'] },
+      ]},
+      { id: 'active', title: 'Active', color: '#2563eb', cards: [
+        { id: 'l3', title: 'API endpoints', labels: [
+          { text: 'Backend', color: '#fff', background: '#2563eb' },
+          { text: 'Priority', color: '#fff', background: '#dc2626', icon: '!', iconPosition: 'left' },
+        ], assignee: 'Carol' },
+      ]},
+      { id: 'review', title: 'Review', color: '#f59e0b', cards: [
+        { id: 'l4', title: 'Code review PR #42', labels: [
+          { text: 'Review', color: '#92400e', background: '#fef3c7' },
+        ]},
+      ]},
+      { id: 'complete', title: 'Complete', color: '#16a34a', cards: [
+        { id: 'l5', title: 'Database schema', labels: ['Backend'], assignee: 'Dave' },
+      ]},
+    ];
+
+    const colorCards = [
+      { id: 'col1', title: 'Sprint', cards: [
+        { id: 'cc1', title: 'Bug fix #123', color: '#dc2626' },
+        { id: 'cc2', title: 'Feature request', color: '#2563eb' },
+        { id: 'cc3', title: 'Refactor', color: '#16a34a' },
+        { id: 'cc4', title: 'Documentation', color: '#9333ea' },
+      ]},
+      { id: 'col2', title: 'Next', cards: [] },
+    ];
+
+    const emptyColumns = [
+      { id: 'e1', title: 'Open', cards: [] },
+      { id: 'e2', title: 'In Progress', cards: [] },
+      { id: 'e3', title: 'Done', cards: [] },
+    ];
+
+    const manyCards = [
+      { id: 'mc1', title: 'Backlog', cards: Array.from({ length: 8 }, (_, i) => ({
+        id: `m${i}`, title: `Task ${i + 1}`, description: `Description for task ${i + 1}.`,
+        assignee: ['Alice', 'Bob', 'Carol', 'Dave'][i % 4],
+        labels: i % 2 === 0 ? ['Important'] : [],
+      }))},
+      { id: 'mc2', title: 'Active', cards: [
+        { id: 'm10', title: 'Current task', assignee: 'Eve' },
+      ]},
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('k-basic').columns = basicColumns;
+      document.getElementById('k-labels').columns = labelColumns;
+      document.getElementById('k-colors').columns = colorCards;
+      document.getElementById('k-empty').columns = emptyColumns;
+      document.getElementById('k-many').columns = manyCards;
+      document.getElementById('k-nodrag').columns = basicColumns;
+      document.getElementById('k-nocount').columns = basicColumns;
+      document.getElementById('k-nodragcount').columns = basicColumns;
+    });
+  </script>
+</head>
+<body>
+
+<h2>Basic Kanban (allow-drag-drop, show-card-count)</h2>
+<snice-kanban id="k-basic"></snice-kanban>
+
+<h2>Cards with Labels (string + object labels with colors/icons)</h2>
+<snice-kanban id="k-labels"></snice-kanban>
+
+<h2>Card Colors (border-left accent)</h2>
+<snice-kanban id="k-colors"></snice-kanban>
+
+<h2>allow-drag-drop: false</h2>
+<snice-kanban id="k-nodrag" allow-drag-drop="false"></snice-kanban>
+
+<h2>show-card-count: false</h2>
+<snice-kanban id="k-nocount" show-card-count="false"></snice-kanban>
+
+<h2>allow-drag-drop: false + show-card-count: false</h2>
+<snice-kanban id="k-nodragcount" allow-drag-drop="false" show-card-count="false"></snice-kanban>
+
+<h2>Empty Columns</h2>
+<snice-kanban id="k-empty"></snice-kanban>
+
+<h2>Many Cards (overflow)</h2>
+<snice-kanban id="k-many"></snice-kanban>
+
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/popover/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/popover/visual.html';
 
 /** Opens exactly one popover by index and waits for its panel to be laid out. */
 async function openOnly(page: import('@playwright/test').Page, index: number) {

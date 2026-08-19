@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/qr-reader/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/qr-reader/visual.html';
 
 test.describe('snice-qr-reader', () => {
   test.beforeEach(async ({ page }) => {

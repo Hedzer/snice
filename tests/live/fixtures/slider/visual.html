@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slider</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    snice-slider { width: min(100%, 280px); }
+    .variant-size-matrix { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 0.75rem; }
+    .contract-form { box-sizing: border-box; display: grid; gap: var(--snice-spacing-sm, 0.75rem); max-width: 32rem; padding: var(--snice-spacing-md, 1rem); border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: var(--snice-border-radius-lg, 0.5rem); }
+    .contract-actions { display: flex; gap: var(--snice-spacing-xs, 0.5rem); flex-wrap: wrap; }
+    .contract-actions button { padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); }
+    .contract-form output { color: var(--snice-color-text-secondary, rgb(82 82 82)); }
+  </style>
+</head>
+<body>
+
+<h2>Variants</h2>
+<div class="row">
+  <snice-slider variant="default" value="40" label="Default"></snice-slider>
+  <snice-slider variant="primary" value="40" label="Primary"></snice-slider>
+  <snice-slider variant="success" value="40" label="Success"></snice-slider>
+  <snice-slider variant="warning" value="40" label="Warning"></snice-slider>
+  <snice-slider variant="danger" value="40" label="Danger"></snice-slider>
+</div>
+
+<h2>Sizes</h2>
+<div class="row">
+  <snice-slider size="small" value="50" label="Small"></snice-slider>
+  <snice-slider size="medium" value="50" label="Medium"></snice-slider>
+  <snice-slider size="large" value="50" label="Large"></snice-slider>
+</div>
+
+<h2>Variant x Size Matrix</h2>
+<div class="variant-size-matrix">
+  <snice-slider variant="default" size="small" value="30" label="default + small"></snice-slider>
+  <snice-slider variant="default" size="medium" value="30" label="default + medium"></snice-slider>
+  <snice-slider variant="default" size="large" value="30" label="default + large"></snice-slider>
+  <snice-slider variant="primary" size="small" value="50" label="primary + small"></snice-slider>
+  <snice-slider variant="primary" size="medium" value="50" label="primary + medium"></snice-slider>
+  <snice-slider variant="primary" size="large" value="50" label="primary + large"></snice-slider>
+  <snice-slider variant="success" size="small" value="70" label="success + small"></snice-slider>
+  <snice-slider variant="success" size="medium" value="70" label="success + medium"></snice-slider>
+  <snice-slider variant="success" size="large" value="70" label="success + large"></snice-slider>
+  <snice-slider variant="warning" size="small" value="60" label="warning + small"></snice-slider>
+  <snice-slider variant="warning" size="medium" value="60" label="warning + medium"></snice-slider>
+  <snice-slider variant="warning" size="large" value="60" label="warning + large"></snice-slider>
+  <snice-slider variant="danger" size="small" value="80" label="danger + small"></snice-slider>
+  <snice-slider variant="danger" size="medium" value="80" label="danger + medium"></snice-slider>
+  <snice-slider variant="danger" size="large" value="80" label="danger + large"></snice-slider>
+</div>
+
+<h2>Boolean States</h2>
+<div class="row">
+  <snice-slider disabled value="40" label="Disabled"></snice-slider>
+  <snice-slider readonly value="60" label="Readonly"></snice-slider>
+  <snice-slider loading value="50" label="Loading"></snice-slider>
+  <snice-slider required label="Required"></snice-slider>
+  <snice-slider invalid value="30" label="Invalid"></snice-slider>
+</div>
+
+<h2>Show Value</h2>
+<div class="row">
+  <snice-slider show-value value="42" label="With value display"></snice-slider>
+  <snice-slider show-value value="0" label="Value at 0"></snice-slider>
+  <snice-slider show-value value="100" label="Value at 100"></snice-slider>
+</div>
+
+<h2>Show Ticks</h2>
+<div class="row">
+  <snice-slider show-ticks step="10" value="50" label="Ticks (step=10)"></snice-slider>
+  <snice-slider show-ticks step="20" value="60" label="Ticks (step=20)"></snice-slider>
+  <snice-slider show-ticks step="25" value="75" label="Ticks (step=25)"></snice-slider>
+</div>
+
+<h2>Show Ticks + Show Value</h2>
+<div class="row">
+  <snice-slider show-ticks show-value step="10" value="40" label="Ticks + Value"></snice-slider>
+</div>
+
+<h2>Custom Min / Max / Step</h2>
+<div class="row">
+  <snice-slider min="0" max="10" step="1" value="5" show-value label="0-10, step 1"></snice-slider>
+  <snice-slider min="-50" max="50" step="5" value="0" show-value label="-50 to 50, step 5"></snice-slider>
+  <snice-slider min="0" max="1" step="0.1" value="0.5" show-value label="0-1, step 0.1"></snice-slider>
+</div>
+
+<h2>Helper Text and Error Text</h2>
+<div class="row">
+  <snice-slider value="60" label="Volume" helper-text="Adjust the playback volume"></snice-slider>
+  <snice-slider value="30" label="Brightness" error-text="Value too low for outdoor use" invalid></snice-slider>
+</div>
+
+<h2>Vertical Orientation</h2>
+<div class="row" style="height: 200px; align-items: flex-end;">
+  <snice-slider vertical value="40" label="Vertical" style="height: 180px; width: auto;"></snice-slider>
+  <snice-slider vertical variant="primary" value="60" show-value style="height: 180px; width: auto;"></snice-slider>
+  <snice-slider vertical variant="success" value="80" show-ticks step="20" style="height: 180px; width: auto;"></snice-slider>
+  <snice-slider vertical variant="danger" value="20" disabled style="height: 180px; width: auto;"></snice-slider>
+</div>
+
+<h2>Vertical Sizes</h2>
+<div class="row" style="height: 200px; align-items: flex-end;">
+  <snice-slider vertical size="small" value="50" style="height: 180px; width: auto;"></snice-slider>
+  <snice-slider vertical size="medium" value="50" style="height: 180px; width: auto;"></snice-slider>
+  <snice-slider vertical size="large" value="50" style="height: 180px; width: auto;"></snice-slider>
+</div>
+
+<h2>Edge Cases</h2>
+<div class="row">
+  <snice-slider value="0" show-value label="Min value (0)"></snice-slider>
+  <snice-slider value="100" show-value label="Max value (100)"></snice-slider>
+  <snice-slider min="0" max="0" value="0" show-value label="min=max=0"></snice-slider>
+  <snice-slider min="50" max="50" value="50" show-value label="min=max=50"></snice-slider>
+</div>
+
+<h2>No Label</h2>
+<div class="row">
+  <snice-slider value="50" variant="primary"></snice-slider>
+</div>
+
+<h2>Named (Form Integration)</h2>
+<div class="row">
+  <snice-slider name="volume" value="75" label="Volume (name=volume)" show-value></snice-slider>
+</div>
+
+<h2>Validated Form Contract</h2>
+<form id="slider-contract-form" class="contract-form">
+  <snice-slider
+    id="slider-contract-control"
+    name="rating"
+    label="Rating"
+    min="1"
+    max="9"
+    step="2"
+    value="2"
+    show-value
+    helper-text="Values snap to the min-based lattice: 1, 3, 5, 7, 9."
+    error-text="This rating is unavailable."
+    required
+  ></snice-slider>
+  <div class="contract-actions">
+    <button type="submit">Submit normalized value</button>
+    <button id="slider-contract-error" type="button">Set business-rule error</button>
+    <button type="reset">Reset</button>
+  </div>
+  <output id="slider-contract-output" aria-live="polite">Current normalized value: 3</output>
+</form>
+
+<script type="module">
+  import '/packages/components/src/slider/snice-slider.ts';
+
+  const form = document.getElementById('slider-contract-form');
+  const slider = document.getElementById('slider-contract-control');
+  const errorButton = document.getElementById('slider-contract-error');
+  const output = document.getElementById('slider-contract-output');
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    output.textContent = `Submitted rating=${new FormData(form).get('rating')}`;
+  });
+  form.addEventListener('reset', () => queueMicrotask(() => {
+    slider.setCustomValidity('');
+    errorButton.textContent = 'Set business-rule error';
+    output.textContent = `Reset rating=${slider.value}`;
+  }));
+  slider.addEventListener('invalid', () => {
+    output.textContent = slider.validationMessage;
+  });
+  errorButton.addEventListener('click', () => {
+    const clearing = !slider.validity.valid;
+    slider.setCustomValidity(clearing ? '' : 'This rating is unavailable.');
+    errorButton.textContent = clearing ? 'Set business-rule error' : 'Clear business-rule error';
+    output.textContent = clearing ? `Valid rating=${slider.value}` : slider.validationMessage;
+  });
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

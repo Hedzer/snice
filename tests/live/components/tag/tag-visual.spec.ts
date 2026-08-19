@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/tag/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/tag/visual.html';
 
 test.describe('Snice Tag visual integrity', () => {
   test.beforeEach(async ({ page }) => {

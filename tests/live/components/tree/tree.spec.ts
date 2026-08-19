@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Tree Component', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:5566/components/tree/demo.html');
+    await page.goto('http://localhost:5566/tests/live/fixtures/tree/visual.html');
     await page.waitForLoadState('networkidle');
   });
 
@@ -85,9 +85,6 @@ test.describe('Tree Component', () => {
       };
     });
     console.log('Tree item info:', JSON.stringify(treeItemInfo, null, 2));
-
-    // Take final screenshot
-    await page.screenshot({ path: '/tmp/tree-final.png', fullPage: true });
 
     // Check if label is visible in the tree item
     const labelInfo = await tree.evaluate((el) => {

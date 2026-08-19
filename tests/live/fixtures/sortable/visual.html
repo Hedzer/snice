@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sortable</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .item {
+      padding: 0.75rem 1rem;
+      background: var(--snice-color-surface-container-high, #fcfbf9);
+      border: 1px solid var(--snice-color-border, #e2e2e2);
+      border-radius: 6px;
+      cursor: grab;
+      user-select: none;
+    }
+    .item:active { cursor: grabbing; }
+    .h-item {
+      padding: 0.75rem 1.25rem;
+      background: var(--snice-color-surface-container-high, #fcfbf9);
+      border: 1px solid var(--snice-color-border, #e2e2e2);
+      border-radius: 6px;
+      cursor: grab;
+      user-select: none;
+    }
+    .handle {
+      cursor: grab;
+      display: inline-block;
+      margin-right: 0.5rem;
+      color: var(--snice-color-text-tertiary, #888);
+    }
+  </style>
+</head>
+<body>
+
+<h2>Direction: Vertical (default)</h2>
+<snice-sortable direction="vertical" style="max-width: 300px;">
+  <div class="item">Item 1</div>
+  <div class="item">Item 2</div>
+  <div class="item">Item 3</div>
+  <div class="item">Item 4</div>
+  <div class="item">Item 5</div>
+</snice-sortable>
+
+<h2>Direction: Horizontal</h2>
+<snice-sortable direction="horizontal" style="display: flex; gap: 0.5rem;">
+  <div class="h-item">Alpha</div>
+  <div class="h-item">Bravo</div>
+  <div class="h-item">Charlie</div>
+  <div class="h-item">Delta</div>
+  <div class="h-item">Echo</div>
+</snice-sortable>
+
+<h2>Disabled</h2>
+<snice-sortable direction="vertical" disabled style="max-width: 300px;">
+  <div class="item" style="opacity: 0.5; cursor: not-allowed;">Item 1 (disabled)</div>
+  <div class="item" style="opacity: 0.5; cursor: not-allowed;">Item 2 (disabled)</div>
+  <div class="item" style="opacity: 0.5; cursor: not-allowed;">Item 3 (disabled)</div>
+</snice-sortable>
+
+<h2>With Handle</h2>
+<snice-sortable direction="vertical" handle=".handle" style="max-width: 300px;">
+  <div class="item"><span class="handle">::</span> Drag by handle 1</div>
+  <div class="item"><span class="handle">::</span> Drag by handle 2</div>
+  <div class="item"><span class="handle">::</span> Drag by handle 3</div>
+  <div class="item"><span class="handle">::</span> Drag by handle 4</div>
+</snice-sortable>
+
+<h2>With Group</h2>
+<div class="row" style="align-items: flex-start;">
+  <div style="max-width: 250px;">
+    <div style="font-size: 0.8rem; color: var(--snice-color-text-secondary); margin-bottom: 0.25rem;">Group A</div>
+    <snice-sortable direction="vertical" group="shared">
+      <div class="item">Group A - Item 1</div>
+      <div class="item">Group A - Item 2</div>
+      <div class="item">Group A - Item 3</div>
+    </snice-sortable>
+  </div>
+  <div style="max-width: 250px;">
+    <div style="font-size: 0.8rem; color: var(--snice-color-text-secondary); margin-bottom: 0.25rem;">Group B</div>
+    <snice-sortable direction="vertical" group="shared">
+      <div class="item">Group B - Item 1</div>
+      <div class="item">Group B - Item 2</div>
+      <div class="item">Group B - Item 3</div>
+    </snice-sortable>
+  </div>
+</div>
+
+<h2>Many Items</h2>
+<snice-sortable direction="vertical" style="max-width: 300px;">
+  <div class="item">Item 1</div>
+  <div class="item">Item 2</div>
+  <div class="item">Item 3</div>
+  <div class="item">Item 4</div>
+  <div class="item">Item 5</div>
+  <div class="item">Item 6</div>
+  <div class="item">Item 7</div>
+  <div class="item">Item 8</div>
+  <div class="item">Item 9</div>
+  <div class="item">Item 10</div>
+</snice-sortable>
+
+<h2>Single Item</h2>
+<snice-sortable direction="vertical" style="max-width: 300px;">
+  <div class="item">Only one item</div>
+</snice-sortable>
+
+<script type="module">
+  import '/packages/components/src/sortable/snice-sortable.ts';
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

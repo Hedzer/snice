@@ -12,7 +12,7 @@ import { test, expect } from '@playwright/test';
 //  - a segment wide enough for both still shows the avatar, image and all;
 //  - tooltip text clears WCAG AA on its own surface, in both themes.
 
-const demoPath = '/components/calendar/demo.html';
+const demoPath = '/tests/live/fixtures/calendar/visual.html';
 
 /** Contrast helpers run in the page: relative luminance per WCAG 2.1. */
 const contrastProbe = `

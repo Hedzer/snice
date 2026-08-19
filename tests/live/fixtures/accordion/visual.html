@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accordion</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .side-by-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <section>
+    <h2>Variant: bordered (default)</h2>
+    <snice-accordion variant="bordered">
+      <snice-accordion-item item-id="b1" open>
+        <span slot="header">First Item (open)</span>
+        <p>Content of the first item, initially expanded.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="b2">
+        <span slot="header">Second Item</span>
+        <p>Content of the second item.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="b3">
+        <span slot="header">Third Item</span>
+        <p>Content of the third item.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Variant: elevated</h2>
+    <snice-accordion variant="elevated">
+      <snice-accordion-item item-id="e1" open>
+        <span slot="header">Elevated First</span>
+        <p>Elevated style content.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="e2">
+        <span slot="header">Elevated Second</span>
+        <p>Another elevated item.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Multiple mode (multiple items open simultaneously)</h2>
+    <snice-accordion multiple>
+      <snice-accordion-item item-id="m1" open>
+        <span slot="header">Item A (open)</span>
+        <p>Multiple items can be open at once.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="m2" open>
+        <span slot="header">Item B (open)</span>
+        <p>This is also open by default.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="m3">
+        <span slot="header">Item C</span>
+        <p>Click to expand.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Single mode (default, only one open at a time)</h2>
+    <snice-accordion>
+      <snice-accordion-item item-id="s1">
+        <span slot="header">Alpha</span>
+        <p>Opening another will close this.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="s2">
+        <span slot="header">Beta</span>
+        <p>Single expansion mode.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="s3">
+        <span slot="header">Gamma</span>
+        <p>Third option.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Disabled items</h2>
+    <snice-accordion>
+      <snice-accordion-item item-id="d1">
+        <span slot="header">Enabled Item</span>
+        <p>This item can be toggled.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="d2" disabled>
+        <span slot="header">Disabled Item</span>
+        <p>This content should not be reachable.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="d3">
+        <span slot="header">Another Enabled Item</span>
+        <p>This item can be toggled.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Variant x Multiple matrix</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>bordered + single</h2>
+        <snice-accordion variant="bordered">
+          <snice-accordion-item item-id="bs1" open>
+            <span slot="header">Open</span>
+            <p>Bordered single.</p>
+          </snice-accordion-item>
+          <snice-accordion-item item-id="bs2">
+            <span slot="header">Closed</span>
+            <p>Content.</p>
+          </snice-accordion-item>
+        </snice-accordion>
+      </div>
+      <div>
+        <h2>elevated + multiple</h2>
+        <snice-accordion variant="elevated" multiple>
+          <snice-accordion-item item-id="em1" open>
+            <span slot="header">Open A</span>
+            <p>Elevated multiple.</p>
+          </snice-accordion-item>
+          <snice-accordion-item item-id="em2" open>
+            <span slot="header">Open B</span>
+            <p>Both open.</p>
+          </snice-accordion-item>
+        </snice-accordion>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Edge case: single item</h2>
+    <snice-accordion>
+      <snice-accordion-item item-id="solo">
+        <span slot="header">Only Item</span>
+        <p>Accordion with a single item.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Edge case: very long header text</h2>
+    <snice-accordion>
+      <snice-accordion-item item-id="long1">
+        <span slot="header">This is an extremely long header text that should demonstrate how the accordion handles overflow when the header content is much longer than typical usage would require in a normal interface</span>
+        <p>Short content.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Edge case: rich content inside</h2>
+    <snice-accordion>
+      <snice-accordion-item item-id="rich1" open>
+        <span slot="header">Rich Content</span>
+        <p>Paragraph one.</p>
+        <p>Paragraph two with <strong>bold</strong> and <em>italic</em> text.</p>
+        <ul>
+          <li>List item one</li>
+          <li>List item two</li>
+          <li>List item three</li>
+        </ul>
+        <p>Final paragraph after a list.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Edge case: empty content</h2>
+    <snice-accordion>
+      <snice-accordion-item item-id="empty1">
+        <span slot="header">Empty Body</span>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>All items open with multiple</h2>
+    <snice-accordion multiple>
+      <snice-accordion-item item-id="ao1" open>
+        <span slot="header">All Open 1</span>
+        <p>First.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="ao2" open>
+        <span slot="header">All Open 2</span>
+        <p>Second.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="ao3" open>
+        <span slot="header">All Open 3</span>
+        <p>Third.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <section>
+    <h2>Mixed: disabled + open + normal</h2>
+    <snice-accordion multiple>
+      <snice-accordion-item item-id="mix1" open>
+        <span slot="header">Open &amp; Enabled</span>
+        <p>Expanded and interactive.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="mix2" disabled>
+        <span slot="header">Disabled</span>
+        <p>Cannot be toggled.</p>
+      </snice-accordion-item>
+      <snice-accordion-item item-id="mix3">
+        <span slot="header">Closed &amp; Enabled</span>
+        <p>Collapsed but interactive.</p>
+      </snice-accordion-item>
+    </snice-accordion>
+  </section>
+
+  <script type="module">
+    import '/packages/components/src/accordion/snice-accordion.ts';
+    import '/packages/components/src/accordion/snice-accordion-item.ts';
+  </script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

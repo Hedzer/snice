@@ -740,7 +740,12 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
         if (typeof this.dropdown.showPopover === 'function') {
           this.dropdown.showPopover();
         }
-        this.positionDropdown();
+        // Firefox lays the popover out lazily: measuring right after
+        // showPopover() reads the mid-layout box (narrower than settled), so
+        // the viewport clamp misses and the panel overhangs the right edge.
+        // Re-measure across frames until the popover's width is stable, then
+        // position it once with the settled box.
+        this.settleDropdown();
         this.emitOpen();
         // Scroll selected items into view
         queueMicrotask(() => this.scrollSelectedIntoView());
@@ -1033,6 +1038,26 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
     this.dropdown.style.top = `${top}px`;
     this.dropdown.style.left = `${left}px`;
     this.dropdown.style.minWidth = `${anchor.width}px`;
+  }
+
+  private settleDropdown() {
+    let attempts = 0;
+    let lastWidth = -1;
+    const poll = () => {
+      attempts++;
+      if (!this.dropdown || attempts > 20) {
+        this.positionDropdown();
+        return;
+      }
+      const width = this.dropdown.getBoundingClientRect().width;
+      if (lastWidth >= 0 && Math.abs(width - lastWidth) < 1) {
+        this.positionDropdown();
+        return;
+      }
+      lastWidth = width;
+      requestAnimationFrame(poll);
+    };
+    requestAnimationFrame(poll);
   }
 
   private positionDropdownHandler = () => {

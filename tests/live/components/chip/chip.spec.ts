@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/chip/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/chip/visual.html';
 
 test.describe('Snice Chip', () => {
   test.beforeEach(async ({ page }) => {

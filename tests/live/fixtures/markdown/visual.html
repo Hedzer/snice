@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown</title>
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-markdown { display: block; max-width: 700px; border: 1px solid var(--snice-color-border, #ddd); border-radius: 8px; padding: 1rem; }
+  </style>
+</head>
+<body>
+
+<h2>Theme: default</h2>
+<snice-markdown theme="default"># Heading 1
+## Heading 2
+### Heading 3
+
+A paragraph with **bold**, *italic*, and ~~strikethrough~~ text.
+</snice-markdown>
+
+<h2>Theme: github</h2>
+<snice-markdown theme="github"># GitHub Theme
+## Subheading
+
+This uses the GitHub-style rendering theme.
+
+- List item one
+- List item two
+</snice-markdown>
+
+<h2>Headings (h1-h6)</h2>
+<snice-markdown># Heading 1
+## Heading 2
+### Heading 3
+#### Heading 4
+##### Heading 5
+###### Heading 6
+</snice-markdown>
+
+<h2>Bold, italic, bold-italic</h2>
+<snice-markdown>**Bold text** and *italic text* and ***bold italic text***.
+
+Also __bold__ and _italic_ and ___bold italic___.
+</snice-markdown>
+
+<h2>Strikethrough</h2>
+<snice-markdown>This is ~~deleted text~~ with strikethrough.</snice-markdown>
+
+<h2>Unordered list</h2>
+<snice-markdown>- First item
+- Second item
+- Third item
+  - Nested item
+- Fourth item
+</snice-markdown>
+
+<h2>Ordered list</h2>
+<snice-markdown>1. First item
+2. Second item
+3. Third item
+4. Fourth item
+</snice-markdown>
+
+<h2>Task list</h2>
+<snice-markdown>- [x] Completed task
+- [x] Another completed
+- [ ] Pending task
+- [ ] Another pending
+</snice-markdown>
+
+<h2>Blockquote</h2>
+<snice-markdown>> This is a blockquote.
+> It can span multiple lines.
+> And contain **formatting**.
+</snice-markdown>
+
+<h2>Inline code</h2>
+<snice-markdown>Use `const x = 42` for inline code. Also `Array.from()` and `document.querySelector()`.</snice-markdown>
+
+<h2>Code block</h2>
+<snice-markdown>```javascript
+function hello(name) {
+  console.log(`Hello, ${name}!`);
+  return true;
+}
+```
+</snice-markdown>
+
+<h2>Code block (no language)</h2>
+<snice-markdown>```
+plain code block
+no language specified
+```
+</snice-markdown>
+
+<h2>Code block (multiple languages)</h2>
+<snice-markdown>```typescript
+const greeting: string = 'Hello';
+```
+
+```python
+greeting = "Hello"
+print(greeting)
+```
+
+```css
+.container {
+  display: flex;
+  gap: 1rem;
+}
+```
+</snice-markdown>
+
+<h2>Links</h2>
+<snice-markdown>[Link text](https://example.com) and another [link](https://example.org).
+
+Autolink: https://example.com/autolinked
+</snice-markdown>
+
+<h2>Images</h2>
+<snice-markdown>![Alt text](data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22150%22%3E%3Crect%20width%3D%22300%22%20height%3D%22150%22%20fill%3D%22%23059669%22%2F%3E%3Ccircle%20cx%3D%22150%22%20cy%3D%2275%22%20r%3D%2250%22%20fill%3D%22rgba(255%2C255%2C255%2C0.3)%22%2F%3E%3C%2Fsvg%3E)
+
+Text after image.
+</snice-markdown>
+
+<h2>Horizontal rule</h2>
+<snice-markdown>Content above
+
+---
+
+Content below
+
+***
+
+More content
+
+___
+
+End
+</snice-markdown>
+
+<h2>Table (GFM)</h2>
+<snice-markdown>| Name | Age | Role |
+|------|-----|------|
+| Alice | 30 | Engineer |
+| Bob | 25 | Designer |
+| Charlie | 35 | Manager |
+</snice-markdown>
+
+<h2>Combined formatting</h2>
+<snice-markdown># Project README
+
+A **full-featured** project with *multiple* features.
+
+## Features
+
+- [x] Markdown rendering
+- [x] GFM tables
+- [ ] Custom themes
+- [ ] Plugin system
+
+## Code Example
+
+```javascript
+import { render } from 'snice';
+render(document.body, template);
+```
+
+> **Note:** This is just an example.
+
+---
+
+| Feature | Status |
+|---------|--------|
+| Tables | Done |
+| Lists | Done |
+| Code | Done |
+
+Visit [our docs](https://example.com) for more.
+</snice-markdown>
+
+<h2>Sanitize: true (default)</h2>
+<snice-markdown sanitize>Safe content with **bold** and a [link](https://example.com).</snice-markdown>
+
+<h2>Sanitize: false</h2>
+<snice-markdown sanitize="false">Content with sanitization disabled. **Bold** still works.</snice-markdown>
+
+<h2>Programmatic setContent</h2>
+<snice-markdown id="md-programmatic"></snice-markdown>
+
+<h2>Empty content</h2>
+<snice-markdown></snice-markdown>
+
+<h2>Long paragraph (wrapping)</h2>
+<snice-markdown>This is a very long paragraph that contains enough text to demonstrate how the markdown renderer handles text wrapping within the container. It should wrap naturally at the container boundaries without overflowing. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</snice-markdown>
+
+<h2>Nested formatting in lists</h2>
+<snice-markdown>- **Bold item** with extra text
+- *Italic item* with `inline code`
+- ~~Struck item~~ replaced
+- [Link item](https://example.com)
+</snice-markdown>
+
+<h2>Mixed block elements</h2>
+<snice-markdown>## Section
+
+Paragraph text.
+
+> A quote
+
+- A list item
+
+```
+A code block
+```
+
+Another paragraph.
+
+| Col A | Col B |
+|-------|-------|
+| 1 | 2 |
+</snice-markdown>
+
+<script type="module">
+  import '/packages/components/src/markdown/snice-markdown.ts';
+
+  const mdProg = document.getElementById('md-programmatic');
+  mdProg.setContent('## Dynamic Content\n\nSet via `setContent()` method.\n\n- Item A\n- Item B');
+</script>
+    <script type="module">
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/login/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/login/visual.html';
 
 test.describe('Login Theme Visual Tests', () => {
   test('login inputs should match theme in light mode', async ({ page }, testInfo) => {

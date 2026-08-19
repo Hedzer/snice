@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/qr-code/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/qr-code/visual.html';
 
 test.describe('Snice QR Code', () => {
   test.beforeEach(async ({ page }) => {

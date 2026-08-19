@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/chart/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/chart/visual.html';
 
 test.describe('Snice Chart visual integrity', () => {
   test.beforeEach(async ({ page }) => {
@@ -41,9 +41,13 @@ test.describe('Snice Chart visual integrity', () => {
 
         if (legend) {
           const l = legend.getBoundingClientRect();
-          // legend-top: the legend band must sit above the plot, abutting it.
-          if (l.height > 0 && Math.abs(w.top - l.bottom) > 1) {
-            problems.push(`${id}: seam between legend (${Math.round(l.bottom)}) and plot (${Math.round(w.top)})`);
+          // legend-top: the legend band must sit above the plot, abutting
+          // it; legend-bottom (the showcase's #legend-bottom chart) sits
+          // below the plot instead.
+          const bottom = legend.classList.contains('legend-bottom');
+          const seam = bottom ? w.bottom - l.top : w.top - l.bottom;
+          if (l.height > 0 && Math.abs(seam) > 1) {
+            problems.push(`${id}: seam between legend and plot (${Math.round(seam)}px)`);
           }
           [...legend.querySelectorAll('.legend-item')].forEach((item, i) => {
             const r = item.getBoundingClientRect();

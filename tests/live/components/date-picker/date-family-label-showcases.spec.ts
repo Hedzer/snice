@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 const showcases = [
   {
     component: 'date picker',
-    url: 'http://localhost:5566/website/showcases/date-picker/full.html',
+    url: 'http://localhost:5566/tests/live/fixtures/date-picker/visual.html',
     section: '#date-picker-label-lifecycle',
     host: '#date-showcase-labelled',
     primary: '#date-showcase-primary-label',
@@ -18,7 +18,7 @@ const showcases = [
   },
   {
     component: 'date range picker',
-    url: 'http://localhost:5566/website/showcases/date-range-picker/full.html',
+    url: 'http://localhost:5566/tests/live/fixtures/date-range-picker/visual.html',
     section: '#date-range-picker-label-lifecycle',
     host: '#range-showcase-labelled',
     primary: '#range-showcase-primary-label',
@@ -33,7 +33,7 @@ const showcases = [
   },
   {
     component: 'date-time picker',
-    url: 'http://localhost:5566/website/showcases/date-time-picker/full.html',
+    url: 'http://localhost:5566/tests/live/fixtures/date-time-picker/visual.html',
     section: '#date-time-picker-label-lifecycle',
     host: '#datetime-showcase-labelled',
     primary: '#datetime-showcase-primary-label',
@@ -94,9 +94,9 @@ for (const showcase of showcases) {
 
     expect(await page.evaluate(() => document.documentElement.scrollWidth))
       .toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth));
-    await page.evaluate(() => localStorage.setItem('snice-theme', 'light'));
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => document.documentElement.getAttribute('data-theme') === 'light');
+    // The fixture has no localStorage theme script; the deterministic
+    // channel is the attribute itself.
+    await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'light'));
     await expect(page.locator(showcase.section)).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth))
       .toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth));

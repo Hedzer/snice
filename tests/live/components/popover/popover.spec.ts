@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/popover/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/popover/visual.html';
 
 test.describe('Snice Popover', () => {
   test.beforeEach(async ({ page }) => {

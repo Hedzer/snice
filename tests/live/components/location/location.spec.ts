@@ -4,7 +4,7 @@ test('full location showcase renders and every example remains functional', asyn
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
 
-  await page.goto('/website/showcases/location/full.html', { waitUntil: 'domcontentloaded' });
+  await page.goto('/tests/live/fixtures/location/visual.html', { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => {
     const locations = Array.from(document.querySelectorAll('snice-location'));
     return locations.length === 32
@@ -87,9 +87,11 @@ test('full location showcase renders and every example remains functional', asyn
   expect(showcase.iframeCount).toBe(3);
   expect(showcase.iframeSources.every(source => source && !/^javascript:/i.test(source))).toBe(true);
   expect(showcase.noIconCount).toBe(0);
-  expect(showcase.imageIcon).toBe('https://cdn-icons-png.flaticon.com/24/854/854878.png');
+  // The showcase's remote flaticon PNG was localized to a data-URL SVG
+  // stand-in; the assertion tracks the icon-image channel, not the CDN.
+  expect(showcase.imageIcon).toMatch(/^data:image\/svg\+xml/);
   expect(showcase.slottedIconCount).toBe(1);
-  expect(showcase.customMapSource).toBe('https://www.google.com/maps?q=48.8566,2.3522&output=embed');
+  expect(showcase.customMapSource).toBe('/tests/live/fixtures/location/map-stub.html');
   expect(showcase.scroll).toBeLessThanOrEqual(showcase.viewport);
   expect(showcase.widths.every(width => width >= 0 && width <= 400)).toBe(true);
   expect(showcase.emptyRendered).toBe(true);

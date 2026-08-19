@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const demoPath = '/components/radio/demo.html';
+const demoPath = '/tests/live/fixtures/radio/visual.html';
 
 async function openShowcase(page: Page, pageErrors: string[]) {
   page.on('pageerror', error => pageErrors.push(error.message));

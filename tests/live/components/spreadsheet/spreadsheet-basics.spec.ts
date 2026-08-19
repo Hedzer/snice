@@ -1,7 +1,8 @@
 /**
  * Comprehensive "every basic interaction" suite for snice-spreadsheet.
- * Drives real mouse + keyboard against live Storybook in chromium so
- * structural breakage that vitest can't see actually fails the build.
+ * Drives real mouse + keyboard against the deterministic fixture page
+ * (tests/live/fixtures/spreadsheet/visual.html) in chromium so structural
+ * breakage that vitest can't see actually fails the build.
  *
  * Coverage axes:
  *  - selection (click, drag-select, shift-click, row/col header click)
@@ -18,15 +19,23 @@
  */
 import { test, expect, type Page, type Locator } from '@playwright/test';
 
-const STORYBOOK = 'http://localhost:6006';
+const FIXTURE = 'http://localhost:5566/tests/live/fixtures/spreadsheet/visual.html';
+const SHEET_ID: Record<string, string> = {
+  'spreadsheet--with-formulas': 'formulas',
+  'spreadsheet--frozen-panes': 'frozen-panes',
+};
 
 async function gotoStory(page: Page, id: string): Promise<Locator> {
-  await page.goto(`${STORYBOOK}/iframe.html?id=${id}&viewMode=story`);
-  await page.waitForFunction(() => {
-    const el = document.querySelector('snice-spreadsheet') as any;
+  await page.goto(FIXTURE, { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction((sheetId) => {
+    const el = document.getElementById(sheetId) as any;
     return !!(el && el.shadowRoot && el.shadowRoot.querySelector('.spreadsheet-td'));
-  });
-  return page.locator('snice-spreadsheet').first();
+  }, SHEET_ID[id]);
+  const sheet = page.locator(`#${SHEET_ID[id]}`);
+  // Mouse interactions use viewport coordinates; keep the sheet on screen.
+  await sheet.evaluate(el => (el as HTMLElement).scrollIntoView({ block: 'center' }));
+  await page.waitForTimeout(100);
+  return sheet;
 }
 
 /** Get bounding rect (in viewport coords) of a cell inside the host's shadow root. */
