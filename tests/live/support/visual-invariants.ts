@@ -48,6 +48,33 @@ export async function collectVisualViolations(page: Page): Promise<string[]> {
       return false;
     };
 
+    const boxOf = (el: Element): { left: number; top: number; right: number; bottom: number } => {
+      // getBoundingClientRect on SVG shapes is engine-inconsistent: Firefox
+      // includes the stroke, Chromium and WebKit do not (the gauge's thick
+      // arcs measure 154x109 in Firefox and 90x45 elsewhere for the same
+      // element). Measure the geometry via getBBox and add the true painted
+      // margin — half the stroke-width on every side — so the check is the
+      // same question in every engine.
+      const isSvgShape = el.namespaceURI === 'http://www.w3.org/2000/svg'
+        && el.tagName.toLowerCase() !== 'svg';
+      if (isSvgShape) {
+        try {
+          const bbox = (el as SVGGraphicsElement).getBBox();
+          const ctm = (el as SVGGraphicsElement).getScreenCTM?.();
+          if (bbox && ctm) {
+            const half = parseFloat(getComputedStyle(el).strokeWidth || '0') / 2 || 0;
+            const p1 = new DOMPoint(bbox.x - half, bbox.y - half).matrixTransform(ctm);
+            const p2 = new DOMPoint(bbox.x + bbox.width + half, bbox.y + bbox.height + half).matrixTransform(ctm);
+            return { left: p1.x, top: p1.y, right: p2.x, bottom: p2.y };
+          }
+        } catch {
+          // Fall through to getBoundingClientRect for unmeasurable shapes.
+        }
+      }
+      const r = el.getBoundingClientRect();
+      return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+    };
+
     const checkHost = (host: Element) => {
       const root = (host as HTMLElement).shadowRoot;
       if (!root) return;
@@ -64,8 +91,8 @@ export async function collectVisualViolations(page: Page): Promise<string[]> {
 
       root.querySelectorAll('*').forEach(el => {
         if (el.tagName === 'STYLE' || el.tagName === 'SLOT') return;
-        const rect = el.getBoundingClientRect();
-        if (rect.width === 0 || rect.height === 0) return;
+        const rect = boxOf(el);
+        if (rect.right - rect.left === 0 || rect.bottom - rect.top === 0) return;
         const escapes =
           rect.right > hostRect.right + TOLERANCE ||
           rect.bottom > hostRect.bottom + TOLERANCE ||
@@ -76,7 +103,7 @@ export async function collectVisualViolations(page: Page): Promise<string[]> {
         problems.push(
           `<${host.tagName.toLowerCase()}> content ${el.tagName.toLowerCase()}`
           + `${el.className && typeof el.className === 'string' ? '.' + el.className.split(' ')[0] : ''}`
-          + ` escapes its host (${Math.round(rect.width)}x${Math.round(rect.height)}`
+          + ` escapes its host (${Math.round(rect.right - rect.left)}x${Math.round(rect.bottom - rect.top)}`
           + ` vs host ${Math.round(hostRect.width)}x${Math.round(hostRect.height)})`);
       });
 

@@ -24,18 +24,41 @@ test.describe('Snice Carousel visual integrity', () => {
   });
 
   test('the visible slides tile the viewport exactly at rest', async ({ page }) => {
-    const failures = await page.evaluate(() => {
+    const failures = await page.evaluate(async () => {
       const problems: string[] = [];
-      document.querySelectorAll('snice-carousel').forEach((car: any, i) => {
+      const cars = [...document.querySelectorAll('snice-carousel')] as any[];
+      const transformOf = (car: any) =>
+        car.shadowRoot.querySelector('.carousel__container')?.style.transform ?? null;
+      // The authored active-index is re-applied at @ready — a beat after the
+      // first paint. A measurement that lands before it sees slide 0, one
+      // that lands after it sees the translated track: either races, so wait
+      // for every track's transform to stop changing before measuring.
+      for (let attempt = 0; attempt < 20; attempt++) {
+        const before = cars.map(transformOf);
+        await new Promise((r) => setTimeout(r, 50));
+        if (cars.every((car, i) => transformOf(car) === before[i])) break;
+      }
+      cars.forEach((car, i) => {
         const viewport = car.shadowRoot.querySelector('.carousel__viewport') as HTMLElement;
         const slides = [...car.children] as HTMLElement[];
         const spv = Math.min(car.slidesPerView, slides.length);
         const space = car.spaceBetween;
         const vr = viewport.getBoundingClientRect();
-        const rects = slides.slice(0, spv).map(s => s.getBoundingClientRect());
+        // The run the viewport actually shows, by box intersection — never a
+        // literal slice from 0: the demo's active-index carousels show their
+        // authored slide first.
+        const visible = slides.filter((s) => {
+          const r = s.getBoundingClientRect();
+          return r.left < vr.right - 0.5 && r.right > vr.left + 0.5;
+        });
+        const rects = visible.map((s) => s.getBoundingClientRect());
 
+        // The run starts at the slide the carousel claims to be on.
+        if (visible[0] !== car.children[car.activeIndex]) {
+          problems.push(`carousel[${i}]: visible run starts at slide ${slides.indexOf(visible[0])}, not activeIndex ${car.activeIndex}`);
+        }
         // Equal slide widths.
-        const widths = rects.map(r => Math.round(r.width));
+        const widths = rects.map((r) => Math.round(r.width));
         if (Math.max(...widths) - Math.min(...widths) > 1) {
           problems.push(`carousel[${i}] spv=${spv}: uneven slide widths ${widths.join(',')}`);
         }
@@ -48,7 +71,7 @@ test.describe('Snice Carousel visual integrity', () => {
         }
         // The visible run fills the viewport edge to edge.
         if (Math.abs(rects[0].left - vr.left) > 1) {
-          problems.push(`carousel[${i}]: first slide left ${Math.round(rects[0].left)} != viewport ${Math.round(vr.left)}`);
+          problems.push(`carousel[${i}]: first visible slide left ${Math.round(rects[0].left)} != viewport ${Math.round(vr.left)}`);
         }
         if (Math.abs(rects[rects.length - 1].right - vr.right) > 1.5) {
           problems.push(`carousel[${i}]: last visible slide right ${Math.round(rects[rects.length - 1].right)} != viewport ${Math.round(vr.right)}`);

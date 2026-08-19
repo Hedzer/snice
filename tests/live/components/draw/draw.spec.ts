@@ -31,11 +31,14 @@ test.describe('Snice Draw', () => {
         width: canvas?.width,
         height: canvas?.height,
         clientWidth: canvas?.clientWidth,
-        clientHeight: canvas?.clientHeight
+        clientHeight: canvas?.clientHeight,
+        dpr: window.devicePixelRatio || 1
       };
     });
-    expect(dims.width).toBe(dims.clientWidth);
-    expect(dims.height).toBe(dims.clientHeight);
+    // The backing store is sized for the display's DPI (width*dpr) — webkit
+    // runs at devicePixelRatio 2, so the buffer is 2x the CSS size there.
+    expect(dims.width).toBe(Math.round(dims.clientWidth * dims.dpr));
+    expect(dims.height).toBe(Math.round(dims.clientHeight * dims.dpr));
   });
 
   test('should have toolbar', async ({ page }) => {

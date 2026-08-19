@@ -91,7 +91,9 @@ test.describe('Snice Sankey visual integrity', () => {
     });
 
     expect(geom.base.width).toBeGreaterThan(0);
-    expect(geom.wide.width).toBe(30);
+    // node-width=30 draws 30-unit nodes; Firefox rounds the sub-pixel box up
+    // to 31px, so allow one rounding step instead of an exact integer.
+    expect(Math.abs(geom.wide.width - 30)).toBeLessThanOrEqual(1);
     expect(geom.wide.width).toBeGreaterThan(geom.base.width);
     expect(geom.padded.gap).toBeGreaterThan(geom.base.gap);
   });

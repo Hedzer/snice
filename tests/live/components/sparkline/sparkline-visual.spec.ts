@@ -89,11 +89,28 @@ test.describe('Snice Sparkline visual integrity', () => {
           problems.push(`bar[${i}]: ${bars.length} bars for ${data.length} points`);
           return;
         }
-        const boxes = bars.map(b => b.getBBox());
-        const baseline = boxes[0].y + boxes[0].height;
+        // WebKit reports 0,0,0,0 for a degenerate (zero-height) rect even
+        // though the attributes carry the true geometry — read the box from
+        // the attributes for those, so a min-value bar cannot anchor the
+        // baseline as a zero box.
+        const boxes = bars.map(b => {
+          const box = b.getBBox();
+          if (box.width === 0 && box.height === 0
+              && parseFloat(b.getAttribute('height') || '0') === 0) {
+            return {
+              x: parseFloat(b.getAttribute('x') || '0'),
+              y: parseFloat(b.getAttribute('y') || '0'),
+              width: parseFloat(b.getAttribute('width') || '0'),
+              height: 0,
+            };
+          }
+          return box;
+        });
+        const ref = boxes.find(b => b.height > 0.5) ?? boxes[0];
+        const baseline = ref.y + ref.height;
         boxes.forEach((b, j) => {
-          if (Math.abs(b.width - boxes[0].width) > 0.5) {
-            problems.push(`bar[${i}] rect ${j}: width ${b.width.toFixed(2)} != ${boxes[0].width.toFixed(2)}`);
+          if (Math.abs(b.width - ref.width) > 0.5) {
+            problems.push(`bar[${i}] rect ${j}: width ${b.width.toFixed(2)} != ${ref.width.toFixed(2)}`);
           }
           if (Math.abs((b.y + b.height) - baseline) > 0.5) {
             problems.push(`bar[${i}] rect ${j}: bottom ${(b.y + b.height).toFixed(2)} off baseline ${baseline.toFixed(2)}`);
