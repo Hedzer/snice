@@ -52,6 +52,20 @@ const config: StorybookConfig = {
       'snice/transitions',
       'snice/router',
     ];
+    // Storybook's own `server` config replaces the root vite.config.ts one,
+    // so the watch ignores do not carry over. `.local` is gitignored local
+    // evidence (gauntlet corpora, model weights) — tens of thousands of
+    // directories that are not Storybook inputs and would exhaust the
+    // inotify quota.
+    cfg.server = cfg.server || {};
+    cfg.server.watch = {
+      ...(cfg.server.watch || {}),
+      ignored: [
+        '**/coverage/**',
+        '**/.local/**',
+        ...((cfg.server.watch as any)?.ignored ?? []),
+      ],
+    };
     return cfg;
   },
 };

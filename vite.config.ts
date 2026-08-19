@@ -185,6 +185,10 @@ export default defineConfig({
     watch: {
       ignored: [
         '**/coverage/**',
+        // `.local` is gitignored local evidence (gauntlet corpora, model
+        // weights) — tens of thousands of directories that are not
+        // application inputs and would exhaust the inotify quota.
+        '**/.local/**',
         ...(process.env.SNICE_TEST_PUBLIC_DIR
           ? ['**/website/public/**', '**/dist/site/**']
           : []),
