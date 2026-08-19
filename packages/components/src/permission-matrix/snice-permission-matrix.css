@@ -131,14 +131,6 @@ case, when, default, if {
 /* ===== Checkbox cell ===== */
 .matrix-cell {
   position: relative;
-  /* Flex-centre the grant control: the checkbox's inline-flex baseline
-     measures differently per engine (Firefox's line box for a 20px
-     inline-flex checkbox is 43px tall where Chromium's is 35px), so
-     baseline alignment parked the box 1.5-2px high and never exactly
-     centred in any engine. */
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .matrix-checkbox {
@@ -152,7 +144,12 @@ case, when, default, if {
   cursor: pointer;
   position: relative;
   transition: all var(--snice-transition-fast, 150ms) ease;
-  vertical-align: middle;
+  /* Centre the control exactly: as an inline box its baseline alignment
+     parks it 1.5-2px high depending on the engine's line-box metrics, so
+     it is a block with auto horizontal margins — with the cell's symmetric
+     padding the box lands dead-centre in every engine. */
+  display: block;
+  margin: 0 auto;
 }
 
 .matrix-checkbox:checked {
@@ -188,11 +185,14 @@ case, when, default, if {
 
 /* ===== Readonly indicator ===== */
 .matrix-readonly-indicator {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  /* Same centring contract as the checkbox: block + auto margins inside the
+     cell's symmetric padding. */
+  display: block;
+  margin: 0 auto;
   width: 1.25rem;
   height: 1.25rem;
+  align-items: center;
+  justify-content: center;
 }
 
 .matrix-readonly-check {
