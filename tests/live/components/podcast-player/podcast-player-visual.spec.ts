@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/podcast-player/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/podcast-player/visual.html';
 
 test.describe('Snice Podcast Player visual integrity', () => {
   test.beforeEach(async ({ page }) => {

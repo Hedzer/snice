@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-candlestick visual fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. The sections the visual-integrity spec
+         asserts on: the flag matrix around the default chart (volume, grid,
+         crosshair, zoom, animation, colours, time formats, value formats)
+         with deterministic generated data. Nothing remote. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      body > section { padding: 1rem 1.5rem; }
+      body > section h2 {
+        margin: 0 0 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--snice-color-text-tertiary);
+      }
+      snice-candlestick { display: block; }
+    </style>
+  </head>
+  <body>
+    <section>
+      <h2>Default (showGrid=true, showCrosshair=true, zoomEnabled=true, animation=true)</h2>
+      <snice-candlestick id="cs-default"></snice-candlestick>
+    </section>
+
+    <section><h2>showVolume: true</h2><snice-candlestick id="cs-volume" show-volume></snice-candlestick></section>
+    <section><h2>showGrid: false</h2><snice-candlestick id="cs-nogrid" show-grid="false"></snice-candlestick></section>
+    <section><h2>showCrosshair: false</h2><snice-candlestick id="cs-nocrosshair" show-crosshair="false"></snice-candlestick></section>
+    <section><h2>zoomEnabled: false</h2><snice-candlestick id="cs-nozoom" zoom-enabled="false"></snice-candlestick></section>
+    <section><h2>animation: false</h2><snice-candlestick id="cs-noanim" animation="false"></snice-candlestick></section>
+    <section><h2>Custom colours</h2><snice-candlestick id="cs-colors"></snice-candlestick></section>
+    <section><h2>time-format: auto</h2><snice-candlestick id="cs-tf-auto" time-format="auto"></snice-candlestick></section>
+    <section><h2>time-format: date</h2><snice-candlestick id="cs-tf-date" time-format="date"></snice-candlestick></section>
+    <section><h2>time-format: datetime</h2><snice-candlestick id="cs-tf-datetime" time-format="datetime"></snice-candlestick></section>
+    <section><h2>time-format: month</h2><snice-candlestick id="cs-tf-month" time-format="month"></snice-candlestick></section>
+    <section><h2>value-format: number</h2><snice-candlestick id="cs-yf-number"></snice-candlestick></section>
+    <section><h2>value-format: currency</h2><snice-candlestick id="cs-yf-currency" value-format="currency"></snice-candlestick></section>
+    <section><h2>Combo: volume + grid + crosshair</h2><snice-candlestick id="cs-combo" show-volume></snice-candlestick></section>
+
+    <script type="module">
+      import '/packages/components/src/candlestick/snice-candlestick.ts';
+
+      function generateCandles(count, startDate, startPrice) {
+        const candles = [];
+        let price = startPrice;
+        const start = new Date(startDate);
+        for (let i = 0; i < count; i++) {
+          const open = price;
+          const delta = (Math.sin(i * 0.5) * 3) + ((i * 7) % 5) - 2;
+          const close = Math.max(1, open + delta);
+          const high = Math.max(open, close) + 2 + (i % 3);
+          const low = Math.min(open, close) - 2 - (i % 4);
+          const date = new Date(start);
+          date.setDate(start.getDate() + i);
+          candles.push({
+            date: date.toISOString().split('T')[0],
+            open: +open.toFixed(2), high: +high.toFixed(2),
+            low: +low.toFixed(2), close: +close.toFixed(2),
+          });
+          price = close;
+        }
+        return candles;
+      }
+
+      const data60 = generateCandles(60, '2024-01-01', 150);
+      const data5 = generateCandles(5, '2024-06-01', 100);
+      const data200 = generateCandles(200, '2023-06-01', 50);
+
+      const assigns = {
+        'cs-default': data60,
+        'cs-volume': data60,
+        'cs-nogrid': data60,
+        'cs-nocrosshair': data60,
+        'cs-nozoom': data60,
+        'cs-noanim': data60,
+        'cs-colors': data60,
+        'cs-tf-auto': data60,
+        'cs-tf-date': data60,
+        'cs-tf-datetime': data60,
+        'cs-tf-month': data200.filter((_, i) => i % 5 === 0),
+        'cs-yf-number': data60,
+        'cs-yf-currency': data60,
+        'cs-combo': data60,
+      };
+      for (const [id, data] of Object.entries(assigns)) {
+        document.getElementById(id).data = data;
+      }
+
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

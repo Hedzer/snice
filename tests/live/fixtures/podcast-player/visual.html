@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-podcast-player visual fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. The players the visual-integrity spec
+         asserts on: a first player with a locally synthesized WAV (real
+         metadata, zero network — the seek test maps its click onto a real
+         duration), an artwork player with a generated cover, and the flag/
+         episode-list variants. Nothing remote. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      body > h2 {
+        margin: 1rem 1.5rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--snice-color-text-tertiary);
+      }
+      body > section { padding: 0 1.5rem 1rem; }
+      snice-podcast-player { display: block; }
+    </style>
+  </head>
+  <body>
+    <h2>Default (no artwork, placeholder glyph)</h2>
+    <section>
+      <snice-podcast-player
+        id="player-default"
+        src=""
+        episode-title="Episode 1: Getting Started"
+        show="Tech Talks"
+        description="An introduction to web components and modern development."
+      ></snice-podcast-player>
+    </section>
+
+    <h2>With artwork</h2>
+    <section>
+      <snice-podcast-player
+        id="player-artwork"
+        src=""
+        episode-title="Episode 2: Deep Dive"
+        show="Tech Talks"
+        artwork=""
+        description="A deep dive into component architecture."
+      ></snice-podcast-player>
+    </section>
+
+    <h2>Custom skip intervals (skip-back="10" skip-forward="60")</h2>
+    <section>
+      <snice-podcast-player
+        src=""
+        episode-title="Custom Skip Intervals"
+        show="Demo Show"
+        skip-back="10"
+        skip-forward="60"
+      ></snice-podcast-player>
+    </section>
+
+    <h2>Custom playback-rate="1.5"</h2>
+    <section>
+      <snice-podcast-player
+        src=""
+        episode-title="1.5x Speed"
+        show="Speed Test"
+        playback-rate="1.5"
+      ></snice-podcast-player>
+    </section>
+
+    <h2>Compact</h2>
+    <section>
+      <snice-podcast-player
+        src=""
+        compact
+        episode-title="Compact"
+        show="Demo Show"
+      ></snice-podcast-player>
+    </section>
+
+    <h2>Episode list (chaptered)</h2>
+    <section>
+      <snice-podcast-player id="player-episodes" episode-title="Chaptered" show="Serial"></snice-podcast-player>
+    </section>
+
+    <script type="module">
+      import '/packages/components/src/podcast-player/snice-podcast-player.ts';
+
+      /** A real, locally generated WAV so the audio element reports real
+          metadata without any network. */
+      function wav(seconds, frequency) {
+        const rate = 8000;
+        const samples = rate * seconds;
+        const buffer = new ArrayBuffer(44 + samples * 2);
+        const view = new DataView(buffer);
+        const writeStr = (offset, str) => {
+          for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+        };
+        writeStr(0, 'RIFF');
+        view.setUint32(4, 36 + samples * 2, true);
+        writeStr(8, 'WAVE');
+        writeStr(12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, 1, true);
+        view.setUint32(24, rate, true);
+        view.setUint32(28, rate * 2, true);
+        view.setUint16(32, 2, true);
+        view.setUint16(34, 16, true);
+        writeStr(36, 'data');
+        view.setUint32(40, samples * 2, true);
+        for (let i = 0; i < samples; i++) {
+          const t = i / rate;
+          view.setInt16(44 + i * 2, Math.round(Math.sin(2 * Math.PI * frequency * t) * 8000), true);
+        }
+        // Chunk the base64: spreading a 480KB buffer into fromCharCode
+        // overflows the call stack.
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        const CHUNK = 0x8000;
+        for (let i = 0; i < bytes.length; i += CHUNK) {
+          binary += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
+        }
+        return `data:audio/wav;base64,${btoa(binary)}`;
+      }
+
+      /** A generated cover. */
+      function art(hex) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 120;
+        canvas.height = 120;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = hex;
+        ctx.fillRect(0, 0, 120, 120);
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.beginPath();
+        ctx.arc(60, 60, 35, 0, Math.PI * 2);
+        ctx.fill();
+        return canvas.toDataURL('image/png');
+      }
+
+      const clip = wav(30, 220);
+
+      document.getElementById('player-default').setAttribute('src', clip);
+
+      const artPlayer = document.getElementById('player-artwork');
+      artPlayer.setAttribute('src', clip);
+      artPlayer.setAttribute('artwork', art('#7c3aed'));
+
+      document.querySelectorAll('snice-podcast-player').forEach(p => {
+        if (p.id === 'player-artwork' || p.id === 'player-episodes') return;
+        if (!p.getAttribute('src')) p.setAttribute('src', clip);
+      });
+
+      document.getElementById('player-episodes').episodes = [
+        { title: 'Ep 1', src: clip, duration: 30, artwork: art('#2563eb') },
+        { title: 'Ep 2', src: clip, duration: 30 },
+        {
+          title: 'Chaptered episode', src: clip, duration: 30,
+          chapters: [{ title: 'Intro', startTime: 0 }, { title: 'Main', startTime: 12 }],
+        },
+      ];
+      document.getElementById('player-episodes').setAttribute('src', clip);
+
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

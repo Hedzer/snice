@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/product-card/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/product-card/visual.html';
 
 test.describe('Snice Product Card visual integrity', () => {
   test.beforeEach(async ({ page }) => {
@@ -37,7 +37,9 @@ test.describe('Snice Product Card visual integrity', () => {
         if (ir.width < 20 || ir.height < 20) {
           problems.push(`card[${i}]: image collapsed (${Math.round(ir.width)}x${Math.round(ir.height)})`);
         }
-        if (ir.width > gr.width + 1 || ir.height > gr.height + 1) {
+        // WebKit rounds the cover-fit image up to 1.2px past the frame
+        // (400x301.2 in a 400x300 box); a real spill is several px.
+        if (ir.width > gr.width + 2 || ir.height > gr.height + 2) {
           problems.push(`card[${i}]: image ${Math.round(ir.width)}x${Math.round(ir.height)}`
             + ` overflows its ${Math.round(gr.width)}x${Math.round(gr.height)} frame`);
         }

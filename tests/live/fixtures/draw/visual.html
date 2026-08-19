@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-draw visual fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. One pen canvas at a fixed size — the only
+         content the visual-integrity spec needs: host-filling canvas,
+         backing store at devicePixelRatio, and ink landing under a pointer
+         drag. No toolbar, no chrome. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      .draw-wrapper { padding: 1rem 1.5rem; }
+      .draw-canvas-container { width: 800px; height: 600px; }
+      snice-draw { display: block; }
+    </style>
+  </head>
+  <body>
+    <div class="draw-wrapper">
+      <div class="draw-canvas-container">
+        <snice-draw id="draw" width="800" height="600"></snice-draw>
+      </div>
+    </div>
+
+    <script type="module">
+      import '/packages/components/src/draw/snice-draw.ts';
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

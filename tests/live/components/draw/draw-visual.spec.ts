@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/draw/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/draw/visual.html';
 
 test.describe('Snice Draw visual integrity', () => {
   test.beforeEach(async ({ page }) => {
@@ -54,13 +54,22 @@ test.describe('Snice Draw visual integrity', () => {
       return { x: r.x, y: r.y, w: r.width, h: r.height };
     });
 
-    // Drag a horizontal line across the middle 50% of the canvas.
+    // Drag a horizontal line across the middle 50% of the canvas. The brush
+    // chases the pointer through a rAF loop with a radius dead zone, so the
+    // moves are paced (waits between steps) and the button stays down long
+    // enough after the final move for the brush to catch up — an unpaced
+    // gesture fires all its events inside one frame, leaving the ink frozen
+    // mid-chase wherever the loop happened to be when the pointer lifted.
     const x0 = box.x + box.w * 0.25;
     const x1 = box.x + box.w * 0.75;
     const y = box.y + box.h * 0.5;
     await page.mouse.move(x0, y);
     await page.mouse.down();
-    for (let i = 1; i <= 10; i++) await page.mouse.move(x0 + (x1 - x0) * i / 10, y);
+    for (let i = 1; i <= 10; i++) {
+      await page.mouse.move(x0 + (x1 - x0) * i / 10, y);
+      await page.waitForTimeout(50);
+    }
+    await page.waitForTimeout(400);
     await page.mouse.up();
     await page.waitForTimeout(400);
 

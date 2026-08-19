@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/candlestick/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/candlestick/visual.html';
 
 test.describe('Snice Candlestick visual integrity', () => {
   test.beforeEach(async ({ page }) => {
@@ -95,10 +95,12 @@ test.describe('Snice Candlestick visual integrity', () => {
     const chart = page.locator('#cs-default');
     const box = (await chart.boundingBox())!;
     await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.5);
+    // The tooltip paints an empty shell before its rows render; wait for the
+    // asserted state itself (all five OHLC rows), not for a non-zero box.
     await page.waitForFunction(() => {
       const tip = document.querySelector('#cs-default')?.shadowRoot
         ?.querySelector('.candlestick__tooltip') as HTMLElement | null;
-      return !!tip && tip.getBoundingClientRect().width > 0;
+      return !!tip && tip.querySelectorAll('.candlestick__tooltip-row').length >= 5;
     });
 
     const geometry = await page.evaluate(() => {

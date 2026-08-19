@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/music-player/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/music-player/visual.html';
 
 test.describe('Snice Music Player visual integrity', () => {
   test.beforeEach(async ({ page }) => {
@@ -121,9 +121,17 @@ test.describe('Snice Music Player visual integrity', () => {
         // evenly pitched rather than abutting: the pitch must be uniform and
         // never let two rows collide.
         const gaps: number[] = [];
+        // Rows must stay inside the playlist's box and keep a uniform width.
+        // The box comparison is containment, not equality: WebKit reserves
+        // ~8px inside the list for its non-overlay scrollbar when the
+        // playlist overflows its max-height, so rows are legitimately
+        // narrower than the list's border box there.
         rows.forEach((r, i) => {
-          if (Math.abs(r.left - lr.left) > 1 || Math.abs(r.width - lr.width) > 1) {
-            problems.push(`player[${pi}] row ${i}: width/left mismatch with the playlist`);
+          if (r.left < lr.left - 1 || r.right > lr.right + 1) {
+            problems.push(`player[${pi}] row ${i}: escapes the playlist (${Math.round(r.left)}..${Math.round(r.right)} vs ${Math.round(lr.left)}..${Math.round(lr.right)})`);
+          }
+          if (rows.length > 1 && Math.abs(r.width - rows[0].width) > 1) {
+            problems.push(`player[${pi}] row ${i}: width ${Math.round(r.width)} != first row ${Math.round(rows[0].width)}`);
           }
           if (i > 0) {
             const gap = r.top - rows[i - 1].bottom;

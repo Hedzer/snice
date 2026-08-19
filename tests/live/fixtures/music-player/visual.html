@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-music-player visual fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. The same player matrix the visual-integrity
+         spec asserts on, with locally generated covers instead of the
+         showcase's picsum artwork — zero network, so the artwork boxes can
+         never depend on image arrival. Tracks carry empty src, exactly like
+         the showcase (no audio fetches). */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      body > h2 {
+        margin: 1rem 1.5rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--snice-color-text-tertiary);
+      }
+      body > snice-music-player { display: block; margin: 0 1.5rem 1rem; }
+    </style>
+  </head>
+  <body>
+    <h2>Default (all features visible)</h2>
+    <snice-music-player id="mp-default"></snice-music-player>
+
+    <h2>Compact mode</h2>
+    <snice-music-player id="mp-compact" compact></snice-music-player>
+
+    <h2>Show playlist: false</h2>
+    <snice-music-player id="mp-no-playlist" show-playlist="false"></snice-music-player>
+
+    <h2>Show controls: false</h2>
+    <snice-music-player id="mp-no-controls" show-controls="false"></snice-music-player>
+
+    <h2>Show volume: false</h2>
+    <snice-music-player id="mp-no-volume" show-volume="false"></snice-music-player>
+
+    <h2>Show artwork: false</h2>
+    <snice-music-player id="mp-no-artwork" show-artwork="false"></snice-music-player>
+
+    <h2>Show track info: false</h2>
+    <snice-music-player id="mp-no-info" show-track-info="false"></snice-music-player>
+
+    <h2>Shuffle enabled</h2>
+    <snice-music-player id="mp-shuffle" shuffle></snice-music-player>
+
+    <h2>Repeat all</h2>
+    <snice-music-player id="mp-repeat-all" repeat="all"></snice-music-player>
+
+    <h2>Repeat one</h2>
+    <snice-music-player id="mp-repeat-one" repeat="one"></snice-music-player>
+
+    <h2>Repeat off</h2>
+    <snice-music-player id="mp-repeat-off" repeat="off"></snice-music-player>
+
+    <h2>Muted</h2>
+    <snice-music-player id="mp-muted" volume="0"></snice-music-player>
+
+    <h2>Volume 50%</h2>
+    <snice-music-player id="mp-vol50" volume="0.5"></snice-music-player>
+
+    <h2>Volume 0</h2>
+    <snice-music-player id="mp-vol0" volume="0"></snice-music-player>
+
+    <h2>Autoplay</h2>
+    <snice-music-player id="mp-autoplay" autoplay></snice-music-player>
+
+    <h2>Combo</h2>
+    <snice-music-player id="mp-combo" compact></snice-music-player>
+
+    <h2>Single track</h2>
+    <snice-music-player id="mp-single"></snice-music-player>
+
+    <h2>No tracks (empty)</h2>
+    <snice-music-player></snice-music-player>
+
+    <h2>Many tracks</h2>
+    <snice-music-player id="mp-many"></snice-music-player>
+
+    <h2>Tracks without artwork</h2>
+    <snice-music-player id="mp-no-art-tracks"></snice-music-player>
+
+    <h2>Track with explicit cover</h2>
+    <snice-music-player id="mp-custom-art"></snice-music-player>
+
+    <script type="module">
+      import '/packages/components/src/music-player/snice-music-player.ts';
+
+      /** A locally generated cover, so the artwork geometry never waits on a
+          network image. */
+      function art(hex) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 120;
+        canvas.height = 120;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = hex;
+        ctx.fillRect(0, 0, 120, 120);
+        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        ctx.beginPath();
+        ctx.arc(60, 60, 40, 0, Math.PI * 2);
+        ctx.fill();
+        return canvas.toDataURL('image/png');
+      }
+
+      const sampleTracks = [
+        { id: '1', title: 'Ambient Dreams', artist: 'Synthwave', album: 'Chill Vibes', duration: 245, src: '', artwork: art('#2563eb') },
+        { id: '2', title: 'Electric Sunset', artist: 'Neon Pulse', album: 'Night Drive', duration: 198, src: '', artwork: art('#7c3aed') },
+        { id: '3', title: 'Ocean Breeze', artist: 'Wave Rider', album: 'Beach Sessions', duration: 312, src: '', artwork: art('#0d9488') },
+        { id: '4', title: 'Mountain Echo', artist: 'Alpine Sound', album: 'Nature', duration: 180, src: '', artwork: art('#dc2626') },
+      ];
+
+      const ids = ['mp-default', 'mp-compact', 'mp-no-playlist', 'mp-no-controls',
+        'mp-no-volume', 'mp-no-artwork', 'mp-no-info', 'mp-shuffle',
+        'mp-repeat-all', 'mp-repeat-one', 'mp-repeat-off', 'mp-muted',
+        'mp-vol50', 'mp-vol0', 'mp-autoplay', 'mp-combo'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.tracks = sampleTracks.map(t => ({ ...t }));
+      });
+
+      document.getElementById('mp-single').tracks = [sampleTracks[0]];
+
+      document.getElementById('mp-many').tracks = Array.from({ length: 10 }, (_, i) => ({
+        id: String(i),
+        title: `Track ${i + 1}`,
+        artist: `Artist ${String.fromCharCode(65 + (i % 26))}`,
+        duration: 120 + i * 30,
+        src: '',
+      }));
+
+      document.getElementById('mp-no-art-tracks').tracks = sampleTracks.map(({ artwork, ...t }) => t);
+
+      document.getElementById('mp-custom-art').tracks = [
+        { ...sampleTracks[0], artwork: art('#16a34a') },
+      ];
+
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>
