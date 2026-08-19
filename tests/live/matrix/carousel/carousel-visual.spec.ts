@@ -25,9 +25,9 @@
  *     them clipped, and every other slide fully outside — "active-index
  *     selects the visible slide", "multi-slide views";
  *   · the prev/next controls are 2.5rem circles floating on the slides:
- *     inside the viewport's edges, vertically centred on the carousel's
- *     own box (the stylesheet's `top: 50%` of part="container" — the
- *     viewport plus the indicator row), above the slides, and
+ *     inside the viewport's edges, vertically centred on the SLIDE VIEWPORT
+ *     (the controls live inside the viewport in the shadow tree, so the
+ *     indicator row cannot drag them down), above the slides, and
  *     pointer-reachable;
  *   · the indicator dots are 0.5rem circles in a centred row 1rem under the
  *     viewport, 0.5rem apart, and the marked dot paints the theme's primary
@@ -165,11 +165,10 @@ async function visualProblems(c: Combo): Promise<string[]> {
     if (!viewport) { say('no part="viewport" rendered'); return problems; }
     const v = viewport.getBoundingClientRect();
     // The controls' anchor: the stylesheet floats them at `top: 50%` of the
-    // carousel's own container box, which is the viewport PLUS the indicator
-    // row — the docs (docs/ai/components/carousel.md: CSS parts, "ARIA roles
-    // and labels for controls") promise overlay controls a pointer can reach,
-    // not a centring on the viewport alone.
-    const cont = (partNamed('container')[0] ?? viewport).getBoundingClientRect();
+    // viewport, which they live INSIDE in the shadow tree — the indicator
+    // row below cannot drag them down, so the slides' band is the vertical
+    // centre they are judged against.
+    const cont = v;
     if (v.width < 10 || v.height < 10) {
       say(`the viewport renders at ${round(v.width)}x${round(v.height)}`);
       return problems;
@@ -250,7 +249,7 @@ async function visualProblems(c: Combo): Promise<string[]> {
               + ` expected the ${round(buttonPx)}px circle`);
           }
           if (Math.abs(box.top + box.height / 2 - (cont.top + cont.height / 2)) > EPS) {
-            say(`the ${name} button is not vertically centred on the carousel's own box`);
+            say(`the ${name} button is not vertically centred on the slide viewport`);
           }
           if (box.top < v.top - EPS || box.bottom > v.bottom + EPS) {
             say(`the ${name} button leaves the slides' band — controls float on the viewport, not the dot row`);

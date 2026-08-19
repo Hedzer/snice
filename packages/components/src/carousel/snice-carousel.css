@@ -15,6 +15,7 @@
 }
 
 .carousel__viewport {
+  position: relative;
   overflow: hidden;
   width: 100%;
 }

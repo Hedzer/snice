@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-image visual fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. The images the visual-integrity spec
+         asserts on: shape variants, the size row (small < medium < large
+         must hold), fit variants with explicit px frames, and the circle
+         frames — all with locally generated SVG sources, never the
+         showcase's picsum seeds. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      body > h2 {
+        margin: 1rem 1.5rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--snice-color-text-tertiary);
+      }
+      .row { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-start; padding: 0 1.5rem 1rem; }
+      snice-image { display: inline-block; }
+    </style>
+  </head>
+  <body>
+    <h2>Shapes</h2>
+    <div class="row">
+      <snice-image id="img-rounded" src="" alt="Rounded image" variant="rounded"></snice-image>
+      <snice-image id="img-square" src="" alt="Square image" variant="square"></snice-image>
+      <snice-image id="img-circle" src="" alt="Circle image" variant="circle"></snice-image>
+    </div>
+
+    <h2>Shapes with size="medium"</h2>
+    <div class="row">
+      <snice-image src="" alt="Rounded" variant="rounded" size="medium"></snice-image>
+      <snice-image src="" alt="Square" variant="square" size="medium"></snice-image>
+      <snice-image src="" alt="Circle" variant="circle" size="medium"></snice-image>
+    </div>
+
+    <h2>Sizes</h2>
+    <div class="row"><snice-image id="img-small" src="" alt="Small" size="small"></snice-image></div>
+    <div class="row"><snice-image id="img-medium" src="" alt="Medium" size="medium"></snice-image></div>
+    <div class="row"><snice-image id="img-large" src="" alt="Large" size="large"></snice-image></div>
+
+    <h2>All Sizes Compared</h2>
+    <div class="row">
+      <snice-image src="" alt="Small" size="small"></snice-image>
+      <snice-image src="" alt="Medium" size="medium"></snice-image>
+      <snice-image src="" alt="Large" size="large"></snice-image>
+    </div>
+
+    <h2>Fit variants (explicit px frame)</h2>
+    <div class="row">
+      <snice-image src="" alt="Cover" fit="cover" width="200px" height="150px"></snice-image>
+      <snice-image src="" alt="Contain" fit="contain" width="200px" height="150px"></snice-image>
+      <snice-image src="" alt="Fill" fit="fill" width="200px" height="150px"></snice-image>
+      <snice-image src="" alt="None" fit="none" width="200px" height="150px"></snice-image>
+      <snice-image src="" alt="Scale-down" fit="scale-down" width="200px" height="150px"></snice-image>
+    </div>
+
+    <h2>Empty state (no src)</h2>
+    <div class="row"><snice-image alt="No image"></snice-image></div>
+
+    <script type="module">
+      import '/packages/components/src/image/snice-image.ts';
+
+      /** A locally generated photo, sized to the intrinsic box. */
+      function img(width, height, hex) {
+        return `data:image/svg+xml,${encodeURIComponent(
+          `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">`
+          + `<rect width="${width}" height="${height}" fill="${hex}"/>`
+          + `<circle cx="${width / 2}" cy="${height / 2}" r="${Math.min(width, height) / 3}" fill="rgba(255,255,255,0.3)"/>`
+          + `</svg>`)}`;
+      }
+
+      const sources = {
+        wide: img(300, 200, '#2563eb'),
+        square: img(200, 200, '#16a34a'),
+        tall: img(300, 500, '#ea580c'),
+      };
+
+      document.querySelectorAll('snice-image').forEach((el) => {
+        if (el.hasAttribute('src')) el.setAttribute('src', sources.wide);
+      });
+      document.getElementById('img-circle').setAttribute('src', sources.square);
+      document.getElementById('img-square').setAttribute('src', sources.square);
+
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

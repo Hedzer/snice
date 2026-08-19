@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/image/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/image/visual.html';
 
 test.describe('Snice Image visual integrity', () => {
   test.beforeEach(async ({ page }) => {
@@ -60,12 +60,11 @@ test.describe('Snice Image visual integrity', () => {
     expect(failures).toEqual([]);
   });
 
-  // BUG: size="large" renders SMALLER than size="medium" and identical to
-  // size="small". snice-image.css `.image--large` reads
-  // `var(--snice-spacing-3xl, 12rem)` — the same token `.image--small` uses
-  // (--snice-spacing-3xl = 4rem/64px) instead of a larger one, so the
-  // showcase's "All Sizes Compared" row measures 64 / 128 / 64 px.
-  test.fixme('size presets scale small < medium < large', async ({ page }) => {
+  // size="large" used to render SMALLER than size="medium" and identical to
+  // size="small": .image--large read var(--snice-spacing-3xl) — the same
+  // token .image--small uses. It is now 1.5x the --snice-spacing-5xl token,
+  // so the documented small < medium < large scale holds.
+  test('size presets scale small < medium < large', async ({ page }) => {
     const failures = await page.evaluate(() => {
       const problems: string[] = [];
       const boxOf = (el: Element) => (el as HTMLElement).shadowRoot!

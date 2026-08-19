@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/carousel/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/carousel/visual.html';
 
 test.describe('Snice Carousel visual integrity', () => {
   test.beforeEach(async ({ page }) => {
@@ -9,13 +9,9 @@ test.describe('Snice Carousel visual integrity', () => {
     await page.waitForFunction(() => !!customElements.get('snice-carousel'));
     await page.waitForFunction(() =>
       !!document.querySelector('snice-carousel')?.shadowRoot?.querySelector('.carousel__viewport'));
-    // Autoplay carousels would move mid-measurement; stop them all up front.
-    await page.evaluate(() => {
-      document.querySelectorAll('snice-carousel').forEach((c: any) => {
-        c.autoplay = false;
-        c.pause?.();
-      });
-    });
+    // The fixture has no autoplay carousels; the settle beat is for the
+    // initial active-index transform (lands at @ready) and the 300ms
+    // translate transition on the spaced views.
     await page.waitForTimeout(400);
   });
 
@@ -86,11 +82,12 @@ test.describe('Snice Carousel visual integrity', () => {
     expect(failures).toEqual([]);
   });
 
-  // BUG: with space-between > 0 the slide pitch is viewportWidth/spv +
-  // space/spv while the container translate step is only viewportWidth/spv,
-  // so every advance drifts the active slide right by space/spv px. Visible
-  // as a progressively mis-cropped first column on the spaced carousels.
-  test.fixme('advancing leaves the active slide flush with the viewport left edge', async ({ page }) => {
+  // The spaced views used to drift: the slide pitch is viewportWidth/spv +
+  // space/spv while the container translate step was only viewportWidth/spv,
+  // so every advance dragged the active slide right by space/spv px. The
+  // translate now includes the gap share (`calc(-k·100/spv% − k·space/spv
+  // px)`), so the active slide stays flush at any index.
+  test('advancing leaves the active slide flush with the viewport left edge', async ({ page }) => {
     const failures = await page.evaluate(async () => {
       const problems: string[] = [];
       const cars = [...document.querySelectorAll('snice-carousel')] as any[];
@@ -141,10 +138,11 @@ test.describe('Snice Carousel visual integrity', () => {
     expect(failures).toEqual([]);
   });
 
-  // BUG: `.carousel__controls` is `top: 50%` of `.carousel`, which also
-  // contains the indicator row (1rem margin + 8px dots). Whenever indicators
-  // are shown the arrows sit ~12px below the centre of the slide viewport.
-  test.fixme('prev/next controls are vertically centred on the slide viewport', async ({ page }) => {
+  // The controls used to hang ~12px below the slides' centre: they were
+  // floated at `top: 50%` of the whole container box, which includes the
+  // indicator row. They now live INSIDE the viewport (which is position:
+  // relative), so the dots cannot drag them down.
+  test('prev/next controls are vertically centred on the slide viewport', async ({ page }) => {
     const failures = await page.evaluate(() => {
       const problems: string[] = [];
       document.querySelectorAll('snice-carousel').forEach((car: any, i) => {

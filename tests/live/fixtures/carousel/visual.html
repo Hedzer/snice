@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-carousel visual fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. The carousels the visual-integrity spec
+         asserts on: the flag matrix, the spaced multi-slide views, the
+         active-index and loop boundaries. No autoplay — the slides must
+         never move on their own. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      body > section { padding: 1rem 1.5rem; }
+      body > section h2 {
+        margin: 0 0 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--snice-color-text-tertiary);
+      }
+      .slide {
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: var(--snice-color-text-inverse, rgb(250 250 250));
+        background: var(--snice-color-primary, rgb(37 99 235));
+        border-radius: var(--snice-border-radius-md, 0.25rem);
+      }
+      snice-carousel { display: block; }
+    </style>
+  </head>
+  <body>
+    <section>
+      <h2>Basic</h2>
+      <snice-carousel>
+        <div class="slide">1</div><div class="slide">2</div><div class="slide">3</div>
+        <div class="slide">4</div><div class="slide">5</div>
+      </snice-carousel>
+    </section>
+
+    <section>
+      <h2>show-controls="false"</h2>
+      <snice-carousel show-controls="false">
+        <div class="slide">1</div><div class="slide">2</div><div class="slide">3</div>
+      </snice-carousel>
+    </section>
+
+    <section>
+      <h2>show-indicators="false"</h2>
+      <snice-carousel show-indicators="false">
+        <div class="slide">1</div><div class="slide">2</div><div class="slide">3</div>
+      </snice-carousel>
+    </section>
+
+    <section>
+      <h2>no controls, no indicators</h2>
+      <snice-carousel show-controls="false" show-indicators="false">
+        <div class="slide">1</div><div class="slide">2</div><div class="slide">3</div>
+      </snice-carousel>
+    </section>
+
+    <section>
+      <h2>loop="false"</h2>
+      <snice-carousel loop="false">
+        <div class="slide">1</div><div class="slide">2</div><div class="slide">3</div>
+      </snice-carousel>
+    </section>
+
+    <section>
+      <h2>active-index="2" (start on slide 3)</h2>
+      <snice-carousel active-index="2">
+        <div class="slide">1</div><div class="slide">2</div><div class="slide">3</div>
+        <div class="slide">4</div>
+      </snice-carousel>
+    </section>
+
+    <section>
+      <h2>slides-per-view="2"</h2>
+      <snice-carousel slides-per-view="2">
+        <div class="slide">1</div><div class="slide">2</div><div class="slide">3</div>
+        <div class="slide">4</div><div class="slide">5</div>
+      </snice-carousel>
+    </section>
+
+    <section>
+      <h2>slides-per-view="3" space-between="16"</h2>
+      <snice-carousel slides-per-view="3" space-between="16">
+        <div class="slide">1</div><div class="slide">2</div><div class="slide">3</div>
+        <div class="slide">4</div><div class="slide">5</div><div class="slide">6</div>
+      </snice-carousel>
+    </section>
+
+    <section>
+      <h2>slides-per-view="4" space-between="8"</h2>
+      <snice-carousel slides-per-view="4" space-between="8">
+        <div class="slide">1</div><div class="slide">2</div><div class="slide">3</div>
+        <div class="slide">4</div><div class="slide">5</div><div class="slide">6</div>
+        <div class="slide">7</div><div class="slide">8</div>
+      </snice-carousel>
+    </section>
+
+    <section>
+      <h2>Two slides, loop="false"</h2>
+      <snice-carousel loop="false">
+        <div class="slide">First</div><div class="slide">Second</div>
+      </snice-carousel>
+    </section>
+
+    <section>
+      <h2>slides-per-view="2" space-between="32"</h2>
+      <snice-carousel slides-per-view="2" space-between="32">
+        <div class="slide">1</div><div class="slide">2</div><div class="slide">3</div>
+        <div class="slide">4</div>
+      </snice-carousel>
+    </section>
+
+    <script type="module">
+      import '/packages/components/src/carousel/snice-carousel.ts';
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

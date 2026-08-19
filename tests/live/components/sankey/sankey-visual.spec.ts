@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { collectVisualViolations } from '../../support/visual-invariants';
 
-const demoPath = 'http://localhost:5566/components/sankey/demo.html';
+const demoPath = 'http://localhost:5566/tests/live/fixtures/sankey/visual.html';
 
 test.describe('Snice Sankey visual integrity', () => {
   test.beforeEach(async ({ page }) => {
@@ -98,13 +98,12 @@ test.describe('Snice Sankey visual integrity', () => {
     expect(geom.padded.gap).toBeGreaterThan(geom.base.gap);
   });
 
-  // BUG: the chart reserves no horizontal margin for node text, so the outer
-  // columns' labels are clipped by the SVG viewport. At 1280px on this
-  // showcase: #s-default's "Organic Search" runs 10..107 against a chart that
-  // starts at 33; #s-complex's "Infrastructure" runs 1175..1258 against a chart
-  // ending at 1249; and with show-labels="false" (#s-no-labels) the value texts
-  // land entirely outside the chart (7..27 and 1255..1275) - completely invisible.
-  test.fixme('node labels and values are drawn inside the chart viewport', async ({ page }) => {
+  // The chart reserves no horizontal margin for node text at first layout,
+  // so the outer columns' labels spilled out of the SVG viewport ("Organic
+  // Search" ran 23px past the chart's left edge). The component now measures
+  // its drawn labels after the first render and grows the gutter until they
+  // fit.
+  test('node labels and values are drawn inside the chart viewport', async ({ page }) => {
     const failures = await page.evaluate(() => {
       const problems: string[] = [];
       [...document.querySelectorAll('snice-sankey')].forEach((chart: any) => {

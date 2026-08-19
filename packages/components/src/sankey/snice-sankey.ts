@@ -50,6 +50,10 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
   private hoveredLinkIndex: number | null = null;
   private chartWidth = 600;
   private chartHeight = 400;
+  /** Horizontal gutter each side for node labels/values; grown by the
+      post-render fit pass to the widest label actually drawn. */
+  private labelSpace = 80;
+  private fittingLabels = false;
   private resizeObserver: ResizeObserver | null = null;
 
   @dispatch('sankey-node-click', { bubbles: true, composed: true })
@@ -118,7 +122,7 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
     }
 
     const padding = 40;
-    const labelSpace = this.showLabels ? 80 : 0;
+    const labelSpace = this.showLabels ? this.labelSpace : 0;
     const width = this.chartWidth - labelSpace * 2;
     const height = this.chartHeight - padding * 2;
 
@@ -509,6 +513,34 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
     }
 
     chart.innerHTML = this.buildSVG();
+    this.fitLabelGutters(chart);
+  }
+
+  /**
+   * The label gutter is fixed at first layout, but a label wider than the
+   * gutter spills out of the viewBox (left labels run past x=0, right labels
+   * past the chart's right edge). Measure the drawn texts after the first
+   * render and, when any label needs more room, grow the gutter and redo the
+   * layout — one extra pass, because the re-layout changes no text widths.
+   */
+  private fitLabelGutters(chart: HTMLElement) {
+    if (!this.showLabels || this.fittingLabels) return;
+    const texts = [...chart.querySelectorAll<SVGTextElement>('text.sankey__label, text.sankey__value')];
+    if (texts.length === 0) return;
+
+    let needed = 80;
+    for (const text of texts) {
+      const width = text.getBBox().width;
+      if (width > needed) needed = width;
+    }
+    needed = Math.min(needed + 12, Math.max(12, (this.chartWidth - 40) / 2));
+    if (needed > this.labelSpace) {
+      this.labelSpace = needed;
+      this.fittingLabels = true;
+      this.computeLayout();
+      this.rebuildChart();
+      this.fittingLabels = false;
+    }
   }
 
   private buildSVG(): string {

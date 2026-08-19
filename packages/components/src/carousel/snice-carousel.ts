@@ -153,28 +153,28 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
           <div class="carousel__container" part="slides-container" aria-live="${this.autoplay ? 'off' : 'polite'}" aria-atomic="false">
             <slot></slot>
           </div>
-        </div>
 
-        <if ${this.showControls}>
-          <div class="carousel__controls" part="controls">
-            <button
-              class="carousel__button carousel__button--prev"
-              part="button-prev"
-              @click="${() => this.prev()}"
-              ?disabled="${!canGoPrev}"
-              aria-label="Previous slide">
-              <span>‹</span>
-            </button>
-            <button
-              class="carousel__button carousel__button--next"
-              part="button-next"
-              @click="${() => this.next()}"
-              ?disabled="${!canGoNext}"
-              aria-label="Next slide">
-              <span>›</span>
-            </button>
-          </div>
-        </if>
+          <if ${this.showControls}>
+            <div class="carousel__controls" part="controls">
+              <button
+                class="carousel__button carousel__button--prev"
+                part="button-prev"
+                @click="${() => this.prev()}"
+                ?disabled="${!canGoPrev}"
+                aria-label="Previous slide">
+                <span>‹</span>
+              </button>
+              <button
+                class="carousel__button carousel__button--next"
+                part="button-next"
+                @click="${() => this.next()}"
+                ?disabled="${!canGoNext}"
+                aria-label="Next slide">
+                <span>›</span>
+              </button>
+            </div>
+          </if>
+        </div>
 
         <if ${this.showIndicators}>
           <div class="carousel__indicators" part="indicators">

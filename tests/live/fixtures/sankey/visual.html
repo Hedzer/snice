@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-sankey visual fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. The charts the visual-integrity spec
+         asserts on — the alignment matrix, the label flag matrix, the
+         node-width/padding geometry charts, and the wide complex chart whose
+         labels are the ones that used to clip. All data is inline. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      body > h2 {
+        margin: 1rem 1.5rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--snice-color-text-tertiary);
+      }
+      body > section { padding: 0 1.5rem 1rem; }
+      snice-sankey { display: block; }
+    </style>
+  </head>
+  <body>
+    <h2>Default (justify)</h2>
+    <section><snice-sankey id="s-default"></snice-sankey></section>
+
+    <h2>alignment="left"</h2>
+    <section><snice-sankey id="s-left" alignment="left"></snice-sankey></section>
+
+    <h2>alignment="right"</h2>
+    <section><snice-sankey id="s-right" alignment="right"></snice-sankey></section>
+
+    <h2>alignment="center"</h2>
+    <section><snice-sankey id="s-center" alignment="center"></snice-sankey></section>
+
+    <h2>alignment="justify"</h2>
+    <section><snice-sankey id="s-justify" alignment="justify"></snice-sankey></section>
+
+    <h2>show-labels="false"</h2>
+    <section><snice-sankey id="s-no-labels" show-labels="false"></snice-sankey></section>
+
+    <h2>show-values="false"</h2>
+    <section><snice-sankey id="s-no-values" show-values="false"></snice-sankey></section>
+
+    <h2>show-labels="false" show-values="false"</h2>
+    <section><snice-sankey id="s-no-both" show-labels="false" show-values="false"></snice-sankey></section>
+
+    <h2>node-width="30"</h2>
+    <section><snice-sankey id="s-wide-node" node-width="30"></snice-sankey></section>
+
+    <h2>node-padding="20"</h2>
+    <section><snice-sankey id="s-pad" node-padding="20"></snice-sankey></section>
+
+    <h2>Complex (wide, long labels)</h2>
+    <section><snice-sankey id="s-complex" style="height:500px"></snice-sankey></section>
+
+    <script type="module">
+      import '/packages/components/src/sankey/snice-sankey.ts';
+
+      const basicData = {
+        nodes: [
+          { id: 'source1', label: 'Organic Search' },
+          { id: 'source2', label: 'Paid Ads' },
+          { id: 'source3', label: 'Social Media' },
+          { id: 'mid1', label: 'Landing Page' },
+          { id: 'mid2', label: 'Product Page' },
+          { id: 'end1', label: 'Purchase' },
+          { id: 'end2', label: 'Bounce' }
+        ],
+        links: [
+          { source: 'source1', target: 'mid1', value: 500 },
+          { source: 'source1', target: 'mid2', value: 300 },
+          { source: 'source2', target: 'mid1', value: 400 },
+          { source: 'source3', target: 'mid2', value: 200 },
+          { source: 'mid1', target: 'end1', value: 600 },
+          { source: 'mid1', target: 'end2', value: 300 },
+          { source: 'mid2', target: 'end1', value: 350 },
+          { source: 'mid2', target: 'end2', value: 150 }
+        ]
+      };
+
+      ['s-default', 's-left', 's-right', 's-center', 's-justify',
+        's-no-labels', 's-no-values', 's-no-both', 's-wide-node', 's-pad'
+      ].forEach(id => { document.getElementById(id).data = basicData; });
+
+      document.getElementById('s-complex').data = {
+        nodes: [
+          { id: 'budget', label: 'Budget' },
+          { id: 'eng', label: 'Engineering' },
+          { id: 'mkt', label: 'Marketing' },
+          { id: 'ops', label: 'Operations' },
+          { id: 'hr', label: 'HR' },
+          { id: 'sal', label: 'Salaries' },
+          { id: 'tools', label: 'Tools' },
+          { id: 'ads', label: 'Advertising' },
+          { id: 'events', label: 'Events' },
+          { id: 'infra', label: 'Infrastructure' },
+          { id: 'benefits', label: 'Benefits' }
+        ],
+        links: [
+          { source: 'budget', target: 'eng', value: 500 },
+          { source: 'budget', target: 'mkt', value: 300 },
+          { source: 'budget', target: 'ops', value: 200 },
+          { source: 'budget', target: 'hr', value: 150 },
+          { source: 'eng', target: 'sal', value: 350 },
+          { source: 'eng', target: 'tools', value: 150 },
+          { source: 'mkt', target: 'ads', value: 200 },
+          { source: 'mkt', target: 'events', value: 100 },
+          { source: 'ops', target: 'infra', value: 150 },
+          { source: 'ops', target: 'tools', value: 50 },
+          { source: 'hr', target: 'sal', value: 50 },
+          { source: 'hr', target: 'benefits', value: 100 },
+          { source: 'sal', target: 'benefits', value: 200 },
+          { source: 'sal', target: 'infra', value: 100 },
+          { source: 'tools', target: 'infra', value: 100 }
+        ]
+      };
+
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>
