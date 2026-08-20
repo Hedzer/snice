@@ -129,22 +129,38 @@ test.describe('Snice Calendar overlay anchoring', () => {
     const tooltip = page.locator('#cal-default .calendar__tooltip');
     await expect(tooltip).toBeVisible();
 
+    // Under heavy parallel load the bar can transiently lose its box (the
+    // page is still settling); wait for it to hold a real box before the
+    // anchor math, so the measurement is of the settled bar.
+    await expect.poll(() => bar.boundingBox()).not.toBeNull();
+
     // The tooltip fades/slides in; toBeVisible fires at the START of that
     // transition, when the tip is still moving toward its anchor. Under
     // parallel-load contention the transition can still be mid-flight at
     // measurement time, so wait for the anchor to actually hold instead of
-    // measuring an arbitrary frame.
+    // measuring an arbitrary frame. Boxes come from getBoundingClientRect
+    // (real geometry), not boundingBox() — the latter's visibility filter
+    // can null a bar that is genuinely laid out mid-page under load.
+    const boxOf = async (locator: import('@playwright/test').Locator) =>
+      locator.evaluate((el) => {
+        const r = (el as HTMLElement).getBoundingClientRect();
+        return r.width > 0 && r.height > 0
+          ? { x: r.left, y: r.top, width: r.width, height: r.height }
+          : null;
+      });
     await expect(async () => {
-      const barBox = (await bar.boundingBox())!;
-      const tipBox = (await tooltip.boundingBox())!;
+      const barBox = await boxOf(bar);
+      const tipBox = await boxOf(tooltip);
+      expect(barBox && tipBox, 'bar or tooltip lost its box').toBeTruthy();
+      if (!barBox || !tipBox) return;
       const above = barBox.y - (tipBox.y + tipBox.height);
       const below = tipBox.y - (barBox.y + barBox.height);
       expect(Math.min(Math.abs(above), Math.abs(below))).toBeLessThanOrEqual(GAP);
       expect(Math.abs(tipBox.x - barBox.x)).toBeLessThanOrEqual(GAP);
     }).toPass();
 
-    const barBox = (await bar.boundingBox())!;
-    const tipBox = (await tooltip.boundingBox())!;
+    const barBox = (await boxOf(bar))!;
+    const tipBox = (await boxOf(tooltip))!;
     const above = barBox.y - (tipBox.y + tipBox.height);
     const below = tipBox.y - (barBox.y + barBox.height);
     expect(Math.min(Math.abs(above), Math.abs(below))).toBeLessThanOrEqual(GAP);
