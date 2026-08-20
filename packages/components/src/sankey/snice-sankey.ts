@@ -122,7 +122,9 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
     }
 
     const padding = 40;
-    const labelSpace = this.showLabels ? this.labelSpace : 0;
+    // The gutter serves the outer columns' labels AND their value lines —
+    // either can run wider than the chart edge when the other is hidden.
+    const labelSpace = (this.showLabels || this.showValues) ? this.labelSpace : 0;
     const width = this.chartWidth - labelSpace * 2;
     const height = this.chartHeight - padding * 2;
 
@@ -524,7 +526,7 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
    * layout — one extra pass, because the re-layout changes no text widths.
    */
   private fitLabelGutters(chart: HTMLElement) {
-    if (!this.showLabels || this.fittingLabels) return;
+    if ((!this.showLabels && !this.showValues) || this.fittingLabels) return;
     const texts = [...chart.querySelectorAll<SVGTextElement>('text.sankey__label, text.sankey__value')];
     if (texts.length === 0) return;
 

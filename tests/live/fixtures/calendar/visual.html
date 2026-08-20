@@ -35,6 +35,10 @@
         color: var(--snice-color-text-tertiary);
       }
       snice-calendar { display: block; }
+      /* The showcase constrains the default calendar to 400px; the chip
+         legibility spec's one-cell/wide thresholds derive from that width,
+         so the fixture keeps it. */
+      #cal-default { max-width: 400px; }
     </style>
   </head>
   <body>
@@ -121,6 +125,13 @@
           <p style="margin:0.5rem 0">${fmt(new Date(event.start))} → ${fmt(new Date(event.end || event.start))}</p>`;
         return card;
       };
+      calDefault.eventTooltip = async (event) => {
+        await new Promise((r) => setTimeout(r, 200));
+        const card = document.createElement('div');
+        card.innerHTML = `<strong>${event.title}</strong>
+          <p style="margin:0.4rem 0;color:var(--snice-color-text-tertiary)">${fmt(new Date(event.start))}</p>`;
+        return card;
+      };
 
       const calPopover = document.getElementById('cal-popover');
       calPopover.events = [
@@ -143,9 +154,9 @@
       ];
 
       document.getElementById('cal-multi-events').events = [
-        { id: 'm1', title: 'Standup', start: addDays(today, 1), color: '#2563eb' },
-        { id: 'm2', title: 'Review', start: addDays(today, 1), color: '#16a34a' },
-        { id: 'm3', title: 'Retro', start: addDays(today, 1), color: '#7c3aed' },
+        { id: 'm1', title: 'Event A', start: addDays(today, 1), color: '#2563eb' },
+        { id: 'm2', title: 'Event B', start: addDays(today, 1), color: '#16a34a' },
+        { id: 'm3', title: 'Event C', start: addDays(today, 1), color: '#7c3aed' },
       ];
 
       document.documentElement.dataset.fixtureReady = 'true';
