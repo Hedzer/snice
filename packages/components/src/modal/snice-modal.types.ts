@@ -10,6 +10,8 @@ export interface SniceModalElement extends HTMLElement {
   noHeader: boolean;
   noFooter: boolean;
   label: string;
+  topLayer: boolean;
+  container?: string | Element;
   show(): void;
   close(): void;
 }

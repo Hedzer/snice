@@ -10,6 +10,9 @@
  *   size: small|medium|large|fullscreen = 'medium'
  *   noBackdropDismiss / noEscapeDismiss / noFocusTrap
  *   noCloseButton / noHeader / noFooter
+ *   topLayer: boolean = false           the Popover-API top-layer opt-in
+ *   container: string = ''              CSS selector (Element values are set
+ *                                       through the property channel in tests)
  *   label: string = ''                  the accessible label
  *   show() / close()
  *   events: modal-open → { modal }, modal-close → { modal }
@@ -71,6 +74,8 @@ export interface ModalSpec {
   noCloseButton: boolean;
   noHeader: boolean;
   noFooter: boolean;
+  topLayer: boolean;
+  container: string;
 }
 
 export function spec(overrides: Partial<ModalSpec> = {}): ModalSpec {
@@ -86,6 +91,8 @@ export function spec(overrides: Partial<ModalSpec> = {}): ModalSpec {
     noCloseButton: false,
     noHeader: false,
     noFooter: false,
+    topLayer: false,
+    container: '',
     ...overrides,
   };
 }
@@ -114,6 +121,8 @@ export async function makeModal(s: ModalSpec): Promise<HTMLElement> {
   el.setAttribute('size', s.size);
   if (s.label) el.setAttribute('label', s.label);
   for (const name of SWITCHES) if (s[name]) el.setAttribute(ATTR[name], '');
+  if (s.topLayer) el.setAttribute('top-layer', '');
+  if (s.container) el.setAttribute('container', s.container);
   if (s.open) el.setAttribute('open', '');
   el.innerHTML = lightDomFor(s);
   document.body.appendChild(el);

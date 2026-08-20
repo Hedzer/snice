@@ -30,6 +30,8 @@ A dialog overlay with focus trapping, backdrop dismiss, and keyboard navigation.
 | `noHeader` (attr: `no-header`) | `boolean` | `false` | Hide the header section entirely |
 | `noFooter` (attr: `no-footer`) | `boolean` | `false` | Hide the footer section entirely |
 | `label` | `string` | `''` | Accessible label for screen readers |
+| `topLayer` (attr: `top-layer`) | `boolean` | `false` | Render the overlay in the browser top layer (Popover API), above any ancestor stacking context |
+| `container` | `string \| Element` | `undefined` | Center the modal inside this element's bounding box instead of the viewport (CSS selector or element) |
 
 ## Methods
 
@@ -183,6 +185,41 @@ modal.close(); // Close
 modal.addEventListener('modal-open', () => console.log('Opened'));
 modal.addEventListener('modal-close', () => console.log('Closed'));
 ```
+
+### Top Layer
+
+Set `top-layer` to render the overlay in the browser's native top layer, so it paints above every ancestor stacking context. This escapes shells where a fixed overlay would otherwise lose to a `header { position: relative; z-index: 1020 }` — no `--modal-z-index` can win that fight, the top layer can. The component uses the native Popover API (`popover="manual"` + `showPopover()`); engines without it silently fall back to normal z-index stacking.
+
+```html
+<snice-modal top-layer label="Confirm Action">
+  <div slot="header"><h2>Confirm</h2></div>
+  <p>This modal paints above the app shell header.</p>
+</snice-modal>
+```
+
+Note: while the modal is in the top layer, `z-index` has no effect — the top layer is above everything by construction.
+
+### Container
+
+Set `container` to a CSS selector (or an element, when assigning from JavaScript) to center the modal inside that element's bounding box instead of the full viewport. This is how a modal excludes a sidebar: with `container=".main"` the overlay spans only the main content column and the panel centers within it. The overlay re-measures on container resize and scroll and on window resize. An unresolvable selector falls back to the full viewport and logs a warning.
+
+```html
+<snice-modal container=".main" label="Edit Profile">
+  <div slot="header"><h2>Edit Profile</h2></div>
+  <p>This modal stays centered within the main column, not the page.</p>
+</snice-modal>
+```
+
+```typescript
+const modal = document.querySelector('snice-modal');
+modal.container = document.querySelector('.main');
+
+// Or both properties at once: top layer, constrained to the container's box
+modal.topLayer = true;
+modal.container = document.querySelector('.main');
+```
+
+`top-layer` and `container` combine: the overlay enters the top layer and is constrained to the container's box.
 
 ## Keyboard Navigation
 

@@ -1,7 +1,7 @@
 /**
  * Smoke slice of the snice-modal matrix — the everyday-loop tier.
  *
- * The full matrix (tests/matrix/modal/, 60 combos) is excluded from the default
+ * The full matrix (tests/matrix/modal/, 72 combos) is excluded from the default
  * Vitest include and runs via `npm run test:matrix`. This file lives at
  * `smoke.test.ts` so it stays collected, and every assertion routes through the
  * matrix's own oracle.
@@ -11,7 +11,7 @@
  *
  * BUDGET: under 1s.
  */
-import { describe, it, afterEach } from 'vitest';
+import { describe, it, afterEach, beforeEach } from 'vitest';
 import {
   Problems, captureEvents, click, expectClean, removeComponent, wait,
 } from '../matrix-kit';
@@ -113,5 +113,101 @@ describe('modal matrix smoke', () => {
     problems.equal(active, nodes[nodes.length - 1], 'no-focus-trap moved focus anyway');
 
     expectClean(problems, 'smoke/focus');
+  });
+
+  // ── the new feature families, one combo each ──────────────────────────────
+  //
+  // The matrix's top-layer block stubs `showPopover`/`hidePopover` onto
+  // `HTMLElement.prototype`; the smoke slice needs the same seam in
+  // miniature. The component feature-detects PER OVERLAY at show time
+  // (`typeof overlay.showPopover !== 'function'` in showOverlay), so a
+  // prototype stub present when the modal opens exercises the real
+  // top-layer branch. Removed again in the afterEach below.
+  let smokeShowCalls = 0;
+  let smokeHideCalls = 0;
+  let smokeStubInstalled = false;
+
+  function installPopoverStub() {
+    if (smokeStubInstalled) return;
+    smokeStubInstalled = true;
+    smokeShowCalls = 0;
+    smokeHideCalls = 0;
+    const proto = HTMLElement.prototype as Record<string, unknown>;
+    proto.showPopover = function (this: HTMLElement) {
+      smokeShowCalls++;
+      (this as Record<string, unknown>)._popoverOpen = true;
+    };
+    proto.hidePopover = function (this: HTMLElement) {
+      smokeHideCalls++;
+      (this as Record<string, unknown>)._popoverOpen = false;
+    };
+  }
+
+  function removePopoverStub() {
+    if (!smokeStubInstalled) return;
+    smokeStubInstalled = false;
+    smokeShowCalls = 0;
+    smokeHideCalls = 0;
+    const proto = HTMLElement.prototype as Record<string, unknown>;
+    delete proto.showPopover;
+    delete proto.hidePopover;
+  }
+
+  beforeEach(installPopoverStub);
+  afterEach(removePopoverStub);
+
+  it('top-layer lifts the overlay via showPopover() and defers hidePopover() past the close transition', async () => {
+    el = await makeModal(spec({ topLayer: true, open: true }));
+    const problems = new Problems();
+    const overlay = dialogOf(el);
+
+    problems.equal(smokeShowCalls, 1, 'showPopover() on an authored-open modal');
+    problems.equal(overlay?.getAttribute('popover'), 'manual', 'popover attribute');
+    problems.check((overlay as any)?._popoverOpen === true, 'the overlay is not flagged open');
+
+    (el as any).close();
+    await wait(40);
+    problems.equal(smokeHideCalls, 0, 'hidePopover() ran before the transition');
+    problems.check((overlay as any)?._popoverOpen === true, 'the overlay was hidden before the transition');
+
+    await wait(400);
+    problems.equal(smokeHideCalls, 1, 'hidePopover() never ran after the transition');
+    problems.check((overlay as any)?._popoverOpen === false, 'the overlay is still flagged open after the deferred hide');
+
+    expectClean(problems, 'smoke/top-layer');
+  });
+
+  it('container pins the overlay to the selector box and clears it only after the close transition', async () => {
+    // happy-dom does no layout, so give the container a KNOWN rect and assert
+    // the MECHANISM — the exact inset string the formula encodes — as the
+    // matrix does. Geometry truth is the visual tier's job.
+    const box = document.createElement('div');
+    box.id = 'smoke-main';
+    const rect = { top: 40, right: 400, bottom: 300, left: 20, width: 380, height: 260, x: 20, y: 40, toJSON: () => ({}) };
+    box.getBoundingClientRect = (() => rect) as unknown as HTMLElement['getBoundingClientRect'];
+    document.body.appendChild(box);
+    const inset = `${rect.top}px ${window.innerWidth - rect.right}px ${window.innerHeight - rect.bottom}px ${rect.left}px`;
+
+    el = await makeModal(spec({ container: '#smoke-main' }));
+    const problems = new Problems();
+    const overlay = dialogOf(el);
+
+    (el as any).show();
+    await wait(40);
+    problems.equal(overlay?.style.inset, inset, 'inset on open');
+    problems.check(overlay?.classList.contains('modal--container'), 'no modal--container class');
+
+    (el as any).close();
+    await wait(40);
+    // The geometry survives the exit window so the panel cannot re-center
+    // mid-fade (F1) — only the deferred half clears it afterwards.
+    problems.equal(overlay?.style.inset, inset, 'inset cleared before the exit transition');
+    problems.check(overlay?.classList.contains('modal--container'), 'modal--container dropped before the exit transition');
+
+    await wait(400);
+    problems.equal(overlay?.style.inset, '', 'inset left after the exit transition');
+    problems.check(overlay?.classList.contains('modal--container') === false, 'modal--container left after the exit transition');
+
+    expectClean(problems, 'smoke/container');
   });
 });

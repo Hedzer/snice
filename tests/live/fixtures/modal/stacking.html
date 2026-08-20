@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>snice-modal stacking &amp; container fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE for MODAL-3 (top-layer / container), not a showcase.
+       *
+       * The validated bug this locks in: a fixed modal hosted inside
+       * main { position: relative; z-index: 0 } paints INSIDE that stacking
+       * context, so the shell header — positioned, z-index: 1020 — paints
+       * above it no matter what --modal-z-index says. Because the panel is
+       * viewport-centered, its top strip lands at y ≈ 24px, geometrically
+       * INSIDE the 64px header band — a real-input click there is the probe
+       * that separates "header painted over the modal" from "modal on top".
+       *
+       * Geometry is pinned so every engine measures the same boxes:
+       *   - the fixed sidebar owns [0, 240], so .shell__main's center-x
+       *     (760) differs from the viewport center-x (640) by 120px —
+       *     "centered in the container" is distinguishable from
+       *     "centered in the viewport";
+       *   - .shell__main is exactly 100vh tall and the page never scrolls,
+       *     so the container overlay's inline inset is exact ("0px 0px 0px
+       *     240px") and the 110vh modal content caps the panel. The cap is
+       *     `max-height: 100%` resolving against the overlay flex box's
+       *     CONTENT box — the padding sits outside it, so the panel ends at
+       *     100vh - 2 * padding = 672px, pinning panel top at 24px (a
+       *     `calc(100% - 2 * padding)` there would subtract the padding
+       *     twice);
+       *   - the opener buttons sit below the header band (padding-top on
+       *     .shell__main) so a real click reaches them instead of the
+       *     z-index: 1020 header that paints over the band.
+       *
+       * LOCAL only: imports the modal source + theme.css, nothing remote.
+       */
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+        background: var(--snice-color-surface, #fff);
+        color: var(--snice-color-text);
+      }
+
+      /* The trap: this header must out-paint every modal inside main's
+         stacking context, in every engine, without top-layer. */
+      .shell__header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        z-index: 1020;
+        background: rgb(13 48 94);
+        color: white;
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+        font-weight: 600;
+      }
+
+      .shell__sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 240px;
+        z-index: 0;
+        background: rgb(226 232 240);
+        border-right: 1px solid rgb(203 213 225);
+      }
+
+      .shell__main {
+        position: relative;
+        z-index: 0;
+        margin-left: 240px;
+        height: 100vh;
+        padding: 80px 1.5rem 1.5rem;
+        box-sizing: border-box;
+      }
+
+      .toolbar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+      .fixture-btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--snice-color-border, #ddd);
+        border-radius: 6px;
+        background: var(--snice-color-surface-container-high, #f9f9f9);
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: var(--snice-color-text);
+      }
+      .tall { height: 110vh; }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="shell__header">Shell header (z-index 1020)</header>
+      <aside class="shell__sidebar">Sidebar (240px)</aside>
+      <main class="shell__main">
+        <div class="toolbar">
+          <button id="opener-trap" class="fixture-btn" onclick="document.getElementById('stack-modal').show()">Open trap</button>
+          <button id="opener-top" class="fixture-btn" onclick="document.getElementById('stack-modal-top').show()">Open top-layer</button>
+          <button id="opener-container" class="fixture-btn" onclick="document.getElementById('stack-modal-container').show()">Open container</button>
+          <button id="opener-both" class="fixture-btn" onclick="document.getElementById('stack-modal-both').show()">Open both</button>
+        </div>
+
+        <snice-modal id="stack-modal" label="Trap modal">
+          <h3 slot="header">Trap modal</h3>
+          <div class="tall">
+            <p>Tall modal content — no top-layer, no container. The panel caps at
+              100vh minus padding, so its top strip overlaps the shell header's
+              paint band and the header wins the hit-test.</p>
+          </div>
+          <div slot="footer"><button class="fixture-btn">Footer action</button></div>
+        </snice-modal>
+
+        <snice-modal id="stack-modal-top" top-layer label="Top-layer modal">
+          <h3 slot="header">Top-layer modal</h3>
+          <div class="tall">
+            <p>Same shell, top-layer set: the overlay rides the browser TOP LAYER
+              via popover=&quot;manual&quot; + showPopover(), so the same hit-test
+              must land on this panel instead of the header.</p>
+          </div>
+          <div slot="footer"><button class="fixture-btn">Footer action</button></div>
+        </snice-modal>
+
+        <snice-modal id="stack-modal-container" container=".shell__main" label="Container modal">
+          <h3 slot="header">Container modal</h3>
+          <div class="tall">
+            <p>container=&quot;.shell__main&quot;: the fixed overlay is pinned to
+              main's box, so the panel centers at x=760 — inside the sidebar
+              offset from the viewport center (640) — and the overlay's inline
+              inset matches main's rect exactly.</p>
+          </div>
+          <div slot="footer"><button class="fixture-btn">Footer action</button></div>
+        </snice-modal>
+
+        <snice-modal id="stack-modal-both" top-layer container=".shell__main" label="Both modal">
+          <h3 slot="header">Top-layer + container</h3>
+          <div class="tall">
+            <p>top-layer and container together: centered within main's box AND
+              painted above the shell header at the panel's top strip.</p>
+          </div>
+          <div slot="footer"><button class="fixture-btn">Footer action</button></div>
+        </snice-modal>
+      </main>
+    </div>
+
+    <script type="module">
+      import '/packages/components/src/modal/snice-modal.ts';
+      if (document.fonts?.ready) await document.fonts.ready;
+      document.documentElement.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

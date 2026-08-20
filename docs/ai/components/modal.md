@@ -14,7 +14,12 @@ noCloseButton: boolean = false;      // attr: no-close-button
 noHeader: boolean = false;           // attr: no-header
 noFooter: boolean = false;           // attr: no-footer
 label: string = '';                  // Accessible label
+topLayer: boolean = false;           // attr: top-layer — show in browser top layer (Popover API)
+container?: string | Element;        // attr: container — center inside this element's box (CSS selector or Element)
 ```
+
+- `top-layer` renders the overlay in the browser TOP LAYER (native `popover="manual"` + `showPopover()`), immune to ancestor stacking contexts — no z-index can lose to `header { z-index: 1020 }`. Unsupported engines fall back to class-only toggle. z-index is irrelevant while in the top layer.
+- `container` pins the fixed overlay to the container's bounding box; the panel centers inside it (exclude a sidebar: `container="main"`). Unresolvable selector → viewport fallback + console.warn. Re-measured on container resize/scroll and window resize while open. Panel `max-height` becomes container-relative when set.
 
 ## Methods
 
@@ -62,6 +67,22 @@ import 'snice/components/modal/snice-modal';
 modal.show();
 modal.close();
 modal.addEventListener('modal-close', () => console.log('Closed'));
+```
+
+## Examples
+
+```html
+<!-- Overlay above any ancestor stacking context (e.g. a shell header) -->
+<snice-modal top-layer label="Confirm Action">...</snice-modal>
+
+<!-- Center inside a container instead of the viewport (excludes a sidebar) -->
+<snice-modal container=".main" label="Edit Profile">...</snice-modal>
+```
+
+```typescript
+// Both at once: top layer, constrained to the container's box
+modal.topLayer = true;
+modal.container = document.querySelector('.main');
 ```
 
 ## CSS Custom Properties
