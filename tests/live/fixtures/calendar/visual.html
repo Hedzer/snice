@@ -126,11 +126,11 @@
         return card;
       };
       calDefault.eventTooltip = async (event) => {
-        await new Promise((r) => setTimeout(r, 200));
-        const card = document.createElement('div');
-        card.innerHTML = `<strong>${event.title}</strong>
-          <p style="margin:0.4rem 0;color:var(--snice-color-text-tertiary)">${fmt(new Date(event.start))}</p>`;
-        return card;
+        await new Promise((r) => setTimeout(r, 120));
+        const rich = document.createElement('div');
+        const range = event.end ? `${fmt(new Date(event.start))} → ${fmt(new Date(event.end))}` : fmt(new Date(event.start));
+        rich.innerHTML = `<strong>${event.title}</strong><br><small>${range}</small>`;
+        return rich;
       };
 
       const calPopover = document.getElementById('cal-popover');

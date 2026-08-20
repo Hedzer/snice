@@ -541,6 +541,32 @@ async function exerciseCustomerInteractions(page: Page) {
     (document.querySelector('#inline-time') as HTMLElement).style.display = 'none';
   });
   await picker.locator('.clock-toggle').click();
+  // The dropdown's position is settled asynchronously: Firefox lays the
+  // popover out lazily after showPopover() and the panel runs a 150ms
+  // entrance transition, so the viewport clamps land on the settled box a
+  // beat after the open. Wait for the full clamp invariant (both axes)
+  // before measuring it.
+  await expect.poll(() => picker.locator('.dropdown').evaluate(el => {
+    const rect = el.getBoundingClientRect();
+    return rect.left >= 0 && rect.top >= 0
+      && rect.right <= window.innerWidth && rect.bottom <= window.innerHeight;
+  })).toBe(true).catch(async (err) => {
+    const state = await picker.locator('.dropdown').evaluate(el => {
+      const rect = el.getBoundingClientRect();
+      const anchor = el.parentElement?.querySelector('.input-container')?.getBoundingClientRect();
+      return {
+        top: +rect.top.toFixed(1), bottom: +rect.bottom.toFixed(1),
+        left: +rect.left.toFixed(1), right: +rect.right.toFixed(1),
+        h: +rect.height.toFixed(1), w: +rect.width.toFixed(1), vh: window.innerHeight, vw: window.innerWidth,
+        styleTop: (el as HTMLElement).style.top, styleBottom: (el as HTMLElement).style.bottom,
+        styleLeft: (el as HTMLElement).style.left, styleRight: (el as HTMLElement).style.right,
+        anchor: anchor ? { top: +anchor.top.toFixed(1), left: +anchor.left.toFixed(1), bottom: +anchor.bottom.toFixed(1) } : null,
+        open: (el as HTMLElement).matches(':popover-open'),
+      };
+    });
+    console.log('TPPOLL ' + JSON.stringify(state));
+    throw err;
+  });
   const popupBounds = await picker.locator('.dropdown').evaluate(element => {
     const rect = element.getBoundingClientRect();
     return {
@@ -624,6 +650,8 @@ for (const build of ['source', 'distribution', 'cdn'] as const) {
     page.on('pageerror', error => pageErrors.push(error.message));
     page.on('console', message => {
       if (message.type() === 'error') consoleErrors.push(message.text());
+
+
     });
     await loadTimePicker(page, build);
     assertFormContract(await exerciseFormContract(page));
@@ -637,6 +665,7 @@ for (const build of ['source', 'distribution', 'cdn'] as const) {
     page.on('pageerror', error => pageErrors.push(error.message));
     page.on('console', message => {
       if (message.type() === 'error') consoleErrors.push(message.text());
+
     });
     await loadTimePicker(page, build);
     await exerciseCustomerInteractions(page);

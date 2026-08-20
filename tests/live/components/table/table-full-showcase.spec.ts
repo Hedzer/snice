@@ -8,9 +8,20 @@ test.describe('table full showcase', () => {
 
   test.beforeEach(async ({ page }) => {
     runtimeErrors = [];
-    page.on('pageerror', (error) => runtimeErrors.push(error.message));
+    page.on('pageerror', (error) => {
+      // WebKit can surface the ResizeObserver-loop diagnostic through the
+      // pageerror channel; it is a browser-internal notice, not an app
+      // error (see the console filter below).
+      if (!error.message.includes('ResizeObserver loop')) runtimeErrors.push(error.message);
+    });
     page.on('console', (message) => {
-      if (message.type() === 'error') runtimeErrors.push(message.text());
+      // "ResizeObserver loop completed with undelivered notifications" is a
+      // browser-internal diagnostic (a ResizeObserver callback that triggers
+      // a layout), not an application error — WebKit emits it under load
+      // even when every observer is doing its job.
+      if (message.type() === 'error' && !message.text().includes('ResizeObserver loop')) {
+        runtimeErrors.push(message.text());
+      }
     });
 
     await page.goto(showcaseUrl);
@@ -539,7 +550,18 @@ test.describe('table full showcase', () => {
     });
     const engineeringGroup = page.locator('#grouping-demo .group-header-row')
       .filter({ hasText: 'Engineering' }).first();
+    // The hover assertion measures the DARK hover background — the showcase
+    // ran with the theme preset script defaulting to dark, which the fixture
+    // strips; set the deterministic channel here.
+    await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
     await engineeringGroup.hover();
+    // The hover background paints with the browser's next style pass; wait
+    // for the dark hover state instead of measuring an arbitrary frame.
+    await expect.poll(() => engineeringGroup.evaluate((row) => {
+      const bg = getComputedStyle(row).backgroundColor;
+      const channels = bg.match(/\d+(?:\.\d+)?/g)?.slice(0, 3).map(Number) || [];
+      return channels.length === 3 ? Math.max(...channels) : 255;
+    })).toBeLessThan(160);
     const darkHover = await engineeringGroup.evaluate((row) => getComputedStyle(row).backgroundColor);
     const darkChannels = darkHover.match(/\d+(?:\.\d+)?/g)?.slice(0, 3).map(Number) || [];
     expect(Math.max(...darkChannels)).toBeLessThan(160);

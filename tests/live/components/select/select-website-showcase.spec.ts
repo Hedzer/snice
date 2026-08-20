@@ -70,9 +70,9 @@ test('select full showcase renders and exercises its external-label lifecycle', 
   expect(await page.evaluate(() => document.documentElement.scrollWidth))
     .toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth));
 
-  await page.evaluate(() => localStorage.setItem('snice-theme', 'light'));
-  await page.reload({ waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => document.documentElement.getAttribute('data-theme') === 'light');
+  // The fixture has no localStorage theme script; the deterministic
+  // channel is the attribute itself.
+  await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'light'));
   await expect(page.locator('#select-label-lifecycle')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth))
     .toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth));

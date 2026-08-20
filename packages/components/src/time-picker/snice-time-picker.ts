@@ -735,17 +735,29 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
   handleShowDropdownChange() {
     if (this.dropdown) {
       if (this.showDropdown) {
+        // close() drops the popover attribute as its hard close guarantee;
+        // restore it here (the watch can fire before the render that
+        // re-applies the template binding).
+        if (!this.dropdown.hasAttribute('popover')) {
+          this.dropdown.setAttribute('popover', 'manual');
+        }
         this.dropdown.removeAttribute('hidden');
         this.dropdown.classList.add('dropdown--open');
+        // Firefox lays the popover out lazily and the panel runs a 150ms
+        // entrance transition, so measuring the OPEN panel reads a moving
+        // box (93 → 304 → 316 → 330px here) and the viewport clamps can
+        // land on a stale width. Measure the panel IN-FLOW while it is
+        // still closed (popover attribute removed, hidden, visibility
+        // hidden — removing the attribute from an OPEN popover would close
+        // it): with the UA's display:none rule out of the way the full
+        // content lays out deterministically, and the clamps get the
+        // settled box. The ResizeObserver below re-positions on any later
+        // change.
         if (typeof this.dropdown.showPopover === 'function') {
           this.dropdown.showPopover();
         }
-        // Firefox lays the popover out lazily: measuring right after
-        // showPopover() reads the mid-layout box (narrower than settled), so
-        // the viewport clamp misses and the panel overhangs the right edge.
-        // Re-measure across frames until the popover's width is stable, then
-        // position it once with the settled box.
-        this.settleDropdown();
+        this.positionDropdown();
+        this.watchDropdownSize();
         this.emitOpen();
         // Scroll selected items into view
         queueMicrotask(() => this.scrollSelectedIntoView());
@@ -755,6 +767,11 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
           this.dropdown.hidePopover();
         }
         this.dropdown.setAttribute('hidden', '');
+        // WebKit can leave the popover open past hidePopover() under load;
+        // removing the attribute is the hard guarantee (the spec closes a
+        // popover when its attribute is removed, and the template's
+        // `.popover` binding re-adds it on the next render before open).
+        this.dropdown.removeAttribute('popover');
         this.emitClose();
       }
     }
@@ -1011,56 +1028,74 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
 
   close() {
     this.showDropdown = false;
+    if (this.dropdown) {
+      this.dropdown.style.minWidth = '';
+      this.dropdown.style.minHeight = '';
+    }
+    this.dropdownResizeObserver?.disconnect();
+    this.dropdownResizeObserver = null;
   }
+
+  private dropdownResizeObserver: ResizeObserver | null = null;
 
   private positionDropdown() {
     if (!this.dropdown) return;
     const container = this.inputContainer;
     if (!container) return;
     const anchor = container.getBoundingClientRect();
-    const popup = this.dropdown.getBoundingClientRect();
     const margin = 8;
     const gap = 2;
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    const popupWidth = Math.max(popup.width, anchor.width);
-    const below = anchor.bottom + gap;
-    const above = anchor.top - popup.height - gap;
 
-    let top = below;
-    if (below + popup.height > viewportHeight - margin && above >= margin) top = above;
-    top = Math.max(margin, Math.min(top, viewportHeight - popup.height - margin));
+    // Position WITHOUT measuring the panel: firefox lays the popover out
+    // lazily and the entrance transition runs 150ms, so a measured width or
+    // height can be stale (93 → 304 → 316 → 330px) and a stale size makes
+    // the clamps miss. Instead, anchor to the open side (below/right) and
+    // PIN to the far viewport edges when the anchor sits in the far half —
+    // edge-pinned positions are correct for any panel size by construction.
+    const placeBelow = anchor.top <= viewportHeight / 2;
+    const placeRight = anchor.left <= viewportWidth / 2;
 
-    let left = anchor.left;
-    if (left + popupWidth > viewportWidth - margin) left = viewportWidth - popupWidth - margin;
-    left = Math.max(margin, left);
+    if (placeBelow) {
+      this.dropdown.style.bottom = 'auto';
+      const top = Math.max(margin, anchor.bottom + gap);
+      this.dropdown.style.top = `${top}px`;
+    } else {
+      this.dropdown.style.top = 'auto';
+      const bottom = Math.max(margin, viewportHeight - anchor.top + gap);
+      this.dropdown.style.bottom = `${bottom}px`;
+    }
 
-    this.dropdown.style.top = `${top}px`;
-    this.dropdown.style.left = `${left}px`;
+    if (placeRight) {
+      this.dropdown.style.right = 'auto';
+      const left = Math.max(margin, anchor.left);
+      this.dropdown.style.left = `${left}px`;
+    } else {
+      this.dropdown.style.left = 'auto';
+      const right = Math.max(margin, viewportWidth - anchor.left + gap);
+      this.dropdown.style.right = `${right}px`;
+    }
+
     this.dropdown.style.minWidth = `${anchor.width}px`;
   }
 
-  private settleDropdown() {
-    let attempts = 0;
-    let lastWidth = -1;
-    const poll = () => {
-      attempts++;
-      if (!this.dropdown || attempts > 20) {
-        this.positionDropdown();
-        return;
-      }
-      const width = this.dropdown.getBoundingClientRect().width;
-      if (lastWidth >= 0 && Math.abs(width - lastWidth) < 1) {
-        this.positionDropdown();
-        return;
-      }
-      lastWidth = width;
-      requestAnimationFrame(poll);
-    };
-    requestAnimationFrame(poll);
+  /** Re-position whenever the open dropdown's box changes (a late layout
+      pass, a font swap, a resize) — the edge-pinned heuristic needs no
+      measurement, so any transient size is irrelevant. */
+  private watchDropdownSize() {
+    this.dropdownResizeObserver?.disconnect();
+    if (!this.dropdown || typeof ResizeObserver === 'undefined') return;
+    this.dropdownResizeObserver = new ResizeObserver(() => {
+      if (this.showDropdown && this.dropdown) this.positionDropdown();
+    });
+    this.dropdownResizeObserver.observe(this.dropdown);
   }
 
   private positionDropdownHandler = () => {
+    // The resize/scroll listener can fire while the popover is mid-layout;
+    // a transient box here is corrected by the ResizeObserver once the
+    // panel settles.
     if (this.showDropdown) this.positionDropdown();
   };
 

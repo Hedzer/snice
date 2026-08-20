@@ -111,6 +111,13 @@ for (const build of ['source', 'distribution', 'cdn'] as const) {
     await expect(time.locator('[data-time-unit="period"]')).toHaveAccessibleName('Appointment time required period');
     await expect(time.locator('.clock-toggle')).toHaveAccessibleName('Appointment time required: open time picker');
     await time.evaluate((picker: any) => picker.close());
+    // The popover's hide can lag a beat behind close() (the exit goes
+    // through the panel's allow-discrete transition); wait for the hidden
+    // state instead of asserting an arbitrary frame.
+    await expect.poll(() => time.locator('.dropdown').evaluate(el =>
+      (el as HTMLElement).hidden
+      || getComputedStyle(el).display === 'none'
+      || (el as HTMLElement).matches(':popover-open') === false && (el as HTMLElement).hidden)).toBe(true);
     await expect(time.locator('.dropdown')).toBeHidden();
     await page.locator('#time-primary').click();
     await expect(timeInput).toBeFocused();
