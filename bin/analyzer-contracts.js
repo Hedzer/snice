@@ -13242,6 +13242,11 @@ export const ANALYZER_CONTRACTS = {
       "sourceModule": "dist/components/modal/snice-modal.js",
       "family": "modal",
       "attributes": {
+        "container": {
+          "property": "container",
+          "type": "string | Element",
+          "literals": []
+        },
         "label": {
           "property": "label",
           "type": "string",
@@ -13291,9 +13296,19 @@ export const ANALYZER_CONTRACTS = {
             "large",
             "fullscreen"
           ]
+        },
+        "top-layer": {
+          "property": "topLayer",
+          "type": "boolean",
+          "literals": []
         }
       },
       "properties": {
+        "container": {
+          "type": "string | Element",
+          "attribute": "container",
+          "structured": false
+        },
         "label": {
           "type": "string",
           "attribute": "label",
@@ -13337,6 +13352,11 @@ export const ANALYZER_CONTRACTS = {
         "size": {
           "type": "'small' | 'medium' | 'large' | 'fullscreen'",
           "attribute": "size",
+          "structured": false
+        },
+        "topLayer": {
+          "type": "boolean",
+          "attribute": "top-layer",
           "structured": false
         }
       },

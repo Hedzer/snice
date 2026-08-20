@@ -5727,6 +5727,10 @@
       "description": "SniceModal custom element.",
       "attributes": [
         {
+          "name": "container",
+          "description": "container: string | Element"
+        },
+        {
           "name": "label",
           "description": "label: string"
         },
@@ -5775,6 +5779,10 @@
               "name": "fullscreen"
             }
           ]
+        },
+        {
+          "name": "top-layer",
+          "description": "topLayer: boolean"
         }
       ]
     },

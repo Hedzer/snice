@@ -27644,6 +27644,23 @@
               }
             },
             {
+              "kind": "field",
+              "name": "container",
+              "type": {
+                "text": "string | Element"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleContainerChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
               "kind": "method",
               "name": "handleOpenChange",
               "parameters": [
@@ -27750,9 +27767,24 @@
                 "text": "'small' | 'medium' | 'large' | 'fullscreen'"
               },
               "default": "'medium'"
+            },
+            {
+              "kind": "field",
+              "name": "topLayer",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
             }
           ],
           "attributes": [
+            {
+              "name": "container",
+              "fieldName": "container",
+              "type": {
+                "text": "string | Element"
+              }
+            },
             {
               "name": "label",
               "fieldName": "label",
@@ -27822,6 +27854,14 @@
               "fieldName": "size",
               "type": {
                 "text": "'small' | 'medium' | 'large' | 'fullscreen'"
+              },
+              "reflects": true
+            },
+            {
+              "name": "top-layer",
+              "fieldName": "topLayer",
+              "type": {
+                "text": "boolean"
               },
               "reflects": true
             }
