@@ -1,3 +1,21 @@
+# [7.10.0](https://github.com/Hedzer/snice/compare/v7.9.0...v7.10.0) (2026-08-20)
+
+
+### Bug Fixes
+
+* **carousel,sankey:** resolve the pinned test.fixme bugs ([0945780](https://github.com/Hedzer/snice/commit/09457807cdf49aa0b1728c7b96f12f8a5674079d))
+* **components:** sweep the remaining verified findings across 16 components ([9e87cdb](https://github.com/Hedzer/snice/commit/9e87cdb40c3d750ae045314bf54571cbcb97bc3e))
+* **components:** sweep the verified findings backlog across 60 components ([bdfaade](https://github.com/Hedzer/snice/commit/bdfaade8c9d09dc7e106376b4362f1c0f35482c2))
+* **image:** drop content-visibility auto from the host ([d6232ba](https://github.com/Hedzer/snice/commit/d6232baa165953a965d91f4c6c9da293ace45d50))
+* **permission-matrix:** centre grant controls as blocks, not flex cells ([1ca23b1](https://github.com/Hedzer/snice/commit/1ca23b12d7d036acf0214603aced5214f3a57dcf))
+* **select:** widen the trigger padding while the clear button paints ([1d0a1f4](https://github.com/Hedzer/snice/commit/1d0a1f4637f07dc05390bbd901b7900f03e0991f))
+* **time-picker:** settle the dropdown's viewport clamps under load ([f3acb8a](https://github.com/Hedzer/snice/commit/f3acb8a4ef68c2c6a7ad975e55eaed75a70b53dc))
+
+
+### Features
+
+* **modal:** add top-layer and container properties to escape stacking traps ([8154677](https://github.com/Hedzer/snice/commit/81546777cdb61874a646d0302c76e3df263e52a9))
+
 # [7.9.0](https://github.com/Hedzer/snice/compare/v7.8.0...v7.9.0) (2026-08-17)
 
 

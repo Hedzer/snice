@@ -12,6 +12,8 @@ export interface ModalProps extends SniceBaseProps {
     noCloseButton?: any;
     noHeader?: any;
     noFooter?: any;
+    topLayer?: any;
+    container?: any;
     label?: any;
     onModalOpen?: (event: any) => void;
     onModalClose?: (event: any) => void;

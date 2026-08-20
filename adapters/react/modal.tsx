@@ -17,6 +17,8 @@ export interface ModalProps extends SniceBaseProps {
   noCloseButton?: any;
   noHeader?: any;
   noFooter?: any;
+  topLayer?: any;
+  container?: any;
   label?: any;
   onModalOpen?: (event: any) => void;
   onModalClose?: (event: any) => void;
@@ -40,7 +42,7 @@ export interface ModalProps extends SniceBaseProps {
  */
 export const Modal: SniceReactComponent<ModalProps, SniceComponentRef> = createReactAdapter<ModalProps, false>({
   tagName: 'snice-modal',
-  properties: ["open","size","noBackdropDismiss","noEscapeDismiss","noFocusTrap","noCloseButton","noHeader","noFooter","label"],
+  properties: ["open","size","noBackdropDismiss","noEscapeDismiss","noFocusTrap","noCloseButton","noHeader","noFooter","topLayer","container","label"],
   events: {"modal-open":"onModalOpen","modal-close":"onModalClose"},
   formAssociated: false
 });

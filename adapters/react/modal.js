@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Modal = createReactAdapter({
     tagName: 'snice-modal',
-    properties: ["open", "size", "noBackdropDismiss", "noEscapeDismiss", "noFocusTrap", "noCloseButton", "noHeader", "noFooter", "label"],
+    properties: ["open", "size", "noBackdropDismiss", "noEscapeDismiss", "noFocusTrap", "noCloseButton", "noHeader", "noFooter", "topLayer", "container", "label"],
     events: { "modal-open": "onModalOpen", "modal-close": "onModalClose" },
     formAssociated: false
 });
