@@ -127,6 +127,13 @@ website/public/screenshots
 .worktrees/
 .wrangler/
 
+# Ad-hoc session scratch / probe outputs (never source)
+/h1.txt
+/run2.txt
+/probe-*.mjs
+/tmp/
+/sweep*.mjs
+
 # Marketing (keep dir, ignore contents)
 marketing/**
 !marketing/.gitkeep
