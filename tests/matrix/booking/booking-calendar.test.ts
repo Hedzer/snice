@@ -24,7 +24,7 @@
 import { describe, it, afterEach, expect } from 'vitest';
 import { mount, cross, Problems, expectClean, removeComponent } from '../matrix-kit';
 import {
-  checkCalendar, dayCells, futureDaysThisMonth, ymd, midnight, monthGrid,
+  checkCalendar, dayCells, bookableDaysThisMonth, ymd, midnight, monthGrid,
   isSelectable, regions, type CalendarRules,
 } from './booking-support';
 
@@ -34,7 +34,7 @@ await import('../../../packages/components/src/booking/snice-booking');
 afterEach(() => { document.body.innerHTML = ''; });
 
 /** Two bookable days in the month the widget opens on. */
-const FUTURE = futureDaysThisMonth(4);
+const FUTURE = bookableDaysThisMonth(4);
 
 describe('booking matrix: the month grid', () => {
   const combos = cross({

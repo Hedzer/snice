@@ -132,9 +132,17 @@ describe('snice-booking', () => {
     it('should re-render the calendar when max-date changes after ready', async () => {
       booking = await createComponent<SniceBookingElement>('snice-booking');
       // Make several days in the displayed month available so the baseline
-      // has enabled buttons.
+      // has enabled buttons. Anchor on today rather than fixed day-of-month
+      // literals: the component disables anything before today, so a list
+      // like [5, 10, 15, ...] is entirely in the past — and the baseline
+      // entirely disabled — once the month is far enough along.
       const now = new Date();
-      booking.availableDates = [5, 10, 15, 20, 25, 26, 27, 28].map(day =>
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const days: number[] = [];
+      for (let day = now.getDate(); day <= lastDay && days.length < 5; day++) {
+        days.push(day);
+      }
+      booking.availableDates = days.map(day =>
         new Date(now.getFullYear(), now.getMonth(), day)
       );
       await wait(80);

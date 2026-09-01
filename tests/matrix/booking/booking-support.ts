@@ -59,10 +59,21 @@ export function monthGrid(month: Date = new Date()): Date[] {
 }
 
 /** Days of the CURRENT month that are still in the future — safe to book. */
-export function futureDaysThisMonth(count: number): string[] {
+/**
+ * Bookable days of the displayed month, today first.
+ *
+ * Today counts: the component opens every date that is not strictly in the
+ * past (`date < today`), and `isSelectable` below mirrors that. Taking only
+ * days AFTER today made this list EMPTY on the last day of every month, and
+ * an empty list quietly turned each caller's `if (!FUTURE.length) return`
+ * into a pass — which is a plain failure for the `it.fails` findings, since
+ * a test that returns early has not failed. Anchoring on today keeps at
+ * least one bookable day on every date of the year.
+ */
+export function bookableDaysThisMonth(count: number): string[] {
   const today = midnight();
   const picked = monthGrid()
-    .filter(cell => cell.getMonth() === today.getMonth() && cell > today)
+    .filter(cell => cell.getMonth() === today.getMonth() && cell >= today)
     .slice(0, count);
   return picked.map(ymd);
 }

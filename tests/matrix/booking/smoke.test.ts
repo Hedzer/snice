@@ -18,7 +18,7 @@
 import { describe, it, afterEach, expect } from 'vitest';
 import { mount, Problems, expectClean, captureEvents, click, wait } from '../matrix-kit';
 import {
-  futureDaysThisMonth, monthGrid, ymd, dayCells, slotButtons, actionButtons, formInputs,
+  bookableDaysThisMonth, monthGrid, ymd, dayCells, slotButtons, actionButtons, formInputs,
   regions, checkCalendar, slotLabel,
 } from './booking-support';
 
@@ -27,7 +27,7 @@ await import('../../../packages/components/src/booking/snice-booking');
 
 afterEach(() => { document.body.innerHTML = ''; });
 
-const FUTURE = futureDaysThisMonth(2);
+const FUTURE = bookableDaysThisMonth(2);
 
 function clickDay(el: HTMLElement, date: string): void {
   const index = monthGrid().findIndex(cell => ymd(cell) === date);
@@ -50,7 +50,13 @@ describe('booking smoke', () => {
   it('a date offers its own slots and emits date-select', async () => {
     if (!FUTURE.length) return;
     const day = FUTURE[0];
-    const other = FUTURE[1] ?? day;
+    // `other` only has to be a DIFFERENT date carrying a slot that must NOT
+    // appear; it is never clicked, so it need not be bookable. The last day
+    // of a month has no second bookable day, and collapsing `other` onto
+    // `day` would put both slots on the clicked date and make the assertion
+    // below contradict itself.
+    const other = FUTURE[1]
+      ?? ymd(new Date(new Date(`${day}T12:00:00`).getTime() + 24 * 60 * 60 * 1000));
     const el = await mount<any>(TAG, { variant: 'inline' }, {
       availableDates: [day, other],
       availableSlots: [

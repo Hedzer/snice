@@ -37,7 +37,7 @@ import { describe, it, afterEach, expect } from 'vitest';
 import { mount, cross, Problems, expectClean, captureEvents, click, removeComponent, wait }
   from '../matrix-kit';
 import {
-  futureDaysThisMonth, monthGrid, ymd, dayCells, slotButtons, actionButtons, stepChips,
+  bookableDaysThisMonth, monthGrid, ymd, dayCells, slotButtons, actionButtons, stepChips,
   formInputs, regions, slotsFor, slotLabel, isFormValid,
 } from './booking-support';
 import type { BookingField, BookingSlot } from
@@ -48,7 +48,7 @@ await import('../../../packages/components/src/booking/snice-booking');
 
 afterEach(() => { document.body.innerHTML = ''; });
 
-const FUTURE = futureDaysThisMonth(3);
+const FUTURE = bookableDaysThisMonth(3);
 
 const FIELD_SETS: Record<string, BookingField[]> = {
   none: [],
