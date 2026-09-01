@@ -26107,6 +26107,8 @@ export const ANALYZER_CONTRACTS = {
           "noCloseButton",
           "noHeader",
           "noFooter",
+          "topLayer",
+          "container",
           "label"
         ],
         "events": {
@@ -26122,6 +26124,8 @@ export const ANALYZER_CONTRACTS = {
           "noCloseButton",
           "noHeader",
           "noFooter",
+          "topLayer",
+          "container",
           "label",
           "onModalOpen",
           "onModalClose"
