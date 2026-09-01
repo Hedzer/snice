@@ -23,7 +23,10 @@
  *             login-forgot-password { timestamp }
  *   Methods:  login(credentials?), setCredentials(...), reset(), setError(m),
  *             clearError(), showAlert(m, variant), clearAlert()
- *   Parts:    base, header, title, form, footer
+ *   Parts:    base, header, title, form, submit-button, footer
+ *             plus the submit button's own parts, forwarded through
+ *             `exportparts` as submit-button-base / -label / -icon /
+ *             -spinner
  *   Slots:    before-header, after-header, subtitle, before-form, after-form,
  *             form-top, between-fields, before-submit, after-submit, footer
  *
@@ -36,7 +39,7 @@
  *       button
  */
 import { Problems, mount, shadow, textOf, wait } from '../matrix-common';
-import { exactPart } from '../part-exact';
+import { exactPart, hasPart } from '../part-exact';
 import '../../../packages/components/src/login/snice-login';
 
 export const VARIANTS = ['default', 'card', 'minimal'] as const;
@@ -48,7 +51,18 @@ export type LoginSize = typeof SIZES[number];
 export type AlertVariant = typeof ALERT_VARIANTS[number];
 
 /** The documented CSS parts, in the order the doc lists them. */
-export const PARTS = ['base', 'header', 'title', 'form', 'footer'] as const;
+export const PARTS = ['base', 'header', 'title', 'form', 'submit-button', 'footer'] as const;
+
+/**
+ * The submit control's own parts, forwarded out of `<snice-button>` under a
+ * `submit-button-` prefix. The doc's mapping, inner part -> exported name.
+ */
+export const FORWARDED_SUBMIT_PARTS: ReadonlyArray<readonly [string, string]> = [
+  ['base', 'submit-button-base'],
+  ['label', 'submit-button-label'],
+  ['icon', 'submit-button-icon'],
+  ['spinner', 'submit-button-spinner'],
+] as const;
 
 /** The documented slots, in the order the doc lists them. */
 export const SLOTS = [
@@ -137,6 +151,17 @@ export const alertElement = (el: HTMLElement) =>
   shadow(el).querySelector('snice-alert') as HTMLElement | null;
 export const formElement = (el: HTMLElement) =>
   exactPart<HTMLFormElement>(el, 'form');
+
+/** An `exportparts` attribute read as the inner -> exported map it declares. */
+export function parseExportParts(value: string | null | undefined): Map<string, string> {
+  const mapping = new Map<string, string>();
+  for (const entry of (value ?? '').split(',')) {
+    const [inner, exported] = entry.split(':').map(token => token.trim());
+    if (!inner) continue;
+    mapping.set(inner, exported ?? inner);
+  }
+  return mapping;
+}
 
 /** Class tokens of a node. happy-dom's `classList` is not iterable. */
 export function classesOf(node: Element | null | undefined): string[] {
@@ -245,6 +270,15 @@ export function checkLogin(el: HTMLElement, combo: LoginCombo): Problems {
     // "loading and disabled states propagate to … the submit button"
     problems.equal(button.hasAttribute('disabled'), want.disabled, 'submit button disabled');
     problems.equal(button.hasAttribute('loading'), want.loading, 'submit button loading');
+
+    // The submit control is reachable from outside: its own part token, and
+    // its inner parts forwarded under the documented prefix.
+    problems.check(hasPart(button, 'submit-button'), 'the submit button carries no part="submit-button"');
+
+    const mapping = parseExportParts(button.getAttribute('exportparts'));
+    for (const [inner, exported] of FORWARDED_SUBMIT_PARTS) {
+      problems.equal(mapping.get(inner), exported, `exportparts mapping for the button's "${inner}" part`);
+    }
   }
 
   // ── the inline alert ────────────────────────────────────────────────────

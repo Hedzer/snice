@@ -132,6 +132,8 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
           <slot name="before-submit"></slot>
 
           <snice-button
+            part="submit-button"
+            exportparts="base: submit-button-base, label: submit-button-label, icon: submit-button-icon, spinner: submit-button-spinner"
             type="submit"
             variant="primary"
             ?disabled=${this.disabled}

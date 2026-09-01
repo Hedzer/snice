@@ -535,6 +535,63 @@ describe('snice-login', () => {
     });
   });
 
+  describe('CSS parts', () => {
+    const partsOf = (node: Element | null | undefined) =>
+      (node?.getAttribute('part') ?? '').split(/\s+/).filter(Boolean);
+
+    it('should expose every documented part', async () => {
+      login = await createComponent<SniceLoginElement>('snice-login');
+      await wait(50);
+
+      for (const name of ['base', 'header', 'title', 'form', 'submit-button', 'footer']) {
+        const node = [...(login.shadowRoot?.querySelectorAll('[part]') ?? [])]
+          .find(candidate => partsOf(candidate).includes(name));
+        expect(node, `no part="${name}"`).toBeTruthy();
+      }
+    });
+
+    it('should expose the submit button as part="submit-button"', async () => {
+      login = await createComponent<SniceLoginElement>('snice-login');
+      await wait(50);
+
+      const button = queryShadow(login as HTMLElement, 'snice-button');
+      expect(button).toBeTruthy();
+      expect(partsOf(button)).toContain('submit-button');
+    });
+
+    it('should forward the submit button\'s own parts through exportparts', async () => {
+      login = await createComponent<SniceLoginElement>('snice-login');
+      await wait(50);
+
+      const button = queryShadow(login as HTMLElement, 'snice-button');
+      const mapping = new Map(
+        (button?.getAttribute('exportparts') ?? '')
+          .split(',')
+          .map(entry => entry.split(':').map(token => token.trim()))
+          .filter(([inner]) => !!inner)
+          .map(([inner, exported]) => [inner, exported ?? inner] as const),
+      );
+
+      expect(mapping.get('base')).toBe('submit-button-base');
+      expect(mapping.get('label')).toBe('submit-button-label');
+      expect(mapping.get('icon')).toBe('submit-button-icon');
+      expect(mapping.get('spinner')).toBe('submit-button-spinner');
+    });
+
+    it('should keep the submit button reachable while loading and disabled', async () => {
+      login = await createComponent<SniceLoginElement>('snice-login');
+      await wait(50);
+
+      login.loading = true;
+      login.disabled = true;
+      await wait(50);
+
+      const button = queryShadow(login as HTMLElement, 'snice-button');
+      expect(partsOf(button)).toContain('submit-button');
+      expect(button?.getAttribute('exportparts')).toContain('submit-button-base');
+    });
+  });
+
   describe('stylesheet contracts', () => {
     const cssPath = resolve(process.cwd(), 'packages/components/src/login/snice-login.css');
 

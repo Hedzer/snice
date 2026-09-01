@@ -70,7 +70,23 @@ interface LoginResult {
 - `header` - Header section
 - `title` - H1 title element
 - `form` - The login form
+- `submit-button` - The `<snice-button>` submit control
 - `footer` - Footer section
+
+Forwarded from the submit `<snice-button>` via `exportparts`:
+
+- `submit-button-base` - The inner `<button>` (focus ring, padding, colors)
+- `submit-button-label` - Submit label wrapper
+- `submit-button-icon` - Submit icon slot wrapper
+- `submit-button-spinner` - Submit loading spinner
+
+```css
+snice-login::part(submit-button) { width: 100%; }
+snice-login::part(submit-button-base):focus-visible {
+  outline: 2px solid rgb(37 99 235);
+  outline-offset: 2px;
+}
+```
 
 ## Basic Usage
 

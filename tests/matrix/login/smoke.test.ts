@@ -6,8 +6,8 @@
  * slot combos) runs via `npm run test:matrix`. This file stays collected by
  * the default loop and pays for one combo per family:
  *
- *   · a default form, its five parts, its ten slots and every item on the
- *     documented accessibility list;
+ *   · a default form, its six parts, the submit button's forwarded parts, its
+ *     ten slots and every item on the documented accessibility list;
  *   · `variant` + `size` reaching the base, the only styling hook;
  *   · `loading`, the state that must reach every input AND the button;
  *   · a successful sign-in end to end — request payload, login-attempt,
