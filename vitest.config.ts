@@ -56,10 +56,24 @@ export default defineConfig({
       'tests/matrix/**/!(smoke).test.ts',
       'tests/website-render.test.ts',
       'rollup.config.test.js',
+      // `.debug/` is the repo's scratch area for throwaway probe specs
+      // (.ai/testing.md). A bare '.debug' only matches the one at the root,
+      // so a probe left in `tests/.debug/` still gets collected — and those
+      // are Playwright specs, which take the whole Vitest process down with
+      // an unhandled 'error' event rather than failing a single file.
+      '**/.debug/**',
       '.debug',
       '.local',
       '.research',
-      '.claude/worktrees'
+      '.claude/worktrees',
+      // `.worktrees/` holds gitignored `git worktree` checkouts of OTHER
+      // branches. Collecting them runs another branch's suite inside this
+      // branch's gate — nine extra copies of every file, asserting against
+      // code that is not the code under test, and a crash in any one of them
+      // (an unhandled 'error' event takes the runner down, not just a spec)
+      // fails a gate that has nothing to do with this branch. Same reason
+      // `.claude/worktrees` is excluded above.
+      '.worktrees'
     ],
   },
 });
