@@ -13,7 +13,7 @@
              section's calendar and being painted over by that section's own
              contained host;
            - #cal-default carries the hover tooltip case;
-           - events are relative to the CURRENT month via addDays(today, n),
+           - events are relative to the CURRENT month via addDays(base, n),
              the same way the showcase authors them, so the bars always
              exist;
            - no avatars, no remote assets, no page chrome — the fixture is
@@ -89,6 +89,16 @@
         return d;
       }
       const today = new Date();
+      // Every chip below is `base + 1 … base + 15`. Anchoring that span on
+      // today pushes it into the NEXT month once today is within a fortnight
+      // of the month end, and this grid only paints the CURRENT month — so on
+      // the 31st the avatar-bearing chips rendered no bars at all and the
+      // legibility specs measured an empty month. Pull the base back just far
+      // enough for the whole span to stay inside the month (every month has at
+      // least 28 days, so this is always a valid day).
+      const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+      const base = new Date(today);
+      base.setDate(Math.min(today.getDate(), lastDayOfMonth - 15));
       const fmt = (date) => new Intl.DateTimeFormat('en-US', {
         month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
       }).format(date);
@@ -113,10 +123,10 @@
 
       const calDefault = document.getElementById('cal-default');
       calDefault.events = [
-        { id: 'd1', title: 'Design sync', start: addDays(today, 1), color: '#2563eb', avatar: { src: avatar('#2563eb', 'Dana Ives'), name: 'Dana Ives' } },
-        { id: 'd2', title: 'Offsite', start: addDays(today, 2), end: addDays(today, 9), color: '#0891b2', tooltip: 'Team offsite — Lisbon', popover: true },
-        { id: 'd3', title: 'Release', start: addDays(today, 6), color: '#16a34a', popover: 'Ships v7.6 — changelog in #releases' },
-        { id: 'd4', title: 'On call', start: addDays(today, 12), end: addDays(today, 15), color: '#7c3aed', avatar: { src: avatar('#7c3aed', 'Sam Reyes'), name: 'Sam Reyes' } },
+        { id: 'd1', title: 'Design sync', start: addDays(base, 1), color: '#2563eb', avatar: { src: avatar('#2563eb', 'Dana Ives'), name: 'Dana Ives' } },
+        { id: 'd2', title: 'Offsite', start: addDays(base, 2), end: addDays(base, 9), color: '#0891b2', tooltip: 'Team offsite — Lisbon', popover: true },
+        { id: 'd3', title: 'Release', start: addDays(base, 6), color: '#16a34a', popover: 'Ships v7.6 — changelog in #releases' },
+        { id: 'd4', title: 'On call', start: addDays(base, 12), end: addDays(base, 15), color: '#7c3aed', avatar: { src: avatar('#7c3aed', 'Sam Reyes'), name: 'Sam Reyes' } },
       ];
       calDefault.eventPopover = async (event) => {
         await new Promise((r) => setTimeout(r, 200));
@@ -135,10 +145,10 @@
 
       const calPopover = document.getElementById('cal-popover');
       calPopover.events = [
-        { id: 'p1', title: 'Kickoff', start: addDays(today, 1), color: '#2563eb',
+        { id: 'p1', title: 'Kickoff', start: addDays(base, 1), color: '#2563eb',
           popover: 'Project kickoff — room 2, bring the roadmap.' },
-        { id: 'p2', title: 'Audit', start: addDays(today, 3), end: addDays(today, 6), color: '#dc2626', popover: true },
-        { id: 'p3', title: 'Retro', start: addDays(today, 8), color: '#16a34a' },
+        { id: 'p2', title: 'Audit', start: addDays(base, 3), end: addDays(base, 6), color: '#dc2626', popover: true },
+        { id: 'p3', title: 'Retro', start: addDays(base, 8), color: '#16a34a' },
       ];
       calPopover.eventPopover = async (event) => {
         await new Promise((r) => setTimeout(r, 250)); // simulated fetch
@@ -149,14 +159,14 @@
       };
 
       document.getElementById('cal-noselect').events = [
-        { id: 'n1', title: 'All hands', start: addDays(today, 2), color: '#2563eb' },
-        { id: 'n2', title: 'Freeze', start: addDays(today, 4), end: addDays(today, 8), color: '#dc2626' },
+        { id: 'n1', title: 'All hands', start: addDays(base, 2), color: '#2563eb' },
+        { id: 'n2', title: 'Freeze', start: addDays(base, 4), end: addDays(base, 8), color: '#dc2626' },
       ];
 
       document.getElementById('cal-multi-events').events = [
-        { id: 'm1', title: 'Event A', start: addDays(today, 1), color: '#2563eb' },
-        { id: 'm2', title: 'Event B', start: addDays(today, 1), color: '#16a34a' },
-        { id: 'm3', title: 'Event C', start: addDays(today, 1), color: '#7c3aed' },
+        { id: 'm1', title: 'Event A', start: addDays(base, 1), color: '#2563eb' },
+        { id: 'm2', title: 'Event B', start: addDays(base, 1), color: '#16a34a' },
+        { id: 'm3', title: 'Event C', start: addDays(base, 1), color: '#7c3aed' },
       ];
 
       document.documentElement.dataset.fixtureReady = 'true';
