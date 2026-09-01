@@ -291,6 +291,50 @@ describe('@observe decorator', () => {
   });
 
   describe('throttle option', () => {
+    it('should not run a queued throttled callback after disconnect', async () => {
+      const tagName = `test-throttle-disconnect-${testId}`;
+      let callCount = 0;
+
+      @element(tagName)
+      class TestThrottleDisconnect extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<div class="content">Content</div>`;
+        }
+
+        @observe('mutation:childList', '.content', { throttle: 100 })
+        handleMutation() {
+          callCount++;
+        }
+      }
+
+      container.innerHTML = `<${tagName}></${tagName}>`;
+      const el = container.querySelector(tagName) as any;
+      await el.ready;
+
+      const content = el.shadowRoot.querySelector('.content');
+
+      // Leading edge: the first mutation calls straight through.
+      content.appendChild(document.createElement('div'));
+      await new Promise(resolve => setTimeout(resolve, 10));
+      expect(callCount).toBe(1);
+
+      // Still inside the window, so this one is queued on the trailing edge.
+      content.appendChild(document.createElement('div'));
+      await new Promise(resolve => setTimeout(resolve, 10));
+      expect(callCount).toBe(1);
+
+      // Tear the element down while that trailing call is still pending.
+      el.remove();
+
+      // Well past the throttle window. Disconnecting the observer alone does
+      // not stop an ALREADY-queued trailing call — its timer has to be
+      // cancelled too, or the method runs against a disposed element (and, in
+      // a torn-down test environment, against a dead realm).
+      await new Promise(resolve => setTimeout(resolve, 250));
+      expect(callCount).toBe(1);
+    });
+
     it('should throttle observer callbacks', async () => {
       const tagName = `test-throttle-${testId}`;
       let callCount = 0;

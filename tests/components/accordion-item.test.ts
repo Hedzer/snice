@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, triggerMouseEvent, triggerKeyboardEvent, wait } from './test-utils';
@@ -200,6 +200,36 @@ describe('snice-accordion-item', () => {
     it('should handle prefers-reduced-motion without the theme loaded', () => {
       const css = readFileSync(itemCssPath, 'utf8');
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
+  });
+
+  describe('teardown', () => {
+    it('should schedule nothing after disconnect with a throttled mutation queued', async () => {
+      accordionItem = await createComponent<SniceAccordionItemElement>('snice-accordion-item', { 'item-id': 'teardown-1' });
+      accordionItem.open = true;
+      await wait(60);
+
+      const host = accordionItem as HTMLElement;
+
+      // `onContentMutation` runs under `throttle: 100`. The first child lands
+      // on the throttle's leading edge; the second is queued on its trailing
+      // edge, ~100ms out.
+      host.appendChild(document.createElement('p'));
+      await wait(20);
+      host.appendChild(document.createElement('p'));
+      await wait(20);
+
+      // Disconnect while that trailing call is still queued. From here the
+      // element must schedule nothing at all: the queued callback would run
+      // `updateContentHeight()`, which asks for an animation frame — and in a
+      // torn-down test environment that frame lands in a dead realm.
+      removeComponent(host);
+      const raf = vi.spyOn(globalThis, 'requestAnimationFrame');
+
+      await wait(300);
+
+      expect(raf).not.toHaveBeenCalled();
+      raf.mockRestore();
     });
   });
 

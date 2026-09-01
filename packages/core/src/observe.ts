@@ -91,12 +91,18 @@ export function setupObservers(instance: any, element: HTMLElement) {
   
   for (const observer of observers) {
     const method = observer.method.bind(instance);
-    
-    // Apply throttling if specified
-    const callback = observer.options?.throttle
-      ? createThrottled(method, observer.options.throttle)
-      : method;
-    
+
+    // Apply throttling if specified. The throttle's trailing edge is a timer
+    // that survives disconnect on its own, so its cancel joins the same
+    // cleanup list the observers use — disconnecting the observer stops new
+    // notifications, cancelling the throttle stops the one already queued.
+    let callback: Function = method;
+    if (observer.options?.throttle) {
+      const throttled = createThrottled(method, observer.options.throttle);
+      instance[CLEANUP].observers.push(() => throttled.cancel());
+      callback = throttled;
+    }
+
     switch (observer.type) {
       case 'intersection':
         setupIntersectionObserver(instance, element, observer, callback);

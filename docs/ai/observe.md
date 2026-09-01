@@ -194,6 +194,9 @@ Observers are automatically:
 - Cleaned up when element disconnects
 - Re-established if element moves in DOM
 
+Disconnect also cancels a `throttle`d callback that is already queued on its
+trailing edge, so a disconnected element schedules nothing.
+
 No manual cleanup required.
 
 ## Performance Considerations

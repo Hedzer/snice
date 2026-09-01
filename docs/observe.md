@@ -441,6 +441,11 @@ All observers are automatically:
 - Cleaned up when element disconnects
 - Re-established if element is moved in DOM
 
+Disconnecting stops more than the observer itself. A `throttle`d callback holds
+a timer for its trailing edge, and that timer is cancelled on disconnect too —
+so a callback queued moments before removal never runs against the disposed
+element. A disconnected element schedules nothing.
+
 No manual cleanup is required - the framework handles everything:
 
 ```typescript

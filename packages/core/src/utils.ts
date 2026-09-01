@@ -354,11 +354,19 @@ export function createDebounced<T extends (...args: any[]) => any>(
 
 /**
  * Create a throttled version of a function (leading + trailing edge)
+ *
+ * The trailing edge is a real `setTimeout`, so the returned function owns a
+ * timer that outlives its caller unless somebody stops it. `cancel()` drops
+ * that pending trailing call — teardown paths must call it, or the wrapped
+ * method runs against an already-disposed instance. Mirrors `createDebounced`.
  */
-export function createThrottled<T extends (...args: any[]) => any>(fn: T, delay: number): T {
+export function createThrottled<T extends (...args: any[]) => any>(
+  fn: T,
+  delay: number
+): T & { cancel(): void } {
   let lastCall = 0;
   let timer: ReturnType<typeof setTimeout> | null = null;
-  return function(this: any, ...args: any[]) {
+  const throttled = function(this: any, ...args: any[]) {
     const now = Date.now();
     const remaining = delay - (now - lastCall);
     if (remaining <= 0) {
@@ -369,7 +377,12 @@ export function createThrottled<T extends (...args: any[]) => any>(fn: T, delay:
     if (!timer) {
       timer = setTimeout(() => { lastCall = Date.now(); timer = null; fn.apply(this, args); }, remaining);
     }
-  } as T;
+  } as T & { cancel(): void };
+  throttled.cancel = () => {
+    if (timer !== null) clearTimeout(timer);
+    timer = null;
+  };
+  return throttled;
 }
 
 /** Resolve and validate an @on/@dispatch debounce or throttle interval. */
