@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import vm from 'node:vm';
@@ -66,5 +66,20 @@ describe('deployed full showcases', () => {
   it('uses the generated site theme in the theme showcase', () => {
     const theme = readFileSync(join(showcaseDir, 'theme.html'), 'utf8');
     expect(theme).toMatch(/href="\/theme\/theme\.css\?v=[a-f0-9]+"/);
+  });
+
+  it('ships the markdown the showcase help drawer fetches at runtime', () => {
+    const docsDir = join(siteDir, 'docs');
+    expect(existsSync(docsDir)).toBe(true);
+
+    const componentDocs = readdirSync(join(docsDir, 'components')).filter(n => n.endsWith('.md'));
+    expect(componentDocs.length).toBeGreaterThan(50);
+
+    for (const slug of ['link', 'button', 'location', 'login']) {
+      expect(existsSync(join(docsDir, 'components', `${slug}.md`))).toBe(true);
+      expect(existsSync(join(docsDir, 'ai', 'components', `${slug}.md`))).toBe(true);
+    }
+
+    expect(readFileSync(join(docsDir, 'components', 'link.md'), 'utf8')).toContain('URL Safety');
   });
 });

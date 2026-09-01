@@ -3,7 +3,8 @@
 // 1. Copies website/public/ → dist/site/
 // 2. Copies website/showcases/<name>/full.html → dist/site/showcase/<name>.html
 //    with .ts imports rewritten to CDN <script> tags
-// 3. Stamps all HTML in dist/site/
+// 3. Copies docs/ → dist/site/docs/ (the help drawer fetches these at runtime)
+// 4. Stamps all HTML in dist/site/
 
 import { cpSync, mkdirSync, rmSync, readdirSync, readFileSync, writeFileSync, statSync, existsSync } from 'fs';
 import { join, dirname, isAbsolute, relative, resolve, sep } from 'path';
@@ -143,7 +144,16 @@ for (const entry of readdirSync(componentsDir)) {
 const showcaseCount = readdirSync(showcaseDir).length;
 console.log(`  ${showcaseCount} showcase pages built`);
 
-// 3. Copy llms.txt files to site root
+// 3. Copy docs/ → dist/site/docs/ so the showcase help drawer resolves its markdown
+const docsSrc = join(root, 'docs');
+if (existsSync(docsSrc)) {
+  const docsDest = join(siteDir, 'docs');
+  rmSync(docsDest, { recursive: true, force: true });
+  cpSync(docsSrc, docsDest, { recursive: true });
+  console.log('  Copied docs/');
+}
+
+// 4. Copy llms.txt files to site root
 for (const f of ['llms.txt', 'llms-full.txt']) {
   const src = join(root, f);
   if (existsSync(src)) {
@@ -152,11 +162,11 @@ for (const f of ['llms.txt', 'llms-full.txt']) {
   }
 }
 
-// 4. Stamp everything
+// 5. Stamp everything
 console.log('Stamping assets...');
 execSync(`node tooling/website/stamp-assets.js --dir ${siteDir}`, { stdio: 'inherit', cwd: root });
 
-// 5. Verify all local assets are stamped — fail the build if not
+// 6. Verify all local assets are stamped — fail the build if not
 console.log('Verifying stamps...');
 const STAMP_EXT = /\.(?:css|js|json|png|jpe?g|gif|svg|ico|webp|woff2?|md)$/i;
 const EXTERNAL = /^(?:https?:\/\/|\/\/|data:|#|mailto:)/;
