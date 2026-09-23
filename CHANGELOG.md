@@ -1,3 +1,16 @@
+# [7.11.0](https://github.com/Hedzer/snice/compare/v7.10.0...v7.11.0) (2026-09-23)
+
+
+### Bug Fixes
+
+* **observe:** cancel a throttled callback when its element disconnects ([13eef35](https://github.com/Hedzer/snice/commit/13eef35b73b8f6afa27f81b2e05d972170589b7b))
+* **website:** ship the component docs the showcase help drawer fetches ([a60270d](https://github.com/Hedzer/snice/commit/a60270d691dda5cb000aef65e9dff0132e3ce8b8))
+
+
+### Features
+
+* **login:** expose the submit button as a styleable part ([c228033](https://github.com/Hedzer/snice/commit/c22803394b2a1af8519cf9ef6a8b53867556df25))
+
 # [7.10.0](https://github.com/Hedzer/snice/compare/v7.9.0...v7.10.0) (2026-08-20)
 
 
