@@ -33,7 +33,7 @@
  *
  * `expectedStatus()` below is that rule and nothing else — it is not a copy of
  * the component's `getStepStatus`, and the two are allowed to disagree
- * (`.ai/fuzzing.md`: the doc is the authority).
+ * (`.ai/policies/fuzzing.md`: the doc is the authority).
  *
  * ── Why part lookups go through `part-exact` ───────────────────────────────
  *

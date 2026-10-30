@@ -4,7 +4,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  *
  * Every expectation is read off `docs/ai/components/login.md` and
- * `snice-login.types.ts`, never off rendered output (`.ai/fuzzing.md`):
+ * `snice-login.types.ts`, never off rendered output (`.ai/policies/fuzzing.md`):
  *
  *   variant: 'default'|'card'|'minimal' = 'default'
  *   size: 'small'|'medium'|'large' = 'medium'

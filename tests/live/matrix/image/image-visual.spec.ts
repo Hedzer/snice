@@ -54,7 +54,7 @@ const FITS: Fit[] = ['cover', 'contain', 'fill', 'none', 'scale-down'];
 /**
  * The cross: variant x size x source-present — 18 combos, the dimensions that
  * change the painted shape, the painted box, or which layer is painted at all
- * — with `fit` and the explicit box rotated across them. `.ai/fuzzing.md` sizes
+ * — with `fit` and the explicit box rotated across them. `.ai/policies/fuzzing.md` sizes
  * the matrix to the component: an image is a wrapper round `<img>` with two
  * render shapes, so the whole product of its twelve properties would be the
  * table's budget spent here.

@@ -8,7 +8,7 @@
  * `removable` adds, and `tag-remove -> { tag }`. It cannot own visual truth,
  * because happy-dom performs no layout and paints nothing.
  *
- * snice-tag is a PURELY PRESENTATIONAL token, so per .ai/fuzzing.md its visual
+ * snice-tag is a PURELY PRESENTATIONAL token, so per .ai/policies/fuzzing.md its visual
  * matrix is deliberately MINIMAL — 60 layer-1 combos, not the table's hundreds.
  * It is also the tier that matters most for this component, because FOUR of its
  * five documented properties produce NO DOM difference whatsoever:

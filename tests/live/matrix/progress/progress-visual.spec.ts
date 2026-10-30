@@ -302,7 +302,7 @@ const combos = generateCombos();
 
 // ── Known component defects ─────────────────────────────────────────────────
 //
-// The matrix policy (.ai/fuzzing.md) is: a combo that diverges from the docs is
+// The matrix policy (.ai/policies/fuzzing.md) is: a combo that diverges from the docs is
 // a FINDING. Keep the correct assertion, pin it against a finding id, report it
 // — never weaken it to match buggy output.
 //

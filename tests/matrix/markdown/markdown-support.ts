@@ -4,7 +4,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  *
  * Every expectation is read off `docs/ai/components/markdown.md` and
- * `snice-markdown.types.ts`, never off rendered output (`.ai/fuzzing.md`):
+ * `snice-markdown.types.ts`, never off rendered output (`.ai/policies/fuzzing.md`):
  *
  *   sanitize: boolean = true        Sanitize HTML output
  *   theme: 'default'|'github' = 'default'

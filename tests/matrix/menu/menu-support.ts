@@ -6,7 +6,7 @@
  * Every expectation in this module is transcribed from
  * `docs/ai/components/menu.md` and `snice-menu.types.ts` /
  * `snice-menu-item.types.ts`. Nothing here is read back from the component —
- * that is the whole point of the tier (`.ai/fuzzing.md`): a matrix whose
+ * that is the whole point of the tier (`.ai/policies/fuzzing.md`): a matrix whose
  * expectations came from the output it is judging proves only that the output
  * is stable, never that it is right.
  *

@@ -53,7 +53,7 @@ const BACK: RGB = [217, 70, 239];
 /**
  * The cross: direction x flipped x clickToFlip x duration — 16 combos. A flip
  * card has one render function with no branches and four properties, so this is
- * the small end of the scale `.ai/fuzzing.md` describes; what it buys is that
+ * the small end of the scale `.ai/policies/fuzzing.md` describes; what it buys is that
  * every documented dimension is measured in a browser that can actually
  * perform a 3D transform.
  */

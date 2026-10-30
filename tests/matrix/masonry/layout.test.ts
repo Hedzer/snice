@@ -9,7 +9,7 @@
  * 5 x 3 x 2 = 30 combos, each run twice (attribute channel and property
  * channel) plus a slot-content cross of 6 — 66 assertions' worth of test cases
  * for a component whose entire behaviour is three CSS custom properties.
- * Deliberately near the small end of the range .ai/fuzzing.md sets: the table
+ * Deliberately near the small end of the range .ai/policies/fuzzing.md sets: the table
  * is the ceiling, and a CSS-columns wrapper is nowhere near it.
  */
 import { describe, it, afterEach } from 'vitest';

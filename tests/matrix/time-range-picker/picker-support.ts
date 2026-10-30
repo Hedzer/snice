@@ -25,7 +25,7 @@
  * a gesture) selects. Every assertion routes through `check*` helpers so a
  * combo reports EVERY violation at once rather than dying on the first.
  *
- * `.ai/fuzzing.md`: expectations come from the doc, never from observed output;
+ * `.ai/policies/fuzzing.md`: expectations come from the doc, never from observed output;
  * a divergence is pinned with `it.fails` and a `MATRIX-time-range-picker-N` id
  * and the assertion stays correct.
  *

@@ -7,7 +7,7 @@
  * `outline` and `pill` are crossed in tag-flags-and-remove.test.ts instead of
  * being multiplied in here: they are pure style booleans that share this exact
  * shape oracle, so folding them in would quadruple the count without reaching
- * one new rendering path. That is the ".ai/fuzzing.md" sizing rule — a
+ * one new rendering path. That is the ".ai/policies/fuzzing.md" sizing rule — a
  * display-only token gets tens of combos, not the table's hundreds.
  *
  * `channel` is a real axis, not a convenience: an authored attribute and a

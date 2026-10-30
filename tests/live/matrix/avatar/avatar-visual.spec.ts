@@ -8,7 +8,7 @@
  * reflected. It cannot own visual truth, because happy-dom performs no layout —
  * every box reads 0, nothing is painted, and the image layer never decodes.
  *
- * The avatar is largely presentational, so per .ai/fuzzing.md this matrix is
+ * The avatar is largely presentational, so per .ai/policies/fuzzing.md this matrix is
  * deliberately modest (36 layer-1 combos, not the table's 1152). It is also the
  * only tier that can check the things this component actually promises:
  *

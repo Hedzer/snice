@@ -2,7 +2,7 @@
  * snice-badge matrix — content and visibility slice.
  *
  * SIZING. The badge is a presentational component with one real rule, so this
- * is a SMALL matrix by design (.ai/fuzzing.md: "a divider gets a handful of
+ * is a SMALL matrix by design (.ai/policies/fuzzing.md: "a divider gets a handful of
  * combos"). The one genuine cross is the content SOURCE against the two
  * properties that change how a source is read — `showZero` and `max` — which is
  * where the documented rule can actually be got wrong: 6 x 2 x 2 = 24.

@@ -8,7 +8,7 @@
  * visual truth, because happy-dom performs no layout and paints nothing.
  *
  * The skeleton is a PURELY PRESENTATIONAL component — no data, no interaction,
- * no delivery modes — so per .ai/fuzzing.md its matrix is deliberately MINIMAL:
+ * no delivery modes — so per .ai/policies/fuzzing.md its matrix is deliberately MINIMAL:
  * 24 layer-1 combos, not the table's 1152. But this is the tier that matters
  * most for it, because a skeleton IS its paint. `variant` is four border-radius
  * and sizing rules, `animation` is three keyframe rules, and `spacing` is a

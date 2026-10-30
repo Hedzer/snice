@@ -25,7 +25,7 @@
  *
  * ── Where expectations come from ────────────────────────────────────────────
  *
- * `.ai/fuzzing.md` is binding: expectations derive from `docs/ai/components/`,
+ * `.ai/policies/fuzzing.md` is binding: expectations derive from `docs/ai/components/`,
  * never from observed output. Every `expected*` function in a per-component
  * support module carries the doc line it encodes. When a combo diverges, the
  * assertion STAYS and the test is marked `it.fails` with a `MATRIX-<component>-N`
@@ -273,7 +273,7 @@ function deepEqual(a: unknown, b: unknown): boolean {
 /**
  * The title of a test pinned to a known divergence from the docs.
  *
- * Policy (`.ai/fuzzing.md`): the assertion is NOT weakened and the component is
+ * Policy (`.ai/policies/fuzzing.md`): the assertion is NOT weakened and the component is
  * NOT changed. The test keeps asserting the documented behavior and is declared
  * with `it.fails(...)`, so the suite fails the day the component is fixed and
  * the finding can be closed — a fixed defect cannot leave a lie behind.

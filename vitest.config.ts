@@ -57,7 +57,7 @@ export default defineConfig({
       'tests/website-render.test.ts',
       'rollup.config.test.js',
       // `.debug/` is the repo's scratch area for throwaway probe specs
-      // (.ai/testing.md). A bare '.debug' only matches the one at the root,
+      // (.ai/policies/testing.md). A bare '.debug' only matches the one at the root,
       // so a probe left in `tests/.debug/` still gets collected — and those
       // are Playwright specs, which take the whole Vitest process down with
       // an unhandled 'error' event rather than failing a single file.

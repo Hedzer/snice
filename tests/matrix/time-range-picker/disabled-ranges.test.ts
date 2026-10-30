@@ -164,7 +164,7 @@ describe('snice-time-range-picker matrix: findings', () => {
    * "end":"12:50"}]'` against a 15-minute picker gets a picker with nothing
    * blocked and no error.
    *
-   * Policy (.ai/fuzzing.md): the assertion stays correct and the test is
+   * Policy (.ai/policies/fuzzing.md): the assertion stays correct and the test is
    * pinned.
    */
   it.fails('MATRIX-time-range-picker-1: an off-boundary disabled range blocks the slots it covers', async () => {

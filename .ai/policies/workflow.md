@@ -33,7 +33,7 @@ strongest listed model.
 - Run independent questions in **parallel** (one message, multiple dispatches).
 - Subagents return **conclusions**, not file dumps; only conclusions enter the main thread.
 - Every subagent prompt that touches Snice development work must instruct:
-  "read all `.ai/` files first".
+  "read `.ai/README.md` and every file under `.ai/policies/` in full first".
 - Research subagents are read-only: no edits, no commits, no deploys.
 
 ### Visuals → never delegated
@@ -61,7 +61,7 @@ Every component must satisfy ALL items before considered complete.
 
 ### Pre-Implementation
 - [ ] Read `theme.css` — understand available CSS custom properties
-- [ ] Read `.ai/style.md` — understand patterns, fallbacks, units
+- [ ] Read `.ai/policies/style.md` — understand patterns, fallbacks, units
 - [ ] If not ready for release, add directory name to `packages/components/.wip` (excludes from all builds)
 
 ### Implementation

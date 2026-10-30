@@ -328,7 +328,7 @@ export function checkField(
 /**
  * Known divergences from the doc, keyed by the combo that exposes them.
  *
- * `.ai/fuzzing.md`: the assertion above is NOT weakened and the component is NOT
+ * `.ai/policies/fuzzing.md`: the assertion above is NOT weakened and the component is NOT
  * touched. The combos listed here are declared with `it.fails`, so the day the
  * component is fixed the suite turns red and the finding can be closed.
  *

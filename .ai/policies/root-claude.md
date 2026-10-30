@@ -1,0 +1,35 @@
+# IMMEDIATELY upon reading this file, complete ALL of the following:
+
+For factory tasks, [w4s-factory](../skills/w4s-factory/SKILL.md) governs task workflow over conflicting repository workflow instructions. Non-workflow policies remain binding. Read binding repository policy and rule files in full; load role procedures, references and checklists only when relevant.
+
+1. READ docs/ai/README.md (token-efficient API reference)
+2. READ docs/ai/DEVELOPMENT.md (token-efficient development guide)
+3. Read `.ai/README.md` and every file under `.ai/policies/` in full
+3. FOLLOW ALL links mentioned in any documentation you read
+4. READ all linked files completely before proceeding
+
+---
+
+# The following instructions are ONLY for development work inside the Snice repository:
+
+# Communication style:
+# - Be SUCCINCT. Minimize explanations and verbose output.
+# - Show code changes, not lengthy descriptions.
+# - No unnecessary commentary or play-by-play narration.
+
+# Development guidelines:
+# - READ docs/ai/DEVELOPMENT.md for build system, testing, component requirements
+# - For API reference, always use docs/ai/ (token-efficient) instead of docs/ (human-friendly)
+
+# Before creating new files or directories, USE Glob to examine the existing repository structure
+# Look at how similar files are organized to follow the established patterns
+# Example: Before creating a test file, check tests/components/ to see the naming and location conventions
+
+# When adding or updating documentation, ALWAYS update BOTH versions:
+# - docs/ai/ (token-efficient, concise format for AI consumption)
+# - docs/ (human-friendly, detailed format with examples and explanations)
+
+# jCodeMunch MCP is available for token-efficient code exploration.
+# Use `index_folder` to index this project, then use `search_symbols`, `get_symbol`,
+# `get_file_outline`, and `get_repo_outline` to navigate code by symbol instead of
+# reading entire files. This saves significant tokens on large explorations.

@@ -306,7 +306,7 @@ test.describe('network-graph visual matrix: zoom really moves the paint', () => 
 
 // ── FINDING ─────────────────────────────────────────────────────────────────
 //
-// Per .ai/fuzzing.md the assertion below stays CORRECT — it asserts what
+// Per .ai/policies/fuzzing.md the assertion below stays CORRECT — it asserts what
 // docs/ai/components/network-graph.md promises ("Responsive via
 // ResizeObserver") — and is unpinned as the regression guard now that the
 // ResizeObserver re-lays the graph out, not just its viewBox.

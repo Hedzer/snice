@@ -330,7 +330,7 @@ async function hoverContainer(): Promise<void> {
 
 // ── Findings ────────────────────────────────────────────────────────────────
 //
-// `.ai/fuzzing.md`: a combo that diverges from the docs is a FINDING — keep the
+// `.ai/policies/fuzzing.md`: a combo that diverges from the docs is a FINDING — keep the
 // correct assertion, pin it against an id, never weaken it. `it.fails` is the
 // DOM tier's tool; the equivalent here names the EXACT message it excuses, so
 // everything else the combo reports still fails and a waiver that stops

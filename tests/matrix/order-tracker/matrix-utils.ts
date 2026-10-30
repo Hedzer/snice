@@ -8,7 +8,7 @@
  * of documented feature dimensions, mount one combo, collect EVERY violation
  * that combo has, and assert them all at once.
  *
- * The rules from `.ai/fuzzing.md` this exists to serve:
+ * The rules from `.ai/policies/fuzzing.md` this exists to serve:
  *
  *   · Expectations derive from `docs/ai/components/<name>.md` and the
  *     component's `.types.ts` — never from what the component happens to emit.

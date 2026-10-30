@@ -90,7 +90,7 @@ export function iconFor(mode: IconMode): string {
  * That covers every documented variant against every documented icon source and
  * both states of the one property whose default is TRUE — which is where a
  * banner's render function actually branches. 32 sits in the "mid" band
- * .ai/fuzzing.md describes; the full product would be 512 for a component that
+ * .ai/policies/fuzzing.md describes; the full product would be 512 for a component that
  * renders five nodes in a row.
  */
 export function generateCombos(): BannerCombo[] {

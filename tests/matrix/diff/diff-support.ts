@@ -31,7 +31,7 @@
  * ("side-by-side") can only pair an old line with its replacement if the two
  * arrive in that order.
  *
- * `.ai/fuzzing.md`: a combo that diverges is a finding, pinned with `it.fails`
+ * `.ai/policies/fuzzing.md`: a combo that diverges is a finding, pinned with `it.fails`
  * and a `MATRIX-diff-N` id. Nothing here can weaken an assertion.
  */
 import { Problems, expectClean, part, parts, text, wait } from '../matrix-kit';

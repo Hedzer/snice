@@ -775,7 +775,7 @@ prices.
 the wall time by three.
 
 **Known component defects are pinned, not softened.** The matrix policy in
-`.ai/fuzzing.md` says a combo that diverges from the docs is a finding: keep the
+`.ai/policies/fuzzing.md` says a combo that diverges from the docs is a finding: keep the
 correct assertion, pin it against a finding id, and report it. The DOM matrix
 uses `it.fails` for that; a component's visual specs use its Playwright
 equivalent, `test.fail()`, with the finding written above it.
@@ -822,7 +822,7 @@ npm run gauntlet -- --prompt-file ./prompt.txt
 npm run gauntlet -- --models qwen3-0.6b,lfm2.5-350m
 ```
 
-See [`.ai/testing.md`](./.ai/testing.md) for artifact verification,
+See [`.ai/policies/testing.md`](.ai/policies/testing.md) for artifact verification,
 scheduling, samples, output layout, and the required false-positive/
 false-negative classification loop.
 

@@ -320,7 +320,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
 
 // ── Findings ────────────────────────────────────────────────────────────────
 //
-// `.ai/fuzzing.md`: a combo that diverges from the docs is a FINDING — keep the
+// `.ai/policies/fuzzing.md`: a combo that diverges from the docs is a FINDING — keep the
 // correct assertion, pin it against an id, never weaken it. When a waiver's
 // message stops reproducing, the waiver must be deleted (its `hits` count fails
 // the suite otherwise), which is how fixed defects expire their pins here. No

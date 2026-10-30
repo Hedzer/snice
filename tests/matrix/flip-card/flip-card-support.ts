@@ -65,7 +65,7 @@ export function combo(id: string, over: Partial<FlipCombo> = {}): FlipCombo {
  * dimension that changes the rendered attributes, the tab order or the
  * animation — with the two slot-fill states rotated across them. A flip card
  * has one render function with no branches, so this is the "handful to tens"
- * end of the scale `.ai/fuzzing.md` describes, not the table's budget.
+ * end of the scale `.ai/policies/fuzzing.md` describes, not the table's budget.
  */
 export function generateCombos(): FlipCombo[] {
   const SLOTS = [

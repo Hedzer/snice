@@ -71,7 +71,7 @@ export function combo(id: string, over: Partial<RatingCombo> = {}): RatingCombo 
  * The cross: precision x readonly x value-shape x size — 48 combos, every
  * dimension that changes the rendered fill, the interaction contract or the
  * tab order — with `max` and the two icon inputs rotated across them. That is
- * the mid-range size `.ai/fuzzing.md` asks for: the rating is a small
+ * the mid-range size `.ai/policies/fuzzing.md` asks for: the rating is a small
  * interactive control, not a data component.
  */
 export function generateCombos(): RatingCombo[] {

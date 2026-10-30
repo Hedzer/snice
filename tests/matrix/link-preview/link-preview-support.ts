@@ -21,7 +21,7 @@
  *
  * The rendered footer also shows a host name derived from `url`, and the card
  * carries `role`/`tabindex`/`aria-label`. Neither is in the documentation, and
- * `.ai/fuzzing.md` binds expectations to the docs rather than to observed
+ * `.ai/policies/fuzzing.md` binds expectations to the docs rather than to observed
  * output, so this oracle stays silent about them instead of freezing today's
  * rendering into a test. What IS documented about `url` — that clicking a
  * preview emits `link-click` carrying it — is asserted in full.

@@ -181,7 +181,7 @@ describe('tooltip matrix: the portal the customer sees', () => {
  * the permanently-`hidden` shadow copy. Every documented part-based style is
  * therefore inert for the visible popup.
  *
- * Per .ai/fuzzing.md the assertion stays at full strength and the component is
+ * Per .ai/policies/fuzzing.md the assertion stays at full strength and the component is
  * NOT changed: this test fails the day the portal exposes the documented parts,
  * which is how the finding gets closed.
  */

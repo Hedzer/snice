@@ -9,7 +9,7 @@
  * every box reads 0 and nothing is painted.
  *
  * The divider is a PURELY PRESENTATIONAL component: no data, no interaction, no
- * delivery modes. Per .ai/fuzzing.md its matrix is deliberately MINIMAL — the
+ * delivery modes. Per .ai/policies/fuzzing.md its matrix is deliberately MINIMAL — the
  * layer-1 cross below is 24 combos, not the table's 1152 — but it is exactly the
  * tier that matters most for this component, because *every single documented
  * dimension of a divider is a CSS rule*. `variant`, `spacing`, `capped` and

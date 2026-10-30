@@ -32,7 +32,7 @@
  *
  * The painted marks are the visual tier's job (tests/live/matrix/chart).
  *
- * `.ai/fuzzing.md` is binding: expectations come from the docs, never from
+ * `.ai/policies/fuzzing.md` is binding: expectations come from the docs, never from
  * observed output, and a divergence is a FINDING — the assertion stays and the
  * test is declared `it.fails` with a `MATRIX-chart-N` id.
  */
@@ -295,7 +295,7 @@ export function series(count: number, points = 4): ChartDataset[] {
 
 /**
  * The title of a test pinned to a known divergence from the docs. The assertion
- * is NOT weakened and the component is NOT changed (`.ai/fuzzing.md`); the test
+ * is NOT weakened and the component is NOT changed (`.ai/policies/fuzzing.md`); the test
  * is `it.fails`, so it starts failing the day the component is fixed.
  */
 export function finding(id: string, description: string): string {

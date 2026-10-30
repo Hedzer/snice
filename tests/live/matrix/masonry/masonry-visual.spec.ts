@@ -11,7 +11,7 @@
  * every box reads 0 and no column ever forms.
  *
  * snice-masonry is a PURELY PRESENTATIONAL component — no data, no events, no
- * interaction — so per .ai/fuzzing.md its matrix is deliberately small. But
+ * interaction — so per .ai/policies/fuzzing.md its matrix is deliberately small. But
  * this is the tier that matters for it: every documented property is a CSS rule
  * and a browser is the only place any of them can be verified at all.
  *

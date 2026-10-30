@@ -287,7 +287,7 @@ describe('candlestick matrix: zoomEnabled', () => {
 
 // ── FINDINGS ────────────────────────────────────────────────────────────────
 //
-// Per .ai/fuzzing.md the assertions below stay CORRECT — they assert what
+// Per .ai/policies/fuzzing.md the assertions below stay CORRECT — they assert what
 // docs/ai/components/candlestick.md promises — and are declared `it.fails` so
 // the suite turns red the day the component is fixed and the finding is closed.
 

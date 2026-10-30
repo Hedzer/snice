@@ -19,7 +19,7 @@
  *   · the doc gives message-strip NO accessibility section, so this oracle
  *     asserts nothing about `role` or `aria-live`. A matrix may only hold a
  *     component to what it promises; asserting the ARIA surface here would be
- *     deriving expectations from observed output, which `.ai/fuzzing.md`
+ *     deriving expectations from observed output, which `.ai/policies/fuzzing.md`
  *     forbids. (It is asserted for the components whose docs DO promise it.)
  *   · the strip's root element carries no `part`, so it is addressed as "the
  *     parent of `[part=content]`" rather than by class name — the documented

@@ -4,7 +4,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  *
  * Every expectation below is read off `docs/ai/components/sparkline.md` and
- * `snice-sparkline.types.ts`, never off the rendered output (`.ai/fuzzing.md`):
+ * `snice-sparkline.types.ts`, never off the rendered output (`.ai/policies/fuzzing.md`):
  *
  *   data: number[] = []                  the series
  *   type: 'line'|'bar'|'area' = 'line'

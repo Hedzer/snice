@@ -68,7 +68,7 @@ export function combo(id: string, over: Partial<SkeletonCombo> = {}): SkeletonCo
  * The cross: variant x animation x count — 24 combos, the three dimensions that
  * change what is rendered or how it is animated — with the three sizing
  * dimensions (`width`, `height`, `spacing`) rotated across them so every one is
- * exercised against several variants. `.ai/fuzzing.md` sizes a matrix to the
+ * exercised against several variants. `.ai/policies/fuzzing.md` sizes a matrix to the
  * component: a skeleton's render function has one loop and one branch-free
  * class string, so the full 4*3*2*3*3*3 product would be budget spent on
  * nothing.

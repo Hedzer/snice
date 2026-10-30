@@ -6,7 +6,7 @@
  * Transcribed from `docs/ai/components/slider.md` and `snice-slider.types.ts`.
  * The slider is a FORM-ASSOCIATED control with a documented value lattice, a
  * dirty-value lifecycle and a constraint-validation contract, which puts it in
- * the "low hundreds of combos" band of `.ai/fuzzing.md` — the same band as the
+ * the "low hundreds of combos" band of `.ai/policies/fuzzing.md` — the same band as the
  * textarea, nowhere near the table.
  *
  *   value        number = 0     "live property only"

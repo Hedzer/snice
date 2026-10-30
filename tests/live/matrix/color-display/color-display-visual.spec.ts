@@ -8,7 +8,7 @@
  * which size class the swatch carries. It cannot own visual truth, because
  * happy-dom performs no layout and paints nothing — every box reads 0.
  *
- * snice-color-display is PURELY PRESENTATIONAL, so per .ai/fuzzing.md its
+ * snice-color-display is PURELY PRESENTATIONAL, so per .ai/policies/fuzzing.md its
  * visual matrix is deliberately MINIMAL — 27 layer-1 combos, not the table's
  * hundreds. It is also the tier that matters most for this component, because
  * the component's whole reason to exist is that a reader can SEE the colour:

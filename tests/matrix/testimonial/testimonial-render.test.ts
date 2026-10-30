@@ -11,7 +11,7 @@
  * role line's "role at company" join is the only place `role` and `company`
  * interact at all. `channel`, fractional/edge ratings and empty content live in
  * testimonial-edges.test.ts so this cross stays sized to a display-only card —
- * the table is the ceiling, not the template (.ai/fuzzing.md).
+ * the table is the ceiling, not the template (.ai/policies/fuzzing.md).
  *
  * Every assertion is the DOCUMENTED expectation. No findings in this slice.
  */

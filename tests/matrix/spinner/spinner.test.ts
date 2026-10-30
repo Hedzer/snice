@@ -2,7 +2,7 @@
  * snice-spinner matrix.
  *
  * SIZING. A spinner is the smallest kind of component there is — five loader
- * shapes and a caption — so per .ai/fuzzing.md this matrix is deliberately
+ * shapes and a caption — so per .ai/policies/fuzzing.md this matrix is deliberately
  * tiny: 20 combos for variant x size, plus a handful for the caption, the
  * colour hook and `thickness`. The reason `size` is CROSSED rather than
  * sampled is that it is not a class-only axis here: each variant renders its

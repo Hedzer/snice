@@ -4,7 +4,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  *
  * Transcribed from `docs/ai/components/drawer.md` and
- * `snice-drawer.types.ts`. Per `.ai/fuzzing.md`, nothing here is read back from
+ * `snice-drawer.types.ts`. Per `.ai/policies/fuzzing.md`, nothing here is read back from
  * the component: every `expected*` below carries the doc line it encodes, and a
  * combo that diverges becomes an `it.fails` finding rather than a softened
  * assertion.

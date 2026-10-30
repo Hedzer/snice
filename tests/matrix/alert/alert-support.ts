@@ -10,7 +10,7 @@
  * wholesale, so a failing combo reports every divergence at once instead of one
  * per re-run.
  *
- * `.ai/fuzzing.md` is binding here:
+ * `.ai/policies/fuzzing.md` is binding here:
  *   · expectations come from the DOCS, never from observed output;
  *   · a divergence is a FINDING — the assertion stays, the test becomes
  *     `it.fails` under a `MATRIX-alert-N` id. Nothing in this module offers a

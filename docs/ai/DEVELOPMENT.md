@@ -132,7 +132,7 @@ differs VISIBLY (`striped` once applied correctly while painting two luminance
 points from the dark surface). Keep every marquee set small — screenshots are
 the expensive layer. New combinations go in the layer-1 generator.
 
-**Known defects are pinned, never softened** (`.ai/fuzzing.md` policy). A
+**Known defects are pinned, never softened** (`.ai/policies/fuzzing.md` policy). A
 component's specs pin theirs with `test.fail()` and the finding written above
 it — the Playwright counterpart of the DOM matrix's `it.fails`. The table
 harness uses `WAIVERS` in `matrix-harness.ts`, stricter still because one combo reports many
@@ -154,7 +154,7 @@ application sample. Focused probes remain available with
 - Auto-downloads pinned llama.cpp + size/SHA-256-pinned GGUFs into `.local/`.
 - Produces blind raw output plus checker, TypeScript, and Vite logs per model.
 - No token/time cap; exact-output repetition is preserved and classified.
-- Full workflow/classification rules: `.ai/testing.md`.
+- Full workflow/classification rules: `.ai/policies/testing.md`.
 
 ## File Structure
 

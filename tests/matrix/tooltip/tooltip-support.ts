@@ -9,7 +9,7 @@
  * actual facts back. Every matrix test compares the two objects wholesale, so a
  * failing combo reports every divergence at once.
  *
- * `.ai/fuzzing.md` is binding: expectations come from the DOCS, never from
+ * `.ai/policies/fuzzing.md` is binding: expectations come from the DOCS, never from
  * observed output, and a divergence is a FINDING (`it.fails` under a
  * `MATRIX-tooltip-N` id) rather than a weakened assertion.
  *

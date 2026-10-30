@@ -91,7 +91,7 @@ export function combo(id: string, over: Partial<ImageCombo> = {}): ImageCombo {
  * change either the render shape or the paint rule — with `size`, `lazy`,
  * `alt`, `srcset`/`sizes`, the explicit box and the low-res placeholder rotated
  * across them so every documented value of each is exercised several times.
- * `.ai/fuzzing.md` sizes the matrix to the component: the image has one branch
+ * `.ai/policies/fuzzing.md` sizes the matrix to the component: the image has one branch
  * (src / no src) and one conditional (placeholder), so the full product of all
  * twelve properties would be the table's budget spent on a wrapper round `<img>`.
  */

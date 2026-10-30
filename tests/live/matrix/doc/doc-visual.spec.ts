@@ -30,7 +30,7 @@
  *   actually draw glyphs, and a readonly editor must lose its toolbar strip
  *   from the PAINT, not just from the accessibility tree.
  *
- * Findings history (.ai/fuzzing.md — pins are deleted the day they expire,
+ * Findings history (.ai/policies/fuzzing.md — pins are deleted the day they expire,
  * never softened):
  *   VISUAL-MATRIX-doc-1 (fixed) — a freshly mounted editor used to seed
  *     `<p><br></p>`, which defeats the placeholder's `:empty::before` hook,

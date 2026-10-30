@@ -20,7 +20,7 @@
  * THE TAX BASE IS NOT DOCUMENTED. "Tax rate percentage" and "Discount amount"
  * do not say whether tax is charged on the subtotal or on the discounted
  * subtotal, and reading the answer off the component is exactly what
- * `.ai/fuzzing.md` forbids. So the oracle asserts what the docs DO fix:
+ * `.ai/policies/fuzzing.md` forbids. So the oracle asserts what the docs DO fix:
  *
  *   · `total = subtotal - discount + tax`, the identity the `checkout` detail's
  *     own four fields describe;

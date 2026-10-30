@@ -28,7 +28,7 @@
  * `aria-selected`, `aria-controls`, the roving `tabindex`, or arrow-key
  * navigation. The component implements all of it, and a matrix that asserted it
  * anyway would be deriving expectations from observed output, which
- * `.ai/fuzzing.md` forbids. (Those claims ARE asserted for the components whose
+ * `.ai/policies/fuzzing.md` forbids. (Those claims ARE asserted for the components whose
  * docs make them.) If the doc grows an accessibility section, this oracle is
  * where the assertions belong.
  *

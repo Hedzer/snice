@@ -32,7 +32,7 @@ TYPES="$ROOT/packages/components/src/$COMP_DIR/snice-${COMP_DIR}.types.ts"
 CSS="$ROOT/packages/components/src/$COMP_DIR/snice-${COMP_DIR}.css"
 AI_DOC="$ROOT/docs/ai/components/${COMP_DIR}.md"
 HUMAN_DOC="$ROOT/docs/components/${COMP_DIR}.md"
-GUIDE="$ROOT/.ai/component-docs-guide.md"
+GUIDE="$ROOT/.ai/policies/component-docs-guide.md"
 
 # Need at least source + one doc
 [ -f "$SRC" ] || exit 0

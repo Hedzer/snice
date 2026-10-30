@@ -1,7 +1,7 @@
 /**
  * Shared harness for the snice-divider feature-combination matrix.
  *
- * The divider is the small end of the scale the policy describes (.ai/fuzzing.md:
+ * The divider is the small end of the scale the policy describes (.ai/policies/fuzzing.md:
  * "a divider gets a handful of combos"), so this file is deliberately one oracle
  * and one small generator rather than the twelve-file spread the table needs.
  *

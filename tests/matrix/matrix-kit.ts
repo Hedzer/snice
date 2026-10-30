@@ -15,7 +15,7 @@
  *   · collect EVERY violation a combo commits and assert them all at once, so
  *     one run tells the whole story instead of dying on the first mismatch.
  *
- * The rules from `.ai/fuzzing.md` this exists to serve:
+ * The rules from `.ai/policies/fuzzing.md` this exists to serve:
  *
  *   · expectations derive from `docs/ai/components/<name>.md` and the
  *     `.types.ts` contract, never from observed output — each component's

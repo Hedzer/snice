@@ -31,7 +31,7 @@
  * the exact icon markup — are asserted STRUCTURALLY (present / absent / ordered)
  * and never pinned to an observed literal.
  *
- * `.ai/fuzzing.md` is binding: nothing here offers a way to weaken an assertion.
+ * `.ai/policies/fuzzing.md` is binding: nothing here offers a way to weaken an assertion.
  * A combo that diverges is a FINDING — the assertion stays and the test is
  * declared `it.fails` with a `MATRIX-command-palette-N` id.
  */
@@ -453,7 +453,7 @@ export function manyCommands(count: number, prefix = 'Item'): CommandItem[] {
 /**
  * The title of a test pinned to a known divergence from the docs.
  *
- * Policy (`.ai/fuzzing.md`): the assertion is NOT weakened and the component is
+ * Policy (`.ai/policies/fuzzing.md`): the assertion is NOT weakened and the component is
  * NOT changed. The test keeps asserting the documented behaviour under
  * `it.fails`, so it starts failing the day the component is fixed.
  */

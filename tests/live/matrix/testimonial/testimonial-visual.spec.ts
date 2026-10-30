@@ -8,7 +8,7 @@
  * are filled. It cannot own visual truth, because happy-dom performs no layout
  * — every box reads 0 and nothing is painted.
  *
- * snice-testimonial is a PURELY PRESENTATIONAL card, so per .ai/fuzzing.md its
+ * snice-testimonial is a PURELY PRESENTATIONAL card, so per .ai/policies/fuzzing.md its
  * visual matrix is deliberately MINIMAL — 24 layer-1 combos, not the table's
  * hundreds. It is also the tier that matters most for this component, because
  * `variant` produces NO DOM difference whatsoever: card, minimal and featured

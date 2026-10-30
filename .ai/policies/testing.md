@@ -7,7 +7,7 @@ npm test                   # Complete required gate (source, built, CDN, React,
 npm run test:source        # Source tests
 npm run test:matrix        # Component feature-combination matrices (tests/matrix/) —
                            # opt-in fuzz tier; the default vitest include keeps only
-                           # each directory's smoke.test.ts (.ai/fuzzing.md)
+                           # each directory's smoke.test.ts (.ai/policies/fuzzing.md)
 npm run test:matrix:visual # Same matrices in a real browser — on-demand visual tier,
                            # chromium by default, --all-engines for all three
 npm run test:distribution  # Fresh dist build + built tests

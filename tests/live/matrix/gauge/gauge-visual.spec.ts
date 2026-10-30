@@ -62,7 +62,7 @@ function expectedFraction(c: Pick<Combo, 'value' | 'min' | 'max'>): number {
  * The cross: variant x size x value-shape — 24 combos covering the empty, part,
  * full and out-of-range readings of every variant at every size — with the
  * custom range, the label, `showValue` and `thickness` rotated across them.
- * Mid-range, per .ai/fuzzing.md: the gauge is one SVG with two paths.
+ * Mid-range, per .ai/policies/fuzzing.md: the gauge is one SVG with two paths.
  */
 function generateCombos(): Combo[] {
   const READINGS: Array<Pick<Combo, 'value' | 'min' | 'max'>> = [

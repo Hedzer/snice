@@ -16,7 +16,7 @@
  * property assignment are two different paths into the same state and only one
  * of them is what CSS can see.
  *
- * Sizing per .ai/fuzzing.md: a display-only component with six properties gets
+ * Sizing per .ai/policies/fuzzing.md: a display-only component with six properties gets
  * tens of combos. `showSwatch`/`showLabel`/`swatchSize` are crossed in
  * color-display-visibility.test.ts instead of being multiplied in here — they
  * add no new label text, so folding them in would multiply the count by twelve

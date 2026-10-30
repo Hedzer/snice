@@ -32,7 +32,7 @@
  * does every bit of the work, exactly as `tests/matrix/media-mock.ts` does for
  * the capture stack.
  *
- * `.ai/fuzzing.md`: expectations come from the doc, never from observed output;
+ * `.ai/policies/fuzzing.md`: expectations come from the doc, never from observed output;
  * a divergence is pinned with `it.fails` and a `MATRIX-video-player-N` id.
  */
 import { Problems, expectClean, part, text, wait } from '../matrix-kit';

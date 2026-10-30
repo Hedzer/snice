@@ -12,7 +12,7 @@
  * invisible one.
  *
  * The spinner is PURELY PRESENTATIONAL: no data, no interaction, no delivery
- * modes. Per .ai/fuzzing.md its matrix is deliberately small — 20 layer-1
+ * modes. Per .ai/policies/fuzzing.md its matrix is deliberately small — 20 layer-1
  * combos, not the table's 1152 — but this is the tier that matters most for it,
  * because every documented dimension (`variant`, `size`, `color`, `thickness`)
  * is a CSS rule or an SVG geometry, and a browser is the only place any of them

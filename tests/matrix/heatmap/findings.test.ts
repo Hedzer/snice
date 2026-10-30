@@ -2,7 +2,7 @@
  * snice-heatmap matrix — the fixed findings.
  *
  * Each test asserts the DOCUMENTED behaviour that was once pinned with
- * `it.fails` per `.ai/fuzzing.md`; the day each was fixed the pin was
+ * `it.fails` per `.ai/policies/fuzzing.md`; the day each was fixed the pin was
  * unwrapped, and the assertion now guards the fix.
  */
 import { describe, it, expect, afterEach } from 'vitest';

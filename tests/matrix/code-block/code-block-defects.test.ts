@@ -1,7 +1,7 @@
 /**
  * snice-code-block matrix — the FINDINGS, both FIXED.
  *
- * Per `.ai/fuzzing.md`: a combo that diverges from the documentation keeps its
+ * Per `.ai/policies/fuzzing.md`: a combo that diverges from the documentation keeps its
  * CORRECT assertion and is marked `it.fails` with a finding id, paired with a
  * "reproduces" test asserting what the component actually does. Both findings
  * here have been fixed in the source: the pins are unwrapped into plain

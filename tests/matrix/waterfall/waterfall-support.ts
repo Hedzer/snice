@@ -31,7 +31,7 @@
  *
  * Deliberately NOT encoded: the exact `1.0K` / `1.0M` abbreviation, the
  * viewBox size, the padding, the bar width fraction. None of those are
- * documented, and .ai/fuzzing.md forbids deriving expectations from observed
+ * documented, and .ai/policies/fuzzing.md forbids deriving expectations from observed
  * output. The geometry assertions below are SCALE-FREE for exactly that reason:
  * they check that every plotted edge sits on ONE consistent value->y mapping
  * shared with the zero axis, which is what "plots cumulative values" means,
@@ -411,7 +411,7 @@ export function structureProblems(el: SniceWaterfallElement, c: WaterfallCombo):
  *
  * Scale-free by construction. The docs promise that the chart plots the
  * cumulative running total; they promise nothing about the pixel scale, the
- * padding, or the viewBox, and .ai/fuzzing.md forbids inventing those from
+ * padding, or the viewBox, and .ai/policies/fuzzing.md forbids inventing those from
  * observed output. So instead of predicting coordinates, this collects the
  * (value, y) pairs the chart itself asserts — the zero axis at value 0, and
  * each bar's two edges at its documented `start`/`end` — and verifies they all

@@ -312,7 +312,7 @@ test.describe('location visual matrix: the compact mode', () => {
    * BLOCKIFIES its display — the declared `inline` computes to `block` and the
    * rule can never take effect. That is worth knowing, but the documentation
    * says only "Display mode" about `compact`; it never promises an inline
-   * address, and `.ai/fuzzing.md` binds this tier to the documentation rather
+   * address, and `.ai/policies/fuzzing.md` binds this tier to the documentation rather
    * than to the stylesheet's intent. What the docs DO support is the test
    * above: compact is tighter than full.
    */

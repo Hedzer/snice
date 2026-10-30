@@ -3,7 +3,7 @@
  *
  * Every expectation cites the line of `docs/ai/components/spinner.md` it
  * encodes. The spinner is PURELY PRESENTATIONAL — no data, no interaction, no
- * state — so per .ai/fuzzing.md its matrix is deliberately small, and the DOM
+ * state — so per .ai/policies/fuzzing.md its matrix is deliberately small, and the DOM
  * tier's only honest subject is the structure the docs promise: which variant
  * part is rendered, that the caption has exactly one path, and that the
  * documented `role`/`aria-label` are there. Everything about the ANIMATION is

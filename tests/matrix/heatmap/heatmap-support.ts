@@ -34,7 +34,7 @@
  * lower level than a smaller one. The colour those levels resolve to is a
  * stylesheet question and belongs to the visual tier.
  *
- * `.ai/fuzzing.md`: expectations come from the doc, never from observed output;
+ * `.ai/policies/fuzzing.md`: expectations come from the doc, never from observed output;
  * a divergence is pinned with `it.fails` and a `MATRIX-heatmap-N` id.
  */
 import { Problems, expectClean, part, parts, text, wait } from '../matrix-kit';

@@ -1,7 +1,7 @@
 /**
  * snice-video-player matrix — the standing findings.
  *
- * Everything here asserts the DOCUMENTED behaviour per `.ai/fuzzing.md`: the
+ * Everything here asserts the DOCUMENTED behaviour per `.ai/policies/fuzzing.md`: the
  * assertion stays correct, the component is changed to match it, and the
  * finding is closed as `(fixed)` — both below are.
  */

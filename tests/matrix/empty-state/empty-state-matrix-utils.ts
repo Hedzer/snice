@@ -89,7 +89,7 @@ export function iconFor(mode: IconMode): string {
  * `description`, a custom `title` and default-slot content rotated across them.
  * That is the whole render function — every `<if>` and `<case>` branch it has,
  * against every documented value of the properties that drive them. 36 is the
- * "mid" band .ai/fuzzing.md describes; the full product with every title and
+ * "mid" band .ai/policies/fuzzing.md describes; the full product with every title and
  * description variant would be several hundred for a component that renders
  * five nodes.
  */

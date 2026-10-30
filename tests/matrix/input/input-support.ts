@@ -10,7 +10,7 @@
  * facts out of the shadow tree. Every matrix test compares the two objects
  * wholesale, so a failing combo reports every divergence at once.
  *
- * `.ai/fuzzing.md` is binding: expectations come from the DOCS, never from
+ * `.ai/policies/fuzzing.md` is binding: expectations come from the DOCS, never from
  * observed output, and a divergence is a FINDING (`it.fails` under a
  * `MATRIX-input-N` id) rather than a weakened assertion.
  *
@@ -19,7 +19,7 @@
  * The input is a FORM-ASSOCIATED control with ten types, three appearance
  * axes, seven state switches, a documented dirty-value lifecycle, a full
  * constraint-validation contract, two icon channels and a password reveal.
- * Per `.ai/fuzzing.md` that is the "low hundreds" band — not the table's
+ * Per `.ai/policies/fuzzing.md` that is the "low hundreds" band — not the table's
  * thousand, not a divider's dozen. The suite crosses:
  *
  *   presentation   variant x size x label x support text        (36)

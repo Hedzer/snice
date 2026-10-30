@@ -208,7 +208,7 @@ test.describe('snice-diff visual matrix (layer 1)', () => {
    * a real browser left the table byte-identical and the hidden lines
    * unreachable.
    *
-   * Policy (.ai/fuzzing.md): the assertion stayed correct while the combo was
+   * Policy (.ai/policies/fuzzing.md): the assertion stayed correct while the combo was
    * pinned; `hunks` is now `@state`, the click re-renders, and the pin is
    * removed with the fix.
    */

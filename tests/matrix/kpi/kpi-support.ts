@@ -73,7 +73,7 @@ export function combo(id: string, over: Partial<KpiCombo> = {}): KpiCombo {
  * The cross: sentiment (including "none") x size x trend-value x trend-data —
  * 48 combos, every dimension that changes which documented parts exist — with
  * `showSparkline`, `colorValue` and the two slots rotated across them. That is
- * the mid-range size `.ai/fuzzing.md` asks for: the KPI's render function is
+ * the mid-range size `.ai/policies/fuzzing.md` asks for: the KPI's render function is
  * four conditionals over four independent inputs, so the conditionals get a
  * full cross and the pure presentation rides along.
  */

@@ -38,4 +38,4 @@ Rules that make the matrix worth anything:
   template. A divider gets a handful of combos.
 
 See `tests/matrix/table/matrix-utils.ts` for the oracle pattern and
-`.ai/testing.md` for browser-tier mechanics.
+`.ai/policies/testing.md` for browser-tier mechanics.

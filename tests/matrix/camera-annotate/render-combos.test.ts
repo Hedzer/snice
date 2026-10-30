@@ -143,7 +143,7 @@ describe('snice-camera-annotate matrix: auto-start', () => {
   /**
    * FINDING MATRIX-camera-annotate-1 (FIXED).
    *
-   * `autoStart: boolean = false` is documented as opt-in, and `.ai/gotchas.md`
+   * `autoStart: boolean = false` is documented as opt-in, and `.ai/policies/gotchas.md`
    * states the house rule it exists for: "Never auto-request camera permission
    * on page load". Mounting the documented bare markup
    * (`<snice-camera-annotate></snice-camera-annotate>`) nevertheless calls

@@ -26,7 +26,7 @@
  * on each side of it, the first and last page, and an ellipsis where pages are
  * skipped — but not the exact threshold at which the component stops eliding.
  * Re-implementing the component's `getPageNumbers()` here would violate the
- * first rule of this tier (`.ai/fuzzing.md`: expectations come from the docs,
+ * first rule of this tier (`.ai/policies/fuzzing.md`: expectations come from the docs,
  * never from the code) and would turn a legitimate design choice into dozens
  * of false findings.
  *

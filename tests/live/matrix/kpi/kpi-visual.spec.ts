@@ -59,7 +59,7 @@ const SERIES = [20, 25, 22, 30, 28, 35, 32];
  * The cross: sentiment (including none) x size x series-present — 24 combos,
  * the dimensions that change what is painted and in what colour — with
  * `colorValue`, `showSparkline`, the trend text and the two slots rotated
- * across them. Mid-range, per .ai/fuzzing.md: a KPI is a composition of five
+ * across them. Mid-range, per .ai/policies/fuzzing.md: a KPI is a composition of five
  * small blocks, not a data component.
  */
 function generateCombos(): Combo[] {

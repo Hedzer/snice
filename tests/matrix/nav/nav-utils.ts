@@ -4,7 +4,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  *
  * Every expectation below is read off `docs/ai/components/nav.md` and
- * `snice-nav.types.ts`, never off the rendered output (`.ai/fuzzing.md`):
+ * `snice-nav.types.ts`, never off the rendered output (`.ai/policies/fuzzing.md`):
  *
  *   · Properties — `variant` (flat|hierarchical|grouped), `orientation`
  *     (horizontal|vertical), `activeStyle` (fill|text, attr `active-style`),

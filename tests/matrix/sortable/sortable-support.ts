@@ -41,7 +41,7 @@
  *      happy-dom.
  *
  * Neither touches an expectation. Every `expect*` below still states what the
- * doc says, and a divergence stays a divergence (`.ai/fuzzing.md`).
+ * doc says, and a divergence stays a divergence (`.ai/policies/fuzzing.md`).
  */
 import { Problems, expectClean, part, wait } from '../matrix-kit';
 import { mount, removeComponent } from '../matrix-utils';

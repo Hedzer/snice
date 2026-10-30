@@ -23,7 +23,7 @@
  *   · `carousel-slide-change` carries `{ activeIndex, previousIndex, carousel }`
  *     and marks a CHANGE of slide.
  *
- * `.ai/fuzzing.md` is binding: a divergence is a FINDING — the assertion stays
+ * `.ai/policies/fuzzing.md` is binding: a divergence is a FINDING — the assertion stays
  * and the test is declared `it.fails` with a `MATRIX-carousel-N` id.
  */
 import { expect } from 'vitest';
@@ -300,7 +300,7 @@ export function withDefaults(spec: CarouselSpec & { slides: number }) {
 
 /**
  * The title of a test pinned to a known divergence from the docs. The assertion
- * is NOT weakened and the component is NOT changed (`.ai/fuzzing.md`).
+ * is NOT weakened and the component is NOT changed (`.ai/policies/fuzzing.md`).
  */
 export function finding(id: string, description: string): string {
   return `${id}: ${description}`;

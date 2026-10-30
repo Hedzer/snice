@@ -7,7 +7,7 @@
  * category, rather than a call into the same `isSafeUrl()` the component uses.
  * Deriving the expectation from the implementation's own helper would make the
  * matrix agree with the component by construction, which is exactly what
- * .ai/fuzzing.md forbids.
+ * .ai/policies/fuzzing.md forbids.
  */
 import { part, shadow, type Shape } from '../matrix-utils';
 import '../../../packages/components/src/link/snice-link';

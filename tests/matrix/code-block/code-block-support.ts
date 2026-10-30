@@ -4,7 +4,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  *
  * Every expectation is read off `docs/ai/components/code-block.md` and
- * `snice-code-block.types.ts`, never off rendered output (`.ai/fuzzing.md`):
+ * `snice-code-block.types.ts`, never off rendered output (`.ai/policies/fuzzing.md`):
  *
  *   code: string = ''                 set via slot or property
  *   language: 'javascript'|…|'plaintext' = 'plaintext'

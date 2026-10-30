@@ -61,7 +61,7 @@ $STANDARDS
 
 Review for:
 1. Coding standards violations
-2. If the diff changes a component's public API surface, remind: \"API changed — update docs (docs/ + docs/ai/), react adapter metadata, and run component checklist (.ai/component-checklist.md)\"
+2. If the diff changes a component's public API surface, remind: \"API changed — update docs (docs/ + docs/ai/), react adapter metadata, and run component checklist (.ai/policies/component-checklist.md)\"
    API surface includes: @property, @dispatch, part=\"...\", slot, public methods, CSS custom properties (--snice-*), and any attribute a consumer would use.
 
 Be terse. If code follows standards and no API surface changed, respond with just \"ok\". Only flag real issues.
