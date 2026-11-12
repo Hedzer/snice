@@ -1,6 +1,6 @@
 # IMMEDIATELY upon reading this file, complete ALL of the following:
 
-For factory tasks, [w4s-factory](../skills/w4s-factory/SKILL.md) governs task workflow over conflicting repository workflow instructions. Non-workflow policies remain binding. Read binding repository policy and rule files in full; load role procedures, references and checklists only when relevant.
+For factory tasks, [w4s-factory](../skills/w4s-factory/SKILL.md) governs task workflow subject to [agent-work.md](agent-work.md). Non-workflow policies remain binding. Read binding repository policy and rule files in full; load role procedures, references and checklists only when relevant.
 
 1. READ docs/ai/README.md (token-efficient API reference)
 2. READ docs/ai/DEVELOPMENT.md (token-efficient development guide)

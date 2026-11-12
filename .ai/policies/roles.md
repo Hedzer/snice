@@ -2,7 +2,7 @@
 
 ## Ownership
 
-- One backlog item has exactly one Worker, one branch, and one worktree.
+- One backlog item has exactly one Worker. All agents work directly on `main`; no worktrees.
 - Only that Worker writes for the item. Foremen, Auditors, and Scouts do not edit its files.
 - State permissions explicitly: write, commit, push, update backlog, open review, approve, and merge.
 
@@ -15,9 +15,9 @@
 
 ## Worker
 
-- Own one backlog item in its assigned branch and worktree.
+- Own one backlog item directly on `main` in the shared repository.
 - Implement only that item, validate it, and report evidence.
-- Do not change backlog or review state unless explicitly authorized.
+- The agent finishing the work moves the relevant board items and commits those moves.
 - Stop before work outside the assigned scope or permissions.
 
 ## Auditor
@@ -39,7 +39,7 @@ Foreman to agent:
 
 - Role and backlog item
 - Goal and acceptance criteria
-- Branch, worktree, and starting point
+- Starting commit on `main`
 - Required context and constraints
 - Allowed actions
 - Required validation and report
@@ -49,5 +49,5 @@ Agent to Foreman:
 - Status or verdict
 - Changes made or findings
 - Validation and evidence
-- Branch and commit, when applicable
+- Commit(s) on `main`, when applicable
 - Risks, blockers, and next step
