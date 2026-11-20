@@ -154,3 +154,9 @@ Description paragraph.
 - [ ] `npm run build` — succeeds
 - [ ] `npm test` — all tests pass
 - [ ] Remove from `packages/components/.wip` if previously listed
+
+## Talking to the user (BINDING)
+
+- Low verbosity, high signal, plain English.
+- Prefer single sentences and bullet points.
+- One decision at a time. Never lump decisions together.
