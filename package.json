@@ -12,7 +12,10 @@
     "./dist/testing-dom.esm.js",
     "./dist/testing-dom.cjs",
     "./dist/components/**/*.js",
-    "./dist/components/**/*.css"
+    "./dist/components/**/*.css",
+    "./packages/core/src/testing-dom.ts",
+    "./packages/components/**/*.ts",
+    "./packages/components/**/*.css"
   ],
   "exports": {
     ".": {

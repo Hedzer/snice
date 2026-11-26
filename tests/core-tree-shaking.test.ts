@@ -4,6 +4,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { rollup } from 'rollup';
+import nodeResolve from '@rollup/plugin-node-resolve';
 import {
   parseDuration,
   html,
@@ -47,6 +48,9 @@ describe('BS-01: Core side-effect elimination, tree-shaking & css() caching', ()
     expect(pkg.sideEffects).toContain('./dist/testing-dom.cjs');
     expect(pkg.sideEffects).toContain('./dist/components/**/*.js');
     expect(pkg.sideEffects).toContain('./dist/components/**/*.css');
+    expect(pkg.sideEffects).toContain('./packages/core/src/testing-dom.ts');
+    expect(pkg.sideEffects).toContain('./packages/components/**/*.ts');
+    expect(pkg.sideEffects).toContain('./packages/components/**/*.css');
     expect(pkg.sideEffects).not.toContain('./dist/index.esm.js');
     expect(pkg.sideEffects).not.toContain('./dist/symbols.esm.js');
     expect(pkg.sideEffects).not.toContain('./dist/transitions.esm.js');
@@ -83,6 +87,41 @@ describe('BS-01: Core side-effect elimination, tree-shaking & css() caching', ()
         expect(code).not.toContain('RouteResult');
         expect(code).not.toContain('lockBodyScroll');
         expect(code).not.toContain('controllerRegistry');
+      } finally {
+        await bundle.close();
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('AC-1/AC-4: preserves child-component side-effect imports in dist/components/** and when bundled by Rollup with node-resolve', async () => {
+    const root = process.cwd();
+    const treeJs = readFileSync(join(root, 'dist/components/tree/snice-tree.js'), 'utf8');
+    const layoutJs = readFileSync(join(root, 'dist/components/layout/snice-layout.js'), 'utf8');
+    const tableJs = readFileSync(join(root, 'dist/components/table/snice-table.js'), 'utf8');
+
+    expect(treeJs).toMatch(/import\s+['"]\.\/snice-tree-item\.js['"]/);
+    expect(layoutJs).toMatch(/import\s+['"]\.\.\/nav\/snice-nav\.js['"]/);
+    expect(tableJs).toMatch(/import\s+['"]\.\/snice-column\.js['"]/);
+    expect(tableJs).toMatch(/import\s+['"]\.\/snice-row\.js['"]/);
+
+    const dir = mkdtempSync(join(tmpdir(), 'snice-component-side-effects-'));
+    try {
+      const entryFile = join(dir, 'entry.js');
+      const treeDist = resolve(root, 'dist/components/tree/snice-tree.js');
+      writeFileSync(entryFile, `import ${JSON.stringify(treeDist)};\n`);
+
+      const bundle = await rollup({
+        input: entryFile,
+        external: ['snice', 'snice/symbols', 'snice/transitions', 'tslib'],
+        plugins: [nodeResolve()],
+      });
+      try {
+        const { output } = await bundle.generate({ format: 'es' });
+        const code = output[0].code;
+        expect(code).toContain('snice-tree');
+        expect(code).toContain('snice-tree-item');
       } finally {
         await bundle.close();
       }
