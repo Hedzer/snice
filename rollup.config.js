@@ -282,6 +282,32 @@ export default [
     ]
   },
 
+  // Bundler plugin builds (snice/vite and snice/rollup → dist/plugin/)
+  {
+    input: {
+      vite: 'packages/plugin/src/vite.ts',
+      rollup: 'packages/plugin/src/rollup.ts',
+    },
+    external: (id) => id.startsWith('node:') || id === 'vite' || id === 'rollup',
+    onwarn: failOnCoreCircularDependency,
+    output: {
+      dir: 'dist/plugin',
+      format: 'es',
+      banner,
+      sourcemap: true,
+      sourcemapPathTransform: (sourcePath) => sourcePath.replace(/packages\/packages\/plugin\/src/g, 'packages/plugin/src'),
+      entryFileNames: '[name].js',
+      chunkFileNames: '_chunks/[name].js',
+    },
+    plugins: [
+      resolve(),
+      typescript({
+        tsconfig: './packages/plugin/tsconfig.json',
+        declaration: true,
+      }),
+    ],
+  },
+
   // React integration (source in packages/react/src/, built to dist/react/)
   {
     input: {

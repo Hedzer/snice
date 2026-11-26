@@ -31,6 +31,8 @@ function sourceCandidates(mapPath, source) {
   if (core) candidates.push(join(projectRoot, 'packages', 'core', 'src', core[1]));
   const react = clean.match(/(?:^|\/)src\/react\/(.+)$/);
   if (react) candidates.push(join(projectRoot, 'packages', 'react', 'src', react[1]));
+  const plugin = clean.match(/(?:^|\/)packages\/plugin\/src\/(.+)$/);
+  if (plugin) candidates.push(join(projectRoot, 'packages', 'plugin', 'src', plugin[1]));
   if (mapPath.includes(`${join('adapters', 'react')}`)) {
     candidates.push(join(projectRoot, 'adapters', 'react', clean));
   }

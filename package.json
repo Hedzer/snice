@@ -38,6 +38,14 @@
       "import": "./dist/testing-dom.esm.js",
       "require": "./dist/testing-dom.cjs"
     },
+    "./vite": {
+      "types": "./dist/plugin/vite.d.ts",
+      "import": "./dist/plugin/vite.js"
+    },
+    "./rollup": {
+      "types": "./dist/plugin/rollup.d.ts",
+      "import": "./dist/plugin/rollup.js"
+    },
     "./react": {
       "types": "./adapters/react/index.d.ts",
       "import": "./adapters/react/index.js"

@@ -17,9 +17,59 @@ describe('published package contract', () => {
   it('orders type conditions before runtime conditions and ships the skill', () => {
     expect(Object.keys(packageJson.exports['.'])).toEqual(['types', 'import', 'require']);
     expect(Object.keys(packageJson.exports['./testing/dom'])).toEqual(['types', 'import', 'require']);
+    expect(Object.keys(packageJson.exports['./vite'])).toEqual(['types', 'import']);
+    expect(Object.keys(packageJson.exports['./rollup'])).toEqual(['types', 'import']);
     expect(Object.keys(packageJson.exports['./components/*'])).toEqual(['types', 'import']);
     expect(packageJson.files).toContain('.agents');
     expect(existsSync(join(root, '.agents/skills/snice/SKILL.md'))).toBe(true);
+  });
+
+  it('ships snice/vite and snice/rollup plugin subpaths with NodeNext types and zero vite dependency in rollup entry', async () => {
+    for (const key of ['./vite', './rollup'] as const) {
+      const exported = packageJson.exports[key];
+      for (const target of Object.values(exported) as string[]) {
+        expect(existsSync(join(root, target)), `missing ${target}`).toBe(true);
+      }
+    }
+
+    // Verify dist/plugin/rollup.js never imports 'vite'
+    const rollupEntry = readFileSync(join(root, 'dist/plugin/rollup.js'), 'utf8');
+    expect(rollupEntry).not.toMatch(/from\s+['"]vite['"]/);
+    const rollupMod = await import(join(root, 'dist/plugin/rollup.js'));
+    expect(typeof rollupMod.default).toBe('function');
+    expect(typeof rollupMod.snice).toBe('function');
+    expect(typeof rollupMod.createSniceManualChunks).toBe('function');
+
+    // Verify NodeNext type resolution for both snice/vite and snice/rollup
+    const consumer = mkdtempSync(join(tmpdir(), 'snice-plugin-nodenext-'));
+    try {
+      mkdirSync(join(consumer, 'node_modules'), { recursive: true });
+      symlinkSync(root, join(consumer, 'node_modules', 'snice'), 'junction');
+      writeFileSync(join(consumer, 'package.json'), JSON.stringify({ type: 'module' }));
+      writeFileSync(join(consumer, 'index.ts'), `
+        import sniceVite, { createSniceManualChunks, type SnicePluginOptions, type SniceBuildReport } from 'snice/vite';
+        import sniceRollup from 'snice/rollup';
+        const opts: SnicePluginOptions = { caching: { isolateHeavy: true }, stripCssFallbacks: 'auto', report: (r: SniceBuildReport) => { void r.totalGzipBytes; } };
+        void [sniceVite(opts), sniceRollup(opts), createSniceManualChunks()];
+      `);
+      writeFileSync(join(consumer, 'tsconfig.json'), JSON.stringify({
+        compilerOptions: {
+          target: 'ES2022',
+          module: 'NodeNext',
+          moduleResolution: 'NodeNext',
+          strict: true,
+          noEmit: true,
+          skipLibCheck: true,
+        },
+        files: ['index.ts'],
+      }));
+      execFileSync(join(root, 'node_modules', '.bin', 'tsc'), ['-p', join(consumer, 'tsconfig.json')], {
+        cwd: consumer,
+        stdio: 'pipe',
+      });
+    } finally {
+      rmSync(consumer, { recursive: true, force: true });
+    }
   });
 
   it('ships the opt-in DOM testing compatibility entry point', () => {
