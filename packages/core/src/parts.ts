@@ -3,7 +3,7 @@ import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult, i
 import { isRepeatResult } from './repeat';
 import { findRenderHost } from './render-root';
 import { PRE_UPGRADE_PROPERTY_BINDINGS, IS_ELEMENT_CLASS, PENDING_CONTROLLER_BINDING, PROPERTIES } from './symbols';
-import { attachController, detachController } from './controller';
+import { attachControllerClassViaBridge, detachElementController } from './lifecycle-hooks';
 import { parseKeyboardFilter, matchesKeyboardFilter, warnIfModifierMisuse, type KeyboardFilter } from './keyboard-filter';
 import { contextualizeRenderError, type RenderHostIdentity } from './render-errors';
 import {
@@ -2232,19 +2232,11 @@ export class ControllerPart extends Part {
   }
 
   private _attach(controllerClass: any): void {
-    attachController(this.element as HTMLElement, controllerClass).catch((error: any) => {
-      if (error?.name === 'ControllerAttachAborted') return;
-      console.error(
-        `Failed to attach controller "${controllerClass?.name || controllerClass}":`,
-        error
-      );
-    });
+    attachControllerClassViaBridge(this.element as HTMLElement, controllerClass);
   }
 
   private _detach(): void {
-    detachController(this.element as HTMLElement).catch((error: any) => {
-      console.error('Failed to detach controller:', error);
-    });
+    detachElementController(this.element as HTMLElement);
   }
 
   disconnected(_preserveEventListeners = false): void {

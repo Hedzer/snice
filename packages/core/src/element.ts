@@ -1,18 +1,28 @@
-import { attachController, deferControllerAttachment, detachController, restoreDirectControllerAttribute } from './controller';
-import { ControllerClass } from './types/i-controller';
-import { setupObservers, cleanupObservers } from './observe';
-import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
-import { setupEventHandlers, cleanupEventHandlers } from './on';
-import { setupContextHandler, cleanupContextHandler } from './context';
+import type { ControllerClass } from './types/i-controller';
+import {
+  attachElementController,
+  attachPendingElementController,
+  detachElementController,
+  restoreDirectControllerAttributeViaBridge,
+  runCleanupContextHandler,
+  runCleanupEventHandlers,
+  runCleanupObservers,
+  runCleanupResponseHandlers,
+  runClearDebounceTimers,
+  runClearDispatchTimers,
+  runClearThrottleTimers,
+  runSetupContextHandler,
+  runSetupEventHandlers,
+  runSetupObservers,
+  runSetupResponseHandlers
+} from './lifecycle-hooks';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, invokeImmediateWatchers, validateWatchedProperties, notEqual } from './utils';
 import { requestRender, applyStyles, clearRenderTimers, disconnectRenderTree, reconnectRenderTree } from './render';
-import { clearDispatchTimers } from './events';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, READY_REJECT, READY_HANDLERS_RUNNING, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, PENDING_CONTROLLER_BINDING, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PRE_UPGRADE_PROPERTY_BINDINGS, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions, StateOptions } from './types/property-options';
 import { WatchOptions } from './types/watch-options';
 import { ElementOptions } from './types/element-options';
-import { clearDebounceTimers, clearThrottleTimers } from './method-decorators';
 import { AppContext } from './types/app-context';
 import { Placard } from './types/placard';
 import { RouteParams } from './types/route-params';
@@ -161,28 +171,12 @@ export function applyElementFunctionality(constructor: any) {
         if (value === oldValue) return;
 
         if (value) {
-          const label = typeof value === 'string' ? value : (value.name || '(anonymous controller class)');
-          attachController(this, value).catch(error => {
-            // Detached before ready — designed teardown, not a failure
-            if (error?.name === 'ControllerAttachAborted') {
-              console.debug(`Controller "${label}" attach aborted (element detached before ready)`);
-              return;
-            }
-            // Registry misses only apply to string names — class references
-            // never go through the registry.
-            if (typeof value === 'string' && error?.message === `Controller "${value}" not found in registry`) {
-              deferControllerAttachment(this, value);
-              return;
-            }
-            console.error(`Failed to attach controller "${label}":`, error);
-          });
+          attachElementController(this, value);
           return;
         }
 
         if (oldValue) {
-          detachController(this).catch(error => {
-            console.error(`Failed to detach controller:`, error);
-          });
+          detachElementController(this, oldValue);
         }
       },
       enumerable: true,
@@ -209,13 +203,13 @@ export function applyElementFunctionality(constructor: any) {
           console.error(`Error reconnecting the render tree for ${this.tagName}:`, error);
         }
         // Re-establish handlers that get cleaned up on disconnect
-        setupEventHandlers(this, this);
-        setupResponseHandlers(this, this);
-        void setupContextHandler(this, 'task');
+        runSetupEventHandlers(this, this);
+        runSetupResponseHandlers(this, this);
+        void runSetupContextHandler(this, 'task');
 
         // Re-establish observers that get cleaned up on disconnect
         try {
-          setupObservers(this, this);
+          runSetupObservers(this, this);
         } catch (error) {
           console.error(`Error setting up observers for ${this.tagName} on reconnection:`, error);
         }
@@ -306,14 +300,7 @@ export function applyElementFunctionality(constructor: any) {
         delete this[PENDING_CONTROLLER_BINDING];
         if (!this[CONTROLLER]) {
           this[CONTROLLER] = pendingControllerClass;
-          const pendingLabel = pendingControllerClass?.name || '(anonymous controller class)';
-          attachController(this, pendingControllerClass).catch((error: any) => {
-            if (error?.name === 'ControllerAttachAborted') {
-              console.debug(`Controller "${pendingLabel}" attach aborted (element detached before ready)`);
-              return;
-            }
-            console.error(`Failed to attach controller "${pendingLabel}":`, error);
-          });
+          attachPendingElementController(this, pendingControllerClass);
         }
       }
 
@@ -344,9 +331,9 @@ export function applyElementFunctionality(constructor: any) {
         }
       }
 
-      setupEventHandlers(this, this);
-      setupResponseHandlers(this, this);
-      void setupContextHandler(this, 'task');
+      runSetupEventHandlers(this, this);
+      runSetupResponseHandlers(this, this);
+      void runSetupContextHandler(this, 'task');
 
       this[INITIALIZED] = true;
 
@@ -389,7 +376,7 @@ export function applyElementFunctionality(constructor: any) {
 
       // Setup observers after render so shadow DOM content exists
       try {
-        setupObservers(this, this);
+        runSetupObservers(this, this);
       } catch (error) {
         console.error(`Error setting up observers for ${this.tagName}:`, error);
       }
@@ -451,7 +438,7 @@ export function applyElementFunctionality(constructor: any) {
       // Invalidate @dispatch work queued or started before disconnect synchronously.
       // The platform does not await disconnectedCallback, and @dispose may be
       // async, so waiting until the end permits events from a detached host.
-      clearDispatchTimers(this);
+      runClearDispatchTimers(this);
       try {
         disconnectRenderTree(this);
       } catch (error) {
@@ -474,21 +461,19 @@ export function applyElementFunctionality(constructor: any) {
         originalDisconnectedCallback.call(this);
       }
       if (this[CONTROLLER]) {
-        detachController(this).catch(error => {
-          console.error(`Failed to detach controller:`, error);
-        });
+        detachElementController(this, this[CONTROLLER]);
       }
       // Cleanup @on event handlers (v2.5.4 compatibility restored!)
-      cleanupEventHandlers(this);
+      runCleanupEventHandlers(this);
       // Cleanup @respond handlers
-      cleanupResponseHandlers(this);
+      runCleanupResponseHandlers(this);
       // Cleanup @context handler
-      cleanupContextHandler(this);
+      runCleanupContextHandler(this);
       // Cleanup @observe observers
-      cleanupObservers(this);
+      runCleanupObservers(this);
       // Cleanup pending @debounce / @throttle timers so they don't fire on a dead element
-      clearDebounceTimers(this);
-      clearThrottleTimers(this);
+      runClearDebounceTimers(this);
+      runClearThrottleTimers(this);
       // The render/dispatch debounce-throttle timers live in separate stores.
       // A pending render is replayed on reconnect (same flag the scheduler
       // uses); a pending dispatch is a one-shot signal, so it's dropped.
@@ -513,7 +498,7 @@ export function applyElementFunctionality(constructor: any) {
         // but the class reference remains the only attachment authority.
         if (this[CONTROLLER_ATTRIBUTE_SYNC]) return;
         if (this[DIRECT_CONTROLLER]) {
-          restoreDirectControllerAttribute(this);
+          restoreDirectControllerAttributeViaBridge(this);
           return;
         }
         this.controller = newValue;

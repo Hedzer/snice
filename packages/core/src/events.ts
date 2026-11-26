@@ -2,6 +2,7 @@ import { DISPATCH_TIMERS, getSymbol } from './symbols';
 import { DispatchOptions } from './types/dispatch-options';
 import { resolveEventTiming, resolveScope } from './utils';
 import { defaultCommunicationTarget, requireDaemonTarget } from './daemon-target';
+import { registerDispatchHook } from './lifecycle-hooks';
 
 // @dispatch decorator - auto-dispatches custom events from method return values
 
@@ -20,6 +21,7 @@ function isDispatchGenerationActive(instance: any, generation: number): boolean 
  * @param options Optional configuration extending EventInit
  */
 export function dispatch(eventName: string, options?: DispatchOptions) {
+  registerDispatchHook(clearDispatchTimers);
   return function (originalMethod: any, _context: ClassMethodDecoratorContext) {
     // Decorator-instance identity avoids collisions such as event `a_b` on
     // method `c` versus event `a` on method `b_c`.

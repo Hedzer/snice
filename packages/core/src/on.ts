@@ -9,6 +9,7 @@ import type { OnOptions } from './types/on-options';
 import { parseKeyboardFilter, matchesKeyboardFilter, warnIfModifierMisuse, type KeyboardFilter } from './keyboard-filter';
 import { createDebounced, resolveEventTiming, resolveScope } from './utils';
 import { isDaemonInstance, requireDaemonTarget } from './daemon-target';
+import { registerEventHooks } from './lifecycle-hooks';
 
 // Re-export OnOptions for public API
 export type { OnOptions } from './types/on-options';
@@ -65,6 +66,7 @@ export function on(
   selectorOrOptions?: string | OnOptions | null,
   options?: OnOptions
 ) {
+  registerEventHooks(setupEventHandlers, cleanupEventHandlers);
   // Parse arguments to support multiple call signatures
   let selector: string | null = null;
   let opts: OnOptions = {};

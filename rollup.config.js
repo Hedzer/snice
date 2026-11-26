@@ -95,12 +95,42 @@ function findComponentFiles(dir, isRoot = true) {
 // Get all component files
 const componentFiles = findComponentFiles(componentSource);
 
+const coreSourceAbs = path.resolve(coreSource).replace(/\\/g, '/') + '/';
+const runtimeTypeModules = new Set([
+  'types/simple-array.ts',
+  'types/transition.ts',
+  'types/context.ts'
+]);
+
+function coreManualChunks(id) {
+  const normalized = id.replace(/\\/g, '/');
+  if (normalized.includes('/node_modules/pica-route/')) {
+    return 'router';
+  }
+  if (normalized.includes('/node_modules/')) {
+    return 'vendor';
+  }
+  if (normalized.startsWith(coreSourceAbs)) {
+    const rel = normalized.slice(coreSourceAbs.length);
+    if (rel === 'index.ts') return undefined;
+    if (rel.startsWith('types/') && !runtimeTypeModules.has(rel)) return undefined;
+    return rel.replace(/\.ts$/, '').replace(/\//g, '-');
+  }
+  return undefined;
+}
+
 export default [
-  // ESM build
+  // ESM build — modular internal chunks under dist/_core/ for file-level tree-shaking
   {
     ...baseConfig,
+    treeshake: {
+      moduleSideEffects: false
+    },
     output: {
-      file: 'dist/index.esm.js',
+      dir: 'dist',
+      entryFileNames: 'index.esm.js',
+      chunkFileNames: '_core/[name].js',
+      manualChunks: coreManualChunks,
       format: 'es',
       banner,
       sourcemap: true,

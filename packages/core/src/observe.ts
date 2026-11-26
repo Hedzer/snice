@@ -1,6 +1,7 @@
 import { OBSERVERS, CLEANUP, IS_CONTROLLER_INSTANCE, OBSERVE_METHODS } from './symbols';
 import { ObserveOptions } from './types/observe-options';
 import { createThrottled } from './utils';
+import { registerObserveHooks } from './lifecycle-hooks';
 
 
 interface ObserverMetadata {
@@ -24,6 +25,7 @@ const mediaQueryCache = /*#__PURE__*/ new Map<string, MediaQueryList>();
  * @param options - Options object (when second parameter is a selector)
  */
 export function observe(observeTarget: string | string[], selectorOrOptions?: string | ObserveOptions, options?: ObserveOptions) {
+  registerObserveHooks(setupObservers, cleanupObservers);
   // Handle overloaded parameters
   let selector: string | undefined;
   let opts: ObserveOptions | undefined;

@@ -1,6 +1,10 @@
-import { clearDispatchTimers } from './events';
-import { cleanupEventHandlers, setupEventHandlers } from './on';
-import { cleanupResponseHandlers, setupResponseHandlers } from './request-response';
+import {
+  runCleanupEventHandlers,
+  runCleanupResponseHandlers,
+  runClearDispatchTimers,
+  runSetupEventHandlers,
+  runSetupResponseHandlers
+} from './lifecycle-hooks';
 import { IS_DAEMON_CLASS } from './symbols';
 import { daemonState, isDaemonInstance } from './daemon-target';
 
@@ -31,11 +35,11 @@ export function bindDaemon(instance: object): () => void {
   if (state.bindings === 0) {
     state.active = true;
     try {
-      setupEventHandlers(instance, state.target);
-      setupResponseHandlers(instance, state.target);
+      runSetupEventHandlers(instance, state.target);
+      runSetupResponseHandlers(instance, state.target);
     } catch (error) {
-      cleanupResponseHandlers(instance);
-      cleanupEventHandlers(instance);
+      runCleanupResponseHandlers(instance);
+      runCleanupEventHandlers(instance);
       state.active = false;
       throw error;
     }
@@ -50,9 +54,9 @@ export function bindDaemon(instance: object): () => void {
     state.bindings = Math.max(0, state.bindings - 1);
     if (state.bindings !== 0) return;
 
-    cleanupResponseHandlers(instance);
-    cleanupEventHandlers(instance);
-    clearDispatchTimers(instance);
+    runCleanupResponseHandlers(instance);
+    runCleanupEventHandlers(instance);
+    runClearDispatchTimers(instance);
     state.active = false;
 
     // Consumers may still hold cleanup records for the old target until their

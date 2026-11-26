@@ -4,6 +4,7 @@
  */
 
 import { getSymbol } from './symbols';
+import { registerDebounceHook, registerThrottleHook } from './lifecycle-hooks';
 
 const DEBOUNCE_TIMERS = /*#__PURE__*/ getSymbol('debounce-timers');
 const THROTTLE_TIMERS = /*#__PURE__*/ getSymbol('throttle-timers');
@@ -40,6 +41,7 @@ export function debounce(
     maxWait?: number;
   } = {}
 ) {
+  registerDebounceHook(clearDebounceTimers);
   const { leading = false, trailing = true, maxWait } = options;
 
   return function (originalMethod: any, context: ClassMethodDecoratorContext) {
@@ -122,6 +124,7 @@ export function throttle(
     trailing?: boolean;
   } = {}
 ) {
+  registerThrottleHook(clearThrottleTimers);
   const { leading = true, trailing = true } = options;
 
   return function (originalMethod: any, context: ClassMethodDecoratorContext) {

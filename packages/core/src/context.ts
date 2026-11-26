@@ -6,6 +6,7 @@ import { CONTEXT_HANDLER, NAVIGATION_CONTEXT_INSTANCE, CONTEXT_REGISTER, CONTEXT
 import { getSymbol } from './symbols';
 import type { Context } from './types/context';
 import { getNavigationContext } from './context-provider';
+import { registerContextHooks } from './lifecycle-hooks';
 
 const CONTEXT_HANDLERS = /*#__PURE__*/ getSymbol('context-handlers');
 
@@ -41,6 +42,7 @@ export interface ContextOptions {
  * ```
  */
 export function context(options: ContextOptions = {}) {
+  registerContextHooks(setupContextHandler, cleanupContextHandler);
   return function (originalMethod: any, context: ClassMethodDecoratorContext) {
     const methodName = context.name as string;
     context.addInitializer(function (this: any) {

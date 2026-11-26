@@ -1,11 +1,28 @@
-import { setupObservers, cleanupObservers } from './observe';
-import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
-import { setupEventHandlers, cleanupEventHandlers } from './on';
-import { clearDispatchTimers } from './events';
-import { setupContextHandler, cleanupContextHandler } from './context';
+import {
+  deferPendingControllerAttachment,
+  registerControllerBridge,
+  runCleanupContextHandler,
+  runCleanupEventHandlers,
+  runCleanupObservers,
+  runCleanupResponseHandlers,
+  runClearDispatchTimers,
+  runSetupContextHandler,
+  runSetupEventHandlers,
+  runSetupObservers,
+  runSetupResponseHandlers
+} from './lifecycle-hooks';
 import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, CONTROLLER_REGISTRY_NAME, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT, CONTROLLER_ATTACHED, READY_HANDLERS_RUNNING } from './symbols';
 import { getSniceGlobal } from './global';
 import { IController, ControllerClass } from './types/i-controller';
+
+function ensureControllerBridge(): void {
+  registerControllerBridge({
+    attachController,
+    detachController,
+    deferControllerAttachment,
+    restoreDirectControllerAttribute,
+  });
+}
 
 
 
@@ -59,7 +76,9 @@ class ControllerScope {
  * @param name The name to register the controller under
  */
 export function controller(name: string) {
+  ensureControllerBridge();
   return function <T extends ControllerClass>(constructor: T, _context: ClassDecoratorContext) {
+    ensureControllerBridge();
     const snice = getSniceGlobal();
     snice.controllerRegistry.set(name, constructor);
     // Mark as controller class for channel decorator detection
@@ -123,23 +142,7 @@ export function deferControllerAttachment(element: HTMLElement, controllerName: 
     return;
   }
 
-  let pending = snice.pendingControllerAttachments.get(controllerName);
-  if (!pending) {
-    pending = new Set();
-    snice.pendingControllerAttachments.set(controllerName, pending);
-  }
-  pending.add(element);
-
-  // Give synchronously evaluated and microtask-delayed controller modules a
-  // chance to register, while keeping genuinely missing controllers loud.
-  queueMicrotask(() => {
-    if (getSniceGlobal().pendingControllerAttachments.get(controllerName)?.has(element)) {
-      console.error(
-        `Failed to attach controller "${controllerName}":`,
-        new Error(`Controller "${controllerName}" not found in registry`)
-      );
-    }
-  });
+  deferPendingControllerAttachment(element, controllerName);
 }
 
 /**
@@ -209,6 +212,7 @@ export function restoreDirectControllerAttribute(element: HTMLElement): boolean 
  *                   controller class itself (classes skip the registry)
  */
 export async function attachController(element: HTMLElement, controller: string | ControllerClass): Promise<void> {
+  ensureControllerBridge();
   if (typeof controller !== 'string') {
     if (typeof controller !== 'function') {
       throw new Error(
@@ -332,7 +336,7 @@ export async function attachController(element: HTMLElement, controller: string 
     failAttach = reject;
   });
   attached.catch(() => {}); // No requester when nothing was claimed
-  setupResponseHandlers(controllerInstance, element, {
+  runSetupResponseHandlers(controllerInstance, element, {
     deferUnresolvableDaemons: true,
     claim: () => {
       requestClaimed = true;
@@ -378,7 +382,7 @@ export async function attachController(element: HTMLElement, controller: string 
       // Attach never got past `ready` (aborted or deadline). Roll back the
       // stored references and the early responders so a later attach does not
       // short-circuit against an instance whose attach() never ran.
-      cleanupResponseHandlers(controllerInstance);
+      runCleanupResponseHandlers(controllerInstance);
       failAttach(error);
       if ((element as any)[CONTROLLER_KEY] === controllerInstance) {
         if (typeof controller !== 'string') {
@@ -411,17 +415,17 @@ export async function attachController(element: HTMLElement, controller: string 
     // @context has the same managed lifecycle on controllers as @on,
     // @observe and @respond. Catch up controllers whose async attach completed
     // after the Router announced the current navigation.
-    await setupContextHandler(controllerInstance, 'microtask');
+    await runSetupContextHandler(controllerInstance, 'microtask');
 
     // Setup @observe observers for controller
-    setupObservers(controllerInstance, element);
+    runSetupObservers(controllerInstance, element);
 
     // Second @respond pass: registers only what the pre-gate pass deferred —
     // daemon-scoped responders whose app context was not resolvable yet.
-    setupResponseHandlers(controllerInstance, element);
+    runSetupResponseHandlers(controllerInstance, element);
 
     // Setup @on event handlers for controller
-    setupEventHandlers(controllerInstance, element);
+    runSetupEventHandlers(controllerInstance, element);
   } catch (error) {
     // A claimed request must not wait on an attachment that never completed.
     failAttach(error);
@@ -441,6 +445,7 @@ export async function attachController(element: HTMLElement, controller: string 
  * @param element The element to detach the controller from
  */
 export async function detachController(element: HTMLElement): Promise<void> {
+  ensureControllerBridge();
   // If attachController is currently awaiting `.ready`, short-circuit that
   // wait so the pending attach rejects immediately instead of hanging.
   const pendingAbort = (element as any)[CONTROLLER_ABORT] as AbortController | undefined;
@@ -456,7 +461,7 @@ export async function detachController(element: HTMLElement): Promise<void> {
 
   // Invalidate dispatch work before every teardown path, including an attach
   // that is still waiting for host readiness and will return early below.
-  clearDispatchTimers(controllerInstance);
+  runClearDispatchTimers(controllerInstance);
 
   // Claim the controller immediately — before any await — so a second detach
   // that overlaps this one (e.g. disconnect's fire-and-forget detach racing a
@@ -493,21 +498,21 @@ export async function detachController(element: HTMLElement): Promise<void> {
   }
 
   // detach() itself may have invoked a decorated dispatch method.
-  clearDispatchTimers(controllerInstance);
+  runClearDispatchTimers(controllerInstance);
   
   controllerInstance.element = null;
 
   // Cleanup @observe observers for controller
-  cleanupObservers(controllerInstance);
+  runCleanupObservers(controllerInstance);
 
   // Cleanup @channel handlers for controller
-  cleanupResponseHandlers(controllerInstance);
+  runCleanupResponseHandlers(controllerInstance);
 
   // Cleanup @on event handlers for controller
-  cleanupEventHandlers(controllerInstance);
+  runCleanupEventHandlers(controllerInstance);
 
   // Cleanup @context handlers for controller
-  cleanupContextHandler(controllerInstance);
+  runCleanupContextHandler(controllerInstance);
   
   // Cleanup the controller scope
   if (scope) {
@@ -549,6 +554,7 @@ export function getControllerScope(element: HTMLElement): ControllerScope | unde
  * on non-custom elements (elements without hyphens in their tag names)
  */
 export function useNativeElementControllers() {
+  ensureControllerBridge();
   // Return if already initialized
   if ((globalThis as any).sniceNativeControllersInitialized) {
     return;

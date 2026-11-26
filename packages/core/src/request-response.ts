@@ -2,6 +2,7 @@ import { CHANNEL_HANDLERS, CLEANUP, RESPOND_METHODS } from './symbols';
 import { RequestOptions } from './types/request-options';
 import { RespondOptions } from './types/respond-options';
 import { defaultCommunicationTarget, requireDaemonTarget } from './daemon-target';
+import { registerResponseHooks } from './lifecycle-hooks';
 
 /**
  * Return type for methods decorated with `@request`.
@@ -212,6 +213,7 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
  * @param options Optional configuration
  */
 export function respond(requestName: string, options?: RespondOptions) {
+  registerResponseHooks(setupResponseHandlers, cleanupResponseHandlers);
   return function (target: any, context: ClassMethodDecoratorContext) {
     const propertyKey = context.name as string;
     context.addInitializer(function(this: any) {
