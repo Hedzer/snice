@@ -27,6 +27,7 @@ export function snice(options?: SnicePluginOptions): Record<string, any> {
   return {
     ...base,
     name: 'snice',
+    enforce: 'pre' as const,
 
     config(userConfig: Record<string, any>, configEnv: { command?: string; mode?: string }) {
       const isServeOrDev =

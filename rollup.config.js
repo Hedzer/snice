@@ -288,7 +288,12 @@ export default [
       vite: 'packages/plugin/src/vite.ts',
       rollup: 'packages/plugin/src/rollup.ts',
     },
-    external: (id) => id.startsWith('node:') || id === 'vite' || id === 'rollup',
+    external: (id) =>
+      id.startsWith('node:') ||
+      id === 'vite' ||
+      id === 'rollup' ||
+      id === '@babel/parser' ||
+      id === 'magic-string',
     onwarn: failOnCoreCircularDependency,
     output: {
       dir: 'dist/plugin',

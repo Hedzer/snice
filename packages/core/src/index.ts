@@ -1,5 +1,6 @@
 // v3.0.0 exports
 export { element, layout, property, state, query, queryAll, watch, applyElementFunctionality, ready, dispose, reconnect, moved, adopted } from './element';
+export { __sniceMeta, __sniceField, __sniceMethod } from './decorator-runtime';
 export type { Layout } from './element';
 export { SniceElement } from './snice-element';
 export { context as contextProperty } from './element'; // Deprecated: use @context method decorator instead

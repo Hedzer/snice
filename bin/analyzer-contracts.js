@@ -19,9 +19,9 @@ export const ANALYZER_CONTRACTS = {
     "customElements": 193,
     "componentFamilies": 134,
     "componentModules": 188,
-    "componentUtilityModules": 32,
+    "componentUtilityModules": 33,
     "reactWrappers": 193,
-    "rootExports": 119
+    "rootExports": 122
   },
   "rootExports": [
     "AdoptedOptions",
@@ -79,6 +79,9 @@ export const ANALYZER_CONTRACTS = {
     "TransitionMode",
     "UnsafeHTML",
     "WatchOptions",
+    "__sniceField",
+    "__sniceMeta",
+    "__sniceMethod",
     "adopted",
     "applyElementFunctionality",
     "attachController",
@@ -363,6 +366,7 @@ export const ANALYZER_CONTRACTS = {
     "snice/components/table/table-toolbar",
     "snice/components/table/table-tree-data",
     "snice/components/table/table-virtualizer",
+    "snice/components/theme-utils",
     "snice/components/tooltip/tooltip-observer",
     "snice/components/tooltip/tooltip-positioning",
     "snice/components/transitions",

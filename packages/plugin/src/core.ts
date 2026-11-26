@@ -2,8 +2,10 @@ import {
   composeObjectManualChunks,
   createSniceManualChunksController,
 } from './chunking';
+import { transformDecorators } from './decorators';
 import { replaceSniceDevIdentifier } from './dev-define';
 import { buildBundleReport, formatBuildReport } from './report';
+import { TC39_RUNTIME_CODE, TC39_SPECIFIER, TC39_VIRTUAL_ID } from './tc39-fallback-runtime';
 import { validateOptions, type SniceCachingOptions, type SnicePluginOptions } from './types';
 
 export interface SniceRuntimeEnv {
@@ -28,6 +30,7 @@ export function createSniceCorePlugin(
     isDev: options.dev ?? false,
   };
 
+  const decoratorsEnabled = options.decorators !== false;
   const cachingEnabled = options.caching !== false;
   const cachingOptions: SniceCachingOptions | undefined =
     typeof options.caching === 'object' ? options.caching : undefined;
@@ -42,14 +45,55 @@ export function createSniceCorePlugin(
       chunkController?.reset();
     },
 
+    resolveId(id: string) {
+      if (id === TC39_SPECIFIER || id === TC39_VIRTUAL_ID) {
+        return TC39_VIRTUAL_ID;
+      }
+      return null;
+    },
+
+    load(id: string) {
+      if (id === TC39_VIRTUAL_ID) {
+        return TC39_RUNTIME_CODE;
+      }
+      return null;
+    },
+
     transform(code: string, id: string) {
-      // In Vite, `config()` defines `__SNICE_DEV__` natively via Vite's define plugin.
-      // In pure Rollup, perform lightweight identifier replacement here.
-      if (runtimeEnv.isVite) return null;
-      if (!/\.(?:[cm]?[jt]sx?)(?:\?.*)?$/.test(id)) return null;
-      const replaced = replaceSniceDevIdentifier(code, runtimeEnv.isDev);
-      if (replaced === null) return null;
-      return { code: replaced, map: { mappings: '' } };
+      if (id === TC39_VIRTUAL_ID || id.startsWith('\0')) return null;
+      const cleanId = id.split('?')[0];
+      if (!/\.(?:[cm]?[jt]sx?)$/.test(cleanId)) return null;
+
+      let currentCode = code;
+      let currentMap: any = null;
+      let changed = false;
+
+      // Pass A: Build-time Snice decorator lowering + TC39 2022-03 fallback
+      // (and TS syntax erasure in pure Rollup builds).
+      if (decoratorsEnabled) {
+        const decResult = transformDecorators(currentCode, {
+          stripTypeScript: !runtimeEnv.isVite,
+          id: cleanId,
+        });
+        if (decResult) {
+          currentCode = decResult.code;
+          currentMap = decResult.map;
+          changed = true;
+        }
+      }
+
+      // Pass D: In pure Rollup, fold bare `__SNICE_DEV__` identifiers.
+      // (In Vite, `config()` defines `__SNICE_DEV__` natively via Vite's define plugin.)
+      if (!runtimeEnv.isVite) {
+        const replaced = replaceSniceDevIdentifier(currentCode, runtimeEnv.isDev);
+        if (replaced !== null) {
+          currentCode = replaced;
+          changed = true;
+        }
+      }
+
+      if (!changed) return null;
+      return { code: currentCode, map: currentMap ?? { mappings: '' } };
     },
 
     outputOptions(opts: Record<string, any>) {
