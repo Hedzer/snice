@@ -206,11 +206,6 @@ export function stripTypeScriptSyntax(
         }
         const specs: AstNode[] = node.specifiers ?? [];
         if (specs.length > 0) {
-          // If re-exporting from a pure *.types module, elide completely
-          if (node.source && /\.types(?:\.[cm]?[jt]s)?$/.test(node.source.value ?? '')) {
-            markRemove(node.start, node.end);
-            return;
-          }
           const typeSpecs = specs.filter((sp) => sp.exportKind === 'type');
           if (typeSpecs.length === specs.length) {
             markRemove(node.start, node.end);
@@ -238,10 +233,7 @@ export function stripTypeScriptSyntax(
       }
 
       case 'ExportAllDeclaration':
-        if (
-          node.exportKind === 'type' ||
-          (node.source && /\.types(?:\.[cm]?[jt]s)?$/.test(node.source.value ?? ''))
-        ) {
+        if (node.exportKind === 'type') {
           markRemove(node.start, node.end);
           return;
         }
@@ -508,9 +500,8 @@ export function stripTypeScriptSyntax(
     if (stmt.type === 'TSInterfaceDeclaration' || stmt.type === 'TSTypeAliasDeclaration') {
       if (stmt.id?.name) declaredTypeOnlyNames.add(stmt.id.name);
     } else if (stmt.type === 'ImportDeclaration') {
-      const isTypesFile = /\.types(?:\.[cm]?[jt]s)?$/.test(stmt.source?.value ?? '');
       for (const sp of stmt.specifiers ?? []) {
-        if (stmt.importKind === 'type' || sp.importKind === 'type' || isTypesFile) {
+        if (stmt.importKind === 'type' || sp.importKind === 'type') {
           if (sp.local?.name) declaredTypeOnlyNames.add(sp.local.name);
         }
       }
@@ -578,14 +569,9 @@ export function stripTypeScriptSyntax(
   }
 
   // Elide explicit `import type` specifiers AND unreferenced value-syntax type-only imports
-  // (matching TypeScript's standard import elision).
+  // (matching TypeScript's standard import elision, preserving runtime enums/consts from *.types).
   for (const node of deferredImports) {
     const specs: AstNode[] = node.specifiers ?? [];
-    const isTypesFile = /\.types(?:\.[cm]?[jt]s)?$/.test(node.source?.value ?? '');
-    if (isTypesFile) {
-      markRemove(node.start, node.end);
-      continue;
-    }
     const keptSpecs = specs.filter((sp) => {
       if (sp.importKind === 'type') return false;
       const local = sp.local?.name;

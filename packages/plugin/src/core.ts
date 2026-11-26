@@ -18,6 +18,13 @@ import { transformDecorators } from './decorators';
 import { replaceSniceDevIdentifier } from './dev-define';
 import { buildBundleReport, formatBuildReport } from './report';
 import { composeSourceMaps } from './sourcemap';
+import {
+  generateModularTableEntry,
+  isSniceTableEntrySpecifier,
+  resolveTableStripConfig,
+  VIRTUAL_TABLE_ID,
+  type ResolvedTableStripConfig,
+} from './table-strip';
 import { TC39_RUNTIME_CODE, TC39_SPECIFIER, TC39_VIRTUAL_ID } from './tc39-fallback-runtime';
 import { transformTemplates } from './templates';
 import { validateOptions, type SniceCachingOptions, type SnicePluginOptions } from './types';
@@ -41,7 +48,7 @@ export function createSniceCorePlugin(
   const runtimeEnv: SniceRuntimeEnv = env ?? {
     isVite: false,
     isLib: false,
-    isDev: options.dev ?? false,
+    isDev: options.dev === true,
   };
 
   const decoratorsEnabled = options.decorators !== false;
@@ -52,10 +59,12 @@ export function createSniceCorePlugin(
     ? createSniceManualChunksController(cachingOptions)
     : null;
 
-  // Per-instance build-scoped CSS/theme state (reset in buildStart — never module-global)
+  // Per-instance build-scoped CSS/theme and table-stripping state (reset in buildStart)
   let themeDetected = false;
   let themeAllowlist: Set<string> | null = null;
   let shippedAllowlistCache: Set<string> | null = null;
+  let tableStripConfig: ResolvedTableStripConfig | null = null;
+  let lastTableImporter: string | undefined;
 
   function recordThemeCss(id: string, cssSource?: string): void {
     themeDetected = true;
@@ -108,11 +117,24 @@ export function createSniceCorePlugin(
       chunkController?.reset();
       themeDetected = false;
       themeAllowlist = null;
+      lastTableImporter = undefined;
+      // Validate and normalize options.table eagerly so typos fail fast at buildStart.
+      tableStripConfig = resolveTableStripConfig(options.table);
     },
 
-    resolveId(id: string) {
+    resolveId(id: string, importer?: string) {
       if (id === TC39_SPECIFIER || id === TC39_VIRTUAL_ID) {
         return TC39_VIRTUAL_ID;
+      }
+      if (tableStripConfig) {
+        if (id === VIRTUAL_TABLE_ID) return VIRTUAL_TABLE_ID;
+        if (importer === VIRTUAL_TABLE_ID && id.startsWith('snice/')) {
+          return (this as any).resolve?.(id, lastTableImporter, { skipSelf: true }) ?? null;
+        }
+        if (importer !== VIRTUAL_TABLE_ID && isSniceTableEntrySpecifier(id)) {
+          if (importer) lastTableImporter = importer;
+          return VIRTUAL_TABLE_ID;
+        }
       }
       if (isThemeCssId(id)) {
         themeDetected = true;
@@ -123,6 +145,9 @@ export function createSniceCorePlugin(
     load(id: string) {
       if (id === TC39_VIRTUAL_ID) {
         return TC39_RUNTIME_CODE;
+      }
+      if (id === VIRTUAL_TABLE_ID && tableStripConfig) {
+        return generateModularTableEntry(tableStripConfig);
       }
       if (isThemeCssId(id)) {
         recordThemeCss(id);
@@ -194,9 +219,9 @@ export function createSniceCorePlugin(
         changed = true;
       }
 
-      // Pass D: In pure Rollup, fold bare `__SNICE_DEV__` identifiers.
-      // (In Vite, `config()` defines `__SNICE_DEV__` natively via Vite's define plugin.)
-      if (!runtimeEnv.isVite) {
+      // Pass D: In pure Rollup, fold bare `__SNICE_DEV__` identifiers unless `dev: 'preserve'`
+      // (library builds keep `__SNICE_DEV__` intact for downstream app bundlers).
+      if (!runtimeEnv.isVite && options.dev !== 'preserve') {
         const replaced = replaceSniceDevIdentifier(currentCode, runtimeEnv.isDev);
         if (replaced !== null) {
           currentCode = replaced;

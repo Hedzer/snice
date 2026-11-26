@@ -1,59 +1,23 @@
 import { element, property, query, request, dispatch, watch, render, styles, html, css, ready, dispose, on, observe } from 'snice';
-import '../input/snice-input';
-import '../select/snice-select';
-import '../button/snice-button';
-import '../checkbox/snice-checkbox';
-import '../modal/snice-modal';
-import '../empty-state/snice-empty-state';
-// The zero-row loading row and the loading overlay both emit <snice-progress>.
-// NOT the same module as this folder's ./snice-progress, which registers
-// `snice-table-progress` for the progress CELL — importing that one leaves the
-// spinner an unregistered 0x0 inline element, i.e. a loading state that paints
-// nothing on any page that imports only the table.
-import '../progress/snice-progress';
+import './table-full-bundle';
 import './snice-cell.ts';
 import './snice-cell-text.ts';
-import './snice-cell-number.ts';
-import './snice-cell-date.ts';
-import './snice-cell-boolean.ts';
-import './snice-cell-rating.ts';
-import './snice-cell-progress.ts';
-import './snice-cell-duration.ts';
-import './snice-cell-filesize.ts';
-import './snice-cell-sparkline.ts';
-import './snice-cell-percentage.ts';
-import './snice-cell-tag.ts';
-import './snice-cell-status.ts';
-import './snice-cell-actions.ts';
-import './snice-cell-link.ts';
-import './snice-cell-email.ts';
-import './snice-cell-phone.ts';
-import './snice-cell-color.ts';
-import './snice-cell-location.ts';
-import './snice-cell-json.ts';
-import './snice-cell-currency.ts';
-import './snice-cell-image.ts';
 import './snice-column.ts';
 import './snice-row.ts';
-import { TableVirtualizer } from './table-virtualizer';
 import { TableColumnManager, horizontalCellChrome } from './table-column-manager';
-import { TableFilterEngine } from './table-filter-engine';
-import { TableEditor } from './table-editor';
-import type { EditorType } from './table-editor';
 import { TableKeyboard } from './table-keyboard';
-import { TableExport } from './table-export';
-import { TableMasterDetail } from './table-master-detail';
-import { TableToolbar } from './table-toolbar';
-import { TableTreeData } from './table-tree-data';
-import { TableGrouping } from './table-grouping';
-import type { DisplayItem, GroupRow, AggregateRow } from './table-grouping';
-import { TableColumnMenu } from './table-column-menu';
-import { TableRowDnD, TableColumnDnD } from './table-row-dnd';
+import { createTableFeature, getRegisteredCellTagName } from './table-registry';
 import { defaultCellAlign, emptyCellValue } from './table-cell-presentation';
-import type { FilterModel } from './table-filter-engine';
-import type { DetailPanelOptions } from './table-master-detail';
-import type { ToolbarOptions } from './table-toolbar';
-import type { TreeDataOptions, TreeRow } from './table-tree-data';
+import type { TableVirtualizer } from './table-virtualizer';
+import type { TableFilterEngine, FilterModel } from './table-filter-engine';
+import type { TableEditor, EditorType } from './table-editor';
+import type { TableExport } from './table-export';
+import type { TableMasterDetail, DetailPanelOptions } from './table-master-detail';
+import type { TableToolbar, ToolbarOptions } from './table-toolbar';
+import type { TableTreeData, TreeDataOptions, TreeRow } from './table-tree-data';
+import type { TableGrouping, DisplayItem, GroupRow, AggregateRow } from './table-grouping';
+import type { TableColumnMenu } from './table-column-menu';
+import type { TableRowDnD, TableColumnDnD } from './table-row-dnd';
 import type { ColumnGroup, ColumnState } from './table-column-manager';
 import type { ColumnDefinition, ColumnFit, SniceTableElement, SelectionMode, ListViewRenderer } from './snice-table.types';
 
@@ -294,19 +258,19 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   private groupingCache: DisplayItem[] | null = null;
 
   // Module instances
-  private virtualizer = new TableVirtualizer();
+  private virtualizer: TableVirtualizer = createTableFeature<TableVirtualizer>('virtualizer');
   private columnManager = new TableColumnManager();
-  private filterEngine = new TableFilterEngine();
-  private editor = new TableEditor();
+  private filterEngine: TableFilterEngine = createTableFeature<TableFilterEngine>('filter');
+  private editor: TableEditor = createTableFeature<TableEditor>('editor');
   private keyboard = new TableKeyboard();
-  private exporter = new TableExport();
-  private masterDetail = new TableMasterDetail();
-  private toolbar = new TableToolbar();
-  private treeData = new TableTreeData();
-  private grouping = new TableGrouping();
-  private columnMenuManager = new TableColumnMenu();
-  private rowDnD = new TableRowDnD();
-  private columnDnD = new TableColumnDnD();
+  private exporter: TableExport = createTableFeature<TableExport>('export');
+  private masterDetail: TableMasterDetail = createTableFeature<TableMasterDetail>('masterDetail');
+  private toolbar: TableToolbar = createTableFeature<TableToolbar>('toolbar');
+  private treeData: TableTreeData = createTableFeature<TableTreeData>('treeData');
+  private grouping: TableGrouping = createTableFeature<TableGrouping>('grouping');
+  private columnMenuManager: TableColumnMenu = createTableFeature<TableColumnMenu>('columnMenu');
+  private rowDnD: TableRowDnD = createTableFeature<TableRowDnD>('rowDnD');
+  private columnDnD: TableColumnDnD = createTableFeature<TableColumnDnD>('columnDnD');
   private pinnedTopRows: any[] = [];
   private pinnedBottomRows: any[] = [];
   private toolbarOptions: ToolbarOptions | null = null;
@@ -2658,7 +2622,11 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         const selectedInFiltered = filteredIndices.filter(i => this.selectedRows.includes(i));
         const allSelected = selectedInFiltered.length === filteredIndices.length && filteredIndices.length > 0;
         const someSelected = selectedInFiltered.length > 0 && selectedInFiltered.length < filteredIndices.length;
-        selectCell.innerHTML = `<snice-checkbox class="select-all" size="small" compact ${allSelected ? 'checked' : ''}></snice-checkbox>`;
+        if (customElements.get('snice-checkbox')) {
+          selectCell.innerHTML = `<snice-checkbox class="select-all" size="small" compact ${allSelected ? 'checked' : ''}></snice-checkbox>`;
+        } else {
+          selectCell.innerHTML = `<input type="checkbox" class="select-all" aria-label="Select all rows" ${allSelected ? 'checked' : ''} />`;
+        }
 
         // Set indeterminate after insertion.
         setTimeout(() => {
@@ -2903,6 +2871,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
    * theme; the indicator arc keeps the primary color.
    */
   private createLoadingSpinner(size: 'medium' | 'large'): HTMLElement {
+    if (!customElements.get('snice-progress')) {
+      const fallback = document.createElement('span');
+      fallback.className = 'table-loading-spinner-fallback';
+      fallback.setAttribute('aria-hidden', 'true');
+      fallback.style.cssText = `display:inline-block;width:${size === 'large' ? '2rem' : '1.25rem'};height:${size === 'large' ? '2rem' : '1.25rem'};border:2px solid currentColor;border-right-color:transparent;border-radius:50%;`;
+      return fallback;
+    }
     const spinner = document.createElement('snice-progress');
     spinner.setAttribute('variant', 'circular');
     spinner.setAttribute('indeterminate', '');
@@ -2951,12 +2926,17 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const slotted = this.querySelector('[slot="empty-state"]');
       if (slotted) {
         td.appendChild(slotted.cloneNode(true));
-      } else {
+      } else if (customElements.get('snice-empty-state')) {
         const empty = document.createElement('snice-empty-state');
         empty.setAttribute('size', 'small');
         empty.setAttribute('icon', '📭');
         empty.setAttribute('title', 'No data');
         empty.setAttribute('description', 'No records to display.');
+        td.appendChild(empty);
+      } else {
+        const empty = document.createElement('div');
+        empty.className = 'table-empty-state-fallback';
+        empty.textContent = 'No data — No records to display.';
         td.appendChild(empty);
       }
     }
@@ -3475,7 +3455,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     el.setAttribute('data-index', String(index));
     const isSelected = this.selectedRows.includes(index);
     this.stampRowSelection(el, isSelected);
-    const checkbox = el.querySelector('snice-checkbox.row-select') as any;
+    const checkbox = el.querySelector('snice-checkbox.row-select, input.row-select') as any;
     if (checkbox) {
       checkbox.setAttribute('data-row-index', String(index));
       checkbox.checked = isSelected;
@@ -3615,17 +3595,15 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     sizeLabel.textContent = 'Rows per page:';
     sizeContainer.appendChild(sizeLabel);
 
-    const sizeSelect = document.createElement('snice-select') as any;
-    sizeSelect.size = 'small';
-    sizeSelect.className = 'pagination__size-select';
-    // Always include the CURRENT pageSize: when it isn't in pageSizes (e.g.
-    // pageSize=5 with the default list) no option matches the value and the
-    // select shows its placeholder instead of the active size.
     const sizeOptions = this.pageSizes.includes(this.pageSize)
       ? this.pageSizes
       : [...this.pageSizes, this.pageSize].sort((a, b) => a - b);
+    const hasSniceSelect = !!customElements.get('snice-select');
+    const sizeSelect = document.createElement(hasSniceSelect ? 'snice-select' : 'select') as any;
+    if (hasSniceSelect) sizeSelect.size = 'small';
+    sizeSelect.className = 'pagination__size-select';
     for (const s of sizeOptions) {
-      const opt = document.createElement('snice-option') as any;
+      const opt = document.createElement(hasSniceSelect ? 'snice-option' : 'option') as any;
       opt.setAttribute('value', String(s));
       opt.textContent = String(s);
       if (s === this.pageSize) opt.setAttribute('selected', '');
@@ -3646,9 +3624,15 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     });
 
     // Bind size select event
-    sizeSelect.addEventListener('select-change', (e: CustomEvent) => {
-      this.setPageSize(parseInt(e.detail.value));
-    });
+    if (hasSniceSelect) {
+      sizeSelect.addEventListener('select-change', (e: CustomEvent) => {
+        this.setPageSize(parseInt(e.detail.value));
+      });
+    } else {
+      sizeSelect.addEventListener('change', (e: Event) => {
+        this.setPageSize(parseInt((e.target as HTMLSelectElement).value));
+      });
+    }
   }
 
   private pageButton(page: number): string {
@@ -3854,53 +3838,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   }
 
   getCellTagName(type: string): string {
-    switch (type) {
-      case 'text':
-        return 'snice-cell-text';
-      case 'number':
-        return 'snice-cell-number';
-      case 'currency':
-        return 'snice-cell-currency';
-      case 'date':
-        return 'snice-cell-date';
-      case 'boolean':
-        return 'snice-cell-boolean';
-      case 'rating':
-        return 'snice-cell-rating';
-      case 'progress':
-        return 'snice-cell-progress';
-      case 'duration':
-        return 'snice-cell-duration';
-      case 'filesize':
-        return 'snice-cell-filesize';
-      case 'sparkline':
-        return 'snice-cell-sparkline';
-      case 'image':
-        return 'snice-cell-image';
-      case 'percentage':
-      case 'percent':
-        return 'snice-cell-percentage';
-      case 'tag':
-        return 'snice-cell-tag';
-      case 'status':
-        return 'snice-cell-status';
-      case 'actions':
-        return 'snice-cell-actions';
-      case 'link':
-        return 'snice-cell-link';
-      case 'email':
-        return 'snice-cell-email';
-      case 'phone':
-        return 'snice-cell-phone';
-      case 'color':
-        return 'snice-cell-color';
-      case 'location':
-        return 'snice-cell-location';
-      case 'json':
-        return 'snice-cell-json';
-      default:
-        return 'snice-cell';
-    }
+    return getRegisteredCellTagName(type);
   }
 
   private fsExitHandler: (() => void) | null = null;
@@ -4020,7 +3958,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     const target = e.target as HTMLElement;
 
     // Handle snice-checkbox events (row-select and select-all)
-    if (target.matches('snice-checkbox.row-select')) {
+    if (target.matches('snice-checkbox.row-select, input.row-select')) {
       const checkbox = target as any;
       const rowIndex = parseInt(checkbox.getAttribute('data-row-index') || '0');
 
@@ -4048,7 +3986,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     }
 
     // F: a group-header checkbox selects/deselects all rows in that group.
-    if (target.matches('snice-checkbox.group-select')) {
+    if (target.matches('snice-checkbox.group-select, input.group-select')) {
       const checkbox = target as any;
       if (this.selectionMode !== 'multiple') return;
 
@@ -4071,7 +4009,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       return;
     }
 
-    if (target.matches('snice-checkbox.select-all')) {
+    if (target.matches('snice-checkbox.select-all, input.select-all')) {
       const checkbox = target as any;
 
       // Select-all only carries meaning in multiple mode.
@@ -4157,7 +4095,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const isSelected = this.selectedRows.includes(index);
       this.stampRowSelection(row as HTMLElement, isSelected);
 
-      const checkbox = row.querySelector('snice-checkbox.row-select') as any;
+      const checkbox = row.querySelector('snice-checkbox.row-select, input.row-select') as any;
       if (checkbox) {
         checkbox.checked = isSelected;
       }
@@ -4185,12 +4123,12 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     const row = this.tbody.querySelector(`tr[data-index="${index}"]`) as HTMLElement | null;
     if (!row) return;
     this.stampRowSelection(row, isSelected);
-    const checkbox = row.querySelector('snice-checkbox.row-select') as any;
+    const checkbox = row.querySelector('snice-checkbox.row-select, input.row-select') as any;
     if (checkbox) checkbox.checked = isSelected;
   }
 
   updateSelectAllState() {
-    const selectAllCheckbox = this.thead?.querySelector('snice-checkbox.select-all') as any;
+    const selectAllCheckbox = this.thead?.querySelector('snice-checkbox.select-all, input.select-all') as any;
     if (!selectAllCheckbox) return;
 
     const filteredIndices = this.getSelectableIndices(this.getFilteredData());
@@ -5627,8 +5565,12 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const selectCell = document.createElement('td');
       selectCell.className = 'select-column';
       const disabled = !!(this.selectabilityCheck && !this.selectabilityCheck(rowData, index));
-      selectCell.innerHTML = `<snice-checkbox class="row-select" size="small" compact ${isSelected ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-row-index="${index}"></snice-checkbox>`;
-      const checkbox = selectCell.querySelector('snice-checkbox') as any;
+      if (customElements.get('snice-checkbox')) {
+        selectCell.innerHTML = `<snice-checkbox class="row-select" size="small" compact ${isSelected ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-row-index="${index}"></snice-checkbox>`;
+      } else {
+        selectCell.innerHTML = `<input type="checkbox" class="row-select" aria-label="Select row ${index + 1}" ${isSelected ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-row-index="${index}" />`;
+      }
+      const checkbox = selectCell.querySelector('.row-select') as any;
       checkbox.disabled = disabled;
       tr.appendChild(selectCell);
     }
@@ -5774,10 +5716,14 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const state = this.groupSelectionState(group);
       const wrap = document.createElement('span');
       wrap.className = 'group-select-wrap';
-      const checkbox = document.createElement('snice-checkbox') as any;
+      const hasSniceCb = !!customElements.get('snice-checkbox');
+      const checkbox = document.createElement(hasSniceCb ? 'snice-checkbox' : 'input') as any;
+      if (!hasSniceCb) checkbox.type = 'checkbox';
       checkbox.className = 'group-select';
-      checkbox.setAttribute('size', 'small');
-      checkbox.setAttribute('compact', '');
+      if (hasSniceCb) {
+        checkbox.setAttribute('size', 'small');
+        checkbox.setAttribute('compact', '');
+      }
       checkbox.setAttribute('data-group-key', group.key);
       checkbox.setAttribute('aria-label', `Select all rows in ${group.value == null || group.value === '' ? 'blank' : String(group.value)} group`);
       checkbox.checked = state === 'all';

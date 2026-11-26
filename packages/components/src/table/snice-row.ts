@@ -7,27 +7,8 @@ import type {
 } from './snice-table.types';
 import './snice-cell';
 import './snice-cell-text';
-import './snice-cell-number';
-import './snice-cell-date';
-import './snice-cell-boolean';
-import './snice-cell-rating';
-import './snice-cell-progress';
-import './snice-cell-duration';
-import './snice-cell-filesize';
-import './snice-cell-sparkline';
-import './snice-cell-link';
-import './snice-cell-actions';
-import './snice-cell-tag';
-import './snice-cell-image';
-import './snice-cell-email';
-import './snice-cell-phone';
-import './snice-cell-status';
-import './snice-cell-color';
-import './snice-cell-json';
-import './snice-cell-currency';
-import './snice-cell-percentage';
-import './snice-cell-location';
 import { defaultCellAlign } from './table-cell-presentation';
+import { getRegisteredCellTagName } from './table-registry';
 
 @element('snice-row')
 export class SniceRow extends HTMLElement implements SniceRowElement {
@@ -284,69 +265,8 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
   }
 
   private getCellComponent(type: string | undefined): string {
-    switch (type) {
-      case 'text':
-        return 'snice-cell-text';
-      case 'number':
-      case 'accounting':
-      case 'scientific':
-      case 'fraction':
-        return 'snice-cell-number';
-      case 'date':
-        return 'snice-cell-date';
-      case 'boolean':
-        return 'snice-cell-boolean';
-      case 'sparkline':
-        return 'snice-cell-sparkline';
-      case 'rating':
-        return 'snice-cell-rating';
-      case 'progress':
-        return 'snice-cell-progress';
-      case 'duration':
-        return 'snice-cell-duration';
-      case 'filesize':
-        return 'snice-cell-filesize';
-      case 'link':
-      case 'url':
-        return 'snice-cell-link';
-      case 'actions':
-        return 'snice-cell-actions';
-      case 'tag':
-      case 'tags':
-      case 'badge':
-      case 'badges':
-        return 'snice-cell-tag';
-      case 'image':
-      case 'avatar':
-      case 'thumbnail':
-        return 'snice-cell-image';
-      case 'email':
-        return 'snice-cell-email';
-      case 'phone':
-      case 'tel':
-      case 'telephone':
-        return 'snice-cell-phone';
-      case 'status':
-        return 'snice-cell-status';
-      case 'color':
-        return 'snice-cell-color';
-      case 'json':
-      case 'object':
-        return 'snice-cell-json';
-      case 'currency':
-      case 'money':
-        return 'snice-cell-currency';
-      case 'percent':
-      case 'percentage':
-        return 'snice-cell-percentage';
-      case 'location':
-      case 'address':
-      case 'coordinates':
-        return 'snice-cell-location';
-      case 'custom':
-      default:
-        return 'snice-cell';
-    }
+    if (type === 'custom') return 'snice-cell';
+    return getRegisteredCellTagName(type);
   }
 
   private getCellStyles(column: ColumnDefinition): string {

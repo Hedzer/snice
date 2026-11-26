@@ -18,7 +18,14 @@ const ROOT_EXPORTS = new Set(ANALYZER_CONTRACTS.rootExports);
 const REACT_EXPORTS = new Set(ANALYZER_CONTRACTS.react.exports);
 const REACT_TYPE_EXPORTS = new Set(ANALYZER_CONTRACTS.react.typeExports ?? []);
 const REACT_MODULE_PATHS = new Set(ANALYZER_CONTRACTS.react.modulePaths ?? []);
-const COMPONENT_MODULE_PATHS = new Set(ANALYZER_CONTRACTS.componentModulePaths);
+const COMPONENT_MODULE_PATHS = new Set([
+  ...ANALYZER_CONTRACTS.componentModulePaths,
+  'snice/components/table/snice-table-core',
+  'snice/components/table/table-registry',
+]);
+const COMPONENT_REGISTRATION_ALIASES = new Map([
+  ['snice/components/table/snice-table-core', 'snice/components/table/snice-table'],
+]);
 const COMPONENT_UTILITY_MODULE_PATHS = new Set(ANALYZER_CONTRACTS.componentUtilityModulePaths ?? []);
 const COMPONENT_TYPE_MODULE_PATHS = new Set(ANALYZER_CONTRACTS.componentTypeModulePaths);
 const COMPONENT_RECOMMENDATIONS = Object.freeze({
@@ -1814,6 +1821,8 @@ export function analyzeProject(files) {
       // custom element, so it must not satisfy project-level registration.
       if (COMPONENT_MODULE_PATHS.has(entry.path) && !isTypeOnlyImport(entry)) {
         registrations.add(entry.path);
+        const canonical = COMPONENT_REGISTRATION_ALIASES.get(entry.path);
+        if (canonical) registrations.add(canonical);
       }
       if (
         (entry.path === 'snice' || entry.path.startsWith('snice/')) &&

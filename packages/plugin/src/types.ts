@@ -44,8 +44,8 @@ export interface SnicePluginOptions {
   pruneTheme?: boolean;
   /** Token names or patterns kept when pruneTheme is true (BS-08, default []). */
   themeSafelist?: (string | RegExp)[];
-  /** Dev diagnostics flag: sets __SNICE_DEV__ (default: true in Vite serve/Vitest, false in prod builds). */
-  dev?: boolean;
+  /** Dev diagnostics flag: sets __SNICE_DEV__ (default: true in Vite serve/Vitest, false in prod builds; 'preserve' leaves __SNICE_DEV__ untouched for library builds). */
+  dev?: boolean | 'preserve';
   /** Deterministic volatility-tiered caching chunks (default true for code-splitting builds). */
   caching?: boolean | SniceCachingOptions;
   /** Default Vite build.target when user has not set build.target (default 'es2022'; false disables). */
@@ -74,7 +74,9 @@ export function validateOptions(options: unknown): SnicePluginOptions {
   assertBooleanOrUndefined(opts.precompileTemplates, 'precompileTemplates');
   assertBooleanOrUndefined(opts.minifyCss, 'minifyCss');
   assertBooleanOrUndefined(opts.pruneTheme, 'pruneTheme');
-  assertBooleanOrUndefined(opts.dev, 'dev');
+  if (opts.dev !== undefined && typeof opts.dev !== 'boolean' && opts.dev !== 'preserve') {
+    throw new TypeError(`snice plugin: "dev" must be a boolean or "preserve", received ${typeof opts.dev}.`);
+  }
 
   if (
     opts.stripCssFallbacks !== undefined &&

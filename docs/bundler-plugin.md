@@ -98,6 +98,11 @@ export interface SnicePluginOptions {
   target?: string | false;
   /** Print or receive per-tier raw and gzip bundle size report (default: false). */
   report?: boolean | ((report: SniceBuildReport) => void);
+  /** Optional snice-table cell and feature allowlist stripping. */
+  table?: {
+    cells?: string[];
+    features?: string[];
+  };
 }
 ```
 
@@ -108,6 +113,23 @@ Snice decorators (`@element`, `@page`, `@layout`, `@controller`, `@daemon`, `@pr
 ### Template Minification and Pre-compilation (`minifyTemplates`, `precompileTemplates`)
 
 In production, `minifyTemplates` collapses redundant whitespace and strips static HTML comments inside Snice `html\`...\`` and `svg\`...\`` literals while preserving `<pre>`, `<code>`, `<textarea>`, `<script>`, `<style>`, quoted attributes, inline element spacing, and dynamic comments. Enabling `precompileTemplates: true` hoists static part descriptors at build time so runtime rendering skips the quasi scanner completely.
+
+### Modular Table Stripping (`table`)
+
+When your app imports `snice/components/table/snice-table`, pass `table: { cells, features }` to strip unused cell types and optional features at build time without changing application imports:
+
+```typescript
+snice({
+  table: {
+    cells: ['text', 'number', 'date', 'status', 'actions'],
+    features: ['filter', 'export'],
+  },
+});
+```
+
+- Omitting `cells` keeps all 21 cell types; passing `cells: []` keeps only core `text`. Documented aliases (`percent`, `url`, `money`, `tags`, etc.) normalize automatically.
+- Omitting `features` keeps all 11 optional features; passing `features: []` keeps only core sorting/selection/pagination/column-manager/keyboard. Transitive dependencies (such as `'toolbar'` requiring `'filter'`) are included automatically.
+- Unrecognized cell or feature names fail fast at build start. Apps without the plugin can also import `snice/components/table/snice-table-core` directly.
 
 ## Caching and HTTP Headers
 

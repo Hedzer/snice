@@ -147,3 +147,17 @@ table.setToolbar({showSearch:true,showSort:true,showFilter:true,showExport:true}
 
 - Grid: arrows, Home/End, Page Up/Down; Enter edits; Space/Shift+Space toggles selection; Ctrl/Cmd+A selects filtered selectable rows. Group/tree/detail buttons: Tab then Enter/Space.
 - Native table uses ARIA grid roles, live counts, roving focus, `aria-sort`, and `aria-selected`; group/tree/detail controls expose labels/`aria-expanded`, and group selection supports mixed state. `aria-selected="true"` is written with `data-selected` on every selection path, including click/checkbox/select-all deltas — not only on a full body render.
+
+## Modular Core & Tree-Shaking
+
+- Full entry (default, backwards compatible): `import 'snice/components/table/snice-table';`
+- Slim core entry (omits 20 optional cells, 11 optional features, and unused sibling controls; accepted by `snice check`):
+  ```typescript
+  import 'snice/components/table/snice-cell-number';
+  import { registerTableFeatures } from 'snice/components/table/table-registry';
+  import { TableFilterEngine } from 'snice/components/table/table-filter-engine';
+  import 'snice/components/table/snice-table-core';
+  registerTableFeatures({ filter: TableFilterEngine });
+  ```
+- Plugin stripping: `snice({ table: { cells: ['text', 'number', 'date'], features: ['filter', 'export'] } })` (`undefined` = keep all, `[]` = core only, unknown names fail fast).
+- Unregistered cells fall back to `snice-cell-text` with a dev-only warning; unregistered optional feature APIs no-op safely with a dev-only warning; `selectable`/`loading`/empty/`pagination` use native HTML fallbacks when optional sibling elements are not registered.

@@ -1644,3 +1644,39 @@ contract before adopting the table:
 - Aggregate rows and grand totals have distinct accessible labels and are included in the visible row count.
 - Virtualized rows retain logical ARIA row indices as the rendered window changes.
 - Focus indicators use `:focus-visible` and inherited Snice focus-ring tokens.
+
+## Modular Imports and Tree-Shaking
+
+Importing `snice/components/table/snice-table` registers every cell component, optional feature, and supporting control out of the box. For smaller bundles, ship only the cells and features your table uses:
+
+### Direct Core Entry (`snice-table-core`)
+
+```typescript
+import 'snice/components/table/snice-cell-number';
+import { registerTableFeatures } from 'snice/components/table/table-registry';
+import { TableFilterEngine } from 'snice/components/table/table-filter-engine';
+import 'snice/components/table/snice-table-core';
+
+registerTableFeatures({ filter: TableFilterEngine });
+```
+
+`snice/components/table/snice-table-core` bundles core rendering, sorting, selection (using a native `<input type="checkbox">` fallback when `snice-checkbox` is not registered), loading, empty state, pagination (native `<select>` fallback when `snice-select` is not registered), column sizing/pinning, keyboard navigation, and `<snice-cell-text>`. Unregistered cell types fall back safely to `<snice-cell-text>` with a dev-only warning, and calls to unregistered optional features no-op safely with a dev-only warning.
+
+### Plugin-Guided Stripping (`snice/vite` & `snice/rollup`)
+
+Keep `import 'snice/components/table/snice-table';` in application code and configure an explicit allowlist in `vite.config.ts`:
+
+```typescript
+import snice from 'snice/vite';
+
+export default defineConfig({
+  plugins: [
+    snice({
+      table: {
+        cells: ['text', 'number', 'date'],
+        features: ['filter', 'export'],
+      },
+    }),
+  ],
+});
+```

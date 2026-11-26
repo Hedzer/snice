@@ -20,7 +20,7 @@ export function snice(options?: SnicePluginOptions): Record<string, any> {
   return createSniceCorePlugin(validated, {
     isVite: false,
     isLib: false,
-    isDev: validated.dev ?? false,
+    isDev: validated.dev === true,
   });
 }
 

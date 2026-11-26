@@ -44,6 +44,10 @@ interface SnicePluginOptions {
   };
   target?: string | false;                 // default: 'es2022' when build.target unset; false disables
   report?: boolean | ((r: SniceBuildReport) => void); // default: false
+  table?: {
+    cells?: string[];                      // undefined = all 21 cells; [] = core 'text' only (accepts aliases)
+    features?: string[];                   // undefined = all 11 optional features; [] = core only; transitive deps auto-added
+  };
 }
 ```
 
@@ -64,3 +68,4 @@ interface SnicePluginOptions {
 - `stripCssFallbacks: 'auto'` is import-order independent and never strips non-theme `--snice-<comp>-*` tokens.
 - `pruneTheme: true` preserves dark-mode transitive primitives (`[data-theme="dark"]`, `prefers-color-scheme: dark`), data URIs, and dynamic `--snice-color-accent-*` tokens; use `themeSafelist` for custom dynamic lookups.
 - Both `'snice/vite'` and `'snice/rollup'` are accepted by `npx snice check` and `npx snice doctor`.
+- `table.features` valid names: `virtualizer`, `filter`, `editor`, `export`, `masterDetail`, `toolbar`, `treeData`, `grouping`, `columnMenu`, `rowDnD`, `columnDnD`. Unknown names fail fast in `buildStart`. Without the plugin, import `snice/components/table/snice-table-core` directly.

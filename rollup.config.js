@@ -356,6 +356,27 @@ export default [
     },
     plugins: [
       {
+        name: 'table-modular-split',
+        load(id) {
+          const norm = id.replace(/\\/g, '/');
+          if (norm.endsWith('/packages/components/src/table/snice-table-core.ts')) {
+            const tablePath = norm.replace(/snice-table-core\.ts$/, 'snice-table.ts');
+            const src = fs.readFileSync(tablePath, 'utf-8');
+            // Strip ONLY the full-bundle side-effect import while keeping line numbers 1:1
+            return src.replace(
+              "import './table-full-bundle';",
+              "// modular core entry (full cells/features omitted)"
+            ) + "\nexport { registerTableFeatures, hasTableFeature, resolveCellTagName, getRegisteredCellTagName, TABLE_CELL_TAG_MAP } from './table-registry';\n";
+          }
+          if (norm.endsWith('/packages/components/src/table/snice-table.ts')) {
+            // Register all 21 cells, 11 optional features, and required siblings BEFORE
+            // snice-table-core defines <snice-table> (zero synchronous upgrade race).
+            return "import './table-full-bundle';\nexport * from './snice-table-core';\n";
+          }
+          return null;
+        }
+      },
+      {
         name: 'ts-js-extension-resolve',
         resolveId(source, importer) {
           if (!importer || !source.startsWith('.') || !source.endsWith('.js')) return null;
@@ -509,6 +530,7 @@ export default [
         minifyCss: true,
         stripCssFallbacks: false,
         caching: false,
+        dev: 'preserve',
       })
     ]
   }

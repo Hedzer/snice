@@ -19,7 +19,7 @@ export function snice(options?: SnicePluginOptions): Record<string, any> {
   const env: SniceRuntimeEnv = {
     isVite: true,
     isLib: false,
-    isDev: validated.dev ?? false,
+    isDev: validated.dev === true,
   };
 
   const base = createSniceCorePlugin(validated, env);
@@ -34,7 +34,7 @@ export function snice(options?: SnicePluginOptions): Record<string, any> {
         configEnv?.command === 'serve' ||
         configEnv?.mode === 'test' ||
         configEnv?.mode === 'development';
-      env.isDev = validated.dev !== undefined ? validated.dev : isServeOrDev;
+      env.isDev = typeof validated.dev === 'boolean' ? validated.dev : isServeOrDev;
       env.isLib = Boolean(userConfig?.build?.lib);
 
       const patch: Record<string, any> = {};
@@ -62,7 +62,7 @@ export function snice(options?: SnicePluginOptions): Record<string, any> {
         resolvedConfig?.command === 'serve' ||
         resolvedConfig?.mode === 'test' ||
         resolvedConfig?.mode === 'development';
-      env.isDev = validated.dev !== undefined ? validated.dev : isServeOrDev;
+      env.isDev = typeof validated.dev === 'boolean' ? validated.dev : isServeOrDev;
       env.isLib = Boolean(resolvedConfig?.build?.lib);
     },
   };
