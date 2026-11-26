@@ -1,4 +1,4 @@
-export const REPEAT_RESULT = Symbol.for('snice:repeat-result');
+export const REPEAT_RESULT = /*#__PURE__*/ Symbol.for('snice:repeat-result');
 
 export interface RepeatOptions<T, K> {
   key: (item: T, index: number) => K;

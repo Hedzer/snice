@@ -15,7 +15,7 @@ export interface KeyboardFilter {
 // is almost certainly a mistake (e.g. `@click.once`) — it binds a listener for
 // an event type the DOM never dispatches. Warn instead of failing silently. A
 // legitimate custom event name like `app.ready` won't match and stays quiet.
-const MODIFIER_WORDS = new Set([
+const MODIFIER_WORDS = /*#__PURE__*/ new Set([
   'once', 'prevent', 'preventdefault', 'stop', 'stoppropagation', 'capture', 'passive',
 ]);
 

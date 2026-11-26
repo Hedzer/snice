@@ -7,7 +7,7 @@ import type { Fetcher } from '../fetcher';
 
 // Symbol for storing the Set of elements
 // Use Symbol.for() to ensure symbols are shared across multiple Snice instances
-const REGISTERED_ELEMENTS_SET = Symbol.for('snice:registered-elements-set');
+const REGISTERED_ELEMENTS_SET = /*#__PURE__*/ Symbol.for('snice:registered-elements-set');
 
 // Counter for generating unique context IDs
 let contextIdCounter = 0;

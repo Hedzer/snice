@@ -2,12 +2,13 @@
  * Generic transition system for animating between elements
  */
 
-export enum TransitionMode {
+export const TransitionMode = {
   /** out transition completes before in transition starts */
-  SEQUENTIAL = 'sequential',
+  SEQUENTIAL: 'sequential',
   /** both transitions happen at the same time */
-  SIMULTANEOUS = 'simultaneous',
-}
+  SIMULTANEOUS: 'simultaneous',
+} as const;
+export type TransitionMode = typeof TransitionMode[keyof typeof TransitionMode];
 
 export interface Transition {
   /**

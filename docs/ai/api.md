@@ -404,6 +404,6 @@ import {
   Router,
   debounce, throttle, once, memoize,
   attachController, detachController, getController,  // accept class or registry name
-  useNativeElementControllers    // controller= on native HTML elements (auto-called on load, idempotent)
+  useNativeElementControllers    // controller= on native HTML elements (auto-called lazily on first @controller(), idempotent)
 } from 'snice';
 ```

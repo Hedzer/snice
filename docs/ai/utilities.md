@@ -44,7 +44,7 @@ lockBodyScroll() | unlockBodyScroll() | getBodyScrollLockCount()
 await attachController(element, MyControllerOrName)
 getController(element)      // instance | undefined
 await detachController(element)
-useNativeElementControllers()   // manual enable; auto-started in browsers
+useNativeElementControllers()   // manual enable; auto-started lazily on first @controller() in browsers
 ```
 
 See controllers.md.

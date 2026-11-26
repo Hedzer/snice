@@ -4,8 +4,8 @@
  * Use Symbol.for() to ensure symbols are shared across multiple Snice instances
  */
 
-export const RENDER_TRACKER = Symbol.for('snice:renderTracker');
-export const TRACK_RENDERS = Symbol.for('snice:trackRenders');
+export const RENDER_TRACKER = /*#__PURE__*/ Symbol.for('snice:renderTracker');
+export const TRACK_RENDERS = /*#__PURE__*/ Symbol.for('snice:trackRenders');
 
 /**
  * Generator that yields after each render of an element

@@ -20,17 +20,18 @@ import { matchRoute } from './route-match';
 // Router historically allows a later Router instance to take over the same
 // target. Track only Router-owned provider releases so that handoff remains
 // explicit without weakening duplicate protection for public provideContext().
-const routerContextProviders = new WeakMap<EventTarget, () => void>();
+const routerContextProviders = /*#__PURE__*/ new WeakMap<EventTarget, () => void>();
 
 
 /**
  * Possible outcomes from route resolution
  */
-enum RouteResult {
-  SUCCESS = 'success',
-  GUARDS_FAILED = 'guards-failed',
-  NOT_FOUND = 'not-found'
-}
+const RouteResult = {
+  SUCCESS: 'success',
+  GUARDS_FAILED: 'guards-failed',
+  NOT_FOUND: 'not-found'
+} as const;
+type RouteResult = typeof RouteResult[keyof typeof RouteResult];
 
 
 /**

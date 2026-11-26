@@ -3,22 +3,28 @@
 
 import { SniceGlobal } from './types/snice-global';
 
-
-// Initialize the global Snice namespace on globalThis
-// This ensures all module instances share the same registry
-if (!(globalThis as any).snice) {
-  (globalThis as any).snice = {
-    controllerRegistry: new Map(),
-    pendingControllerAttachments: new Map(),
-    controllerIdCounter: 0
-  };
+/**
+ * Lazily read, initialize, or upgrade the shared `globalThis.snice` registry.
+ * Reads directly from `globalThis.snice` on every call (no module-local cache)
+ * so multiple copies of Snice share a single registry without import-time
+ * side effects.
+ */
+export function getSniceGlobal(): SniceGlobal {
+  let g = (globalThis as any).snice;
+  if (!g) {
+    g = {
+      controllerRegistry: new Map(),
+      pendingControllerAttachments: new Map(),
+      controllerIdCounter: 0
+    };
+    (globalThis as any).snice = g;
+  } else {
+    g.controllerRegistry ??= new Map();
+    g.pendingControllerAttachments ??= new Map();
+    g.controllerIdCounter ??= 0;
+  }
+  return g;
 }
-
-// Multiple copies of Snice can share a global created by an older build.
-(globalThis as any).snice.pendingControllerAttachments ??= new Map();
-
-// Export direct reference to globalThis.snice
-export const snice: SniceGlobal = (globalThis as any).snice;
 
 // Helper function to get or create a global symbol
 // Symbol.for() already guarantees global uniqueness, no need for a Map cache

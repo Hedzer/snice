@@ -15,7 +15,7 @@ interface ProviderRecord {
   listener: EventListener;
 }
 
-const providers = new WeakMap<EventTarget, ProviderRecord>();
+const providers = /*#__PURE__*/ new WeakMap<EventTarget, ProviderRecord>();
 
 /** @internal */
 export function hasContextProvider(root: EventTarget): boolean {

@@ -86,7 +86,7 @@ the registry. Strings stay fully supported and behave exactly like the static
 attribute.
 
 **Native element controllers** — attach controllers to any HTML element (div, form, table, etc.).
-Enabled automatically when Snice loads — no setup needed.
+Enabled automatically on first `@controller(...)` registration (or explicit `useNativeElementControllers()`) — no setup needed.
 ```typescript
 // Template class binding: html`<div controller=${DataLoader}></div>`
 // Raw HTML (string names, via MutationObserver):

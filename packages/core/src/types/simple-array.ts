@@ -5,7 +5,9 @@
  * Strings cannot contain the full-width comma character
  */
 export class SimpleArray {
-  static readonly SEPARATOR = '，'; // U+FF0C Full-width comma
+  static get SEPARATOR(): string {
+    return '，'; // U+FF0C Full-width comma
+  }
 
   /**
    * Serialize array to string for attribute storage

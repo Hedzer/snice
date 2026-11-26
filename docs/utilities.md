@@ -86,9 +86,10 @@ getController(element);            // the attached instance, or undefined
 await detachController(element);
 ```
 
-Native elements pick up `controller="name"` automatically in the browser;
-`useNativeElementControllers()` exists to enable that manually in environments
-where it is not auto-started. See [Controllers](./controllers.md).
+Native elements pick up `controller="name"` automatically in the browser as soon
+as the first `@controller(...)` class is registered; call
+`useNativeElementControllers()` explicitly if you want observation active before
+any controller decorator runs. See [Controllers](./controllers.md).
 
 ## Debugging
 

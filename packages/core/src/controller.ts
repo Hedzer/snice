@@ -4,7 +4,7 @@ import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { clearDispatchTimers } from './events';
 import { setupContextHandler, cleanupContextHandler } from './context';
 import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, CONTROLLER_REGISTRY_NAME, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT, CONTROLLER_ATTACHED, READY_HANDLERS_RUNNING } from './symbols';
-import { snice } from './global';
+import { getSniceGlobal } from './global';
 import { IController, ControllerClass } from './types/i-controller';
 
 
@@ -60,12 +60,8 @@ class ControllerScope {
  */
 export function controller(name: string) {
   return function <T extends ControllerClass>(constructor: T, _context: ClassDecoratorContext) {
-    // Access globalThis.snice directly to ensure consistency
-    const registry = (globalThis as any).snice?.controllerRegistry;
-    if (!registry) {
-      throw new Error('Snice global registry not initialized');
-    }
-    registry.set(name, constructor);
+    const snice = getSniceGlobal();
+    snice.controllerRegistry.set(name, constructor);
     // Mark as controller class for channel decorator detection
     (constructor.prototype as any)[IS_CONTROLLER_CLASS] = true;
     // Preserve the registry name on the class. Direct class attachments still
@@ -74,6 +70,13 @@ export function controller(name: string) {
       value: name,
       configurable: true
     });
+
+    // Lazily enable native element controller observation in browser environments
+    // after registration & class marking, so existing `<el controller="...">`
+    // elements attach cleanly without a spurious missing-controller rejection.
+    if (typeof document !== 'undefined') {
+      useNativeElementControllers();
+    }
 
     const pending = snice.pendingControllerAttachments.get(name);
     if (pending) {
@@ -100,6 +103,7 @@ export function controller(name: string) {
 
 /** Queue an element until its controller module finishes registering. */
 export function deferControllerAttachment(element: HTMLElement, controllerName: string): void {
+  const snice = getSniceGlobal();
   // Registration can win the microtask race between attachController's
   // rejected promise and this recovery path. Retry immediately in that case.
   if (snice.controllerRegistry.has(controllerName)) {
@@ -129,7 +133,7 @@ export function deferControllerAttachment(element: HTMLElement, controllerName: 
   // Give synchronously evaluated and microtask-delayed controller modules a
   // chance to register, while keeping genuinely missing controllers loud.
   queueMicrotask(() => {
-    if (snice.pendingControllerAttachments.get(controllerName)?.has(element)) {
+    if (getSniceGlobal().pendingControllerAttachments.get(controllerName)?.has(element)) {
       console.error(
         `Failed to attach controller "${controllerName}":`,
         new Error(`Controller "${controllerName}" not found in registry`)
@@ -259,11 +263,7 @@ export async function attachController(element: HTMLElement, controller: string 
 
   let ControllerClass: ControllerClass;
   if (typeof controller === 'string') {
-    // Access globalThis.snice directly to ensure consistency
-    const registry = (globalThis as any).snice?.controllerRegistry;
-    if (!registry) {
-      throw new Error('Snice global registry not initialized');
-    }
+    const registry = getSniceGlobal().controllerRegistry;
 
     ControllerClass = registry.get(controller);
     if (!ControllerClass) {
@@ -282,6 +282,7 @@ export async function attachController(element: HTMLElement, controller: string 
     (element as any)[DIRECT_CONTROLLER] = true;
     delete (element as any)[NATIVE_CONTROLLER];
   }
+  const snice = getSniceGlobal();
   snice.controllerIdCounter += 1;
   const controllerId = snice.controllerIdCounter;
   const scope = new ControllerScope();

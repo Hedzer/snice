@@ -13,7 +13,7 @@ interface ObserverMetadata {
 }
 
 // Global cache for MediaQueryList objects
-const mediaQueryCache = new Map<string, MediaQueryList>();
+const mediaQueryCache = /*#__PURE__*/ new Map<string, MediaQueryList>();
 
 
 /**

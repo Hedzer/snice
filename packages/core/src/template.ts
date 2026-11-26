@@ -5,14 +5,16 @@
 
 // Unique symbols for type checking
 // Use Symbol.for() to ensure symbols are shared across multiple Snice instances
-export const HTML_RESULT = Symbol.for('snice:html-result');
-export const CSS_RESULT = Symbol.for('snice:css-result');
+export const HTML_RESULT = /*#__PURE__*/ Symbol.for('snice:html-result');
+export const CSS_RESULT = /*#__PURE__*/ Symbol.for('snice:css-result');
 
 // Static css`` sites are the common stylesheet path and can be reused forever.
-// Interpolated sites are intentionally not retained: caching every distinct
-// primitive interpolation would turn a dynamic css`` call into an unbounded
-// per-callsite value history.
-const cssResultCache = new WeakMap<TemplateStringsArray, CSSResult>();
+const cssResultCache = /*#__PURE__*/ new WeakMap<TemplateStringsArray, CSSResult>();
+// Bounded O(1)-per-callsite cache for interpolated css`` sites (e.g. css`${importedCss}`).
+// Holds at most one { cssText, result } entry per TemplateStringsArray callsite so
+// repeated component instances share one CSSResult/CSSStyleSheet without unbounded
+// retention when interpolated values change dynamically.
+const interpolatedCssResultCache = /*#__PURE__*/ new WeakMap<TemplateStringsArray, { cssText: string; result: CSSResult }>();
 
 /**
  * Result of html`` tagged template
@@ -87,16 +89,36 @@ export function svg(strings: TemplateStringsArray, ...values: any[]): TemplateRe
  * ```
  */
 export function css(strings: TemplateStringsArray, ...values: any[]): CSSResult {
-  const cached = values.length === 0 ? cssResultCache.get(strings) : undefined;
-  if (cached) return cached;
+  if (values.length === 0) {
+    const cached = cssResultCache.get(strings);
+    if (cached) return cached;
+  }
 
-  // Combine strings and values into final CSS text
-  let cssText = strings[0];
-  for (let i = 0; i < values.length; i++) {
-    // Inline a nested css`` result by its text so style fragments compose;
-    // String() on a CSSResult object would yield "[object Object]".
-    const value = values[i];
-    cssText += (isCSSResult(value) ? value.cssText : String(value)) + strings[i + 1];
+  let cssText: string;
+  if (
+    values.length === 1 &&
+    strings[0] === '' &&
+    strings[1] === '' &&
+    typeof values[0] === 'string'
+  ) {
+    // O(1) fast path for the dominant component pattern: css`${importedCss}`
+    cssText = values[0];
+  } else {
+    // Combine strings and values into final CSS text
+    cssText = strings[0];
+    for (let i = 0; i < values.length; i++) {
+      // Inline a nested css`` result by its text so style fragments compose;
+      // String() on a CSSResult object would yield "[object Object]".
+      const value = values[i];
+      cssText += (isCSSResult(value) ? value.cssText : String(value)) + strings[i + 1];
+    }
+  }
+
+  if (values.length > 0) {
+    const cached = interpolatedCssResultCache.get(strings);
+    if (cached && cached.cssText === cssText) {
+      return cached.result;
+    }
   }
 
   const result: CSSResult = {
@@ -121,7 +143,11 @@ export function css(strings: TemplateStringsArray, ...values: any[]): CSSResult 
     }
   }
 
-  if (values.length === 0) cssResultCache.set(strings, result);
+  if (values.length === 0) {
+    cssResultCache.set(strings, result);
+  } else {
+    interpolatedCssResultCache.set(strings, { cssText, result });
+  }
 
   return result;
 }
@@ -183,7 +209,7 @@ export function sanitize(value: any): string {
  * Used to remove content from templates
  * Use Symbol.for() to ensure symbols are shared across multiple Snice instances
  */
-export const nothing = Symbol.for('snice:nothing');
+export const nothing = /*#__PURE__*/ Symbol.for('snice:nothing');
 
 /**
  * Type for template values that represent "no content"
@@ -192,7 +218,7 @@ export type Nothing = typeof nothing;
 
 // Unique symbol for unsafe HTML
 // Use Symbol.for() to ensure symbols are shared across multiple Snice instances
-const UNSAFE_HTML = Symbol.for('snice:unsafe-html');
+const UNSAFE_HTML = /*#__PURE__*/ Symbol.for('snice:unsafe-html');
 
 /**
  * Wrapper for raw HTML strings that should not be escaped

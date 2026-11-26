@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getSymbol } from '../packages/core/src/global';
+import { getSymbol, getSniceGlobal } from '../packages/core/src/global';
 import {
   IS_CONTROLLER_CLASS,
   IS_CONTROLLER_INSTANCE,
@@ -12,6 +12,10 @@ import { HTML_RESULT, CSS_RESULT, nothing } from '../packages/core/src/template'
 import { RENDER_TRACKER, TRACK_RENDERS } from '../packages/core/src/render-tracker';
 
 describe('Symbol sharing across instances', () => {
+  it('should not mutate globalThis.snice on bare symbol imports', () => {
+    expect((globalThis as any).snice).toBeUndefined();
+  });
+
   it('should use the same symbols when getSymbol is called multiple times', () => {
     const sym1 = getSymbol('test-symbol');
     const sym2 = getSymbol('test-symbol');
@@ -28,27 +32,43 @@ describe('Symbol sharing across instances', () => {
     expect(Symbol.for('snice:channel-handlers')).toBe(CHANNEL_HANDLERS);
   });
 
-  it('should share the same globalThis.snice across imports', () => {
-    // Import should see the same global registry
-    const global1 = (globalThis as any).snice;
+  it('should lazily initialize and share the same globalThis.snice across calls', () => {
+    const global1 = getSniceGlobal();
     expect(global1).toBeDefined();
+    expect((globalThis as any).snice).toBe(global1);
     expect(global1.controllerRegistry).toBeInstanceOf(Map);
+    expect(global1.pendingControllerAttachments).toBeInstanceOf(Map);
+    expect(typeof global1.controllerIdCounter).toBe('number');
     // Note: `globalThis.snice.symbols` was a legacy cache Map used before
     // `getSymbol()` switched to `Symbol.for('snice:<name>')`. Symbol.for
     // already guarantees global uniqueness, so the cache was removed.
 
-    // Accessing globalThis.snice directly should get the same reference
-    const global2 = (globalThis as any).snice;
+    // Accessing getSniceGlobal() or globalThis.snice directly gets the same reference
+    const global2 = getSniceGlobal();
     expect(global2).toBe(global1);
+    expect((globalThis as any).snice).toBe(global1);
   });
 
-  it('should share controller registry across instances', () => {
-    const registry1 = (globalThis as any).snice?.controllerRegistry;
+  it('should share controller registry across instances and upgrade partial globals', () => {
+    const registry1 = getSniceGlobal().controllerRegistry;
     expect(registry1).toBeInstanceOf(Map);
 
     // Simulate second import by accessing globalThis directly
     const registry2 = (globalThis as any).snice?.controllerRegistry;
     expect(registry2).toBe(registry1);
+
+    // Simulate a partial globalThis.snice created by an older build
+    const prev = (globalThis as any).snice;
+    try {
+      const legacyRegistry = new Map();
+      (globalThis as any).snice = { controllerRegistry: legacyRegistry };
+      const upgraded = getSniceGlobal();
+      expect(upgraded.controllerRegistry).toBe(legacyRegistry);
+      expect(upgraded.pendingControllerAttachments).toBeInstanceOf(Map);
+      expect(upgraded.controllerIdCounter).toBe(0);
+    } finally {
+      (globalThis as any).snice = prev;
+    }
   });
 
   it('should maintain symbol consistency for template symbols', () => {

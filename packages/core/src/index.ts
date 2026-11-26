@@ -8,12 +8,6 @@ export { controller, useNativeElementControllers, attachController, detachContro
 export { daemon } from './daemon';
 export { provideContext, getContext, getContextFetch } from './app-context';
 export type { ContextProviderOptions } from './app-context';
-import { useNativeElementControllers } from './controller';
-
-// Auto-enable native element controllers in browser environments
-if (typeof document !== 'undefined') {
-  useNativeElementControllers();
-}
 export { dispatch } from './events';
 export { observe } from './observe';
 export { on } from './on';

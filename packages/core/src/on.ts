@@ -13,7 +13,7 @@ import { isDaemonInstance, requireDaemonTarget } from './daemon-target';
 // Re-export OnOptions for public API
 export type { OnOptions } from './types/on-options';
 
-const ON_HANDLERS = getSymbol('on-handlers');
+const ON_HANDLERS = /*#__PURE__*/ getSymbol('on-handlers');
 
 // Per-decoration-site counter — see the registration identity note in `on()`.
 let registrationCount = 0;
@@ -167,7 +167,7 @@ function throttle<T extends (...args: any[]) => any>(fn: T, delay: number): T {
 /**
  * Events that don't bubble - these require capture phase for delegation
  */
-const NON_BUBBLING_EVENTS = new Set([
+const NON_BUBBLING_EVENTS = /*#__PURE__*/ new Set([
   'scroll',
   'focus',
   'blur',

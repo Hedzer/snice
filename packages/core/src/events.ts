@@ -5,7 +5,7 @@ import { defaultCommunicationTarget, requireDaemonTarget } from './daemon-target
 
 // @dispatch decorator - auto-dispatches custom events from method return values
 
-const DISPATCH_GENERATION = getSymbol('dispatch-generation');
+const DISPATCH_GENERATION = /*#__PURE__*/ getSymbol('dispatch-generation');
 
 function isDispatchGenerationActive(instance: any, generation: number): boolean {
   return (instance[DISPATCH_GENERATION] ?? 0) === generation;

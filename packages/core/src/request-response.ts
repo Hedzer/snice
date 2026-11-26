@@ -260,7 +260,7 @@ export interface SetupResponseHandlerOptions {
 
 // Which handler descriptors an instance has already registered, so a second
 // setup pass only picks up what the first one deferred.
-const registeredHandlers = new WeakMap<object, Set<unknown>>();
+const registeredHandlers = /*#__PURE__*/ new WeakMap<object, Set<unknown>>();
 
 /**
  * Helper to setup response handlers for elements and controllers.

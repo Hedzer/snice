@@ -5,10 +5,10 @@
 
 import { getSymbol } from './symbols';
 
-const DEBOUNCE_TIMERS = getSymbol('debounce-timers');
-const THROTTLE_TIMERS = getSymbol('throttle-timers');
-const ONCE_CALLED = getSymbol('once-called');
-const MEMOIZE_CACHE = getSymbol('memoize-cache');
+const DEBOUNCE_TIMERS = /*#__PURE__*/ getSymbol('debounce-timers');
+const THROTTLE_TIMERS = /*#__PURE__*/ getSymbol('throttle-timers');
+const ONCE_CALLED = /*#__PURE__*/ getSymbol('once-called');
+const MEMOIZE_CACHE = /*#__PURE__*/ getSymbol('memoize-cache');
 
 /**
  * @debounce decorator - delays function execution until after wait time has elapsed

@@ -10,7 +10,16 @@ import type { ElementOptions } from './types/element-options';
  * kebab-case implicit attributes, and `render()` / static `styles` conventions.
  */
 export class SniceElement extends HTMLElement {
-  static propertyAttributeNaming: 'kebab' = 'kebab';
+  static get propertyAttributeNaming(): 'kebab' {
+    return 'kebab';
+  }
+
+  // `@element` uses this inherited marker to enable render() conventions only
+  // for the opt-in base class. Plain HTMLElement components may legitimately
+  // have imperative helper methods named render().
+  get [SNICE_ELEMENT_BASE](): true {
+    return true;
+  }
 
   protected createRenderRoot(): HTMLElement | ShadowRoot {
     const options = (this.constructor as any)[ELEMENT_OPTIONS] as ElementOptions | undefined;
@@ -35,8 +44,3 @@ export interface SniceElement {
   readonly ready: Promise<void>;
   readonly rendered: Promise<void>;
 }
-
-// `@element` uses this inherited marker to enable render() conventions only
-// for the opt-in base class. Plain HTMLElement components may legitimately
-// have imperative helper methods named render().
-Object.defineProperty(SniceElement.prototype, SNICE_ELEMENT_BASE, { value: true });

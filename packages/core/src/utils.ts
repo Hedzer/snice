@@ -479,7 +479,7 @@ export function valueToAttribute(value: any, propertyOptions: PropertyOptions, i
  * such watchers can never fire, and the typo is otherwise silent.
  * Valid targets: property names, their attribute forms, and the '*' wildcard.
  */
-const validatedWatchClasses = new WeakSet<Function>();
+const validatedWatchClasses = /*#__PURE__*/ new WeakSet<Function>();
 
 export function validateWatchedProperties(instance: any, constructor: any): void {
   if (validatedWatchClasses.has(constructor)) return;

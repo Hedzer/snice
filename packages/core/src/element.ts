@@ -724,7 +724,7 @@ export function layout(tagName: string) {
 // @property pushes entries; @element pops them. Works because field decorators
 // run synchronously before the class decorator in the same static block.
 const _pendingProperties: Map<string, PropertyOptions>[] = [];
-const nativeOwnPropertyDefaults = new WeakMap<Document, Map<PropertyKey, unknown>>();
+const nativeOwnPropertyDefaults = /*#__PURE__*/ new WeakMap<Document, Map<PropertyKey, unknown>>();
 
 function isNativeOwnPropertyDefault(instance: any, propertyKey: PropertyKey, value: unknown): boolean {
   const ownerDocument = instance?.ownerDocument as Document | undefined;
@@ -1200,5 +1200,5 @@ function createLifecycleDecorator(handlersSymbol: symbol, timersSymbol: symbol, 
   };
 }
 
-export const moved = createLifecycleDecorator(MOVED_HANDLERS, MOVED_TIMERS, MOVED_METHODS);
-export const adopted = createLifecycleDecorator(ADOPTED_HANDLERS, ADOPTED_TIMERS, ADOPTED_METHODS);
+export const moved = /*#__PURE__*/ createLifecycleDecorator(MOVED_HANDLERS, MOVED_TIMERS, MOVED_METHODS);
+export const adopted = /*#__PURE__*/ createLifecycleDecorator(ADOPTED_HANDLERS, ADOPTED_TIMERS, ADOPTED_METHODS);

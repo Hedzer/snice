@@ -134,7 +134,7 @@ class RenderScheduler {
   }
 }
 
-const renderScheduler = new RenderScheduler();
+const renderScheduler = /*#__PURE__*/ new RenderScheduler();
 
 function hasRendered(element: HTMLElement): boolean {
   return Object.prototype.hasOwnProperty.call(element, RENDER_INSTANCE);

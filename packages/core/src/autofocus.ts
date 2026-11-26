@@ -1,24 +1,23 @@
 import { getRenderRoot, type SniceRenderRoot } from './render-root';
 
-const scheduledHosts = new WeakSet<HTMLElement>();
-const processedCandidates = new WeakSet<Element>();
+const scheduledHosts = /*#__PURE__*/ new WeakSet<HTMLElement>();
+const processedCandidates = /*#__PURE__*/ new WeakSet<Element>();
 
-const focusableSelector = [
-  'a[href]',
-  'area[href]',
-  'button:not([disabled])',
-  'input:not([disabled]):not([type="hidden"])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-  'iframe',
-  'object',
-  'embed',
-  'summary',
-  'audio[controls]',
-  'video[controls]',
-  '[contenteditable]:not([contenteditable="false"])',
-  '[tabindex]:not([tabindex="-1"])'
-].join(',');
+const focusableSelector =
+  'a[href],' +
+  'area[href],' +
+  'button:not([disabled]),' +
+  'input:not([disabled]):not([type="hidden"]),' +
+  'select:not([disabled]),' +
+  'textarea:not([disabled]),' +
+  'iframe,' +
+  'object,' +
+  'embed,' +
+  'summary,' +
+  'audio[controls],' +
+  'video[controls],' +
+  '[contenteditable]:not([contenteditable="false"]),' +
+  '[tabindex]:not([tabindex="-1"])';
 
 function hasMeaningfulFocus(document: Document): boolean {
   const active = document.activeElement;

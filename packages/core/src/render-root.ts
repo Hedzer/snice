@@ -3,7 +3,7 @@ import type { ElementOptions } from './types/element-options';
 
 export type SniceRenderRoot = HTMLElement | ShadowRoot;
 
-const renderHosts = new WeakSet<HTMLElement>();
+const renderHosts = /*#__PURE__*/ new WeakSet<HTMLElement>();
 
 export function getRenderRoot(element: HTMLElement): SniceRenderRoot | null {
   return (element as any)[RENDER_ROOT] || element.shadowRoot || null;

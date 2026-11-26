@@ -8,6 +8,12 @@
   "browser": "dist/index.iife.js",
   "types": "dist/index.d.ts",
   "customElements": "custom-elements.json",
+  "sideEffects": [
+    "./dist/testing-dom.esm.js",
+    "./dist/testing-dom.cjs",
+    "./dist/components/**/*.js",
+    "./dist/components/**/*.css"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

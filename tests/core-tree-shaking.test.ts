@@ -1,0 +1,357 @@
+import { describe, it, expect, afterEach, vi } from 'vitest';
+import { execFileSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { rollup } from 'rollup';
+import {
+  parseDuration,
+  html,
+  css,
+  element,
+  property,
+  SniceElement,
+  controller,
+  useNativeElementControllers,
+  lockBodyScroll,
+  unlockBodyScroll,
+  getBodyScrollLockCount,
+  getSymbol
+} from '../packages/core/src/index';
+import { cleanupNativeElementControllers } from '../packages/core/src/controller';
+
+const SCROLL_LOCK_HOOK = Symbol.for('snice:body-scroll-lock');
+
+// Capture global state immediately after module evaluation (before any test runs)
+const initialGlobals = {
+  snice: (globalThis as any).snice,
+  sniceNativeControllersInitialized: (globalThis as any).sniceNativeControllersInitialized,
+  sniceNativeControllerObserver: (globalThis as any).sniceNativeControllerObserver,
+  scrollLockHook: (globalThis as any)[SCROLL_LOCK_HOOK]
+};
+
+describe('BS-01: Core side-effect elimination, tree-shaking & css() caching', () => {
+  afterEach(() => {
+    cleanupNativeElementControllers();
+    document.body.innerHTML = '';
+    document.body.style.overflow = '';
+    const scrollLock = (globalThis as any)[SCROLL_LOCK_HOOK];
+    if (scrollLock?.clear) scrollLock.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('AC-1: declares explicit sideEffects array in package.json without core ESM modules', () => {
+    const pkg = JSON.parse(readFileSync(resolve(process.cwd(), 'package.json'), 'utf8'));
+    expect(Array.isArray(pkg.sideEffects)).toBe(true);
+    expect(pkg.sideEffects).toContain('./dist/testing-dom.esm.js');
+    expect(pkg.sideEffects).toContain('./dist/testing-dom.cjs');
+    expect(pkg.sideEffects).toContain('./dist/components/**/*.js');
+    expect(pkg.sideEffects).toContain('./dist/components/**/*.css');
+    expect(pkg.sideEffects).not.toContain('./dist/index.esm.js');
+    expect(pkg.sideEffects).not.toContain('./dist/symbols.esm.js');
+    expect(pkg.sideEffects).not.toContain('./dist/transitions.esm.js');
+    // Preserve exports ordering contract
+    expect(Object.keys(pkg.exports['.'])).toEqual(['types', 'import', 'require']);
+  });
+
+  it('AC-2: bare import of core utilities and symbols does not mutate globalThis or start a MutationObserver', () => {
+    expect(parseDuration('250ms').milliseconds()).toBe(250);
+    expect(getSymbol('tree-shake-check')).toBe(Symbol.for('snice:tree-shake-check'));
+    expect(initialGlobals.snice).toBeUndefined();
+    expect(initialGlobals.sniceNativeControllersInitialized).toBeUndefined();
+    expect(initialGlobals.sniceNativeControllerObserver).toBeUndefined();
+    expect(initialGlobals.scrollLockHook).toBeUndefined();
+  });
+
+  it('AC-4: Rollup drops unused controller, SniceElement, RouteResult, and scroll-lock when only parseDuration is imported from dist/index.esm.js', async () => {
+    const distEntry = resolve(process.cwd(), 'dist/index.esm.js');
+    const dir = mkdtempSync(join(tmpdir(), 'snice-tree-shake-'));
+    try {
+      const entryFile = join(dir, 'entry.js');
+      writeFileSync(
+        entryFile,
+        `import { parseDuration } from ${JSON.stringify(distEntry)};\nconsole.log(parseDuration('150ms'));\n`
+      );
+      const bundle = await rollup({ input: entryFile });
+      try {
+        const { output } = await bundle.generate({ format: 'es' });
+        const code = output[0].code;
+        expect(code).toContain('parseDuration');
+        expect(code).not.toContain('MutationObserver');
+        expect(code).not.toContain('sniceNativeControllersInitialized');
+        expect(code).not.toContain('SniceElement');
+        expect(code).not.toContain('RouteResult');
+        expect(code).not.toContain('lockBodyScroll');
+        expect(code).not.toContain('controllerRegistry');
+      } finally {
+        await bundle.close();
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('AC-3: useNativeElementControllers() reports missing-controller error even before any @controller is defined', async () => {
+    const prevSnice = (globalThis as any).snice;
+    delete (globalThis as any).snice;
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const div = document.createElement('div');
+      div.setAttribute('controller', 'non-existent-controller');
+      document.body.appendChild(div);
+
+      useNativeElementControllers();
+      await new Promise(resolve => setTimeout(resolve, 20));
+
+      expect(errorSpy).toHaveBeenCalled();
+      const allErrors = errorSpy.mock.calls.flat().map(arg => (arg instanceof Error ? arg.message : String(arg)));
+      expect(allErrors.some(msg => msg.includes('Controller "non-existent-controller" not found in registry'))).toBe(true);
+      expect(allErrors.some(msg => msg.includes('Snice global registry not initialized'))).toBe(false);
+    } finally {
+      cleanupNativeElementControllers();
+      if (prevSnice !== undefined) {
+        (globalThis as any).snice = prevSnice;
+      }
+    }
+  });
+
+  it('AC-3: @controller lazily activates native element observation after registration for existing and newly added DOM', async () => {
+    const attachSpy = vi.fn();
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Place element in DOM BEFORE @controller runs and without calling useNativeElementControllers()
+    const existingDiv = document.createElement('div');
+    existingDiv.setAttribute('controller', 'lazy-native-ctrl');
+    document.body.appendChild(existingDiv);
+
+    expect((globalThis as any).sniceNativeControllersInitialized).toBeUndefined();
+
+    @controller('lazy-native-ctrl')
+    class LazyNativeController {
+      element: HTMLElement | null = null;
+      attach = attachSpy;
+      async detach() {}
+    }
+    void LazyNativeController;
+
+    expect((globalThis as any).sniceNativeControllersInitialized).toBe(true);
+
+    await new Promise(resolve => setTimeout(resolve, 20));
+    expect(attachSpy).toHaveBeenCalledWith(existingDiv);
+    expect(errorSpy).not.toHaveBeenCalled();
+
+    // Newly added element after lazy activation also attaches automatically
+    const addedSpan = document.createElement('span');
+    addedSpan.setAttribute('controller', 'lazy-native-ctrl');
+    document.body.appendChild(addedSpan);
+
+    await new Promise(resolve => setTimeout(resolve, 20));
+    expect(attachSpy).toHaveBeenCalledWith(addedSpan);
+    expect(attachSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('AC-5: preserves SniceElement.propertyAttributeNaming and SNICE_ELEMENT_BASE inheritance without affecting plain HTMLElement', async () => {
+    expect(SniceElement.propertyAttributeNaming).toBe('kebab');
+
+    @element('ts-snice-base-el')
+    class BaseSniceEl extends SniceElement {
+      @property() userName = 'world';
+      render() {
+        return html`<span class="msg">Hello ${this.userName}</span>`;
+      }
+    }
+
+    class IntermediateSniceEl extends SniceElement {}
+
+    @element('ts-snice-grandchild-el')
+    class GrandchildSniceEl extends IntermediateSniceEl {
+      render() {
+        return html`<em class="gc">Grandchild</em>`;
+      }
+    }
+
+    const plainRenderSpy = vi.fn(() => html`<p>should not auto-run</p>`);
+    @element('ts-plain-html-el')
+    class PlainHtmlEl extends HTMLElement {
+      render() {
+        return plainRenderSpy();
+      }
+    }
+
+    const baseEl = document.createElement('ts-snice-base-el') as BaseSniceEl;
+    baseEl.setAttribute('user-name', 'snice');
+    document.body.appendChild(baseEl);
+    await baseEl.ready;
+    expect(baseEl.userName).toBe('snice');
+    expect(baseEl.shadowRoot?.querySelector('.msg')?.textContent).toBe('Hello snice');
+
+    const gcEl = document.createElement('ts-snice-grandchild-el') as GrandchildSniceEl;
+    document.body.appendChild(gcEl);
+    await gcEl.ready;
+    expect(gcEl.shadowRoot?.querySelector('.gc')?.textContent).toBe('Grandchild');
+
+    const plainEl = document.createElement('ts-plain-html-el') as PlainHtmlEl;
+    document.body.appendChild(plainEl);
+    await (plainEl as any).ready;
+    expect(Object.prototype.hasOwnProperty.call(PlainHtmlEl.prototype, 'render')).toBe(true);
+    expect(plainRenderSpy).not.toHaveBeenCalled();
+  });
+
+  it('AC-5: dist/index.d.ts SniceElement uses unique symbol so subclasses with symbol members compile cleanly', () => {
+    const root = process.cwd();
+    const dts = readFileSync(join(root, 'dist/snice-element.d.ts'), 'utf8');
+    const symbolsDts = readFileSync(join(root, 'dist/symbols.d.ts'), 'utf8');
+    expect(symbolsDts).toContain('SNICE_ELEMENT_BASE: unique symbol');
+    expect(dts).not.toContain('[x: symbol]');
+
+    const consumer = mkdtempSync(join(tmpdir(), 'snice-element-dts-'));
+    try {
+      mkdirSync(join(consumer, 'node_modules'), { recursive: true });
+      symlinkSync(root, join(consumer, 'node_modules', 'snice'), 'junction');
+      writeFileSync(join(consumer, 'package.json'), JSON.stringify({ type: 'module' }));
+      writeFileSync(join(consumer, 'index.ts'), `
+        import { SniceElement } from 'snice';
+        const customSym = Symbol('custom');
+        export class SymbolSubElement extends SniceElement {
+          [customSym] = 42;
+          *[Symbol.iterator](): Generator<number> {
+            yield this[customSym];
+          }
+          get [Symbol.toStringTag](): string {
+            return 'SymbolSubElement';
+          }
+        }
+      `);
+      writeFileSync(join(consumer, 'tsconfig.json'), JSON.stringify({
+        compilerOptions: {
+          target: 'ES2022',
+          module: 'ESNext',
+          moduleResolution: 'bundler',
+          strict: true,
+          noEmit: true,
+          skipLibCheck: true,
+        },
+        files: ['index.ts'],
+      }));
+
+      execFileSync(join(root, 'node_modules', '.bin', 'tsc'), ['-p', join(consumer, 'tsconfig.json')], {
+        cwd: consumer,
+        stdio: 'pipe',
+      });
+    } finally {
+      rmSync(consumer, { recursive: true, force: true });
+    }
+  });
+
+  it('AC-6: caches identical interpolated css`${importedCss}` calls and runs replaceSync only once', () => {
+    const importedCss = ':host { display: block; color: rgb(37 99 235); }';
+    const makeStyles = (text: string) => css`${text}`;
+
+    const desc = Object.getOwnPropertyDescriptor(Document.prototype, 'adoptedStyleSheets');
+    const hadOwn = desc !== undefined;
+    try {
+      if (!('adoptedStyleSheets' in Document.prototype)) {
+        Object.defineProperty(Document.prototype, 'adoptedStyleSheets', {
+          value: [],
+          configurable: true,
+          writable: true,
+        });
+      }
+
+      const replaceSyncSpy = vi.spyOn(CSSStyleSheet.prototype, 'replaceSync');
+
+      const first = makeStyles(importedCss);
+      expect(first.styleSheet).toBeInstanceOf(CSSStyleSheet);
+      for (let i = 0; i < 99; i++) {
+        const next = makeStyles(importedCss);
+        expect(next).toBe(first);
+        expect(next.styleSheet).toBe(first.styleSheet);
+      }
+
+      expect(replaceSyncSpy).toHaveBeenCalledTimes(1);
+
+      // Static values.length === 0 fast path remains cached
+      const makeStatic = () => css`:host { display: inline-block; }`;
+      const s1 = makeStatic();
+      const s2 = makeStatic();
+      expect(s2).toBe(s1);
+      expect(s1.styleSheet).toBeInstanceOf(CSSStyleSheet);
+      expect(s2.styleSheet).toBe(s1.styleSheet);
+    } finally {
+      if (!hadOwn) {
+        delete (Document.prototype as any).adoptedStyleSheets;
+      } else if (desc.configurable) {
+        Object.defineProperty(Document.prototype, 'adoptedStyleSheets', desc);
+      }
+    }
+  });
+
+  it('AC-7: returns accurate cssText for varying interpolations with bounded O(1) per-callsite cache and nested CSSResult support', () => {
+    const dynamicStyle = (color: string) => css`:host { color: ${color}; }`;
+
+    const red1 = dynamicStyle('red');
+    const red1Repeat = dynamicStyle('red');
+    expect(red1.cssText).toBe(':host { color: red; }');
+    expect(red1Repeat).toBe(red1);
+
+    const blue1 = dynamicStyle('blue');
+    expect(blue1.cssText).toBe(':host { color: blue; }');
+    expect(blue1).not.toBe(red1);
+
+    // Bounded 1-slot per-callsite cache: 'blue' evicted 'red', so returning to 'red'
+    // creates a fresh CSSResult instead of retaining an unbounded history map.
+    const red2 = dynamicStyle('red');
+    expect(red2.cssText).toBe(':host { color: red; }');
+    expect(red2).not.toBe(red1);
+
+    // Nested CSSResult flattening still works and caches identical compositions
+    const base = css`:host { display: block; }`;
+    const composed = (accent: string) => css`${base} .a { color: ${accent}; }`;
+    const c1 = composed('green');
+    const c2 = composed('green');
+    expect(c1.cssText).toBe(':host { display: block; } .a { color: green; }');
+    expect(c2).toBe(c1);
+  });
+
+  it('AC-6/AC-7: css() caching works cleanly when Document.prototype.adoptedStyleSheets is absent', () => {
+    const desc = Object.getOwnPropertyDescriptor(Document.prototype, 'adoptedStyleSheets');
+    const hadOwn = desc !== undefined;
+    try {
+      // Simulate an environment without adoptedStyleSheets
+      if (hadOwn && desc.configurable) {
+        delete (Document.prototype as any).adoptedStyleSheets;
+      }
+      expect('adoptedStyleSheets' in Document.prototype).toBe(false);
+      const noSheetCss = (s: string) => css`${s}`;
+      const r1 = noSheetCss(':host { padding: 1rem; }');
+      const r2 = noSheetCss(':host { padding: 1rem; }');
+      expect(r1.cssText).toBe(':host { padding: 1rem; }');
+      expect(r1.styleSheet).toBeUndefined();
+      expect(r2).toBe(r1);
+    } finally {
+      if (hadOwn && desc.configurable) {
+        Object.defineProperty(Document.prototype, 'adoptedStyleSheets', desc);
+      }
+    }
+  });
+
+  it('AC-8: lazily installs scroll-lock test hook on first lockBodyScroll() and refcounts/clears cleanly', () => {
+    delete (globalThis as any)[SCROLL_LOCK_HOOK];
+    expect((globalThis as any)[SCROLL_LOCK_HOOK]).toBeUndefined();
+    expect(getBodyScrollLockCount()).toBe(0);
+
+    lockBodyScroll();
+    expect((globalThis as any)[SCROLL_LOCK_HOOK]).toBeDefined();
+    expect(typeof (globalThis as any)[SCROLL_LOCK_HOOK].clear).toBe('function');
+    expect(getBodyScrollLockCount()).toBe(1);
+
+    lockBodyScroll();
+    expect(getBodyScrollLockCount()).toBe(2);
+
+    unlockBodyScroll();
+    expect(getBodyScrollLockCount()).toBe(1);
+
+    (globalThis as any)[SCROLL_LOCK_HOOK].clear();
+    expect(getBodyScrollLockCount()).toBe(0);
+  });
+});

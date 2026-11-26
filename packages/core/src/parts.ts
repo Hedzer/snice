@@ -14,14 +14,14 @@ import {
 } from './template-marker';
 
 // Template cache - templates with same string array can be reused
-const templateCache = new WeakMap<TemplateStringsArray, Template>();
+const templateCache = /*#__PURE__*/ new WeakMap<TemplateStringsArray, Template>();
 
 // Sentinel for "not yet set" - distinct from undefined/null
-const NOT_COMMITTED = Symbol('not-committed');
+const NOT_COMMITTED = /*#__PURE__*/ Symbol('not-committed');
 
 type PropertyBindingRegistry = Pick<CustomElementRegistry, 'get' | 'whenDefined'>;
 
-const pendingDefinitionRegistries = new WeakMap<Element, PropertyBindingRegistry>();
+const pendingDefinitionRegistries = /*#__PURE__*/ new WeakMap<Element, PropertyBindingRegistry>();
 
 function isUpgradedBy(element: Element, constructor: CustomElementConstructor): boolean {
   return Object.prototype.isPrototypeOf.call(constructor.prototype, element);
@@ -119,12 +119,12 @@ function commitPropertyValue(
 }
 
 // noChange sentinel - preserves the currently committed value
-export const noChange = Symbol.for('snice:no-change');
+export const noChange = /*#__PURE__*/ Symbol.for('snice:no-change');
 export type NoChange = typeof noChange;
 
 // live() wrapper - marks a property binding value for comparison against the
 // actual DOM property instead of the last committed value
-const LIVE_MARKER = Symbol.for('snice:live');
+const LIVE_MARKER = /*#__PURE__*/ Symbol.for('snice:live');
 
 interface LiveValue {
   readonly _$liveMarker$: typeof LIVE_MARKER;
@@ -2508,7 +2508,7 @@ export class EventPart extends Part {
  * Removes/inserts DOM nodes based on condition
  */
 // Sentinel value to distinguish "not yet set" from undefined
-const NOT_SET = Symbol('not-set');
+const NOT_SET = /*#__PURE__*/ Symbol('not-set');
 
 export class ConditionalIfPart extends Part {
   readonly type = 'node' as const;
@@ -2628,7 +2628,7 @@ export class ConditionalIfPart extends Part {
   }
 }
 
-const conditionalElseIfOwners = new WeakMap<Element, {
+const conditionalElseIfOwners = /*#__PURE__*/ new WeakMap<Element, {
   coordinator: ConditionalIfPart;
   index: number;
 }>();
@@ -2768,7 +2768,7 @@ export class ConditionalCasePart extends Part {
   }
 }
 
-const conditionalWhenOwners = new WeakMap<Element, {
+const conditionalWhenOwners = /*#__PURE__*/ new WeakMap<Element, {
   coordinator: ConditionalCasePart;
   index: number;
 }>();

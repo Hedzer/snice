@@ -259,7 +259,7 @@ class LifecycleController implements IController {
 
 ## Native Element Controllers
 
-Native element controllers are enabled automatically when Snice loads in a browser environment. No setup is required.
+Native element controllers are enabled automatically in browser environments as soon as the first `@controller(...)` class is registered (or when `useNativeElementControllers()` is called explicitly). No setup is required.
 
 You can attach controllers to any HTML element:
 

@@ -18,15 +18,18 @@ let savedOverflow: string | null = null;
 // counter when document.body.innerHTML is wiped. The counter is module-scope,
 // so without this it survives across tests and the second test's first lock
 // would only increment instead of flipping `overflow: hidden`.
-const TEST_HOOK = Symbol.for('snice:body-scroll-lock');
-(globalThis as any)[TEST_HOOK] = {
-  clear() {
-    count = 0;
-    savedOverflow = null;
-  },
-};
+// Installed lazily on first lockBodyScroll() so importing snice stays pure.
+const TEST_HOOK = /*#__PURE__*/ Symbol.for('snice:body-scroll-lock');
 
 export function lockBodyScroll(): void {
+  if (!(globalThis as any)[TEST_HOOK]) {
+    (globalThis as any)[TEST_HOOK] = {
+      clear() {
+        count = 0;
+        savedOverflow = null;
+      },
+    };
+  }
   if (count === 0) {
     savedOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';

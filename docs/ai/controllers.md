@@ -121,7 +121,7 @@ dropped.
 
 ## Native Element Controllers
 
-Enabled automatically when Snice loads in a browser — no setup required.
+Enabled automatically in browsers on first `@controller(...)` registration (or explicit `useNativeElementControllers()`) — no setup required.
 
 ```html
 <div controller="content-controller"><p>Content managed by controller</p></div>

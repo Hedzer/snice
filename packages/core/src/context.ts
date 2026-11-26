@@ -7,7 +7,7 @@ import { getSymbol } from './symbols';
 import type { Context } from './types/context';
 import { getNavigationContext } from './context-provider';
 
-const CONTEXT_HANDLERS = getSymbol('context-handlers');
+const CONTEXT_HANDLERS = /*#__PURE__*/ getSymbol('context-handlers');
 
 /**
  * Options for the @context decorator

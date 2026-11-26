@@ -10,14 +10,14 @@ interface RegisteredRenderHostIdentity {
   readonly label: string;
 }
 
-const AMBIGUOUS_RENDER_HOST_IDENTITY = Symbol('ambiguous-render-host-identity');
+const AMBIGUOUS_RENDER_HOST_IDENTITY = /*#__PURE__*/ Symbol('ambiguous-render-host-identity');
 type RegisteredRenderHostState = RegisteredRenderHostIdentity |
   typeof AMBIGUOUS_RENDER_HOST_IDENTITY;
 
 // Keys are weak; values contain only a sanitized label or the ambiguity
 // sentinel. The same frozen identity is recorded for the exact constructor
 // and its exact prototype only after the caller verifies registration.
-const registeredRenderHosts = new WeakMap<object, RegisteredRenderHostState>();
+const registeredRenderHosts = /*#__PURE__*/ new WeakMap<object, RegisteredRenderHostState>();
 
 export function registerRenderHostIdentity(constructor: unknown, tagName: string): void {
   try {
