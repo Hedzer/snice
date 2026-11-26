@@ -398,7 +398,9 @@ export function setupResponseHandlers(instance: any, element: EventTarget, optio
         // can be unreachable while the host is still disconnected. Leave the
         // handler for the later pass instead of dropping it permanently.
         if (options?.deferUnresolvableDaemons) continue;
-        console.warn(`[snice/@respond] ${(error as Error).message} Responder "${handler.channelName}" skipped.`);
+        if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+          console.warn(`[snice/@respond] ${(error as Error).message} Responder "${handler.channelName}" skipped.`);
+        }
         registered.add(handler);
         continue;
       }

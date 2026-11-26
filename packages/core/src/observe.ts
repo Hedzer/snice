@@ -119,7 +119,9 @@ export function setupObservers(instance: any, element: HTMLElement) {
         setupMutationObserver(instance, element, observer, callback);
         break;
       default:
-        console.warn(`Unknown observer type: ${observer.type}`);
+        if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+          console.warn(`Unknown observer type: ${observer.type}`);
+        }
     }
   }
 }
@@ -151,7 +153,9 @@ function setupIntersectionObserver(
   };
 
   if (typeof IntersectionObserver === 'undefined') {
-    console.warn('IntersectionObserver is not available in this environment');
+    if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+      console.warn('IntersectionObserver is not available in this environment');
+    }
     return;
   }
 
@@ -196,7 +200,9 @@ function setupResizeObserver(
   
   // Check if ResizeObserver is available
   if (typeof ResizeObserver === 'undefined') {
-    console.warn('ResizeObserver is not available in this environment');
+    if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+      console.warn('ResizeObserver is not available in this environment');
+    }
     return;
   }
   
@@ -229,7 +235,9 @@ function setupMediaQueryObserver(
   const mediaQuery = observer.target;
   
   if (!mediaQuery) {
-    console.warn('Media query observer requires a query string');
+    if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+      console.warn('Media query observer requires a query string');
+    }
     return;
   }
   
@@ -303,14 +311,16 @@ function setupMutationObserver(
     default: {
       // A leading . # or [ means the author put a CSS selector where the
       // mutation type goes — point at the correct two-argument form.
-      if (/^[.#[]/.test(mutationType)) {
-        console.warn(
-          `@observe: "mutation:${mutationType}" — "${mutationType}" looks like a selector. ` +
-          `Selectors are the second argument — did you mean ` +
-          `@observe('mutation:childList', '${mutationType}')?`
-        );
-      } else {
-        console.warn(`Unknown mutation type: ${mutationType} (expected childList or attributes)`);
+      if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+        if (/^[.#[]/.test(mutationType)) {
+          console.warn(
+            `@observe: "mutation:${mutationType}" — "${mutationType}" looks like a selector. ` +
+            `Selectors are the second argument — did you mean ` +
+            `@observe('mutation:childList', '${mutationType}')?`
+          );
+        } else {
+          console.warn(`Unknown mutation type: ${mutationType} (expected childList or attributes)`);
+        }
       }
       return;
     }
@@ -321,7 +331,9 @@ function setupMutationObserver(
     options.subtree = true;
     // Could implement maxDepth checking in the callback
     if (observer.options.maxDepth) {
-      console.warn('maxDepth is set but requires custom implementation');
+      if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+        console.warn('maxDepth is set but requires custom implementation');
+      }
     }
   }
   

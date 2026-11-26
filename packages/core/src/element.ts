@@ -339,7 +339,9 @@ export function applyElementFunctionality(constructor: any) {
 
       // One-time (per class) sanity check: a @watch name with no matching
       // @property never fires — surface the typo instead of staying silent.
-      validateWatchedProperties(this, constructor);
+      if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+        validateWatchedProperties(this, constructor);
+      }
 
       // Now that the initial value is settled, give @watch immediate handlers
       // their one init call (before the first render, so derived state is ready).

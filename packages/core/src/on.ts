@@ -236,7 +236,9 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
       ? handler.eventName.substring(delimiterIndex + 1)
       : null;
 
-    if (delimiterIndex <= 0) warnIfModifierMisuse(handler.eventName);
+    if (delimiterIndex <= 0 && (typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+      warnIfModifierMisuse(handler.eventName);
+    }
 
     // Apply debounce (takes precedence over throttle)
     if (debounceDelay && debounceDelay > 0) {
@@ -281,15 +283,19 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
     const hasExplicitScope = handlerOptions.scope !== undefined;
     const hasDaemon = handlerOptions.daemon !== undefined;
     if (hasExplicitScope && hasDaemon) {
-      console.warn(
-        `[snice/@on] "${handler.eventName}" cannot use both scope and daemon — listener skipped.`
-      );
+      if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+        console.warn(
+          `[snice/@on] "${handler.eventName}" cannot use both scope and daemon — listener skipped.`
+        );
+      }
       continue;
     }
     if ((hasDaemon || isDaemonInstance(instance)) && handler.selector) {
-      console.warn(
-        `[snice/@on] "${handler.eventName}" cannot delegate "${handler.selector}" on a daemon target — listener skipped.`
-      );
+      if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+        console.warn(
+          `[snice/@on] "${handler.eventName}" cannot delegate "${handler.selector}" on a daemon target — listener skipped.`
+        );
+      }
       continue;
     }
 
@@ -303,14 +309,18 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
     const inLight = handlerOptions.light !== false;
     if (hasExplicitTarget
         && (handlerOptions.light !== undefined || handlerOptions.shadow !== undefined)) {
-      console.warn(
-        `[snice/@on] light/shadow are ignored for "${handler.eventName}" — an explicit scope/daemon owns the listener target.`
-      );
+      if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+        console.warn(
+          `[snice/@on] light/shadow are ignored for "${handler.eventName}" — an explicit scope/daemon owns the listener target.`
+        );
+      }
     }
     if (!hasExplicitTarget && !inShadow && !inLight) {
-      console.warn(
-        `[snice/@on] "${handler.eventName}" disables both light and shadow — listener skipped.`
-      );
+      if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+        console.warn(
+          `[snice/@on] "${handler.eventName}" disables both light and shadow — listener skipped.`
+        );
+      }
       continue;
     }
 
@@ -319,7 +329,9 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
       try {
         scopedTarget = requireDaemonTarget(instance, handlerOptions.daemon);
       } catch (error) {
-        console.warn(`[snice/@on] ${(error as Error).message} Listener "${handler.eventName}" skipped.`);
+        if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+          console.warn(`[snice/@on] ${(error as Error).message} Listener "${handler.eventName}" skipped.`);
+        }
         continue;
       }
     } else if (hasExplicitScope) {
@@ -327,9 +339,11 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
       if (!scopedTarget) {
         // Dev warning — listener silently dropped when scope cannot resolve.
         // Skip attachment so we don't bind to the wrong target.
-        console.warn(
-          `[snice/@on] scope did not resolve for "${handler.eventName}" on ${handler.methodName} — listener skipped.`
-        );
+        if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+          console.warn(
+            `[snice/@on] scope did not resolve for "${handler.eventName}" on ${handler.methodName} — listener skipped.`
+          );
+        }
         continue;
       }
     }
@@ -349,9 +363,11 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
           ];
 
       if (delegationRoots.length === 0) {
-        console.warn(
-          `[snice/@on] "${handler.eventName}" cannot delegate "${handler.selector}" — no shadow root and light disabled; listener skipped.`
-        );
+        if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+          console.warn(
+            `[snice/@on] "${handler.eventName}" cannot delegate "${handler.selector}" — no shadow root and light disabled; listener skipped.`
+          );
+        }
         continue;
       }
 
@@ -458,9 +474,11 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
         : (targetElement as any).shadowRoot;
 
       if (!hasExplicitTarget && !shadowRoot && !inLight) {
-        console.warn(
-          `[snice/@on] "${handler.eventName}" requests shadow only but the element has no shadow root — listener skipped.`
-        );
+        if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+          console.warn(
+            `[snice/@on] "${handler.eventName}" requests shadow only but the element has no shadow root — listener skipped.`
+          );
+        }
         continue;
       }
 

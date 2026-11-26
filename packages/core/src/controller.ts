@@ -618,7 +618,9 @@ export function useNativeElementControllers() {
     attachController(element as HTMLElement, controllerName).catch(error => {
       // Detached before ready — designed teardown, not a failure
       if (error?.name === 'ControllerAttachAborted') {
-        console.debug(`Controller "${controllerName}" attach aborted (element detached before ready)`);
+        if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+          console.debug(`Controller "${controllerName}" attach aborted (element detached before ready)`);
+        }
         return;
       }
       if (error?.message === `Controller "${controllerName}" not found in registry`) {

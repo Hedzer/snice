@@ -344,11 +344,13 @@ class Template {
               if (isSingleExpressionBinding) {
                 const hasStaticText = attrStrings.some((s) => s !== '');
                 if (expressionCount > 1 || hasStaticText) {
-                  console.warn(
-                    `snice: binding "${originalName}" takes a single expression; ` +
-                    `static text and extra interpolations are ignored. ` +
-                    `Use a plain attribute for string interpolation.`
-                  );
+                  if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+                    console.warn(
+                      `snice: binding "${originalName}" takes a single expression; ` +
+                      `static text and extra interpolations are ignored. ` +
+                      `Use a plain attribute for string interpolation.`
+                    );
+                  }
                 }
               }
 
@@ -661,14 +663,16 @@ function prepareTemplate(result: TemplateResult): Template {
             attrNamesForParts.push('value');
             htmlParts.push(`value="${marker}"`);
           } else {
-            const nearbyTemplate = (
-              str.slice(-40) + '${…}' + (strings[i + 1] ?? '').slice(0, 40)
-            ).replace(/\s+/g, ' ').trim();
-            throw new Error(
+            let message =
               'snice: expressions directly in opening tags are not supported; ' +
-              'use an explicit attribute, property, event, class, style, or named spread binding. ' +
-              `Near "${nearbyTemplate}".`
-            );
+              'use an explicit attribute, property, event, class, style, or named spread binding.';
+            if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+              const nearbyTemplate = (
+                str.slice(-40) + '${…}' + (strings[i + 1] ?? '').slice(0, 40)
+              ).replace(/\s+/g, ' ').trim();
+              message += ` Near "${nearbyTemplate}".`;
+            }
+            throw new Error(message);
           }
         }
       } else {
@@ -699,7 +703,10 @@ function prepareTemplate(result: TemplateResult): Template {
   try {
     tmpl = new Template(result, template, attrNamesForParts);
   } catch (error) {
-    throw contextualizeTemplatePreparationError(error, strings);
+    if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+      throw contextualizeTemplatePreparationError(error, strings);
+    }
+    throw error;
   }
   // Cache the template for reuse
   templateCache.set(strings, tmpl);
@@ -1242,10 +1249,12 @@ export class NodePart extends Part {
     }
     const definedKeys = newKeys.filter(key => key !== undefined);
     if (definedKeys.length > 0 && definedKeys.length !== newKeys.length) {
-      console.warn(
-        'snice: a list mixes keyed and unkeyed items. Identity falls back to position; ' +
-        'use repeat(items, { key, render }) for deterministic updates.'
-      );
+      if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+        console.warn(
+          'snice: a list mixes keyed and unkeyed items. Identity falls back to position; ' +
+          'use repeat(items, { key, render }) for deterministic updates.'
+        );
+      }
     }
     if (definedKeys.length > 0 && new Set(definedKeys).size !== definedKeys.length) {
       throw new Error('snice: a keyed list contains duplicate keys.');
@@ -2368,7 +2377,9 @@ export class EventPart extends Part {
       this.keyFilter = parseKeyboardFilter(keySpec);
     } else {
       this.eventName = eventSpec;
-      warnIfModifierMisuse(eventSpec);
+      if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+        warnIfModifierMisuse(eventSpec);
+      }
     }
   }
 

@@ -207,7 +207,9 @@ function performRender(
     // Non-differential rendering (string)
     if (options.differential === false) {
       if (typeof result !== 'string') {
-        console.warn('Render method with differential: false must return a string');
+        if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+          console.warn('Render method with differential: false must return a string');
+        }
         return;
       }
       const template = document.createElement('template');
@@ -231,7 +233,9 @@ function performRender(
 
     // Differential rendering (template)
     if (!isTemplateResult(result)) {
-      console.warn('Render method must return html`` template result');
+      if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+        console.warn('Render method must return html`` template result');
+      }
       return;
     }
 
@@ -546,7 +550,9 @@ export function applyStyles(element: HTMLElement): void {
     const values = Array.isArray(value) ? value : [value];
     for (const result of values) {
       if (isCSSResult(result)) staticResults.push(result);
-      else console.warn('Static styles must be a css`` result or an array of css`` results');
+      else if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+        console.warn('Static styles must be a css`` result or an array of css`` results');
+      }
     }
   }
   if (!stylesMethod && staticResults.length === 0) return;
@@ -568,7 +574,9 @@ export function applyStyles(element: HTMLElement): void {
     if (stylesMethod) {
       const result = stylesMethod.call(element);
       if (!isCSSResult(result)) {
-        console.warn('Styles method must return css`` template result');
+        if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+          console.warn('Styles method must return css`` template result');
+        }
         return;
       }
       allResults.push(result);

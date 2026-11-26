@@ -199,7 +199,9 @@ export function attachElementController(
 
   controllerBridge.attachController(element, value).catch((error: any) => {
     if (error?.name === 'ControllerAttachAborted') {
-      console.debug(`Controller "${label}" attach aborted (element detached before ready)`);
+      if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+        console.debug(`Controller "${label}" attach aborted (element detached before ready)`);
+      }
       return;
     }
     if (typeof value === 'string' && error?.message === `Controller "${value}" not found in registry`) {
@@ -225,7 +227,9 @@ export function attachPendingElementController(
 
   controllerBridge.attachController(element, pendingControllerClass).catch((error: any) => {
     if (error?.name === 'ControllerAttachAborted') {
-      console.debug(`Controller "${pendingLabel}" attach aborted (element detached before ready)`);
+      if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+        console.debug(`Controller "${pendingLabel}" attach aborted (element detached before ready)`);
+      }
       return;
     }
     console.error(`Failed to attach controller "${pendingLabel}":`, error);

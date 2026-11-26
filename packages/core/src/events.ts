@@ -105,9 +105,11 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
         if (options?.scope !== undefined) {
           const target = resolveScope(this as HTMLElement, options.scope);
           if (!target) {
-            console.warn(
-              `[snice/@dispatch] scope did not resolve for "${eventName}" — event not dispatched.`
-            );
+            if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
+              console.warn(
+                `[snice/@dispatch] scope did not resolve for "${eventName}" — event not dispatched.`
+              );
+            }
             return;
           }
           target.dispatchEvent(event);

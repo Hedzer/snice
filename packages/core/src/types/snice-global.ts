@@ -3,3 +3,7 @@ export interface SniceGlobal {
   pendingControllerAttachments: Map<string, Set<HTMLElement>>;
   controllerIdCounter: number;
 }
+
+declare global {
+  const __SNICE_DEV__: boolean | undefined;
+}

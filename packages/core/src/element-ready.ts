@@ -38,9 +38,13 @@ export async function waitForElementDefined(
     return;
   }
 
-  // Set up warning timer if not disabled
+  // Set up warning timer if not disabled (and only in dev mode)
   let warningTimer: any = null;
-  if (!DISABLE_ELEMENT_READY_WARNINGS) {
+  if (
+    (typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) &&
+    (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production') &&
+    !DISABLE_ELEMENT_READY_WARNINGS
+  ) {
     warningTimer = setTimeout(() => {
       console.warn(
         `Custom element <${tagName}> is taking longer than ${warningTimeout}ms to register. ` +
