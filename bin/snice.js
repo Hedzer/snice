@@ -524,7 +524,7 @@ async function probeDecoratorTransform(targetDir, add, projectPackage) {
       .join('\n');
     if (!bundle.includes('snice-doctor-probe-installed')) {
       add('error', 'decorator-transform',
-        'the project build does not preserve TC39 field decorators (@query/@state/@property), so Snice elements silently lose their decorated accessors; use the create-app build setup (unplugin-swc with decoratorVersion 2022-03 and useDefineForClassFields: false) or an equivalent decorator transform');
+        "the project build does not preserve TC39 field decorators (@query/@state/@property), so Snice elements silently lose their decorated accessors; add `snice()` from 'snice/vite' to your Vite plugins (or use an equivalent decorator transform such as unplugin-swc with decoratorVersion 2022-03 and useDefineForClassFields: false)");
     }
   } catch {
     // The probe only reports when a bundle could actually be inspected; a

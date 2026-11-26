@@ -284,7 +284,34 @@ describe('snice doctor decorator-transform probe', () => {
     const results = findings();
     expect(results).toHaveLength(1);
     expect(results[0].severity).toBe('error');
-    expect(results[0].message).toContain('unplugin-swc');
+    expect(results[0].message).toContain('snice/vite');
+  }, 60000);
+
+  it('passes a snice/vite-configured build that preserves field decorators', () => {
+    linkDependency('vite');
+    linkDependency('esbuild');
+    write('package.json', JSON.stringify({
+      name: 'doctor-fixture',
+      version: '0.0.1',
+      dependencies: { snice: '^7.0.0' },
+      devDependencies: { vite: '^5.0.0' }
+    }));
+    write('vite.config.ts', [
+      "import { defineConfig } from 'vite';",
+      "import snice from 'snice/vite';",
+      'export default defineConfig({',
+      '  plugins: [snice()]',
+      '});'
+    ].join('\n'));
+    write('src/main.ts', [
+      "import { element, query, html } from 'snice';",
+      "@element('probe-app')",
+      'class ProbeApp extends HTMLElement {',
+      "  @query('.target') $target!: HTMLElement;",
+      '  render() { return html`<div class="target"></div>`; }',
+      '}'
+    ].join('\n'));
+    expect(findings()).toEqual([]);
   }, 60000);
 
   it('passes a SWC-configured build that preserves field decorators', () => {

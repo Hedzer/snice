@@ -986,6 +986,7 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 - [Queries](./docs/queries.md) - Resolving elements with `@query` and `@queryAll`
 - [Styling](./docs/styling.md) - Scoped CSS, host styling, and icons
 - [Theming](./docs/theme.md) - Design tokens, surfaces, and dark mode
+- [Bundler Plugin](./docs/bundler-plugin.md) - `snice/vite` and `snice/rollup` decorator lowering, template/CSS slimming, and cache-tiered builds
 - [CLI](./docs/cli.md) - Scaffolding, diagnostics, source validation, and AI setup
 - [Utilities](./docs/utilities.md) - Method decorators, escaping, durations, scroll lock, controller helpers
 - [Testing](./docs/testing.md) - Waiting on `ready` / `rendered`, asserting events, swapping controllers

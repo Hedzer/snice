@@ -1865,6 +1865,7 @@ const docsManifest = [
     { id: 'theme', file: 'theme.md', title: 'Theming' },
   ]},
   { group: 'Tooling', docs: [
+    { id: 'bundler-plugin', file: 'bundler-plugin.md', title: 'Bundler Plugin' },
     { id: 'cli', file: 'cli.md', title: 'CLI' },
     { id: 'testing', file: 'testing.md', title: 'Testing' },
     { id: 'utilities', file: 'utilities.md', title: 'Utilities' },

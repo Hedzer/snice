@@ -71,7 +71,7 @@ type-checks with `npx tsc -p references/tsconfig.kitchen-sink.json` after
   handler. Do not call bare `fetch`, import the Router into the controller, or
   invent another context-injection channel.
 - Preserve native form, keyboard, focus, and accessibility behavior.
-- Use the project compiler configuration for TC39 decorators.
+- Use `snice()` from `snice/vite` (or `snice/rollup`; see `bundler-plugin.md`) for TC39 decorators, slim bundles, and cache-tiered builds.
 - Do not edit generated distribution, adapter, metadata, or website output.
 
 Run `npx snice check` after changing Snice code. It combines package,

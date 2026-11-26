@@ -1,23 +1,10 @@
 import { defineConfig } from 'vite';
-import swc from 'unplugin-swc';
+import snice from 'snice/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   plugins: [
-    swc.vite({
-      jsc: {
-        parser: {
-          syntax: 'typescript',
-          decorators: true,
-        },
-        target: 'es2022',
-        transform: {
-          decoratorMetadata: false,
-          decoratorVersion: '2022-03',
-          useDefineForClassFields: false,
-        },
-      },
-    }),
+    snice(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['vite.svg', 'icons/*.png'],
@@ -75,16 +62,8 @@ export default defineConfig({
     }),
   ],
   build: {
-    target: 'es2015',
     minify: 'terser',
     cssMinify: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['snice'],
-        },
-      },
-    },
     sourcemap: true,
     chunkSizeWarningLimit: 500,
   },

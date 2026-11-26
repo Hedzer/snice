@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { mkdtemp, rm, readFile } from 'fs/promises';
+import { mkdtemp, rm, readFile, readdir } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { existsSync } from 'fs';
@@ -47,11 +47,27 @@ describe('CLI create-app command', () => {
     expect(existsSync(join(appPath, 'src'))).toBe(true);
     expect(existsSync(join(appPath, 'src/main.ts'))).toBe(true);
     
-    // Verify package.json has correct name
+    // Verify package.json has correct name and uses snice/vite instead of unplugin-swc
     const packageJson = JSON.parse(
       await readFile(join(appPath, 'package.json'), 'utf-8')
     );
     expect(packageJson.name).toBe(appName);
+    expect(packageJson.devDependencies).not.toHaveProperty('unplugin-swc');
+    expect(packageJson.devDependencies).toHaveProperty('terser');
+
+    const viteCfg = await readFile(join(appPath, 'vite.config.ts'), 'utf-8');
+    const vitestCfg = await readFile(join(appPath, 'vitest.config.ts'), 'utf-8');
+    expect(viteCfg).toContain("import snice from 'snice/vite'");
+    expect(viteCfg).toContain('snice()');
+    expect(viteCfg).toContain('VitePWA(');
+    expect(viteCfg).toContain("minify: 'terser'");
+    expect(viteCfg).toContain('sourcemap: true');
+    expect(viteCfg).not.toContain('unplugin-swc');
+    expect(viteCfg).not.toContain("target: 'es2015'");
+    expect(viteCfg).not.toContain('manualChunks');
+    expect(vitestCfg).toContain("import snice from 'snice/vite'");
+    expect(vitestCfg).toContain('snice()');
+    expect(vitestCfg).not.toContain('unplugin-swc');
     
     // Verify main.ts doesn't have template placeholders
     const mainTs = await readFile(join(appPath, 'src/main.ts'), 'utf-8');
@@ -84,6 +100,11 @@ describe('CLI create-app command', () => {
       timeout: 30000
     });
 
+    await execAsync('npm test', {
+      cwd: appPath,
+      timeout: 60000
+    });
+
     const validation = await execAsync(
       `node ${join(process.cwd(), 'bin/snice.js')} check . --json`,
       { cwd: appPath, timeout: 30000 }
@@ -94,7 +115,7 @@ describe('CLI create-app command', () => {
 
     // Build the app
     console.log('Building app...');
-    const { stderr } = await execAsync('npm run build', { 
+    await execAsync('npm run build', { 
       cwd: appPath,
       timeout: 30000 // 30 second timeout for build
     });
@@ -103,9 +124,15 @@ describe('CLI create-app command', () => {
     expect(existsSync(join(appPath, 'dist'))).toBe(true);
     expect(existsSync(join(appPath, 'dist/index.html'))).toBe(true);
     
-    // Verify the build output contains the compiled JS
-    const distFiles = await execAsync('ls -la dist/assets/', { cwd: appPath });
-    expect(distFiles.stdout).toContain('.js');
+    // Verify volatility-tiered caching chunks and zero SWC inline decorator helpers
+    const assetsDir = join(appPath, 'dist/assets');
+    const assetFiles = await readdir(assetsDir);
+    const jsAssets = assetFiles.filter((f) => f.endsWith('.js'));
+    expect(jsAssets.some((f) => f.startsWith('snice-runtime-'))).toBe(true);
+    for (const file of jsAssets) {
+      const text = await readFile(join(assetsDir, file), 'utf-8');
+      expect(text).not.toContain('applyDecs2203RFactory');
+    }
   }, 240000);
   
   it('should reject invalid app names', async () => {
@@ -251,6 +278,13 @@ describe('CLI create-app command', () => {
     expect(packageJson.dependencies).toHaveProperty('react-dom');
     expect(packageJson.dependencies).toHaveProperty('snice');
 
+    // Verify vite.config.ts uses snice() alongside react()
+    const reactViteCfg = await readFile(join(appPath, 'vite.config.ts'), 'utf-8');
+    expect(reactViteCfg).toContain("import snice from 'snice/vite'");
+    expect(reactViteCfg).toContain('plugins: [react(), snice()]');
+    expect(reactViteCfg).not.toContain("target: 'es2015'");
+    expect(reactViteCfg).not.toContain('manualChunks');
+
     // Verify tsconfig has JSX config
     const tsconfig = JSON.parse(
       await readFile(join(appPath, 'tsconfig.json'), 'utf-8')
@@ -278,6 +312,11 @@ describe('CLI create-app command', () => {
       timeout: 30000
     });
 
+    await execAsync('npm test', {
+      cwd: appPath,
+      timeout: 60000
+    });
+
     const validation = await execAsync(
       `node ${join(process.cwd(), 'bin/snice.js')} check . --json`,
       { cwd: appPath, timeout: 30000 }
@@ -285,7 +324,7 @@ describe('CLI create-app command', () => {
     expect(JSON.parse(validation.stdout).ok).toBe(true);
 
     // Build the app
-    const { stderr } = await execAsync('npm run build', {
+    await execAsync('npm run build', {
       cwd: appPath,
       timeout: 30000
     });
@@ -294,9 +333,16 @@ describe('CLI create-app command', () => {
     expect(existsSync(join(appPath, 'dist'))).toBe(true);
     expect(existsSync(join(appPath, 'dist/index.html'))).toBe(true);
 
-    // Verify the build output contains compiled JS
-    const distFiles = await execAsync('ls -la dist/assets/', { cwd: appPath });
-    expect(distFiles.stdout).toContain('.js');
+    // Verify volatility-tiered chunks (vendor-react + snice-runtime) and zero SWC inline helpers
+    const assetsDir = join(appPath, 'dist/assets');
+    const assetFiles = await readdir(assetsDir);
+    const jsAssets = assetFiles.filter((f) => f.endsWith('.js'));
+    expect(jsAssets.some((f) => f.startsWith('vendor-react-'))).toBe(true);
+    expect(jsAssets.some((f) => f.startsWith('snice-runtime-'))).toBe(true);
+    for (const file of jsAssets) {
+      const text = await readFile(join(assetsDir, file), 'utf-8');
+      expect(text).not.toContain('applyDecs2203RFactory');
+    }
   }, 240000);
 
   it('should include the skill in the react template', async () => {

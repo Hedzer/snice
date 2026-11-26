@@ -338,6 +338,16 @@ Per-component docs live in `docs/ai/components/<name>.md`
 <script src="https://cdn.snice.dev/components/snice-button.min.js"></script>
 ```
 
+### Bundler Plugin (`snice/vite` & `snice/rollup`)
+
+```typescript
+import { defineConfig } from 'vite';
+import snice from 'snice/vite'; // or 'snice/rollup' for Rollup
+export default defineConfig({ plugins: [snice()] });
+```
+
+Options: `decorators` (true), `minifyTemplates` (!dev), `precompileTemplates` (false), `minifyCss` (!dev), `stripCssFallbacks` ('auto' | boolean), `pruneTheme` (false), `themeSafelist` (`(string | RegExp)[]`), `dev`, `caching` (volatility-tiered `snice-runtime`, `vendor-react`, `snice-theme`, `snice-components`, heavy component chunks), `target` ('es2022'), `report`. Replaces `unplugin-swc` in Vite & Vitest.
+
 ### React Adapters
 
 ```jsx

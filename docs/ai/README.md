@@ -56,6 +56,7 @@ for depth; read the aggregates when you want the whole surface at once.
 - `theme.md` - Tokens, surfaces, dark mode
 
 *Tooling:*
+- `bundler-plugin.md` - `snice/vite` & `snice/rollup` plugin options, decorator lowering, CSS/template slimming, caching tiers
 - `cli.md` - `create-app`, `init-ai`, `check`, `doctor`, `validate`, `build-component`
 - `testing.md` - `ready` / `rendered`, asserting events, swapping controllers
 - `utilities.md` - `@debounce`/`@throttle`/`@once`/`@memoize`, escaping, durations, scroll lock, controller helpers

@@ -70,10 +70,17 @@ class MyCounter extends HTMLElement {
 
 ## Usage Modes
 
-### npm (bundled apps)
+### npm (bundled apps — Vite / Rollup plugin)
 ```typescript
+// vite.config.ts
+import { defineConfig } from 'vite';
+import snice from 'snice/vite';
+export default defineConfig({ plugins: [snice()] });
+
+// app entry
 import 'snice/components/button/snice-button';
 ```
+`snice/vite` and `snice/rollup` lower Snice decorators (replacing `unplugin-swc`), minify `html``/svg``/css``, strip allowlisted `var(--snice-*, fallback)` when `theme.css` is imported, fold `__SNICE_DEV__`, and emit volatility-tiered cache chunks (`snice-runtime`, `vendor-react`, `snice-theme`, `snice-components`).
 
 ### CDN (no build step)
 ```html

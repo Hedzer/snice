@@ -1,18 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import snice from 'snice/vite';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), snice()],
   build: {
-    target: 'es2015',
     sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          snice: ['snice']
-        }
-      }
-    }
-  }
+  },
 });

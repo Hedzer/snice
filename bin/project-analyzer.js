@@ -1140,11 +1140,16 @@ const RULE_DEFINITIONS = [
       for (const entry of findImports(context.source)) {
         const path = entry.path;
         if (!path.startsWith('snice/') || path.startsWith('snice/components/')) continue;
-        if (path === 'snice/symbols' || path === 'snice/transitions') continue;
+        if (
+          path === 'snice/symbols' ||
+          path === 'snice/transitions' ||
+          path === 'snice/vite' ||
+          path === 'snice/rollup'
+        ) continue;
         if (REACT_MODULE_PATHS.has(path)) continue;
         context.report(entry.index, {
           message: `The module "${path}" is not a released Snice package path.`,
-          fix: "Use an exact package export: 'snice', 'snice/symbols', 'snice/transitions', 'snice/react' or a documented snice/react/<module> deep import, or a snice/components/<name>/<module> path."
+          fix: "Use an exact package export: 'snice', 'snice/symbols', 'snice/transitions', 'snice/vite', 'snice/rollup', 'snice/react' or a documented snice/react/<module> deep import, or a snice/components/<name>/<module> path."
         });
       }
     }

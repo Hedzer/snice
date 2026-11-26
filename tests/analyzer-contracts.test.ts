@@ -314,6 +314,13 @@ describe('React red-team regressions', () => {
     expect(analyzeSource(source, 'src/local.tsx').filter(diagnostic => diagnostic.severity === 'error'))
       .toEqual([]);
   });
+
+  it('allows snice/vite and snice/rollup bundler plugin imports', () => {
+    const viteCfg = "import { defineConfig } from 'vite';\nimport snice from 'snice/vite';\nexport default defineConfig({ plugins: [snice()] });\n";
+    const rollupCfg = "import snice from 'snice/rollup';\nexport default { plugins: [snice()] };\n";
+    expect(analyzeSource(viteCfg, 'vite.config.ts').filter(d => d.severity === 'error')).toEqual([]);
+    expect(analyzeSource(rollupCfg, 'rollup.config.js').filter(d => d.severity === 'error')).toEqual([]);
+  });
 });
 
 describe('shipped templates', () => {
