@@ -286,6 +286,10 @@ describe('Every public export is documented', () => {
     'contextProperty',           // deprecated in favour of the @context decorator
     'getSymbol',                 // symbol registry helper
     'IS_CONTROLLER_INSTANCE',    // marker symbol
+    '__sniceMeta',               // compiler helper: lowered class/element metadata registration
+    '__sniceField',              // compiler helper: lowered field/property/query/watch registration
+    '__sniceMethod',             // compiler helper: lowered method/render/styles/event registration
+    '__sniceTemplate',           // compiler helper: pre-compiled template descriptor wrapper
   ]);
 
   const exported = (() => {

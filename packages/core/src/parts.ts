@@ -552,21 +552,15 @@ interface TemplatePart {
   attrStrings?: string[]; // Static string segments for attribute/comment interpolation
 }
 
-/**
- * Prepare a template for rendering
- *
- * Uses state tracking to correctly handle multi-interpolation in attributes.
- * Tracks whether we're inside a tag and inside a quoted attribute value.
- */
-function prepareTemplate(result: TemplateResult): Template {
-  // Check cache first
-  const { strings } = result;
-  const cached = templateCache.get(strings);
-  if (cached) {
-    return cached;
-  }
+let _quasiScanCount = 0;
 
-  // Build HTML with markers and extract original attribute names
+/** @internal Count of runtime char-by-char quasi scans (for pre-compilation verification). */
+export function _getQuasiScanCount(): number {
+  return _quasiScanCount;
+}
+
+function scanTemplateQuasis(strings: TemplateStringsArray): { html: string; attrNamesForParts: string[] } {
+  _quasiScanCount++;
   const htmlParts: string[] = [];
   const attrNamesForParts: string[] = [];
 
@@ -683,7 +677,43 @@ function prepareTemplate(result: TemplateResult): Template {
     }
   }
 
-  const html = htmlParts.join('');
+  return { html: htmlParts.join(''), attrNamesForParts };
+}
+
+/**
+ * Prepare a template for rendering
+ *
+ * Uses state tracking to correctly handle multi-interpolation in attributes.
+ * Tracks whether we're inside a tag and inside a quoted attribute value.
+ */
+function prepareTemplate(result: TemplateResult): Template {
+  // Check cache first
+  const { strings } = result;
+  const cached = templateCache.get(strings);
+  if (cached) {
+    return cached;
+  }
+
+  let html: string;
+  let attrNamesForParts: string[];
+
+  if (result.compiled) {
+    const { kinds, attrs } = result.compiled;
+    const htmlParts: string[] = [];
+    for (let i = 0; i < strings.length; i++) {
+      htmlParts.push(strings[i]);
+      if (i < kinds.length) {
+        const k = kinds[i];
+        htmlParts.push(k === 0 ? nodeMarker : k === 2 ? `value="${marker}"` : marker);
+      }
+    }
+    html = htmlParts.join('');
+    attrNamesForParts = attrs as string[];
+  } else {
+    const scanned = scanTemplateQuasis(strings);
+    html = scanned.html;
+    attrNamesForParts = scanned.attrNamesForParts;
+  }
 
   const template = document.createElement('template');
   if (result.svg) {

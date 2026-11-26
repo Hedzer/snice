@@ -24,8 +24,8 @@ export type { RequestRoute, RequestRouteMap, CreateRequestHandlerOptions } from 
 export { IS_CONTROLLER_INSTANCE, getSymbol } from './symbols';
 
 // v3.0.0 new template system
-export { html, svg, css, nothing, unsafeHTML } from './template';
-export type { TemplateResult, CSSResult, Nothing, UnsafeHTML } from './template';
+export { html, svg, css, nothing, unsafeHTML, __sniceTemplate } from './template';
+export type { TemplateResult, CompiledTemplateDescriptor, CSSResult, Nothing, UnsafeHTML } from './template';
 export { render, styles, setStrictRenderErrors } from './render';
 export { noChange, live } from './parts';
 export type { NoChange } from './parts';

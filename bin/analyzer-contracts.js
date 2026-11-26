@@ -21,12 +21,13 @@ export const ANALYZER_CONTRACTS = {
     "componentModules": 188,
     "componentUtilityModules": 33,
     "reactWrappers": 193,
-    "rootExports": 122
+    "rootExports": 124
   },
   "rootExports": [
     "AdoptedOptions",
     "AppContext",
     "CSSResult",
+    "CompiledTemplateDescriptor",
     "Context",
     "ContextAwareFetcher",
     "ContextOptions",
@@ -82,6 +83,7 @@ export const ANALYZER_CONTRACTS = {
     "__sniceField",
     "__sniceMeta",
     "__sniceMethod",
+    "__sniceTemplate",
     "adopted",
     "applyElementFunctionality",
     "attachController",

@@ -6,6 +6,7 @@ import { transformDecorators } from './decorators';
 import { replaceSniceDevIdentifier } from './dev-define';
 import { buildBundleReport, formatBuildReport } from './report';
 import { TC39_RUNTIME_CODE, TC39_SPECIFIER, TC39_VIRTUAL_ID } from './tc39-fallback-runtime';
+import { transformTemplates } from './templates';
 import { validateOptions, type SniceCachingOptions, type SnicePluginOptions } from './types';
 
 export interface SniceRuntimeEnv {
@@ -78,6 +79,23 @@ export function createSniceCorePlugin(
         if (decResult) {
           currentCode = decResult.code;
           currentMap = decResult.map;
+          changed = true;
+        }
+      }
+
+      // Pass B: Build-time html`` / svg`` template minification & opt-in pre-compilation.
+      const shouldMinifyTemplates =
+        options.minifyTemplates !== undefined ? options.minifyTemplates : !runtimeEnv.isDev;
+      const shouldPrecompileTemplates = options.precompileTemplates === true;
+      if (shouldMinifyTemplates || shouldPrecompileTemplates) {
+        const tmplResult = transformTemplates(currentCode, {
+          id: cleanId,
+          minifyTemplates: shouldMinifyTemplates,
+          precompileTemplates: shouldPrecompileTemplates,
+        });
+        if (tmplResult) {
+          currentCode = tmplResult.code;
+          currentMap = tmplResult.map;
           changed = true;
         }
       }

@@ -17,6 +17,19 @@ const cssResultCache = /*#__PURE__*/ new WeakMap<TemplateStringsArray, CSSResult
 const interpolatedCssResultCache = /*#__PURE__*/ new WeakMap<TemplateStringsArray, { cssText: string; result: CSSResult }>();
 
 /**
+ * Pre-compiled build-time descriptor produced by `snice/vite` / `snice/rollup`
+ * when `precompileTemplates: true`. Allows `parts.ts` to skip the runtime
+ * char-by-char quasi scanner while assembling markers with the live runtime
+ * `templateMarker`.
+ */
+export interface CompiledTemplateDescriptor {
+  /** Marker kind per interpolation: 0 = nodeMarker, 1 = marker, 2 = value="marker" */
+  readonly kinds: readonly (0 | 1 | 2)[];
+  /** Original attribute name per interpolation ('' for node/comment slots) */
+  readonly attrs: readonly string[];
+}
+
+/**
  * Result of html`` tagged template
  * Contains static strings and dynamic values for differential rendering
  */
@@ -26,6 +39,8 @@ export interface TemplateResult {
   readonly values: readonly any[];
   /** True when created by svg`` — parses in the SVG namespace */
   readonly svg?: boolean;
+  /** Optional build-time pre-compiled descriptor */
+  readonly compiled?: CompiledTemplateDescriptor;
 }
 
 /**
@@ -75,6 +90,21 @@ export function svg(strings: TemplateStringsArray, ...values: any[]): TemplateRe
     values,
     svg: true
   };
+}
+
+/**
+ * Runtime constructor for build-time pre-compiled templates (`precompileTemplates: true`).
+ * Preserves stable per-callsite `strings` identity and `svg` namespace.
+ */
+export function __sniceTemplate(
+  strings: TemplateStringsArray,
+  values: readonly any[],
+  compiled: CompiledTemplateDescriptor,
+  isSvg?: boolean
+): TemplateResult {
+  return isSvg
+    ? { _$litType$: HTML_RESULT, strings, values, svg: true, compiled }
+    : { _$litType$: HTML_RESULT, strings, values, compiled };
 }
 
 /**
