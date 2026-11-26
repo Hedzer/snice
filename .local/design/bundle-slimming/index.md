@@ -1,8 +1,8 @@
 # Bundle Slimming & Cache-Friendly Plugin — Design Index
 
 - **Design ID**: `bundle-slimming`
-- **Status / Current Phase**: `story finalization` complete — all 4 user decisions (`Q-1`..`Q-4`) settled and all 11 whole stories (`BS-01`..`BS-11`) authored, reviewed by independent A/B/C/D advisory critics, refined, and placed in `.local/board/ready/`.
-- **Next Unfinished Action**: Review `.gitignore` narrow exception for tracking `.local/design/**` (keeping `.local/board/`, `.local/cards/`, and `.local/gauntlet/` ignored) and commit the durable design artifacts when ready. Implementation stories are ready in `.local/board/ready/` for a separately invoked implementation workflow.
+- **Status / Current Phase**: `complete` — all 11 stories (`BS-01`..`BS-11`) implemented, verified, committed on `main`, and moved to `.local/board/done/`.
+- **Next Unfinished Action**: None (all `BS-01`..`BS-11` stories and verification gates complete).
 
 ---
 
@@ -59,21 +59,21 @@
 
 ## Story Decomposition & Linked Board Stories
 
-All 11 stories are self-contained, critic-reviewed (A/B/C/D), and saved under `.local/board/ready/`:
+All 11 stories are implemented, verified, committed on `main`, and moved under `.local/board/done/`:
 
-| Story ID | Title | Pillar | Board Status | Linked Story Path | Prerequisites |
+| Story ID | Title | Pillar | Board Status | Commit | Linked Story Path |
 |---|---|---|---|---|---|
-| **BS-01** | Core side-effect elimination, `"sideEffects"` declaration & `css()` stylesheet caching | Tiny | `ready` | `.local/board/ready/BS-01.md` | None |
-| **BS-02** | Acyclic lifecycle-hook inversion & core ESM tree-shaking | Tiny | `ready` | `.local/board/ready/BS-02.md` | `BS-01` |
-| **BS-03** | Production `__DEV__` diagnostic gating & dead-code-eliminable warnings | Tiny | `ready` | `.local/board/ready/BS-03.md` | `BS-01`, `BS-02` (serialized on `main`) |
-| **BS-04** | Component shared-helper decoupling (`utils.ts` icon split & `pdf-viewer` lazy loader) | Tiny | `ready` | `.local/board/ready/BS-04.md` | None (parallel with `BS-01`..`BS-03`) |
-| **BS-05** | Snice bundler plugin scaffold, Vite/Rollup integration & deterministic cache-boundary chunking | Cache + Foundation | `ready` | `.local/board/ready/BS-05.md` | `BS-01` |
-| **BS-06** | Build-time Snice decorator lowering & TC39 2022-03 fallback | Tiny | `ready` | `.local/board/ready/BS-06.md` | `BS-02`, `BS-05` |
-| **BS-07** | Build-time `html\`...\`` / `svg\`...\`` template minification & opt-in pre-compiled descriptors | Tiny | `ready` | `.local/board/ready/BS-07.md` | `BS-02`, `BS-05` |
-| **BS-08** | Build-time CSS pipeline (inline `css\`...\`` minification, `.css?inline` folding, allowlisted `var()` stripping & opt-in `pruneTheme`) | Tiny + Cache | `ready` | `.local/board/ready/BS-08.md` | `BS-01`, `BS-05` |
-| **BS-09** | Snice own distribution & CDN build dogfooding + size/cache regression suite | Tiny + Cache | `ready` | `.local/board/ready/BS-09.md` | `BS-02`, `BS-03`, `BS-04`, `BS-05`, `BS-06`, `BS-07`, `BS-08` |
-| **BS-10** | `create-app` templates, `snice check`/`doctor` integration & human+AI documentation | Ergonomics + Cache | `ready` | `.local/board/ready/BS-10.md` | `BS-05`, `BS-06`, `BS-07`, `BS-08` |
-| **BS-11** | Modular `snice-table` feature/cell tree-shaking & plugin-guided stripping | Tiny | `ready` | `.local/board/ready/BS-11.md` | `BS-03`, `BS-05`, `BS-10` (doc sequencing) |
+| **BS-01** | Core side-effect elimination, `"sideEffects"` declaration & `css()` stylesheet caching | Tiny | `done` | `8935f8be`, `44e4461b` | `.local/board/done/BS-01.md` |
+| **BS-02** | Acyclic lifecycle-hook inversion & core ESM tree-shaking | Tiny | `done` | `f9e37730` | `.local/board/done/BS-02.md` |
+| **BS-03** | Production `__DEV__` diagnostic gating & dead-code-eliminable warnings | Tiny | `done` | `ff64358e` | `.local/board/done/BS-03.md` |
+| **BS-04** | Component shared-helper decoupling (`utils.ts` icon split & `pdf-viewer` lazy loader) | Tiny | `done` | `5bcaad0b` | `.local/board/done/BS-04.md` |
+| **BS-05** | Snice bundler plugin scaffold, Vite/Rollup integration & deterministic cache-boundary chunking | Cache + Foundation | `done` | `db3cb3e9` | `.local/board/done/BS-05.md` |
+| **BS-06** | Build-time Snice decorator lowering & TC39 2022-03 fallback | Tiny | `done` | `162613f5` | `.local/board/done/BS-06.md` |
+| **BS-07** | Build-time `html\`...\`` / `svg\`...\`` template minification & opt-in pre-compiled descriptors | Tiny | `done` | `cf8ddac9` | `.local/board/done/BS-07.md` |
+| **BS-08** | Build-time CSS pipeline (inline `css\`...\`` minification, `.css?inline` folding, allowlisted `var()` stripping & opt-in `pruneTheme`) | Tiny + Cache | `done` | `1dc44352` | `.local/board/done/BS-08.md` |
+| **BS-09** | Snice own distribution & CDN build dogfooding + size/cache regression suite | Tiny + Cache | `done` | `ce82fe65` | `.local/board/done/BS-09.md` |
+| **BS-10** | `create-app` templates, `snice check`/`doctor` integration & human+AI documentation | Ergonomics + Cache | `done` | `e7e7ef1d` | `.local/board/done/BS-10.md` |
+| **BS-11** | Modular `snice-table` feature/cell tree-shaking & plugin-guided stripping | Tiny | `done` | `ded6b364` | `.local/board/done/BS-11.md` |
 
 ---
 

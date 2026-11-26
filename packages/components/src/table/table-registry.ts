@@ -24,15 +24,11 @@ const warnedCells = new Set<string>();
 const warnedFeatures = new Set<string>();
 
 /**
- * Canonical cell type and documented alias → custom element tag name.
- * Shared between `snice-table` and `snice-row`.
+ * Canonical cell type → custom element tag name (matching `snice-table.getCellTagName`).
  */
 export const TABLE_CELL_TAG_MAP: Readonly<Record<string, string>> = {
   text: 'snice-cell-text',
   number: 'snice-cell-number',
-  accounting: 'snice-cell-number',
-  scientific: 'snice-cell-number',
-  fraction: 'snice-cell-number',
   date: 'snice-cell-date',
   boolean: 'snice-cell-boolean',
   rating: 'snice-cell-rating',
@@ -43,26 +39,36 @@ export const TABLE_CELL_TAG_MAP: Readonly<Record<string, string>> = {
   percentage: 'snice-cell-percentage',
   percent: 'snice-cell-percentage',
   tag: 'snice-cell-tag',
-  tags: 'snice-cell-tag',
-  badge: 'snice-cell-tag',
-  badges: 'snice-cell-tag',
   status: 'snice-cell-status',
   actions: 'snice-cell-actions',
   link: 'snice-cell-link',
-  url: 'snice-cell-link',
   email: 'snice-cell-email',
   phone: 'snice-cell-phone',
-  tel: 'snice-cell-phone',
-  telephone: 'snice-cell-phone',
   color: 'snice-cell-color',
   location: 'snice-cell-location',
+  json: 'snice-cell-json',
+  currency: 'snice-cell-currency',
+  image: 'snice-cell-image',
+};
+
+/**
+ * Extended declarative `<snice-row>` aliases (preserving `<snice-table>`'s
+ * direct `<snice-cell>` handling for `fraction`/`accounting`/`scientific`).
+ */
+export const ROW_CELL_ALIAS_MAP: Readonly<Record<string, string>> = {
+  accounting: 'snice-cell-number',
+  scientific: 'snice-cell-number',
+  fraction: 'snice-cell-number',
+  tags: 'snice-cell-tag',
+  badge: 'snice-cell-tag',
+  badges: 'snice-cell-tag',
+  url: 'snice-cell-link',
+  tel: 'snice-cell-phone',
+  telephone: 'snice-cell-phone',
   address: 'snice-cell-location',
   coordinates: 'snice-cell-location',
-  json: 'snice-cell-json',
   object: 'snice-cell-json',
-  currency: 'snice-cell-currency',
   money: 'snice-cell-currency',
-  image: 'snice-cell-image',
   avatar: 'snice-cell-image',
   thumbnail: 'snice-cell-image',
 };
@@ -70,9 +76,9 @@ export const TABLE_CELL_TAG_MAP: Readonly<Record<string, string>> = {
 /**
  * Resolve a column type or alias to its custom element tag name (or `'snice-cell'` for unknown/custom).
  */
-export function resolveCellTagName(type: string | undefined): string {
+export function resolveCellTagName(type: string | undefined, includeRowAliases = false): string {
   if (!type) return 'snice-cell';
-  return TABLE_CELL_TAG_MAP[type] ?? 'snice-cell';
+  return TABLE_CELL_TAG_MAP[type] ?? (includeRowAliases ? ROW_CELL_ALIAS_MAP[type] : undefined) ?? 'snice-cell';
 }
 
 /**
@@ -81,8 +87,8 @@ export function resolveCellTagName(type: string | undefined): string {
  * or plugin-guided stripping), falls back safely to `'snice-cell-text'` and emits
  * a foldable dev-only warning once per missing cell type.
  */
-export function getRegisteredCellTagName(type: string | undefined): string {
-  const tag = resolveCellTagName(type);
+export function getRegisteredCellTagName(type: string | undefined, includeRowAliases = false): string {
+  const tag = resolveCellTagName(type, includeRowAliases);
   if (tag === 'snice-cell' || tag === 'snice-cell-text') return tag;
   if (typeof customElements !== 'undefined' && customElements.get(tag)) {
     return tag;

@@ -266,7 +266,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
 
   private getCellComponent(type: string | undefined): string {
     if (type === 'custom') return 'snice-cell';
-    return getRegisteredCellTagName(type);
+    return getRegisteredCellTagName(type, true);
   }
 
   private getCellStyles(column: ColumnDefinition): string {

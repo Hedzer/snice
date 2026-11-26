@@ -15,14 +15,15 @@ describe('BS-11: Modular snice-table runtime behavior, native fallbacks, gracefu
 
   it('AC-5(unit): resolves canonical cells and aliases, falls back to snice-cell-text with dev-only warning when unregistered, and provides non-throwing feature no-op stubs', async () => {
     expect(resolveCellTagName('percent')).toBe('snice-cell-percentage');
-    expect(resolveCellTagName('accounting')).toBe('snice-cell-number');
-    expect(resolveCellTagName('url')).toBe('snice-cell-link');
-    expect(resolveCellTagName('money')).toBe('snice-cell-currency');
-    expect(resolveCellTagName('tags')).toBe('snice-cell-tag');
-    expect(resolveCellTagName('avatar')).toBe('snice-cell-image');
-    expect(resolveCellTagName('tel')).toBe('snice-cell-phone');
-    expect(resolveCellTagName('object')).toBe('snice-cell-json');
-    expect(resolveCellTagName('address')).toBe('snice-cell-location');
+    expect(resolveCellTagName('fraction')).toBe('snice-cell');
+    expect(resolveCellTagName('accounting', true)).toBe('snice-cell-number');
+    expect(resolveCellTagName('url', true)).toBe('snice-cell-link');
+    expect(resolveCellTagName('money', true)).toBe('snice-cell-currency');
+    expect(resolveCellTagName('tags', true)).toBe('snice-cell-tag');
+    expect(resolveCellTagName('avatar', true)).toBe('snice-cell-image');
+    expect(resolveCellTagName('tel', true)).toBe('snice-cell-phone');
+    expect(resolveCellTagName('object', true)).toBe('snice-cell-json');
+    expect(resolveCellTagName('address', true)).toBe('snice-cell-location');
 
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
