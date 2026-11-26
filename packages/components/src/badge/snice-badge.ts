@@ -1,7 +1,7 @@
 import { element, property, watch, query, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-badge.css?inline';
 import type { BadgeVariant, BadgePosition, BadgeSize, SniceBadgeElement } from './snice-badge.types';
-import { pickContrastColor, onThemeChange } from '../utils';
+import { pickContrastColor, onThemeChange } from '../theme-utils';
 
 @element('snice-badge')
 export class SniceBadge extends HTMLElement implements SniceBadgeElement {

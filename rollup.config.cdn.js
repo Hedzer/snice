@@ -208,6 +208,7 @@ export function createCdnBuild(componentName, options = {}) {
       output: {
         file: `${outputDir}/snice-${componentName}.js`,
         format: 'iife',
+        inlineDynamicImports: true,
         name: jsIdentifier,
         banner,
         sourcemap: true,
@@ -223,6 +224,7 @@ export function createCdnBuild(componentName, options = {}) {
         output: {
           file: `${outputDir}/snice-${componentName}.min.js`,
           format: 'iife',
+          inlineDynamicImports: true,
           name: jsIdentifier,
           banner,
           sourcemap: true,
@@ -243,6 +245,7 @@ export function createCdnBuild(componentName, options = {}) {
       output: {
         file: `${outputDir}/snice-${componentName}.esm.js`,
         format: 'es',
+        inlineDynamicImports: true,
         banner,
         sourcemap: true,
       }
@@ -255,6 +258,7 @@ export function createCdnBuild(componentName, options = {}) {
         output: {
           file: `${outputDir}/snice-${componentName}.esm.min.js`,
           format: 'es',
+          inlineDynamicImports: true,
           banner,
           sourcemap: true,
           plugins: [terser(TERSER_OPTS)],

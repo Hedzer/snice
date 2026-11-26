@@ -1,6 +1,6 @@
 import { element, property, render, styles, dispatch, ready, dispose, watch, query, html, css } from 'snice';
 import cssContent from './snice-sankey.css?inline';
-import { getAccentPalette } from '../utils';
+import { getAccentPalette } from '../theme-utils';
 import type {
   SankeyData, SankeyAlignment, SankeyLayoutNode, SankeyLayoutLink,
   SankeyNode, SankeyLink, SniceSankeyElement

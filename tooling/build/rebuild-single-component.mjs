@@ -87,7 +87,13 @@ const cssLoader = {
 // Step 1: Core build (TS → dist/components/)
 const coreBundle = await rollup({
   input: inputs,
-  external: ['snice', 'snice/symbols', 'snice/transitions', 'tslib'],
+  external: (id) =>
+    id === 'snice' ||
+    id === 'snice/symbols' ||
+    id === 'snice/transitions' ||
+    id === 'tslib' ||
+    id === './pdf.min.mjs' ||
+    id.replace(/\\/g, '/').endsWith('/pdf-viewer/pdf.min.mjs'),
   plugins: [
     resolve(),
     cssLoader,

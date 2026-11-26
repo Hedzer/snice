@@ -2,32 +2,66 @@ import { element, property, render, styles, dispatch, ready, dispose, watch, que
 import type { PdfFitMode, SnicePdfViewerElement } from './snice-pdf-viewer.types';
 import viewerStyles from './snice-pdf-viewer.css?inline';
 
-// @ts-ignore - Vendored pdf.js library (Mozilla Foundation, Apache 2.0)
-import { getDocument, GlobalWorkerOptions } from './pdf.min.mjs';
-
-// Resolve worker source relative to whichever context loaded this module.
-// - ESM/bundled (Vite, storybook, app builds): use `import.meta.url`, which
-//   resolves to the emitted module's URL — the worker sits in the same dir.
-// - CDN/IIFE: `import.meta.url` is unavailable; fall back to scanning
-//   <script> tags for the pdf-viewer bundle.
-// Without this fallback pdfjs throws `No "GlobalWorkerOptions.workerSrc"
-// specified` the first time a PDF is loaded.
-{
+// Resolve worker source synchronously at module evaluation time so
+// `document.currentScript` is still available in CDN/IIFE builds even though
+// `pdf.min.mjs` itself is lazy-loaded on first document load.
+const capturedWorkerSrc: string = (() => {
   let base = '';
   try {
     base = new URL('./pdf.worker.min.mjs', import.meta.url).href;
   } catch {
-    const cs = document.currentScript as HTMLScriptElement | null;
-    const scriptSrc = cs?.src
-      || (document.querySelectorAll('script[src*="pdf-viewer"]') as NodeListOf<HTMLScriptElement>)[0]?.src
-      || '';
-    if (scriptSrc) base = scriptSrc.replace(/[^/]+$/, 'pdf.worker.min.mjs');
+    if (typeof document !== 'undefined') {
+      const cs = document.currentScript as HTMLScriptElement | null;
+      const scriptSrc = cs?.src
+        || (document.querySelectorAll('script[src*="pdf-viewer"]') as NodeListOf<HTMLScriptElement>)[0]?.src
+        || '';
+      if (scriptSrc) base = scriptSrc.replace(/[^/]+$/, 'pdf.worker.min.mjs');
+    }
   }
-  if (base) GlobalWorkerOptions.workerSrc = base;
+  return base;
+})();
+
+interface PdfJsModule {
+  getDocument: (src: any) => { promise: Promise<any>; destroy?: () => void };
+  GlobalWorkerOptions?: { workerSrc: string };
+}
+
+let pdfJsPromise: Promise<PdfJsModule> | null = null;
+
+function defaultImportPdfJs(): Promise<PdfJsModule> {
+  // @ts-ignore - Vendored pdf.js library (Mozilla Foundation, Apache 2.0)
+  return import('./pdf.min.mjs');
+}
+
+function loadPdfJs(): Promise<PdfJsModule> {
+  if (!pdfJsPromise) {
+    const loader = SnicePdfViewer._pdfLoader ?? defaultImportPdfJs;
+    pdfJsPromise = Promise.resolve()
+      .then(() => loader())
+      .then((mod) => {
+        if (capturedWorkerSrc && mod?.GlobalWorkerOptions && !mod.GlobalWorkerOptions.workerSrc) {
+          mod.GlobalWorkerOptions.workerSrc = capturedWorkerSrc;
+        }
+        return mod;
+      })
+      .catch((err) => {
+        pdfJsPromise = null;
+        throw err;
+      });
+  }
+  return pdfJsPromise;
+}
+
+/** @internal Reset cached lazy pdf.js module promise (used in tests). */
+export function resetPdfJsLoaderCache(): void {
+  pdfJsPromise = null;
 }
 
 @element('snice-pdf-viewer')
 export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement {
+  /** @internal Optional loader override for deterministic unit tests. */
+  static _pdfLoader?: () => Promise<PdfJsModule>;
+
   @property() src: string = '';
   @property({ type: Number }) page: number = 1;
   @property({ type: Number }) zoom: number = 1;
@@ -39,6 +73,7 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
   private loading: boolean = false;
   private error: string = '';
   private rendering: boolean = false;
+  private loadGeneration: number = 0;
 
   @query('.pdf-viewport') private viewportEl?: HTMLElement;
   @query('.pdf-canvas-wrapper canvas') private canvas?: HTMLCanvasElement;
@@ -65,6 +100,8 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
 
   @dispose()
   cleanup() {
+    this.loadGeneration++;
+    this.loading = false;
     if (this.pdfDoc) {
       this.pdfDoc.destroy();
       this.pdfDoc = null;
@@ -99,17 +136,46 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
   }
 
   private async loadDocument(): Promise<void> {
-    if (!this.src) return;
+    if (!this.src) {
+      this.loadGeneration++;
+      if (this.pdfDoc) {
+        try { this.pdfDoc.destroy(); } catch { /* ignore */ }
+        this.pdfDoc = null;
+      }
+      this.totalPages = 0;
+      this.loading = false;
+      this.error = '';
+      this.updateView();
+      return;
+    }
+
+    const requestedSrc = this.src;
+    const generation = ++this.loadGeneration;
+
+    if (this.pdfDoc) {
+      try { this.pdfDoc.destroy(); } catch { /* ignore */ }
+      this.pdfDoc = null;
+    }
 
     this.loading = true;
     this.error = '';
-    this.pdfDoc = null;
     this.totalPages = 0;
     this.updateView();
 
     try {
-      const loadingTask = getDocument(this.src);
-      this.pdfDoc = await loadingTask.promise;
+      const pdfjs = await loadPdfJs();
+      if (generation !== this.loadGeneration || !this.isConnected || this.src !== requestedSrc) {
+        return;
+      }
+
+      const loadingTask = pdfjs.getDocument(requestedSrc);
+      const doc = await loadingTask.promise;
+      if (generation !== this.loadGeneration || !this.isConnected || this.src !== requestedSrc) {
+        try { doc?.destroy?.(); } catch { /* ignore */ }
+        return;
+      }
+
+      this.pdfDoc = doc;
       this.totalPages = this.pdfDoc.numPages;
       this.loading = false;
 
@@ -119,6 +185,9 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
       this.emitLoaded();
       this.renderPage();
     } catch (err: any) {
+      if (generation !== this.loadGeneration || !this.isConnected || this.src !== requestedSrc) {
+        return;
+      }
       this.loading = false;
       this.error = err?.message || 'Failed to load PDF';
       this.updateView();

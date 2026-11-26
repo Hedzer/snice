@@ -1,5 +1,5 @@
 import { element, property, render, styles, html, css, isSafeUrl, nothing } from 'snice';
-import { strictStringAttributeConverter } from '../utils';
+import { strictStringAttributeConverter } from '../theme-utils';
 import cssContent from './snice-link.css?inline';
 import type { LinkVariant, LinkTarget, SniceLinkElement } from './snice-link.types';
 

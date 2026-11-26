@@ -338,7 +338,13 @@ export default [
       acc[entryName] = file;
       return acc;
     }, {}),
-    external: ['snice', 'snice/symbols', 'snice/transitions', 'tslib'],
+    external: (id) =>
+      id === 'snice' ||
+      id === 'snice/symbols' ||
+      id === 'snice/transitions' ||
+      id === 'tslib' ||
+      id === './pdf.min.mjs' ||
+      id.replace(/\\/g, '/').endsWith('/pdf-viewer/pdf.min.mjs'),
     output: {
       dir: 'dist/components',
       format: 'es',

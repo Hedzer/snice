@@ -1,7 +1,7 @@
 import { element, property, render, styles, dispatch, query, watch, html, css } from 'snice';
 import type { ChartType, ChartDataset, ChartOptions, ChartDataPoint, SniceChartElement } from './snice-chart.types';
 import chartStyles from './snice-chart.css?inline';
-import { getAccentPalette } from '../utils';
+import { getAccentPalette } from '../theme-utils';
 
 const DEFAULT_OPTIONS: ChartOptions = {
   responsive: true,

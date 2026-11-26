@@ -1,6 +1,6 @@
 import { element, property, dispatch, query, render, styles, ready, dispose, watch, html, css, escapeHtml, escapeAttr } from 'snice';
 import cssContent from './snice-network-graph.css?inline';
-import { getAccentPalette } from '../utils';
+import { getAccentPalette } from '../theme-utils';
 import type { NetworkNode, NetworkEdge, NetworkGraphData, LayoutType, SniceNetworkGraphElement } from './snice-network-graph.types';
 
 interface SimNode extends NetworkNode {

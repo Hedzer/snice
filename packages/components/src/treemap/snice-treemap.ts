@@ -1,7 +1,7 @@
 import { element, property, dispatch, ready, dispose, watch, query, render, styles, html, css, escapeHtml } from 'snice';
 import cssContent from './snice-treemap.css?inline';
 import type { TreemapNode, TreemapColorScheme, TreemapRect, SniceTreemapElement } from './snice-treemap.types';
-import { getAccentPalette } from '../utils';
+import { getAccentPalette } from '../theme-utils';
 
 // `default` is resolved at render time from --snice-color-accent-1..8 so
 // it flows with the theme. Named schemes remain static palettes.

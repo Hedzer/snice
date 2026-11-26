@@ -1,6 +1,6 @@
 import { element, property, state, render, styles, dispatch, query, watch, observe, ready, dispose, html, css, unsafeHTML } from 'snice';
 import { PENCIL, TRASH, PAPER_CLIP, PAPER_AIRPLANE_SOLID } from '../icons';
-import { FALLBACK_ACCENTS } from '../utils';
+import { FALLBACK_ACCENTS } from '../theme-utils';
 import { ChatLayout, MessageFormat } from './snice-chat.types';
 import type {
   ChatMessage,

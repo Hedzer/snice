@@ -249,4 +249,48 @@ describe('CDN Builds', () => {
       expect(content).toContain('iife');
     });
   });
+
+  describe('BS-04: Icon-free CDN bundles & pdf-viewer dynamic-import inlining', () => {
+    it('keeps the 7 icon-free CDN bundles free of the ICONS registry', () => {
+      const iconFree = ['chart', 'funnel', 'sankey', 'network-graph', 'treemap', 'badge', 'link'];
+      for (const comp of iconFree) {
+        const minPath = path.join(process.cwd(), outputDir, comp, `snice-${comp}.min.js`);
+        expect(fs.existsSync(minPath), `missing ${minPath}`).toBe(true);
+        const content = fs.readFileSync(minPath, 'utf-8');
+        expect(content, `${comp} CDN bundle should not embed ICONS`).not.toContain('paper-airplane');
+      }
+    });
+
+    it('builds pdf-viewer CDN cleanly for both iife and es single-file formats', async () => {
+      const { rollup } = await import('rollup');
+      const { createCdnBuild } = await import('../rollup.config.cdn.js');
+      const os = await import('os');
+      const tmpOut = fs.mkdtempSync(path.join(os.tmpdir(), 'snice-pdf-cdn-'));
+      try {
+        const configs = createCdnBuild('pdf-viewer', {
+          outputDir: tmpOut,
+          formats: ['iife', 'es'],
+          minify: false,
+        });
+        expect(configs.length).toBe(2);
+        for (const config of configs) {
+          expect(config.output.inlineDynamicImports).toBe(true);
+          const bundle = await rollup({
+            input: config.input,
+            external: config.external,
+            plugins: config.plugins,
+          });
+          try {
+            await bundle.write(config.output);
+          } finally {
+            await bundle.close();
+          }
+        }
+        expect(fs.existsSync(path.join(tmpOut, 'snice-pdf-viewer.js'))).toBe(true);
+        expect(fs.existsSync(path.join(tmpOut, 'snice-pdf-viewer.esm.js'))).toBe(true);
+      } finally {
+        fs.rmSync(tmpOut, { recursive: true, force: true });
+      }
+    }, 30000);
+  });
 });

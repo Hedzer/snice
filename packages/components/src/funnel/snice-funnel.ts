@@ -1,6 +1,6 @@
 import { element, property, dispatch, render, styles, watch, query, ready, html, css } from 'snice';
 import cssContent from './snice-funnel.css?inline';
-import { getAccentPalette } from '../utils';
+import { getAccentPalette } from '../theme-utils';
 import type { FunnelStage, FunnelVariant, FunnelOrientation, SniceFunnelElement } from './snice-funnel.types';
 
 // Resolved from --snice-color-accent-1..8 at call time so theme changes
