@@ -121,7 +121,10 @@ website/public/screenshots
 .plans/
 .research/
 .handoff/
-.local/
+!/.local/
+/.local/*
+!/.local/design/
+!/.local/design/**
 /*.png
 .playwright-mcp/
 .worktrees/
