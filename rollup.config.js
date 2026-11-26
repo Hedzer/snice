@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import CleanCSS from 'clean-css';
 import { getWipComponents } from './tooling/shared/wip-components.js';
+import sniceRollup from './dist/plugin/rollup.js';
 
 const require = createRequire(import.meta.url);
 const packageJson = require('./package.json');
@@ -282,37 +283,6 @@ export default [
     ]
   },
 
-  // Bundler plugin builds (snice/vite and snice/rollup → dist/plugin/)
-  {
-    input: {
-      vite: 'packages/plugin/src/vite.ts',
-      rollup: 'packages/plugin/src/rollup.ts',
-    },
-    external: (id) =>
-      id.startsWith('node:') ||
-      id === 'vite' ||
-      id === 'rollup' ||
-      id === '@babel/parser' ||
-      id === 'magic-string',
-    onwarn: failOnCoreCircularDependency,
-    output: {
-      dir: 'dist/plugin',
-      format: 'es',
-      banner,
-      sourcemap: true,
-      sourcemapPathTransform: (sourcePath) => sourcePath.replace(/packages\/packages\/plugin\/src/g, 'packages/plugin/src'),
-      entryFileNames: '[name].js',
-      chunkFileNames: '_chunks/[name].js',
-    },
-    plugins: [
-      resolve(),
-      typescript({
-        tsconfig: './packages/plugin/tsconfig.json',
-        declaration: true,
-      }),
-    ],
-  },
-
   // React integration (source in packages/react/src/, built to dist/react/)
   {
     input: {
@@ -385,7 +355,19 @@ export default [
       preserveModules: false
     },
     plugins: [
-      resolve(),
+      {
+        name: 'ts-js-extension-resolve',
+        resolveId(source, importer) {
+          if (!importer || !source.startsWith('.') || !source.endsWith('.js')) return null;
+          const base = path.resolve(path.dirname(importer), source);
+          if (!fs.existsSync(base)) {
+            const tsCandidate = base.slice(0, -3) + '.ts';
+            if (fs.existsSync(tsCandidate)) return tsCandidate;
+          }
+          return null;
+        }
+      },
+      resolve({ extensions: ['.ts', '.tsx', '.mjs', '.js', '.json'] }),
       // Plugin to handle CSS imports
       {
         name: 'css-loader',
@@ -517,10 +499,16 @@ export default [
           }
         }
       },
-      typescript({
-        tsconfig: './packages/components/tsconfig.json',
-        declaration: false,
-        declarationMap: false
+      // Dogfood snice/rollup directly on packages/components/src/ (bypassing
+      // @rollup/plugin-typescript's load() hook so raw decorators, html``, and
+      // inline css`` are lowered/minified cleanly; npm run build:types handles
+      // strict type checking and .d.ts emission).
+      sniceRollup({
+        decorators: true,
+        minifyTemplates: true,
+        minifyCss: true,
+        stripCssFallbacks: false,
+        caching: false,
       })
     ]
   }

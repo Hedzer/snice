@@ -88,6 +88,9 @@ export function stripTypeScriptSyntax(
 ): boolean {
   const skip = getSkipSet(skipNodes);
   let changed = false;
+  const runtimeIdentifiers = new Set<string>();
+  const deferredImports: AstNode[] = [];
+  const deferredReexports: AstNode[] = [];
 
   const markRemove = (start: number, end: number) => {
     if (end > start) {
@@ -172,33 +175,7 @@ export function stripTypeScriptSyntax(
         }
         const specs: AstNode[] = node.specifiers ?? [];
         if (specs.length > 0) {
-          const typeSpecs = specs.filter((sp) => sp.importKind === 'type');
-          if (typeSpecs.length === specs.length) {
-            markRemove(node.start, node.end);
-            return;
-          }
-          if (typeSpecs.length > 0) {
-            // Rebuild import specifiers without `type` specifiers
-            const defaultSpec = specs.find((sp) => sp.type === 'ImportDefaultSpecifier');
-            const nsSpec = specs.find((sp) => sp.type === 'ImportNamespaceSpecifier');
-            const namedSpecs = specs.filter(
-              (sp) => sp.type === 'ImportSpecifier' && sp.importKind !== 'type'
-            );
-            const parts: string[] = [];
-            if (defaultSpec) parts.push(defaultSpec.local.name);
-            if (nsSpec) parts.push(`* as ${nsSpec.local.name}`);
-            if (namedSpecs.length > 0) {
-              const items = namedSpecs.map((sp) => {
-                const imported =
-                  sp.imported.type === 'Identifier' ? sp.imported.name : JSON.stringify(sp.imported.value);
-                return imported === sp.local.name ? imported : `${imported} as ${sp.local.name}`;
-              });
-              parts.push(`{ ${items.join(', ')} }`);
-            }
-            const src = code.slice(node.source.start, node.source.end);
-            markOverwrite(node.start, node.end, `import ${parts.join(', ')} from ${src};`);
-            return;
-          }
+          deferredImports.push(node);
         }
         return;
       }
@@ -229,31 +206,42 @@ export function stripTypeScriptSyntax(
         }
         const specs: AstNode[] = node.specifiers ?? [];
         if (specs.length > 0) {
+          // If re-exporting from a pure *.types module, elide completely
+          if (node.source && /\.types(?:\.[cm]?[jt]s)?$/.test(node.source.value ?? '')) {
+            markRemove(node.start, node.end);
+            return;
+          }
           const typeSpecs = specs.filter((sp) => sp.exportKind === 'type');
           if (typeSpecs.length === specs.length) {
             markRemove(node.start, node.end);
             return;
           }
-          if (typeSpecs.length > 0) {
-            const kept = specs
-              .filter((sp) => sp.exportKind !== 'type')
-              .map((sp) => {
-                const loc = sp.local.name;
-                const exp = sp.exported.name;
-                return loc === exp ? loc : `${loc} as ${exp}`;
-              });
-            const fromPart = node.source
-              ? ` from ${code.slice(node.source.start, node.source.end)}`
-              : '';
-            markOverwrite(node.start, node.end, `export { ${kept.join(', ')} }${fromPart};`);
+          if (node.source) {
+            if (typeSpecs.length > 0) {
+              const kept = specs
+                .filter((sp) => sp.exportKind !== 'type')
+                .map((sp) => {
+                  const loc = sp.local.name;
+                  const exp = sp.exported.name;
+                  return loc === exp ? loc : `${loc} as ${exp}`;
+                });
+              const fromPart = ` from ${code.slice(node.source.start, node.source.end)}`;
+              markOverwrite(node.start, node.end, `export { ${kept.join(', ')} }${fromPart};`);
+            }
             return;
           }
+          // Local `export { A, B }` — defer until we know which symbols are type-only
+          deferredReexports.push(node);
+          return;
         }
         break;
       }
 
       case 'ExportAllDeclaration':
-        if (node.exportKind === 'type') {
+        if (
+          node.exportKind === 'type' ||
+          (node.source && /\.types(?:\.[cm]?[jt]s)?$/.test(node.source.value ?? ''))
+        ) {
           markRemove(node.start, node.end);
           return;
         }
@@ -305,14 +293,19 @@ export function stripTypeScriptSyntax(
           return;
         }
         // Remove TS modifiers (`public`, `private`, `protected`, `readonly`, `override`)
+        // strictly AFTER any decorators so we never overwrite decorator removals.
+        let modStart = node.start;
+        for (const d of node.decorators ?? []) {
+          if (d.end > modStart) modStart = d.end;
+        }
         const keyStart = node.computed
           ? code.lastIndexOf('[', node.key.start)
           : node.key.start;
-        if (keyStart > node.start) {
-          const prefix = code.slice(node.start, keyStart);
+        if (keyStart > modStart) {
+          const prefix = code.slice(modStart, keyStart);
           const cleaned = prefix.replace(/\b(?:public|private|protected|readonly|override)\b\s*/g, '');
           if (cleaned !== prefix) {
-            markOverwrite(node.start, keyStart, cleaned);
+            markOverwrite(modStart, keyStart, cleaned);
           }
         }
         // Remove optional `?` or definite `!` after key
@@ -343,14 +336,18 @@ export function stripTypeScriptSyntax(
           markRemove(node.start, node.end);
           return;
         }
+        let modStart = node.start;
+        for (const d of node.decorators ?? []) {
+          if (d.end > modStart) modStart = d.end;
+        }
         const keyStart = node.computed
           ? code.lastIndexOf('[', node.key.start)
           : node.key.start;
-        if (keyStart > node.start) {
-          const prefix = code.slice(node.start, keyStart);
+        if (keyStart > modStart) {
+          const prefix = code.slice(modStart, keyStart);
           const cleaned = prefix.replace(/\b(?:public|private|protected|override|abstract)\b\s*/g, '');
           if (cleaned !== prefix) {
-            markOverwrite(node.start, keyStart, cleaned);
+            markOverwrite(modStart, keyStart, cleaned);
           }
         }
         if (node.optional) {
@@ -403,6 +400,7 @@ export function stripTypeScriptSyntax(
         return;
 
       case 'Identifier':
+        runtimeIdentifiers.add(node.name);
         stripOptionalModifier(code, s, node);
         if (node.typeAnnotation) {
           markRemove(node.typeAnnotation.start, node.typeAnnotation.end);
@@ -430,24 +428,38 @@ export function stripTypeScriptSyntax(
         }
         break;
 
-      case 'TSAsExpression':
-      case 'TSSatisfiesExpression':
-        markRemove(node.expression.end, node.end);
+      case 'TSAsExpression': {
+        const asIdx = code.lastIndexOf('as', node.typeAnnotation.start);
+        markRemove(asIdx >= node.expression.end ? asIdx : node.expression.end, node.end);
         visit(node.expression);
         return;
+      }
 
-      case 'TSTypeAssertion':
-        markRemove(node.start, node.expression.start);
+      case 'TSSatisfiesExpression': {
+        const satIdx = code.lastIndexOf('satisfies', node.typeAnnotation.start);
+        markRemove(satIdx >= node.expression.end ? satIdx : node.expression.end, node.end);
         visit(node.expression);
         return;
+      }
+
+      case 'TSTypeAssertion': {
+        const gtIdx = findNextChar(code, node.typeAnnotation.end, '>', node.end);
+        markRemove(node.start, gtIdx >= 0 ? gtIdx + 1 : node.expression.start);
+        visit(node.expression);
+        return;
+      }
 
       case 'TSNonNullExpression':
-        markRemove(node.expression.end, node.end);
+        markRemove(node.end - 1, node.end);
         visit(node.expression);
         return;
 
       case 'TSInstantiationExpression':
-        markRemove(node.expression.end, node.end);
+        if (node.typeParameters) {
+          markRemove(node.typeParameters.start, node.typeParameters.end);
+        } else {
+          markRemove(node.expression.end, node.end);
+        }
         visit(node.expression);
         return;
     }
@@ -481,5 +493,127 @@ export function stripTypeScriptSyntax(
   }
 
   visit(ast);
+
+  // Collect locally-declared type names and *.types imports so local `export { Foo }`
+  // doesn't emit runtime exports for type-only symbols.
+  const declaredTypeOnlyNames = new Set<string>();
+  const declaredRuntimeNames = new Set<string>();
+  const bodyStmts: AstNode[] =
+    ast.type === 'File'
+      ? ast.program?.body ?? []
+      : ast.type === 'Program'
+        ? ast.body ?? []
+        : [];
+  for (const stmt of bodyStmts) {
+    if (stmt.type === 'TSInterfaceDeclaration' || stmt.type === 'TSTypeAliasDeclaration') {
+      if (stmt.id?.name) declaredTypeOnlyNames.add(stmt.id.name);
+    } else if (stmt.type === 'ImportDeclaration') {
+      const isTypesFile = /\.types(?:\.[cm]?[jt]s)?$/.test(stmt.source?.value ?? '');
+      for (const sp of stmt.specifiers ?? []) {
+        if (stmt.importKind === 'type' || sp.importKind === 'type' || isTypesFile) {
+          if (sp.local?.name) declaredTypeOnlyNames.add(sp.local.name);
+        }
+      }
+    } else if (
+      stmt.type === 'FunctionDeclaration' ||
+      stmt.type === 'ClassDeclaration' ||
+      stmt.type === 'TSEnumDeclaration'
+    ) {
+      if (stmt.id?.name && !stmt.declare) declaredRuntimeNames.add(stmt.id.name);
+    } else if (stmt.type === 'VariableDeclaration' && !stmt.declare) {
+      for (const d of stmt.declarations ?? []) {
+        if (d.id?.type === 'Identifier') declaredRuntimeNames.add(d.id.name);
+      }
+    }
+  }
+
+  // Handle local `export { A, B }` statements
+  for (const node of deferredReexports) {
+    const specs: AstNode[] = node.specifiers ?? [];
+    const keptSpecs = specs.filter((sp) => {
+      if (sp.exportKind === 'type') return false;
+      const loc = sp.local?.name;
+      if (loc && declaredTypeOnlyNames.has(loc) && !declaredRuntimeNames.has(loc)) return false;
+      return true;
+    });
+    for (const sp of keptSpecs) {
+      if (sp.local?.name) runtimeIdentifiers.add(sp.local.name);
+    }
+    if (keptSpecs.length === 0) {
+      markRemove(node.start, node.end);
+    } else if (keptSpecs.length < specs.length) {
+      const kept = keptSpecs.map((sp) => {
+        const loc = sp.local.name;
+        const exp = sp.exported.name;
+        return loc === exp ? loc : `${loc} as ${exp}`;
+      });
+      markOverwrite(node.start, node.end, `export { ${kept.join(', ')} };`);
+    }
+  }
+
+  // Also include identifiers referenced inside any skipped decorator subtrees (since lowered
+  // decorators still reference their imported decorator names at runtime!).
+  const collectSkipIds = (n: AstNode) => {
+    if (!isNode(n)) return;
+    if (n.type === 'Identifier') {
+      runtimeIdentifiers.add(n.name);
+      return;
+    }
+    for (const key of Object.keys(n)) {
+      if (
+        key === 'type' || key === 'start' || key === 'end' || key === 'loc' ||
+        key === 'typeAnnotation' || key === 'typeParameters' || key === 'returnType' ||
+        key === 'leadingComments' || key === 'trailingComments' || key === 'innerComments'
+      ) continue;
+      const val = n[key];
+      if (Array.isArray(val)) {
+        for (const item of val) if (isNode(item)) collectSkipIds(item);
+      } else if (isNode(val)) {
+        collectSkipIds(val);
+      }
+    }
+  };
+  for (const skippedNode of skip) {
+    collectSkipIds(skippedNode);
+  }
+
+  // Elide explicit `import type` specifiers AND unreferenced value-syntax type-only imports
+  // (matching TypeScript's standard import elision).
+  for (const node of deferredImports) {
+    const specs: AstNode[] = node.specifiers ?? [];
+    const isTypesFile = /\.types(?:\.[cm]?[jt]s)?$/.test(node.source?.value ?? '');
+    if (isTypesFile) {
+      markRemove(node.start, node.end);
+      continue;
+    }
+    const keptSpecs = specs.filter((sp) => {
+      if (sp.importKind === 'type') return false;
+      const local = sp.local?.name;
+      if (!local) return true;
+      return runtimeIdentifiers.has(local);
+    });
+    if (keptSpecs.length === specs.length) continue;
+    if (keptSpecs.length === 0) {
+      markRemove(node.start, node.end);
+      continue;
+    }
+    const defaultSpec = keptSpecs.find((sp) => sp.type === 'ImportDefaultSpecifier');
+    const nsSpec = keptSpecs.find((sp) => sp.type === 'ImportNamespaceSpecifier');
+    const namedSpecs = keptSpecs.filter((sp) => sp.type === 'ImportSpecifier');
+    const parts: string[] = [];
+    if (defaultSpec) parts.push(defaultSpec.local.name);
+    if (nsSpec) parts.push(`* as ${nsSpec.local.name}`);
+    if (namedSpecs.length > 0) {
+      const items = namedSpecs.map((sp) => {
+        const imported =
+          sp.imported.type === 'Identifier' ? sp.imported.name : JSON.stringify(sp.imported.value);
+        return imported === sp.local.name ? imported : `${imported} as ${sp.local.name}`;
+      });
+      parts.push(`{ ${items.join(', ')} }`);
+    }
+    const src = code.slice(node.source.start, node.source.end);
+    markOverwrite(node.start, node.end, `import ${parts.join(', ')} from ${src};`);
+  }
+
   return changed;
 }

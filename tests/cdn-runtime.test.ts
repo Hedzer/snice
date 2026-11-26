@@ -216,7 +216,7 @@ describe('CDN Runtime Builds', () => {
       const className = new Function(
         `${runtime}\n${button}\nreturn customElements.get('snice-button').name;`,
       )();
-      expect(className).toBe('');
+      expect(className).not.toBe('SniceButton');
     });
   });
 

@@ -17,6 +17,7 @@ import {
 import { transformDecorators } from './decorators';
 import { replaceSniceDevIdentifier } from './dev-define';
 import { buildBundleReport, formatBuildReport } from './report';
+import { composeSourceMaps } from './sourcemap';
 import { TC39_RUNTIME_CODE, TC39_SPECIFIER, TC39_VIRTUAL_ID } from './tc39-fallback-runtime';
 import { transformTemplates } from './templates';
 import { validateOptions, type SniceCachingOptions, type SnicePluginOptions } from './types';
@@ -158,7 +159,7 @@ export function createSniceCorePlugin(
         });
         if (decResult) {
           currentCode = decResult.code;
-          currentMap = decResult.map;
+          currentMap = composeSourceMaps(currentMap, decResult.map);
           changed = true;
         }
       }
@@ -175,7 +176,7 @@ export function createSniceCorePlugin(
         });
         if (tmplResult) {
           currentCode = tmplResult.code;
-          currentMap = tmplResult.map;
+          currentMap = composeSourceMaps(currentMap, tmplResult.map);
           changed = true;
         }
       }
@@ -189,7 +190,7 @@ export function createSniceCorePlugin(
       });
       if (cssResult) {
         currentCode = cssResult.code;
-        currentMap = cssResult.map;
+        currentMap = composeSourceMaps(currentMap, cssResult.map);
         changed = true;
       }
 
