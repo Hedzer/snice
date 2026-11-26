@@ -22,13 +22,28 @@ interface LifecycleFeatureHooks {
   clearThrottleTimers?: (instance: any) => void;
 }
 
-const hooks: LifecycleFeatureHooks = {};
-let controllerBridge: ControllerBridge | null = null;
+interface LifecycleStore {
+  hooks: LifecycleFeatureHooks;
+  controllerBridge: ControllerBridge | null;
+}
+
+const LIFECYCLE_STORE_KEY = /*#__PURE__*/ Symbol.for('snice:lifecycle-hooks');
+
+function getLifecycleStore(): LifecycleStore {
+  const g = globalThis as any;
+  let store = g[LIFECYCLE_STORE_KEY] as LifecycleStore | undefined;
+  if (!store) {
+    store = { hooks: {}, controllerBridge: null };
+    g[LIFECYCLE_STORE_KEY] = store;
+  }
+  return store;
+}
 
 export function registerEventHooks(
   setup: (instance: any, target: EventTarget) => void,
   cleanup: (instance: any) => void
 ): void {
+  const { hooks } = getLifecycleStore();
   if (!hooks.setupEventHandlers) {
     hooks.setupEventHandlers = setup;
     hooks.cleanupEventHandlers = cleanup;
@@ -39,6 +54,7 @@ export function registerResponseHooks(
   setup: (instance: any, target: EventTarget, options?: any) => void,
   cleanup: (instance: any) => void
 ): void {
+  const { hooks } = getLifecycleStore();
   if (!hooks.setupResponseHandlers) {
     hooks.setupResponseHandlers = setup;
     hooks.cleanupResponseHandlers = cleanup;
@@ -49,6 +65,7 @@ export function registerContextHooks(
   setup: (instance: object, catchUp?: false | 'microtask' | 'task') => void | Promise<void>,
   cleanup: (instance: object) => void
 ): void {
+  const { hooks } = getLifecycleStore();
   if (!hooks.setupContextHandler) {
     hooks.setupContextHandler = setup;
     hooks.cleanupContextHandler = cleanup;
@@ -59,6 +76,7 @@ export function registerObserveHooks(
   setup: (instance: any, element: HTMLElement) => void,
   cleanup: (instance: any) => void
 ): void {
+  const { hooks } = getLifecycleStore();
   if (!hooks.setupObservers) {
     hooks.setupObservers = setup;
     hooks.cleanupObservers = cleanup;
@@ -66,74 +84,78 @@ export function registerObserveHooks(
 }
 
 export function registerDispatchHook(clear: (instance: any) => void): void {
+  const { hooks } = getLifecycleStore();
   if (!hooks.clearDispatchTimers) {
     hooks.clearDispatchTimers = clear;
   }
 }
 
 export function registerDebounceHook(clear: (instance: any) => void): void {
+  const { hooks } = getLifecycleStore();
   if (!hooks.clearDebounceTimers) {
     hooks.clearDebounceTimers = clear;
   }
 }
 
 export function registerThrottleHook(clear: (instance: any) => void): void {
+  const { hooks } = getLifecycleStore();
   if (!hooks.clearThrottleTimers) {
     hooks.clearThrottleTimers = clear;
   }
 }
 
 export function registerControllerBridge(bridge: ControllerBridge): void {
-  if (!controllerBridge) {
-    controllerBridge = bridge;
+  const store = getLifecycleStore();
+  if (!store.controllerBridge) {
+    store.controllerBridge = bridge;
   }
 }
 
 export function runSetupEventHandlers(instance: any, target: EventTarget): void {
-  hooks.setupEventHandlers?.(instance, target);
+  getLifecycleStore().hooks.setupEventHandlers?.(instance, target);
 }
 
 export function runCleanupEventHandlers(instance: any): void {
-  hooks.cleanupEventHandlers?.(instance);
+  getLifecycleStore().hooks.cleanupEventHandlers?.(instance);
 }
 
 export function runSetupResponseHandlers(instance: any, target: EventTarget, options?: any): void {
-  hooks.setupResponseHandlers?.(instance, target, options);
+  getLifecycleStore().hooks.setupResponseHandlers?.(instance, target, options);
 }
 
 export function runCleanupResponseHandlers(instance: any): void {
-  hooks.cleanupResponseHandlers?.(instance);
+  getLifecycleStore().hooks.cleanupResponseHandlers?.(instance);
 }
 
 export function runSetupContextHandler(
   instance: object,
   catchUp?: false | 'microtask' | 'task'
 ): void | Promise<void> {
-  return hooks.setupContextHandler?.(instance, catchUp);
+  return getLifecycleStore().hooks.setupContextHandler?.(instance, catchUp);
 }
 
 export function runCleanupContextHandler(instance: object): void {
-  hooks.cleanupContextHandler?.(instance);
+  getLifecycleStore().hooks.cleanupContextHandler?.(instance);
 }
 
 export function runSetupObservers(instance: any, element: HTMLElement): void {
-  hooks.setupObservers?.(instance, element);
+  getLifecycleStore().hooks.setupObservers?.(instance, element);
 }
 
 export function runCleanupObservers(instance: any): void {
-  hooks.cleanupObservers?.(instance);
+  getLifecycleStore().hooks.cleanupObservers?.(instance);
 }
 
 export function runClearDispatchTimers(instance: any): void {
-  hooks.clearDispatchTimers?.(instance);
+  getLifecycleStore().hooks.clearDispatchTimers?.(instance);
 }
 
 export function runClearDebounceTimers(instance: any): void {
-  hooks.clearDebounceTimers?.(instance);
+  getLifecycleStore().hooks.clearDebounceTimers?.(instance);
 }
 
 export function runClearThrottleTimers(instance: any): void {
-  hooks.clearThrottleTimers?.(instance);
+  getLifecycleStore().hooks.clearThrottleTimers?.(instance);
 }
 
 /**
@@ -185,7 +207,8 @@ export function attachElementController(
   value: string | ControllerClass
 ): void {
   const label = typeof value === 'string' ? value : (value?.name || '(anonymous controller class)');
-  if (!controllerBridge) {
+  const bridge = getLifecycleStore().controllerBridge;
+  if (!bridge) {
     if (typeof value === 'string') {
       deferPendingControllerAttachment(element, value);
       return;
@@ -197,7 +220,7 @@ export function attachElementController(
     return;
   }
 
-  controllerBridge.attachController(element, value).catch((error: any) => {
+  bridge.attachController(element, value).catch((error: any) => {
     if (error?.name === 'ControllerAttachAborted') {
       if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
         console.debug(`Controller "${label}" attach aborted (element detached before ready)`);
@@ -205,7 +228,7 @@ export function attachElementController(
       return;
     }
     if (typeof value === 'string' && error?.message === `Controller "${value}" not found in registry`) {
-      controllerBridge!.deferControllerAttachment(element, value);
+      bridge.deferControllerAttachment(element, value);
       return;
     }
     console.error(`Failed to attach controller "${label}":`, error);
@@ -217,7 +240,8 @@ export function attachPendingElementController(
   pendingControllerClass: ControllerClass
 ): void {
   const pendingLabel = pendingControllerClass?.name || '(anonymous controller class)';
-  if (!controllerBridge) {
+  const bridge = getLifecycleStore().controllerBridge;
+  if (!bridge) {
     console.error(
       `Failed to attach controller "${pendingLabel}":`,
       new Error(`Controller class "${pendingLabel}" must be decorated with @controller('name') before it can be attached.`)
@@ -225,7 +249,7 @@ export function attachPendingElementController(
     return;
   }
 
-  controllerBridge.attachController(element, pendingControllerClass).catch((error: any) => {
+  bridge.attachController(element, pendingControllerClass).catch((error: any) => {
     if (error?.name === 'ControllerAttachAborted') {
       if ((typeof __SNICE_DEV__ === 'undefined' || __SNICE_DEV__) && (typeof process === 'undefined' || !process.env || process.env.NODE_ENV !== 'production')) {
         console.debug(`Controller "${pendingLabel}" attach aborted (element detached before ready)`);
@@ -241,7 +265,8 @@ export function attachControllerClassViaBridge(
   controllerClass: any
 ): void {
   const label = controllerClass?.name || String(controllerClass);
-  if (!controllerBridge) {
+  const bridge = getLifecycleStore().controllerBridge;
+  if (!bridge) {
     console.error(
       `Failed to attach controller "${label}":`,
       new Error(`Controller class "${label}" must be decorated with @controller('name') before it can be attached.`)
@@ -249,7 +274,7 @@ export function attachControllerClassViaBridge(
     return;
   }
 
-  controllerBridge.attachController(element, controllerClass).catch((error: any) => {
+  bridge.attachController(element, controllerClass).catch((error: any) => {
     if (error?.name === 'ControllerAttachAborted') return;
     console.error(`Failed to attach controller "${label}":`, error);
   });
@@ -257,12 +282,14 @@ export function attachControllerClassViaBridge(
 
 export function detachElementController(element: HTMLElement, previousValue?: unknown): void {
   cancelPendingControllerAttachment(element, previousValue);
-  if (!controllerBridge) return;
-  controllerBridge.detachController(element).catch((error: any) => {
+  const bridge = getLifecycleStore().controllerBridge;
+  if (!bridge) return;
+  bridge.detachController(element).catch((error: any) => {
     console.error('Failed to detach controller:', error);
   });
 }
 
 export function restoreDirectControllerAttributeViaBridge(element: HTMLElement): boolean {
-  return controllerBridge ? controllerBridge.restoreDirectControllerAttribute(element) : false;
+  const bridge = getLifecycleStore().controllerBridge;
+  return bridge ? bridge.restoreDirectControllerAttribute(element) : false;
 }

@@ -129,7 +129,7 @@ describe('BS-09: Distribution dogfooding, bundle-size budgets & cache-hash stabi
     expect(jsBundle).not.toContain('__esDecorate');
     expect(jsBundle).not.toContain('applyDecs2203RFactory');
     expect(jsBundle).not.toContain('__SNICE_DEV__');
-    expect(jsBundle).not.toContain('attachController');
+    expect(jsBundle).not.toContain('useNativeElementControllers');
     expect(jsBundle).not.toContain('IntersectionObserver');
     expect(jsBundle).not.toContain('static comment');
     expect(jsBundle).not.toContain('comment to strip');

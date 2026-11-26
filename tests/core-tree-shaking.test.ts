@@ -758,44 +758,53 @@ describe('BS-02: Acyclic lifecycle-hook inversion & core ESM tree-shaking', () =
       element('bs02-isolated-no-ctrl')(WrappedIsolated, { kind: 'class', name: 'WrappedIsolated', metadata: {} });
     `, false);
 
-    const dataUrl = `data:text/javascript;base64,${Buffer.from(isolatedBundle).toString('base64')}`;
-    await import(/* @vite-ignore */ dataUrl);
+    const storeKey = Symbol.for('snice:lifecycle-hooks');
+    const savedStore = (globalThis as any)[storeKey];
+    delete (globalThis as any)[storeKey];
 
-    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const dataUrl = `data:text/javascript;base64,${Buffer.from(isolatedBundle).toString('base64')}`;
+      await import(/* @vite-ignore */ dataUrl);
 
-    const el = document.createElement('bs02-isolated-no-ctrl') as any;
-    document.body.appendChild(el);
-    await el.ready;
-    expect(el.shadowRoot?.querySelector('.ok')?.textContent).toBe('alive');
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    // (a) null / '' is a silent no-op and cancels queued pending string entry
-    el.controller = null;
-    el.controller = '';
-    expect(errorSpy).not.toHaveBeenCalled();
+      const el = document.createElement('bs02-isolated-no-ctrl') as any;
+      document.body.appendChild(el);
+      await el.ready;
+      expect(el.shadowRoot?.querySelector('.ok')?.textContent).toBe('alive');
 
-    el.controller = 'bs02-cancelled-ctrl';
-    el.controller = null;
-    await new Promise(r => setTimeout(r, 10));
-    expect(errorSpy).not.toHaveBeenCalled();
+      // (a) null / '' is a silent no-op and cancels queued pending string entry
+      el.controller = null;
+      el.controller = '';
+      expect(errorSpy).not.toHaveBeenCalled();
 
-    // (b) string queues in pendingControllerAttachments and logs missing-controller error on microtask
-    el.controller = 'bs02-never-registered';
-    await new Promise(r => setTimeout(r, 10));
-    const errMsgs = errorSpy.mock.calls.flat().map(v => (v instanceof Error ? v.message : String(v)));
-    expect(errMsgs.some(m => m.includes('Controller "bs02-never-registered" not found in registry'))).toBe(true);
-    el.controller = null;
-    errorSpy.mockClear();
+      el.controller = 'bs02-cancelled-ctrl';
+      el.controller = null;
+      await new Promise(r => setTimeout(r, 10));
+      expect(errorSpy).not.toHaveBeenCalled();
 
-    // (c) class reference logs via console.error without throwing synchronously
-    class PlainClass {}
-    expect(() => { el.controller = PlainClass; }).not.toThrow();
-    const classErrs = errorSpy.mock.calls.flat().map(v => (v instanceof Error ? v.message : String(v)));
-    expect(classErrs.some(m => m.includes('must be decorated with @controller'))).toBe(true);
+      // (b) string queues in pendingControllerAttachments and logs missing-controller error on microtask
+      el.controller = 'bs02-never-registered';
+      await new Promise(r => setTimeout(r, 10));
+      const errMsgs = errorSpy.mock.calls.flat().map(v => (v instanceof Error ? v.message : String(v)));
+      expect(errMsgs.some(m => m.includes('Controller "bs02-never-registered" not found in registry'))).toBe(true);
+      el.controller = null;
+      errorSpy.mockClear();
 
-    // Unrelated elements continue rendering cleanly
-    const el2 = document.createElement('bs02-isolated-no-ctrl') as any;
-    document.body.appendChild(el2);
-    await el2.ready;
-    expect(el2.shadowRoot?.querySelector('.ok')?.textContent).toBe('alive');
+      // (c) class reference logs via console.error without throwing synchronously
+      class PlainClass {}
+      expect(() => { el.controller = PlainClass; }).not.toThrow();
+      const classErrs = errorSpy.mock.calls.flat().map(v => (v instanceof Error ? v.message : String(v)));
+      expect(classErrs.some(m => m.includes('must be decorated with @controller'))).toBe(true);
+
+      // Unrelated elements continue rendering cleanly
+      const el2 = document.createElement('bs02-isolated-no-ctrl') as any;
+      document.body.appendChild(el2);
+      await el2.ready;
+      expect(el2.shadowRoot?.querySelector('.ok')?.textContent).toBe('alive');
+    } finally {
+      if (savedStore !== undefined) (globalThis as any)[storeKey] = savedStore;
+      else delete (globalThis as any)[storeKey];
+    }
   });
 });
