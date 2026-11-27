@@ -98,15 +98,15 @@
   background: var(--snice-color-danger);
 }
 
-/* Signature concentric WinUI 3 thumb: fixed outer circle + surface ring + inner accent dot */
+/* Signature concentric WinUI 3 thumb: fixed outer circle + elevated surface ring + inner accent dot */
 [part~="thumb"] {
   width: 1.25rem;
   height: 1.25rem;
   box-sizing: border-box;
   border-radius: 9999px;
   background: var(--snice-color-primary);
-  border: 4px solid var(--snice-color-surface-container-lowest);
-  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom), var(--snice-shadow-xs);
+  border: 4px solid var(--snice-color-surface-container-highest);
+  box-shadow: 0 0 0 1px var(--snice-color-border-hover), var(--snice-shadow-xs);
   transition:
     border-width var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
     background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
@@ -141,13 +141,13 @@
 [part~="thumb"]:hover {
   transform: translate(-50%, -50%);
   border-width: 3px;
-  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom), var(--snice-shadow-xs);
+  box-shadow: 0 0 0 1px var(--snice-color-border-hover), var(--snice-shadow-xs);
 }
 
 [part~="thumb"][part~="thumb-vertical"]:hover {
   transform: translate(-50%, 50%);
   border-width: 3px;
-  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom), var(--snice-shadow-xs);
+  box-shadow: 0 0 0 1px var(--snice-color-border-hover), var(--snice-shadow-xs);
 }
 
 :host([size="small"]) [part~="thumb"]:hover,
@@ -164,13 +164,13 @@
 [part~="thumb"]:active {
   transform: translate(-50%, -50%);
   border-width: 5px;
-  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom), var(--snice-shadow-xs);
+  box-shadow: 0 0 0 1px var(--snice-color-border-hover), var(--snice-shadow-xs);
 }
 
 [part~="thumb"][part~="thumb-vertical"]:active {
   transform: translate(-50%, 50%);
   border-width: 5px;
-  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom), var(--snice-shadow-xs);
+  box-shadow: 0 0 0 1px var(--snice-color-border-hover), var(--snice-shadow-xs);
 }
 
 :host([data-win-pressed="true"]) [part~="thumb"],
@@ -305,7 +305,7 @@
 
 /* Loading state: --snice-win-on-accent spinner centered cleanly inside concentric thumb */
 [part~="track"][part~="track-loading"] {
-  opacity: 0.8;
+  opacity: 1;
   cursor: wait;
 }
 
@@ -318,15 +318,15 @@
 [part~="thumb"][part~="thumb-loading"] {
   cursor: wait;
   pointer-events: none;
-  border-width: 4px;
+  border-width: 2.5px;
 }
 
 :host([size="small"]) [part~="thumb"][part~="thumb-loading"] {
-  border-width: 3px;
+  border-width: 2px;
 }
 
 :host([size="large"]) [part~="thumb"][part~="thumb-loading"] {
-  border-width: 5px;
+  border-width: 3px;
 }
 
 [part~="spinner"] {
@@ -335,23 +335,23 @@
 
 [part~="spinner"]::after {
   box-sizing: border-box;
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-width: 1.5px;
   border-color: var(--snice-win-on-accent);
   border-right-color: transparent;
 }
 
 :host([size="small"]) [part~="spinner"]::after {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-width: 1.5px;
 }
 
 :host([size="large"]) [part~="spinner"]::after {
-  width: 12px;
-  height: 12px;
-  border-width: 2px;
+  width: 11px;
+  height: 11px;
+  border-width: 1.75px;
 }
 
 /* Readonly state: preserve resting concentric dot without interactive deformation */

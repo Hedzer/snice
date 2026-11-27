@@ -100,9 +100,9 @@
   cursor: not-allowed;
 }
 
-/* Loading sets both track-disabled & track-loading in DOM; keep loading distinct unless also disabled */
+/* Loading sets both track-disabled & track-loading in DOM; keep opacity 1 so white pill stays luminous */
 [part~="track"][part~="track-loading"] {
-  opacity: 0.78;
+  opacity: 1;
   cursor: wait;
 }
 

@@ -105,10 +105,9 @@
   cursor: not-allowed;
 }
 
-/* Loading track — placed after track-disabled because snice-slider sets both
-   track-disabled and track-loading when loading is active. */
+/* Loading track — keep opacity 1 so cutout surface halo stays 100% crisp opaque */
 [part~="track"][part~="track-loading"] {
-  opacity: 0.78;
+  opacity: 1;
   background: var(--_m3-slider-track-bg);
   cursor: wait;
 }
@@ -290,6 +289,13 @@
 
 [part~="spinner"] {
   color: var(--_m3-slider-accent);
+}
+
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  width: 0.6875rem;
+  height: 0.6875rem;
+  border-width: 1.75px;
 }
 
 /* Value readout & M3 supporting / error text */

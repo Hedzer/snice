@@ -301,6 +301,7 @@
 }
 
 [part~="spinner"]::after {
+  box-sizing: border-box;
   width: 0.625rem;
   height: 0.625rem;
   border-width: 1.5px;
@@ -322,9 +323,9 @@
   cursor: not-allowed;
 }
 
-/* Loading track sits after track-disabled so interactionDisabled doesn't dim loading */
+/* Loading track sits after track-disabled; keep opacity 1 so white AppKit knob stays luminous */
 [part~="track"][part~="track-loading"] {
-  opacity: 0.78;
+  opacity: 1;
   cursor: wait;
 }
 
