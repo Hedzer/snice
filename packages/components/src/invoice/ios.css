@@ -46,6 +46,7 @@
 
 :host([variant="modern"]) {
   --invoice-border-width: 0;
+  --invoice-accent: var(--snice-ios-fill-primary);
   --invoice-header-text: hsl(0 0% 100%);
   --invoice-shadow: var(--snice-shadow-md);
 }

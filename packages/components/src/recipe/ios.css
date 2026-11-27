@@ -388,8 +388,8 @@
   font-size: 0.9375rem;
   font-weight: 600;
   letter-spacing: -0.012em;
-  background: var(--snice-color-primary);
-  border: 1px solid color-mix(in srgb, white 26%, var(--snice-color-primary));
+  background: var(--snice-ios-fill-primary);
+  border: 1px solid color-mix(in srgb, white 26%, var(--snice-ios-fill-primary));
   box-shadow:
     inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
     0 4px 14px -4px color-mix(in srgb, var(--snice-color-primary) 50%, transparent);

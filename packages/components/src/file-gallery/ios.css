@@ -180,19 +180,19 @@
   padding: 3px 8px;
   font-size: 0.6875rem;
   font-weight: 600;
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   box-shadow: var(--snice-shadow-xs);
 }
 
 :host [part~="status-success"] {
-  background: var(--snice-color-success);
+  background: var(--snice-ios-fill-success);
   color: hsl(0 0% 100%);
   box-shadow: var(--snice-shadow-xs);
 }
 
 :host [part~="status-error"] {
-  background: var(--snice-color-danger);
+  background: var(--snice-ios-fill-danger);
   color: hsl(0 0% 100%);
   box-shadow: var(--snice-shadow-xs);
 }

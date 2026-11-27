@@ -87,7 +87,7 @@
 
 /* Floating capsule badge with explicit white ink in light & dark modes */
 [part~="badge"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   border-radius: 9999px;
   padding: 0.25rem 0.75rem;
@@ -151,7 +151,7 @@
 }
 
 [part~="cta-primary"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   border: none;
   box-shadow: var(--snice-shadow-xs);

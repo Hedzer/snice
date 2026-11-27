@@ -102,7 +102,7 @@
 }
 
 [part~="toggle-collapsed"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   border-color: transparent;
   color: hsl(0 0% 100%);
 }

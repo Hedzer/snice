@@ -108,7 +108,7 @@
 
 :host [part~="button-active"],
 :host [part~="button-active"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
 }
 

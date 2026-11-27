@@ -130,8 +130,8 @@
 }
 
 [part~="task-checkbox-checked"] {
-  background: var(--snice-color-success);
-  border-color: var(--snice-color-success);
+  background: var(--snice-ios-fill-success);
+  border-color: var(--snice-ios-fill-success);
   color: hsl(0 0% 100%);
 }
 
@@ -191,7 +191,7 @@
 }
 
 [part~="sign-button"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
 }
 

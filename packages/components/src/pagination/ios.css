@@ -87,7 +87,7 @@
 
 [part~="page"][part~="page-current"],
 :host([variant="text"]) [part~="page"][part~="page-current"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   font-weight: 600;
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.28), 0 1px 3px hsl(0 0% 0% / 0.16);

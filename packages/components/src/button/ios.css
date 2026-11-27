@@ -76,8 +76,8 @@
 /* Prominent Liquid Glass (.glassProminent) — translucent tinted glass with
    crisp internal specular rim and subtle neutral contact shadow (no neon glow). */
 :host([variant="primary"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 90%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 72%, hsl(0 0% 0% / 0.35));
+  background: color-mix(in srgb, var(--snice-ios-fill-primary) 90%, transparent);
+  border-color: color-mix(in srgb, var(--snice-ios-fill-primary) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   box-shadow:
     inset 0 1px 0.5px hsl(0 0% 100% / 0.34),
@@ -88,8 +88,8 @@
 }
 
 :host([variant="primary"]) [part~="base"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 94%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 72%, hsl(0 0% 0% / 0.35));
+  background: color-mix(in srgb, var(--snice-ios-fill-primary) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-ios-fill-primary) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   transform: none;
   filter: brightness(1.04);
@@ -102,8 +102,8 @@
 }
 
 :host([variant="primary"]) [part~="base"]:active {
-  background: color-mix(in srgb, var(--snice-color-primary) 96%, black);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 72%, hsl(0 0% 0% / 0.35));
+  background: color-mix(in srgb, var(--snice-ios-fill-primary) 96%, black);
+  border-color: color-mix(in srgb, var(--snice-ios-fill-primary) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   transform: scale(0.96);
   filter: brightness(0.94);
@@ -114,8 +114,8 @@
 }
 
 :host([variant="success"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-success) 90%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-success) 72%, hsl(0 0% 0% / 0.35));
+  background: color-mix(in srgb, var(--snice-ios-fill-success) 90%, transparent);
+  border-color: color-mix(in srgb, var(--snice-ios-fill-success) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   box-shadow:
     inset 0 1px 0.5px hsl(0 0% 100% / 0.34),
@@ -126,8 +126,8 @@
 }
 
 :host([variant="success"]) [part~="base"]:hover {
-  background: color-mix(in srgb, var(--snice-color-success) 94%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-success) 72%, hsl(0 0% 0% / 0.35));
+  background: color-mix(in srgb, var(--snice-ios-fill-success) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-ios-fill-success) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   transform: none;
   filter: brightness(1.04);
@@ -140,8 +140,8 @@
 }
 
 :host([variant="success"]) [part~="base"]:active {
-  background: color-mix(in srgb, var(--snice-color-success) 96%, black);
-  border-color: color-mix(in srgb, var(--snice-color-success) 72%, hsl(0 0% 0% / 0.35));
+  background: color-mix(in srgb, var(--snice-ios-fill-success) 96%, black);
+  border-color: color-mix(in srgb, var(--snice-ios-fill-success) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   transform: scale(0.96);
   filter: brightness(0.94);
@@ -190,8 +190,8 @@
 }
 
 :host([variant="danger"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-danger) 90%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-danger) 72%, hsl(0 0% 0% / 0.35));
+  background: color-mix(in srgb, var(--snice-ios-fill-danger) 90%, transparent);
+  border-color: color-mix(in srgb, var(--snice-ios-fill-danger) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   box-shadow:
     inset 0 1px 0.5px hsl(0 0% 100% / 0.34),
@@ -202,8 +202,8 @@
 }
 
 :host([variant="danger"]) [part~="base"]:hover {
-  background: color-mix(in srgb, var(--snice-color-danger) 94%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-danger) 72%, hsl(0 0% 0% / 0.35));
+  background: color-mix(in srgb, var(--snice-ios-fill-danger) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-ios-fill-danger) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   transform: none;
   filter: brightness(1.04);
@@ -216,8 +216,8 @@
 }
 
 :host([variant="danger"]) [part~="base"]:active {
-  background: color-mix(in srgb, var(--snice-color-danger) 96%, black);
-  border-color: color-mix(in srgb, var(--snice-color-danger) 72%, hsl(0 0% 0% / 0.35));
+  background: color-mix(in srgb, var(--snice-ios-fill-danger) 96%, black);
+  border-color: color-mix(in srgb, var(--snice-ios-fill-danger) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   transform: scale(0.96);
   filter: brightness(0.94);

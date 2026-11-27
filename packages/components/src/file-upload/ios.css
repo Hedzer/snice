@@ -116,7 +116,7 @@
   padding: 0 1.25rem;
   border-radius: 9999px;
   border: none;
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   font-family: var(--snice-font-family);
   font-size: 0.9375rem;

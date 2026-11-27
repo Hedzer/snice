@@ -87,7 +87,7 @@
 
 :host [part~="handle"]:active {
   scale: 1.32;
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   border-color: hsl(0 0% 100%);
 }
 

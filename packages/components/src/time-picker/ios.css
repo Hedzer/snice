@@ -183,7 +183,7 @@
 
 :host [part~="selector-item"][part~="selector-item-selected"],
 :host [part~="selector-item"][part~="selector-item-selected"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   font-weight: 600;
 }

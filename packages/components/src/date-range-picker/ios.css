@@ -359,14 +359,14 @@
 }
 
 :host [part~="day-range-start"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   font-weight: 600;
   border-radius: 9999px 0 0 9999px;
 }
 
 :host [part~="day-range-end"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   font-weight: 600;
   border-radius: 0 9999px 9999px 0;
@@ -418,7 +418,7 @@
 }
 
 :host [part~="year-cell-selected"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   font-weight: 600;
 }

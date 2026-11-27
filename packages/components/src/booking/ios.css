@@ -41,12 +41,12 @@
 }
 
 [part~="step-number-active"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
 }
 
 [part~="step-number-completed"] {
-  background: var(--snice-color-success);
+  background: var(--snice-ios-fill-success);
   color: hsl(0 0% 100%);
 }
 
@@ -123,7 +123,7 @@
 }
 
 [part~="day-selected"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   font-weight: 600;
 }
@@ -176,8 +176,8 @@
 }
 
 [part~="slot-selected"] {
-  background: var(--snice-color-primary);
-  border-color: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
+  border-color: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
 }
 
@@ -264,7 +264,7 @@
 
 [part~="next-button"] {
   border: none;
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
 }
 

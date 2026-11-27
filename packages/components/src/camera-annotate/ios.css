@@ -92,7 +92,7 @@
 :host [part~="primary-button"] {
   min-height: 40px;
   padding: 0 18px;
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   border: none;
   color: hsl(0 0% 100%);
   font-weight: 600;
@@ -101,7 +101,7 @@
 
 :host [part~="primary-button"]:hover {
   opacity: 1;
-  background: color-mix(in srgb, var(--snice-color-primary) 88%, hsl(0 0% 0%));
+  background: color-mix(in srgb, var(--snice-ios-fill-primary) 88%, hsl(0 0% 0%));
   color: hsl(0 0% 100%);
 }
 
@@ -117,8 +117,8 @@
 }
 
 :host [part~="clear-button"]:hover {
-  background: var(--snice-color-danger);
-  border-color: var(--snice-color-danger);
+  background: var(--snice-ios-fill-danger);
+  border-color: var(--snice-ios-fill-danger);
   color: hsl(0 0% 100%);
 }
 

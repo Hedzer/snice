@@ -21,13 +21,20 @@
   --snice-tracking-tight: -0.024em;
   --snice-tracking-normal: -0.008em;
 
-  /* iOS 26 System Semantic Seeds — brand overrides on --snice-color-primary
-     cascade automatically through core.css color-mix() derivations. */
-  --snice-color-primary: hsl(211 100% 50%);
-  --snice-color-success: hsl(135 59% 49%);
-  --snice-color-warning: hsl(35 100% 50%);
-  --snice-color-danger: hsl(3 100% 59%);
-  --snice-color-neutral: hsl(240 4% 46%);
+  /* iOS 26 System Semantic Seeds — Apple HIG Accessible System Colors (>=4.5:1 WCAG AA
+     on grouped surfaces, tinted pills, and filled controls). Brand overrides on
+     --snice-color-primary cascade automatically through core.css color-mix() derivations. */
+  --snice-color-primary: hsl(211 100% 39%);
+  --snice-color-success: hsl(135 68% 26%);
+  --snice-color-warning: hsl(27 100% 32%);
+  --snice-color-danger: hsl(355 96% 39%);
+  --snice-color-neutral: hsl(240 4% 40%);
+
+  /* Accessible filled-control semantic fills (paired with white ink in both modes) */
+  --snice-ios-fill-primary: var(--snice-color-primary);
+  --snice-ios-fill-success: var(--snice-color-success);
+  --snice-ios-fill-danger: var(--snice-color-danger);
+  --snice-ios-on-warning: hsl(0 0% 100%);
 
   /* iOS Grouped Surface Hierarchy (opaque content surfaces — glass is reserved
      strictly for floating control/navigation chrome above content). */
@@ -40,8 +47,8 @@
 
   /* Text & Hairline Separators */
   --snice-color-text: hsl(0 0% 0%);
-  --snice-color-text-secondary: hsl(240 4% 34%);
-  --snice-color-text-tertiary: hsl(240 4% 52%);
+  --snice-color-text-secondary: hsl(240 4% 32%);
+  --snice-color-text-tertiary: hsl(240 4% 39%);
   --snice-color-text-inverse: hsl(0 0% 100%);
   --snice-color-border: hsl(240 6% 24% / 0.16);
   --snice-color-border-hover: hsl(240 6% 24% / 0.28);
@@ -94,11 +101,16 @@
 }
 
 [data-theme="dark"] {
-  --snice-color-primary: hsl(210 100% 52%);
-  --snice-color-success: hsl(135 63% 50%);
-  --snice-color-warning: hsl(36 100% 52%);
-  --snice-color-danger: hsl(3 100% 61%);
-  --snice-color-neutral: hsl(240 4% 58%);
+  --snice-color-primary: hsl(211 100% 62%);
+  --snice-color-success: hsl(135 65% 52%);
+  --snice-color-warning: hsl(38 100% 56%);
+  --snice-color-danger: hsl(3 100% 66%);
+  --snice-color-neutral: hsl(240 4% 44%);
+
+  --snice-ios-fill-primary: hsl(211 100% 42%);
+  --snice-ios-fill-success: hsl(135 68% 28%);
+  --snice-ios-fill-danger: hsl(355 92% 43%);
+  --snice-ios-on-warning: hsl(0 0% 0%);
 
   --snice-color-surface: hsl(0 0% 0%);
   --snice-color-surface-container-lowest: hsl(240 5% 12%);
@@ -108,8 +120,8 @@
   --snice-color-surface-container-highest: hsl(240 4% 15%);
 
   --snice-color-text: hsl(0 0% 100%);
-  --snice-color-text-secondary: hsl(240 5% 68%);
-  --snice-color-text-tertiary: hsl(240 4% 50%);
+  --snice-color-text-secondary: hsl(240 5% 74%);
+  --snice-color-text-tertiary: hsl(240 5% 63%);
   --snice-color-text-inverse: hsl(0 0% 0%);
   --snice-color-border: hsl(240 6% 45% / 0.34);
   --snice-color-border-hover: hsl(240 6% 60% / 0.46);
@@ -126,11 +138,16 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]),
   :root[data-theme="auto"] {
-    --snice-color-primary: hsl(210 100% 52%);
-    --snice-color-success: hsl(135 63% 50%);
-    --snice-color-warning: hsl(36 100% 52%);
-    --snice-color-danger: hsl(3 100% 61%);
-    --snice-color-neutral: hsl(240 4% 58%);
+    --snice-color-primary: hsl(211 100% 62%);
+    --snice-color-success: hsl(135 65% 52%);
+    --snice-color-warning: hsl(38 100% 56%);
+    --snice-color-danger: hsl(3 100% 66%);
+    --snice-color-neutral: hsl(240 4% 44%);
+
+    --snice-ios-fill-primary: hsl(211 100% 42%);
+    --snice-ios-fill-success: hsl(135 68% 28%);
+    --snice-ios-fill-danger: hsl(355 92% 43%);
+    --snice-ios-on-warning: hsl(0 0% 0%);
 
     --snice-color-surface: hsl(0 0% 0%);
     --snice-color-surface-container-lowest: hsl(240 5% 12%);
@@ -140,8 +157,8 @@
     --snice-color-surface-container-highest: hsl(240 4% 15%);
 
     --snice-color-text: hsl(0 0% 100%);
-    --snice-color-text-secondary: hsl(240 5% 68%);
-    --snice-color-text-tertiary: hsl(240 4% 50%);
+    --snice-color-text-secondary: hsl(240 5% 74%);
+    --snice-color-text-tertiary: hsl(240 5% 63%);
     --snice-color-text-inverse: hsl(0 0% 0%);
     --snice-color-border: hsl(240 6% 45% / 0.34);
     --snice-color-border-hover: hsl(240 6% 60% / 0.46);

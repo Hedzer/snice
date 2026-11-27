@@ -73,15 +73,15 @@
 
 /* CRITICAL iOS dark-mode fix: explicit white icon ink + seed-derived active halo */
 [part~="step-indicator-active"] {
-  background: var(--snice-color-primary);
-  border: 2px solid var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
+  border: 2px solid var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--snice-color-primary) 24%, transparent);
 }
 
 [part~="step-indicator-completed"] {
-  background: var(--snice-color-success);
-  border: 2px solid var(--snice-color-success);
+  background: var(--snice-ios-fill-success);
+  border: 2px solid var(--snice-ios-fill-success);
   color: hsl(0 0% 100%);
 }
 

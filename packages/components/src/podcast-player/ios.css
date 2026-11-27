@@ -131,7 +131,7 @@
   height: 56px;
   padding: 0;
   border-radius: 9999px;
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   box-shadow: 0 4px 14px -2px color-mix(in srgb, var(--snice-color-primary) 42%, transparent);
 }

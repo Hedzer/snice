@@ -72,7 +72,7 @@
 
 /* Explicit white ink on saturated iOS blue (never --snice-color-text-inverse in dark mode!) */
 :host [part~="sort-order"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
 }
 
@@ -129,7 +129,7 @@
 
 :host [part~="pagination-button"][part~="pagination-button-active"],
 :host [part~="pagination-button"][part~="pagination-button-active"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   border-color: transparent;
   color: hsl(0 0% 100%);
 }

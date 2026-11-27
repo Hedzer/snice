@@ -135,7 +135,7 @@
 }
 
 [part~="accept-button"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   border: none;
 }
@@ -163,7 +163,7 @@
 }
 
 [part~="option-button"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
 }
 

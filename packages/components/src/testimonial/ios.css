@@ -42,7 +42,7 @@
 :host([variant="featured"]) [part~="base"] {
   background: linear-gradient(
     155deg,
-    color-mix(in srgb, var(--snice-color-primary) 92%, white),
+    color-mix(in srgb, var(--snice-ios-fill-primary) 92%, white),
     var(--snice-color-primary)
   );
   color: hsl(0 0% 100%);

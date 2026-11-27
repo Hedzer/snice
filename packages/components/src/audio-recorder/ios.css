@@ -114,14 +114,14 @@
   width: 44px;
   height: 44px;
   box-sizing: border-box;
-  background: var(--snice-color-danger);
+  background: var(--snice-ios-fill-danger);
   color: hsl(0 0% 100%);
   border: 3px solid var(--snice-color-surface-container-high);
   box-shadow: 0 0 0 2px var(--snice-color-danger);
 }
 
 :host [part~="button-play"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
 }
 

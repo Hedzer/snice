@@ -97,7 +97,7 @@
 }
 
 [part~="button-next"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
 }
 

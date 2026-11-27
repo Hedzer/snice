@@ -21,22 +21,22 @@
 }
 
 [part~="step-indicator"][part~="step-indicator-active"] {
-  background: var(--snice-color-primary);
-  border: 1.5px solid var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
+  border: 1.5px solid var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.28), 0 1px 3px hsl(0 0% 0% / 0.16);
 }
 
 [part~="step-indicator"][part~="step-indicator-completed"] {
-  background: var(--snice-color-success);
-  border: 1.5px solid var(--snice-color-success);
+  background: var(--snice-ios-fill-success);
+  border: 1.5px solid var(--snice-ios-fill-success);
   color: hsl(0 0% 100%);
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.25);
 }
 
 [part~="step-indicator"][part~="step-indicator-error"] {
-  background: var(--snice-color-danger);
-  border: 1.5px solid var(--snice-color-danger);
+  background: var(--snice-ios-fill-danger);
+  border: 1.5px solid var(--snice-ios-fill-danger);
   color: hsl(0 0% 100%);
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.25);
 }

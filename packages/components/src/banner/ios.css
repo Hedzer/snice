@@ -112,7 +112,7 @@
   font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.34);
   transition:
@@ -121,22 +121,22 @@
 }
 
 :host([variant="info"]) [part~="action"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
 }
 
 :host([variant="success"]) [part~="action"] {
-  background: var(--snice-color-success);
+  background: var(--snice-ios-fill-success);
   color: hsl(0 0% 100%);
 }
 
 :host([variant="warning"]) [part~="action"] {
   background: var(--snice-color-warning);
-  color: hsl(24 40% 10%);
+  color: var(--snice-ios-on-warning);
 }
 
 :host([variant="error"]) [part~="action"] {
-  background: var(--snice-color-danger);
+  background: var(--snice-ios-fill-danger);
   color: hsl(0 0% 100%);
 }
 

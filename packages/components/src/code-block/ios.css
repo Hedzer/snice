@@ -129,8 +129,8 @@
 :host [part~="copy-button-copied"],
 :host([theme="dark"]) [part~="copy-button-copied"],
 :host([theme="light"]) [part~="copy-button-copied"] {
-  background: var(--snice-color-success);
-  border-color: var(--snice-color-success);
+  background: var(--snice-ios-fill-success);
+  border-color: var(--snice-ios-fill-success);
   color: hsl(0 0% 100%);
   box-shadow: none;
 }

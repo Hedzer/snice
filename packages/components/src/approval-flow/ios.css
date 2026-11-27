@@ -25,14 +25,14 @@
 }
 
 [part~="avatar-approved"] {
-  background: var(--snice-color-success);
-  border: 2px solid var(--snice-color-success);
+  background: var(--snice-ios-fill-success);
+  border: 2px solid var(--snice-ios-fill-success);
   color: hsl(0 0% 100%);
 }
 
 [part~="avatar-rejected"] {
-  background: var(--snice-color-danger);
-  border: 2px solid var(--snice-color-danger);
+  background: var(--snice-ios-fill-danger);
+  border: 2px solid var(--snice-ios-fill-danger);
   color: hsl(0 0% 100%);
 }
 
@@ -144,12 +144,12 @@
 }
 
 [part~="button-approve"] {
-  background: var(--snice-color-success);
+  background: var(--snice-ios-fill-success);
   color: hsl(0 0% 100%);
 }
 
 [part~="button-reject"] {
-  background: var(--snice-color-danger);
+  background: var(--snice-ios-fill-danger);
   color: hsl(0 0% 100%);
 }
 

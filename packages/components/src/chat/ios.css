@@ -55,7 +55,7 @@
 
 /* Explicit white ink on saturated iOS blue — never --snice-color-text-inverse (black in dark mode!) */
 :host([layout="bubbles"]) [part~="message-text-own"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   border-radius: 18px 18px 6px 18px;
   padding: 0.5rem 0.875rem;
@@ -100,8 +100,8 @@
 
 :host [part~="reaction-active"],
 :host [part~="reaction-active"]:hover {
-  background: var(--snice-color-primary);
-  border-color: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
+  border-color: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
 }
 
@@ -148,7 +148,7 @@
 
 :host [part~="edit-save"] {
   border-radius: 9999px;
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   border-color: transparent;
   color: hsl(0 0% 100%);
   font-weight: 600;
@@ -176,7 +176,7 @@
 :host [part~="delete-confirm-yes"],
 :host [part~="delete-confirm-yes"]:hover {
   border-radius: 9999px;
-  background: var(--snice-color-danger);
+  background: var(--snice-ios-fill-danger);
   border-color: transparent;
   color: hsl(0 0% 100%);
   font-weight: 600;
@@ -240,7 +240,7 @@
   width: 2rem;
   height: 2rem;
   border-radius: 9999px;
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   transition:
     transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring),
@@ -248,7 +248,7 @@
 }
 
 :host [part~="send-button"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   filter: brightness(1.06);
   color: hsl(0 0% 100%);
 }

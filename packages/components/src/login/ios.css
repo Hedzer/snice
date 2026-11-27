@@ -181,7 +181,7 @@
   min-height: 2.75rem;
   border-radius: 9999px;
   border: none;
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   font-family: var(--snice-font-family);
   font-size: 1rem;
@@ -205,7 +205,7 @@
 }
 
 :host [part~="submit-button-base"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 88%, white);
+  background: color-mix(in srgb, var(--snice-ios-fill-primary) 88%, white);
   color: hsl(0 0% 100%);
 }
 

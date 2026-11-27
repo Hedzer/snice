@@ -90,10 +90,10 @@
 /* Variant: primary */
 :host([variant="primary"]) [part~="primary"],
 :host([variant="primary"]) [part~="toggle"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border-color: color-mix(in srgb, var(--snice-color-primary) 88%, black);
+  border-color: color-mix(in srgb, var(--snice-ios-fill-primary) 88%, black);
   color: hsl(0 0% 100%);
   box-shadow:
     inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
@@ -113,10 +113,10 @@
 /* Variant: success */
 :host([variant="success"]) [part~="primary"],
 :host([variant="success"]) [part~="toggle"] {
-  background: var(--snice-color-success);
+  background: var(--snice-ios-fill-success);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border-color: color-mix(in srgb, var(--snice-color-success) 88%, black);
+  border-color: color-mix(in srgb, var(--snice-ios-fill-success) 88%, black);
   color: hsl(0 0% 100%);
   box-shadow:
     inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
@@ -159,10 +159,10 @@
 /* Variant: danger */
 :host([variant="danger"]) [part~="primary"],
 :host([variant="danger"]) [part~="toggle"] {
-  background: var(--snice-color-danger);
+  background: var(--snice-ios-fill-danger);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border-color: color-mix(in srgb, var(--snice-color-danger) 88%, black);
+  border-color: color-mix(in srgb, var(--snice-ios-fill-danger) 88%, black);
   color: hsl(0 0% 100%);
   box-shadow:
     inset 0 1px 0.5px hsl(0 0% 100% / 0.34),
@@ -323,7 +323,7 @@
 }
 
 [part~="action"]:active {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
 }
 

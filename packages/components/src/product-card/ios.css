@@ -146,12 +146,12 @@
 }
 
 :host([badge-variant="sale"]) [part~="badge"] {
-  background: var(--snice-color-danger);
+  background: var(--snice-ios-fill-danger);
   color: hsl(0 0% 100%);
 }
 
 :host([badge-variant="new"]) [part~="badge"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
 }
 
@@ -237,7 +237,7 @@
 [part~="cta"] {
   min-height: 2.75rem;
   border-radius: 9999px;
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
   font-size: 0.9375rem;
   font-weight: 600;

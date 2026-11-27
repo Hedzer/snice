@@ -53,7 +53,7 @@
 }
 
 [part~="track-checked"] {
-  background: var(--snice-color-success);
+  background: var(--snice-ios-fill-success);
   box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.1);
 }
 
@@ -62,7 +62,7 @@
 }
 
 :host(:hover) [part~="track-checked"] {
-  background: color-mix(in srgb, var(--snice-color-success) 92%, white);
+  background: color-mix(in srgb, var(--snice-ios-fill-success) 92%, white);
 }
 
 /* Track sizes */
@@ -103,7 +103,7 @@
 }
 
 [part~="track-invalid"][part~="track-checked"] {
-  background: var(--snice-color-danger);
+  background: var(--snice-ios-fill-danger);
   box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.12);
 }
 
@@ -112,7 +112,7 @@
 }
 
 :host(:hover) [part~="track-invalid"][part~="track-checked"] {
-  background: color-mix(in srgb, var(--snice-color-danger) 90%, white);
+  background: color-mix(in srgb, var(--snice-ios-fill-danger) 90%, white);
 }
 
 [part~="track-loading"] {
