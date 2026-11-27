@@ -25,8 +25,8 @@
 
   /* Windows 11 Accent & Semantic Seeds (WinUI 3 Light Theme values) */
   --snice-color-primary: hsl(209 100% 36%);
-  --snice-color-success: hsl(120 78% 27%);
-  --snice-color-warning: hsl(35 100% 31%);
+  --snice-color-success: hsl(120 78% 23%);
+  --snice-color-warning: hsl(35 100% 27%);
   --snice-color-danger: hsl(5 75% 44%);
   --snice-color-neutral: hsl(0 0% 38%);
   --snice-win-on-accent: hsl(0 0% 100%);
@@ -41,8 +41,8 @@
 
   /* Text & Fluent Elevation Strokes */
   --snice-color-text: hsl(0 0% 10.6%);
-  --snice-color-text-secondary: hsl(0 0% 36%);
-  --snice-color-text-tertiary: hsl(0 0% 48%);
+  --snice-color-text-secondary: hsl(0 0% 34%);
+  --snice-color-text-tertiary: hsl(0 0% 41%);
   --snice-color-text-inverse: hsl(0 0% 100%);
   --snice-color-border: hsl(0 0% 0% / 0.08);
   --snice-color-border-hover: hsl(0 0% 0% / 0.16);
@@ -102,8 +102,8 @@
   --snice-color-surface-container-highest: hsl(0 0% 20%);
 
   --snice-color-text: hsl(0 0% 100%);
-  --snice-color-text-secondary: hsl(0 0% 78%);
-  --snice-color-text-tertiary: hsl(0 0% 62%);
+  --snice-color-text-secondary: hsl(0 0% 79%);
+  --snice-color-text-tertiary: hsl(0 0% 65%);
   --snice-color-text-inverse: hsl(0 0% 10%);
   --snice-color-border: hsl(0 0% 100% / 0.08);
   --snice-color-border-hover: hsl(0 0% 100% / 0.16);
@@ -137,8 +137,8 @@
     --snice-color-surface-container-highest: hsl(0 0% 20%);
 
     --snice-color-text: hsl(0 0% 100%);
-    --snice-color-text-secondary: hsl(0 0% 78%);
-    --snice-color-text-tertiary: hsl(0 0% 62%);
+    --snice-color-text-secondary: hsl(0 0% 79%);
+    --snice-color-text-tertiary: hsl(0 0% 65%);
     --snice-color-text-inverse: hsl(0 0% 10%);
     --snice-color-border: hsl(0 0% 100% / 0.08);
     --snice-color-border-hover: hsl(0 0% 100% / 0.16);

@@ -43,8 +43,8 @@
 
   /* Text & Outlines */
   --snice-color-text: hsl(270 10% 12%);
-  --snice-color-text-secondary: hsl(270 6% 32%);
-  --snice-color-text-tertiary: hsl(270 5% 48%);
+  --snice-color-text-secondary: hsl(270 6% 30%);
+  --snice-color-text-tertiary: hsl(270 6% 39%);
   --snice-color-text-inverse: hsl(270 14% 96%);
   --snice-color-border: hsl(270 6% 48%);
   --snice-color-border-hover: hsl(270 8% 36%);
@@ -98,10 +98,10 @@
   --snice-color-neutral: hsl(264 8% 64%);
 
   --snice-m3-on-primary: hsl(265 58% 22%);
-  --snice-m3-primary-container: color-mix(in srgb, var(--snice-color-primary) 30%, hsl(270 14% 12%));
-  --snice-m3-on-primary-container: color-mix(in srgb, var(--snice-color-primary) 92%, white);
-  --snice-m3-secondary-container: color-mix(in srgb, var(--snice-color-primary) 22%, hsl(270 12% 18%));
-  --snice-m3-on-secondary-container: color-mix(in srgb, var(--snice-color-primary) 86%, white);
+  --snice-m3-primary-container: color-mix(in srgb, var(--snice-color-primary) 24%, hsl(270 14% 12%));
+  --snice-m3-on-primary-container: color-mix(in srgb, var(--snice-color-primary) 78%, white);
+  --snice-m3-secondary-container: color-mix(in srgb, var(--snice-color-primary) 20%, hsl(270 12% 17%));
+  --snice-m3-on-secondary-container: color-mix(in srgb, var(--snice-color-primary) 78%, white);
 
   --snice-color-surface: color-mix(in srgb, var(--snice-color-primary) 3%, hsl(266 14% 8%));
   --snice-color-surface-container-lowest: hsl(266 16% 6%);
@@ -111,8 +111,8 @@
   --snice-color-surface-container-highest: color-mix(in srgb, var(--snice-color-primary) 13%, hsl(266 9% 21%));
 
   --snice-color-text: hsl(270 14% 92%);
-  --snice-color-text-secondary: hsl(270 8% 76%);
-  --snice-color-text-tertiary: hsl(270 6% 58%);
+  --snice-color-text-secondary: hsl(270 8% 79%);
+  --snice-color-text-tertiary: hsl(270 7% 67%);
   --snice-color-text-inverse: hsl(266 14% 12%);
   --snice-color-border: hsl(270 8% 56%);
   --snice-color-border-hover: hsl(270 10% 72%);
@@ -130,10 +130,10 @@
     --snice-color-neutral: hsl(264 8% 64%);
 
     --snice-m3-on-primary: hsl(265 58% 22%);
-    --snice-m3-primary-container: color-mix(in srgb, var(--snice-color-primary) 30%, hsl(270 14% 12%));
-    --snice-m3-on-primary-container: color-mix(in srgb, var(--snice-color-primary) 92%, white);
-    --snice-m3-secondary-container: color-mix(in srgb, var(--snice-color-primary) 22%, hsl(270 12% 18%));
-    --snice-m3-on-secondary-container: color-mix(in srgb, var(--snice-color-primary) 86%, white);
+    --snice-m3-primary-container: color-mix(in srgb, var(--snice-color-primary) 24%, hsl(270 14% 12%));
+    --snice-m3-on-primary-container: color-mix(in srgb, var(--snice-color-primary) 78%, white);
+    --snice-m3-secondary-container: color-mix(in srgb, var(--snice-color-primary) 20%, hsl(270 12% 17%));
+    --snice-m3-on-secondary-container: color-mix(in srgb, var(--snice-color-primary) 78%, white);
 
     --snice-color-surface: color-mix(in srgb, var(--snice-color-primary) 3%, hsl(266 14% 8%));
     --snice-color-surface-container-lowest: hsl(266 16% 6%);
@@ -143,8 +143,8 @@
     --snice-color-surface-container-highest: color-mix(in srgb, var(--snice-color-primary) 13%, hsl(266 9% 21%));
 
     --snice-color-text: hsl(270 14% 92%);
-    --snice-color-text-secondary: hsl(270 8% 76%);
-    --snice-color-text-tertiary: hsl(270 6% 58%);
+    --snice-color-text-secondary: hsl(270 8% 79%);
+    --snice-color-text-tertiary: hsl(270 7% 67%);
     --snice-color-text-inverse: hsl(266 14% 12%);
     --snice-color-border: hsl(270 8% 56%);
     --snice-color-border-hover: hsl(270 10% 72%);
