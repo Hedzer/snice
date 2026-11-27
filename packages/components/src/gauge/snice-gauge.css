@@ -5,7 +5,7 @@
 :host {
   display: inline-block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-  contain: layout style paint;
+  contain: layout style;
 }
 
 .gauge {
@@ -57,6 +57,20 @@
   line-height: 1;
 }
 
+/* Default (medium) size — base 0,1,0 specificity so Layer 2 platform parts override cleanly */
+.gauge__svg {
+  width: 7.5rem; /* 120px */
+  height: 4.5rem; /* ~72px */
+}
+
+.gauge__value-text {
+  font-size: 1.25rem; /* 20px */
+}
+
+.gauge__label {
+  font-size: 0.75rem; /* 12px */
+}
+
 /* Sizes */
 :host([size="small"]) .gauge__svg {
   width: 5rem; /* 80px */
@@ -69,22 +83,6 @@
 
 :host([size="small"]) .gauge__label {
   font-size: 0.625rem; /* 10px */
-}
-
-:host([size="medium"]) .gauge__svg,
-:host(:not([size])) .gauge__svg {
-  width: 7.5rem; /* 120px */
-  height: 4.5rem; /* ~72px */
-}
-
-:host([size="medium"]) .gauge__value-text,
-:host(:not([size])) .gauge__value-text {
-  font-size: 1.25rem; /* 20px */
-}
-
-:host([size="medium"]) .gauge__label,
-:host(:not([size])) .gauge__label {
-  font-size: 0.75rem; /* 12px */
 }
 
 :host([size="large"]) .gauge__svg {
@@ -100,9 +98,12 @@
   font-size: 0.875rem; /* 14px */
 }
 
-/* Variants */
-:host([variant="default"]) .gauge__fill,
-:host(:not([variant])) .gauge__fill {
+/* Variants — default fill at 0,1,0 so Layer 2 [part~="fill"] & WHCM override cleanly */
+.gauge__fill {
+  stroke: hsl(var(--snice-color-gray-600, 0 0% 45%));
+}
+
+:host([variant="default"]) .gauge__fill {
   stroke: hsl(var(--snice-color-gray-600, 0 0% 45%));
 }
 

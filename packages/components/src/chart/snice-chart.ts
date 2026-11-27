@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, query, watch, html, css } from 'snice';
+import { element, property, render, styles, dispatch, query, watch, ready, dispose, html, css } from 'snice';
 import type { ChartType, ChartDataset, ChartOptions, ChartDataPoint, SniceChartElement } from './snice-chart.types';
 import chartStyles from './snice-chart.css?inline';
 import { getAccentPalette } from '../theme-utils';
@@ -194,6 +194,60 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
 
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
+  private themeObserver: MutationObserver | null = null;
+  private resizeObserver: ResizeObserver | null = null;
+  private drawRaf = 0;
+
+  @ready()
+  private setupObservers() {
+    if (typeof MutationObserver !== 'undefined' && document.documentElement) {
+      this.themeObserver = new MutationObserver(() => this.scheduleDraw());
+      this.themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme', 'data-platform']
+      });
+    }
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => this.scheduleDraw());
+      this.resizeObserver.observe(this);
+    }
+  }
+
+  @dispose()
+  private teardownObservers() {
+    this.themeObserver?.disconnect();
+    this.themeObserver = null;
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = null;
+    if (this.drawRaf) {
+      cancelAnimationFrame(this.drawRaf);
+      this.drawRaf = 0;
+    }
+  }
+
+  private scheduleDraw() {
+    if (this.drawRaf) cancelAnimationFrame(this.drawRaf);
+    this.drawRaf = requestAnimationFrame(() => {
+      this.drawRaf = 0;
+      this.initAndDrawChart();
+    });
+  }
+
+  private getCanvasTheme() {
+    const cs = typeof getComputedStyle === 'function' ? getComputedStyle(this) : null;
+    const read = (prop: string) => cs?.getPropertyValue(prop).trim() || '';
+    const gridColor = read('--snice-chart-grid-color') || read('--snice-color-border') || '#e0e0e0';
+    const axisColor = read('--snice-chart-axis-color') || read('--snice-color-border-hover') || read('--snice-color-text-secondary') || '#666';
+    const labelColor = read('--snice-chart-label-color') || read('--snice-color-text-secondary') || '#666';
+    const fontFamily = read('--snice-chart-label-font') || read('--snice-font-family') || 'sans-serif';
+    const labelSize = read('--snice-chart-label-size') || '11px';
+    const barRadius = parseFloat(read('--snice-chart-bar-radius')) || 0;
+    const rawDash = read('--snice-chart-grid-dash');
+    const gridDash = rawDash && rawDash !== 'none'
+      ? rawDash.split(/[\s,]+/).map(Number).filter(n => !isNaN(n) && n >= 0)
+      : [];
+    return { gridColor, axisColor, labelColor, font: `${labelSize} ${fontFamily}`, barRadius, gridDash };
+  }
 
   @styles()
   styles() {
@@ -250,9 +304,10 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     const plotArea = this.canvas.parentElement as HTMLElement | null;
     const width = this.width || plotArea?.clientWidth || this.offsetWidth || 600;
     const height = this.height || plotArea?.clientHeight || this.offsetHeight || 400;
+    const dpr = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1;
 
-    this.canvas.width = width;
-    this.canvas.height = height;
+    this.canvas.width = Math.round(width * dpr);
+    this.canvas.height = Math.round(height * dpr);
     this.canvas.style.width = `${width}px`;
     this.canvas.style.height = `${height}px`;
 
@@ -263,6 +318,10 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
       return;
     }
     if (!this.ctx || !this.datasets.length) return;
+
+    if (typeof this.ctx.setTransform === 'function') {
+      this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
 
     // Clear canvas
     this.ctx.clearRect(0, 0, width, height);
@@ -285,36 +344,46 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
   private drawCartesianChart(width: number, height: number) {
     if (!this.ctx) return;
 
-    const padding = { top: 40, right: 40, bottom: 60, left: 60 };
-    const chartWidth = width - padding.left - padding.right;
-    const chartHeight = height - padding.top - padding.bottom;
+    const padding = {
+      top: Math.max(14, Math.min(24, Math.round(height * 0.08))),
+      right: Math.max(14, Math.min(24, Math.round(width * 0.05))),
+      bottom: Math.max(26, Math.min(36, Math.round(height * 0.14))),
+      left: 44
+    };
+    const chartWidth = Math.max(20, width - padding.left - padding.right);
+    const chartHeight = Math.max(20, height - padding.top - padding.bottom);
 
     const { min: yMin, max: yMax } = this.getYAxisRange();
     const xCount = this.getXAxisCount();
+    const theme = this.getCanvasTheme();
 
     // Draw grid
-    this.drawGrid(padding, chartWidth, chartHeight, yMin, yMax, xCount);
+    this.drawGrid(padding, chartWidth, chartHeight, yMin, yMax, xCount, theme);
 
     // Draw axes
-    this.drawAxes(padding, chartWidth, chartHeight, yMin, yMax, xCount);
+    this.drawAxes(padding, chartWidth, chartHeight, yMin, yMax, xCount, theme);
 
     // Draw datasets
     this.ctx.save();
     this.ctx.translate(padding.left, padding.top);
     this.datasets.forEach((dataset, index) => {
       if (this.hiddenDatasets.has(index)) return;
-      this.drawDataset(dataset, index, chartWidth, chartHeight, yMin, yMax, xCount);
+      this.drawDataset(dataset, index, chartWidth, chartHeight, yMin, yMax, xCount, theme.barRadius);
     });
     this.ctx.restore();
   }
 
-  private drawGrid(padding: any, chartWidth: number, chartHeight: number, yMin: number, yMax: number, xCount: number) {
+  private drawGrid(padding: any, chartWidth: number, chartHeight: number, yMin: number, yMax: number, xCount: number, theme = this.getCanvasTheme()) {
     if (!this.ctx) return;
     const options = this.resolvedOptions();
     if (!options.xAxis?.grid && !options.yAxis?.grid) return;
 
-    this.ctx.strokeStyle = '#e0e0e0';
+    this.ctx.save();
+    this.ctx.strokeStyle = theme.gridColor;
     this.ctx.lineWidth = 1;
+    if (typeof this.ctx.setLineDash === 'function') {
+      this.ctx.setLineDash(theme.gridDash);
+    }
 
     const yTicks = options.yAxis?.ticks || 5;
 
@@ -353,13 +422,14 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
         }
       }
     }
+    this.ctx.restore();
   }
 
-  private drawAxes(padding: any, chartWidth: number, chartHeight: number, yMin: number, yMax: number, xCount: number) {
+  private drawAxes(padding: any, chartWidth: number, chartHeight: number, yMin: number, yMax: number, xCount: number, theme = this.getCanvasTheme()) {
     if (!this.ctx) return;
 
-    this.ctx.strokeStyle = '#333';
-    this.ctx.lineWidth = 2;
+    this.ctx.strokeStyle = theme.axisColor;
+    this.ctx.lineWidth = 1;
 
     // Y axis
     this.ctx.beginPath();
@@ -374,8 +444,8 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     this.ctx.stroke();
 
     // Y axis labels
-    this.ctx.fillStyle = '#666';
-    this.ctx.font = '12px sans-serif';
+    this.ctx.fillStyle = theme.labelColor;
+    this.ctx.font = theme.font;
     this.ctx.textAlign = 'right';
     this.ctx.textBaseline = 'middle';
 
@@ -383,7 +453,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     for (let i = 0; i <= yTicks; i++) {
       const value = yMax - (yMax - yMin) / yTicks * i;
       const y = padding.top + (chartHeight / yTicks) * i;
-      this.ctx.fillText(value.toFixed(1), padding.left - 10, y);
+      this.ctx.fillText(value.toFixed(1), padding.left - 8, y);
     }
 
     // X axis labels
@@ -400,7 +470,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
         for (let i = 0; i < numLabels; i++) {
           const x = padding.left + segmentWidth * i + segmentWidth / 2;
           const label = this.labels[i] || i.toString();
-          this.ctx.fillText(label, x, padding.top + chartHeight + 10);
+          this.ctx.fillText(label, x, padding.top + chartHeight + 8);
         }
       } else {
         // Line/area chart: spread labels edge-to-edge
@@ -408,13 +478,13 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
         for (let i = 0; i < numLabels; i++) {
           const x = padding.left + spacing * i;
           const label = this.labels[i] || i.toString();
-          this.ctx.fillText(label, x, padding.top + chartHeight + 10);
+          this.ctx.fillText(label, x, padding.top + chartHeight + 8);
         }
       }
     }
   }
 
-  private drawDataset(dataset: ChartDataset, datasetIndex: number, chartWidth: number, chartHeight: number, yMin: number, yMax: number, xCount: number) {
+  private drawDataset(dataset: ChartDataset, datasetIndex: number, chartWidth: number, chartHeight: number, yMin: number, yMax: number, xCount: number, barRadius = 0) {
     const chartType = dataset.type || this.type;
 
     switch (chartType) {
@@ -425,7 +495,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
         this.drawAreaDataset(dataset, datasetIndex, chartWidth, chartHeight, yMin, yMax);
         break;
       case 'bar':
-        this.drawBarDataset(dataset, datasetIndex, chartWidth, chartHeight, yMin, yMax, xCount);
+        this.drawBarDataset(dataset, datasetIndex, chartWidth, chartHeight, yMin, yMax, xCount, barRadius);
         break;
       case 'scatter':
         this.drawScatterDataset(dataset, datasetIndex, chartWidth, chartHeight, yMin, yMax);
@@ -446,6 +516,8 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     // Draw line
     this.ctx.strokeStyle = dataset.borderColor || color;
     this.ctx.lineWidth = borderWidth;
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
     this.ctx.beginPath();
     this.ctx.moveTo(points[0].x, points[0].y);
     points.slice(1).forEach(p => this.ctx!.lineTo(p.x, p.y));
@@ -485,7 +557,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     this.drawLineDataset(dataset, datasetIndex, chartWidth, chartHeight, yMin, yMax);
   }
 
-  private drawBarDataset(dataset: ChartDataset, datasetIndex: number, chartWidth: number, chartHeight: number, yMin: number, yMax: number, xCount: number) {
+  private drawBarDataset(dataset: ChartDataset, datasetIndex: number, chartWidth: number, chartHeight: number, yMin: number, yMax: number, xCount: number, barRadius = 0) {
     if (!this.ctx) return;
 
     const color = this.getDatasetColor(dataset, datasetIndex);
@@ -517,7 +589,14 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
       this.ctx!.fillStyle = Array.isArray(dataset.backgroundColor)
         ? dataset.backgroundColor[index % dataset.backgroundColor.length]
         : color;
-      this.ctx!.fillRect(x, barY, singleBarWidth, barHeight);
+      if (barRadius > 0 && barHeight > 1 && typeof this.ctx!.roundRect === 'function') {
+        const r = Math.min(barRadius, singleBarWidth / 2, barHeight);
+        this.ctx!.beginPath();
+        this.ctx!.roundRect(x, barY, singleBarWidth, barHeight, [r, r, 0, 0]);
+        this.ctx!.fill();
+      } else {
+        this.ctx!.fillRect(x, barY, singleBarWidth, barHeight);
+      }
     });
   }
 
@@ -577,7 +656,8 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     const maxValue = Math.max(...this.datasets.flatMap(d => d.data.map(v => typeof v === 'number' ? v : 0)));
 
     // Draw grid
-    this.ctx.strokeStyle = '#e0e0e0';
+    const theme = this.getCanvasTheme();
+    this.ctx.strokeStyle = theme.gridColor;
     [0.2, 0.4, 0.6, 0.8, 1].forEach(ratio => {
       const r = radius * ratio;
       this.ctx!.beginPath();
@@ -607,8 +687,8 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
       this.ctx.stroke();
 
       // Labels
-      this.ctx.fillStyle = '#666';
-      this.ctx.font = '12px sans-serif';
+      this.ctx.fillStyle = theme.labelColor;
+      this.ctx.font = theme.font;
       this.ctx.textAlign = 'center';
       this.ctx.fillText(this.labels[i] || i.toString(), x, y);
     }

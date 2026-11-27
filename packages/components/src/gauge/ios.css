@@ -1,6 +1,32 @@
-/* iOS 26+ Liquid Glass / SwiftUI Fitness & Weather semicircular gauge skin */
+/* iOS 26+ Liquid Glass / Apple Health & Weather — snice-gauge
+ * 18px grouped Apple widget tile with top atmospheric sheen, variant-tinted
+ * round-cap track, bold SF Pro Display tabular readout, and spring fill motion.
+ */
 
-:host [part~="track"] {
+:host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+[part~="base"] {
+  box-sizing: border-box;
+  padding: 0.75rem 0.9375rem;
+  border-radius: 18px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 4%, var(--snice-color-surface-container-high)) 0%,
+    var(--snice-color-surface-container-high) 48%
+  );
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-xs);
+}
+
+:host([size="small"]) [part~="base"] {
+  padding: 0.5rem 0.6875rem;
+  border-radius: 14px;
+}
+
+[part~="track"] {
   stroke: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
   stroke-linecap: round;
 }
@@ -22,11 +48,11 @@
   stroke: color-mix(in srgb, var(--snice-color-danger) 24%, transparent);
 }
 
-:host [part~="fill"],
+[part~="fill"],
 :host([variant="default"]) [part~="fill"] {
   stroke: var(--snice-color-neutral);
   stroke-linecap: round;
-  transition: stroke-dashoffset var(--snice-transition-medium, 320ms) var(--snice-ease-spring, cubic-bezier(0.25, 1, 0.5, 1));
+  transition: stroke-dashoffset var(--snice-transition-medium, 320ms) var(--snice-ease-spring);
 }
 
 :host([variant="primary"]) [part~="fill"],
@@ -63,7 +89,34 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :host [part~="fill"] {
+  [part~="fill"] {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="track"] {
+    stroke: GrayText;
+  }
+
+  [part~="fill"],
+  :host([variant="default"]) [part~="fill"],
+  :host([variant="primary"]) [part~="fill"],
+  :host([variant="info"]) [part~="fill"],
+  :host([variant="success"]) [part~="fill"],
+  :host([variant="warning"]) [part~="fill"],
+  :host([variant="error"]) [part~="fill"] {
+    stroke: Highlight;
+  }
+
+  [part~="value"],
+  [part~="label"] {
+    color: CanvasText;
   }
 }

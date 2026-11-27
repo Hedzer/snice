@@ -1,22 +1,31 @@
-/* Windows 11 Fluent 2 / Task Manager inline sparkline skin */
+/* Windows 11 Fluent 2 / Task Manager inline sparkline — snice-sparkline
+ * Crisp 4px top-lit Mica mini-graph frame with razor-sharp 0px crispEdges bars,
+ * square line caps, 100ms fast-out motion, and complete WHCM support.
+ */
 
 [part~="base"] {
   display: inline-block;
   vertical-align: middle;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
   overflow: visible;
 }
 
 [part~="line"] {
   stroke-linecap: square;
-  stroke-linejoin: round;
-  animation-duration: 450ms;
+  stroke-linejoin: miter;
+  animation-duration: 420ms;
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
 }
 
 [part~="bar"] {
-  rx: 1.5px;
-  ry: 1.5px;
-  animation-duration: 240ms;
+  rx: 0;
+  ry: 0;
+  shape-rendering: crispEdges;
+  animation-duration: 220ms;
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
   transition: opacity 100ms cubic-bezier(0, 0, 0, 1);
 }
@@ -42,6 +51,11 @@
 }
 
 @media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
   [part~="line"],
   [part~="dot"] {
     stroke: Highlight;

@@ -1,24 +1,31 @@
-/* macOS 26 Tahoe AppKit / Activity Monitor inline sparkline skin */
+/* macOS 26+ Tahoe AppKit / Activity Monitor inline sparkline — snice-sparkline
+ * Compact 5px recessed AppKit micro-well with inset depth shadow & crisp 1px rectilinear bars.
+ */
 
 [part~="base"] {
   display: inline-block;
   vertical-align: middle;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: color-mix(in srgb, black 3%, var(--snice-color-background-secondary));
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: inset 0 1px 1.5px hsl(0 0% 0% / 0.1);
   overflow: visible;
 }
 
 [part~="line"] {
   stroke-linecap: round;
   stroke-linejoin: round;
-  animation-duration: 560ms;
+  animation-duration: 540ms;
   animation-timing-function: ease-out;
 }
 
 [part~="bar"] {
-  rx: 2px;
-  ry: 2px;
-  animation-duration: 300ms;
+  rx: 1px;
+  ry: 1px;
+  animation-duration: 280ms;
   animation-timing-function: ease-out;
-  transition: opacity 140ms ease;
+  transition: opacity 120ms ease;
 }
 
 [part~="bar"]:hover {
@@ -26,7 +33,7 @@
 }
 
 [part~="dot"] {
-  fill: var(--snice-color-background-element);
+  fill: var(--snice-color-background-secondary);
   animation-duration: 200ms;
 }
 
@@ -37,5 +44,23 @@
   [part~="dot"] {
     animation-duration: 0.01ms;
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="line"],
+  [part~="dot"] {
+    stroke: Highlight;
+  }
+
+  [part~="bar"],
+  [part~="area"] {
+    fill: Highlight;
   }
 }

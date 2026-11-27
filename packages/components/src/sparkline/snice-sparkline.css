@@ -5,7 +5,7 @@
 :host {
   display: inline-block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-  contain: layout style paint;
+  contain: layout style;
   vertical-align: middle;
 }
 
@@ -164,5 +164,17 @@
   * {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .sparkline .sparkline__line,
+  .sparkline .sparkline__dot {
+    stroke: Highlight;
+  }
+
+  .sparkline .sparkline__bar,
+  .sparkline .sparkline__area {
+    fill: Highlight;
   }
 }

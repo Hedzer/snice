@@ -1,15 +1,29 @@
-/* Material 3 Expressive chart card skin */
+/* Android Material 3 Expressive / Pixel & Fitbit Analytics — snice-chart
+ * Generous 28px borderless primary-tinted tonal surface container (-low),
+ * primary-tinted dashed gridlines, plush 7px top-rounded bars, Roboto ticks,
+ * borderless secondary-container legend pills with 8px press morph, and
+ * elevated 16px surface-container-highest Rich Tooltip.
+ */
 
 :host {
   font-family: var(--snice-font-family);
+  --snice-chart-grid-color: color-mix(in srgb, var(--snice-color-primary) 22%, var(--snice-color-border-subtle));
+  --snice-chart-axis-color: color-mix(in srgb, var(--snice-color-primary) 34%, var(--snice-color-border));
+  --snice-chart-label-color: var(--snice-color-text-secondary);
+  --snice-chart-label-font: var(--snice-font-family);
+  --snice-chart-label-size: 11px;
+  --snice-chart-bar-radius: 7;
+  --snice-chart-grid-dash: 4 4;
+  --snice-chart-legend-hidden-opacity: 0.52;
 }
 
+/* Signature M3 Expressive 28px borderless primary-tinted tonal card */
 [part~="base"] {
   box-sizing: border-box;
   padding: 1rem;
-  border-radius: 1rem;
+  border-radius: 28px;
   background: var(--snice-color-surface-container-low);
-  border: 1px solid var(--snice-color-border-subtle);
+  border: none;
   box-shadow: var(--snice-shadow-xs);
 }
 
@@ -22,33 +36,31 @@
   min-height: 2rem;
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
-  background: var(--snice-color-surface-container);
-  border: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-m3-secondary-container);
+  border: none;
   transition:
-    border-radius 180ms cubic-bezier(0.2, 0, 0, 1),
-    background-color 160ms cubic-bezier(0.2, 0, 0, 1),
-    opacity 160ms cubic-bezier(0.2, 0, 0, 1);
+    border-radius 180ms var(--snice-m3-spring-spatial-fast),
+    background-color 150ms var(--snice-m3-spring-effects),
+    opacity 150ms var(--snice-m3-spring-effects);
 }
 
 [part~="legend-item"]:hover {
-  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container));
+  background: color-mix(in srgb, var(--snice-color-primary) 16%, var(--snice-m3-secondary-container));
   opacity: 1;
 }
 
 [part~="legend-item"]:active {
-  border-radius: var(--snice-m3-shape-morph-pressed, 0.5rem);
-  background: color-mix(in srgb, var(--snice-color-primary) 10%, var(--snice-color-surface-container));
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
 }
 
 [part~="legend-item"]:focus-visible {
-  outline: 2px solid var(--snice-color-primary);
+  outline: 3px solid var(--snice-color-primary);
   outline-offset: 2px;
 }
 
 [part~="legend-item-hidden"] {
   opacity: 0.52;
-  background: transparent;
-  border-style: dashed;
+  background: var(--snice-color-surface-container);
 }
 
 [part~="legend-color"] {
@@ -61,25 +73,25 @@
   font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: 0.006em;
-  color: var(--snice-color-text);
+  color: var(--snice-m3-on-secondary-container);
   font-variant-numeric: tabular-nums;
 }
 
-/* M3 Rich Tooltip: opaque tonal elevation, explicit contrasting ink */
+/* Elevated 16px borderless M3 Rich Tooltip */
 [part~="tooltip"] {
-  border-radius: 0.75rem;
+  border-radius: 16px;
   padding: 0.5rem 0.75rem;
   background: var(--snice-color-surface-container-highest);
   color: var(--snice-color-text);
-  border: 1px solid var(--snice-color-border-subtle);
+  border: none;
   box-shadow: var(--snice-shadow-md);
   font-size: 0.75rem;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   transform: translateY(4px);
   transition:
-    opacity 160ms cubic-bezier(0.2, 0, 0, 1),
-    transform 180ms cubic-bezier(0.2, 0, 0, 1);
+    opacity 150ms var(--snice-m3-spring-effects),
+    transform 180ms var(--snice-m3-spring-spatial-fast);
 }
 
 [part~="tooltip-visible"] {
@@ -100,5 +112,26 @@
   [part~="tooltip"],
   [part~="tooltip-visible"] {
     transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    --snice-chart-grid-color: GrayText;
+    --snice-chart-axis-color: CanvasText;
+    --snice-chart-label-color: CanvasText;
+  }
+
+  [part~="base"],
+  [part~="legend-item"],
+  [part~="tooltip"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="legend-label"] {
+    color: CanvasText;
   }
 }

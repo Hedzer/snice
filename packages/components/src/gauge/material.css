@@ -1,15 +1,36 @@
-/* Android Material 3 Expressive circular meter gauge skin */
+/* Android Material 3 Expressive / Pixel & Fitbit Widget — snice-gauge
+ * Generous 24px borderless primary-tinted tonal widget card (-low), M3
+ * secondary-container round-cap track, Roboto Display tabular readout, and spring fill.
+ */
 
-:host [part~="track"] {
-  stroke: var(--snice-m3-secondary-container, var(--snice-color-surface-container-highest));
+:host {
+  font-family: var(--snice-font-family);
+}
+
+[part~="base"] {
+  box-sizing: border-box;
+  padding: 0.8125rem 1rem;
+  border-radius: 24px;
+  background: var(--snice-color-surface-container-low);
+  border: none;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host([size="small"]) [part~="base"] {
+  padding: 0.5625rem 0.75rem;
+  border-radius: 18px;
+}
+
+[part~="track"] {
+  stroke: var(--snice-m3-secondary-container);
   stroke-linecap: round;
 }
 
-:host [part~="fill"],
+[part~="fill"],
 :host([variant="default"]) [part~="fill"] {
   stroke: var(--snice-color-neutral);
   stroke-linecap: round;
-  transition: stroke-dashoffset var(--snice-transition-medium, 280ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.2, 0, 0, 1));
+  transition: stroke-dashoffset var(--snice-transition-medium, 280ms) var(--snice-m3-spring-spatial-fast);
 }
 
 :host([variant="primary"]) [part~="fill"],
@@ -32,7 +53,7 @@
 [part~="value"] {
   font-family: var(--snice-font-family-display);
   font-weight: 600;
-  letter-spacing: var(--snice-tracking-tight, -0.01em);
+  letter-spacing: var(--snice-tracking-tight, -0.015em);
   font-variant-numeric: tabular-nums;
   color: var(--snice-color-text);
 }
@@ -46,7 +67,34 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :host [part~="fill"] {
+  [part~="fill"] {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="track"] {
+    stroke: GrayText;
+  }
+
+  [part~="fill"],
+  :host([variant="default"]) [part~="fill"],
+  :host([variant="primary"]) [part~="fill"],
+  :host([variant="info"]) [part~="fill"],
+  :host([variant="success"]) [part~="fill"],
+  :host([variant="warning"]) [part~="fill"],
+  :host([variant="error"]) [part~="fill"] {
+    stroke: Highlight;
+  }
+
+  [part~="value"],
+  [part~="label"] {
+    color: CanvasText;
   }
 }

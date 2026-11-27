@@ -1,28 +1,45 @@
-/* Windows 11 Fluent 2 / WinUI 3 chart card skin */
+/* Windows 11 Fluent 2 / Task Manager & Power BI WinUI 3 — snice-chart
+ * Crisp 8px elevated top-lit Mica card (--snice-win-stroke-top / --snice-win-stroke-bottom),
+ * solid hairline gridlines, razor-sharp 0px square bars, Segoe UI Variable ticks,
+ * 2px square swatches inside 4px WinUI legend tiles, transient 4px Acrylic tooltip
+ * with 3px top Fluent accent bar, 100ms fast-out motion, and complete WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
+  --snice-chart-grid-color: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+  --snice-chart-axis-color: var(--snice-color-border-hover);
+  --snice-chart-label-color: var(--snice-color-text-secondary);
+  --snice-chart-label-font: var(--snice-font-family);
+  --snice-chart-label-size: 11px;
+  --snice-chart-bar-radius: 0;
+  --snice-chart-grid-dash: none;
+  --snice-chart-legend-hidden-opacity: 0.45;
 }
 
+/* Crisp 8px elevated top-lit Fluent 2 Mica card */
 [part~="base"] {
   box-sizing: border-box;
   padding: 0.875rem;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   background: var(--snice-color-surface-container-high);
-  border: 1px solid var(--snice-color-border);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
   box-shadow: var(--snice-shadow-xs);
 }
 
 [part~="legend"] {
-  gap: 0.375rem 0.625rem;
+  gap: 0.375rem 0.5rem;
   padding: 0 0 0.625rem 0;
 }
 
 [part~="legend-item"] {
   min-height: 1.75rem;
   padding: 0.1875rem 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid transparent;
+  border-radius: 4px;
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
   transition:
     background-color 100ms cubic-bezier(0, 0, 0, 1),
     border-color 100ms cubic-bezier(0, 0, 0, 1),
@@ -30,13 +47,12 @@
 }
 
 [part~="legend-item"]:hover {
-  background: var(--snice-win-control-bg-hover, var(--snice-color-surface-container));
-  border-color: var(--snice-win-stroke-top, var(--snice-color-border));
+  background: var(--snice-win-control-bg-hover);
   opacity: 1;
 }
 
 [part~="legend-item"]:active {
-  background: var(--snice-win-control-bg-pressed, var(--snice-color-surface-container-low));
+  background: var(--snice-win-control-bg-pressed);
 }
 
 [part~="legend-item"]:focus-visible {
@@ -46,12 +62,13 @@
 
 [part~="legend-item-hidden"] {
   opacity: 0.45;
+  background: transparent;
 }
 
 [part~="legend-color"] {
   width: 0.625rem;
   height: 0.625rem;
-  border-radius: 0.125rem;
+  border-radius: 2px;
 }
 
 [part~="legend-label"] {
@@ -61,14 +78,16 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Transient Acrylic flyout tooltip with explicit contrasting ink */
+/* Transient 4px Acrylic flyout tooltip with iconic 3px top Fluent accent bar */
 [part~="tooltip"] {
-  border-radius: 0.25rem;
-  padding: 0.375rem 0.625rem;
-  background: var(--snice-win-acrylic-bg);
-  backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  border: 1px solid var(--snice-color-border);
+  border-radius: 4px;
+  padding: 0.4375rem 0.6875rem;
+  background: color-mix(in srgb, var(--snice-color-surface-container-highest) 92%, transparent);
+  backdrop-filter: var(--snice-win-acrylic-blur);
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  border-top: 3px solid var(--snice-color-primary);
   box-shadow: var(--snice-shadow-md);
   color: var(--snice-color-text);
   font-size: 0.75rem;
@@ -80,6 +99,14 @@
   opacity: 1;
 }
 
+@media (prefers-reduced-transparency: reduce) {
+  [part~="tooltip"] {
+    background: var(--snice-color-surface-container-highest);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   [part~="legend-item"],
   [part~="tooltip"] {
@@ -88,15 +115,24 @@
 }
 
 @media (forced-colors: active) {
+  :host {
+    --snice-chart-grid-color: GrayText;
+    --snice-chart-axis-color: CanvasText;
+    --snice-chart-label-color: CanvasText;
+  }
+
   [part~="base"],
+  [part~="legend-item"],
   [part~="tooltip"] {
     background: Canvas;
     border-color: CanvasText;
     color: CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
   }
 
-  [part~="legend-item"]:hover {
-    border-color: ButtonText;
+  [part~="tooltip"] {
+    border-top-color: Highlight;
   }
 
   [part~="legend-item"]:focus-visible {

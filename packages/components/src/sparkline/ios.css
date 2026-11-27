@@ -1,8 +1,15 @@
-/* iOS 26+ Liquid Glass / Apple Stocks inline sparkline skin */
+/* iOS 26+ Liquid Glass / Apple Stocks inline sparkline — snice-sparkline
+ * Soft 8px grouped micro-capsule backing, smooth round-cap strokes, and 3px pill bars.
+ */
 
 [part~="base"] {
   display: inline-block;
   vertical-align: middle;
+  padding: 3px 7px;
+  border-radius: 8px;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-xs);
   overflow: visible;
 }
 
@@ -10,15 +17,15 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   animation-duration: 720ms;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-timing-function: var(--snice-ease-out);
 }
 
 [part~="bar"] {
-  rx: 2.5px;
-  ry: 2.5px;
+  rx: 3px;
+  ry: 3px;
   animation-duration: 360ms;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-  transition: opacity 160ms ease;
+  animation-timing-function: var(--snice-ease-out);
+  transition: opacity 160ms var(--snice-ease-out);
 }
 
 [part~="bar"]:hover {
@@ -36,5 +43,23 @@
   [part~="dot"] {
     animation-duration: 0.01ms;
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="line"],
+  [part~="dot"] {
+    stroke: Highlight;
+  }
+
+  [part~="bar"],
+  [part~="area"] {
+    fill: Highlight;
   }
 }

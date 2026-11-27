@@ -1,14 +1,38 @@
-/* Windows 11 Fluent 2 / WinUI 3 radial gauge skin */
+/* Windows 11 Fluent 2 / Task Manager & Power BI WinUI 3 — snice-gauge
+ * Crisp 8px elevated top-lit Mica card (--snice-win-stroke-top / --snice-win-stroke-bottom),
+ * precision flat/butt-capped technical meter arc, Segoe UI Variable tabular readout,
+ * 187ms fast-out motion, and complete forced-colors WHCM.
+ */
 
-:host [part~="track"] {
-  stroke: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
-  stroke-linecap: round;
+:host {
+  font-family: var(--snice-font-family);
 }
 
-:host [part~="fill"],
+[part~="base"] {
+  box-sizing: border-box;
+  padding: 0.6875rem 0.875rem;
+  border-radius: 8px;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host([size="small"]) [part~="base"] {
+  padding: 0.5rem 0.625rem;
+  border-radius: 6px;
+}
+
+/* Precision flat-cap WinUI / Power BI technical meter geometry */
+[part~="track"] {
+  stroke: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+  stroke-linecap: butt;
+}
+
+[part~="fill"],
 :host([variant="default"]) [part~="fill"] {
   stroke: var(--snice-color-neutral);
-  stroke-linecap: round;
+  stroke-linecap: butt;
   transition: stroke-dashoffset 187ms cubic-bezier(0, 0, 0, 1);
 }
 
@@ -45,17 +69,23 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :host [part~="fill"] {
+  [part~="fill"] {
     transition: none;
   }
 }
 
 @media (forced-colors: active) {
-  :host [part~="track"] {
+  [part~="base"] {
+    background: Canvas;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="track"] {
     stroke: GrayText;
   }
 
-  :host [part~="fill"],
+  [part~="fill"],
   :host([variant="default"]) [part~="fill"],
   :host([variant="primary"]) [part~="fill"],
   :host([variant="info"]) [part~="fill"],
