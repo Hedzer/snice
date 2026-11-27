@@ -1,0 +1,79 @@
+/* macOS 26 Tahoe Liquid Glass / AppKit — snice-action-bar (Compact Floating Liquid Glass HUD Toolbar) */
+:host {
+  font-family: var(--snice-font-family);
+  --action-bar-background: color-mix(in srgb, var(--snice-color-background-elevated) 88%, transparent);
+  --action-bar-border: 0.5px solid var(--snice-macos-glass-border);
+  --action-bar-border-radius: 10px;
+  --action-bar-padding: 0.3125rem 0.4375rem;
+  --action-bar-gap: 0.25rem;
+  --action-bar-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-lg);
+}
+
+:host([ready]),
+:host([open]) {
+  transition-duration: var(--snice-transition-medium, 220ms);
+  transition-timing-function: var(--snice-ease-spring);
+}
+
+:host([no-animation]) {
+  transition: none;
+}
+
+:host([variant="pill"]) {
+  --action-bar-border-radius: 9999px;
+  --action-bar-padding: 0.25rem 0.5rem;
+}
+
+:host([size="small"]) {
+  --action-bar-border-radius: 8px;
+  --action-bar-padding: 0.1875rem 0.3125rem;
+  --action-bar-gap: 0.1875rem;
+}
+
+:host([size="small"][variant="pill"]) {
+  --action-bar-border-radius: 9999px;
+}
+
+/* Preserve base CSS [ready] FOUC display gate — never set display on bare [part~="base"] */
+[part~="base"] {
+  box-sizing: border-box;
+  padding: var(--action-bar-padding);
+  gap: var(--action-bar-gap);
+  border-radius: var(--action-bar-border-radius);
+  background: var(--action-bar-background);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: var(--action-bar-border);
+  box-shadow: var(--action-bar-shadow);
+  color: var(--snice-color-text);
+}
+
+:host([size="small"]) [part~="base"] {
+  padding: var(--action-bar-padding);
+  gap: var(--action-bar-gap);
+  border-radius: var(--action-bar-border-radius);
+}
+
+:host([variant="pill"]) [part~="base"] {
+  border-radius: 9999px;
+  padding: var(--action-bar-padding);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host {
+    --action-bar-background: var(--snice-color-background-elevated);
+  }
+
+  [part~="base"] {
+    background: var(--snice-color-background-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([ready]),
+  :host([open]) {
+    transition-duration: 0.01ms;
+  }
+}

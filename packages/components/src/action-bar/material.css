@@ -1,0 +1,65 @@
+/* Android Material 3 Expressive — snice-action-bar (Borderless Floating Tonal Toolbar) */
+:host {
+  font-family: var(--snice-font-family);
+  --action-bar-background: var(--snice-color-surface-container-high);
+  --action-bar-border: none;
+  --action-bar-border-radius: 16px;
+  --action-bar-padding: 0.5rem 0.75rem;
+  --action-bar-gap: 0.375rem;
+  --action-bar-shadow: var(--snice-shadow-lg);
+}
+
+:host([ready]),
+:host([open]) {
+  transition-duration: var(--snice-transition-medium, 280ms);
+  transition-timing-function: var(--snice-m3-spring-spatial, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host([no-animation]) {
+  transition: none;
+}
+
+:host([variant="pill"]) {
+  --action-bar-border-radius: 9999px;
+  --action-bar-padding: 0.5rem 0.75rem;
+}
+
+:host([size="small"]) {
+  --action-bar-border-radius: 12px;
+  --action-bar-padding: 0.375rem 0.5rem;
+  --action-bar-gap: 0.25rem;
+}
+
+:host([size="small"][variant="pill"]) {
+  --action-bar-border-radius: 9999px;
+}
+
+/* Preserve base CSS [ready] FOUC display gate — zero glass blur in Material 3 */
+[part~="base"] {
+  box-sizing: border-box;
+  padding: var(--action-bar-padding);
+  gap: var(--action-bar-gap);
+  border-radius: var(--action-bar-border-radius);
+  background: var(--action-bar-background);
+  border: var(--action-bar-border);
+  box-shadow: var(--action-bar-shadow);
+  color: var(--snice-color-text);
+}
+
+:host([size="small"]) [part~="base"] {
+  padding: var(--action-bar-padding);
+  gap: var(--action-bar-gap);
+  border-radius: var(--action-bar-border-radius);
+}
+
+:host([variant="pill"]) [part~="base"] {
+  border-radius: 9999px;
+  padding: var(--action-bar-padding);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([ready]),
+  :host([open]) {
+    transition-duration: 0.01ms;
+  }
+}
