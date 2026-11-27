@@ -1,0 +1,27 @@
+/* macOS 26 Tahoe AppKit binpack layout skin */
+
+:host {
+  --binpack-transition-duration: 0.24s;
+}
+
+[part~="base"] {
+  background: transparent;
+}
+
+[part~="drop-placeholder"] {
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--snice-color-primary) 9%, transparent);
+  outline: 1.5px dashed var(--snice-color-primary);
+  outline-offset: -4px;
+  transition: transform 160ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    --binpack-transition-duration: 0.01s;
+  }
+
+  [part~="drop-placeholder"] {
+    transition: none;
+  }
+}

@@ -1,0 +1,27 @@
+/* iOS 26+ Liquid Glass / UIKit binpack layout skin */
+
+:host {
+  --binpack-transition-duration: 0.32s;
+}
+
+[part~="base"] {
+  background: transparent;
+}
+
+[part~="drop-placeholder"] {
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+  outline: 2px dashed color-mix(in srgb, var(--snice-color-primary) 60%, transparent);
+  outline-offset: -4px;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    --binpack-transition-duration: 0.01s;
+  }
+
+  [part~="drop-placeholder"] {
+    transition: none;
+  }
+}
