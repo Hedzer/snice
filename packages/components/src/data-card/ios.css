@@ -1,0 +1,209 @@
+/* iOS 26+ Liquid Glass — snice-data-card
+   Native counterpart: iOS 26 Contacts / Settings Inset Grouped Detail Card (opaque surface, zero blur). */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 20px;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="header"] {
+  padding: 0.875rem 1rem;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="title"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--snice-color-text);
+}
+
+:host [part~="edit-toggle"] {
+  min-height: 2rem;
+  padding: 0.3125rem 0.875rem;
+  border-radius: 9999px;
+  border: none;
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  color: var(--snice-color-primary);
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition:
+    transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring),
+    background-color 140ms ease;
+}
+
+:host [part~="edit-toggle"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 18%, transparent);
+  color: var(--snice-color-primary);
+}
+
+:host [part~="edit-toggle"]:active {
+  transform: scale(0.95);
+}
+
+:host [part~="edit-toggle"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Explicit white ink on saturated iOS blue (never --snice-color-text-inverse in dark mode!) */
+:host [part~="edit-toggle"][part~="edit-toggle-active"],
+:host [part~="edit-toggle"][part~="edit-toggle-active"]:hover {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="group"] {
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="group"]:last-child {
+  border-bottom: none;
+}
+
+:host [part~="group-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--snice-color-text-secondary);
+  padding: 0.875rem 1rem 0.25rem;
+}
+
+:host [part~="field"] {
+  min-height: 2.75rem;
+  padding: 0.6875rem 1rem;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  align-items: center;
+  box-sizing: border-box;
+}
+
+:host [part~="field"]:last-child {
+  border-bottom: none;
+}
+
+:host [part~="field"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 3.5%, transparent);
+}
+
+:host [part~="field-label"] {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="field-value"] {
+  font-size: 0.9375rem;
+  letter-spacing: -0.008em;
+}
+
+:host [part~="field-value-badge"] {
+  flex: 0 0 auto;
+  width: fit-content;
+  border-radius: 9999px;
+  padding: 0.1875rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+:host [part~="field-value-currency"],
+:host [part~="field-value-date"] {
+  font-variant-numeric: tabular-nums;
+}
+
+:host [part~="field-value-link"] {
+  color: var(--snice-color-primary);
+}
+
+:host [part~="field-value-link"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+:host [part~="field-input"] {
+  min-height: 2.25rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 10px;
+  border: 0.5px solid var(--snice-color-border);
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text);
+  font-size: 0.9375rem;
+  box-sizing: border-box;
+}
+
+:host [part~="field-input"]:focus-visible {
+  border-color: var(--snice-color-primary);
+  background: var(--snice-color-surface-container-high);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+:host [part~="field-save"] {
+  min-height: 2.25rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition:
+    transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring),
+    background-color 140ms ease;
+}
+
+:host [part~="field-save"]:hover {
+  opacity: 1;
+  background: var(--snice-color-primary-hover);
+}
+
+:host [part~="field-save"]:active {
+  transform: scale(0.95);
+}
+
+:host [part~="field-save"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Compact variant */
+:host([variant="compact"]) [part~="header"] {
+  padding: 0.625rem 0.875rem;
+}
+
+:host([variant="compact"]) [part~="group-title"] {
+  padding: 0.625rem 0.875rem 0.1875rem;
+  font-size: 0.6875rem;
+}
+
+:host([variant="compact"]) [part~="field"] {
+  min-height: 2.125rem;
+  padding: 0.375rem 0.875rem;
+}
+
+:host([variant="compact"]) [part~="field-label"],
+:host([variant="compact"]) [part~="field-value"] {
+  font-size: 0.8125rem;
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="field-save"],
+  :host [part~="edit-toggle"][part~="edit-toggle-active"] {
+    background: Highlight;
+    color: HighlightText;
+  }
+}
