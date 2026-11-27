@@ -1,33 +1,53 @@
-/* macOS 26 Tahoe AppKit / Stocks.app candlestick chart skin */
+/* macOS 26+ Tahoe AppKit / Pro Finance Inspector — snice-candlestick
+ * Compact 10px recessed AppKit NSBox chart well with 0.5px rim & inset depth shadow,
+ * solid hairline horizontal rules, dense 10.5px SF Mono tabular axis labels,
+ * precision 1px rectilinear candles & 1px wicks, and 8px Tahoe frosted HUD tooltip.
+ */
 
 :host {
-  --candlestick-bg: var(--snice-color-background-element);
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+  --candlestick-bg: var(--snice-color-surface-container);
   --candlestick-bullish: var(--snice-color-success);
   --candlestick-bearish: var(--snice-color-danger);
-  --candlestick-grid: var(--snice-color-border);
+  --candlestick-grid: color-mix(in srgb, var(--snice-color-text) 11%, transparent);
   --candlestick-border: var(--snice-color-border);
 }
 
+/* Compact 10px recessed AppKit inspector chart well (recessed in both light & dark) */
 [part~="base"] {
-  border-radius: 0.75rem;
-  border: 1px solid var(--snice-color-border);
+  border-radius: 10px;
+  background: color-mix(in srgb, black 3%, var(--snice-color-background-secondary));
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow:
+    inset 0 1px 3px hsl(0 0% 0% / 0.14),
+    inset 0 0 0 0.5px var(--snice-color-border-subtle);
 }
 
+/* Precision solid hairline desktop gridlines */
 [part~="grid-line"] {
-  stroke-dasharray: 2 3;
+  stroke: var(--candlestick-grid);
+  stroke-dasharray: none;
   stroke-width: 0.75px;
-  opacity: 0.8;
+  opacity: 1;
 }
 
+/* Dense 10.5px SF Mono tabular pro-finance axis labels */
 [part~="axis-label"] {
-  font-size: 0.6875rem;
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.65625rem;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
   fill: var(--snice-color-text-secondary);
 }
 
+/* Precision rectilinear 1px candles & crisp 1px wicks */
 [part~="candle"] {
-  rx: 1.5px;
-  ry: 1.5px;
+  rx: 1px;
+  ry: 1px;
+  stroke-width: 0.75px;
+  transition: opacity 120ms var(--snice-ease-out);
 }
 
 [part~="candle"]:hover {
@@ -35,19 +55,21 @@
 }
 
 [part~="wick"] {
+  stroke-linecap: butt;
   stroke-width: 1px;
 }
 
 [part~="volume-bar"] {
-  rx: 1px;
-  ry: 1px;
-  opacity: 0.24;
+  rx: 0.5px;
+  ry: 0.5px;
+  opacity: 0.28;
 }
 
 [part~="crosshair-line"] {
-  stroke: var(--snice-color-text-tertiary);
-  stroke-dasharray: 3 3;
-  opacity: 0.8;
+  stroke: var(--snice-color-text-secondary);
+  stroke-dasharray: 2 2;
+  stroke-width: 0.75px;
+  opacity: 0.75;
 }
 
 [part~="crosshair-label-background"] {
@@ -59,20 +81,22 @@
 }
 
 [part~="crosshair-label"] {
-  fill: var(--snice-color-text);
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.625rem;
   font-variant-numeric: tabular-nums;
   font-weight: 500;
+  fill: var(--snice-color-text);
 }
 
 :host([zoom-enabled]) [part~="canvas"]:active {
   cursor: grabbing;
 }
 
-/* macOS Liquid Glass floating OHLC popover (preserve base opacity visibility toggle) */
+/* Compact 8px Tahoe frosted HUD OHLC popover (high-legibility frosted glass) */
 [part~="tooltip"] {
-  border-radius: 0.5rem;
+  border-radius: 8px;
   padding: 0.4375rem 0.625rem;
-  background: var(--snice-macos-glass-menu-bg);
+  background: color-mix(in srgb, var(--snice-color-background-elevated) 90%, transparent);
   backdrop-filter: var(--snice-macos-glass-blur);
   -webkit-backdrop-filter: var(--snice-macos-glass-blur);
   border: 0.5px solid var(--snice-macos-glass-border);
@@ -81,6 +105,54 @@
   font-size: 0.6875rem;
 }
 
+[part~="tooltip-label"] {
+  color: var(--snice-color-text-secondary);
+}
+
 [part~="tooltip-value"] {
+  font-family: var(--snice-font-family-mono);
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="tooltip"] {
+    background: var(--snice-color-background-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid var(--snice-color-border);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="candle"],
+  [part~="tooltip"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="tooltip"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  [part~="grid-line"],
+  [part~="crosshair-line"] {
+    stroke: CanvasText;
+  }
+
+  [part~="axis-label"],
+  [part~="crosshair-label"] {
+    fill: CanvasText;
+  }
+
+  [part~="crosshair-label-background"] {
+    fill: Canvas;
+    stroke: CanvasText;
+  }
 }

@@ -1,67 +1,91 @@
-/* iOS 26+ Liquid Glass / Apple Stocks candlestick chart skin */
+/* iOS 26+ Liquid Glass / Apple Stocks — snice-candlestick
+ * 22px Apple Stocks grouped card with subtle top atmospheric sheen, 0.5px hairline
+ * border, soft 2.5px rounded candles, round-cap wicks, dotted hairline grid,
+ * SF Pro tabular axis ticks, and frosted 14px Regular Liquid Glass OHLC callout.
+ */
 
 :host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
   --candlestick-bg: var(--snice-color-surface-container-high);
   --candlestick-bullish: var(--snice-color-success);
   --candlestick-bearish: var(--snice-color-danger);
-  --candlestick-grid: var(--snice-color-border-subtle);
+  --candlestick-grid: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
   --candlestick-border: var(--snice-color-border-subtle);
 }
 
+/* 22px Apple Stocks grouped card with subtle top atmospheric sheen */
 [part~="base"] {
-  border-radius: 1.25rem;
-  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 22px;
+  border: 0.5px solid var(--snice-color-border);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 5%, var(--snice-color-surface-container-high)) 0%,
+    var(--snice-color-surface-container-high) 42%
+  );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--snice-color-text-inverse) 42%, transparent), var(--snice-shadow-sm);
 }
 
+/* Dotted Apple Stocks hairline horizontal grid */
 [part~="grid-line"] {
-  stroke-dasharray: 2 3;
-  stroke-width: 0.75px;
-  opacity: 0.8;
+  stroke: var(--candlestick-grid);
+  stroke-dasharray: 1.5 3.5;
+  stroke-linecap: round;
+  stroke-width: 1px;
+  opacity: 1;
 }
 
+/* SF Pro tabular axis labels (AA-legible in light & OLED dark) */
 [part~="axis-label"] {
+  font-family: var(--snice-font-family);
   font-size: 0.6875rem;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.008em;
-  fill: var(--snice-color-text-tertiary);
+  letter-spacing: -0.01em;
+  fill: var(--snice-color-text-secondary);
 }
 
+/* Rounded 2.5px Apple Stocks candles */
 [part~="candle"] {
-  rx: 2px;
-  ry: 2px;
+  rx: 2.5px;
+  ry: 2.5px;
+  stroke-width: 0;
+  transition: opacity 160ms var(--snice-ease-out), filter 160ms var(--snice-ease-out);
 }
 
 [part~="candle"]:hover {
-  opacity: 0.85;
-  filter: brightness(1.06);
+  opacity: 0.88;
+  filter: brightness(1.08);
 }
 
 [part~="wick"] {
   stroke-linecap: round;
-  stroke-width: 1.25px;
+  stroke-width: 1.5px;
 }
 
 [part~="volume-bar"] {
-  rx: 1.5px;
-  ry: 1.5px;
+  rx: 2.5px;
+  ry: 2.5px;
   opacity: 0.24;
 }
 
 [part~="crosshair-line"] {
-  stroke: var(--snice-color-text-tertiary);
-  stroke-dasharray: 3 3;
-  opacity: 0.75;
+  stroke: var(--snice-color-primary);
+  stroke-dasharray: 2 3;
+  stroke-linecap: round;
+  opacity: 0.72;
 }
 
 [part~="crosshair-label-background"] {
   fill: var(--snice-color-surface-container-highest);
   stroke: var(--snice-color-border);
-  rx: 5px;
-  ry: 5px;
+  stroke-width: 0.5px;
+  rx: 6px;
+  ry: 6px;
 }
 
 [part~="crosshair-label"] {
+  font-family: var(--snice-font-family);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   fill: var(--snice-color-text);
@@ -71,19 +95,66 @@
   cursor: grabbing;
 }
 
-/* Floating Regular Liquid Glass OHLC callout (preserve base opacity visibility toggle) */
+/* Floating 14px Regular Liquid Glass OHLC callout (high-legibility frosted glass) */
 [part~="tooltip"] {
-  border-radius: 0.875rem;
-  padding: 0.5rem 0.75rem;
-  background: var(--snice-ios-glass-regular-bg);
+  border-radius: 14px;
+  padding: 0.5625rem 0.75rem;
+  background: color-mix(in srgb, var(--snice-color-surface-container-highest) 88%, transparent);
   backdrop-filter: var(--snice-ios-glass-blur);
   -webkit-backdrop-filter: var(--snice-ios-glass-blur);
-  border: 1px solid var(--snice-ios-glass-border);
+  border: 0.5px solid var(--snice-ios-glass-border);
   box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
   color: var(--snice-color-text);
+}
+
+[part~="tooltip-label"] {
+  color: var(--snice-color-text-secondary);
+  font-weight: 500;
 }
 
 [part~="tooltip-value"] {
   font-variant-numeric: tabular-nums;
   font-weight: 600;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="tooltip"] {
+    background: var(--snice-color-surface-container-highest);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid var(--snice-color-border);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="candle"],
+  [part~="tooltip"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="tooltip"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  [part~="grid-line"],
+  [part~="crosshair-line"] {
+    stroke: CanvasText;
+  }
+
+  [part~="axis-label"],
+  [part~="crosshair-label"] {
+    fill: CanvasText;
+  }
+
+  [part~="crosshair-label-background"] {
+    fill: Canvas;
+    stroke: CanvasText;
+  }
 }

@@ -1,32 +1,52 @@
-/* Windows 11 Fluent 2 / WinUI 3 candlestick chart skin */
+/* Windows 11 Fluent 2 / MSN Money & Power BI WinUI 3 — snice-candlestick
+ * Crisp 8px top-lit Mica card (--snice-win-stroke-top / --snice-win-stroke-bottom),
+ * sharp 0px classic financial candlesticks with crisp 1px wicks, solid subtle gridlines,
+ * Segoe UI Variable tabular axis ticks, transient 4px Acrylic OHLC flyout with
+ * 3px top Fluent accent bar, 100ms fast-out motion, and complete WHCM support.
+ */
 
 :host {
+  font-family: var(--snice-font-family);
   --candlestick-bg: var(--snice-color-surface-container-high);
   --candlestick-bullish: var(--snice-color-success);
   --candlestick-bearish: var(--snice-color-danger);
-  --candlestick-grid: var(--snice-color-border);
-  --candlestick-border: var(--snice-color-border);
+  --candlestick-grid: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+  --candlestick-border: var(--snice-win-stroke-top);
 }
 
+/* Crisp 8px elevated top-lit Fluent 2 Mica card */
 [part~="base"] {
-  border-radius: 0.5rem;
-  border: 1px solid var(--snice-color-border);
+  border-radius: 8px;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  box-shadow: var(--snice-shadow-xs);
 }
 
+/* High-precision solid subtle Fluent gridlines */
 [part~="grid-line"] {
-  stroke-dasharray: 2 3;
-  opacity: 0.85;
+  stroke: var(--candlestick-grid);
+  stroke-dasharray: none;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+  opacity: 1;
 }
 
+/* Segoe UI Variable tabular axis ticks */
 [part~="axis-label"] {
+  font-family: var(--snice-font-family);
   font-size: 0.6875rem;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
   fill: var(--snice-color-text-secondary);
 }
 
+/* Razor-sharp 0px classic financial candlesticks */
 [part~="candle"] {
-  rx: 1px;
-  ry: 1px;
+  rx: 0;
+  ry: 0;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
   transition: opacity 100ms cubic-bezier(0, 0, 0, 1);
 }
 
@@ -34,26 +54,36 @@
   opacity: 0.84;
 }
 
+[part~="wick"] {
+  stroke-linecap: butt;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+
 [part~="volume-bar"] {
-  rx: 1px;
-  ry: 1px;
-  opacity: 0.28;
+  rx: 0;
+  ry: 0;
+  shape-rendering: crispEdges;
+  opacity: 0.3;
 }
 
 [part~="crosshair-line"] {
-  stroke: var(--snice-color-text-secondary);
+  stroke: var(--snice-color-primary);
   stroke-dasharray: 3 2;
-  opacity: 0.7;
+  stroke-width: 1px;
+  opacity: 0.78;
 }
 
 [part~="crosshair-label-background"] {
   fill: var(--snice-color-surface-container-highest);
-  stroke: var(--snice-color-border-hover);
+  stroke: var(--snice-color-primary);
+  stroke-width: 1px;
   rx: 2px;
   ry: 2px;
 }
 
 [part~="crosshair-label"] {
+  font-family: var(--snice-font-family);
   fill: var(--snice-color-text);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
@@ -63,21 +93,36 @@
   cursor: grabbing;
 }
 
-/* Transient Acrylic OHLC flyout (preserve base opacity visibility toggle) */
+/* Transient 4px Acrylic OHLC flyout with iconic 3px top Fluent accent bar */
 [part~="tooltip"] {
-  border-radius: 0.25rem;
-  padding: 0.5rem 0.625rem;
-  background: var(--snice-win-acrylic-bg);
-  backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  border: 1px solid var(--snice-color-border);
+  border-radius: 4px;
+  padding: 0.5rem 0.6875rem;
+  background: color-mix(in srgb, var(--snice-color-surface-container-highest) 92%, transparent);
+  backdrop-filter: var(--snice-win-acrylic-blur);
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  border-top: 3px solid var(--snice-color-primary);
   box-shadow: var(--snice-shadow-md);
   color: var(--snice-color-text);
   transition: opacity 100ms cubic-bezier(0, 0, 0, 1);
 }
 
+[part~="tooltip-label"] {
+  color: var(--snice-color-text-secondary);
+}
+
 [part~="tooltip-value"] {
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="tooltip"] {
+    background: var(--snice-color-surface-container-highest);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -93,5 +138,29 @@
     background: Canvas;
     border-color: CanvasText;
     color: CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  [part~="tooltip"] {
+    border-top-color: Highlight;
+  }
+
+  [part~="grid-line"] {
+    stroke: CanvasText;
+  }
+
+  [part~="crosshair-line"] {
+    stroke: Highlight;
+  }
+
+  [part~="axis-label"],
+  [part~="crosshair-label"] {
+    fill: CanvasText;
+  }
+
+  [part~="crosshair-label-background"] {
+    fill: Canvas;
+    stroke: Highlight;
   }
 }

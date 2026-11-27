@@ -51,7 +51,7 @@
 
 .candlestick__axis-label--x {
   text-anchor: middle;
-  dominant-baseline: hanging;
+  dominant-baseline: central;
 }
 
 .candlestick__axis-label--y {

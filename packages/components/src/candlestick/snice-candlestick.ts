@@ -394,18 +394,20 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     // Vertical line
     parts += `<line class="candlestick__crosshair-v" part="crosshair-line crosshair-line-vertical" x1="${snapX}" y1="${area.y}" x2="${snapX}" y2="${totalChartBottom}" />`;
 
-    // Price label
+    // Price label (right-aligned flush with static Y-axis column, vertically centered)
     const priceLabel = this.formatPrice(price);
-    const labelX = this.svgWidth - PADDING.right + 4;
-    parts += `<rect class="candlestick__crosshair-label-bg" part="crosshair-label-background" x="${labelX}" y="${this.mouseY - 9}" width="${PADDING.right - 8}" height="18" rx="2" />`;
-    parts += `<text class="candlestick__crosshair-label" part="crosshair-label" x="${labelX + 4}" y="${this.mouseY + 4}">${priceLabel}</text>`;
+    const pricePillW = Math.max(46, Math.min(PADDING.right - 8, Math.ceil(priceLabel.length * 6.5 + 14)));
+    const pricePillX = this.svgWidth - 6 - pricePillW;
+    parts += `<rect class="candlestick__crosshair-label-bg" part="crosshair-label-background" x="${pricePillX}" y="${this.mouseY - 9}" width="${pricePillW}" height="18" rx="2" />`;
+    parts += `<text class="candlestick__crosshair-label" part="crosshair-label" x="${this.svgWidth - 12}" y="${this.mouseY}" text-anchor="end" dominant-baseline="central">${priceLabel}</text>`;
 
-    // Date label
+    // Date label (inline on X-axis centerline, sized tightly to text)
     if (candle) {
       const dateLabel = this.formatDate(candle.date);
-      const dateLabelY = totalChartBottom + 4;
-      parts += `<rect class="candlestick__crosshair-label-bg" part="crosshair-label-background" x="${snapX - 36}" y="${dateLabelY}" width="72" height="18" rx="2" />`;
-      parts += `<text class="candlestick__crosshair-label" part="crosshair-label" x="${snapX}" y="${dateLabelY + 13}" text-anchor="middle">${dateLabel}</text>`;
+      const dateCenterY = totalChartBottom + 18;
+      const datePillW = Math.max(46, Math.ceil(dateLabel.length * 6.5 + 14));
+      parts += `<rect class="candlestick__crosshair-label-bg" part="crosshair-label-background" x="${snapX - datePillW / 2}" y="${dateCenterY - 9}" width="${datePillW}" height="18" rx="2" />`;
+      parts += `<text class="candlestick__crosshair-label" part="crosshair-label" x="${snapX}" y="${dateCenterY}" text-anchor="middle" dominant-baseline="central">${dateLabel}</text>`;
     }
 
     group.innerHTML = parts;
@@ -488,7 +490,7 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     const visible = this.visibleData;
     if (visible.length === 0) return '';
     const area = this.chartArea;
-    const labelY = area.y + area.height + area.volumeHeight + 16;
+    const labelY = area.y + area.height + area.volumeHeight + 18;
     const maxLabels = Math.floor(area.width / 80);
     const step = Math.max(1, Math.ceil(visible.length / maxLabels));
     let labels = '';
