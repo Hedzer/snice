@@ -1,23 +1,184 @@
-/* macOS 26+ Liquid Glass / AppKit — snice-card (Opaque Content Group Box, 12px concentric radius, 0 blur) */
+/* macOS 26+ Tahoe AppKit — snice-card
+   Native counterpart: AppKit NSBox / System Settings grouped content card (strictly opaque — zero Liquid Glass blur). */
+
 :host {
-  --card-border-radius: 12px;
+  font-family: var(--snice-font-family);
+  --card-border-radius: 10px;
+  --card-padding: 0.75rem 0.875rem;
   --card-bg: var(--snice-color-background-element);
-  --card-shadow: var(--snice-shadow-xs);
+  --card-border-color: var(--snice-color-border);
+  --card-shadow: var(--snice-shadow-sm);
+  --card-hover-shadow: var(--snice-shadow-md);
 }
 
-[part~="base"] {
-  border-radius: 12px;
+:host([size="small"]) {
+  --card-border-radius: 8px;
+  --card-padding: 0.5rem 0.625rem;
+}
+
+:host([size="large"]) {
+  --card-border-radius: 12px;
+  --card-padding: 1rem 1.125rem;
+}
+
+:host [part~="base"] {
+  border-radius: var(--card-border-radius);
   background: var(--snice-color-background-element);
-  border: 0.5px solid var(--snice-color-border-subtle);
-  box-shadow: var(--snice-shadow-xs);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-sm);
+  color: var(--snice-color-text);
+  transition:
+    transform 140ms var(--snice-ease-spring),
+    box-shadow 140ms var(--snice-ease-out),
+    background-color 140ms ease,
+    border-color 140ms ease;
 }
 
-[part~="base"]::before {
+:host [part~="base"]::before {
   display: none;
 }
 
-[part~="header"] {
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+/* Variants */
+:host([variant="elevated"]) [part~="base"] {
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host([variant="bordered"]) [part~="base"] {
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border-hover);
+  box-shadow: none;
+}
+
+:host([variant="flat"]) [part~="base"] {
+  background: var(--snice-color-surface-container);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: none;
+}
+
+/* Compact desktop AppKit typography */
+:host [part~="header"] {
+  font-family: var(--snice-font-family);
   font-size: 0.8125rem;
   font-weight: 600;
+  letter-spacing: -0.01em;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="body"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--snice-color-text);
+}
+
+:host [part~="footer"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+}
+
+/* Clickable interactions — neutralize base 3D cursor tilt, tight 140ms desktop press */
+:host([clickable]) [part~="base"][part~="base-clickable"]:hover,
+:host([clickable][variant="elevated"]) [part~="base"][part~="base-clickable"]:hover {
+  transform: none;
+  border-color: var(--snice-color-border-hover);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host([clickable][variant="bordered"]) [part~="base"][part~="base-clickable"]:hover {
+  transform: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: none;
+}
+
+:host([clickable][variant="flat"]) [part~="base"][part~="base-clickable"]:hover {
+  transform: none;
+  background: var(--snice-color-surface-container-high);
+  border-color: var(--snice-color-border);
+  box-shadow: none;
+}
+
+:host([clickable]) [part~="base"][part~="base-clickable"]:active,
+:host([clickable][variant="elevated"]) [part~="base"][part~="base-clickable"]:active,
+:host([clickable][variant="bordered"]) [part~="base"][part~="base-clickable"]:active,
+:host([clickable][variant="flat"]) [part~="base"][part~="base-clickable"]:active {
+  transform: scale(0.99);
+  background: var(--snice-color-surface-container);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host([clickable]) [part~="base"][part~="base-clickable"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Selected state */
+:host([selected]) [part~="base"][part~="base-selected"],
+:host([selected][variant="elevated"]) [part~="base"][part~="base-selected"],
+:host([selected][variant="bordered"]) [part~="base"][part~="base-selected"] {
+  border: 0.5px solid var(--snice-color-primary);
+  box-shadow: 0 0 0 1.5px var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 6%, var(--snice-color-background-element));
+}
+
+:host([selected][variant="flat"]) [part~="base"][part~="base-selected"] {
+  border: 0.5px solid var(--snice-color-primary);
+  box-shadow: 0 0 0 1.5px var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 9%, var(--snice-color-background-element));
+}
+
+/* Accent top-bar preservation */
+:host([accent]) [part~="base"] {
+  border-top: 3px solid var(--snice-color-primary);
+}
+:host([accent="success"]) [part~="base"] {
+  border-top-color: var(--snice-color-success);
+}
+:host([accent="warning"]) [part~="base"] {
+  border-top-color: var(--snice-color-warning);
+}
+:host([accent="danger"]) [part~="base"] {
+  border-top-color: var(--snice-color-danger);
+}
+:host([accent="brand"]) [part~="base"] {
+  border-top-color: var(--snice-color-brand);
+}
+
+/* Disabled state */
+:host([disabled]) {
+  opacity: 0.45;
+}
+
+:host([disabled]) [part~="base"][part~="base-disabled"],
+:host([disabled][variant="elevated"]) [part~="base"][part~="base-disabled"],
+:host([disabled][variant="bordered"]) [part~="base"][part~="base-disabled"],
+:host([disabled][variant="flat"]) [part~="base"][part~="base-disabled"],
+:host([clickable][disabled]) [part~="base"][part~="base-clickable"][part~="base-disabled"]:hover,
+:host([clickable][disabled]) [part~="base"][part~="base-clickable"][part~="base-disabled"]:active {
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([clickable]) [part~="base"][part~="base-clickable"]:active,
+  :host([clickable][variant="elevated"]) [part~="base"][part~="base-clickable"]:active,
+  :host([clickable][variant="bordered"]) [part~="base"][part~="base-clickable"]:active,
+  :host([clickable][variant="flat"]) [part~="base"][part~="base-clickable"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host([selected]) [part~="base"][part~="base-selected"] {
+    border: 2px solid Highlight;
+    box-shadow: none;
+  }
 }

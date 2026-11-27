@@ -1,22 +1,217 @@
-/* Material 3 Expressive — snice-card (Tonal Surface Container Card) */
+/* Android Material 3 Expressive — snice-card
+   Native counterpart: M3 ElevatedCard, OutlinedCard, and FilledCard on the 5-step tonal surface ladder. */
+
 :host {
+  font-family: var(--snice-font-family);
   --card-border-radius: 16px;
+  --card-padding: 1rem;
   --card-bg: var(--snice-color-surface-container-low);
+  --card-border-color: var(--snice-color-border-subtle);
   --card-shadow: var(--snice-shadow-xs);
+  --card-hover-shadow: var(--snice-shadow-sm);
 }
 
-[part~="base"] {
-  border-radius: 16px;
+:host([size="small"]) {
+  --card-border-radius: 12px;
+  --card-padding: 0.75rem;
+}
+
+:host([size="large"]) {
+  --card-border-radius: 24px;
+  --card-padding: 1.5rem;
+}
+
+:host [part~="base"] {
+  border-radius: var(--card-border-radius);
   background: var(--snice-color-surface-container-low);
-  border: 1px solid var(--snice-color-border-subtle);
+  border: none;
   box-shadow: var(--snice-shadow-xs);
+  color: var(--snice-color-text);
+  transition:
+    background-color var(--snice-transition-fast, 180ms) var(--snice-m3-spring-effects),
+    box-shadow var(--snice-transition-fast, 180ms) var(--snice-m3-spring-effects),
+    border-color var(--snice-transition-fast, 180ms) var(--snice-m3-spring-effects),
+    border-radius var(--snice-transition-fast, 150ms) var(--snice-m3-spring-spatial-fast);
 }
 
-[part~="base"]::before {
+:host [part~="base"]::before {
   display: none;
 }
 
-[part~="header"] {
-  border-bottom: none;
+/* Variants: Elevated (Level 1 tonal), Bordered (M3 Outlined), Flat (M3 Filled) */
+:host([variant="elevated"]) [part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border: none;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host([variant="bordered"]) [part~="base"] {
+  background: var(--snice-color-surface);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: none;
+}
+
+:host([variant="flat"]) [part~="base"] {
+  background: var(--snice-color-surface-container-highest);
+  border: none;
+  box-shadow: none;
+}
+
+/* Sections */
+:host [part~="header"] {
+  font-family: var(--snice-font-family-display);
   font-weight: 500;
+  letter-spacing: 0;
+  border-bottom: none;
+  padding-bottom: 0.5rem;
+}
+
+:host([variant="bordered"]) [part~="header"] {
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  padding-bottom: var(--card-padding);
+}
+
+:host [part~="body"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--snice-color-text);
+}
+
+:host [part~="footer"] {
+  border-top: 1px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text-secondary);
+  padding: 0.75rem var(--card-padding);
+}
+
+/* Clickable interactions — 8% hover / 10% press state layers + M3 Expressive press corner morph (zero 3D tilt) */
+:host([clickable]) [part~="base"][part~="base-clickable"]:hover,
+:host([clickable][variant="elevated"]) [part~="base"][part~="base-clickable"]:hover {
+  transform: none;
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-low));
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host([clickable][variant="bordered"]) [part~="base"][part~="base-clickable"]:hover {
+  transform: none;
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface));
+  border-color: var(--snice-color-border);
+  box-shadow: none;
+}
+
+:host([clickable][variant="flat"]) [part~="base"][part~="base-clickable"]:hover {
+  transform: none;
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-highest));
+  box-shadow: none;
+}
+
+:host([clickable]) [part~="base"][part~="base-clickable"]:active,
+:host([clickable][variant="elevated"]) [part~="base"][part~="base-clickable"]:active {
+  transform: none;
+  border-radius: var(--snice-m3-shape-morph-selected, 12px);
+  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface-container-low));
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host([clickable][variant="bordered"]) [part~="base"][part~="base-clickable"]:active {
+  transform: none;
+  border-radius: var(--snice-m3-shape-morph-selected, 12px);
+  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface));
+}
+
+:host([clickable][variant="flat"]) [part~="base"][part~="base-clickable"]:active {
+  transform: none;
+  border-radius: var(--snice-m3-shape-morph-selected, 12px);
+  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface-container-highest));
+}
+
+:host([clickable][size="small"]) [part~="base"][part~="base-clickable"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+:host([clickable]) [part~="base"][part~="base-clickable"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+/* Selected state — M3 tonal secondary-container fill */
+:host([selected]) [part~="base"][part~="base-selected"],
+:host([selected][variant="elevated"]) [part~="base"][part~="base-selected"],
+:host([selected][variant="bordered"]) [part~="base"][part~="base-selected"] {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  border: 1.5px solid var(--snice-color-primary);
+  box-shadow: none;
+}
+
+:host([selected][variant="flat"]) [part~="base"][part~="base-selected"] {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  border: none;
+  box-shadow: none;
+}
+
+:host([selected]) [part~="header"],
+:host([selected]) [part~="body"],
+:host([selected]) [part~="footer"] {
+  color: var(--snice-m3-on-secondary-container);
+}
+
+/* Accent top-bar preservation */
+:host([accent]) [part~="base"] {
+  border-top: 3px solid var(--snice-color-primary);
+}
+:host([accent="success"]) [part~="base"] {
+  border-top-color: var(--snice-color-success);
+}
+:host([accent="warning"]) [part~="base"] {
+  border-top-color: var(--snice-color-warning);
+}
+:host([accent="danger"]) [part~="base"] {
+  border-top-color: var(--snice-color-danger);
+}
+:host([accent="brand"]) [part~="base"] {
+  border-top-color: var(--snice-color-brand);
+}
+
+/* Disabled state — exact M3 opacity: 1 with 12% surface / 38% ink */
+:host([disabled]) {
+  opacity: 1;
+}
+
+:host([disabled]) [part~="base"][part~="base-disabled"],
+:host([disabled][variant="elevated"]) [part~="base"][part~="base-disabled"],
+:host([disabled][variant="flat"]) [part~="base"][part~="base-disabled"],
+:host([clickable][disabled]) [part~="base"][part~="base-clickable"][part~="base-disabled"]:hover,
+:host([clickable][disabled]) [part~="base"][part~="base-clickable"][part~="base-disabled"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 12%, var(--snice-color-surface));
+  border: none;
+  box-shadow: none;
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  transform: none;
+  border-radius: var(--card-border-radius);
+}
+
+:host([disabled][variant="bordered"]) [part~="base"][part~="base-disabled"] {
+  background: var(--snice-color-surface);
+  border: 1px solid color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  box-shadow: none;
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+:host([disabled]) [part~="header"],
+:host([disabled]) [part~="body"],
+:host([disabled]) [part~="footer"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host([selected]) [part~="base"][part~="base-selected"] {
+    border: 2px solid Highlight;
+  }
 }

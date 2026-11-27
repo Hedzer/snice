@@ -1,23 +1,178 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-card (Layered Card on Mica, 8px radius, 0 blur) */
+/* Windows 11 Fluent 2 / WinUI 3 — snice-card
+   Native counterpart: WinUI 3 SettingsCard / Fluent 2 Card on Mica (strictly opaque — zero Acrylic blur). */
+
 :host {
+  font-family: var(--snice-font-family);
   --card-border-radius: 8px;
-  --card-bg: var(--snice-color-surface-container-lowest);
-  --card-shadow: none;
+  --card-padding: 1rem;
+  --card-bg: var(--snice-color-surface-container-high);
+  --card-border-color: var(--snice-color-border-subtle);
+  --card-shadow: var(--snice-shadow-sm);
+  --card-hover-shadow: var(--snice-shadow-md);
 }
 
-[part~="base"] {
-  border-radius: 8px;
-  background: var(--snice-color-surface-container-lowest);
+:host([size="small"]) {
+  --card-border-radius: 4px;
+  --card-padding: 0.75rem;
+}
+
+:host([size="large"]) {
+  --card-border-radius: 8px;
+  --card-padding: 1.25rem;
+}
+
+:host [part~="base"] {
+  border-radius: var(--card-border-radius);
+  background: var(--snice-color-surface-container-high);
   border: 1px solid var(--snice-color-border-subtle);
-  box-shadow: var(--snice-shadow-xs);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  box-shadow: var(--snice-shadow-sm);
+  color: var(--snice-color-text);
+  transition:
+    background-color 100ms cubic-bezier(0, 0, 0, 1),
+    border-color 100ms cubic-bezier(0, 0, 0, 1),
+    box-shadow 100ms cubic-bezier(0, 0, 0, 1);
 }
 
-[part~="base"]::before {
+:host [part~="base"]::before {
   display: none;
 }
 
-[part~="header"] {
-  border-bottom: 1px solid var(--snice-color-border-subtle);
-  font-weight: 600;
+/* Variants */
+:host([variant="elevated"]) [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host([variant="bordered"]) [part~="base"] {
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border);
+  box-shadow: none;
+}
+
+:host([variant="flat"]) [part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+
+/* Segoe UI Variable Ramp */
+:host [part~="header"] {
+  font-family: var(--snice-font-family);
   font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="body"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  line-height: 1.43;
+  color: var(--snice-color-text);
+}
+
+:host [part~="footer"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+  background: var(--snice-color-surface-container-low);
+  border-top: 1px solid var(--snice-color-border-subtle);
+}
+
+/* Clickable interactions — calm Fluent 100ms fast-out decelerate, zero 3D tilt or bounce */
+:host([clickable]) [part~="base"][part~="base-clickable"]:hover,
+:host([clickable][variant="elevated"]) [part~="base"][part~="base-clickable"]:hover {
+  transform: none;
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-color-border-hover);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host([clickable][variant="bordered"]) [part~="base"][part~="base-clickable"]:hover {
+  transform: none;
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-color-border-hover);
+  box-shadow: none;
+}
+
+:host([clickable][variant="flat"]) [part~="base"][part~="base-clickable"]:hover {
+  transform: none;
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-color-border-subtle);
+  box-shadow: none;
+}
+
+:host([clickable]) [part~="base"][part~="base-clickable"]:active,
+:host([clickable][variant="elevated"]) [part~="base"][part~="base-clickable"]:active,
+:host([clickable][variant="bordered"]) [part~="base"][part~="base-clickable"]:active,
+:host([clickable][variant="flat"]) [part~="base"][part~="base-clickable"]:active {
+  transform: none;
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-color-border-subtle);
+  box-shadow: none;
+}
+
+:host([clickable]) [part~="base"][part~="base-clickable"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* Selected state */
+:host([selected]) [part~="base"][part~="base-selected"],
+:host([selected][variant="elevated"]) [part~="base"][part~="base-selected"],
+:host([selected][variant="bordered"]) [part~="base"][part~="base-selected"],
+:host([selected][variant="flat"]) [part~="base"][part~="base-selected"] {
+  border: 2px solid var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 6%, var(--snice-color-surface-container-lowest));
+  box-shadow: none;
+}
+
+/* Accent top-bar preservation */
+:host([accent]) [part~="base"] {
+  border-top: 3px solid var(--snice-color-primary);
+}
+:host([accent="success"]) [part~="base"] {
+  border-top-color: var(--snice-color-success);
+}
+:host([accent="warning"]) [part~="base"] {
+  border-top-color: var(--snice-color-warning);
+}
+:host([accent="danger"]) [part~="base"] {
+  border-top-color: var(--snice-color-danger);
+}
+:host([accent="brand"]) [part~="base"] {
+  border-top-color: var(--snice-color-brand);
+}
+
+/* Disabled state */
+:host([disabled]) {
+  opacity: 0.55;
+}
+
+:host([disabled]) [part~="base"][part~="base-disabled"],
+:host([disabled][variant="elevated"]) [part~="base"][part~="base-disabled"],
+:host([disabled][variant="bordered"]) [part~="base"][part~="base-disabled"],
+:host([disabled][variant="flat"]) [part~="base"][part~="base-disabled"],
+:host([clickable][disabled]) [part~="base"][part~="base-clickable"][part~="base-disabled"]:hover,
+:host([clickable][disabled]) [part~="base"][part~="base-clickable"][part~="base-disabled"]:active {
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-border-subtle);
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host([selected]) [part~="base"][part~="base-selected"] {
+    border: 2px solid Highlight;
+  }
 }

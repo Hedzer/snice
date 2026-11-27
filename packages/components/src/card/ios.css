@@ -1,23 +1,191 @@
-/* iOS 26+ Liquid Glass — snice-card (Opaque Grouped Inset Container — no blur on content) */
+/* iOS 26+ Liquid Glass — snice-card
+   Native counterpart: iOS 26 Inset Grouped Content Card (strictly opaque grouped surface — zero Liquid Glass blur). */
+
 :host {
+  font-family: var(--snice-font-family);
   --card-border-radius: 20px;
+  --card-padding: 1rem;
   --card-bg: var(--snice-color-surface-container-high);
-  --card-shadow: 0 2px 12px -2px hsl(0 0% 0% / 0.06), 0 0 0 0.5px var(--snice-color-border-subtle);
+  --card-border-color: var(--snice-color-border-subtle);
+  --card-shadow: 0 2px 12px -2px hsl(0 0% 0% / 0.06), 0 1px 2px hsl(0 0% 0% / 0.03);
+  --card-hover-shadow: 0 6px 20px -4px hsl(0 0% 0% / 0.1), 0 2px 4px hsl(0 0% 0% / 0.04);
 }
 
-[part~="base"] {
-  border-radius: 20px;
+:host([size="small"]) {
+  --card-border-radius: 14px;
+  --card-padding: 0.75rem;
+}
+
+:host([size="large"]) {
+  --card-border-radius: 24px;
+  --card-padding: 1.25rem;
+}
+
+:host [part~="base"] {
+  border-radius: var(--card-border-radius);
   background: var(--snice-color-surface-container-high);
   border: 0.5px solid var(--snice-color-border-subtle);
-  box-shadow: var(--snice-shadow-sm);
+  box-shadow: var(--card-shadow);
+  color: var(--snice-color-text);
+  transition:
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring),
+    box-shadow var(--snice-transition-fast, 180ms) var(--snice-ease-out),
+    background-color var(--snice-transition-fast, 180ms) ease,
+    border-color var(--snice-transition-fast, 180ms) ease;
 }
 
-[part~="header"] {
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+:host [part~="base"]::before {
+  display: none;
+}
+
+/* Variants */
+:host([variant="elevated"]) [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--card-shadow);
+}
+
+:host([variant="bordered"]) [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: none;
+}
+
+:host([variant="flat"]) [part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border: none;
+  box-shadow: none;
+}
+
+/* Sections */
+:host [part~="header"] {
+  font-family: var(--snice-font-family-display);
   font-weight: 600;
   letter-spacing: -0.018em;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
 }
 
-[part~="footer"] {
+:host [part~="body"] {
+  font-family: var(--snice-font-family);
+  letter-spacing: var(--snice-tracking-normal);
+  line-height: 1.45;
+  color: var(--snice-color-text);
+}
+
+:host [part~="footer"] {
   border-top: 0.5px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text-secondary);
+}
+
+/* Clickable interactions — neutralize base 3D perspective tilt, use native iOS spring press */
+:host([clickable]) [part~="base"][part~="base-clickable"]:hover {
+  transform: none;
+  box-shadow: var(--card-hover-shadow);
+}
+
+:host([clickable][variant="elevated"]) [part~="base"][part~="base-clickable"]:hover {
+  transform: none;
+  box-shadow: var(--card-hover-shadow);
+}
+
+:host([clickable][variant="bordered"]) [part~="base"][part~="base-clickable"]:hover {
+  transform: none;
+  border-color: var(--snice-color-border-hover);
+  box-shadow: none;
+}
+
+:host([clickable][variant="flat"]) [part~="base"][part~="base-clickable"]:hover {
+  transform: none;
+  background: var(--snice-color-surface-container);
+  box-shadow: none;
+}
+
+:host([clickable]) [part~="base"][part~="base-clickable"]:active,
+:host([clickable][variant="elevated"]) [part~="base"][part~="base-clickable"]:active {
+  transform: scale(0.975);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host([clickable][variant="bordered"]) [part~="base"][part~="base-clickable"]:active {
+  transform: scale(0.975);
+  background: var(--snice-color-surface-container);
+}
+
+:host([clickable][variant="flat"]) [part~="base"][part~="base-clickable"]:active {
+  transform: scale(0.975);
+  background: var(--snice-color-surface-container);
+}
+
+:host([clickable]) [part~="base"][part~="base-clickable"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Selected state across all variants */
+:host([selected]) [part~="base"][part~="base-selected"],
+:host([selected][variant="elevated"]) [part~="base"][part~="base-selected"],
+:host([selected][variant="bordered"]) [part~="base"][part~="base-selected"] {
+  border: 0.5px solid var(--snice-color-primary);
+  box-shadow: 0 0 0 2px var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 6%, var(--snice-color-surface-container-high));
+}
+
+:host([selected][variant="flat"]) [part~="base"][part~="base-selected"] {
+  border: none;
+  box-shadow: 0 0 0 2px var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, var(--snice-color-surface-container-low));
+}
+
+/* Accent top-bar preservation */
+:host([accent]) [part~="base"] {
+  border-top: 3px solid var(--snice-color-primary);
+}
+:host([accent="success"]) [part~="base"] {
+  border-top-color: var(--snice-color-success);
+}
+:host([accent="warning"]) [part~="base"] {
+  border-top-color: var(--snice-color-warning);
+}
+:host([accent="danger"]) [part~="base"] {
+  border-top-color: var(--snice-color-danger);
+}
+:host([accent="brand"]) [part~="base"] {
+  border-top-color: var(--snice-color-brand);
+}
+
+/* Disabled state */
+:host([disabled]) {
+  opacity: 0.48;
+}
+
+:host([disabled]) [part~="base"][part~="base-disabled"],
+:host([disabled][variant="elevated"]) [part~="base"][part~="base-disabled"],
+:host([disabled][variant="bordered"]) [part~="base"][part~="base-disabled"],
+:host([disabled][variant="flat"]) [part~="base"][part~="base-disabled"],
+:host([clickable][disabled]) [part~="base"][part~="base-clickable"][part~="base-disabled"]:hover,
+:host([clickable][disabled]) [part~="base"][part~="base-clickable"][part~="base-disabled"]:active {
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([clickable]) [part~="base"][part~="base-clickable"]:active,
+  :host([clickable][variant="elevated"]) [part~="base"][part~="base-clickable"]:active,
+  :host([clickable][variant="bordered"]) [part~="base"][part~="base-clickable"]:active,
+  :host([clickable][variant="flat"]) [part~="base"][part~="base-clickable"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host([selected]) [part~="base"][part~="base-selected"] {
+    border: 2px solid Highlight;
+    box-shadow: none;
+  }
 }
