@@ -70,15 +70,18 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
     const labelText = this.label || `${Math.round(percentage)}%`;
     const progressClass = `progress progress--linear${this.showLabel ? ' progress--with-label' : ''}`;
     const barStyle = this.indeterminate ? '' : `width: ${percentage}%`;
+    const isEmpty = !this.indeterminate && percentage <= 0;
+    const isComplete = !this.indeterminate && percentage >= 100;
 
     return html/*html*/`
-      <div part="base${this.showLabel ? ' base-with-label' : ''}${this.indeterminate ? ' base-indeterminate' : ''}" class="${progressClass}"
+      <div part="base${this.showLabel ? ' base-with-label' : ''}${this.indeterminate ? ' base-indeterminate' : ''}${isEmpty ? ' base-empty' : ''}${isComplete ? ' base-complete' : ''}" class="${progressClass}"
            role="progressbar"
            aria-valuenow="${this.value}"
            aria-valuemin="0"
            aria-valuemax="${this.max}"
            aria-label="${labelText}">
-        <div part="bar${this.indeterminate ? ' bar-indeterminate' : ''}" class="progress__bar" style="${barStyle}"></div>
+        <div part="bar${this.indeterminate ? ' bar-indeterminate' : ''}${isEmpty ? ' bar-empty' : ''}${isComplete ? ' bar-complete' : ''}" class="progress__bar" style="${barStyle}"></div>
+        <svg class="progress__wave" part="wave" data-platform-only="material" aria-hidden="true" hidden></svg>
         <if ${this.showLabel}>
           <span part="label" class="progress__label">${labelText}</span>
         </if>

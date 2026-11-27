@@ -34,8 +34,13 @@ Linear variant:
 - `base` - Outer progress container with `role="progressbar"`
 - `base-with-label` - Added to `base` when `show-label` is set
 - `base-indeterminate` - Added to `base` while indeterminate
+- `base-empty` - Added to `base` when determinate progress is `0%`
+- `base-complete` - Added to `base` when determinate progress reaches `100%`
 - `bar` - The progress bar fill
 - `bar-indeterminate` - Added to `bar` while indeterminate
+- `bar-empty` - Added to `bar` when determinate progress is `0%`
+- `bar-complete` - Added to `bar` when determinate progress reaches `100%`
+- `wave` - Material 3 Expressive bounded wavy linear progress indicator helper (`<svg>`)
 - `label` - Percentage or custom label text
 
 Circular variant:

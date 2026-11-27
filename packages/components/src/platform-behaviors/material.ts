@@ -5,10 +5,39 @@
  * 1. Pointer-origin & keyboard-centered state-layer ripple (--snice-ripple-x/y/size)
  * 2. M3 Expressive press/selection shape morphing & connected button-group coordination
  * 3. Updated M3 slider drag state & value/stop-indicator coordination
+ * 4. On-demand lazy loader for M3 Expressive wavy progress SVG engine (material-wavy.ts)
  */
 import { prefersReducedMotion, type PlatformBehaviorCleanup } from './types';
 
 export const platform = 'material' as const;
+
+type WavyModule = typeof import('./material-wavy');
+let wavyModPromise: Promise<WavyModule> | null = null;
+
+function loadWavyModule(): Promise<WavyModule> {
+  if (!wavyModPromise) {
+    wavyModPromise = import('./material-wavy');
+  }
+  return wavyModPromise;
+}
+
+function attachLazyWavyProgress(el: Element): PlatformBehaviorCleanup {
+  let disposed = false;
+  let innerCleanup: PlatformBehaviorCleanup | null = null;
+
+  loadWavyModule()
+    .then((mod) => {
+      if (disposed) return;
+      innerCleanup = mod.attachWavyProgress(el);
+    })
+    .catch(() => {});
+
+  return () => {
+    disposed = true;
+    innerCleanup?.();
+    innerCleanup = null;
+  };
+}
 
 function triggerRipple(
   host: Element,
@@ -28,8 +57,8 @@ function triggerRipple(
   const rx = typeof clientX === 'number' ? clientX - rect.left : w / 2;
   const ry = typeof clientY === 'number' ? clientY - rect.top : h / 2;
   const maxDist = Math.hypot(Math.max(rx, w - rx), Math.max(ry, h - ry));
-  // 2.45x covers furthest corner past the soft feathered radial wavefront (84-94%)
-  const size = Math.ceil(maxDist * 2.45);
+  // 2.15x matches AOSP RippleAnimation target diameter past the furthest corner
+  const size = Math.ceil(maxDist * 2.15);
 
   ripple.style.setProperty('--snice-ripple-x', `${Math.round(rx)}px`);
   ripple.style.setProperty('--snice-ripple-y', `${Math.round(ry)}px`);
@@ -40,8 +69,8 @@ function triggerRipple(
     return;
   }
 
-  host.removeAttribute('data-m3-ripple');
-  // Force style flush so rapid repeated clicks restart the ripple cleanly from scale(0.18)
+  // Explicitly reset scale via entering state (overrides :hover scale(1) on checkbox/radio/switch)
+  host.setAttribute('data-m3-ripple', 'entering');
   void ripple.offsetWidth;
   host.setAttribute('data-m3-ripple', 'active');
 }
@@ -49,10 +78,8 @@ function triggerRipple(
 function clearRippleAndPress(host: Element): void {
   host.removeAttribute('data-m3-pressed');
   host.removeAttribute('data-m3-ripple');
-  const prev = host.previousElementSibling;
-  const next = host.nextElementSibling;
-  prev?.removeAttribute('data-m3-neighbor-pressed');
-  next?.removeAttribute('data-m3-neighbor-pressed');
+  host.previousElementSibling?.removeAttribute('data-m3-neighbor-pressed');
+  host.nextElementSibling?.removeAttribute('data-m3-neighbor-pressed');
 }
 
 function attachRippleAndMorph(el: Element): PlatformBehaviorCleanup {
@@ -220,6 +247,7 @@ function attachSliderBehavior(el: Element): PlatformBehaviorCleanup {
 function attachSingleElement(el: Element): PlatformBehaviorCleanup {
   const tag = el.tagName.toLowerCase();
   if (tag === 'snice-slider') return attachSliderBehavior(el);
+  if (tag === 'snice-progress') return attachLazyWavyProgress(el);
   if (
     tag === 'snice-button' ||
     tag === 'snice-switch' ||
@@ -234,7 +262,7 @@ function attachSingleElement(el: Element): PlatformBehaviorCleanup {
 }
 
 const M3_INTERACTIVE_SELECTOR =
-  'snice-button, snice-switch, snice-checkbox, snice-radio, snice-tab, snice-chip, snice-slider';
+  'snice-button, snice-switch, snice-checkbox, snice-radio, snice-tab, snice-chip, snice-slider, snice-progress';
 
 export function attach(root: Document | Element): PlatformBehaviorCleanup {
   if (root instanceof Element && root.tagName.toLowerCase().startsWith('snice-')) {

@@ -31,8 +31,20 @@
 
 [part~="bar"] {
   border-radius: 9999px;
-  background: var(--progress-color, var(--snice-color-primary));
+  background: var(--progress-color, var(--snice-ios-fill-primary, var(--snice-color-primary)));
   transition: width 320ms var(--snice-ease-out);
+}
+
+:host([color="primary"]) [part~="bar"] {
+  background: var(--snice-ios-fill-primary, var(--snice-color-primary));
+}
+
+:host([color="success"]) [part~="bar"] {
+  background: var(--snice-ios-fill-success, var(--snice-color-success));
+}
+
+:host([color="error"]) [part~="bar"] {
+  background: var(--snice-ios-fill-danger, var(--snice-color-danger));
 }
 
 [part~="bar-indeterminate"] {
@@ -61,7 +73,7 @@
 }
 
 :host([color="warning"]) [part~="label"] {
-  color: hsl(24 40% 10%);
+  color: var(--snice-ios-on-warning, hsl(24 40% 10%));
   text-shadow: none;
 }
 

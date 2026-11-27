@@ -19,7 +19,7 @@ export const ANALYZER_CONTRACTS = {
     "customElements": 193,
     "componentFamilies": 134,
     "componentModules": 188,
-    "componentUtilityModules": 112,
+    "componentUtilityModules": 113,
     "reactWrappers": 193,
     "rootExports": 139
   },
@@ -437,6 +437,7 @@ export const ANALYZER_CONTRACTS = {
     "snice/components/platform-behaviors/ios",
     "snice/components/platform-behaviors/macos",
     "snice/components/platform-behaviors/material",
+    "snice/components/platform-behaviors/material-wavy",
     "snice/components/platform-behaviors/runtime",
     "snice/components/platform-behaviors/types",
     "snice/components/platform-behaviors/windows",

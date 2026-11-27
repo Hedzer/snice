@@ -43,7 +43,7 @@
 
 [part~="base"]:active,
 :host([data-m3-pressed="true"]) [part~="base"] {
-  background-color: color-mix(in srgb, var(--snice-m3-on-secondary-container) 10%, var(--snice-m3-secondary-container));
+  background-color: var(--snice-m3-secondary-container);
   border-color: transparent;
   border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
@@ -81,7 +81,7 @@
 
 :host([variant="primary"]) [part~="base"]:active,
 :host([variant="primary"][data-m3-pressed="true"]) [part~="base"] {
-  background-color: color-mix(in srgb, var(--snice-m3-on-primary, var(--snice-color-text-inverse)) 10%, var(--snice-color-primary));
+  background-color: var(--snice-color-primary);
   border-color: transparent;
   border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
@@ -103,7 +103,7 @@
 
 :host([variant="success"]) [part~="base"]:active,
 :host([variant="success"][data-m3-pressed="true"]) [part~="base"] {
-  background-color: color-mix(in srgb, var(--snice-color-text-inverse) 10%, var(--snice-color-success));
+  background-color: var(--snice-color-success);
   border-color: transparent;
   border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
@@ -125,7 +125,7 @@
 
 :host([variant="warning"]) [part~="base"]:active,
 :host([variant="warning"][data-m3-pressed="true"]) [part~="base"] {
-  background-color: color-mix(in srgb, var(--snice-color-text-inverse) 10%, var(--snice-color-warning));
+  background-color: var(--snice-color-warning);
   border-color: transparent;
   border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
@@ -147,7 +147,7 @@
 
 :host([variant="danger"]) [part~="base"]:active,
 :host([variant="danger"][data-m3-pressed="true"]) [part~="base"] {
-  background-color: color-mix(in srgb, var(--snice-color-text-inverse) 10%, var(--snice-color-danger));
+  background-color: var(--snice-color-danger);
   border-color: transparent;
   border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
@@ -177,7 +177,7 @@
 
 :host([variant="text"]) [part~="base"]:active,
 :host([variant="text"][data-m3-pressed="true"]) [part~="base"] {
-  background-color: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+  background-color: transparent;
   color: color-mix(in srgb, var(--snice-color-primary) 88%, var(--snice-color-text));
   border-color: transparent;
   border-radius: var(--snice-m3-shape-morph-pressed, 10px);
@@ -207,7 +207,7 @@
 :host([data-m3-pressed="true"]) [part~="base-outline"],
 :host([variant="default"]) [part~="base-outline"]:active,
 :host([variant="default"][data-m3-pressed="true"]) [part~="base-outline"] {
-  background-color: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+  background-color: transparent;
   border-color: var(--snice-color-border);
   color: var(--snice-color-text);
   border-radius: var(--snice-m3-shape-morph-pressed, 10px);
@@ -232,7 +232,7 @@
 
 :host([variant="primary"]) [part~="base-outline"]:active,
 :host([variant="primary"][data-m3-pressed="true"]) [part~="base-outline"] {
-  background-color: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+  background-color: transparent;
   border-color: var(--snice-color-primary);
   color: color-mix(in srgb, var(--snice-color-primary) 88%, var(--snice-color-text));
   border-radius: var(--snice-m3-shape-morph-pressed, 10px);
@@ -257,7 +257,7 @@
 
 :host([variant="success"]) [part~="base-outline"]:active,
 :host([variant="success"][data-m3-pressed="true"]) [part~="base-outline"] {
-  background-color: color-mix(in srgb, var(--snice-color-success) 10%, transparent);
+  background-color: transparent;
   border-color: var(--snice-color-success);
   color: color-mix(in srgb, var(--snice-color-success) 86%, var(--snice-color-text));
   border-radius: var(--snice-m3-shape-morph-pressed, 10px);
@@ -282,7 +282,7 @@
 
 :host([variant="warning"]) [part~="base-outline"]:active,
 :host([variant="warning"][data-m3-pressed="true"]) [part~="base-outline"] {
-  background-color: color-mix(in srgb, var(--snice-color-warning) 10%, transparent);
+  background-color: transparent;
   border-color: var(--snice-color-warning);
   color: color-mix(in srgb, var(--snice-color-warning) 84%, var(--snice-color-text));
   border-radius: var(--snice-m3-shape-morph-pressed, 10px);
@@ -307,7 +307,7 @@
 
 :host([variant="danger"]) [part~="base-outline"]:active,
 :host([variant="danger"][data-m3-pressed="true"]) [part~="base-outline"] {
-  background-color: color-mix(in srgb, var(--snice-color-danger) 10%, transparent);
+  background-color: transparent;
   border-color: var(--snice-color-danger);
   color: color-mix(in srgb, var(--snice-color-danger) 86%, var(--snice-color-text));
   border-radius: var(--snice-m3-shape-morph-pressed, 10px);
@@ -386,12 +386,29 @@
   transition: none;
 }
 
+:host([data-m3-ripple="entering"]) [part~="ripple"] {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.18);
+  transition: none;
+}
+
 :host([data-m3-ripple="active"]) [part~="ripple"] {
-  opacity: 0.14;
+  opacity: 0.12;
   transform: translate(-50%, -50%) scale(1);
   transition:
     opacity 75ms linear,
-    transform 225ms cubic-bezier(0.2, 0, 0, 1);
+    transform 225ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:host([variant="primary"][data-m3-ripple="active"]) [part~="ripple"],
+:host([variant="success"][data-m3-ripple="active"]) [part~="ripple"],
+:host([variant="warning"][data-m3-ripple="active"]) [part~="ripple"],
+:host([variant="danger"][data-m3-ripple="active"]) [part~="ripple"] {
+  opacity: 0.16;
+}
+
+:host([outline][data-m3-ripple="active"]) [part~="ripple"] {
+  opacity: 0.12;
 }
 
 :host([data-m3-ripple="fading"]) [part~="ripple"] {
@@ -399,7 +416,7 @@
   transform: translate(-50%, -50%) scale(1);
   transition:
     opacity 200ms linear,
-    transform 225ms cubic-bezier(0.2, 0, 0, 1);
+    transform 225ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :host([data-m3-ripple="static"]) [part~="ripple"] {

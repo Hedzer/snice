@@ -26,7 +26,7 @@ const distPlatformsJs = join(root, 'dist/components/platforms.js');
 if (existsSync(distBehaviorsDir) && existsSync(distPlatformsJs)) {
   mkdirSync(join(out, 'theme/platforms/platform-behaviors'), { recursive: true });
   cpSync(distPlatformsJs, join(out, 'theme/platforms/platforms.js'));
-  for (const mod of ['runtime.js', 'types.js', 'ios.js', 'material.js', 'windows.js', 'macos.js']) {
+  for (const mod of ['runtime.js', 'types.js', 'ios.js', 'material.js', 'material-wavy.js', 'windows.js', 'macos.js']) {
     const src = join(distBehaviorsDir, mod);
     if (existsSync(src)) {
       cpSync(src, join(out, 'theme/platforms/platform-behaviors', mod));

@@ -1,63 +1,154 @@
-/* Android Material 3 Expressive — snice-progress (M3 Linear with Stop Indicator + Rounded-Cap Circular) */
+/* ==========================================================================
+   Android Material 3 Expressive — snice-progress
+   1:1 AOSP WavyProgressIndicatorDefaults (LinearWavyProgressIndicator):
+   - Real bounded SVG wave ([part~="wave"], data-platform-only="material", 0B DCE)
+     with genuine semicircular stroke-linecap="round" caps on both wave ends
+   - 40dp (40px) wavelength at 40px/s across all sizes (3/4/6px stroke,
+     2.25/3/4px amplitude, >=1px vertical AA headroom)
+   - Smooth AOSP defaultAmplitude ramp to flat at 0% & 100%
+   - Crisp 4dp gaps separating active wave(s) from flat secondary-container track
+     and concentric trailing stop dot (never overlapped or bisected)
+   - Indeterminate 2-segment variable-length wavy sweep with clean 4dp track gaps
+   - Flex-flow label column so custom labels of any length never collide with bar
+   ========================================================================== */
+
 :host {
   font-family: var(--snice-font-family);
-  --progress-height: 0.25rem;
+  --progress-height: 0.75rem;
   --progress-radius: 9999px;
   --progress-bg: var(--snice-m3-secondary-container);
   --progress-track-opacity: 1;
+  --_m3-track-h: 4px;
+  --_m3-wave-h: 12px;
+  --_m3-wave-active: var(--progress-color, var(--snice-color-primary));
+  --_m3-wave-track: var(--progress-bg);
 }
 
 :host([size="small"]) {
-  --progress-height: 0.25rem;
+  --progress-height: 0.625rem;
+  --_m3-track-h: 3px;
+  --_m3-wave-h: 10px;
 }
 
-:host([size="large"]) {
-  --progress-height: 0.5rem;
+:host([size="large"]),
+:host([size="xl"]),
+:host([size="xxl"]),
+:host([size="xxxl"]) {
+  --progress-height: 1rem;
+  --_m3-track-h: 6px;
+  --_m3-wave-h: 16px;
 }
 
+/* Linear container: clean flex row holding wave/bar + optional in-flow label */
 [part~="base"] {
-  border-radius: 9999px;
-  background: var(--progress-bg);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: var(--_m3-wave-h);
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
 }
 
-/* Signature M3 Expressive 4px trailing stop-indicator dot on unlabeled determinate linear bars */
 [part~="base"]::after {
   content: '';
-  position: absolute;
-  right: 2px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--progress-color, var(--snice-color-primary));
+  flex: 1 1 0%;
+  min-width: 0;
+  height: var(--_m3-track-h);
+  border-radius: 9999px;
+  background: var(--progress-bg);
   pointer-events: none;
 }
 
-:host([variant="circular"]) [part~="base"]::after,
-:host([indeterminate]) [part~="base"]::after,
-:host([show-label]) [part~="base"]::after {
-  content: none;
+[part~="base-with-label"] {
+  height: auto;
+  min-height: 1.25rem;
+}
+
+[part~="base-complete"]::after,
+[part~="base-indeterminate"]::after,
+:host([data-m3-wavy="true"]) [part~="base"]::after,
+:host([striped]) [part~="base"]::after {
   display: none;
 }
 
-[part~="base-with-label"] {
-  min-height: 1.375rem;
+:host([data-m3-wavy="true"]) [part~="base"] {
+  gap: 0.75rem;
 }
 
-:host([variant="circular"]) [part~="base"] {
-  background: transparent;
-  border-radius: 0;
-}
-
+/* Zero-JS / pre-hydration clean M3 flat fallback bar */
 [part~="bar"] {
+  flex: 0 0 auto;
+  height: var(--_m3-track-h);
   border-radius: 9999px;
   background: var(--progress-color, var(--snice-color-primary));
   transition: width 300ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
 }
 
-[part~="bar-indeterminate"] {
+[part~="bar-empty"] {
+  display: none;
+}
+
+/* Material 3 Expressive bounded SVG linear wave (populated by platform-behaviors/material.ts) */
+[part~="wave"] {
+  display: none;
+  flex: 1 1 0%;
+  min-width: 0;
+  width: 100%;
+  height: var(--_m3-wave-h);
+  overflow: visible;
+}
+
+:host([data-m3-wavy="true"]) [part~="wave"] {
+  display: block;
+}
+
+:host([data-m3-wavy="true"]) [part~="bar"] {
+  display: none;
+}
+
+/* Striped opt-in stays flat so user-authored stripes remain crisp */
+:host([striped]) [part~="wave"] {
+  display: none;
+}
+
+:host([striped]) [part~="base"] {
+  background: var(--progress-bg);
+  height: var(--_m3-track-h);
   border-radius: 9999px;
+  overflow: hidden;
+  gap: 0;
+}
+
+:host([striped]) [part~="base-with-label"] {
+  height: auto;
+  min-height: 1.25rem;
+  background: transparent;
+  overflow: visible;
+  gap: 0.75rem;
+}
+
+:host([striped]) [part~="bar"] {
+  display: block;
+  height: var(--_m3-track-h);
+  border-radius: 9999px;
+  background: var(--progress-color, var(--snice-color-primary));
+}
+
+/* Circular variant reset */
+:host([variant="circular"]) [part~="base"] {
+  display: inline-block;
+  height: var(--progress-spinner-size, 2.5rem);
+  gap: 0;
+  background: transparent;
+  border-radius: 0;
+}
+
+:host([variant="circular"]) [part~="base"]::before,
+:host([variant="circular"]) [part~="base"]::after {
+  content: none;
+  display: none;
 }
 
 [part~="circle-bg"] {
@@ -71,25 +162,30 @@
   transition: stroke-dashoffset 300ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
 }
 
+/* Linear label in flex flow — custom labels of any length never collide with wave */
 [part~="label"] {
+  position: static;
+  top: auto;
+  left: auto;
+  right: auto;
+  transform: none;
+  flex: 0 0 auto;
   font-family: var(--snice-font-family);
   font-size: 0.75rem;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
-  color: var(--snice-m3-on-primary, var(--snice-color-text-inverse));
-}
-
-:host([color="success"]) [part~="label"],
-:host([color="warning"]) [part~="label"],
-:host([color="error"]) [part~="label"] {
-  color: var(--snice-color-text-inverse);
-}
-
-:host([color="info"]) [part~="label"] {
-  color: hsl(0 0% 100%);
+  color: var(--snice-color-text-secondary);
+  text-align: right;
+  white-space: nowrap;
 }
 
 :host([variant="circular"]) [part~="label"] {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  transform: translate(-50%, -50%);
+  text-align: center;
   color: var(--snice-color-text);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
@@ -99,5 +195,26 @@
   [part~="bar"],
   [part~="circle-bar"] {
     transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    --_m3-wave-active: Highlight;
+    --_m3-wave-track: CanvasText;
+    --progress-bg: CanvasText;
+    --progress-color: Highlight;
+  }
+
+  [part~="circle-bg"] {
+    stroke: CanvasText;
+  }
+
+  [part~="circle-bar"] {
+    stroke: Highlight;
+  }
+
+  [part~="label"] {
+    color: CanvasText;
   }
 }

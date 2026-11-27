@@ -296,6 +296,13 @@
   transition: opacity 150ms linear, transform 180ms cubic-bezier(0.2, 0, 0, 1);
 }
 
+:host([data-m3-ripple="entering"]) [part~="ripple"],
+:host(:hover[data-m3-ripple="entering"]) [part~="ripple"] {
+  opacity: 0.08;
+  transform: translate(-50%, -50%) scale(0.35);
+  transition: none;
+}
+
 :host([data-m3-ripple="static"]) [part~="ripple"] {
   opacity: 0.12;
   transform: translate(-50%, -50%) scale(1);
@@ -303,10 +310,10 @@
 }
 
 :host([data-m3-ripple="active"]) [part~="ripple"],
-:host([data-m3-pressed="true"]) [part~="ripple"] {
+:host(:hover[data-m3-ripple="active"]) [part~="ripple"] {
   opacity: 0.14;
   transform: translate(-50%, -50%) scale(1);
-  transition: opacity 75ms linear, transform 200ms cubic-bezier(0.2, 0, 0, 1);
+  transition: opacity 75ms linear, transform 225ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :host([data-m3-ripple="fading"]) [part~="ripple"] {

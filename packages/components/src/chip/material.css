@@ -183,12 +183,18 @@
   transition: none;
 }
 
+:host([data-m3-ripple="entering"]) [part~="ripple"] {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.18);
+  transition: none;
+}
+
 :host([data-m3-ripple="active"]) [part~="ripple"] {
   opacity: 0.12;
   transform: translate(-50%, -50%) scale(1);
   transition:
     opacity 75ms linear,
-    transform 225ms cubic-bezier(0.2, 0, 0, 1);
+    transform 225ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :host([data-m3-ripple="fading"]) [part~="ripple"] {
@@ -196,7 +202,7 @@
   transform: translate(-50%, -50%) scale(1);
   transition:
     opacity 200ms linear,
-    transform 225ms cubic-bezier(0.2, 0, 0, 1);
+    transform 225ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :host([data-m3-ripple="static"]) [part~="ripple"] {

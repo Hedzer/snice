@@ -37930,10 +37930,22 @@
               "name": "bar"
             },
             {
+              "name": "bar-complete"
+            },
+            {
+              "name": "bar-empty"
+            },
+            {
               "name": "bar-indeterminate"
             },
             {
               "name": "base"
+            },
+            {
+              "name": "base-complete"
+            },
+            {
+              "name": "base-empty"
             },
             {
               "name": "base-indeterminate"
@@ -37955,6 +37967,9 @@
             },
             {
               "name": "label"
+            },
+            {
+              "name": "wave"
             }
           ],
           "cssProperties": [
