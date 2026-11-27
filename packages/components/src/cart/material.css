@@ -1,0 +1,249 @@
+/* Android Material 3 Expressive — snice-cart
+ * Tonal surface-container-low bag card stepping up to surface-container summary,
+ * 16px card / 12px thumbnails, secondary-container count chip, pill CTAs with 8px press morph,
+ * and dark-mode-safe --snice-m3-on-primary ink on T80 pastel primary fills.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+  --cart-bg: var(--snice-color-surface-container-low);
+  --cart-bg-element: var(--snice-color-surface-container);
+  --cart-border: var(--snice-color-border-subtle);
+  --cart-text: var(--snice-color-text);
+  --cart-text-secondary: var(--snice-color-text-secondary);
+  --cart-text-tertiary: var(--snice-color-text-tertiary);
+  --cart-primary: var(--snice-color-primary);
+  --cart-danger: var(--snice-color-danger);
+  --cart-success: var(--snice-color-success);
+}
+
+[part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 16px;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="header"] {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="title"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--snice-color-text);
+}
+
+[part~="count"] {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  border-radius: 9999px;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="item"] {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  transition: background-color 150ms var(--snice-m3-spring-effects);
+}
+
+[part~="item"]:last-child {
+  border-bottom: none;
+}
+
+[part~="item"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 4%, transparent);
+}
+
+[part~="item-image"],
+[part~="item-image-placeholder"] {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 12px;
+}
+
+[part~="item-image-placeholder"] {
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="item-name"] {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+[part~="item-variant"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="item-price"] {
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="item-total"] {
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+/* Exported child parts — M3 Expressive controls */
+[part~="remove-button-base"] {
+  color: var(--snice-color-text-secondary);
+  border-radius: 9999px;
+  transition: background-color 150ms var(--snice-m3-spring-effects),
+              color 150ms var(--snice-m3-spring-effects);
+}
+
+[part~="remove-button-base"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  color: var(--snice-color-danger);
+}
+
+[part~="remove-button-base"]:focus-visible,
+[part~="apply-button-base"]:focus-visible,
+[part~="checkout-button-base"]:focus-visible {
+  outline: var(--snice-focus-ring-width) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+[part~="quantity-base"] {
+  border-radius: 9999px;
+  border: 1px solid var(--snice-color-border);
+  background: var(--snice-color-surface-container-lowest);
+}
+
+[part~="quantity-input"] {
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="coupon"] {
+  padding: 0.75rem 1.25rem 1rem;
+  gap: 0.5rem;
+}
+
+[part~="coupon-input-input"] {
+  min-height: 2.5rem;
+  border-radius: 4px;
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text);
+}
+
+[part~="coupon-input-input"]:focus-visible {
+  outline: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: inset 0 0 0 1px var(--snice-color-primary);
+}
+
+[part~="apply-button-base"] {
+  min-height: 2.5rem;
+  padding-inline: 1.125rem;
+  border-radius: 9999px;
+  border: 1px solid var(--snice-color-border);
+  background: transparent;
+  color: var(--snice-color-primary);
+  font-weight: 500;
+  transition: border-radius 180ms var(--snice-m3-spring-spatial-fast),
+              background-color 150ms var(--snice-m3-spring-effects);
+}
+
+[part~="apply-button-base"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+}
+
+[part~="apply-button-base"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed);
+}
+
+/* Tonal step-up summary band */
+[part~="summary"] {
+  padding: 1rem 1.25rem;
+  background: var(--snice-color-surface-container);
+  border-top: 1px solid var(--snice-color-border-subtle);
+  gap: 0.5rem;
+}
+
+[part~="summary-row"] {
+  font-size: 0.875rem;
+}
+
+[part~="summary-row-total"] {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+[part~="summary-label"] {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="summary-value"] {
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+[part~="summary-value-discount"] {
+  color: var(--snice-color-success);
+}
+
+[part~="divider-line"],
+[part~="divider-line-before"],
+[part~="divider-line-after"] {
+  border-color: var(--snice-color-border-subtle);
+}
+
+/* Checkout — 48dp Expressive pill CTA with dark-safe --snice-m3-on-primary ink */
+[part~="checkout"] {
+  padding: 1rem 1.25rem 1.25rem;
+  background: var(--snice-color-surface-container-low);
+  border-top: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="checkout-button-base"] {
+  min-height: 3rem;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  border-color: transparent;
+  color: var(--snice-m3-on-primary);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  box-shadow: var(--snice-shadow-xs);
+  transition: border-radius 180ms var(--snice-m3-spring-spatial-fast),
+              box-shadow 150ms var(--snice-m3-spring-effects),
+              background-color 150ms var(--snice-m3-spring-effects);
+}
+
+[part~="checkout-button-base"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 8%, var(--snice-color-primary));
+  box-shadow: var(--snice-shadow-sm);
+}
+
+[part~="checkout-button-base"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed);
+}
+
+[part~="checkout-button-base"]:disabled,
+[part~="apply-button-base"]:disabled {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+[part~="empty"] {
+  padding: 2rem 1.25rem;
+  font-size: 0.875rem;
+  color: var(--snice-color-text-secondary);
+}

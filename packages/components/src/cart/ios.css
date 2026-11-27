@@ -1,0 +1,247 @@
+/* iOS 26+ Liquid Glass / Apple HIG — snice-cart
+ * Apple Store App Bag / Apple Pay grouped order card.
+ * Opaque 20px grouped card (zero blur on scrolling bag content), 12px concentric thumbnails,
+ * 0.5px hairlines, tabular SF Pro pricing, and 50px full-width capsule checkout CTA.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+  --cart-bg: var(--snice-color-surface-container-high);
+  --cart-bg-element: var(--snice-color-surface-container-low);
+  --cart-border: var(--snice-color-border-subtle);
+  --cart-text: var(--snice-color-text);
+  --cart-text-secondary: var(--snice-color-text-secondary);
+  --cart-text-tertiary: var(--snice-color-text-tertiary);
+  --cart-primary: var(--snice-color-primary);
+  --cart-danger: var(--snice-color-danger);
+  --cart-success: var(--snice-color-success);
+  -webkit-font-smoothing: antialiased;
+}
+
+[part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 20px;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+[part~="header"] {
+  padding: 1rem 1.25rem;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="title"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.024em;
+  color: var(--snice-color-text);
+}
+
+[part~="count"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="item"] {
+  padding: 1rem 1.25rem;
+  gap: 1rem;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  transition: background-color var(--snice-transition-fast) var(--snice-ease-out);
+}
+
+[part~="item"]:last-child {
+  border-bottom: none;
+}
+
+[part~="item"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 3%, transparent);
+}
+
+[part~="item-image"],
+[part~="item-image-placeholder"] {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 12px;
+  border: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="item-image-placeholder"] {
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="item-name"] {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--snice-color-text);
+}
+
+[part~="item-variant"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="item-price"] {
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="item-total"] {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+/* Exported child parts for Mode B parity */
+[part~="remove-button-base"] {
+  color: var(--snice-color-text-secondary);
+  border-radius: 9999px;
+  transition: background-color var(--snice-transition-fast) var(--snice-ease-out),
+              color var(--snice-transition-fast) var(--snice-ease-out),
+              transform var(--snice-transition-fast) var(--snice-ease-spring);
+}
+
+[part~="remove-button-base"]:hover {
+  background: color-mix(in srgb, var(--snice-color-danger) 12%, transparent);
+  color: var(--snice-color-danger);
+}
+
+[part~="remove-button-base"]:active {
+  transform: scale(0.92);
+}
+
+[part~="remove-button-base"]:focus-visible,
+[part~="apply-button-base"]:focus-visible,
+[part~="checkout-button-base"]:focus-visible {
+  outline: var(--snice-focus-ring-width) solid var(--snice-focus-ring-color);
+  outline-offset: var(--snice-focus-ring-offset);
+}
+
+[part~="quantity-base"] {
+  border-radius: 10px;
+  border: 0.5px solid var(--snice-color-border);
+  background: var(--snice-color-surface-container-low);
+}
+
+[part~="quantity-input"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Coupon row */
+[part~="coupon"] {
+  padding: 0.75rem 1.25rem 1rem;
+  gap: 0.625rem;
+}
+
+[part~="coupon-input-input"] {
+  min-height: 2.375rem;
+  border-radius: 10px;
+  background: var(--snice-color-surface-container-low);
+  border: 0.5px solid var(--snice-color-border);
+  color: var(--snice-color-text);
+}
+
+[part~="coupon-input-input"]:focus-visible {
+  outline: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="apply-button-base"] {
+  min-height: 2.375rem;
+  padding-inline: 1rem;
+  border-radius: 9999px;
+  border: 1px solid var(--snice-color-primary);
+  background: transparent;
+  color: var(--snice-color-primary);
+  font-weight: 600;
+  transition: transform var(--snice-transition-fast) var(--snice-ease-spring),
+              background-color var(--snice-transition-fast) var(--snice-ease-out);
+}
+
+[part~="apply-button-base"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+}
+
+[part~="apply-button-base"]:active {
+  transform: scale(0.97);
+}
+
+/* Recessed grouped summary band */
+[part~="summary"] {
+  padding: 1rem 1.25rem;
+  background: var(--snice-color-surface-container-low);
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+  gap: 0.5rem;
+}
+
+[part~="summary-row"] {
+  font-size: 0.875rem;
+}
+
+[part~="summary-row-total"] {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+[part~="summary-label"] {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="summary-value"] {
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+[part~="summary-value-discount"] {
+  color: var(--snice-color-success);
+}
+
+[part~="divider-line"],
+[part~="divider-line-before"],
+[part~="divider-line-after"] {
+  border-color: var(--snice-color-border-subtle);
+}
+
+/* Checkout area — 50px full-width capsule CTA with explicit white ink in dark mode */
+[part~="checkout"] {
+  padding: 1rem 1.25rem 1.25rem;
+  background: var(--snice-color-surface-container-high);
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="checkout-button-base"] {
+  min-height: 3.125rem;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  border-color: transparent;
+  color: hsl(0 0% 100%);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  box-shadow: var(--snice-shadow-sm);
+  transition: transform var(--snice-transition-fast) var(--snice-ease-spring),
+              filter var(--snice-transition-fast) var(--snice-ease-out);
+}
+
+[part~="checkout-button-base"]:hover {
+  filter: brightness(1.06);
+}
+
+[part~="checkout-button-base"]:active {
+  transform: scale(0.97);
+}
+
+[part~="empty"] {
+  padding: 2.5rem 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--snice-color-text-secondary);
+}
