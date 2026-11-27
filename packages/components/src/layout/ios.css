@@ -1,0 +1,25 @@
+/* iOS 26+ Liquid Glass — snice-layout */
+[part~="header"] {
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-ios-glass-rim);
+}
+
+[part~="main"] {
+  background: var(--snice-color-surface);
+}
+
+[part~="footer"] {
+  background: var(--snice-color-surface-container-low);
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="header"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

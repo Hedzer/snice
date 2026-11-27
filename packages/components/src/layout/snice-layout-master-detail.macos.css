@@ -1,0 +1,53 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-layout-master-detail */
+:host {
+  --snice-layout-control-size: 1.75rem;
+}
+
+[part~="header"] {
+  padding: 0.5rem 1rem;
+  background: var(--snice-macos-glass-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border-bottom: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-macos-glass-rim);
+}
+
+[part~="back-button"] {
+  border-radius: 6px;
+  color: var(--snice-color-text-secondary);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+[part~="back-button"]:hover {
+  background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-text);
+}
+
+[part~="back-button"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+}
+
+[part~="back-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+[part~="list"] {
+  background: var(--snice-macos-glass-sidebar-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border-right: 0.5px solid var(--snice-color-border);
+}
+
+[part~="detail"] {
+  background: var(--snice-color-surface);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="header"],
+  [part~="list"] {
+    background: var(--snice-color-background-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

@@ -1,0 +1,11 @@
+/* Android Material 3 Expressive — snice-layout-centered */
+[part~="base"] {
+  background: var(--snice-color-surface);
+}
+
+[part~="container"] {
+  background: var(--snice-color-surface-container-high);
+  border: none;
+  border-radius: 28px;
+  box-shadow: var(--snice-shadow-sm);
+}

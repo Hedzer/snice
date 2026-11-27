@@ -1,0 +1,4 @@
+/* Android Material 3 Expressive — snice-layout-minimal */
+[part~="main"] {
+  background: var(--snice-color-surface);
+}

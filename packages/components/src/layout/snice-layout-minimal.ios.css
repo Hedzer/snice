@@ -1,0 +1,4 @@
+/* iOS 26+ Liquid Glass — snice-layout-minimal */
+[part~="main"] {
+  background: var(--snice-color-surface);
+}

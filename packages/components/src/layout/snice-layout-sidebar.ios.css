@@ -1,0 +1,78 @@
+/* iOS 26+ Liquid Glass — snice-layout-sidebar */
+:host {
+  --snice-layout-control-size: 2.75rem;
+}
+
+[part~="header"] {
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-ios-glass-rim);
+}
+
+[part~="sidebar-toggle"] {
+  border-radius: 9999px;
+  background: var(--snice-ios-glass-clear-bg);
+  border: 0.5px solid var(--snice-ios-glass-border);
+  color: var(--snice-color-primary);
+  box-shadow: var(--snice-ios-glass-rim);
+  transition:
+    background-color var(--snice-transition-fast, 180ms) ease,
+    transform 180ms var(--snice-ease-spring, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+[part~="sidebar-toggle"]:hover {
+  background: var(--snice-ios-glass-tinted-bg);
+  color: var(--snice-color-primary);
+}
+
+[part~="sidebar-toggle"]:active {
+  transform: scale(0.94);
+}
+
+[part~="sidebar-toggle"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="sidebar"] {
+  background: var(--snice-color-surface-container-low);
+  border-right: 0.5px solid var(--snice-color-border-subtle);
+  transition:
+    width 320ms var(--snice-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform 360ms var(--snice-ios-spring-sheet, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+:host([mobile-open="true"]) [part~="sidebar"],
+[part~="sidebar"][part~="sidebar-mobile-open"] {
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-radius: 0 24px 24px 0;
+  border-right: 0.5px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+}
+
+[part~="scrim"][part~="scrim-visible"] {
+  background: hsl(0 0% 0% / 0.36);
+}
+
+[part~="main"] {
+  background: var(--snice-color-surface);
+}
+
+[part~="footer"] {
+  background: var(--snice-color-surface-container-low);
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="header"],
+  :host([mobile-open="true"]) [part~="sidebar"],
+  [part~="sidebar"][part~="sidebar-mobile-open"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

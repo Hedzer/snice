@@ -1,0 +1,4 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-layout-minimal */
+[part~="main"] {
+  background: var(--snice-color-surface);
+}

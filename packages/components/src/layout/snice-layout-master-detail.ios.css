@@ -1,0 +1,54 @@
+/* iOS 26+ Liquid Glass — snice-layout-master-detail */
+:host {
+  --snice-layout-control-size: 2.75rem;
+}
+
+[part~="header"] {
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-ios-glass-rim);
+}
+
+[part~="back-button"] {
+  border-radius: 9999px;
+  background: var(--snice-ios-glass-clear-bg);
+  border: 0.5px solid var(--snice-ios-glass-border);
+  color: var(--snice-color-primary);
+  box-shadow: var(--snice-ios-glass-rim);
+  transition:
+    background-color var(--snice-transition-fast, 180ms) ease,
+    transform 180ms var(--snice-ease-spring, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+[part~="back-button"]:hover {
+  background: var(--snice-ios-glass-tinted-bg);
+  color: var(--snice-color-primary);
+}
+
+[part~="back-button"]:active {
+  transform: scale(0.94);
+}
+
+[part~="back-button"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="list"] {
+  background: var(--snice-color-surface-container-low);
+  border-right: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="detail"] {
+  background: var(--snice-color-surface);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="header"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

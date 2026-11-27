@@ -1,0 +1,9 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-layout-auth-split */
+[part~="base"] {
+  background: var(--snice-color-surface);
+}
+
+[part~="panel"] {
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-border);
+}

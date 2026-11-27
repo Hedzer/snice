@@ -1,0 +1,89 @@
+/* iOS 26+ Liquid Glass — snice-layout-docs */
+:host {
+  --snice-layout-control-size: 2.75rem;
+}
+
+[part~="skip-link"] {
+  border-radius: 9999px;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 0.5px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+}
+
+[part~="skip-link"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color), var(--snice-ios-glass-shadow);
+}
+
+[part~="header"] {
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-ios-glass-rim);
+}
+
+[part~="sidebar-toggle"] {
+  border-radius: 9999px;
+  background: var(--snice-ios-glass-clear-bg);
+  border: 0.5px solid var(--snice-ios-glass-border);
+  color: var(--snice-color-primary);
+  box-shadow: var(--snice-ios-glass-rim);
+  transition:
+    background-color var(--snice-transition-fast, 180ms) ease,
+    transform 180ms var(--snice-ease-spring, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+[part~="sidebar-toggle"]:hover {
+  background: var(--snice-ios-glass-tinted-bg);
+  color: var(--snice-color-primary);
+}
+
+[part~="sidebar-toggle"]:active {
+  transform: scale(0.94);
+}
+
+[part~="sidebar-toggle"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="sidebar"] {
+  background: var(--snice-color-surface-container-low);
+  border-right: 0.5px solid var(--snice-color-border-subtle);
+  transition: transform 360ms var(--snice-ios-spring-sheet, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+[part~="sidebar"][part~="sidebar-open"] {
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-radius: 0 24px 24px 0;
+  border-right: 0.5px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+}
+
+[part~="scrim"][part~="scrim-visible"] {
+  background: hsl(0 0% 0% / 0.36);
+}
+
+[part~="main"] {
+  background: var(--snice-color-surface);
+}
+
+[part~="toc"] {
+  background: var(--snice-color-surface-container-low);
+  border-left: 0.5px solid var(--snice-color-border-subtle);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="header"],
+  [part~="skip-link"],
+  [part~="sidebar"][part~="sidebar-open"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

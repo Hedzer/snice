@@ -1,0 +1,31 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-layout-blog */
+[part~="header"] {
+  background: var(--snice-macos-glass-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border-bottom: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-macos-glass-rim);
+}
+
+[part~="main"] {
+  background: var(--snice-color-surface);
+}
+
+[part~="sidebar"] {
+  background: var(--snice-color-background-elevated);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 12px;
+}
+
+[part~="footer"] {
+  background: var(--snice-color-surface-container-low);
+  border-top: 0.5px solid var(--snice-color-border);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="header"] {
+    background: var(--snice-color-background-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

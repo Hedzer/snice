@@ -1,0 +1,21 @@
+/* Android Material 3 Expressive — snice-layout-card */
+[part~="base"] {
+  background: var(--snice-color-surface);
+}
+
+[part~="header"] {
+  box-sizing: border-box;
+  min-height: 4rem;
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  box-shadow: none;
+}
+
+[part~="main"] {
+  background: var(--snice-color-surface);
+}
+
+[part~="footer"] {
+  background: var(--snice-color-surface-container);
+  border-top: 1px solid var(--snice-color-border-subtle);
+}

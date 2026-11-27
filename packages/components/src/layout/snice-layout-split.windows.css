@@ -1,0 +1,12 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-layout-split */
+[part~="panel"] {
+  background: var(--snice-color-surface-container-low);
+}
+
+[part~="panel-left"] {
+  background: var(--snice-color-surface);
+}
+
+[part~="divider"] {
+  background: var(--snice-color-border-subtle);
+}

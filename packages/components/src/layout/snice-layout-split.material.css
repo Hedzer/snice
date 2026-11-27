@@ -1,0 +1,12 @@
+/* Android Material 3 Expressive — snice-layout-split */
+[part~="panel"] {
+  background: var(--snice-color-surface);
+}
+
+[part~="panel-left"] {
+  background: var(--snice-color-surface-container-low);
+}
+
+[part~="divider"] {
+  background: var(--snice-color-border-subtle);
+}

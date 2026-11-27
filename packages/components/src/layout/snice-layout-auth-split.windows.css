@@ -1,0 +1,9 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-layout-auth-split */
+[part~="base"] {
+  background: var(--snice-color-surface-container-low);
+}
+
+[part~="panel"] {
+  background: var(--snice-color-surface);
+  border-color: var(--snice-color-border-subtle);
+}
