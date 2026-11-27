@@ -118,7 +118,7 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
               aria-current="${ariaCurrent ?? ''}"
               @click="${() => this.handleStepClick(index)}">
 
-              <div class="step__indicator" part="step-indicator">
+              <div class="step__indicator" part="step-indicator${({ pending: ' step-indicator-pending', active: ' step-indicator-active', completed: ' step-indicator-completed', error: ' step-indicator-error' })[status] || ''}">
                 <if ${status === 'completed'}>
                   ✓
                 </if>
@@ -128,13 +128,13 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
               </div>
 
               <div class="step__content" part="step-content">
-                <div class="step__label" part="step-label">${step.label}</div>
+                <div class="step__label" part="step-label${({ pending: ' step-label-pending', active: ' step-label-active', completed: ' step-label-completed', error: ' step-label-error' })[status] || ''}">${step.label}</div>
                 <if ${step.description}>
                   <div class="step__description" part="step-description">${step.description}</div>
                 </if>
               </div>
 
-              <div class="step__connector" part="step-connector"></div>
+              <div class="step__connector" part="step-connector${({ pending: ' step-connector-pending', active: ' step-connector-active', completed: ' step-connector-completed', error: ' step-connector-error' })[status] || ''}"></div>
             </div>
           `;
         })}

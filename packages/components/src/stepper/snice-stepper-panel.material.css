@@ -1,0 +1,5 @@
+/* Material 3 Expressive — snice-stepper-panel */
+[part~="panel"] {
+  padding: 1rem 0;
+  font-size: 0.875rem;
+}

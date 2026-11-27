@@ -1,0 +1,5 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-stepper-panel */
+[part~="panel"] {
+  padding: 0.75rem 0;
+  font-size: 0.8125rem;
+}

@@ -1,6 +1,99 @@
-/* macOS 26+ Liquid Glass / AppKit — snice-stepper */
+/* macOS 26+ Liquid Glass / AppKit — snice-stepper (Compact 24px Setup Assistant) */
 [part~="step-indicator"] {
+  width: 24px;
+  height: 24px;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+  transition:
+    background-color var(--snice-transition-fast, 140ms) ease,
+    border-color var(--snice-transition-fast, 140ms) ease,
+    color var(--snice-transition-fast, 140ms) ease;
+}
+
+[part~="step-indicator"][part~="step-indicator-pending"] {
+  background: var(--snice-macos-control-bg);
+  border: 0.5px solid var(--snice-color-border-hover);
+  box-shadow: var(--snice-macos-control-shadow);
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="step-indicator"][part~="step-indicator-active"] {
+  background: var(--snice-color-primary);
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-primary) 75%, black);
+  color: hsl(0 0% 100%);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.28), 0 0.5px 1.5px hsl(0 0% 0% / 0.18);
+}
+
+[part~="step-indicator"][part~="step-indicator-completed"] {
+  background: var(--snice-color-success);
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-success) 75%, black);
+  color: hsl(0 0% 100%);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.25);
+}
+
+[part~="step-indicator"][part~="step-indicator-error"] {
+  background: var(--snice-color-danger);
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-danger) 75%, black);
+  color: hsl(0 0% 100%);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.25);
+}
+
+/* Synchronized 1px hairline connectors for 24px badges */
+[part~="step-connector"] {
+  top: 11.5px;
+  left: calc(50% + 12px);
+  right: calc(-50% + 12px);
+  height: 1px;
+  background: var(--snice-color-border);
+}
+
+:host([orientation="vertical"]) [part~="step-connector"] {
+  top: 24px;
+  left: 11.5px;
+  right: auto;
+  bottom: 0;
+  width: 1px;
+  height: auto;
+}
+
+[part~="step-connector"][part~="step-connector-completed"] {
+  background: var(--snice-color-success);
+}
+
+[part~="step-label"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="step-label"][part~="step-label-active"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="step-label"][part~="step-label-completed"] {
+  color: var(--snice-color-text);
+}
+
+[part~="step-label"][part~="step-label-error"] {
+  font-weight: 600;
+  color: var(--snice-color-danger);
+}
+
+[part~="step-description"] {
+  font-size: 0.6875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="step"][part~="step-clickable"] {
+  border-radius: 6px;
+}
+
+[part~="step"][part~="step-clickable"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
 }

@@ -1,4 +1,82 @@
-/* Material 3 Expressive — snice-stepper */
+/* Material 3 Expressive — snice-stepper (Tonal Multi-Step Progress) */
 [part~="step-indicator"] {
+  width: 32px;
+  height: 32px;
   border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+  transition:
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, ease),
+    border-color var(--snice-transition-fast, 160ms) ease,
+    color var(--snice-transition-fast, 160ms) ease,
+    transform var(--snice-transition-medium, 260ms) var(--snice-m3-spring-spatial, ease);
+}
+
+[part~="step-indicator"][part~="step-indicator-pending"] {
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="step-indicator"][part~="step-indicator-active"] {
+  background: var(--snice-color-primary);
+  border: 1px solid var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
+}
+
+[part~="step-indicator"][part~="step-indicator-completed"] {
+  background: var(--snice-m3-primary-container);
+  border: 1px solid transparent;
+  color: var(--snice-m3-on-primary-container);
+}
+
+[part~="step-indicator"][part~="step-indicator-error"] {
+  background: var(--snice-color-danger);
+  border: 1px solid var(--snice-color-danger);
+  color: var(--snice-color-text-inverse);
+}
+
+[part~="step-connector"] {
+  background: var(--snice-color-border-subtle);
+}
+
+[part~="step-connector"][part~="step-connector-completed"] {
+  background: var(--snice-color-primary);
+}
+
+[part~="step-label"] {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.008em;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="step-label"][part~="step-label-active"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="step-label"][part~="step-label-completed"] {
+  color: var(--snice-color-text);
+}
+
+[part~="step-label"][part~="step-label-error"] {
+  font-weight: 600;
+  color: var(--snice-color-danger);
+}
+
+[part~="step-description"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="step"][part~="step-clickable"] {
+  border-radius: 12px;
+}
+
+[part~="step"][part~="step-clickable"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
 }

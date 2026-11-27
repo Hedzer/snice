@@ -1,5 +1,94 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-stepper (Fluent Stepper) */
+/* Windows 11 Fluent 2 / WinUI 3 — snice-stepper (28px Desktop Wizard Stepper) */
 [part~="step-indicator"] {
+  width: 28px;
+  height: 28px;
   border-radius: 9999px;
+  font-size: 0.75rem;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+  transition:
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
+}
+
+[part~="step-indicator"][part~="step-indicator-pending"] {
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-bottom);
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="step-indicator"][part~="step-indicator-active"] {
+  background: var(--snice-color-primary);
+  border: 1px solid var(--snice-color-primary);
+  color: var(--snice-win-on-accent);
+}
+
+[part~="step-indicator"][part~="step-indicator-completed"] {
+  background: var(--snice-color-success);
+  border: 1px solid var(--snice-color-success);
+  color: var(--snice-win-on-accent);
+}
+
+[part~="step-indicator"][part~="step-indicator-error"] {
+  background: var(--snice-color-danger);
+  border: 1px solid var(--snice-color-danger);
+  color: var(--snice-win-on-accent);
+}
+
+/* Synchronized 2px connectors for 28px badges */
+[part~="step-connector"] {
+  top: 13px;
+  left: calc(50% + 14px);
+  right: calc(-50% + 14px);
+  height: 2px;
+  background: var(--snice-color-border);
+}
+
+:host([orientation="vertical"]) [part~="step-connector"] {
+  top: 28px;
+  left: 13px;
+  right: auto;
+  bottom: 0;
+  width: 2px;
+  height: auto;
+}
+
+[part~="step-connector"][part~="step-connector-completed"] {
+  background: var(--snice-color-success);
+}
+
+[part~="step-label"] {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="step-label"][part~="step-label-active"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="step-label"][part~="step-label-completed"] {
+  color: var(--snice-color-text);
+}
+
+[part~="step-label"][part~="step-label-error"] {
+  font-weight: 600;
+  color: var(--snice-color-danger);
+}
+
+[part~="step-description"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="step"][part~="step-clickable"] {
+  border-radius: 4px;
+}
+
+[part~="step"][part~="step-clickable"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
 }

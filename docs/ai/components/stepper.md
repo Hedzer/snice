@@ -32,10 +32,22 @@ interface Step {
 - `container` - Main container
 - `step` - Individual step wrapper
 - `step-indicator` - Circular indicator (number/checkmark)
+- `step-indicator-pending` - Added to `step-indicator` while pending
+- `step-indicator-active` - Added to `step-indicator` while active
+- `step-indicator-completed` - Added to `step-indicator` while completed
+- `step-indicator-error` - Added to `step-indicator` when in error state
 - `step-content` - Label + description wrapper
 - `step-label` - Step label text
+- `step-label-pending` - Added to `step-label` while pending
+- `step-label-active` - Added to `step-label` while active
+- `step-label-completed` - Added to `step-label` while completed
+- `step-label-error` - Added to `step-label` when in error state
 - `step-description` - Description text
 - `step-connector` - Line between steps
+- `step-connector-pending` - Added to `step-connector` while pending
+- `step-connector-active` - Added to `step-connector` while active
+- `step-connector-completed` - Added to `step-connector` while completed
+- `step-connector-error` - Added to `step-connector` when in error state
 - `step-pending` - Added to `step` while the step is pending
 - `step-active` - Added to `step` while the step is active
 - `step-completed` - Added to `step` once the step is completed

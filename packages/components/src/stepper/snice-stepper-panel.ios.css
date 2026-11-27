@@ -1,0 +1,5 @@
+/* iOS 26+ Liquid Glass — snice-stepper-panel */
+[part~="panel"] {
+  padding: 1rem 0.25rem;
+  font-size: 0.9375rem;
+}
