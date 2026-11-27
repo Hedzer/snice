@@ -1,0 +1,315 @@
+/* iOS 26+ Liquid Glass — snice-podcast-player
+ * Apple Podcasts card: opaque 20px grouped surface, elevated 14px artwork,
+ * 56px circular Play button with explicit white dark-mode ink, 44px circular
+ * skip controls, capsule speed/sleep pills, and high-contrast scrubber track.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+/* Artwork */
+:host [part~="artwork"] {
+  border-radius: 14px;
+  background: var(--snice-color-surface-container-low);
+  box-shadow:
+    0 8px 20px -4px hsl(0 0% 0% / 0.2),
+    inset 0 0 0 0.5px var(--snice-color-border-subtle);
+}
+
+:host [part~="artwork-placeholder"] {
+  color: var(--snice-color-text-secondary);
+}
+
+/* Show & Episode Typography */
+:host [part~="show"] {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--snice-color-primary);
+}
+
+:host [part~="title"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.022em;
+  color: var(--snice-color-text);
+}
+
+:host [part~="description"] {
+  font-size: 0.875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+/* Transport Buttons */
+:host [part~="button"] {
+  border-radius: 9999px;
+  color: var(--snice-color-text);
+  transition:
+    background-color var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out),
+    border-color var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out),
+    color var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out),
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+}
+
+:host [part~="button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 7%, transparent);
+}
+
+:host [part~="button"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  transform: scale(0.94);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="skip-back-button"],
+:host [part~="skip-forward-button"] {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  position: relative;
+}
+
+:host [part~="skip-label"] {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+}
+
+/* Capsule Speed & Sleep Pills */
+:host [part~="speed-button"],
+:host [part~="sleep-button"] {
+  height: 36px;
+  min-width: 44px;
+  padding: 0 12px;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-low);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+:host [part~="speed-button"]:hover,
+:host [part~="sleep-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 6%, var(--snice-color-surface-container-low));
+}
+
+:host [part~="speed-button-active"],
+:host [part~="speed-button-active"]:hover,
+:host [part~="sleep-button-active"],
+:host [part~="sleep-button-active"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 45%, transparent);
+  color: var(--snice-color-primary);
+}
+
+:host [part~="volume-button"] {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+/* Primary Play Circle — explicit white ink in light AND dark mode */
+:host [part~="play-button"] {
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  box-shadow: 0 4px 14px -2px color-mix(in srgb, var(--snice-color-primary) 42%, transparent);
+}
+
+:host [part~="play-button"]:hover {
+  background: color-mix(in srgb, white 10%, var(--snice-color-primary));
+}
+
+:host [part~="play-button"]:active {
+  background: color-mix(in srgb, black 8%, var(--snice-color-primary));
+  transform: scale(0.92);
+}
+
+:host [part~="button"]:disabled,
+:host [part~="play-button"]:disabled {
+  opacity: 0.36;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Scrubber & Volume */
+:host [part~="time"] {
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="progress"] {
+  height: 6px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+}
+
+:host [part~="progress"]:hover {
+  height: 6px;
+  background: color-mix(in srgb, var(--snice-color-text) 20%, transparent);
+}
+
+:host [part~="progress"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="progress-bar"] {
+  background: var(--snice-color-primary);
+  border-radius: 9999px;
+}
+
+:host [part~="volume-slider"] {
+  accent-color: var(--snice-color-primary);
+  height: 5px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--snice-color-primary) 0%,
+    var(--snice-color-primary) var(--volume-percent, 100%),
+    color-mix(in srgb, var(--snice-color-text) 16%, transparent) var(--volume-percent, 100%),
+    color-mix(in srgb, var(--snice-color-text) 16%, transparent) 100%
+  );
+}
+
+:host [part~="volume-slider"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Sleep Banner */
+:host [part~="sleep-label"] {
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="sleep-time"] {
+  color: var(--snice-color-primary);
+}
+
+/* Chapters & Episodes — opaque grouped rows */
+:host [part~="chapters"],
+:host [part~="episodes"] {
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="chapters-header"],
+:host [part~="episodes-header"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--snice-color-text);
+}
+
+:host [part~="chapter"],
+:host [part~="episode"] {
+  min-height: 44px;
+  border-radius: 12px;
+  transition: background-color var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="chapter"]:hover,
+:host [part~="episode"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 6%, transparent);
+}
+
+:host [part~="chapter"]:focus-visible,
+:host [part~="episode"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="chapter-active"],
+:host [part~="chapter-active"]:hover,
+:host [part~="episode-active"],
+:host [part~="episode-active"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+}
+
+:host [part~="episode-artwork"] {
+  border-radius: 8px;
+}
+
+:host [part~="chapter-title"],
+:host [part~="episode-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+:host [part~="chapter-time"],
+:host [part~="episode-date"],
+:host [part~="episode-duration"] {
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="episode-playing-bar"] {
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"],
+  :host [part~="play-button"],
+  :host [part~="chapter"],
+  :host [part~="episode"],
+  :host [part~="progress-bar"],
+  :host [part~="episode-playing-bar"] {
+    transition: none;
+    animation: none;
+  }
+
+  :host [part~="button"]:active,
+  :host [part~="play-button"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="play-button"] {
+    background: Highlight;
+    color: HighlightText;
+    box-shadow: none;
+  }
+
+  :host [part~="speed-button"],
+  :host [part~="sleep-button"] {
+    border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="progress"] {
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="progress-bar"] {
+    background: Highlight;
+  }
+}

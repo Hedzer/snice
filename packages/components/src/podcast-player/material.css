@@ -1,0 +1,302 @@
+/* Android Material 3 Expressive — snice-podcast-player
+ * 24px tonal container, 16px artwork, 56dp press-morphing Play FAB, 48dp skip
+ * buttons, 8px M3 filter-chip speed/sleep toggles, tonal active rows, exact
+ * 12%/38% disabled states, and dark-mode T80-on-ink compliance.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+/* Artwork */
+:host [part~="artwork"] {
+  border-radius: 16px;
+  background: var(--snice-color-surface-container-high);
+}
+
+:host [part~="artwork-placeholder"] {
+  color: var(--snice-color-text-secondary);
+}
+
+/* Typography */
+:host [part~="show"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--snice-color-primary);
+}
+
+:host [part~="title"] {
+  font-family: var(--snice-font-family);
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+:host [part~="description"] {
+  font-size: 0.875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+/* Transport Controls */
+:host [part~="button"] {
+  border-radius: 9999px;
+  color: var(--snice-color-text);
+  transition:
+    border-radius var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.42, 1.4, 0.24, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    border-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+:host [part~="button"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+  border-radius: var(--snice-m3-shape-morph-selected, 12px);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="skip-back-button"],
+:host [part~="skip-forward-button"] {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  position: relative;
+}
+
+:host [part~="skip-label"] {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+}
+
+/* M3 Filter-Chip Speed & Sleep Controls */
+:host [part~="speed-button"],
+:host [part~="sleep-button"] {
+  height: 36px;
+  min-width: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--snice-color-border);
+  background: transparent;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+:host [part~="speed-button"]:hover,
+:host [part~="sleep-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+:host [part~="speed-button-active"],
+:host [part~="speed-button-active"]:hover,
+:host [part~="sleep-button-active"],
+:host [part~="sleep-button-active"]:hover {
+  background: var(--snice-m3-secondary-container);
+  border-color: transparent;
+  color: var(--snice-m3-on-secondary-container);
+}
+
+:host [part~="volume-button"] {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+}
+
+/* Expressive Play FAB — dark-mode T80-on-ink compliant */
+:host [part~="play-button"] {
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary, var(--snice-color-text-inverse));
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="play-button"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-primary, white) 8%, var(--snice-color-primary));
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="play-button"]:active {
+  border-radius: var(--snice-m3-shape-morph-selected, 12px);
+}
+
+/* Exact Material 3 disabled spec: opacity 1, 12% surface / 38% ink */
+:host [part~="button"]:disabled,
+:host [part~="play-button"]:disabled {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  border-color: transparent;
+  border-radius: 9999px;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Scrubber & Volume */
+:host [part~="time"] {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="progress"] {
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-highest);
+}
+
+:host [part~="progress"]:hover {
+  height: 6px;
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, var(--snice-color-surface-container-highest));
+}
+
+:host [part~="progress"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="progress-bar"] {
+  background: var(--snice-color-primary);
+  border-radius: 9999px;
+}
+
+:host [part~="volume-slider"] {
+  accent-color: var(--snice-color-primary);
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--snice-color-primary) 0%,
+    var(--snice-color-primary) var(--volume-percent, 100%),
+    var(--snice-color-surface-container-highest) var(--volume-percent, 100%),
+    var(--snice-color-surface-container-highest) 100%
+  );
+}
+
+:host [part~="volume-slider"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Tonal Chapters & Episodes */
+:host [part~="chapters"],
+:host [part~="episodes"] {
+  border-top: 1px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="chapters-header"],
+:host [part~="episodes-header"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+:host [part~="chapter"],
+:host [part~="episode"] {
+  min-height: 48px;
+  border-radius: 12px;
+  transition: background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="chapter"]:hover,
+:host [part~="episode"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+:host [part~="chapter"]:focus-visible,
+:host [part~="episode"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="chapter-active"],
+:host [part~="chapter-active"]:hover,
+:host [part~="episode-active"],
+:host [part~="episode-active"]:hover {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+}
+
+:host [part~="episode-artwork"] {
+  border-radius: 10px;
+}
+
+:host [part~="chapter-title"],
+:host [part~="episode-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+:host [part~="chapter-time"],
+:host [part~="episode-date"],
+:host [part~="episode-duration"] {
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="episode-playing-bar"] {
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"],
+  :host [part~="play-button"],
+  :host [part~="chapter"],
+  :host [part~="episode"],
+  :host [part~="progress-bar"],
+  :host [part~="episode-playing-bar"] {
+    transition: none;
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="play-button"] {
+    background: Highlight;
+    color: HighlightText;
+    box-shadow: none;
+  }
+
+  :host [part~="button"]:disabled,
+  :host [part~="play-button"]:disabled {
+    color: GrayText;
+    border: 1px solid GrayText;
+  }
+
+  :host [part~="progress"] {
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="progress-bar"] {
+    background: Highlight;
+  }
+}

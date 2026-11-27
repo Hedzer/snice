@@ -1,0 +1,330 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-podcast-player
+ * 8px Mica-layered card, 4px artwork, 32px top-lit Fluent speed/sleep controls,
+ * 44px circular accent Play button (--snice-win-on-accent), 3px left accent
+ * selection pill on active chapters/episodes, dual-stroke focus, WHCM.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+/* Artwork */
+:host [part~="artwork"] {
+  border-radius: 4px;
+  border: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container);
+}
+
+:host [part~="artwork-placeholder"] {
+  color: var(--snice-color-text-secondary);
+}
+
+/* Segoe UI Variable Typography */
+:host [part~="show"] {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--snice-color-primary);
+}
+
+:host [part~="title"] {
+  font-family: var(--snice-font-family);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+:host [part~="description"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+}
+
+/* Fluent 2 Transport Controls */
+:host [part~="button"] {
+  border-radius: 4px;
+  color: var(--snice-color-text);
+  transition:
+    background-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1),
+    border-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1),
+    color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="button"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="button"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="skip-back-button"],
+:host [part~="skip-forward-button"] {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  position: relative;
+}
+
+:host [part~="skip-label"] {
+  font-size: 0.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+}
+
+/* Top-Lit Fluent Speed & Sleep Buttons */
+:host [part~="speed-button"],
+:host [part~="sleep-button"] {
+  height: 32px;
+  min-width: 40px;
+  padding: 0 10px;
+  border-radius: 4px;
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+:host [part~="speed-button"]:hover,
+:host [part~="sleep-button"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="speed-button"]:active,
+:host [part~="sleep-button"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  border-bottom-color: var(--snice-win-stroke-top);
+}
+
+:host [part~="speed-button-active"],
+:host [part~="speed-button-active"]:hover,
+:host [part~="sleep-button-active"],
+:host [part~="sleep-button-active"]:hover {
+  background: var(--snice-color-primary);
+  border-color: transparent;
+  color: var(--snice-win-on-accent);
+}
+
+:host [part~="volume-button"] {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+/* Fluent Accent Play Circle — --snice-win-on-accent */
+:host [part~="play-button"] {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent);
+  border: 1px solid color-mix(in srgb, white 18%, transparent);
+}
+
+:host [part~="play-button"]:hover {
+  background: color-mix(in srgb, white 10%, var(--snice-color-primary));
+}
+
+:host [part~="play-button"]:active {
+  background: color-mix(in srgb, black 10%, var(--snice-color-primary));
+}
+
+:host [part~="button"]:disabled,
+:host [part~="play-button"]:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* Scrubber & Volume */
+:host [part~="time"] {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="progress"] {
+  height: 4px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-text) 18%, transparent);
+}
+
+:host [part~="progress"]:hover {
+  height: 4px;
+  background: color-mix(in srgb, var(--snice-color-text) 24%, transparent);
+}
+
+:host [part~="progress"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="progress-bar"] {
+  background: var(--snice-color-primary);
+  border-radius: 9999px;
+}
+
+:host [part~="volume-slider"] {
+  accent-color: var(--snice-color-primary);
+  height: 4px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--snice-color-primary) 0%,
+    var(--snice-color-primary) var(--volume-percent, 100%),
+    color-mix(in srgb, var(--snice-color-text) 18%, transparent) var(--volume-percent, 100%),
+    color-mix(in srgb, var(--snice-color-text) 18%, transparent) 100%
+  );
+}
+
+:host [part~="volume-slider"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* WinUI ListView Chapters & Episodes with 3px Left Accent Pill */
+:host [part~="chapters"],
+:host [part~="episodes"] {
+  border-top: 1px solid var(--snice-color-border-subtle);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+:host [part~="chapters-header"],
+:host [part~="episodes-header"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+  margin-bottom: 6px;
+}
+
+:host [part~="chapter"],
+:host [part~="episode"] {
+  position: relative;
+  padding: 6px 10px 6px 12px;
+  border-radius: 4px;
+  transition: background-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="chapter"]:hover,
+:host [part~="episode"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="chapter"]:focus-visible,
+:host [part~="episode"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="chapter-active"],
+:host [part~="chapter-active"]:hover,
+:host [part~="episode-active"],
+:host [part~="episode-active"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 5%, transparent);
+}
+
+:host [part~="chapter-active"]::before,
+:host [part~="episode-active"]::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+:host [part~="episode-artwork"] {
+  border-radius: 4px;
+}
+
+:host [part~="chapter-title"],
+:host [part~="episode-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+:host [part~="chapter-time"],
+:host [part~="episode-date"],
+:host [part~="episode-duration"] {
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="episode-playing-bar"] {
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"],
+  :host [part~="play-button"],
+  :host [part~="chapter"],
+  :host [part~="episode"],
+  :host [part~="progress-bar"],
+  :host [part~="episode-playing-bar"] {
+    transition: none;
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="play-button"],
+  :host [part~="speed-button-active"],
+  :host [part~="sleep-button-active"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+
+  :host [part~="speed-button"],
+  :host [part~="sleep-button"] {
+    border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="button"]:focus-visible,
+  :host [part~="play-button"]:focus-visible,
+  :host [part~="progress"]:focus-visible,
+  :host [part~="volume-slider"]:focus-visible,
+  :host [part~="chapter"]:focus-visible,
+  :host [part~="episode"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  :host [part~="chapter-active"]::before,
+  :host [part~="episode-active"]::before,
+  :host [part~="progress-bar"] {
+    background: Highlight;
+  }
+
+  :host [part~="progress"] {
+    border: 1px solid CanvasText;
+  }
+}

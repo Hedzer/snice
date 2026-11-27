@@ -1,0 +1,320 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-podcast-player
+ * Compact desktop Apple Podcasts card: 12px opaque AppKit container, 0.5px
+ * hairlines, 28px AppKit bevel speed/sleep controls, 42px top-lit glossy Play
+ * circle with white dark-mode ink, and AppKit focus halo.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+/* Artwork */
+:host [part~="artwork"] {
+  border-radius: 8px;
+  background: var(--snice-color-surface-container);
+  box-shadow:
+    var(--snice-shadow-sm),
+    inset 0 0 0 0.5px var(--snice-color-border-subtle);
+}
+
+:host [part~="artwork-placeholder"] {
+  color: var(--snice-color-text-secondary);
+}
+
+/* Compact SF Pro Typography */
+:host [part~="show"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--snice-color-primary);
+}
+
+:host [part~="title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--snice-color-text);
+}
+
+:host [part~="description"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+/* Compact Desktop Transport Controls */
+:host [part~="button"] {
+  border-radius: 6px;
+  color: var(--snice-color-text);
+  transition:
+    background-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out),
+    border-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out),
+    color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out),
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="button"]:hover {
+  background: var(--snice-color-overlay-hover, color-mix(in srgb, var(--snice-color-text) 7%, transparent));
+}
+
+:host [part~="button"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="skip-back-button"],
+:host [part~="skip-forward-button"] {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  position: relative;
+}
+
+:host [part~="skip-label"] {
+  font-size: 0.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+}
+
+/* AppKit Bevel Speed & Sleep Controls */
+:host [part~="speed-button"],
+:host [part~="sleep-button"] {
+  height: 28px;
+  min-width: 38px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--snice-macos-control-bg);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-macos-control-shadow);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+:host [part~="speed-button"]:hover,
+:host [part~="sleep-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 5%, var(--snice-macos-control-bg));
+}
+
+:host [part~="speed-button-active"],
+:host [part~="speed-button-active"]:hover,
+:host [part~="sleep-button-active"],
+:host [part~="sleep-button-active"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 16%, var(--snice-macos-control-bg));
+  border-color: color-mix(in srgb, var(--snice-color-primary) 50%, transparent);
+  color: var(--snice-color-primary);
+}
+
+:host [part~="volume-button"] {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+}
+
+/* Top-Lit Glossy Play Circle — explicit white ink in light AND dark mode */
+:host [part~="play-button"] {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 9999px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 16%, var(--snice-color-primary)) 0%,
+    var(--snice-color-primary) 100%
+  );
+  color: hsl(0 0% 100%);
+  box-shadow:
+    0 1px 2px hsl(0 0% 0% / 0.2),
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.35);
+}
+
+:host [part~="play-button"]:hover {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 22%, var(--snice-color-primary)) 0%,
+    color-mix(in srgb, white 6%, var(--snice-color-primary)) 100%
+  );
+}
+
+:host [part~="play-button"]:active {
+  transform: scale(0.95);
+}
+
+:host [part~="button"]:disabled,
+:host [part~="play-button"]:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Scrubber & Volume */
+:host [part~="time"] {
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="progress"] {
+  height: 4px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+}
+
+:host [part~="progress"]:hover {
+  height: 4px;
+  background: color-mix(in srgb, var(--snice-color-text) 20%, transparent);
+}
+
+:host [part~="progress"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="progress-bar"] {
+  background: var(--snice-color-primary);
+  border-radius: 9999px;
+}
+
+:host [part~="volume-slider"] {
+  accent-color: var(--snice-color-primary);
+  height: 4px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--snice-color-primary) 0%,
+    var(--snice-color-primary) var(--volume-percent, 100%),
+    color-mix(in srgb, var(--snice-color-text) 16%, transparent) var(--volume-percent, 100%),
+    color-mix(in srgb, var(--snice-color-text) 16%, transparent) 100%
+  );
+}
+
+:host [part~="volume-slider"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Chapters & Episodes */
+:host [part~="chapters"],
+:host [part~="episodes"] {
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+:host [part~="chapters-header"],
+:host [part~="episodes-header"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 6px;
+}
+
+:host [part~="chapter"],
+:host [part~="episode"] {
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="chapter"]:hover,
+:host [part~="episode"]:hover {
+  background: var(--snice-color-overlay-hover, color-mix(in srgb, var(--snice-color-text) 6%, transparent));
+}
+
+:host [part~="chapter"]:focus-visible,
+:host [part~="episode"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="chapter-active"],
+:host [part~="chapter-active"]:hover,
+:host [part~="episode-active"],
+:host [part~="episode-active"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+}
+
+:host [part~="episode-artwork"] {
+  border-radius: 6px;
+}
+
+:host [part~="chapter-title"],
+:host [part~="episode-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+:host [part~="chapter-time"],
+:host [part~="episode-date"],
+:host [part~="episode-duration"] {
+  font-size: 0.6875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="episode-playing-bar"] {
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"],
+  :host [part~="play-button"],
+  :host [part~="chapter"],
+  :host [part~="episode"],
+  :host [part~="progress-bar"],
+  :host [part~="episode-playing-bar"] {
+    transition: none;
+    animation: none;
+  }
+
+  :host [part~="play-button"]:active {
+    transform: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :host [part~="base"],
+  :host [part~="speed-button"],
+  :host [part~="sleep-button"] {
+    border-width: 1px;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="play-button"] {
+    background: Highlight;
+    color: HighlightText;
+    box-shadow: none;
+  }
+
+  :host [part~="progress"] {
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="progress-bar"] {
+    background: Highlight;
+  }
+}
