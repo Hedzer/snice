@@ -1,0 +1,114 @@
+/* macOS 26 Tahoe Liquid Glass / AppKit — snice-avatar-group (Compact AppKit Collaborator Facepile) */
+:host {
+  font-family: var(--snice-font-family);
+  --avatar-group-size: 2rem;
+  --avatar-group-font-size: 0.75rem;
+  --avatar-group-border-width: 2px;
+  --avatar-group-border-color: var(--snice-color-surface);
+
+  /* Calibrated macOS 15-color palette — >= 4.5:1 with pure white ink */
+  --avatar-palette-red: hsl(4 72% 45%);
+  --avatar-palette-orange: hsl(27 86% 39%);
+  --avatar-palette-yellow: hsl(39 84% 35%);
+  --avatar-palette-lime: hsl(86 62% 33%);
+  --avatar-palette-green: hsl(142 60% 34%);
+  --avatar-palette-teal: hsl(176 68% 33%);
+  --avatar-palette-cyan: hsl(192 78% 35%);
+  --avatar-palette-sky: hsl(204 82% 39%);
+  --avatar-palette-blue: hsl(212 90% 45%);
+  --avatar-palette-indigo: hsl(236 62% 50%);
+  --avatar-palette-violet: hsl(262 60% 50%);
+  --avatar-palette-purple: hsl(280 56% 46%);
+  --avatar-palette-fuchsia: hsl(306 60% 45%);
+  --avatar-palette-pink: hsl(336 72% 46%);
+  --avatar-palette-rose: hsl(350 72% 46%);
+}
+
+:host([size="small"]) {
+  --avatar-group-size: 1.5rem;
+  --avatar-group-font-size: 0.625rem;
+  --avatar-group-border-width: 1.5px;
+}
+
+:host([size="medium"]) {
+  --avatar-group-size: 2rem;
+  --avatar-group-font-size: 0.75rem;
+  --avatar-group-border-width: 2px;
+}
+
+:host([size="large"]) {
+  --avatar-group-size: 2.5rem;
+  --avatar-group-font-size: 0.875rem;
+  --avatar-group-border-width: 2px;
+}
+
+[part~="avatar"] {
+  font-family: var(--snice-font-family);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: hsl(0 0% 100%);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.16);
+  transition:
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-out),
+    box-shadow var(--snice-transition-fast, 140ms) var(--snice-ease-out);
+}
+
+[part~="initials"] {
+  color: hsl(0 0% 100%);
+}
+
+[part~="overflow"] {
+  font-family: var(--snice-font-family);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  background: color-mix(in srgb, var(--snice-color-background-elevated) 88%, transparent);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  color: var(--snice-color-text);
+  box-shadow: var(--snice-macos-glass-rim), inset 0 0 0 0.5px var(--snice-macos-glass-border);
+  transition:
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-out),
+    box-shadow var(--snice-transition-fast, 140ms) var(--snice-ease-out);
+}
+
+[part~="avatar"]:hover,
+[part~="overflow"]:hover {
+  transform: translateY(-1.5px);
+  z-index: 2;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+[part~="avatar"]:active,
+[part~="overflow"]:active {
+  transform: scale(0.96);
+  filter: brightness(0.94);
+}
+
+[part~="avatar"]:focus-visible,
+[part~="overflow"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+  z-index: 3;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="overflow"] {
+    background: var(--snice-color-background-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="avatar"],
+  [part~="overflow"] {
+    transition: none;
+  }
+
+  [part~="avatar"]:hover,
+  [part~="overflow"]:hover,
+  [part~="avatar"]:active,
+  [part~="overflow"]:active {
+    transform: none;
+  }
+}
