@@ -1,0 +1,124 @@
+/* Android Material 3 Expressive — snice-terminal
+ * Material You Developer Console: 16px primary-tinted dark tonal obsidian
+ * canvas (zero glass blur), Roboto Mono typography, M3 T80 high-legibility
+ * semantic/ANSI palette, WCAG AA timestamps, and a 48dp 12px-radius tonal
+ * command field with 8% hover state layer and crisp focus border.
+ */
+
+:host {
+  font-family: var(--snice-font-family-mono);
+  --snice-terminal-font-size: 0.875rem;
+  --snice-terminal-line-height: 1.5;
+  --snice-terminal-border-radius: 16px;
+  --snice-terminal-background: color-mix(in srgb, var(--snice-color-primary) 7%, hsl(266 16% 9%));
+  --snice-terminal-foreground: hsl(270 16% 93%);
+  --snice-terminal-input-color: hsl(270 18% 95%);
+  --snice-terminal-output-color: hsl(270 14% 91%);
+  --snice-terminal-prompt-color: hsl(259 100% 85%);
+  --snice-terminal-cursor-color: hsl(259 100% 85%);
+  --snice-terminal-info-color: hsl(205 92% 76%);
+  --snice-terminal-success-color: hsl(142 66% 70%);
+  --snice-terminal-warning-color: hsl(38 96% 70%);
+  --snice-terminal-error-color: hsl(5 90% 80%);
+  --snice-terminal-timestamp-color: hsl(270 10% 66%);
+  --snice-terminal-scrollbar-color: hsl(270 14% 76% / 0.28);
+  --snice-terminal-scrollbar-hover-color: hsl(270 14% 85% / 0.45);
+  --snice-terminal-selection-color: color-mix(in srgb, var(--snice-color-primary) 42%, transparent);
+  --snice-terminal-ansi-red: #f2b8b5;
+  --snice-terminal-ansi-green: #8ee5a4;
+  --snice-terminal-ansi-yellow: #ffd97d;
+  --snice-terminal-ansi-blue: #a8c7fa;
+  --snice-terminal-ansi-magenta: #e6b8ff;
+  --snice-terminal-ansi-cyan: #8ce5f0;
+  --snice-terminal-ansi-bright-black: #a39db0;
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host [part~="base"] {
+  padding: 1rem 1rem 0.75rem;
+  gap: 0.5rem;
+}
+
+:host([readonly]) [part~="base"] {
+  padding: 1rem;
+}
+
+:host [part~="output"] {
+  margin-bottom: 0;
+}
+
+:host [part~="timestamp"] {
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-terminal-timestamp-color);
+}
+
+/* 48dp Elevated Tonal Command Container */
+:host [part~="input-line"] {
+  min-height: 3rem;
+  padding: 0 1rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--snice-color-primary) 13%, hsl(266 14% 15%));
+  border: 1px solid hsl(270 12% 38% / 0.5);
+  transition:
+    border-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="input-line"]:hover {
+  background: color-mix(
+    in srgb,
+    hsl(0 0% 100%) 8%,
+    color-mix(in srgb, var(--snice-color-primary) 13%, hsl(266 14% 15%))
+  );
+}
+
+:host [part~="input-line"]:focus-within {
+  border-color: hsl(259 100% 85%);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--snice-color-primary) 45%, transparent);
+}
+
+:host [part~="prompt"] {
+  font-weight: 600;
+  color: var(--snice-terminal-prompt-color);
+}
+
+:host [part~="input"] {
+  min-height: 2.75rem;
+  color: var(--snice-terminal-foreground);
+  caret-color: var(--snice-terminal-cursor-color);
+}
+
+:host [part~="input"]:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="input-line"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    --snice-terminal-background: Canvas;
+    --snice-terminal-foreground: CanvasText;
+    --snice-terminal-input-color: CanvasText;
+    --snice-terminal-output-color: CanvasText;
+    --snice-terminal-timestamp-color: GrayText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="input-line"] {
+    background: Field;
+    border: 1px solid FieldText;
+  }
+
+  :host [part~="input-line"]:focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: 1px;
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,121 @@
+/* iOS 26+ Liquid Glass — snice-terminal
+ * Apple Developer Console / Swift Playgrounds terminal: 16px obsidian console
+ * surface (strictly opaque over scrolling log), 0.5px specular hairline rim,
+ * SF Mono 14px typography, Apple system ANSI/semantic palette, WCAG AA
+ * timestamps, and a 44pt dark-glass command capsule with iOS focus ring.
+ */
+
+:host {
+  font-family: var(--snice-font-family-mono);
+  --snice-terminal-font-size: 0.875rem;
+  --snice-terminal-line-height: 1.45;
+  --snice-terminal-border-radius: 16px;
+  --snice-terminal-background: hsl(240 8% 9%);
+  --snice-terminal-foreground: hsl(240 10% 94%);
+  --snice-terminal-input-color: hsl(240 10% 96%);
+  --snice-terminal-output-color: hsl(240 10% 92%);
+  --snice-terminal-prompt-color: hsl(135 65% 58%);
+  --snice-terminal-cursor-color: hsl(210 100% 60%);
+  --snice-terminal-info-color: hsl(205 100% 68%);
+  --snice-terminal-success-color: hsl(135 65% 58%);
+  --snice-terminal-warning-color: hsl(38 100% 62%);
+  --snice-terminal-error-color: hsl(3 100% 68%);
+  --snice-terminal-timestamp-color: hsl(240 6% 62%);
+  --snice-terminal-scrollbar-color: hsl(0 0% 100% / 0.22);
+  --snice-terminal-scrollbar-hover-color: hsl(0 0% 100% / 0.38);
+  --snice-terminal-selection-color: hsl(210 100% 52% / 0.35);
+  --snice-terminal-ansi-red: #ff6961;
+  --snice-terminal-ansi-green: #30d158;
+  --snice-terminal-ansi-yellow: #ffd60a;
+  --snice-terminal-ansi-blue: #0a84ff;
+  --snice-terminal-ansi-magenta: #bf5af2;
+  --snice-terminal-ansi-cyan: #64d2ff;
+  --snice-terminal-ansi-bright-black: #8e8e93;
+  border: 0.5px solid hsl(0 0% 100% / 0.16);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="base"] {
+  padding: 0.875rem 1rem 0.75rem;
+  gap: 0.5rem;
+}
+
+:host([readonly]) [part~="base"] {
+  padding: 1rem;
+}
+
+:host [part~="output"] {
+  margin-bottom: 0;
+}
+
+:host [part~="timestamp"] {
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-terminal-timestamp-color);
+}
+
+/* 44pt Dark Glass Command Input Capsule */
+:host [part~="input-line"] {
+  min-height: 2.75rem;
+  padding: 0 0.875rem;
+  border-radius: 9999px;
+  background: hsl(240 6% 16% / 0.78);
+  border: 0.5px solid hsl(0 0% 100% / 0.18);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14);
+  transition:
+    border-color var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="input-line"]:hover {
+  border-color: hsl(0 0% 100% / 0.28);
+}
+
+:host [part~="input-line"]:focus-within {
+  border-color: var(--snice-color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-primary) 42%, transparent);
+}
+
+:host [part~="prompt"] {
+  font-weight: 600;
+  color: var(--snice-terminal-prompt-color);
+}
+
+:host [part~="input"] {
+  min-height: 2.5rem;
+  color: var(--snice-terminal-foreground);
+  caret-color: var(--snice-terminal-cursor-color);
+}
+
+:host [part~="input"]:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="input-line"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    --snice-terminal-background: Canvas;
+    --snice-terminal-foreground: CanvasText;
+    --snice-terminal-input-color: CanvasText;
+    --snice-terminal-output-color: CanvasText;
+    --snice-terminal-timestamp-color: GrayText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="input-line"] {
+    background: Field;
+    border: 1px solid FieldText;
+    box-shadow: none;
+  }
+
+  :host [part~="input-line"]:focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: 1px;
+    box-shadow: none;
+  }
+}
