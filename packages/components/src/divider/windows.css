@@ -1,0 +1,42 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-divider (DividerStrokeColorDefault) */
+:host {
+  font-family: var(--snice-font-family);
+  --divider-color: var(--snice-color-border);
+  --divider-thickness: 1px;
+  --divider-text-padding: 0 0.5rem;
+  --divider-text-gap: 0.25rem;
+}
+
+:host([variant="dashed"]) {
+  --divider-color: var(--snice-color-border-hover);
+  --divider-thickness: 1px;
+}
+
+:host([variant="dotted"]) {
+  --divider-color: var(--snice-color-border-hover);
+  --divider-thickness: 2px;
+}
+
+:host([capped]) [part~="line"] {
+  border-radius: 2px;
+}
+
+[part~="text"] {
+  font-family: var(--snice-font-family);
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (forced-colors: active) {
+  :host,
+  :host([variant="dashed"]),
+  :host([variant="dotted"]) {
+    --divider-color: CanvasText;
+  }
+
+  [part~="text"] {
+    color: CanvasText;
+  }
+}

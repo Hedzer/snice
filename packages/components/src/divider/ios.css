@@ -1,0 +1,52 @@
+/* iOS 26+ Liquid Glass — snice-divider (HIG Translucent Separator Hairline) */
+:host {
+  font-family: var(--snice-font-family);
+  --divider-color: var(--snice-color-border);
+  --divider-thickness: 1px;
+  --divider-text-padding: 0 0.5rem;
+  --divider-text-gap: 0.25rem;
+}
+
+:host([variant="dashed"]) {
+  --divider-thickness: 1px;
+}
+
+:host([variant="dotted"]) {
+  --divider-thickness: 2px;
+}
+
+:host([capped]) [part~="line"] {
+  border-radius: 9999px;
+}
+
+[part~="text"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (min-resolution: 2dppx) {
+  :host {
+    --divider-thickness: 0.5px;
+  }
+
+  :host([variant="dashed"]) {
+    --divider-thickness: 1px;
+  }
+
+  :host([variant="dotted"]) {
+    --divider-thickness: 2px;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    --divider-color: CanvasText;
+  }
+
+  [part~="text"] {
+    color: CanvasText;
+  }
+}

@@ -1,0 +1,34 @@
+/* Android Material 3 Expressive — snice-divider (M3 outlineVariant 1dp Horizontal & Vertical Divider) */
+:host {
+  font-family: var(--snice-font-family);
+  --divider-color: var(--snice-color-border-subtle);
+  --divider-thickness: 1px;
+  --divider-text-padding: 0 0.75rem;
+  --divider-text-gap: 0.25rem;
+}
+
+:host([variant="dotted"]) {
+  --divider-thickness: 2px;
+}
+
+:host([capped]) [part~="line"] {
+  border-radius: 9999px;
+}
+
+[part~="text"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (forced-colors: active) {
+  :host {
+    --divider-color: CanvasText;
+  }
+
+  [part~="text"] {
+    color: CanvasText;
+  }
+}
