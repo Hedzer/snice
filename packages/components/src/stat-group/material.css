@@ -1,5 +1,7 @@
 /* Android Material 3 Expressive — snice-stat-group
-   Native counterpart: Material 3 Tonal Metric Card Grid (surface-container-low, 16px radius, 8%/10% state layers). */
+ * 24px borderless primary-tinted tonal metric tiles (-low), 8%/10% M3 state layers,
+ * expressive corner morph on press, secondary-container neutral pills, and complete WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
@@ -16,8 +18,8 @@
 :host [part~="stat"],
 :host([variant="card"]) [part~="stat"] {
   background: var(--snice-color-surface-container-low);
-  border: 1px solid var(--snice-color-border-subtle);
-  border-radius: 16px;
+  border: none;
+  border-radius: 24px;
   padding: 1.125rem 1.25rem;
   box-shadow: var(--snice-shadow-xs);
   transition:
@@ -48,7 +50,7 @@
 :host([variant="minimal"]) [part~="stat"] {
   background: transparent;
   border: none;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 0.75rem;
   box-shadow: none;
 }
@@ -57,7 +59,7 @@
   transform: none;
   box-shadow: none;
   background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 0.75rem;
 }
 
@@ -102,7 +104,6 @@
   font-weight: 500;
   letter-spacing: -0.015em;
   font-variant-numeric: tabular-nums;
-  color: var(--snice-color-text);
 }
 
 :host [part~="trend"] {
@@ -125,17 +126,56 @@
 }
 
 :host [part~="trend-neutral"] {
-  background: var(--snice-color-surface-container-high);
-  color: var(--snice-color-text-secondary);
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="stat"],
+  :host([variant="card"]) [part~="stat"] {
+    transition: none;
+  }
+
+  :host [part~="stat"]:active,
+  :host([variant="card"]) [part~="stat"]:active {
+    border-radius: 24px;
+  }
+
+  :host([variant="minimal"]) [part~="stat"]:active {
+    border-radius: 16px;
+  }
 }
 
 @media (forced-colors: active) {
   :host [part~="stat"],
   :host([variant="card"]) [part~="stat"] {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host([variant="minimal"]) [part~="stat"] {
+    background: Canvas;
+    color: CanvasText;
+    border: none;
+  }
+
+  :host([variant="bordered"]) [part~="stat"] {
+    background: Canvas;
+    color: CanvasText;
+    border: none;
+    border-bottom: 1.5px solid CanvasText;
   }
 
   :host [part~="trend"] {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
+  }
+
+  :host [part~="stat"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
   }
 }

@@ -1,19 +1,28 @@
-/* iOS 26+ Liquid Glass — snice-data-card
-   Native counterpart: iOS 26 Contacts / Settings Inset Grouped Detail Card (opaque surface, zero blur). */
+/* iOS 26+ Liquid Glass / Apple Contacts & Settings Inset Grouped Detail Card — snice-data-card
+ * 20px luminous grouped card with top catchlight & whisper header sheen, Liquid Glass
+ * capsule Edit toggle, hairline dividers (preserving base :last-child removal),
+ * dark-safe --snice-ios-fill-primary active/save controls, and complete WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
 }
 
 :host [part~="base"] {
   background: var(--snice-color-surface-container-high);
-  border: 0.5px solid var(--snice-color-border-subtle);
+  border: 0.5px solid var(--snice-color-border);
   border-radius: 20px;
-  box-shadow: var(--snice-shadow-sm);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-sm);
 }
 
 :host [part~="header"] {
   padding: 0.875rem 1rem;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 4.5%, var(--snice-color-surface-container-low)) 0%,
+    var(--snice-color-surface-container-low) 100%
+  );
   border-bottom: 0.5px solid var(--snice-color-border-subtle);
 }
 
@@ -29,19 +38,20 @@
   min-height: 2rem;
   padding: 0.3125rem 0.875rem;
   border-radius: 9999px;
-  border: none;
-  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  border: 0.5px solid var(--snice-ios-glass-border);
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, var(--snice-color-surface-container-high));
   color: var(--snice-color-primary);
   font-family: var(--snice-font-family);
   font-size: 0.8125rem;
   font-weight: 600;
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-xs);
   transition:
     transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring),
     background-color 140ms ease;
 }
 
 :host [part~="edit-toggle"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 18%, transparent);
+  background: color-mix(in srgb, var(--snice-color-primary) 18%, var(--snice-color-surface-container-high));
   color: var(--snice-color-primary);
 }
 
@@ -54,19 +64,18 @@
   outline-offset: 2px;
 }
 
-/* Explicit white ink on saturated iOS blue (never --snice-color-text-inverse in dark mode!) */
+/* Explicit white ink on saturated iOS blue (dark-mode safe) */
 :host [part~="edit-toggle"][part~="edit-toggle-active"],
 :host [part~="edit-toggle"][part~="edit-toggle-active"]:hover {
   background: var(--snice-ios-fill-primary);
+  border-color: transparent;
   color: hsl(0 0% 100%);
 }
 
+/* Set width/color only so base :last-child { border-bottom: none; } stays intact */
 :host [part~="group"] {
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
-}
-
-:host [part~="group"]:last-child {
-  border-bottom: none;
+  border-bottom-width: 0.5px;
+  border-bottom-color: var(--snice-color-border-subtle);
 }
 
 :host [part~="group-title"] {
@@ -82,13 +91,10 @@
 :host [part~="field"] {
   min-height: 2.75rem;
   padding: 0.6875rem 1rem;
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  border-bottom-width: 0.5px;
+  border-bottom-color: var(--snice-color-border-subtle);
   align-items: center;
   box-sizing: border-box;
-}
-
-:host [part~="field"]:last-child {
-  border-bottom: none;
 }
 
 :host [part~="field"]:hover {
@@ -163,7 +169,7 @@
 
 :host [part~="field-save"]:hover {
   opacity: 1;
-  background: var(--snice-color-primary-hover);
+  background: color-mix(in srgb, var(--snice-ios-fill-primary) 88%, black);
 }
 
 :host [part~="field-save"]:active {
@@ -195,15 +201,54 @@
   font-size: 0.8125rem;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="edit-toggle"],
+  :host [part~="field-save"],
+  :host [part~="field"] {
+    transition: none;
+  }
+
+  :host [part~="edit-toggle"]:active,
+  :host [part~="field-save"]:active {
+    transform: none;
+  }
+}
+
 @media (forced-colors: active) {
-  :host [part~="base"] {
-    border: 1px solid CanvasText;
+  :host [part~="base"],
+  :host [part~="header"] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
     box-shadow: none;
+  }
+
+  :host [part~="edit-toggle"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+    box-shadow: none;
+  }
+
+  :host [part~="field-value-badge"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
   }
 
   :host [part~="field-save"],
   :host [part~="edit-toggle"][part~="edit-toggle-active"] {
     background: Highlight;
     color: HighlightText;
+    border: 1px solid HighlightText;
+  }
+
+  :host [part~="edit-toggle"]:focus-visible,
+  :host [part~="field-save"]:focus-visible,
+  :host [part~="field-input"]:focus-visible,
+  :host [part~="field-value-link"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

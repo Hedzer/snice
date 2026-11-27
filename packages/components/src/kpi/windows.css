@@ -1,5 +1,7 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-kpi
-   Native counterpart: WinUI 3 Dev Home / Task Manager Telemetry Card (8px card, 4px trend badge, Segoe UI Variable 600). */
+/* Windows 11 Fluent 2 / WinUI 3 Dev Home Telemetry Card — snice-kpi
+ * 8px top-lit opaque Mica tile (--snice-color-surface-container-highest) with crisp
+ * 3px Fluent accent top strip, 4px trend badge, Segoe UI Variable 600, and complete WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
@@ -9,9 +11,10 @@
 }
 
 :host [part~="base"] {
-  background: var(--snice-color-surface-container-lowest);
-  border: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-win-stroke-top);
   border-bottom-color: var(--snice-win-stroke-bottom);
+  border-top: 3px solid var(--snice-color-primary);
   border-radius: 8px;
   box-shadow: var(--snice-shadow-xs);
   padding: 0.875rem 1rem;
@@ -89,11 +92,14 @@
   :host [part~="base"] {
     background: Canvas;
     color: CanvasText;
-    border-color: CanvasText;
+    border: 1px solid CanvasText;
+    border-top: 3px solid Highlight;
     box-shadow: none;
   }
 
   :host [part~="trend"] {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
   }
 }

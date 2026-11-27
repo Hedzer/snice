@@ -1,8 +1,11 @@
-/* macOS 26+ Tahoe AppKit — snice-kpi
-   Native counterpart: AppKit Activity Monitor / Stocks Desktop Metric Box (compact 10px card, 24px figures, zero blur). */
+/* macOS 26+ Tahoe AppKit / Activity Monitor & Stocks Summary Well — snice-kpi
+ * Dense 10px beveled AppKit metric box, tight desktop typography, SF Mono tabular
+ * trend deltas, and complete WHCM support.
+ */
 
 :host {
   font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
   --kpi-trend-up-bg: color-mix(in srgb, var(--snice-color-success) 14%, transparent);
   --kpi-trend-down-bg: color-mix(in srgb, var(--snice-color-danger) 14%, transparent);
   --kpi-trend-neutral-bg: var(--snice-color-surface-container);
@@ -12,7 +15,7 @@
   background: var(--snice-color-background-element);
   border: 0.5px solid var(--snice-color-border);
   border-radius: 10px;
-  box-shadow: var(--snice-shadow-xs);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.12), var(--snice-shadow-xs);
   padding: 0.75rem 0.875rem;
 }
 
@@ -70,6 +73,7 @@
 :host([size="medium"]) [part~="trend"] {
   border-radius: 6px;
   padding: 0.125rem 0.4375rem;
+  font-family: var(--snice-font-family-mono);
   font-size: 0.6875rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -87,11 +91,15 @@
 
 @media (forced-colors: active) {
   :host [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
     box-shadow: none;
   }
 
   :host [part~="trend"] {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
   }
 }

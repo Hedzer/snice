@@ -1,11 +1,14 @@
-/* iOS 26+ Liquid Glass — snice-stat-group
-   Native counterpart: iOS 26 Apple Health / Activity Summary Stat Strip (opaque grouped 20px cards, zero blur). */
+/* iOS 26+ Liquid Glass / Apple Health & Activity Stat Strip — snice-stat-group
+ * 20px luminous grouped stat tiles with top catchlight & subtle sheen, pill trend chips,
+ * spring press compression, zero-shift minimal variant, and complete WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
   --sg-bg: var(--snice-color-surface-container-high);
   --sg-bg-element: var(--snice-color-surface-container-low);
-  --sg-border: var(--snice-color-border-subtle);
+  --sg-border: var(--snice-color-border);
 }
 
 :host [part~="base"] {
@@ -15,11 +18,15 @@
 /* Default / Card variant */
 :host [part~="stat"],
 :host([variant="card"]) [part~="stat"] {
-  background: var(--snice-color-surface-container-high);
-  border: 0.5px solid var(--snice-color-border-subtle);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 3.5%, var(--snice-color-surface-container-high)) 0%,
+    var(--snice-color-surface-container-high) 42%
+  );
+  border: 0.5px solid var(--snice-color-border);
   border-radius: 20px;
   padding: 1rem 1.125rem;
-  box-shadow: var(--snice-shadow-sm);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-sm);
   transition:
     transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring),
     background-color 140ms ease,
@@ -29,7 +36,7 @@
 :host [part~="stat"]:hover,
 :host([variant="card"]) [part~="stat"]:hover {
   transform: none;
-  box-shadow: var(--snice-shadow-md);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.18), var(--snice-shadow-md);
 }
 
 :host [part~="stat"]:active,
@@ -46,7 +53,7 @@
 :host([variant="minimal"]) [part~="stat"] {
   background: transparent;
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 0.625rem 0.75rem;
   box-shadow: none;
 }
@@ -55,7 +62,7 @@
   transform: none;
   box-shadow: none;
   background: color-mix(in srgb, var(--snice-color-text) 4.5%, transparent);
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 0.625rem 0.75rem;
 }
 
@@ -98,7 +105,6 @@
   font-weight: 700;
   letter-spacing: -0.028em;
   font-variant-numeric: tabular-nums;
-  color: var(--snice-color-text);
 }
 
 :host [part~="trend"] {
@@ -125,14 +131,49 @@
   color: var(--snice-color-text-secondary);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="stat"],
+  :host([variant="card"]) [part~="stat"] {
+    transition: none;
+  }
+
+  :host [part~="stat"]:active,
+  :host([variant="card"]) [part~="stat"]:active,
+  :host([variant="minimal"]) [part~="stat"]:active {
+    transform: none;
+  }
+}
+
 @media (forced-colors: active) {
   :host [part~="stat"],
   :host([variant="card"]) [part~="stat"] {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
     box-shadow: none;
   }
 
+  :host([variant="minimal"]) [part~="stat"] {
+    background: Canvas;
+    color: CanvasText;
+    border: none;
+  }
+
+  :host([variant="bordered"]) [part~="stat"] {
+    background: Canvas;
+    color: CanvasText;
+    border: none;
+    border-bottom: 1.5px solid CanvasText;
+  }
+
   :host [part~="trend"] {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
+  }
+
+  :host [part~="stat"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
   }
 }

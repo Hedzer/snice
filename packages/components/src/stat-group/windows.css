@@ -1,11 +1,13 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-stat-group
-   Native counterpart: WinUI 3 Dashboard Metric Strip (8px Mica card, 4px trend badges, 100ms fast-out, zero Acrylic). */
+/* Windows 11 Fluent 2 / WinUI 3 Dashboard Metric Strip — snice-stat-group
+ * 8px top-lit opaque Mica tiles with crisp 3px Fluent accent top strip, opaque hover/press
+ * layering, 4px trend badges, 100ms fast-out motion, and complete WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
-  --sg-bg: var(--snice-color-surface-container-lowest);
+  --sg-bg: var(--snice-color-surface-container-highest);
   --sg-bg-element: var(--snice-win-control-bg-hover);
-  --sg-border: var(--snice-color-border-subtle);
+  --sg-border: var(--snice-win-stroke-top);
 }
 
 :host [part~="base"] {
@@ -15,9 +17,10 @@
 /* Default / Card variant */
 :host [part~="stat"],
 :host([variant="card"]) [part~="stat"] {
-  background: var(--snice-color-surface-container-lowest);
-  border: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-win-stroke-top);
   border-bottom-color: var(--snice-win-stroke-bottom);
+  border-top: 3px solid var(--snice-color-primary);
   border-radius: 8px;
   padding: 1rem 1.125rem;
   box-shadow: var(--snice-shadow-xs);
@@ -30,20 +33,18 @@
 :host [part~="stat"]:hover,
 :host([variant="card"]) [part~="stat"]:hover {
   transform: none;
-  background: var(--snice-win-control-bg-hover);
+  background-color: var(--snice-color-surface-container-highest);
+  background-image: linear-gradient(var(--snice-win-control-bg-hover), var(--snice-win-control-bg-hover));
   border-color: var(--snice-color-border-hover);
+  border-top-color: var(--snice-color-primary);
   box-shadow: var(--snice-shadow-sm);
 }
 
 :host [part~="stat"]:active,
 :host([variant="card"]) [part~="stat"]:active {
-  background: var(--snice-win-control-bg-pressed);
+  background-color: var(--snice-color-surface-container-highest);
+  background-image: linear-gradient(var(--snice-win-control-bg-pressed), var(--snice-win-control-bg-pressed));
   box-shadow: none;
-}
-
-:host [part~="stat"]:focus-visible {
-  outline: none;
-  box-shadow: var(--snice-win-focus-shadow);
 }
 
 /* Minimal variant (constant padding at rest & hover — zero layout shift) */
@@ -89,6 +90,18 @@
   background: var(--snice-win-control-bg-pressed);
 }
 
+/* Placed after variant/hover rules so dual-stroke focus is never erased by variant box-shadow: none */
+:host [part~="stat"]:focus-visible,
+:host([variant="card"]) [part~="stat"]:focus-visible,
+:host([variant="card"]) [part~="stat"]:hover:focus-visible,
+:host([variant="minimal"]) [part~="stat"]:focus-visible,
+:host([variant="minimal"]) [part~="stat"]:hover:focus-visible,
+:host([variant="bordered"]) [part~="stat"]:focus-visible,
+:host([variant="bordered"]) [part~="stat"]:hover:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
 :host [part~="label"] {
   font-family: var(--snice-font-family);
   font-size: 0.75rem;
@@ -102,7 +115,6 @@
   font-weight: 600;
   letter-spacing: -0.012em;
   font-variant-numeric: tabular-nums;
-  color: var(--snice-color-text);
 }
 
 :host [part~="trend"] {
@@ -129,16 +141,51 @@
   color: var(--snice-color-text-secondary);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="stat"],
+  :host([variant="card"]) [part~="stat"] {
+    transition: none;
+  }
+}
+
 @media (forced-colors: active) {
   :host [part~="stat"],
   :host([variant="card"]) [part~="stat"] {
     background: Canvas;
     color: CanvasText;
-    border-color: CanvasText;
+    border: 1px solid CanvasText;
+    border-top: 3px solid Highlight;
     box-shadow: none;
   }
 
+  :host([variant="minimal"]) [part~="stat"] {
+    background: Canvas;
+    color: CanvasText;
+    border: none;
+  }
+
+  :host([variant="bordered"]) [part~="stat"] {
+    background: Canvas;
+    color: CanvasText;
+    border: none;
+    border-bottom: 2px solid CanvasText;
+  }
+
   :host [part~="trend"] {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
+  }
+
+  :host [part~="stat"]:focus-visible,
+  :host([variant="card"]) [part~="stat"]:focus-visible,
+  :host([variant="card"]) [part~="stat"]:hover:focus-visible,
+  :host([variant="minimal"]) [part~="stat"]:focus-visible,
+  :host([variant="minimal"]) [part~="stat"]:hover:focus-visible,
+  :host([variant="bordered"]) [part~="stat"]:focus-visible,
+  :host([variant="bordered"]) [part~="stat"]:hover:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

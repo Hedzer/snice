@@ -1,33 +1,35 @@
 /* Android Material 3 Expressive — snice-kpi
-   Native counterpart: Material 3 Tonal Metric Card (surface-container-low, 16px radius, Roboto Medium figures, pill chips). */
+ * 24px borderless primary-tinted tonal container tile (-low), Roboto Expressive
+ * Medium numerals, secondary-container neutral trend pill, and complete WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
   --kpi-trend-up-bg: color-mix(in srgb, var(--snice-color-success) 15%, transparent);
   --kpi-trend-down-bg: color-mix(in srgb, var(--snice-color-danger) 15%, transparent);
-  --kpi-trend-neutral-bg: var(--snice-color-surface-container-high);
+  --kpi-trend-neutral-bg: var(--snice-m3-secondary-container);
 }
 
 :host [part~="base"] {
   background: var(--snice-color-surface-container-low);
-  border: 1px solid var(--snice-color-border-subtle);
-  border-radius: 16px;
+  border: none;
+  border-radius: 24px;
   box-shadow: var(--snice-shadow-xs);
-  padding: 1rem 1.25rem;
+  padding: 1.125rem 1.25rem;
 }
 
 :host([size="small"]) [part~="base"] {
-  border-radius: 12px;
-  padding: 0.75rem 1rem;
+  border-radius: 18px;
+  padding: 0.875rem 1rem;
 }
 
 :host([size="medium"]) [part~="base"] {
-  border-radius: 16px;
-  padding: 1rem 1.25rem;
+  border-radius: 24px;
+  padding: 1.125rem 1.25rem;
 }
 
 :host([size="large"]) [part~="base"] {
-  border-radius: 20px;
+  border-radius: 28px;
   padding: 1.5rem;
 }
 
@@ -69,15 +71,19 @@
 :host [part~="trend"],
 :host([size="medium"]) [part~="trend"] {
   border-radius: 9999px;
-  padding: 0.25rem 0.625rem;
+  padding: 0.25rem 0.6875rem;
   font-size: 0.75rem;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
+:host [part~="trend-neutral"] {
+  color: var(--snice-m3-on-secondary-container);
+}
+
 :host([size="small"]) [part~="trend"] {
   font-size: 0.6875rem;
-  padding: 0.1875rem 0.5rem;
+  padding: 0.1875rem 0.5625rem;
 }
 
 :host([size="large"]) [part~="trend"] {
@@ -87,10 +93,15 @@
 
 @media (forced-colors: active) {
   :host [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
+    box-shadow: none;
   }
 
   :host [part~="trend"] {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
   }
 }

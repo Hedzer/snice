@@ -1,20 +1,26 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-data-card
-   Native counterpart: WinUI 3 SettingsExpander / Properties Detail Card on Mica (8px card, 4px controls, zero Acrylic). */
+/* Windows 11 Fluent 2 / WinUI 3 SettingsExpander Properties Card — snice-data-card
+ * 8px top-lit opaque Mica card with crisp 3px Fluent accent top strip, surface-container
+ * header, 4px top-lit WinUI controls with --snice-win-on-accent active/save,
+ * clean dividers (preserving base :last-child), and complete WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
 }
 
 :host [part~="base"] {
-  background: var(--snice-color-surface-container-lowest);
-  border: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  border-top: 3px solid var(--snice-color-primary);
   border-radius: 8px;
+  box-shadow: var(--snice-shadow-xs);
 }
 
 :host [part~="header"] {
   padding: 0.75rem 1rem;
-  background: var(--snice-color-surface-container-low);
-  border-bottom: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border);
 }
 
 :host [part~="title"] {
@@ -34,7 +40,7 @@
   color: var(--snice-color-text);
   font-family: var(--snice-font-family);
   font-size: 0.8125rem;
-  font-weight: 400;
+  font-weight: 500;
   transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
 }
 
@@ -54,7 +60,7 @@
   box-shadow: var(--snice-win-focus-shadow);
 }
 
-/* Black ink on bright #60CDFF dark accent via --snice-win-on-accent */
+/* Dark-safe --snice-win-on-accent ink on bright #60CDFF dark accent */
 :host [part~="edit-toggle"][part~="edit-toggle-active"],
 :host [part~="edit-toggle"][part~="edit-toggle-active"]:hover {
   background: var(--snice-color-primary);
@@ -62,12 +68,9 @@
   color: var(--snice-win-on-accent);
 }
 
+/* Set width/color only so base :last-child { border-bottom: none; } stays intact */
 :host [part~="group"] {
-  border-bottom: 1px solid var(--snice-color-border-subtle);
-}
-
-:host [part~="group"]:last-child {
-  border-bottom: none;
+  border-bottom-color: var(--snice-color-border);
 }
 
 :host [part~="group-title"] {
@@ -83,14 +86,10 @@
 :host [part~="field"] {
   min-height: 2.375rem;
   padding: 0.5rem 1rem;
-  border-bottom: 1px solid var(--snice-color-border-subtle);
+  border-bottom-color: var(--snice-color-border-subtle);
   align-items: center;
   box-sizing: border-box;
   transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
-}
-
-:host [part~="field"]:last-child {
-  border-bottom: none;
 }
 
 :host [part~="field"]:hover {
@@ -144,7 +143,7 @@
 }
 
 :host [part~="field-input"]:focus-visible {
-  background: var(--snice-color-surface-container-lowest);
+  background: var(--snice-color-surface-container-highest);
   border-color: var(--snice-win-stroke-top);
   border-bottom-color: var(--snice-color-primary);
   box-shadow: inset 0 -1px 0 0 var(--snice-color-primary);
@@ -163,7 +162,7 @@
 
 :host [part~="field-save"]:hover {
   opacity: 1;
-  background: var(--snice-color-primary-hover);
+  background: color-mix(in srgb, var(--snice-color-primary) 88%, var(--snice-win-on-accent));
 }
 
 :host [part~="field-save"]:focus-visible {
@@ -191,16 +190,52 @@
   font-size: 0.75rem;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="edit-toggle"],
+  :host [part~="field-save"],
+  :host [part~="field"] {
+    transition: none;
+  }
+}
+
 @media (forced-colors: active) {
-  :host [part~="base"] {
+  :host [part~="base"],
+  :host [part~="header"] {
     background: Canvas;
     color: CanvasText;
     border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="base"] {
+    border-top: 3px solid Highlight;
+  }
+
+  :host [part~="edit-toggle"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+  }
+
+  :host [part~="field-value-badge"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
   }
 
   :host [part~="field-save"],
   :host [part~="edit-toggle"][part~="edit-toggle-active"] {
     background: Highlight;
     color: HighlightText;
+    border: 1px solid HighlightText;
+  }
+
+  :host [part~="edit-toggle"]:focus-visible,
+  :host [part~="field-save"]:focus-visible,
+  :host [part~="field-input"]:focus-visible,
+  :host [part~="field-value-link"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

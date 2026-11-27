@@ -1,5 +1,8 @@
 /* Android Material 3 Expressive — snice-data-card
-   Native counterpart: M3 Elevated/Outlined Detail Card + sentence-case primary subheaders + pill Expressive actions. */
+ * 24px borderless primary-tinted tonal card (-low), tonal surface-container header,
+ * sentence-case primary subheaders, secondary-container pill actions with 8px press morph,
+ * clean dividers (preserving base :last-child), and complete WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
@@ -7,13 +10,14 @@
 
 :host [part~="base"] {
   background: var(--snice-color-surface-container-low);
-  border: 1px solid var(--snice-color-border-subtle);
-  border-radius: 16px;
+  border: none;
+  border-radius: 24px;
   box-shadow: var(--snice-shadow-xs);
 }
 
 :host [part~="header"] {
   padding: 1rem 1.25rem;
+  background: var(--snice-color-surface-container);
   border-bottom: 1px solid var(--snice-color-border-subtle);
 }
 
@@ -60,12 +64,9 @@
   color: var(--snice-m3-on-primary);
 }
 
+/* Set width/color only so base :last-child { border-bottom: none; } stays intact */
 :host [part~="group"] {
-  border-bottom: 1px solid var(--snice-color-border-subtle);
-}
-
-:host [part~="group"]:last-child {
-  border-bottom: none;
+  border-bottom-color: var(--snice-color-border-subtle);
 }
 
 :host [part~="group-title"] {
@@ -81,14 +82,10 @@
 :host [part~="field"] {
   min-height: 3rem;
   padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid var(--snice-color-border-subtle);
+  border-bottom-color: var(--snice-color-border-subtle);
   align-items: center;
   box-sizing: border-box;
   transition: background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects);
-}
-
-:host [part~="field"]:last-child {
-  border-bottom: none;
 }
 
 :host [part~="field"]:hover {
@@ -108,8 +105,8 @@
 :host [part~="field-value-badge"] {
   flex: 0 0 auto;
   width: fit-content;
-  border-radius: 8px;
-  padding: 0.1875rem 0.625rem;
+  border-radius: 9999px;
+  padding: 0.1875rem 0.6875rem;
   font-size: 0.75rem;
   font-weight: 500;
 }
@@ -132,7 +129,7 @@
 :host [part~="field-input"] {
   min-height: 2.5rem;
   padding: 0.4375rem 0.75rem;
-  border-radius: 4px;
+  border-radius: 8px;
   border: 1px solid var(--snice-color-border);
   background: var(--snice-color-surface);
   color: var(--snice-color-text);
@@ -191,8 +188,43 @@
   font-size: 0.75rem;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="edit-toggle"],
+  :host [part~="field-save"],
+  :host [part~="field"] {
+    transition: none;
+  }
+
+  :host [part~="edit-toggle"]:active,
+  :host [part~="field-save"]:active {
+    border-radius: 9999px;
+  }
+}
+
 @media (forced-colors: active) {
   :host [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="header"] {
+    background: Canvas;
+    color: CanvasText;
+    border: none;
+    border-bottom: 1px solid CanvasText;
+  }
+
+  :host [part~="edit-toggle"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+  }
+
+  :host [part~="field-value-badge"] {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
   }
 
@@ -200,5 +232,15 @@
   :host [part~="edit-toggle"][part~="edit-toggle-active"] {
     background: Highlight;
     color: HighlightText;
+    border: 1px solid HighlightText;
+  }
+
+  :host [part~="edit-toggle"]:focus-visible,
+  :host [part~="field-save"]:focus-visible,
+  :host [part~="field-input"]:focus-visible,
+  :host [part~="field-value-link"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

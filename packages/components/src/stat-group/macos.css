@@ -1,8 +1,11 @@
-/* macOS 26+ Tahoe AppKit — snice-stat-group
-   Native counterpart: AppKit Inspector / Activity Summary Box Strip (compact 10px cards, 22px figures, zero blur). */
+/* macOS 26+ Tahoe AppKit / Activity Summary Box Strip — snice-stat-group
+ * Dense 10px beveled AppKit metric tiles, 22px tabular figures, SF Mono trend deltas,
+ * soft accent focus halo, and complete WHCM & reduced-motion support.
+ */
 
 :host {
   font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
   --sg-bg: var(--snice-color-background-element);
   --sg-bg-element: var(--snice-color-overlay-hover);
   --sg-border: var(--snice-color-border);
@@ -19,7 +22,7 @@
   border: 0.5px solid var(--snice-color-border);
   border-radius: 10px;
   padding: 0.75rem 0.875rem;
-  box-shadow: var(--snice-shadow-xs);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.12), var(--snice-shadow-xs);
   transition:
     background-color 120ms ease,
     border-color 120ms ease,
@@ -31,18 +34,13 @@
 :host([variant="card"]) [part~="stat"]:hover {
   transform: none;
   border-color: var(--snice-color-border-hover);
-  box-shadow: var(--snice-shadow-sm);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-sm);
 }
 
 :host [part~="stat"]:active,
 :host([variant="card"]) [part~="stat"]:active {
   transform: scale(0.99);
   background: var(--snice-color-surface-container);
-}
-
-:host [part~="stat"]:focus-visible {
-  outline: none;
-  box-shadow: var(--snice-macos-focus-halo);
 }
 
 /* Minimal variant (constant padding at rest & hover — zero layout shift) */
@@ -88,6 +86,18 @@
   background: transparent;
 }
 
+/* Placed after variant/hover rules so focus halo is never erased by variant box-shadow: none */
+:host [part~="stat"]:focus-visible,
+:host([variant="card"]) [part~="stat"]:focus-visible,
+:host([variant="card"]) [part~="stat"]:hover:focus-visible,
+:host([variant="minimal"]) [part~="stat"]:focus-visible,
+:host([variant="minimal"]) [part~="stat"]:hover:focus-visible,
+:host([variant="bordered"]) [part~="stat"]:focus-visible,
+:host([variant="bordered"]) [part~="stat"]:hover:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
 :host [part~="label"] {
   font-family: var(--snice-font-family);
   font-size: 0.75rem;
@@ -102,12 +112,12 @@
   font-weight: 600;
   letter-spacing: -0.022em;
   font-variant-numeric: tabular-nums;
-  color: var(--snice-color-text);
 }
 
 :host [part~="trend"] {
   border-radius: 6px;
   padding: 0.0625rem 0.375rem;
+  font-family: var(--snice-font-family-mono);
   font-size: 0.6875rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -129,14 +139,56 @@
   color: var(--snice-color-text-secondary);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="stat"],
+  :host([variant="card"]) [part~="stat"] {
+    transition: none;
+  }
+
+  :host [part~="stat"]:active,
+  :host([variant="card"]) [part~="stat"]:active,
+  :host([variant="minimal"]) [part~="stat"]:active {
+    transform: none;
+  }
+}
+
 @media (forced-colors: active) {
   :host [part~="stat"],
   :host([variant="card"]) [part~="stat"] {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
     box-shadow: none;
   }
 
+  :host([variant="minimal"]) [part~="stat"] {
+    background: Canvas;
+    color: CanvasText;
+    border: none;
+  }
+
+  :host([variant="bordered"]) [part~="stat"] {
+    background: Canvas;
+    color: CanvasText;
+    border: none;
+    border-bottom: 1px solid CanvasText;
+  }
+
   :host [part~="trend"] {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
+  }
+
+  :host [part~="stat"]:focus-visible,
+  :host([variant="card"]) [part~="stat"]:focus-visible,
+  :host([variant="card"]) [part~="stat"]:hover:focus-visible,
+  :host([variant="minimal"]) [part~="stat"]:focus-visible,
+  :host([variant="minimal"]) [part~="stat"]:hover:focus-visible,
+  :host([variant="bordered"]) [part~="stat"]:focus-visible,
+  :host([variant="bordered"]) [part~="stat"]:hover:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

@@ -1,21 +1,24 @@
-/* macOS 26+ Tahoe AppKit — snice-data-card
-   Native counterpart: AppKit Inspector / System Settings Grouped Box (compact 13px density, zero blur). */
+/* macOS 26+ Tahoe AppKit / Inspector & System Settings Box — snice-data-card
+ * Dense 10px beveled AppKit frame, compact 13px rows, 24px beveled NSButton Edit control,
+ * SF Mono tabular dates & currency, hairline dividers (preserving base :last-child), and WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
 }
 
 :host [part~="base"] {
   background: var(--snice-color-background-element);
   border: 0.5px solid var(--snice-color-border);
   border-radius: 10px;
-  box-shadow: var(--snice-shadow-xs);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.12), var(--snice-shadow-xs);
 }
 
 :host [part~="header"] {
   padding: 0.5625rem 0.875rem;
   background: var(--snice-color-surface-container-low);
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  border-bottom: 0.5px solid var(--snice-color-border);
 }
 
 :host [part~="title"] {
@@ -54,20 +57,22 @@
   box-shadow: var(--snice-macos-focus-halo);
 }
 
-/* Top-lit AppKit accent gloss + explicit white ink (never --snice-color-text-inverse in dark mode!) */
+/* Top-lit AppKit accent gloss + explicit white ink (>=4.6:1 WCAG AA in light & dark) */
 :host [part~="edit-toggle"][part~="edit-toggle-active"],
 :host [part~="edit-toggle"][part~="edit-toggle-active"]:hover {
-  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-macos-fill-primary)), var(--snice-macos-fill-primary));
-  border-color: color-mix(in srgb, black 12%, var(--snice-macos-fill-primary));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 5%, var(--snice-macos-fill-primary)),
+    color-mix(in srgb, black 8%, var(--snice-macos-fill-primary))
+  );
+  border-color: color-mix(in srgb, black 14%, var(--snice-macos-fill-primary));
   color: hsl(0 0% 100%);
 }
 
+/* Set width/color only so base :last-child { border-bottom: none; } stays intact */
 :host [part~="group"] {
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
-}
-
-:host [part~="group"]:last-child {
-  border-bottom: none;
+  border-bottom-width: 0.5px;
+  border-bottom-color: var(--snice-color-border);
 }
 
 :host [part~="group-title"] {
@@ -84,13 +89,10 @@
   min-height: 2rem;
   padding: 0.375rem 0.875rem;
   gap: 0.75rem;
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  border-bottom-width: 0.5px;
+  border-bottom-color: var(--snice-color-border-subtle);
   align-items: center;
   box-sizing: border-box;
-}
-
-:host [part~="field"]:last-child {
-  border-bottom: none;
 }
 
 :host [part~="field"]:hover {
@@ -119,6 +121,8 @@
 
 :host [part~="field-value-currency"],
 :host [part~="field-value-date"] {
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
 }
 
@@ -153,8 +157,12 @@
   height: 1.625rem;
   padding: 0 0.625rem;
   border-radius: 5px;
-  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-macos-fill-primary)), var(--snice-macos-fill-primary));
-  border: 0.5px solid color-mix(in srgb, black 12%, var(--snice-macos-fill-primary));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 5%, var(--snice-macos-fill-primary)),
+    color-mix(in srgb, black 8%, var(--snice-macos-fill-primary))
+  );
+  border: 0.5px solid color-mix(in srgb, black 14%, var(--snice-macos-fill-primary));
   color: hsl(0 0% 100%);
   font-size: 0.75rem;
   font-weight: 500;
@@ -162,7 +170,7 @@
 
 :host [part~="field-save"]:hover {
   opacity: 1;
-  filter: brightness(1.04);
+  filter: brightness(0.94);
 }
 
 :host [part~="field-save"]:active {
@@ -194,15 +202,49 @@
   font-size: 0.75rem;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="edit-toggle"],
+  :host [part~="field-save"],
+  :host [part~="field"] {
+    transition: none;
+  }
+}
+
 @media (forced-colors: active) {
-  :host [part~="base"] {
-    border: 1px solid CanvasText;
+  :host [part~="base"],
+  :host [part~="header"] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
     box-shadow: none;
+  }
+
+  :host [part~="edit-toggle"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+    box-shadow: none;
+  }
+
+  :host [part~="field-value-badge"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
   }
 
   :host [part~="field-save"],
   :host [part~="edit-toggle"][part~="edit-toggle-active"] {
     background: Highlight;
     color: HighlightText;
+    border: 1px solid HighlightText;
+  }
+
+  :host [part~="edit-toggle"]:focus-visible,
+  :host [part~="field-save"]:focus-visible,
+  :host [part~="field-input"]:focus-visible,
+  :host [part~="field-value-link"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }
