@@ -1,15 +1,15 @@
 /* Windows 11 Fluent 2 / WinUI 3 — snice-segmented-control (4px Control Strip) */
 [part~="base"] {
   border-radius: 4px;
-  background: var(--snice-win-mica-alt-bg, var(--snice-color-background-tertiary));
-  border: 1px solid var(--snice-win-stroke-card, var(--snice-color-border-subtle));
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
   padding: 2px;
 }
 
 [part~="indicator"] {
   border-radius: 3px;
-  background: var(--snice-win-control-fill, var(--snice-color-background-element));
-  box-shadow: var(--snice-win-elevation-control);
+  background: var(--snice-win-control-bg);
+  box-shadow: var(--snice-shadow-xs);
 }
 
 [part~="segment"] {

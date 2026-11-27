@@ -2,17 +2,17 @@
 [part~="input"] {
   min-height: 2rem;
   border-radius: 4px;
-  background: var(--snice-win-control-fill, var(--snice-color-background-element));
-  border: 1px solid var(--snice-win-stroke-default, var(--snice-color-border));
-  border-bottom-color: var(--snice-win-stroke-strong, var(--snice-color-border-strong));
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-input-bottom);
 }
 
 [part~="calendar"] {
   border-radius: 8px;
-  background: var(--snice-win-acrylic-bg, var(--snice-color-background-elevated));
+  background: var(--snice-win-acrylic-bg);
   backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
   -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  border: 1px solid var(--snice-win-stroke-surface-flyout, var(--snice-color-border));
+  border: 1px solid var(--snice-color-border);
   box-shadow: var(--snice-shadow-lg);
 }
 

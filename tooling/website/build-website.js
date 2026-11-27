@@ -1873,6 +1873,7 @@ const docsManifest = [
   { group: 'Styling', docs: [
     { id: 'styling', file: 'styling.md', title: 'Component Styles' },
     { id: 'theme', file: 'theme.md', title: 'Theming' },
+    { id: 'platform-skins', file: 'platform-skins.md', title: 'Platform Skins' },
   ]},
   { group: 'Tooling', docs: [
     { id: 'bundler-plugin', file: 'bundler-plugin.md', title: 'Bundler Plugin' },

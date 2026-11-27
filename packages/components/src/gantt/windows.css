@@ -1,14 +1,14 @@
 /* Windows 11 Fluent 2 / WinUI 3 — snice-gantt (Fluent Enterprise Timeline) */
 [part~="base"] {
   border-radius: 8px;
-  background: var(--snice-win-card-bg, var(--snice-color-background-element));
-  border: 1px solid var(--snice-win-stroke-card, var(--snice-color-border-subtle));
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
   overflow: hidden;
 }
 
 [part~="header"] {
-  background: var(--snice-win-mica-alt-bg, var(--snice-color-background-secondary));
-  border-bottom: 1px solid var(--snice-win-stroke-divider, var(--snice-color-border-subtle));
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
 }
 
 [part~="zoom-button"] {

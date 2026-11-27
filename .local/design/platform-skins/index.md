@@ -1,9 +1,9 @@
 # Platform Skins — Design Index
 
 - **Design ID**: `platform-skins`
-- **Status / Current Phase**: `stories-ready` — durable design (`index.md`, `architecture.md`) and 9 modernized, self-contained stories (`PS-01`..`PS-09`) authored under `.local/board/ready/`.
-- **Replaces Legacy Epic**: `.board/backlog/SNICE-199-*.md` .. `SNICE-216-*.md` (18 legacy Aug 12 stories — see full Disposition Table below; `.board/backlog/SNICE-*.md` files left untouched pending coordinated board update).
-- **Next Unfinished Action**: Apply recommended disposition updates to `.board/backlog/SNICE-199..216`, commit `.local/design/platform-skins/`, then begin implementation with `PS-01`.
+- **Status / Current Phase**: `complete` — all 9 stories (`PS-01`..`PS-09`) implemented, verified across source/dist/CDN/React/3-engine Playwright, committed separately on `main`, and moved to `.local/board/done/`.
+- **Replaces Legacy Epic**: `.board/backlog/SNICE-199-*.md` .. `SNICE-216-*.md` (18 legacy Aug 12 stories — see full Disposition Table below).
+- **Next Unfinished Action**: Complete — main-session visual review of `.debug/platform-review/*.png` and optional future enterprise profiles (`fiori`, `salesforce`).
 
 ---
 
@@ -139,14 +139,14 @@ flowchart LR
 
 | Story ID | Title | Prerequisites | Board Status | Story Path |
 |---|---|---|---|---|
-| **PS-01** | Platform skin contract, contemporary fidelity bar, package exports & CSS parts completeness pass | None | `ready` | `.local/board/ready/PS-01.md` |
-| **PS-02** | Zero-cost build-time platform compilation & behavior tree-shaking in `snice/vite` & `snice/rollup` (`snice({ platform })`) | `PS-01` | `ready` | `.local/board/ready/PS-02.md` |
-| **PS-03** | Pure-CSS runtime multi-platform scoping (`[data-platform="..."]`) & lazy behavior binding | `PS-01` | `ready` | `.local/board/ready/PS-03.md` |
-| **PS-04** | iOS 26+ Liquid Glass platform skin & contemporary native behaviors | `PS-01`, `PS-02` | `ready` | `.local/board/ready/PS-04.md` |
-| **PS-05** | Android Material 3 Expressive platform skin & contemporary native behaviors | `PS-01`, `PS-02` | `ready` | `.local/board/ready/PS-05.md` |
-| **PS-06** | Windows 11 Fluent 2 / WinUI 3 platform skin & contemporary desktop behaviors | `PS-01`, `PS-02` | `ready` | `.local/board/ready/PS-06.md` |
-| **PS-07** | macOS 26+ Liquid Glass platform skin & contemporary desktop behaviors | `PS-01`, `PS-02` | `ready` | `.local/board/ready/PS-07.md` |
-| **PS-08** | Strict visual & behavioral conformance harness, cross-framework parity & zero-cost bundle-budget gates | `PS-02`..`PS-07` | `ready` | `.local/board/ready/PS-08.md` |
-| **PS-09** | Platform skins human + AI documentation, Storybook contemporary theme lab & live showcase | `PS-03`..`PS-07` | `ready` | `.local/board/ready/PS-09.md` |
+| **PS-01** | Platform skin contract, contemporary fidelity bar, package exports & CSS parts completeness pass | None | `done` | `.local/board/done/PS-01.md` |
+| **PS-02** | Zero-cost build-time platform compilation & behavior tree-shaking in `snice/vite` & `snice/rollup` (`snice({ platform })`) | `PS-01` | `done` | `.local/board/done/PS-02.md` |
+| **PS-03** | Pure-CSS runtime multi-platform scoping (`[data-platform="..."]`) & lazy behavior binding | `PS-01` | `done` | `.local/board/done/PS-03.md` |
+| **PS-04** | iOS 26+ Liquid Glass platform skin & contemporary native behaviors | `PS-01`, `PS-02` | `done` | `.local/board/done/PS-04.md` |
+| **PS-05** | Android Material 3 Expressive platform skin & contemporary native behaviors | `PS-01`, `PS-02` | `done` | `.local/board/done/PS-05.md` |
+| **PS-06** | Windows 11 Fluent 2 / WinUI 3 platform skin & contemporary desktop behaviors | `PS-01`, `PS-02` | `done` | `.local/board/done/PS-06.md` |
+| **PS-07** | macOS 26+ Liquid Glass platform skin & contemporary desktop behaviors | `PS-01`, `PS-02` | `done` | `.local/board/done/PS-07.md` |
+| **PS-08** | Strict visual & behavioral conformance harness, cross-framework parity & zero-cost bundle-budget gates | `PS-02`..`PS-07` | `done` | `.local/board/done/PS-08.md` |
+| **PS-09** | Platform skins human + AI documentation, Storybook contemporary theme lab & live showcase | `PS-03`..`PS-07` | `done` | `.local/board/done/PS-09.md` |
 
 > Parallelism note: After `PS-01`, `PS-02` and `PS-03` run in parallel. Once `PS-02` lands, **all 4 contemporary platform vertical slices (`PS-04`, `PS-05`, `PS-06`, `PS-07`) can proceed completely in parallel** with non-overlapping platform files.

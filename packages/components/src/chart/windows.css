@@ -1,16 +1,16 @@
 /* Windows 11 Fluent 2 / WinUI 3 — snice-chart (Layered Card + Acrylic Tooltip) */
 [part~="base"] {
   border-radius: 8px;
-  background: var(--snice-win-card-bg, var(--snice-color-background-element));
-  border: 1px solid var(--snice-win-stroke-card, var(--snice-color-border-subtle));
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
   padding: 0.875rem;
 }
 
 [part~="tooltip"] {
   border-radius: 4px;
-  background: var(--snice-win-acrylic-bg, var(--snice-color-background-elevated));
+  background: var(--snice-win-acrylic-bg);
   backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
   -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  border: 1px solid var(--snice-win-stroke-surface-flyout, var(--snice-color-border));
+  border: 1px solid var(--snice-color-border);
   box-shadow: var(--snice-shadow-md);
 }

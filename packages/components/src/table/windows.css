@@ -2,30 +2,30 @@
 [part~="frame"],
 [part~="container"] {
   border-radius: 8px;
-  background: var(--snice-win-card-bg, var(--snice-color-background-element));
-  border: 1px solid var(--snice-win-stroke-card, var(--snice-color-border-subtle));
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
   overflow: hidden;
 }
 
 [part~="toolbar"] {
-  background: var(--snice-win-mica-alt-bg, var(--snice-color-background-secondary));
-  border-bottom: 1px solid var(--snice-win-stroke-divider, var(--snice-color-border-subtle));
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
   padding: 0.5rem 0.75rem;
 }
 
 [part~="header-cell"] {
-  background: var(--snice-win-mica-alt-bg, var(--snice-color-background-secondary));
+  background: var(--snice-color-surface-container);
   color: var(--snice-color-text-secondary);
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--snice-win-stroke-divider, var(--snice-color-border-subtle));
+  border-bottom: 1px solid var(--snice-color-border-subtle);
 }
 
 [part~="cell"] {
   font-size: 0.875rem;
   padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--snice-win-stroke-divider, var(--snice-color-border-subtle));
+  border-bottom: 1px solid var(--snice-color-border-subtle);
 }
 
 [part~="pagination-button"] {

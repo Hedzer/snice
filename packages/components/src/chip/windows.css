@@ -5,15 +5,15 @@
   border-radius: 4px;
   font-size: 0.8125rem;
   font-weight: 400;
-  background: var(--snice-win-control-fill, var(--snice-color-background-element));
-  border: 1px solid var(--snice-win-stroke-default, var(--snice-color-border));
-  box-shadow: var(--snice-win-elevation-control);
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  box-shadow: var(--snice-shadow-xs);
   color: var(--snice-color-text);
   transition: background-color var(--snice-transition-fast, 100ms) ease;
 }
 
 [part~="base"]:hover {
-  background: var(--snice-win-control-fill-secondary, var(--snice-color-background-hover));
+  background: var(--snice-win-control-bg-hover);
 }
 
 [part~="base-selected"] {

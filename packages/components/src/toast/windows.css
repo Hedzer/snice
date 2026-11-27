@@ -2,10 +2,10 @@
 [part~="toast"],
 [part~="base"] {
   border-radius: 8px;
-  background: var(--snice-win-acrylic-bg, var(--snice-color-background-elevated));
+  background: var(--snice-win-acrylic-bg);
   backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
   -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  border: 1px solid var(--snice-win-stroke-surface-flyout, var(--snice-color-border));
+  border: 1px solid var(--snice-color-border);
   color: var(--snice-color-text);
   box-shadow: var(--snice-shadow-lg);
 }
