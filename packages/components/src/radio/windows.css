@@ -15,6 +15,7 @@
 :host {
   display: inline-flex;
   align-items: center;
+  align-self: center;
   min-height: 2rem;
 }
 
@@ -30,6 +31,7 @@
 :host([variant="block"][size="small"]),
 :host([variant="block"][size="large"]) {
   display: block;
+  align-self: stretch;
   min-height: 0;
 }
 
@@ -194,6 +196,24 @@
   color: inherit;
 }
 
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  width: 0.6875rem;
+  height: 0.6875rem;
+  border-width: 1.5px;
+}
+
+:host([size="small"]) [part~="spinner"]::after {
+  width: 0.5625rem;
+  height: 0.5625rem;
+}
+
+:host([size="large"]) [part~="spinner"]::after {
+  width: 0.8125rem;
+  height: 0.8125rem;
+  border-width: 1.75px;
+}
+
 /* Typography & Labels — Segoe UI Variable Scale */
 [part~="label"] {
   margin-left: 0.5rem;
@@ -218,7 +238,8 @@
   padding: 0.75rem 1rem;
   border-radius: 8px;
   background: var(--snice-color-surface-container-high);
-  border: 1px solid var(--snice-color-border);
+  border: 1px solid var(--snice-win-stroke-top, var(--snice-color-border));
+  border-bottom-color: var(--snice-win-stroke-bottom, var(--snice-color-border));
   box-shadow: var(--snice-shadow-xs);
   gap: 0.75rem;
   transition:
@@ -285,15 +306,15 @@
   box-shadow: var(--snice-win-focus-shadow);
 }
 
-/* Disabled State — Full Disc, Dot, Label & Block Card Overrides */
+/* Disabled State — opacity: 1 crisp WinUI 3 muted tokens in light & dark */
 [part~="base-disabled"] {
-  opacity: 0.55;
+  opacity: 1;
   cursor: not-allowed;
 }
 
 :host([disabled]) [part~="label"],
 :host([disabled]) [part~="description"] {
-  color: var(--snice-color-text-tertiary);
+  color: color-mix(in srgb, var(--snice-color-text) 48%, transparent);
 }
 
 :host([disabled]) [part~="radio"],
@@ -304,9 +325,9 @@
 :host([disabled]:hover) [part~="radio-invalid"],
 :host([disabled]:active) [part~="radio-invalid"],
 :host([disabled][data-win-pressed="true"]) [part~="radio-invalid"] {
-  background: transparent;
-  border-color: var(--snice-color-border-hover);
-  color: var(--snice-color-text-tertiary);
+  background: color-mix(in srgb, var(--snice-color-text) 5%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 28%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
 }
 
 :host([disabled]) [part~="radio-checked"],
@@ -317,7 +338,7 @@
 :host([disabled]:hover) [part~="radio-invalid"][part~="radio-checked"],
 :host([disabled]:active) [part~="radio-invalid"][part~="radio-checked"],
 :host([disabled][data-win-pressed="true"]) [part~="radio-invalid"][part~="radio-checked"] {
-  background: var(--snice-color-text-tertiary);
+  background: color-mix(in srgb, var(--snice-color-text) 34%, transparent);
   border-color: transparent;
   color: var(--snice-color-surface);
 }
@@ -370,7 +391,7 @@
 
 /* Loading State Overrides (distinct from Disabled while suppressing hover jitter) */
 [part~="base-loading"] {
-  opacity: 0.75;
+  opacity: 0.85;
   cursor: wait;
 }
 

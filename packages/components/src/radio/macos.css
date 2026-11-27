@@ -9,6 +9,7 @@
 :host {
   display: inline-flex;
   align-items: center;
+  align-self: center;
   min-height: 1.75rem;
 }
 
@@ -22,6 +23,7 @@
 
 :host([variant="block"]) {
   display: block;
+  align-self: stretch;
   min-height: 0;
 }
 
@@ -57,13 +59,13 @@
   height: 1.25rem;
 }
 
-/* Checked Top-Lit Accent Disc */
+/* Checked — macOS 26 Tahoe translucent glass accent disc */
 [part~="radio-checked"] {
-  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 82%, black);
+  background: color-mix(in srgb, var(--snice-color-primary) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 74%, hsl(0 0% 0% / 0.34));
   box-shadow:
-    inset 0 0.5px 0 hsl(0 0% 100% / 0.34),
-    0 0.5px 1.5px hsl(0 0% 0% / 0.2);
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.36),
+    0 0.5px 1.5px hsl(0 0% 0% / 0.18);
   color: hsl(0 0% 100%);
 }
 
@@ -73,7 +75,7 @@
 }
 
 :host(:hover) [part~="radio-checked"] {
-  border-color: color-mix(in srgb, var(--snice-color-primary) 82%, black);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 74%, hsl(0 0% 0% / 0.34));
   filter: brightness(1.05);
 }
 
@@ -82,7 +84,7 @@
 }
 
 :host(:active) [part~="radio-checked"] {
-  border-color: color-mix(in srgb, var(--snice-color-primary) 82%, black);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 74%, hsl(0 0% 0% / 0.34));
   filter: brightness(0.92);
 }
 
@@ -155,8 +157,8 @@
 
 [part~="spinner"]::after {
   box-sizing: border-box;
-  width: 0.625rem;
-  height: 0.625rem;
+  width: 0.5625rem;
+  height: 0.5625rem;
   border-width: 1.5px;
 }
 
@@ -239,14 +241,14 @@
 }
 
 [part~="base-block"][part~="base-checked"] {
-  border-color: color-mix(in srgb, var(--snice-color-primary) 75%, transparent);
-  background: color-mix(in srgb, var(--snice-color-primary) 7%, var(--snice-color-surface-container-lowest));
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--snice-color-primary) 26%, transparent);
+  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 6%, var(--snice-color-surface-container-lowest));
+  box-shadow: var(--snice-shadow-xs);
 }
 
 [part~="base-block"][part~="base-checked"]:hover {
-  border-color: color-mix(in srgb, var(--snice-color-primary) 88%, transparent);
-  background: color-mix(in srgb, var(--snice-color-primary) 10%, var(--snice-color-surface-container-lowest));
+  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 9%, var(--snice-color-surface-container-lowest));
 }
 
 [part~="base-block"][part~="base-checked"]:active {
@@ -305,20 +307,20 @@
     var(--snice-macos-focus-halo);
 }
 
-/* Disabled & Loading Opacity + Muted States */
+/* Disabled & Loading — opacity: 1 muted tokens so dark & light stay clearly visible */
 [part~="base-disabled"] {
-  opacity: 0.44;
+  opacity: 1;
   cursor: not-allowed;
 }
 
 [part~="base-loading"] {
-  opacity: 0.72;
+  opacity: 0.85;
   cursor: wait;
 }
 
 :host([disabled]) [part~="base-disabled"],
 :host([disabled]) [part~="base-loading"] {
-  opacity: 0.44;
+  opacity: 1;
   cursor: not-allowed;
 }
 
@@ -328,11 +330,11 @@
 :host([disabled]) [part~="radio-invalid"],
 :host([disabled]:hover) [part~="radio-invalid"],
 :host([disabled]:active) [part~="radio-invalid"] {
-  background: var(--snice-color-surface-container);
-  border-color: var(--snice-color-border);
+  background: color-mix(in srgb, var(--snice-color-text) 7%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 28%, transparent);
   box-shadow: none;
   filter: none;
-  color: var(--snice-color-text-secondary);
+  color: color-mix(in srgb, var(--snice-color-text) 45%, transparent);
 }
 
 :host([disabled]) [part~="radio-checked"],
@@ -341,21 +343,22 @@
 :host([disabled]) [part~="radio-invalid"][part~="radio-checked"],
 :host([disabled]:hover) [part~="radio-invalid"][part~="radio-checked"],
 :host([disabled]:active) [part~="radio-invalid"][part~="radio-checked"] {
-  background: var(--snice-color-neutral);
-  border-color: var(--snice-color-neutral);
+  background: color-mix(in srgb, var(--snice-color-text) 36%, transparent);
+  border-color: transparent;
   box-shadow: none;
   filter: none;
-  color: hsl(0 0% 100%);
+  color: var(--snice-color-surface);
 }
 
 :host([disabled]) [part~="dot"],
 :host([disabled]) [part~="dot-checked"] {
-  background: hsl(0 0% 100%);
+  background: var(--snice-color-surface);
   box-shadow: none;
 }
 
-:host([disabled]) [part~="label"] {
-  color: var(--snice-color-text-secondary);
+:host([disabled]) [part~="label"],
+:host([disabled]) [part~="description"] {
+  color: color-mix(in srgb, var(--snice-color-text) 48%, transparent);
   cursor: not-allowed;
 }
 

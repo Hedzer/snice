@@ -8,6 +8,7 @@
 :host {
   display: inline-flex;
   align-items: center;
+  align-self: center;
   min-height: 2.5rem;
 }
 
@@ -21,6 +22,7 @@
 
 :host([variant="block"]) {
   display: block;
+  align-self: stretch;
   min-height: 0;
 }
 
@@ -169,9 +171,27 @@
   transform: translate(-50%, -50%) scale(1);
 }
 
-/* Loading Spinner */
+/* Loading Spinner — sized cleanly inside 20dp hollow ring with breathing room */
 [part~="spinner"] {
   color: var(--snice-color-primary);
+}
+
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-width: 1.5px;
+}
+
+:host([size="small"]) [part~="spinner"]::after {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+:host([size="large"]) [part~="spinner"]::after {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-width: 1.75px;
 }
 
 :host([invalid]) [part~="spinner"] {
@@ -179,6 +199,10 @@
 }
 
 [part~="radio-loading"] {
+  border-color: var(--_m3-disabled-ink, var(--snice-color-text-secondary));
+}
+
+[part~="radio-loading"][part~="radio-checked"] {
   border-color: var(--_m3-disabled-ink, var(--snice-color-primary));
 }
 
@@ -299,12 +323,12 @@
   font-size: 1rem;
 }
 
-/* Disabled (including fieldset[disabled] via base-disabled) — M3 38% ink / 4% fill / 12% border */
+/* Disabled (including fieldset[disabled] via base-disabled) — crisp matte M3 ink (opacity: 1) */
 [part~="base-disabled"] {
   opacity: 1;
-  --_m3-disabled-ink: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
-  --_m3-label-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
-  --_m3-description-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  --_m3-disabled-ink: color-mix(in srgb, var(--snice-color-text) 42%, transparent);
+  --_m3-label-color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
+  --_m3-description-color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   --_m3-ripple-hover-opacity: 0;
   --_m3-ripple-focus-opacity: 0;
   --_m3-ripple-active-opacity: 0;
@@ -315,9 +339,9 @@
 [part~="base-block"][part~="base-disabled"][part~="base-checked"],
 [part~="base-block"][part~="base-disabled"][part~="base-checked"]:hover {
   background: color-mix(in srgb, var(--snice-color-text) 4%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
-  --_m3-label-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
-  --_m3-description-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
+  --_m3-label-color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
+  --_m3-description-color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
 }
 
 /* Loading restores active ink (while keeping ripple suppressed and opacity: 1) */
@@ -350,9 +374,9 @@
 /* Explicit [disabled] host overrides — guaranteed precedence over invalid/hover/checked/loading */
 :host([disabled]) [part~="base"] {
   opacity: 1;
-  --_m3-disabled-ink: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
-  --_m3-label-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
-  --_m3-description-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  --_m3-disabled-ink: color-mix(in srgb, var(--snice-color-text) 42%, transparent);
+  --_m3-label-color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
+  --_m3-description-color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   --_m3-ripple-hover-opacity: 0;
   --_m3-ripple-focus-opacity: 0;
   --_m3-ripple-active-opacity: 0;
@@ -361,7 +385,7 @@
 :host([disabled]) [part~="radio"],
 :host([disabled]:hover) [part~="radio"] {
   background: transparent;
-  border-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 42%, transparent);
 }
 
 :host([disabled]:focus-visible) [part~="radio"],
