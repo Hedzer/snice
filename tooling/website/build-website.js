@@ -2270,7 +2270,9 @@ ${header('themes')}
         (function(){
           var group = document.getElementById('platform-switcher');
           if (!group) return;
+          var valid = { default: 1, ios: 1, material: 1, windows: 1, macos: 1 };
           function selectPlatform(pf) {
+            if (!valid[pf]) pf = 'default';
             var panel = document.querySelector('.theme-preview-panel');
             if (panel) {
               if (pf === 'default') panel.removeAttribute('data-platform');
@@ -2282,11 +2284,15 @@ ${header('themes')}
               btn.style.borderColor = active ? 'var(--snice-color-primary)' : 'var(--snice-color-border)';
               btn.style.background = active ? 'var(--snice-color-primary-subtle, rgba(37,99,235,0.12))' : 'transparent';
             });
+            try { localStorage.setItem('snice-platform', pf); } catch (e) {}
           }
           group.addEventListener('click', function(e) {
             var btn = e.target.closest('[data-platform-choice]');
             if (btn) selectPlatform(btn.getAttribute('data-platform-choice'));
           });
+          var param = new URLSearchParams(location.search).get('platform');
+          var saved = (param && valid[param]) ? param : (localStorage.getItem('snice-platform') || 'default');
+          if (saved !== 'default') selectPlatform(saved);
         })();
       </script>
     </section>

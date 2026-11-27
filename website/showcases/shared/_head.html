@@ -17,6 +17,10 @@
   <meta property="og:description" content="Pre-built UI components. Use standalone or with React/Vue/Angular.">
   <meta property="og:image" content="images/snice-logo.png">
   <link rel="stylesheet" href="theme/theme.css?v=80938d7">
+  <link rel="stylesheet" href="theme/platforms/ios-scoped.css?v=80938d7">
+  <link rel="stylesheet" href="theme/platforms/material-scoped.css?v=80938d7">
+  <link rel="stylesheet" href="theme/platforms/windows-scoped.css?v=80938d7">
+  <link rel="stylesheet" href="theme/platforms/macos-scoped.css?v=80938d7">
   <link rel="stylesheet" href="styles.css?v=80938d7">
   <script>(function(){var p=localStorage.getItem('snice-theme-preset');var c=localStorage.getItem('snice-theme-custom');if(p){var s=document.createElement('style');s.id='snice-theme-preset';s.textContent=p;document.head.appendChild(s)}if(c){var s=document.createElement('style');s.id='snice-theme-custom';s.textContent=c;document.head.appendChild(s)}var n=localStorage.getItem('snice-theme-preset-name');if(n&&n!=='default'){document.addEventListener('DOMContentLoaded',function(){var d=document.getElementById('theme-dot');if(d){d.hidden=false;d.title=n.charAt(0).toUpperCase()+n.slice(1)+' theme';d.style.background='var(--snice-color-primary)'}})}})()</script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
@@ -345,6 +349,36 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       </button>
     </div>
+    <div style="margin-bottom:0.5rem">
+      <label for="comp-platform-select" style="display:block;font-size:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary,#888);margin-bottom:0.2rem">Platform Skin</label>
+      <select id="comp-platform-select" aria-label="Platform skin" style="width:100%;padding:0.3rem 0.45rem;font-size:0.72rem;font-family:inherit;background:var(--snice-color-surface-container-low,rgba(128,128,128,0.08));border:1px solid var(--snice-color-border,rgba(128,128,128,0.15));border-radius:6px;color:var(--snice-color-text,#eee);cursor:pointer">
+        <option value="default">Default</option>
+        <option value="ios">iOS 26+ (Liquid Glass)</option>
+        <option value="material">Android (Material 3)</option>
+        <option value="windows">Windows 11 (Fluent 2)</option>
+        <option value="macos">macOS 26+ (Liquid Glass)</option>
+      </select>
+    </div>
+    <script>
+      (function(){
+        var valid={default:1,ios:1,material:1,windows:1,macos:1};
+        var param=new URLSearchParams(location.search).get('platform');
+        var initial=(param&&valid[param])?param:(localStorage.getItem('snice-platform')||'default');
+        if(!valid[initial])initial='default';
+        function applyPlatform(pf){
+          var sec=document.getElementById('comp-sections');
+          if(sec){if(pf==='default')sec.removeAttribute('data-platform');else sec.setAttribute('data-platform',pf);}
+          var sel=document.getElementById('comp-platform-select');
+          if(sel&&sel.value!==pf)sel.value=pf;
+          try{localStorage.setItem('snice-platform',pf);}catch(e){}
+        }
+        document.addEventListener('DOMContentLoaded',function(){
+          applyPlatform(initial);
+          var sel=document.getElementById('comp-platform-select');
+          if(sel)sel.addEventListener('change',function(){applyPlatform(sel.value);});
+        });
+      })();
+    </script>
     <div class="comp-search-count" id="comp-search-count"></div>
     <div class="comp-sidebar-links" id="comp-sidebar-links"></div>
   </nav>
