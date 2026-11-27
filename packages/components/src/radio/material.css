@@ -129,7 +129,7 @@
   box-shadow: none;
 }
 
-/* 40dp M3 Circular State-Layer Ripple */
+/* 40dp M3 Circular State-Layer Ripple (feathered wavefront, zero shrink-back on release) */
 [part~="ripple"] {
   display: block;
   position: absolute;
@@ -139,13 +139,16 @@
   height: 2.5rem;
   border-radius: 9999px;
   pointer-events: none;
-  background: var(--_m3-ripple-color, var(--snice-color-text));
+  background: radial-gradient(
+    circle,
+    var(--_m3-ripple-color, var(--snice-color-text)) 0%,
+    var(--_m3-ripple-color, var(--snice-color-text)) 64%,
+    color-mix(in srgb, var(--_m3-ripple-color, var(--snice-color-text)) 55%, transparent) 84%,
+    transparent 100%
+  );
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.5);
-  transition:
-    opacity var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
-    transform var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
-    background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+  transition: opacity 160ms linear;
 }
 
 :host([size="small"]) [part~="ripple"] {
@@ -161,11 +164,13 @@
 :host(:hover) [part~="ripple"] {
   opacity: var(--_m3-ripple-hover-opacity, 0.08);
   transform: translate(-50%, -50%) scale(1);
+  transition: opacity 150ms linear, transform 180ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 :host(:focus-visible) [part~="ripple"] {
   opacity: var(--_m3-ripple-focus-opacity, 0.1);
   transform: translate(-50%, -50%) scale(1);
+  transition: opacity 150ms linear, transform 180ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 :host([data-m3-ripple="active"]) [part~="ripple"],
@@ -173,6 +178,17 @@
 :host([data-m3-pressed="true"]) [part~="ripple"] {
   opacity: var(--_m3-ripple-active-opacity, 0.14);
   transform: translate(-50%, -50%) scale(1);
+  transition: opacity 75ms linear, transform 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+:host([data-m3-ripple="fading"]) [part~="ripple"] {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1);
+  transition: opacity 200ms linear;
+}
+
+:host(:hover[data-m3-ripple="fading"]) [part~="ripple"] {
+  opacity: var(--_m3-ripple-hover-opacity, 0.08);
 }
 
 /* Loading Spinner — sized cleanly inside 20dp hollow ring with breathing room */

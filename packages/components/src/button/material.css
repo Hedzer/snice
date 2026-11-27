@@ -363,7 +363,7 @@
   border-bottom-left-radius: 6px;
 }
 
-/* Pointer-origin Material state-layer ripple */
+/* Pointer-origin AOSP Material 3 RippleShader wavefront (enter -> hold -> fade at scale 1, zero shrink-back) */
 [part~="ripple"] {
   display: block;
   position: absolute;
@@ -373,15 +373,33 @@
   height: var(--snice-ripple-size, 120px);
   border-radius: 9999px;
   pointer-events: none;
-  background-color: currentColor;
+  background: radial-gradient(
+    circle,
+    currentColor 0%,
+    currentColor 54%,
+    color-mix(in srgb, currentColor 68%, transparent) 72%,
+    color-mix(in srgb, currentColor 22%, transparent) 84%,
+    transparent 94%
+  );
   opacity: 0;
-  transform: translate(-50%, -50%) scale(0);
-  transition: opacity 240ms var(--snice-m3-spring-effects, ease), transform 340ms var(--snice-m3-spring-effects, ease);
+  transform: translate(-50%, -50%) scale(0.18);
+  transition: none;
 }
 
 :host([data-m3-ripple="active"]) [part~="ripple"] {
   opacity: 0.14;
   transform: translate(-50%, -50%) scale(1);
+  transition:
+    opacity 75ms linear,
+    transform 225ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+:host([data-m3-ripple="fading"]) [part~="ripple"] {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1);
+  transition:
+    opacity 200ms linear,
+    transform 225ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 :host([data-m3-ripple="static"]) [part~="ripple"] {

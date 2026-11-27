@@ -28,7 +28,8 @@ function triggerRipple(
   const rx = typeof clientX === 'number' ? clientX - rect.left : w / 2;
   const ry = typeof clientY === 'number' ? clientY - rect.top : h / 2;
   const maxDist = Math.hypot(Math.max(rx, w - rx), Math.max(ry, h - ry));
-  const size = Math.ceil(maxDist * 2.15);
+  // 2.45x covers furthest corner past the soft feathered radial wavefront (84-94%)
+  const size = Math.ceil(maxDist * 2.45);
 
   ripple.style.setProperty('--snice-ripple-x', `${Math.round(rx)}px`);
   ripple.style.setProperty('--snice-ripple-y', `${Math.round(ry)}px`);
@@ -40,7 +41,7 @@ function triggerRipple(
   }
 
   host.removeAttribute('data-m3-ripple');
-  // Force style flush so rapid repeated clicks restart the ripple cleanly
+  // Force style flush so rapid repeated clicks restart the ripple cleanly from scale(0.18)
   void ripple.offsetWidth;
   host.setAttribute('data-m3-ripple', 'active');
 }
@@ -58,7 +59,20 @@ function attachRippleAndMorph(el: Element): PlatformBehaviorCleanup {
   const root = el.shadowRoot;
   if (!root) return () => {};
   let active = false;
-  let decayTimer: ReturnType<typeof setTimeout> | null = null;
+  let pressStart = 0;
+  let holdTimer: ReturnType<typeof setTimeout> | null = null;
+  let clearTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const cancelTimers = () => {
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      holdTimer = null;
+    }
+    if (clearTimer) {
+      clearTimeout(clearTimer);
+      clearTimer = null;
+    }
+  };
 
   const markNeighbors = () => {
     const parent = el.parentElement;
@@ -73,63 +87,87 @@ function attachRippleAndMorph(el: Element): PlatformBehaviorCleanup {
     }
   };
 
-  const onPointerDown = (e: Event) => {
-    const pe = e as PointerEvent;
+  const startPress = (clientX?: number, clientY?: number) => {
     if (el.hasAttribute('disabled') || el.hasAttribute('loading')) return;
-    if (decayTimer) {
-      clearTimeout(decayTimer);
-      decayTimer = null;
-    }
+    cancelTimers();
     active = true;
+    pressStart = typeof performance !== 'undefined' ? performance.now() : Date.now();
     el.setAttribute('data-m3-pressed', 'true');
     markNeighbors();
-    triggerRipple(el, pe.clientX, pe.clientY);
+    triggerRipple(el, clientX, clientY);
   };
 
-  const onPointerUp = () => {
+  const releasePress = () => {
     if (!active) return;
     active = false;
     el.removeAttribute('data-m3-pressed');
     el.previousElementSibling?.removeAttribute('data-m3-neighbor-pressed');
     el.nextElementSibling?.removeAttribute('data-m3-neighbor-pressed');
-    const delay = prefersReducedMotion(el) ? 60 : 280;
-    decayTimer = setTimeout(() => {
-      el.removeAttribute('data-m3-ripple');
-      decayTimer = null;
-    }, delay);
+
+    if (prefersReducedMotion(el)) {
+      clearTimer = setTimeout(() => {
+        el.removeAttribute('data-m3-ripple');
+        clearTimer = null;
+      }, 60);
+      return;
+    }
+
+    // AOSP RippleAnimation: ensure outward expansion finishes before fading out at scale(1)
+    const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    const minHold = Math.max(0, 180 - (now - pressStart));
+    const beginFade = () => {
+      holdTimer = null;
+      if (el.getAttribute('data-m3-ripple') !== 'active') return;
+      el.setAttribute('data-m3-ripple', 'fading');
+      clearTimer = setTimeout(() => {
+        if (el.getAttribute('data-m3-ripple') === 'fading') {
+          el.removeAttribute('data-m3-ripple');
+        }
+        clearTimer = null;
+      }, 220);
+    };
+
+    if (minHold > 0) {
+      holdTimer = setTimeout(beginFade, minHold);
+    } else {
+      beginFade();
+    }
+  };
+
+  const onPointerDown = (e: Event) => {
+    const pe = e as PointerEvent;
+    startPress(pe.clientX, pe.clientY);
   };
 
   const onKeyDown = (e: Event) => {
     const ke = e as KeyboardEvent;
     if (ke.key !== 'Enter' && ke.key !== ' ') return;
-    if (el.hasAttribute('disabled') || el.hasAttribute('loading')) return;
-    el.setAttribute('data-m3-pressed', 'true');
-    markNeighbors();
-    triggerRipple(el);
+    if (ke.repeat) return;
+    startPress();
   };
 
   const onKeyUp = (e: Event) => {
     const ke = e as KeyboardEvent;
     if (ke.key !== 'Enter' && ke.key !== ' ') return;
-    clearRippleAndPress(el);
+    releasePress();
   };
 
   root.addEventListener('pointerdown', onPointerDown);
-  window.addEventListener('pointerup', onPointerUp);
-  window.addEventListener('pointercancel', onPointerUp);
+  window.addEventListener('pointerup', releasePress);
+  window.addEventListener('pointercancel', releasePress);
   root.addEventListener('keydown', onKeyDown);
   root.addEventListener('keyup', onKeyUp);
-  el.addEventListener('blur', onPointerUp);
+  el.addEventListener('blur', releasePress);
 
   return () => {
-    if (decayTimer) clearTimeout(decayTimer);
+    cancelTimers();
     clearRippleAndPress(el);
     root.removeEventListener('pointerdown', onPointerDown);
-    window.removeEventListener('pointerup', onPointerUp);
-    window.removeEventListener('pointercancel', onPointerUp);
+    window.removeEventListener('pointerup', releasePress);
+    window.removeEventListener('pointercancel', releasePress);
     root.removeEventListener('keydown', onKeyDown);
     root.removeEventListener('keyup', onKeyUp);
-    el.removeEventListener('blur', onPointerUp);
+    el.removeEventListener('blur', releasePress);
   };
 }
 
