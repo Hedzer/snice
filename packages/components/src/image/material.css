@@ -1,0 +1,126 @@
+/* Android Material 3 Expressive — snice-image
+ * Expressive 12px/16px rounded media containers, primary-tinted tonal surface
+ * ladder, and M3 critically-damped effects curve for opacity reveal.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="container"] {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--snice-border-radius-md, 12px);
+  background: var(--snice-color-surface-container-high);
+}
+
+:host [part~="image"],
+:host [part~="placeholder"] {
+  border-radius: var(--snice-border-radius-md, 12px);
+  transition: opacity var(--snice-transition-medium, 280ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="placeholder"] {
+  filter: blur(18px);
+  transform: scale(1.08);
+}
+
+:host [part~="image-loaded"] {
+  opacity: 1;
+}
+
+:host [part~="placeholder-hidden"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+:host([variant="rounded"]) [part~="container"],
+:host([variant="rounded"]) [part~="image"],
+:host([variant="rounded"]) [part~="placeholder"] {
+  border-radius: var(--snice-border-radius-md, 12px);
+}
+
+:host([size="large"]) [part~="container"],
+:host([size="large"]) [part~="image"],
+:host([size="large"]) [part~="placeholder"],
+:host([size="large"][variant="rounded"]) [part~="container"],
+:host([size="large"][variant="rounded"]) [part~="image"],
+:host([size="large"][variant="rounded"]) [part~="placeholder"] {
+  border-radius: var(--snice-border-radius-lg, 16px);
+}
+
+:host([variant="square"]) [part~="container"],
+:host([variant="square"]) [part~="image"],
+:host([variant="square"]) [part~="placeholder"],
+:host([size="large"][variant="square"]) [part~="container"],
+:host([size="large"][variant="square"]) [part~="image"],
+:host([size="large"][variant="square"]) [part~="placeholder"] {
+  border-radius: 0;
+}
+
+:host([variant="circle"]) [part~="container"],
+:host([variant="circle"]) [part~="image"],
+:host([variant="circle"]) [part~="placeholder"],
+:host([size="large"][variant="circle"]) [part~="container"],
+:host([size="large"][variant="circle"]) [part~="image"],
+:host([size="large"][variant="circle"]) [part~="placeholder"] {
+  border-radius: 50%;
+}
+
+/* Empty placeholder — flat M3 tonal container */
+:host [part~="placeholder-empty"] {
+  box-sizing: border-box;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border-subtle);
+  filter: none;
+  transform: none;
+}
+
+:host [part~="placeholder-icon"] {
+  color: var(--snice-color-text-secondary);
+  opacity: 0.72;
+}
+
+/* Loading pulse */
+:host([loading]) [part~="image"],
+:host([loading]) [part~="placeholder"] {
+  opacity: 0.65;
+  animation: snice-m3-image-pulse 1.4s var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)) infinite;
+}
+
+@keyframes snice-m3-image-pulse {
+  0%, 100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Focus indicator when focusable */
+:host(:focus-visible) {
+  outline: none;
+}
+
+:host(:focus-visible) [part~="container"] {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="image"],
+  :host [part~="placeholder"] {
+    transition: none;
+  }
+
+  :host([loading]) [part~="image"],
+  :host([loading]) [part~="placeholder"] {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="placeholder-empty"] {
+    border: 1px solid CanvasText;
+  }
+}

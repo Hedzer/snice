@@ -1,0 +1,147 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-image
+ * Compact NSImageView / Finder & Photos thumbnail well with 6px/10px desktop
+ * concentric radii, 0.5px AppKit hairline rim, opaque content placeholder, and
+ * soft AppKit focus halo when focusable.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="container"] {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--snice-border-radius-md, 6px);
+  background: var(--snice-color-surface-container);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host [part~="container"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 0.5px var(--snice-color-border);
+}
+
+:host [part~="image"],
+:host [part~="placeholder"] {
+  border-radius: var(--snice-border-radius-md, 6px);
+  transition: opacity var(--snice-transition-medium, 220ms) var(--snice-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+:host [part~="placeholder"] {
+  filter: blur(18px);
+  transform: scale(1.08);
+}
+
+:host [part~="image-loaded"] {
+  opacity: 1;
+}
+
+:host [part~="placeholder-hidden"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+:host([variant="rounded"]) [part~="container"],
+:host([variant="rounded"]) [part~="image"],
+:host([variant="rounded"]) [part~="placeholder"] {
+  border-radius: var(--snice-border-radius-md, 6px);
+}
+
+:host([size="large"]) [part~="container"],
+:host([size="large"]) [part~="image"],
+:host([size="large"]) [part~="placeholder"],
+:host([size="large"][variant="rounded"]) [part~="container"],
+:host([size="large"][variant="rounded"]) [part~="image"],
+:host([size="large"][variant="rounded"]) [part~="placeholder"] {
+  border-radius: 10px;
+}
+
+:host([variant="square"]) [part~="container"],
+:host([variant="square"]) [part~="image"],
+:host([variant="square"]) [part~="placeholder"],
+:host([size="large"][variant="square"]) [part~="container"],
+:host([size="large"][variant="square"]) [part~="image"],
+:host([size="large"][variant="square"]) [part~="placeholder"] {
+  border-radius: 0;
+}
+
+:host([variant="circle"]) [part~="container"],
+:host([variant="circle"]) [part~="image"],
+:host([variant="circle"]) [part~="placeholder"],
+:host([size="large"][variant="circle"]) [part~="container"],
+:host([size="large"][variant="circle"]) [part~="image"],
+:host([size="large"][variant="circle"]) [part~="placeholder"] {
+  border-radius: 50%;
+}
+
+/* Empty placeholder — opaque AppKit image well */
+:host [part~="placeholder-empty"] {
+  box-sizing: border-box;
+  background: var(--snice-color-surface-container);
+  border: 0.5px solid var(--snice-color-border);
+  filter: none;
+  transform: none;
+}
+
+:host [part~="placeholder-icon"] {
+  color: var(--snice-color-text-secondary);
+  opacity: 0.65;
+}
+
+/* Loading pulse */
+:host([loading]) [part~="image"],
+:host([loading]) [part~="placeholder"] {
+  opacity: 0.65;
+  animation: snice-macos-image-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes snice-macos-image-pulse {
+  0%, 100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* AppKit focus halo when focusable */
+:host(:focus-visible) {
+  outline: none;
+}
+
+:host(:focus-visible) [part~="container"] {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+@media (prefers-contrast: more) {
+  :host [part~="container"]::after {
+    box-shadow: inset 0 0 0 1px var(--snice-color-border-strong, var(--snice-color-border));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="image"],
+  :host [part~="placeholder"] {
+    transition: none;
+  }
+
+  :host([loading]) [part~="image"],
+  :host([loading]) [part~="placeholder"] {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="container"]::after {
+    box-shadow: inset 0 0 0 1px CanvasText;
+  }
+
+  :host [part~="placeholder-empty"] {
+    border: 1px solid CanvasText;
+  }
+}
