@@ -1,0 +1,138 @@
+/* Material 3 Expressive — snice-book
+ * Google Play Books Tonal Spread: 16px expressive cover corners, primary-tinted
+ * surface-container-high paper (zero glass blur), adaptive spine gutter, Roboto
+ * Display + editorial serif ramp, M3 state-layer hover, and critically damped
+ * M3 effects page-turn motion.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --page-bg: var(--snice-color-surface-container-high);
+  --dark-text: var(--snice-color-text);
+  --book-title: var(--snice-font-family-display);
+  --title: Georgia, 'Noto Serif', ui-serif, serif;
+  --body: var(--snice-font-family);
+}
+
+:host(:focus-visible) {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+  border-radius: 16px;
+}
+
+:host [part~="base"] {
+  max-width: 100%;
+  border-radius: var(--snice-border-radius-lg, 16px);
+  overflow: hidden;
+  border: 1px solid var(--snice-color-border-subtle);
+  background: var(--page-bg);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="book"] {
+  color: var(--snice-color-text);
+}
+
+/* Primary-Tinted Tonal Paper & Adaptive Spine Crease */
+:host [part~="page"] {
+  background-color: var(--page-bg);
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--snice-color-text) 10%, transparent) 0%,
+    transparent 18%
+  );
+  color: var(--snice-color-text);
+}
+
+:host [part~="page-cover"] {
+  background-color: var(--page-bg);
+  background-image: linear-gradient(
+    -90deg,
+    color-mix(in srgb, var(--snice-color-text) 12%, transparent) 0%,
+    transparent 18%
+  );
+  transition: background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="page-cover"]:hover,
+:host [part~="page-last"]:hover {
+  background-color: color-mix(in srgb, var(--snice-color-text) var(--snice-m3-state-hover, 8%), var(--snice-color-surface-container-high));
+}
+
+:host [part~="page-cover"]:active,
+:host [part~="page-last"]:active {
+  background-color: color-mix(in srgb, var(--snice-color-text) var(--snice-m3-state-pressed, 10%), var(--snice-color-surface-container-high));
+}
+
+:host [part~="cover-image"] {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+:host [part~="page-leaf"] {
+  background-color: var(--page-bg);
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--snice-color-text) 10%, transparent) 0%,
+    transparent 18%
+  );
+  transition: transform 0.65s var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="page-front"],
+:host [part~="page-back"] {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background-color: var(--page-bg);
+}
+
+:host [part~="page-front"] {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--snice-color-text) 10%, transparent) 0%,
+    transparent 18%
+  );
+}
+
+:host [part~="page-back"] {
+  background-image: linear-gradient(
+    -90deg,
+    color-mix(in srgb, var(--snice-color-text) 10%, transparent) 0%,
+    transparent 18%
+  );
+}
+
+:host [part~="title"] {
+  font-family: var(--snice-font-family-display);
+  font-weight: 500;
+  letter-spacing: var(--snice-tracking-tight, -0.015em);
+  color: var(--snice-color-text);
+}
+
+:host [part~="author"] {
+  font-family: var(--snice-font-family);
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+  border-top: 1px solid var(--snice-color-border-subtle);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="page-leaf"],
+  :host [part~="page-cover"] {
+    transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host(:focus-visible) {
+    outline: 2px solid Highlight;
+  }
+}

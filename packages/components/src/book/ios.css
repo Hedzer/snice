@@ -1,0 +1,145 @@
+/* iOS 26+ Liquid Glass — snice-book
+ * Apple Books Two-Page Spread Reader: concentric 20px cover shell, strictly
+ * opaque grouped paper surface (no glass blur on reading content), theme-safe
+ * alpha spine gutter, SF Pro Display / editorial serif ramp, iOS focus ring,
+ * and Apple sheet-decelerated 3D page turns.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --page-bg: var(--snice-color-surface-container-high);
+  --dark-text: var(--snice-color-text);
+  --book-title: var(--snice-font-family-display);
+  --title: 'New York', Georgia, ui-serif, serif;
+  --body: 'New York', Georgia, ui-serif, serif;
+}
+
+:host(:focus-visible) {
+  outline: none;
+  border-radius: 20px;
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color);
+}
+
+:host [part~="base"] {
+  max-width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--page-bg);
+  box-shadow: var(--snice-shadow-lg);
+}
+
+:host [part~="book"] {
+  color: var(--snice-color-text);
+}
+
+/* Theme-Safe Opaque Reading Paper & Spine Gutter */
+:host [part~="page"] {
+  background-color: var(--page-bg);
+  background-image: linear-gradient(
+    90deg,
+    hsl(0 0% 0% / 0.12) 0%,
+    hsl(0 0% 0% / 0.03) 6%,
+    transparent 18%
+  );
+  color: var(--snice-color-text);
+}
+
+:host [part~="page-cover"] {
+  background-color: var(--page-bg);
+  background-image: linear-gradient(
+    -90deg,
+    hsl(0 0% 0% / 0.14) 0%,
+    hsl(0 0% 0% / 0.04) 6%,
+    transparent 18%
+  );
+  transition: filter var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="page-cover"]:hover,
+:host [part~="page-last"]:hover {
+  filter: brightness(0.985);
+}
+
+:host [part~="page-cover"]:active,
+:host [part~="page-last"]:active {
+  opacity: 0.96;
+}
+
+:host [part~="cover-image"] {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+:host [part~="page-leaf"] {
+  background-color: var(--page-bg);
+  background-image: linear-gradient(
+    90deg,
+    hsl(0 0% 0% / 0.12) 0%,
+    hsl(0 0% 0% / 0.03) 6%,
+    transparent 18%
+  );
+  transition: transform 0.72s var(--snice-ios-spring-sheet, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+:host [part~="page-front"],
+:host [part~="page-back"] {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background-color: var(--page-bg);
+}
+
+:host [part~="page-front"] {
+  background-image: linear-gradient(
+    90deg,
+    hsl(0 0% 0% / 0.12) 0%,
+    hsl(0 0% 0% / 0.03) 6%,
+    transparent 18%
+  );
+}
+
+:host [part~="page-back"] {
+  background-image: linear-gradient(
+    -90deg,
+    hsl(0 0% 0% / 0.12) 0%,
+    hsl(0 0% 0% / 0.03) 6%,
+    transparent 18%
+  );
+}
+
+:host [part~="title"] {
+  font-family: var(--snice-font-family-display);
+  font-weight: 700;
+  letter-spacing: var(--snice-tracking-tight, -0.024em);
+  color: var(--snice-color-text);
+}
+
+:host [part~="author"] {
+  font-family: var(--snice-font-family);
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+  border-top: 0.5px solid var(--snice-color-border);
+  border-bottom: 0.5px solid var(--snice-color-border);
+  letter-spacing: 0.06em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="page-leaf"],
+  :host [part~="page-cover"] {
+    transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host(:focus-visible) {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}

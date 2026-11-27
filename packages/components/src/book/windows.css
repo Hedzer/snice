@@ -1,0 +1,140 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-book
+ * Fluent Editorial Reader Spread: crisp 8px card geometry, 1px top-lit Fluent
+ * borders, solid layered page surfaces (zero 3D bleed-through), Segoe UI
+ * Variable typography, WinUI 3 dual-stroke focus, and zero-bounce fast-out
+ * decelerate page turns.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --page-bg: var(--snice-color-surface-container-lowest);
+  --dark-text: var(--snice-color-text);
+  --book-title: var(--snice-font-family-display);
+  --title: Georgia, 'Cambria', serif;
+  --body: var(--snice-font-family);
+}
+
+:host(:focus-visible) {
+  outline: none;
+  border-radius: 8px;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="base"] {
+  max-width: 100%;
+  border-radius: var(--snice-border-radius-lg, 8px);
+  overflow: hidden;
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  background: var(--page-bg);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="book"] {
+  color: var(--snice-color-text);
+}
+
+/* Solid Layered Fluent Pages & Clean Spine Shading */
+:host [part~="page"] {
+  background-color: var(--page-bg);
+  background-image: linear-gradient(
+    90deg,
+    hsl(0 0% 0% / 0.1) 0%,
+    transparent 16%
+  );
+  color: var(--snice-color-text);
+}
+
+:host [part~="page-cover"] {
+  background-color: var(--page-bg);
+  background-image: linear-gradient(
+    -90deg,
+    hsl(0 0% 0% / 0.11) 0%,
+    transparent 16%
+  );
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="page-cover"]:hover,
+:host [part~="page-last"]:hover {
+  background-color: var(--snice-color-surface-container-low);
+}
+
+:host [part~="page-cover"]:active,
+:host [part~="page-last"]:active {
+  background-color: var(--snice-color-surface-container);
+}
+
+:host [part~="cover-image"] {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+:host [part~="page-leaf"] {
+  background-color: var(--page-bg);
+  background-image: linear-gradient(
+    90deg,
+    hsl(0 0% 0% / 0.1) 0%,
+    transparent 16%
+  );
+  transition: transform 0.52s var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
+}
+
+:host [part~="page-front"],
+:host [part~="page-back"] {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background-color: var(--page-bg);
+}
+
+:host [part~="page-front"] {
+  background-image: linear-gradient(
+    90deg,
+    hsl(0 0% 0% / 0.1) 0%,
+    transparent 16%
+  );
+}
+
+:host [part~="page-back"] {
+  background-image: linear-gradient(
+    -90deg,
+    hsl(0 0% 0% / 0.1) 0%,
+    transparent 16%
+  );
+}
+
+:host [part~="title"] {
+  font-family: var(--snice-font-family-display);
+  font-weight: 600;
+  letter-spacing: var(--snice-tracking-tight, -0.01em);
+  color: var(--snice-color-text);
+}
+
+:host [part~="author"] {
+  font-family: var(--snice-font-family);
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+  border-top: 1px solid var(--snice-color-border);
+  border-bottom: 1px solid var(--snice-color-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="page-leaf"],
+  :host [part~="page-cover"] {
+    transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host(:focus-visible) {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}
