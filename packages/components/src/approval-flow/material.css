@@ -1,15 +1,51 @@
 /* Android Material 3 Expressive — snice-approval-flow
- * Multi-step sign-off flow: 40dp step avatars (primary-container on current),
- * 8px tonal status chips, pill Approve/Reject buttons with 8px press morph,
- * 4px outlined comment field, and dark-mode-safe --snice-color-text-inverse ink.
+ * 24dp primary-tinted tonal workflow sheet, individual 16dp tonal step cards
+ * (primary-container tonal wash on current step), 40dp avatars with continuous
+ * z-indexed connector rail, pill Approve/Reject with 8px press morph, and
+ * M3 Filled text field with bottom active indicator.
  */
 
 :host {
   font-family: var(--snice-font-family);
 }
 
-/* 40dp M3 avatars */
+/* Signature M3 Expressive 24dp primary-tinted tonal workflow sheet */
+[part~="base"] {
+  box-sizing: border-box;
+  align-items: stretch;
+  background: var(--snice-color-surface-container-low);
+  border: none;
+  border-radius: 24px;
+  padding: 0.875rem;
+  gap: 0.5rem;
+}
+
+:host([orientation="vertical"]) [part~="base"] {
+  gap: 0.5rem;
+}
+
+/* Individual 16dp tonal step cards (zero harsh borders) */
+[part~="step"] {
+  box-sizing: border-box;
+  background: var(--snice-color-surface-container-high);
+  border-radius: 16px;
+  padding: 0.75rem 0.625rem;
+  transition: background-color 150ms var(--snice-m3-spring-effects);
+}
+
+:host([orientation="vertical"]) [part~="step"] {
+  padding: 0.75rem 0.875rem;
+}
+
+/* Current step: full M3 Expressive primary-container tonal highlight card */
+[part~="step-current"] {
+  background: var(--snice-m3-primary-container);
+}
+
+/* 40dp M3 circular avatars above connector z-index */
 [part~="avatar"] {
+  position: relative;
+  z-index: 2;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 9999px;
@@ -17,7 +53,7 @@
 }
 
 [part~="avatar-pending"] {
-  background: var(--snice-color-surface-container-high);
+  background: var(--snice-color-surface-container-highest);
   border: 1px solid var(--snice-color-border);
   color: var(--snice-color-text-secondary);
 }
@@ -35,25 +71,49 @@
 }
 
 [part~="avatar-skipped"] {
-  background: var(--snice-color-surface-container-low);
+  background: var(--snice-color-surface-container);
   border: 1.5px dashed var(--snice-color-border);
   color: var(--snice-color-text-tertiary);
 }
 
 [part~="avatar-current"] {
-  background: var(--snice-m3-primary-container);
+  background: var(--snice-color-primary);
   border: 2px solid var(--snice-color-primary);
-  color: var(--snice-m3-on-primary-container);
-  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+  color: var(--snice-color-text-inverse);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-primary) 28%, transparent);
 }
 
-/* Connectors */
+/* Continuous 2px M3 connector cleanly inset 4px outside avatar halos */
 [part~="connector"] {
-  background: var(--snice-color-border-subtle);
+  z-index: 1;
+  top: calc(2rem - 1px);
+  left: calc(50% + 1.25rem + 4px);
+  right: calc(-50% - 0.5rem + 1.25rem + 4px);
+  bottom: auto;
+  width: auto;
+  height: 2px;
+  background: color-mix(in srgb, var(--snice-color-primary) 34%, var(--snice-color-border));
+}
+
+:host([orientation="vertical"]) [part~="connector"] {
+  top: calc(3.25rem + 4px);
+  left: calc(0.875rem + 1.25rem - 1px);
+  right: auto;
+  bottom: calc(-1.25rem + 4px);
+  width: 2px;
+  height: auto;
 }
 
 [part~="connector-approved"] {
   background: var(--snice-color-success);
+}
+
+[part~="content"] {
+  max-width: 11.5rem;
+}
+
+:host([orientation="vertical"]) [part~="content"] {
+  max-width: none;
 }
 
 /* Typography */
@@ -63,7 +123,8 @@
 }
 
 [part~="name-current"] {
-  color: var(--snice-color-primary);
+  font-weight: 600;
+  color: var(--snice-m3-on-primary-container);
 }
 
 [part~="name-skipped"] {
@@ -81,31 +142,31 @@
 }
 
 [part~="timestamp"] {
-  color: var(--snice-color-text-tertiary);
+  color: var(--snice-color-text-secondary);
 }
 
-/* 8px M3 tonal status chips */
+/* Full-pill M3 tonal status chips */
 [part~="status"] {
   width: fit-content;
-  border-radius: 8px;
-  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  padding: 0.125rem 0.5625rem;
   font-size: 0.75rem;
   font-weight: 500;
 }
 
 [part~="status-pending"] {
-  background: var(--snice-color-surface-container-high);
+  background: var(--snice-color-surface-container-lowest);
   color: var(--snice-color-text-secondary);
 }
 
 [part~="status-approved"] {
-  background: color-mix(in srgb, var(--snice-color-success) 16%, transparent);
-  color: var(--snice-color-success);
+  background: color-mix(in srgb, var(--snice-color-success) 14%, var(--snice-color-surface-container-lowest));
+  color: color-mix(in srgb, var(--snice-color-success) 84%, var(--snice-color-text));
 }
 
 [part~="status-rejected"] {
-  background: color-mix(in srgb, var(--snice-color-danger) 16%, transparent);
-  color: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 14%, var(--snice-color-surface-container-lowest));
+  color: color-mix(in srgb, var(--snice-color-danger) 84%, var(--snice-color-text));
 }
 
 [part~="status-skipped"] {
@@ -120,8 +181,9 @@
   border-radius: 9999px;
   font-size: 0.8125rem;
   font-weight: 500;
-  transition: border-radius 180ms var(--snice-m3-spring-spatial-fast),
-              box-shadow 150ms var(--snice-m3-spring-effects);
+  transition:
+    border-radius 180ms var(--snice-m3-spring-spatial-fast),
+    box-shadow 150ms var(--snice-m3-spring-effects);
 }
 
 [part~="button"]:hover {
@@ -130,11 +192,11 @@
 }
 
 [part~="button"]:active {
-  border-radius: var(--snice-m3-shape-morph-pressed);
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
 }
 
 [part~="button"]:focus-visible {
-  outline: 3px solid var(--snice-focus-ring-color);
+  outline: 3px solid var(--snice-color-primary);
   outline-offset: 2px;
 }
 
@@ -148,21 +210,66 @@
   color: var(--snice-color-text-inverse);
 }
 
-/* 4px M3 Outlined text field */
+/* M3 Filled Text Field (top-rounded 8px, bottom active indicator stroke) */
 [part~="input"] {
+  box-sizing: border-box;
   min-height: 2.25rem;
   padding: 0 0.75rem;
-  border-radius: 4px;
-  background: var(--snice-color-surface-container-lowest);
-  border: 1px solid var(--snice-color-border);
+  border-radius: 8px 8px 0 0;
+  background: var(--snice-color-surface-container-highest);
+  border: none;
+  border-bottom: 1.5px solid var(--snice-color-text-secondary);
   font-size: 0.8125rem;
   color: var(--snice-color-text);
-  transition: border-color 150ms var(--snice-m3-spring-effects),
-              box-shadow 150ms var(--snice-m3-spring-effects);
+  transition:
+    border-color 150ms var(--snice-m3-spring-effects),
+    box-shadow 150ms var(--snice-m3-spring-effects);
+}
+
+[part~="input"]::placeholder {
+  color: var(--snice-color-text-secondary);
+  opacity: 0.9;
 }
 
 [part~="input"]:focus-visible {
   outline: none;
-  border-color: var(--snice-color-primary);
-  box-shadow: inset 0 0 0 1px var(--snice-color-primary);
+  border-bottom-color: var(--snice-color-primary);
+  box-shadow: inset 0 -1.5px 0 0 var(--snice-color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="step"],
+  [part~="button"],
+  [part~="input"] {
+    transition: none;
+  }
+
+  [part~="button"]:active {
+    border-radius: 9999px;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="step"],
+  [part~="input"] {
+    border: 1px solid CanvasText;
+  }
+
+  [part~="avatar-approved"],
+  [part~="avatar-rejected"],
+  [part~="button-approve"],
+  [part~="button-reject"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+  }
+
+  [part~="connector"] {
+    background: CanvasText;
+  }
+
+  [part~="connector-approved"] {
+    background: Highlight;
+  }
 }

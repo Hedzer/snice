@@ -1,7 +1,7 @@
 /* iOS 26+ Liquid Glass / Apple HIG — snice-approval-flow
- * Sign-off & workflow stepper: 40px semantic step avatars, capsule status pills,
- * pill Approve/Reject actions with spring press scale, 10px recessed comment field,
- * explicit white ink on all saturated fills in light & dark modes.
+ * Inset-grouped 20px workflow card, circular 40px semantic sign-off avatars,
+ * 14px active-step highlight surface, capsule status pills, 36px prominent
+ * Approve/Reject capsules with spring press scale, and 10px recessed comment field.
  */
 
 :host {
@@ -9,8 +9,45 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Avatars (keep 2.5rem / 40px to match horizontal & vertical connector geometry) */
+/* Inset-grouped iOS 26 rounded-20px workflow card */
+[part~="base"] {
+  box-sizing: border-box;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 20px;
+  padding: 1rem;
+  box-shadow: var(--snice-shadow-xs);
+  gap: 0.5rem;
+}
+
+:host([orientation="vertical"]) [part~="base"] {
+  gap: 0.5rem;
+}
+
+[part~="step"] {
+  box-sizing: border-box;
+  padding: 0.75rem 0.625rem;
+  border-radius: 14px;
+  transition: background-color 160ms var(--snice-ease-out);
+}
+
+:host([orientation="vertical"]) [part~="step"] {
+  padding: 0.75rem 0.875rem;
+}
+
+/* 14px inset active-step Liquid Glass highlight card */
+[part~="step-current"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 8%, var(--snice-color-surface-container-high));
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.35),
+    inset 0 0 0 0.5px color-mix(in srgb, var(--snice-color-primary) 28%, transparent),
+    0 2px 8px color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+}
+
+/* Avatars (40px circular medallions above connector z-index) */
 [part~="avatar"] {
+  position: relative;
+  z-index: 2;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 9999px;
@@ -43,17 +80,43 @@
 }
 
 [part~="avatar-current"] {
-  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, var(--snice-color-surface-container-high));
+  border: 2px solid var(--snice-color-primary);
+  color: var(--snice-color-primary);
   box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
 }
 
-/* Connectors */
+/* Exact connectors cleanly inset 4px outside avatar halos (z-index: 1 above cards) */
 [part~="connector"] {
-  background: var(--snice-color-border-subtle);
+  z-index: 1;
+  top: calc(2rem - 0.75px);
+  left: calc(50% + 1.25rem + 4px);
+  right: calc(-50% - 0.5rem + 1.25rem + 4px);
+  bottom: auto;
+  width: auto;
+  height: 1.5px;
+  background: color-mix(in srgb, var(--snice-color-text) 24%, transparent);
+}
+
+:host([orientation="vertical"]) [part~="connector"] {
+  top: calc(3.25rem + 4px);
+  left: calc(0.875rem + 1.25rem - 0.75px);
+  right: auto;
+  bottom: calc(-1.25rem + 4px);
+  width: 1.5px;
+  height: auto;
 }
 
 [part~="connector-approved"] {
   background: var(--snice-color-success);
+}
+
+[part~="content"] {
+  max-width: 11.5rem;
+}
+
+:host([orientation="vertical"]) [part~="content"] {
+  max-width: none;
 }
 
 /* Typography */
@@ -99,7 +162,7 @@
 }
 
 [part~="status-pending"] {
-  background: var(--snice-color-surface-container);
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
   color: var(--snice-color-text-secondary);
 }
 
@@ -114,19 +177,21 @@
 }
 
 [part~="status-skipped"] {
-  background: var(--snice-color-surface-container-low);
+  background: color-mix(in srgb, var(--snice-color-text) 6%, transparent);
   color: var(--snice-color-text-tertiary);
 }
 
-/* Capsule inline action pills */
+/* Capsule inline action pills (38px touch-prominent Liquid Glass pills with spring scale) */
 [part~="button"] {
-  min-height: 2.125rem;
-  padding: 0 0.875rem;
+  min-height: 2.375rem;
+  padding: 0 1.0625rem;
   border-radius: 9999px;
   font-size: 0.8125rem;
   font-weight: 600;
-  transition: transform var(--snice-transition-fast) var(--snice-ease-spring),
-              filter var(--snice-transition-fast) var(--snice-ease-out);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.32), 0 2px 6px hsl(0 0% 0% / 0.16);
+  transition:
+    transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring),
+    filter var(--snice-transition-fast, 160ms) var(--snice-ease-out);
 }
 
 [part~="button"]:hover {
@@ -153,21 +218,65 @@
   color: hsl(0 0% 100%);
 }
 
-/* 10px recessed iOS comment input */
+/* 10px recessed iOS comment field — clearly separated in both light & OLED dark */
 [part~="input"] {
-  min-height: 2.125rem;
+  box-sizing: border-box;
+  min-height: 2.25rem;
   padding: 0 0.75rem;
   border-radius: 10px;
-  background: var(--snice-color-surface-container-low);
+  background: color-mix(in srgb, var(--snice-color-text) 6%, var(--snice-color-surface-container-high));
   border: 0.5px solid var(--snice-color-border);
   font-size: 0.8125rem;
   color: var(--snice-color-text);
-  transition: border-color var(--snice-transition-fast) var(--snice-ease-out),
-              box-shadow var(--snice-transition-fast) var(--snice-ease-out);
+  transition:
+    border-color var(--snice-transition-fast, 160ms) var(--snice-ease-out),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-ease-out);
+}
+
+[part~="input"]::placeholder {
+  color: var(--snice-color-text-secondary);
+  opacity: 0.9;
 }
 
 [part~="input"]:focus-visible {
   outline: none;
   border-color: var(--snice-color-primary);
   box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="step"],
+  [part~="button"],
+  [part~="input"] {
+    transition: none;
+  }
+
+  [part~="button"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="step-current"],
+  [part~="input"] {
+    border: 1px solid CanvasText;
+  }
+
+  [part~="avatar-approved"],
+  [part~="avatar-rejected"],
+  [part~="button-approve"],
+  [part~="button-reject"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+  }
+
+  [part~="connector"] {
+    background: CanvasText;
+  }
+
+  [part~="connector-approved"] {
+    background: Highlight;
+  }
 }
