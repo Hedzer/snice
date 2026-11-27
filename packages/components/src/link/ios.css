@@ -1,0 +1,79 @@
+/* iOS 26+ Liquid Glass — snice-link (SwiftUI Link / Tinted Inline Text Action) */
+[part~="link"] {
+  background-image: none;
+  border-radius: 6px;
+  color: var(--snice-color-primary);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition:
+    opacity var(--snice-transition-fast, 180ms) ease,
+    color var(--snice-transition-fast, 180ms) ease;
+}
+
+[part~="link"]:hover {
+  color: var(--snice-color-primary);
+  opacity: 0.78;
+}
+
+[part~="link"]:active {
+  color: var(--snice-color-primary);
+  opacity: 0.42;
+}
+
+[part~="link"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+:host([variant="primary"]) [part~="link"] {
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+:host([variant="secondary"]) [part~="link"] {
+  color: var(--snice-color-text-secondary);
+}
+
+:host([variant="secondary"]) [part~="link"]:hover {
+  color: var(--snice-color-text);
+  opacity: 1;
+}
+
+:host([variant="muted"]) [part~="link"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+:host([variant="muted"]) [part~="link"]:hover {
+  color: var(--snice-color-text-secondary);
+  opacity: 1;
+}
+
+[part~="link"][part~="link-underline"] {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, currentColor 55%, transparent);
+}
+
+[part~="link"][part~="link-underline"]:hover {
+  text-decoration-color: currentColor;
+}
+
+[part~="external-icon"] {
+  font-size: 0.78em;
+  font-variant-emoji: text;
+  opacity: 0.78;
+  transform: translateY(-0.06em);
+}
+
+:host([disabled]) [part~="link"],
+:host([disabled][variant="primary"]) [part~="link"],
+:host([disabled][variant="secondary"]) [part~="link"],
+:host([disabled][variant="muted"]) [part~="link"],
+[part~="link"][part~="link-disabled"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  opacity: 1;
+  text-decoration: none;
+  pointer-events: none;
+}

@@ -1,0 +1,71 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-link (Compact 13px AppKit Link) */
+[part~="link"] {
+  background-image: none;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  color: var(--snice-color-primary);
+  text-decoration: none;
+  transition: color var(--snice-transition-fast, 140ms) ease;
+}
+
+[part~="link"]:hover {
+  color: var(--snice-color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+[part~="link"]:active {
+  color: color-mix(in srgb, var(--snice-color-primary) 78%, var(--snice-color-text));
+}
+
+[part~="link"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host([variant="primary"]) [part~="link"] {
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+:host([variant="secondary"]) [part~="link"] {
+  color: var(--snice-color-text-secondary);
+}
+
+:host([variant="secondary"]) [part~="link"]:hover {
+  color: var(--snice-color-text);
+}
+
+:host([variant="muted"]) [part~="link"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+:host([variant="muted"]) [part~="link"]:hover {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="link"][part~="link-underline"] {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+[part~="external-icon"] {
+  font-size: 0.78em;
+  font-variant-emoji: text;
+  opacity: 0.72;
+}
+
+:host([disabled]) [part~="link"],
+:host([disabled][variant="primary"]) [part~="link"],
+:host([disabled][variant="secondary"]) [part~="link"],
+:host([disabled][variant="muted"]) [part~="link"],
+[part~="link"][part~="link-disabled"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  opacity: 1;
+  text-decoration: none;
+  pointer-events: none;
+}

@@ -1,0 +1,76 @@
+/* Material 3 Expressive — snice-link (Roboto Inline Text Link + 8%/10% State Layers) */
+[part~="link"] {
+  background-image: none;
+  padding: 0.0625rem 0.25rem;
+  margin: -0.0625rem -0.25rem;
+  border-radius: 4px;
+  color: var(--snice-color-primary);
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  transition:
+    background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+[part~="link"]:hover {
+  color: var(--snice-color-primary);
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+[part~="link"]:active {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+[part~="link"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+:host([variant="primary"]) [part~="link"] {
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+:host([variant="secondary"]) [part~="link"] {
+  color: var(--snice-color-text-secondary);
+}
+
+:host([variant="secondary"]) [part~="link"]:hover {
+  color: var(--snice-color-text);
+}
+
+:host([variant="muted"]) [part~="link"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+:host([variant="muted"]) [part~="link"]:hover {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="link"][part~="link-underline"] {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+[part~="external-icon"] {
+  font-size: 0.8em;
+  font-variant-emoji: text;
+  opacity: 0.85;
+}
+
+:host([disabled]) [part~="link"],
+:host([disabled][variant="primary"]) [part~="link"],
+:host([disabled][variant="secondary"]) [part~="link"],
+:host([disabled][variant="muted"]) [part~="link"],
+[part~="link"][part~="link-disabled"] {
+  opacity: 1;
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  background: transparent;
+  text-decoration: none;
+  pointer-events: none;
+}
