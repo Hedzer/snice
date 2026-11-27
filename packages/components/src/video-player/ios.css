@@ -1,0 +1,244 @@
+/* iOS 26+ Liquid Glass — snice-video-player
+ * AVPlayerViewController Clear Liquid Glass floating media chrome: 20px video
+ * frame, 68px Clear Liquid Glass poster play medallion, inset 18px Liquid Glass
+ * capsule transport dock, pure white AVKit scrubber, and spring press.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  border-radius: 20px;
+  background: rgb(0 0 0);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="base"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host([variant="cinema"]) [part~="base"] {
+  border-radius: 0;
+}
+
+/* Clear Liquid Glass Poster & Center Play Medallions */
+:host [part~="poster-play"],
+:host [part~="center-play"] {
+  border-radius: 9999px;
+  background: hsl(0 0% 10% / 0.44);
+  backdrop-filter: blur(20px) saturate(185%);
+  -webkit-backdrop-filter: blur(20px) saturate(185%);
+  border: 0.5px solid hsl(0 0% 100% / 0.34);
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.38),
+    0 10px 28px hsl(0 0% 0% / 0.36);
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="poster-play"] {
+  width: 68px;
+  height: 68px;
+  transition:
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="poster-play"]:hover {
+  transform: scale(1.06);
+  background: hsl(0 0% 12% / 0.56);
+}
+
+:host [part~="poster-play"]:active {
+  transform: scale(0.92);
+}
+
+:host [part~="center-play"] {
+  width: 60px;
+  height: 60px;
+}
+
+:host [part~="poster-play-icon"],
+:host [part~="center-play-icon"] {
+  color: hsl(0 0% 100%);
+}
+
+/* Inset Floating Liquid Glass Control Capsule */
+:host [part~="controls"] {
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  border-radius: 18px;
+  padding: 10px 14px;
+  background: hsl(0 0% 8% / 0.56);
+  backdrop-filter: blur(24px) saturate(185%);
+  -webkit-backdrop-filter: blur(24px) saturate(185%);
+  border: 0.5px solid hsl(0 0% 100% / 0.24);
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.26),
+    0 12px 32px hsl(0 0% 0% / 0.4);
+}
+
+:host([variant="minimal"]) [part~="controls"] {
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  border-radius: 14px;
+  padding: 6px 10px;
+}
+
+/* AVKit Scrubber */
+:host [part~="progress-container"] {
+  height: 5px;
+  padding: 4px 0;
+}
+
+:host [part~="progress-container"]:hover {
+  height: 5px;
+}
+
+:host [part~="progress"] {
+  overflow: visible;
+  border-radius: 9999px;
+  background: hsl(0 0% 100% / 0.26);
+}
+
+:host [part~="buffered"] {
+  border-radius: 9999px;
+  background: hsl(0 0% 100% / 0.42);
+}
+
+:host [part~="played"] {
+  border-radius: 9999px;
+  background: hsl(0 0% 100%);
+}
+
+:host [part~="played"]::after {
+  content: '';
+  position: absolute;
+  right: -5.5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 11px;
+  height: 11px;
+  border-radius: 9999px;
+  background: hsl(0 0% 100%);
+  box-shadow: 0 1px 4px hsl(0 0% 0% / 0.45);
+}
+
+/* Transport Buttons */
+:host [part~="button"] {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 6px;
+  border-radius: 9999px;
+  color: hsl(0 0% 100%);
+  transition:
+    background-color var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out),
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+}
+
+:host [part~="button"]:hover {
+  background: hsl(0 0% 100% / 0.18);
+}
+
+:host [part~="button"]:active {
+  background: hsl(0 0% 100% / 0.26);
+  transform: scale(0.92);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="rate-button"] {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 9999px;
+  background: hsl(0 0% 100% / 0.14);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+:host [part~="time"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: hsl(0 0% 100% / 0.9);
+}
+
+:host [part~="volume-slider"] {
+  accent-color: hsl(0 0% 100%);
+  height: 4px;
+  border-radius: 9999px;
+  background: hsl(0 0% 100% / 0.28);
+}
+
+:host [part~="volume-slider"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="spinner"] {
+  border-width: 2.5px;
+  border-color: hsl(0 0% 100% / 0.25);
+  border-top-color: hsl(0 0% 100%);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="controls"],
+  :host [part~="poster-play"],
+  :host [part~="center-play"] {
+    background: hsl(0 0% 8% / 0.92);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :host [part~="controls"],
+  :host [part~="poster-play"],
+  :host [part~="center-play"] {
+    background: hsl(0 0% 8% / 0.92);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="poster-play"],
+  :host [part~="button"],
+  :host [part~="played"],
+  :host [part~="controls"] {
+    transition: none;
+  }
+
+  :host [part~="poster-play"]:hover,
+  :host [part~="poster-play"]:active,
+  :host [part~="button"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="controls"],
+  :host [part~="poster-play"],
+  :host [part~="center-play"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  :host [part~="played"] {
+    background: Highlight;
+  }
+}

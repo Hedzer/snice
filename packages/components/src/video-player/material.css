@@ -1,0 +1,217 @@
+/* Android Material 3 Expressive — snice-video-player
+ * 16px expressive video container, 68dp primary Play FAB with circle->squircle
+ * hover/press morph and dark-mode T80-on-ink compliance, dark tonal bottom
+ * gradient scrim, press-morphing circular controls, and unclipped M3 scrubber.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  border-radius: 16px;
+  background: rgb(0 0 0);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="base"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host([variant="cinema"]) [part~="base"] {
+  border-radius: 0;
+}
+
+/* Expressive M3 Primary Play FAB — dark-mode T80-on-ink compliant */
+:host [part~="poster-play"],
+:host [part~="center-play"] {
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary, var(--snice-color-text-inverse));
+  box-shadow: var(--snice-shadow-lg);
+}
+
+:host [part~="poster-play"] {
+  width: 68px;
+  height: 68px;
+  transition:
+    border-radius var(--snice-transition-medium, 280ms) var(--snice-m3-spring-spatial, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="poster-play"]:hover {
+  transform: none;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--snice-m3-on-primary, white) 8%, var(--snice-color-primary));
+  box-shadow: var(--snice-shadow-xl);
+}
+
+:host [part~="poster-play"]:active {
+  border-radius: 16px;
+}
+
+:host [part~="center-play"] {
+  width: 60px;
+  height: 60px;
+}
+
+:host [part~="poster-play-icon"],
+:host [part~="center-play-icon"] {
+  color: var(--snice-m3-on-primary, var(--snice-color-text-inverse));
+}
+
+/* Dark Tonal Gradient Scrim — zero backdrop blur */
+:host [part~="controls"] {
+  background: linear-gradient(
+    to top,
+    hsl(266 16% 6% / 0.88) 0%,
+    hsl(266 16% 6% / 0.45) 68%,
+    transparent 100%
+  );
+  padding: 16px 16px 12px;
+}
+
+:host([variant="minimal"]) [part~="controls"] {
+  background: hsl(266 16% 6% / 0.78);
+  padding: 8px 12px;
+}
+
+/* Unclipped M3 Primary Scrubber */
+:host [part~="progress-container"] {
+  height: 5px;
+  padding: 4px 0;
+}
+
+:host [part~="progress-container"]:hover {
+  height: 5px;
+}
+
+:host [part~="progress"] {
+  overflow: visible;
+  border-radius: 9999px;
+  background: hsl(0 0% 100% / 0.28);
+}
+
+:host [part~="buffered"] {
+  border-radius: 9999px;
+  background: hsl(0 0% 100% / 0.48);
+}
+
+:host [part~="played"] {
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+:host [part~="played"]::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  box-shadow: 0 1px 4px hsl(0 0% 0% / 0.45);
+}
+
+/* Press-Morphing Circular Control Buttons */
+:host [part~="button"] {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 8px;
+  border-radius: 9999px;
+  color: hsl(0 0% 100%);
+  transition:
+    border-radius var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.42, 1.4, 0.24, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="button"]:hover {
+  background: hsl(0 0% 100% / 0.14);
+}
+
+:host [part~="button"]:active {
+  background: hsl(0 0% 100% / 0.22);
+  border-radius: 10px;
+}
+
+:host [part~="button"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="rate-button"] {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 9999px;
+  background: hsl(0 0% 100% / 0.14);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+:host [part~="time"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: hsl(0 0% 100% / 0.92);
+}
+
+:host [part~="volume-slider"] {
+  accent-color: var(--snice-color-primary);
+  height: 4px;
+  border-radius: 9999px;
+  background: hsl(0 0% 100% / 0.3);
+}
+
+:host [part~="volume-slider"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="spinner"] {
+  border-color: hsl(0 0% 100% / 0.28);
+  border-top-color: var(--snice-color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="poster-play"],
+  :host [part~="button"],
+  :host [part~="played"],
+  :host [part~="controls"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="poster-play"],
+  :host [part~="center-play"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+    box-shadow: none;
+  }
+
+  :host [part~="poster-play-icon"],
+  :host [part~="center-play-icon"] {
+    color: HighlightText;
+  }
+
+  :host [part~="controls"] {
+    background: Canvas;
+    color: CanvasText;
+    border-top: 1px solid CanvasText;
+  }
+
+  :host [part~="played"] {
+    background: Highlight;
+  }
+}

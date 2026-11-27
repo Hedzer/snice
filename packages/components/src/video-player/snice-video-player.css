@@ -24,18 +24,22 @@
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   overflow: hidden;
   width: 100%;
+  aspect-ratio: 16 / 9;
 }
 
 .video-container:fullscreen,
 .video-container:-webkit-full-screen {
   border-radius: 0;
+  aspect-ratio: auto;
+  height: 100%;
 }
 
 /* Video element */
 video {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
   cursor: pointer;
 }
 

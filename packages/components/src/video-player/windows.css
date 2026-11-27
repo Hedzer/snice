@@ -1,0 +1,243 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-video-player
+ * 8px Fluent framing, dark transient Acrylic floating poster play medallion
+ * & inset 8px transport bar, 32px 4px-radius buttons, Fluent accent scrubber
+ * with white-ringed thumb, dual-stroke focus, fast-out motion, WHCM.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  border-radius: 8px;
+  border: 1px solid var(--snice-color-border-subtle);
+  background: rgb(0 0 0);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="base"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px hsl(0 0% 0%), 0 0 0 3px hsl(0 0% 100%);
+}
+
+:host([variant="cinema"]) [part~="base"] {
+  border-radius: 0;
+  border: none;
+}
+
+/* Dark Acrylic Poster & Center Play Medallions */
+:host [part~="poster-play"],
+:host [part~="center-play"] {
+  border-radius: 9999px;
+  background: hsl(0 0% 12% / 0.78);
+  backdrop-filter: var(--snice-win-acrylic-blur);
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur);
+  border: 1px solid hsl(0 0% 100% / 0.16);
+  border-top-color: hsl(0 0% 100% / 0.24);
+  box-shadow: var(--snice-shadow-lg);
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="poster-play"] {
+  width: 64px;
+  height: 64px;
+  transition: background-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="poster-play"]:hover {
+  transform: none;
+  background: hsl(0 0% 18% / 0.86);
+}
+
+:host [part~="poster-play"]:active {
+  background: hsl(0 0% 10% / 0.88);
+}
+
+:host [part~="center-play"] {
+  width: 56px;
+  height: 56px;
+}
+
+:host [part~="poster-play-icon"],
+:host [part~="center-play-icon"] {
+  color: hsl(0 0% 100%);
+}
+
+/* Floating Inset Dark Acrylic Transport Bar */
+:host [part~="controls"] {
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: hsl(0 0% 12% / 0.8);
+  backdrop-filter: var(--snice-win-acrylic-blur);
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur);
+  border: 1px solid hsl(0 0% 100% / 0.12);
+  box-shadow: var(--snice-shadow-lg);
+}
+
+:host([variant="minimal"]) [part~="controls"] {
+  bottom: 6px;
+  left: 6px;
+  right: 6px;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+/* Fluent Accent Scrubber with White-Ringed Thumb */
+:host [part~="progress-container"] {
+  height: 4px;
+  padding: 4px 0;
+}
+
+:host [part~="progress-container"]:hover {
+  height: 4px;
+}
+
+:host [part~="progress"] {
+  overflow: visible;
+  border-radius: 9999px;
+  background: hsl(0 0% 100% / 0.26);
+}
+
+:host [part~="buffered"] {
+  border-radius: 9999px;
+  background: hsl(0 0% 100% / 0.42);
+}
+
+:host [part~="played"] {
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+:host [part~="played"]::after {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  border: 2px solid hsl(0 0% 100%);
+  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.4);
+}
+
+/* 32px 4px-Radius Fluent Control Buttons */
+:host [part~="button"] {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  border-radius: 4px;
+  color: hsl(0 0% 100%);
+  transition: background-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="button"]:hover {
+  background: hsl(0 0% 100% / 0.12);
+}
+
+:host [part~="button"]:active {
+  background: hsl(0 0% 100% / 0.08);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px hsl(0 0% 0%), 0 0 0 3px hsl(0 0% 100%);
+}
+
+:host [part~="rate-button"] {
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+:host [part~="time"] {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: hsl(0 0% 100% / 0.92);
+}
+
+:host [part~="volume-slider"] {
+  accent-color: var(--snice-color-primary);
+  height: 4px;
+  border-radius: 9999px;
+  background: hsl(0 0% 100% / 0.28);
+}
+
+:host [part~="volume-slider"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px hsl(0 0% 0%), 0 0 0 3px hsl(0 0% 100%);
+}
+
+:host [part~="spinner"] {
+  border-color: hsl(0 0% 100% / 0.25);
+  border-top-color: var(--snice-color-primary);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="controls"],
+  :host [part~="poster-play"],
+  :host [part~="center-play"] {
+    background: hsl(0 0% 12% / 0.94);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :host [part~="controls"],
+  :host [part~="poster-play"],
+  :host [part~="center-play"] {
+    background: hsl(0 0% 12% / 0.94);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="poster-play"],
+  :host [part~="button"],
+  :host [part~="played"],
+  :host [part~="controls"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="controls"],
+  :host [part~="poster-play"],
+  :host [part~="center-play"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  :host [part~="button"] {
+    color: ButtonText;
+  }
+
+  :host [part~="button"]:focus-visible,
+  :host [part~="base"]:focus-visible,
+  :host [part~="volume-slider"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  :host [part~="played"] {
+    background: Highlight;
+  }
+}
