@@ -50,9 +50,12 @@ interface ApprovalStep {
 | `step` | Individual step node |
 | `step-current` | Added to `step` when it is the current step |
 | `avatar` | Approver avatar circle |
+| `avatar-current` | Added to `avatar` when it is the current step |
 | `avatar-image` | Approver avatar image |
 | `content` | Name/role/status wrapper |
 | `name` | Approver name text |
+| `name-current` | Added to `name` when it is the current step |
+| `name-skipped` | Added to `name` when the step is skipped |
 | `role` | Approver role text |
 | `status` | Status badge |
 | `status-icon` | Status glyph inside the badge |
@@ -66,7 +69,7 @@ interface ApprovalStep {
 | `input` | Comment input |
 | `connector` | Line between steps |
 
-Each `step` also carries a `step-<status>` token — one of `step-pending`, `step-approved`, `step-rejected`, `step-skipped`.
+Each `step`, `avatar`, `status`, and `connector` also carries a status modifier token (`<part>-pending`, `<part>-approved`, `<part>-rejected`, `<part>-skipped`).
 
 ## Basic Usage
 

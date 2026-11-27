@@ -1,0 +1,173 @@
+/* iOS 26+ Liquid Glass / Apple HIG — snice-approval-flow
+ * Sign-off & workflow stepper: 40px semantic step avatars, capsule status pills,
+ * pill Approve/Reject actions with spring press scale, 10px recessed comment field,
+ * explicit white ink on all saturated fills in light & dark modes.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Avatars (keep 2.5rem / 40px to match horizontal & vertical connector geometry) */
+[part~="avatar"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="avatar-pending"] {
+  background: var(--snice-color-surface-container-high);
+  border: 1.5px solid var(--snice-color-border);
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="avatar-approved"] {
+  background: var(--snice-color-success);
+  border: 2px solid var(--snice-color-success);
+  color: hsl(0 0% 100%);
+}
+
+[part~="avatar-rejected"] {
+  background: var(--snice-color-danger);
+  border: 2px solid var(--snice-color-danger);
+  color: hsl(0 0% 100%);
+}
+
+[part~="avatar-skipped"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1.5px dashed var(--snice-color-border);
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="avatar-current"] {
+  border-color: var(--snice-color-primary);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+/* Connectors */
+[part~="connector"] {
+  background: var(--snice-color-border-subtle);
+}
+
+[part~="connector-approved"] {
+  background: var(--snice-color-success);
+}
+
+/* Typography */
+[part~="name"] {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--snice-color-text);
+}
+
+[part~="name-current"] {
+  color: var(--snice-color-primary);
+}
+
+[part~="name-skipped"] {
+  color: var(--snice-color-text-tertiary);
+  text-decoration: line-through;
+}
+
+[part~="role"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="comment"] {
+  font-style: normal;
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="timestamp"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Capsule status pills */
+[part~="status"] {
+  width: fit-content;
+  border-radius: 9999px;
+  padding: 0.125rem 0.5625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+[part~="status-pending"] {
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="status-approved"] {
+  background: color-mix(in srgb, var(--snice-color-success) 16%, transparent);
+  color: var(--snice-color-success);
+}
+
+[part~="status-rejected"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 16%, transparent);
+  color: var(--snice-color-danger);
+}
+
+[part~="status-skipped"] {
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Capsule inline action pills */
+[part~="button"] {
+  min-height: 2.125rem;
+  padding: 0 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: transform var(--snice-transition-fast) var(--snice-ease-spring),
+              filter var(--snice-transition-fast) var(--snice-ease-out);
+}
+
+[part~="button"]:hover {
+  opacity: 1;
+  filter: brightness(1.06);
+}
+
+[part~="button"]:active {
+  transform: scale(0.94);
+}
+
+[part~="button"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+[part~="button-approve"] {
+  background: var(--snice-color-success);
+  color: hsl(0 0% 100%);
+}
+
+[part~="button-reject"] {
+  background: var(--snice-color-danger);
+  color: hsl(0 0% 100%);
+}
+
+/* 10px recessed iOS comment input */
+[part~="input"] {
+  min-height: 2.125rem;
+  padding: 0 0.75rem;
+  border-radius: 10px;
+  background: var(--snice-color-surface-container-low);
+  border: 0.5px solid var(--snice-color-border);
+  font-size: 0.8125rem;
+  color: var(--snice-color-text);
+  transition: border-color var(--snice-transition-fast) var(--snice-ease-out),
+              box-shadow var(--snice-transition-fast) var(--snice-ease-out);
+}
+
+[part~="input"]:focus-visible {
+  outline: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}

@@ -1,0 +1,168 @@
+/* Android Material 3 Expressive — snice-approval-flow
+ * Multi-step sign-off flow: 40dp step avatars (primary-container on current),
+ * 8px tonal status chips, pill Approve/Reject buttons with 8px press morph,
+ * 4px outlined comment field, and dark-mode-safe --snice-color-text-inverse ink.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+/* 40dp M3 avatars */
+[part~="avatar"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+[part~="avatar-pending"] {
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="avatar-approved"] {
+  background: var(--snice-color-success);
+  border: 2px solid var(--snice-color-success);
+  color: var(--snice-color-text-inverse);
+}
+
+[part~="avatar-rejected"] {
+  background: var(--snice-color-danger);
+  border: 2px solid var(--snice-color-danger);
+  color: var(--snice-color-text-inverse);
+}
+
+[part~="avatar-skipped"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1.5px dashed var(--snice-color-border);
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="avatar-current"] {
+  background: var(--snice-m3-primary-container);
+  border: 2px solid var(--snice-color-primary);
+  color: var(--snice-m3-on-primary-container);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+/* Connectors */
+[part~="connector"] {
+  background: var(--snice-color-border-subtle);
+}
+
+[part~="connector-approved"] {
+  background: var(--snice-color-success);
+}
+
+/* Typography */
+[part~="name"] {
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+[part~="name-current"] {
+  color: var(--snice-color-primary);
+}
+
+[part~="name-skipped"] {
+  color: var(--snice-color-text-tertiary);
+  text-decoration: line-through;
+}
+
+[part~="role"] {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="comment"] {
+  font-style: normal;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="timestamp"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+/* 8px M3 tonal status chips */
+[part~="status"] {
+  width: fit-content;
+  border-radius: 8px;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+[part~="status-pending"] {
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="status-approved"] {
+  background: color-mix(in srgb, var(--snice-color-success) 16%, transparent);
+  color: var(--snice-color-success);
+}
+
+[part~="status-rejected"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 16%, transparent);
+  color: var(--snice-color-danger);
+}
+
+[part~="status-skipped"] {
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Pill M3 buttons with expressive 8px press morph */
+[part~="button"] {
+  min-height: 2.25rem;
+  padding: 0 1rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: border-radius 180ms var(--snice-m3-spring-spatial-fast),
+              box-shadow 150ms var(--snice-m3-spring-effects);
+}
+
+[part~="button"]:hover {
+  opacity: 1;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="button"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed);
+}
+
+[part~="button"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+[part~="button-approve"] {
+  background: var(--snice-color-success);
+  color: var(--snice-color-text-inverse);
+}
+
+[part~="button-reject"] {
+  background: var(--snice-color-danger);
+  color: var(--snice-color-text-inverse);
+}
+
+/* 4px M3 Outlined text field */
+[part~="input"] {
+  min-height: 2.25rem;
+  padding: 0 0.75rem;
+  border-radius: 4px;
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border);
+  font-size: 0.8125rem;
+  color: var(--snice-color-text);
+  transition: border-color 150ms var(--snice-m3-spring-effects),
+              box-shadow 150ms var(--snice-m3-spring-effects);
+}
+
+[part~="input"]:focus-visible {
+  outline: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: inset 0 0 0 1px var(--snice-color-primary);
+}

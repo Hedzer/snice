@@ -1859,6 +1859,9 @@
               "name": "avatar"
             },
             {
+              "name": "avatar-current"
+            },
+            {
               "name": "avatar-image"
             },
             {
@@ -1890,6 +1893,12 @@
             },
             {
               "name": "name"
+            },
+            {
+              "name": "name-current"
+            },
+            {
+              "name": "name-skipped"
             },
             {
               "name": "role"
@@ -9482,6 +9491,15 @@
             },
             {
               "name": "message-text-base"
+            },
+            {
+              "name": "message-text-other"
+            },
+            {
+              "name": "message-text-own"
+            },
+            {
+              "name": "message-text-system"
             },
             {
               "name": "messages"

@@ -1,0 +1,207 @@
+/* macOS 26+ Tahoe / AppKit — snice-approval-flow
+ * Compact desktop Xcode Cloud / AppKit review stepper.
+ * 32px circular avatars with lockstep-realigned 1.5px connectors, 13px SF Pro names,
+ * 24px 6px-radius top-lit Approve/Reject push buttons with explicit white dark-mode ink.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Compact 32px desktop avatars */
+[part~="avatar"] {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+[part~="avatar-pending"] {
+  background: var(--snice-macos-control-bg);
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text-secondary);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="avatar-approved"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-success) 88%, white),
+    var(--snice-color-success)
+  );
+  border: 1px solid transparent;
+  color: hsl(0 0% 100%);
+}
+
+[part~="avatar-rejected"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-danger) 88%, white),
+    var(--snice-color-danger)
+  );
+  border: 1px solid transparent;
+  color: hsl(0 0% 100%);
+}
+
+[part~="avatar-skipped"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px dashed var(--snice-color-border);
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="avatar-current"] {
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Lockstep-realigned 1.5px connectors for 32px avatars (horizontal default + vertical override) */
+:host [part~="connector"] {
+  top: 1rem;
+  left: calc(50% + 1rem);
+  right: calc(-50% + 1rem);
+  bottom: auto;
+  width: auto;
+  height: 1.5px;
+  background: var(--snice-color-border);
+}
+
+:host([orientation="vertical"]) [part~="connector"] {
+  top: 2rem;
+  left: 0.96875rem;
+  right: auto;
+  bottom: 0;
+  width: 1.5px;
+  height: auto;
+}
+
+[part~="connector-approved"] {
+  background: var(--snice-color-success);
+}
+
+/* Compact 13px / 11px SF Pro typography */
+[part~="name"] {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--snice-color-text);
+}
+
+[part~="name-current"] {
+  color: var(--snice-color-primary);
+}
+
+[part~="name-skipped"] {
+  color: var(--snice-color-text-tertiary);
+  text-decoration: line-through;
+}
+
+[part~="role"],
+[part~="timestamp"] {
+  font-size: 0.6875rem;
+}
+
+[part~="role"] {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="comment"] {
+  font-size: 0.6875rem;
+  font-style: normal;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="timestamp"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Compact 5px AppKit status badges */
+[part~="status"] {
+  width: fit-content;
+  border-radius: 5px;
+  padding: 0.0625rem 0.4375rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+[part~="status-pending"] {
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="status-approved"] {
+  background: color-mix(in srgb, var(--snice-color-success) 16%, transparent);
+  color: var(--snice-color-success);
+}
+
+[part~="status-rejected"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 16%, transparent);
+  color: var(--snice-color-danger);
+}
+
+[part~="status-skipped"] {
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Compact 24px 6px-radius top-lit AppKit push buttons */
+[part~="button"] {
+  min-height: 1.5rem;
+  padding: 0 0.625rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  box-shadow: 0 0.5px 1px hsl(0 0% 0% / 0.18), inset 0 0.5px 0 hsl(0 0% 100% / 0.22);
+  transition: filter 140ms var(--snice-ease-out);
+}
+
+[part~="button"]:hover {
+  opacity: 1;
+  filter: brightness(1.06);
+}
+
+[part~="button"]:active {
+  filter: brightness(0.92);
+}
+
+[part~="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+[part~="button-approve"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-success) 88%, white),
+    var(--snice-color-success)
+  );
+  color: hsl(0 0% 100%);
+}
+
+[part~="button-reject"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-danger) 88%, white),
+    var(--snice-color-danger)
+  );
+  color: hsl(0 0% 100%);
+}
+
+/* Recessed 6px AppKit text field */
+[part~="input"] {
+  min-height: 1.5rem;
+  padding: 0 0.4375rem;
+  border-radius: 6px;
+  background: var(--snice-macos-control-bg);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.08);
+  font-size: 0.75rem;
+  color: var(--snice-color-text);
+}
+
+[part~="input"]:focus-visible {
+  outline: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-macos-focus-halo);
+}

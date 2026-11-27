@@ -92,6 +92,7 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
 
   private renderStep(step: ApprovalStep) {
     const isCurrent = step.id === this.currentStep;
+    const isSkipped = step.status === 'skipped';
     const showActions = isCurrent && step.status === 'pending';
     const stepClasses = [
       'step',
@@ -101,7 +102,7 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
 
     return html/*html*/`
       <div class="${stepClasses}" part="step step-${step.status}${isCurrent ? ' step-current' : ''}" role="listitem">
-        <div class="step__avatar" part="avatar">
+        <div class="step__avatar" part="avatar avatar-${step.status}${isCurrent ? ' avatar-current' : ''}">
           <if ${step.avatar}>
             <img part="avatar-image" src="${step.avatar}" alt="${step.approver}" />
           </if>
@@ -111,11 +112,11 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
         </div>
 
         <div class="step__content" part="content">
-          <div class="step__name" part="name">${step.approver}</div>
+          <div class="step__name" part="name${isCurrent ? ' name-current' : ''}${isSkipped ? ' name-skipped' : ''}">${step.approver}</div>
           <if ${step.role}>
             <div class="step__role" part="role">${step.role}</div>
           </if>
-          <div class="step__status" part="status">
+          <div class="step__status" part="status status-${step.status}">
             <span class="step__status-icon" part="status-icon" aria-hidden="true">${unsafeHTML(this.getStatusIcon(step.status))}</span>
             <span part="status-label">${this.getStatusLabel(step.status)}</span>
           </div>
@@ -141,7 +142,7 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
           </if>
         </div>
 
-        <div class="step__connector" part="connector"></div>
+        <div class="step__connector" part="connector connector-${step.status}"></div>
       </div>
     `;
   }
