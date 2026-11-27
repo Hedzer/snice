@@ -1,0 +1,36 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-header */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+:host [part~="cell"] {
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-secondary);
+  border-right: 1px solid color-mix(in srgb, var(--snice-color-border-subtle) 65%, transparent);
+  min-height: 2.25rem;
+  padding: 0.4375rem 0.75rem;
+}
+
+:host [part~="cell"][part~="cell-sortable"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="cell"][part~="cell-sortable"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="filter-button"] {
+  border-radius: 4px;
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  background: var(--snice-win-control-bg);
+}

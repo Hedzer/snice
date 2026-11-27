@@ -1,0 +1,25 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-cell-actions */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="action-button"] {
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="action-button"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="action-button"]:active {
+  transform: none;
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="action-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}

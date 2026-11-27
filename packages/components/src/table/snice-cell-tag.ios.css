@@ -1,0 +1,12 @@
+/* iOS 26+ Liquid Glass — snice-cell-tag */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="tag"] {
+  border-radius: 9999px;
+  padding: 0.1875rem 0.5625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: -0.004em;
+}

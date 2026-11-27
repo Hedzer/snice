@@ -1,0 +1,22 @@
+/* iOS 26+ Liquid Glass — snice-cell-actions */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="action-button"] {
+  border-radius: 9999px;
+  padding: 0.3125rem 0.625rem;
+  font-weight: 500;
+  transition:
+    background-color 140ms ease,
+    transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring);
+}
+
+:host [part~="action-button"]:active {
+  transform: scale(0.95);
+}
+
+:host [part~="action-button"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}

@@ -1,0 +1,11 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-cell-tag */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="tag"] {
+  border-radius: 4px;
+  padding: 0.125rem 0.4375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}

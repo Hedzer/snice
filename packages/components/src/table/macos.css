@@ -1,34 +1,144 @@
-/* macOS 26+ Liquid Glass / AppKit — snice-table (NSTableView compact density, zero cell blur) */
-[part~="frame"],
-[part~="container"] {
+/* macOS 26+ Tahoe AppKit — snice-table
+   Native counterpart: AppKit NSTableView (compact desktop density, alternating --snice-macos-table-stripe, zero cell blur). */
+
+:host {
+  font-family: var(--snice-font-family);
+  --snice-table-body-bg: var(--snice-color-background-element);
+  --snice-table-row-border: 0.5px solid var(--snice-color-border-subtle);
+  --snice-table-cell-border: 0.5px solid color-mix(in srgb, var(--snice-color-border-subtle) 70%, transparent);
+  --snice-table-cell-padding: 0.3125rem 0.625rem;
+  --snice-table-stripe-bg: var(--snice-macos-table-stripe);
+  --snice-table-group-header-bg: var(--snice-color-surface-container-low);
+  --snice-table-group-count-bg: var(--snice-color-surface-container);
+  --snice-table-aggregate-bg: var(--snice-color-surface-container-low);
+}
+
+:host([list]) {
+  --snice-table-cell-border: none;
+}
+
+:host([density="compact"]) {
+  --snice-table-cell-padding: 0.1875rem 0.5rem;
+}
+
+:host([density="comfortable"]) {
+  --snice-table-cell-padding: 0.5rem 0.75rem;
+}
+
+:host [part~="frame"] {
   border-radius: 10px;
   background: var(--snice-color-background-element);
   border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-xs);
   overflow: hidden;
 }
 
-[part~="toolbar"] {
-  background: var(--snice-color-surface-container);
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
-  padding: 0.375rem 0.625rem;
+:host [part~="controls"] {
+  gap: 0.5rem;
+  margin-bottom: 0.375rem;
 }
 
-[part~="header-cell"] {
+:host [part~="superheader"] {
+  background: var(--snice-color-surface-container-low);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="header-cell"] {
   background: var(--snice-color-surface-container-low);
   color: var(--snice-color-text-secondary);
+  font-family: var(--snice-font-family);
   font-size: 0.6875rem;
   font-weight: 600;
-  padding: 0.3125rem 0.625rem;
+  letter-spacing: -0.005em;
   border-bottom: 0.5px solid var(--snice-color-border);
 }
 
-[part~="cell"] {
-  font-size: 0.8125rem;
-  padding: 0.3125rem 0.625rem;
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+:host [part~="header-cell"]:hover {
+  background: var(--snice-color-surface-container);
 }
 
-[part~="pagination-button"] {
-  min-height: 1.5rem;
+:host [part~="cell"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  letter-spacing: -0.005em;
+  color: var(--snice-color-text);
+}
+
+:host [part~="sort-indicator-active"] {
+  color: var(--snice-color-primary);
+}
+
+/* Explicit white ink on saturated AppKit blue (never --snice-color-text-inverse in dark mode!) */
+:host [part~="sort-order"] {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="group-header-cell"] {
+  background: var(--snice-color-surface-container-low);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+:host [part~="group-header-count"] {
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.6875rem;
+}
+
+:host [part~="pagination"] {
+  background: var(--snice-color-surface-container-low);
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+  padding: 0.4375rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+:host [part~="pagination-button"] {
+  min-width: 1.5rem;
+  height: 1.5rem;
   border-radius: 5px;
+  background: var(--snice-macos-control-bg);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-macos-control-shadow);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+:host [part~="pagination-button"]:hover {
+  background: var(--snice-color-surface-container);
+}
+
+:host [part~="pagination-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="pagination-button"][part~="pagination-button-active"],
+:host [part~="pagination-button"][part~="pagination-button-active"]:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-primary)), var(--snice-color-primary));
+  border-color: color-mix(in srgb, black 12%, var(--snice-color-primary));
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="pagination-button"]:disabled,
+:host [part~="pagination-button"]:disabled:hover {
+  opacity: 0.4;
+  background: var(--snice-macos-control-bg);
+  box-shadow: none;
+}
+
+@media (forced-colors: active) {
+  :host [part~="frame"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="pagination-button"][part~="pagination-button-active"],
+  :host [part~="sort-order"] {
+    background: Highlight;
+    color: HighlightText;
+  }
 }

@@ -1,0 +1,11 @@
+/* macOS 26+ Tahoe AppKit — snice-cell-image (dark-mode-safe placeholder & 5px thumbnails) */
+:host [part~="image"] {
+  background-color: var(--snice-color-surface-container);
+  border-radius: 5px;
+}
+
+:host [part~="placeholder"] {
+  background: var(--snice-color-surface-container);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 5px;
+}

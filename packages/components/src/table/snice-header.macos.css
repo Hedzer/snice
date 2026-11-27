@@ -1,0 +1,36 @@
+/* macOS 26+ Tahoe AppKit — snice-header (compact NSTableHeaderView) */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border-bottom: 0.5px solid var(--snice-color-border);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+:host [part~="cell"] {
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text-secondary);
+  border-right: 0.5px solid color-mix(in srgb, var(--snice-color-border-subtle) 70%, transparent);
+  min-height: 1.875rem;
+  padding: 0.3125rem 0.625rem;
+}
+
+:host [part~="cell"][part~="cell-sortable"]:hover {
+  background: var(--snice-color-surface-container);
+}
+
+:host [part~="cell"][part~="cell-sortable"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="filter-button"] {
+  border-radius: 5px;
+  border: 0.5px solid var(--snice-color-border);
+  background: var(--snice-macos-control-bg);
+}

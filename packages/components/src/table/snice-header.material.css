@@ -1,0 +1,30 @@
+/* Android Material 3 Expressive — snice-header */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+:host [part~="cell"] {
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-secondary);
+  border-right: none;
+  min-height: 3rem;
+}
+
+:host [part~="cell"][part~="cell-sortable"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container));
+}
+
+:host [part~="filter-button"] {
+  border-radius: 9999px;
+  border: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-low);
+}

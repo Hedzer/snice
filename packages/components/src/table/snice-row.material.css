@@ -1,0 +1,22 @@
+/* Android Material 3 Expressive — snice-row */
+:host {
+  font-family: var(--snice-font-family);
+  min-height: 3.25rem;
+}
+
+:host [part~="base"] {
+  min-height: 3.25rem;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text);
+  transition: background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects);
+}
+
+:host [part~="base"]:hover {
+  background-color: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+:host [part~="cell"] {
+  border-right: none;
+  min-height: 3.25rem;
+  font-size: 0.875rem;
+}

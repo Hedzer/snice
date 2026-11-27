@@ -1,0 +1,14 @@
+/* Android Material 3 Expressive — snice-cell-status */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="dot"] {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+:host [part~="status"] {
+  font-size: 0.875rem;
+  font-weight: 500;
+}

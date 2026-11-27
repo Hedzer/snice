@@ -1,0 +1,14 @@
+/* macOS 26+ Tahoe AppKit — snice-cell-status */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="dot"] {
+  width: 0.4375rem;
+  height: 0.4375rem;
+}
+
+:host [part~="status"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}

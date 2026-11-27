@@ -1,6 +1,27 @@
-/* iOS 26+ Liquid Glass — snice-table (Grouped Inset Table View — zero blur on cells) */
-[part~="frame"],
-[part~="container"] {
+/* iOS 26+ Liquid Glass — snice-table
+   Native counterpart: iOS / iPadOS 26 Inset Grouped Data Table (zero blur on cells/rows/frame). */
+
+:host {
+  font-family: var(--snice-font-family);
+  --snice-table-body-bg: var(--snice-color-surface-container-high);
+  --snice-table-row-border: 0.5px solid var(--snice-color-border-subtle);
+  --snice-table-cell-border: none;
+  --snice-table-cell-padding: 0.75rem 1rem;
+  --snice-table-stripe-bg: color-mix(in srgb, var(--snice-color-text) 2.2%, transparent);
+  --snice-table-group-header-bg: var(--snice-color-surface-container-low);
+  --snice-table-group-count-bg: var(--snice-color-surface-container);
+  --snice-table-aggregate-bg: var(--snice-color-surface-container-low);
+}
+
+:host([density="compact"]) {
+  --snice-table-cell-padding: 0.4375rem 0.75rem;
+}
+
+:host([density="comfortable"]) {
+  --snice-table-cell-padding: 0.9375rem 1.125rem;
+}
+
+:host [part~="frame"] {
   border-radius: 20px;
   background: var(--snice-color-surface-container-high);
   border: 0.5px solid var(--snice-color-border-subtle);
@@ -8,17 +29,25 @@
   overflow: hidden;
 }
 
-[part~="toolbar"] {
-  background: var(--snice-ios-glass-regular-bg);
-  backdrop-filter: var(--snice-ios-glass-blur);
-  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
-  padding: 0.75rem 1rem;
+:host([list]) [part~="frame"] {
+  border-radius: 16px;
+  border: 0.5px solid var(--snice-color-border-subtle);
 }
 
-[part~="header-cell"] {
+:host [part~="controls"] {
+  gap: 0.625rem;
+  margin-bottom: 0.5rem;
+}
+
+:host [part~="superheader"] {
+  background: var(--snice-color-surface-container-low);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="header-cell"] {
   background: var(--snice-color-surface-container-low);
   color: var(--snice-color-text-secondary);
+  font-family: var(--snice-font-family);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -26,12 +55,105 @@
   border-bottom: 0.5px solid var(--snice-color-border);
 }
 
-[part~="cell"] {
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+:host [part~="header-cell"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 4%, var(--snice-color-surface-container-low));
+}
+
+:host [part~="cell"] {
+  font-family: var(--snice-font-family);
   font-size: 0.9375rem;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text);
+}
+
+:host [part~="sort-indicator-active"] {
+  color: var(--snice-color-primary);
+}
+
+/* Explicit white ink on saturated iOS blue (never --snice-color-text-inverse in dark mode!) */
+:host [part~="sort-order"] {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="group-header-cell"] {
+  background: var(--snice-color-surface-container-low);
+  font-size: 0.8125rem;
+  font-weight: 600;
   letter-spacing: -0.008em;
 }
 
-[part~="pagination-button"] {
+:host [part~="group-header-count"] {
   border-radius: 9999px;
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="group-aggregate-row"] {
+  background: var(--snice-color-surface-container-low);
+  font-weight: 600;
+}
+
+:host [part~="pagination"] {
+  background: var(--snice-color-surface-container-high);
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+  padding: 0.75rem 1rem;
+}
+
+:host [part~="pagination-button"] {
+  min-width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  border: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-variant-numeric: tabular-nums;
+  transition:
+    transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring),
+    background-color 140ms ease;
+}
+
+:host [part~="pagination-button"]:hover {
+  background: var(--snice-color-surface-container);
+}
+
+:host [part~="pagination-button"]:active {
+  transform: scale(0.95);
+}
+
+:host [part~="pagination-button"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="pagination-button"][part~="pagination-button-active"],
+:host [part~="pagination-button"][part~="pagination-button-active"]:hover {
+  background: var(--snice-color-primary);
+  border-color: transparent;
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="pagination-button"]:disabled,
+:host [part~="pagination-button"]:disabled:hover {
+  opacity: 0.35;
+  transform: none;
+  background: var(--snice-color-surface-container-low);
+}
+
+:host [part~="error-message"] {
+  color: var(--snice-color-danger);
+}
+
+@media (forced-colors: active) {
+  :host [part~="frame"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="pagination-button"][part~="pagination-button-active"],
+  :host [part~="sort-order"] {
+    background: Highlight;
+    color: HighlightText;
+  }
 }

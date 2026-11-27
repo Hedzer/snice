@@ -1,0 +1,11 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-cell-image (dark-mode-safe placeholder & 4px thumbnails) */
+:host [part~="image"] {
+  background-color: var(--snice-color-surface-container);
+  border-radius: 4px;
+}
+
+:host [part~="placeholder"] {
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 4px;
+}

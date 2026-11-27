@@ -1,0 +1,22 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-row */
+:host {
+  font-family: var(--snice-font-family);
+  min-height: 2.25rem;
+}
+
+:host [part~="base"] {
+  min-height: 2.25rem;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text);
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="base"]:hover {
+  background-color: color-mix(in srgb, var(--snice-color-text) 4.5%, transparent);
+}
+
+:host [part~="cell"] {
+  border-right: 1px solid color-mix(in srgb, var(--snice-color-border-subtle) 65%, transparent);
+  min-height: 2.25rem;
+  font-size: 0.875rem;
+}

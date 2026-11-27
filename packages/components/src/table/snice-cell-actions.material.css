@@ -1,0 +1,27 @@
+/* Android Material 3 Expressive — snice-cell-actions */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="action-button"] {
+  border-radius: 9999px;
+  padding: 0.3125rem 0.625rem;
+  font-weight: 500;
+  transition:
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects),
+    border-radius var(--snice-transition-fast, 150ms) var(--snice-m3-spring-spatial-fast);
+}
+
+:host [part~="action-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+:host [part~="action-button"]:active {
+  transform: none;
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+:host [part~="action-button"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}

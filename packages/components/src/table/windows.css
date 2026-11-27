@@ -1,34 +1,145 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-table (WinUI DataGrid, dense rows, zero cell blur) */
-[part~="frame"],
-[part~="container"] {
+/* Windows 11 Fluent 2 / WinUI 3 — snice-table
+   Native counterpart: WinUI 3 Community Toolkit DataGrid on Mica (8px frame, 36px dense rows, zero cell blur). */
+
+:host {
+  font-family: var(--snice-font-family);
+  --snice-table-body-bg: var(--snice-color-surface-container-lowest);
+  --snice-table-row-border: 1px solid var(--snice-color-border-subtle);
+  --snice-table-cell-border: 1px solid color-mix(in srgb, var(--snice-color-border-subtle) 65%, transparent);
+  --snice-table-cell-padding: 0.4375rem 0.75rem;
+  --snice-table-stripe-bg: color-mix(in srgb, var(--snice-color-text) 2.5%, transparent);
+  --snice-table-group-header-bg: var(--snice-color-surface-container-low);
+  --snice-table-group-count-bg: var(--snice-color-surface-container-high);
+  --snice-table-aggregate-bg: var(--snice-color-surface-container-low);
+}
+
+:host([list]) {
+  --snice-table-cell-border: none;
+}
+
+:host([density="compact"]) {
+  --snice-table-cell-padding: 0.25rem 0.5rem;
+}
+
+:host([density="comfortable"]) {
+  --snice-table-cell-padding: 0.6875rem 1rem;
+}
+
+:host [part~="frame"] {
   border-radius: 8px;
   background: var(--snice-color-surface-container-lowest);
   border: 1px solid var(--snice-color-border-subtle);
   overflow: hidden;
 }
 
-[part~="toolbar"] {
-  background: var(--snice-color-surface-container);
-  border-bottom: 1px solid var(--snice-color-border-subtle);
-  padding: 0.5rem 0.75rem;
+:host [part~="controls"] {
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
-[part~="header-cell"] {
+:host [part~="superheader"] {
+  background: var(--snice-color-surface-container-low);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="header-cell"] {
   background: var(--snice-color-surface-container);
   color: var(--snice-color-text-secondary);
+  font-family: var(--snice-font-family);
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--snice-color-border-subtle);
+  border-bottom: 1px solid var(--snice-color-border);
 }
 
-[part~="cell"] {
+:host [part~="header-cell"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="cell"] {
+  font-family: var(--snice-font-family);
   font-size: 0.875rem;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text);
 }
 
-[part~="pagination-button"] {
-  min-height: 1.75rem;
+:host [part~="sort-indicator-active"] {
+  color: var(--snice-color-primary);
+}
+
+/* Black ink on bright #60CDFF dark accent via --snice-win-on-accent */
+:host [part~="sort-order"] {
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent);
+}
+
+:host [part~="group-header-cell"] {
+  background: var(--snice-color-surface-container-low);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+:host [part~="group-header-count"] {
   border-radius: 4px;
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="pagination"] {
+  background: var(--snice-color-surface-container-low);
+  border-top: 1px solid var(--snice-color-border-subtle);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+:host [part~="pagination-button"] {
+  min-width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 4px;
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-variant-numeric: tabular-nums;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="pagination-button"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="pagination-button"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="pagination-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="pagination-button"][part~="pagination-button-active"],
+:host [part~="pagination-button"][part~="pagination-button-active"]:hover {
+  background: var(--snice-color-primary);
+  border-color: transparent;
+  color: var(--snice-win-on-accent);
+}
+
+:host [part~="pagination-button"]:disabled,
+:host [part~="pagination-button"]:disabled:hover {
+  opacity: 0.45;
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-color-border-subtle);
+}
+
+@media (forced-colors: active) {
+  :host [part~="frame"] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+
+  :host [part~="pagination-button"][part~="pagination-button-active"],
+  :host [part~="sort-order"] {
+    background: Highlight;
+    color: HighlightText;
+  }
 }

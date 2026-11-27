@@ -1,0 +1,11 @@
+/* iOS 26+ Liquid Glass — snice-cell-image (dark-mode-safe placeholder & concentric 8px thumbnails) */
+:host [part~="image"] {
+  background-color: var(--snice-color-surface-container);
+  border-radius: 8px;
+}
+
+:host [part~="placeholder"] {
+  background: var(--snice-color-surface-container);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 8px;
+}

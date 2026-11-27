@@ -1,0 +1,36 @@
+/* iOS 26+ Liquid Glass — snice-header (slotted table header) */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border-bottom: 0.5px solid var(--snice-color-border);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+:host [part~="cell"] {
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text-secondary);
+  border-right: none;
+  min-height: 2.5rem;
+}
+
+:host [part~="cell"][part~="cell-sortable"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 4%, var(--snice-color-surface-container-low));
+}
+
+:host [part~="cell"][part~="cell-sortable"]:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2.5px var(--snice-color-primary);
+}
+
+:host [part~="filter-button"] {
+  border-radius: 9999px;
+  border: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-high);
+}

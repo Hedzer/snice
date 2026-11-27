@@ -1,0 +1,21 @@
+/* macOS 26+ Tahoe AppKit — snice-cell-actions */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="action-button"] {
+  border-radius: 5px;
+  padding: 0.1875rem 0.4375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: background-color 120ms ease;
+}
+
+:host [part~="action-button"]:hover {
+  background: var(--snice-color-overlay-hover);
+}
+
+:host [part~="action-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}

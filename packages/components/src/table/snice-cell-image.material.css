@@ -1,0 +1,11 @@
+/* Android Material 3 Expressive — snice-cell-image (dark-mode-safe tonal placeholder & 8px thumbnails) */
+:host [part~="image"] {
+  background-color: var(--snice-color-surface-container-high);
+  border-radius: 8px;
+}
+
+:host [part~="placeholder"] {
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 8px;
+}

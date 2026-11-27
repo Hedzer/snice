@@ -1,0 +1,11 @@
+/* macOS 26+ Tahoe AppKit — snice-cell-tag */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="tag"] {
+  border-radius: 5px;
+  padding: 0.0625rem 0.4375rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+}

@@ -1,0 +1,19 @@
+/* macOS 26+ Tahoe AppKit — snice-row (compact NSTableRowView) */
+:host {
+  font-family: var(--snice-font-family);
+  min-height: 1.75rem;
+  --snice-table-stripe-bg: var(--snice-macos-table-stripe);
+}
+
+:host [part~="base"] {
+  min-height: 1.75rem;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text);
+}
+
+:host [part~="cell"] {
+  border-right: 0.5px solid color-mix(in srgb, var(--snice-color-border-subtle) 70%, transparent);
+  min-height: 1.75rem;
+  font-size: 0.8125rem;
+  letter-spacing: -0.005em;
+}
