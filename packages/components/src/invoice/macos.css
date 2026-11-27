@@ -1,0 +1,156 @@
+/* macOS 26+ Tahoe / AppKit — snice-invoice
+ * Compact desktop Apple Business / Numbers invoice sheet.
+ * 12px opaque AppKit sheet, 0.5px hairlines, 13px SF Pro body / 11px labels,
+ * 6px status tags, --snice-macos-table-stripe detailed rows, explicit white modern header ink.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --invoice-bg: var(--snice-color-background-element);
+  --invoice-bg-element: var(--snice-color-surface-container-low);
+  --invoice-border: var(--snice-color-border-subtle);
+  --invoice-border-color: var(--snice-color-border);
+  --invoice-border-width: 0.5px;
+  --invoice-border-radius: 12px;
+  --invoice-shadow: var(--snice-shadow-sm);
+  --invoice-body-font-size: 0.8125rem;
+  --invoice-label-font-size: 0.6875rem;
+  --invoice-title-font-size: 1.25rem;
+  --invoice-table-stripe-bg: var(--snice-macos-table-stripe);
+  --invoice-text: var(--snice-color-text);
+  --invoice-text-secondary: var(--snice-color-text-secondary);
+  --invoice-text-tertiary: var(--snice-color-text-tertiary);
+  --invoice-accent: var(--snice-color-primary);
+  --invoice-success: var(--snice-color-success);
+  --invoice-danger: var(--snice-color-danger);
+  --invoice-status-draft-bg: var(--snice-color-surface-container);
+  --invoice-status-draft-text: var(--snice-color-text-secondary);
+  --invoice-status-sent-bg: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+  --invoice-status-sent-text: var(--snice-color-primary);
+  --invoice-status-paid-bg: color-mix(in srgb, var(--snice-color-success) 15%, transparent);
+  --invoice-status-paid-text: var(--snice-color-success);
+  --invoice-status-overdue-bg: color-mix(in srgb, var(--snice-color-danger) 15%, transparent);
+  --invoice-status-overdue-text: var(--snice-color-danger);
+  --invoice-status-cancelled-bg: var(--snice-color-surface-container-low);
+  --invoice-status-cancelled-text: var(--snice-color-text-tertiary);
+  -webkit-font-smoothing: antialiased;
+}
+
+:host([variant="classic"]) {
+  --invoice-border-width: 2px;
+  --invoice-border-radius: 0;
+  --invoice-shadow: none;
+}
+
+:host([variant="minimal"]) {
+  --invoice-border-width: 0;
+  --invoice-shadow: none;
+}
+
+:host([variant="modern"]) {
+  --invoice-border-width: 0;
+  --invoice-header-text: hsl(0 0% 100%);
+  --invoice-shadow: var(--snice-shadow-md);
+}
+
+[part~="title"] {
+  letter-spacing: -0.015em;
+}
+
+:host([variant="paper"]) [part~="title"],
+:host([variant="ink"]) [part~="title"] {
+  letter-spacing: 0.45em;
+}
+
+[part~="meta-value"],
+[part~="table-cell-qty"],
+[part~="table-cell-price"],
+[part~="table-cell-amount"],
+[part~="summary-value"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Compact 6px AppKit status badges */
+[part~="status"] {
+  align-self: flex-start;
+  width: fit-content;
+  border-radius: 6px;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+:host([variant="classic"]) [part~="status"],
+:host([variant="ink"]) [part~="status"] {
+  border-radius: 0;
+}
+
+:host([variant="paper"]) [part~="status"] {
+  border-radius: 0.1875rem;
+}
+
+:host([variant="minimal"]) [part~="status"] {
+  border-radius: 0;
+  padding: 0;
+}
+
+/* Concentric 8px notes & QR containers */
+[part~="notes"],
+[part~="qr-container"] {
+  border-radius: 8px;
+}
+
+:host([variant="classic"]) [part~="notes"],
+:host([variant="minimal"]) [part~="notes"],
+:host([variant="paper"]) [part~="notes"],
+:host([variant="modern"]) [part~="notes"] {
+  border-radius: 0;
+}
+
+/* CRITICAL modern dark-mode contrast fix: explicit white ink on saturated macOS blue */
+:host([variant="modern"]) [part~="header"] {
+  border-radius: 12px 12px 0 0;
+  color: hsl(0 0% 100%);
+}
+
+:host([variant="modern"]) [part~="title"],
+:host([variant="modern"]) [part~="meta-value"] {
+  color: hsl(0 0% 100%);
+}
+
+:host([variant="modern"]) [part~="meta-label"] {
+  color: hsl(0 0% 100% / 0.78);
+}
+
+:host([variant="modern"]) [part~="status"] {
+  background: hsl(0 0% 100% / 0.2);
+  color: hsl(0 0% 100%);
+}
+
+:host([variant="modern"]) [part~="parties"] {
+  border-radius: 8px;
+}
+
+/* Fix ink variant masthead contrast in dark mode */
+:host([variant="ink"]) [part~="header"],
+:host([variant="ink"]) [part~="title"],
+:host([variant="ink"]) [part~="meta-value"] {
+  color: var(--snice-color-text-inverse);
+}
+
+:host([variant="ink"]) [part~="meta-label"] {
+  color: color-mix(in srgb, var(--snice-color-text-inverse) 68%, transparent);
+}
+
+:host([variant="ink"]) [part~="status"] {
+  color: var(--snice-color-text-inverse);
+  border-color: color-mix(in srgb, var(--snice-color-text-inverse) 55%, transparent);
+}
+
+@media print {
+  :host {
+    --invoice-shadow: none;
+    --invoice-border-width: 0;
+    --invoice-border-radius: 0;
+  }
+}

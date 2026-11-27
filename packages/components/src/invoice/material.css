@@ -1,0 +1,152 @@
+/* Android Material 3 Expressive — snice-invoice
+ * Google Cloud Billing / Workspace tonal invoice statement card.
+ * 16px surface-container-low sheet, 12px surface-container notes/parties, M3 status chips,
+ * dark-mode-safe --snice-m3-on-primary modern header, and editorial variant preservation.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --invoice-bg: var(--snice-color-surface-container-low);
+  --invoice-bg-element: var(--snice-color-surface-container);
+  --invoice-border: var(--snice-color-border-subtle);
+  --invoice-border-color: var(--snice-color-border-subtle);
+  --invoice-border-width: 1px;
+  --invoice-border-radius: 16px;
+  --invoice-shadow: var(--snice-shadow-xs);
+  --invoice-table-stripe-bg: var(--snice-color-surface-container);
+  --invoice-text: var(--snice-color-text);
+  --invoice-text-secondary: var(--snice-color-text-secondary);
+  --invoice-text-tertiary: var(--snice-color-text-tertiary);
+  --invoice-accent: var(--snice-color-primary);
+  --invoice-success: var(--snice-color-success);
+  --invoice-danger: var(--snice-color-danger);
+  --invoice-status-draft-bg: var(--snice-color-surface-container-high);
+  --invoice-status-draft-text: var(--snice-color-text-secondary);
+  --invoice-status-sent-bg: var(--snice-m3-primary-container);
+  --invoice-status-sent-text: var(--snice-m3-on-primary-container);
+  --invoice-status-paid-bg: color-mix(in srgb, var(--snice-color-success) 16%, transparent);
+  --invoice-status-paid-text: var(--snice-color-success);
+  --invoice-status-overdue-bg: color-mix(in srgb, var(--snice-color-danger) 16%, transparent);
+  --invoice-status-overdue-text: var(--snice-color-danger);
+  --invoice-status-cancelled-bg: var(--snice-color-surface-container);
+  --invoice-status-cancelled-text: var(--snice-color-text-tertiary);
+}
+
+:host([variant="classic"]) {
+  --invoice-border-width: 2px;
+  --invoice-border-radius: 0;
+  --invoice-shadow: none;
+}
+
+:host([variant="minimal"]) {
+  --invoice-border-width: 0;
+  --invoice-shadow: none;
+}
+
+:host([variant="modern"]) {
+  --invoice-border-width: 0;
+  --invoice-header-text: var(--snice-m3-on-primary);
+  --invoice-shadow: var(--snice-shadow-sm);
+}
+
+[part~="title"] {
+  letter-spacing: -0.015em;
+}
+
+:host([variant="paper"]) [part~="title"],
+:host([variant="ink"]) [part~="title"] {
+  letter-spacing: 0.45em;
+}
+
+[part~="meta-value"],
+[part~="table-cell-qty"],
+[part~="table-cell-price"],
+[part~="table-cell-amount"],
+[part~="summary-value"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* M3 tonal status chips */
+[part~="status"] {
+  align-self: flex-start;
+  width: fit-content;
+  border-radius: 8px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+:host([variant="classic"]) [part~="status"],
+:host([variant="ink"]) [part~="status"] {
+  border-radius: 0;
+}
+
+:host([variant="paper"]) [part~="status"] {
+  border-radius: 0.1875rem;
+}
+
+:host([variant="minimal"]) [part~="status"] {
+  border-radius: 0;
+  padding: 0;
+}
+
+/* Concentric 12px notes & QR containers */
+[part~="notes"],
+[part~="qr-container"] {
+  border-radius: 12px;
+}
+
+:host([variant="classic"]) [part~="notes"],
+:host([variant="minimal"]) [part~="notes"],
+:host([variant="paper"]) [part~="notes"],
+:host([variant="modern"]) [part~="notes"] {
+  border-radius: 0;
+}
+
+/* CRITICAL modern dark-mode T80 fix: --snice-m3-on-primary ink across header, meta, and status */
+:host([variant="modern"]) [part~="header"] {
+  border-radius: 16px 16px 0 0;
+  color: var(--snice-m3-on-primary);
+}
+
+:host([variant="modern"]) [part~="title"],
+:host([variant="modern"]) [part~="meta-value"] {
+  color: var(--snice-m3-on-primary);
+}
+
+:host([variant="modern"]) [part~="meta-label"] {
+  color: color-mix(in srgb, var(--snice-m3-on-primary) 78%, transparent);
+}
+
+:host([variant="modern"]) [part~="status"] {
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 14%, transparent);
+  color: var(--snice-m3-on-primary);
+}
+
+:host([variant="modern"]) [part~="parties"] {
+  border-radius: 12px;
+}
+
+/* Fix ink variant masthead contrast in dark mode */
+:host([variant="ink"]) [part~="header"],
+:host([variant="ink"]) [part~="title"],
+:host([variant="ink"]) [part~="meta-value"] {
+  color: var(--snice-color-text-inverse);
+}
+
+:host([variant="ink"]) [part~="meta-label"] {
+  color: color-mix(in srgb, var(--snice-color-text-inverse) 68%, transparent);
+}
+
+:host([variant="ink"]) [part~="status"] {
+  color: var(--snice-color-text-inverse);
+  border-color: color-mix(in srgb, var(--snice-color-text-inverse) 55%, transparent);
+}
+
+@media print {
+  :host {
+    --invoice-shadow: none;
+    --invoice-border-width: 0;
+    --invoice-border-radius: 0;
+  }
+}
