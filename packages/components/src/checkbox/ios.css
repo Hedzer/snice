@@ -31,11 +31,11 @@
   box-sizing: border-box;
   border-radius: 50%;
   background: var(--snice-ios-glass-clear-bg);
-  border: 1.5px solid var(--snice-color-border-hover);
+  border: 1.5px solid color-mix(in srgb, var(--snice-color-text) 28%, transparent);
   color: var(--snice-color-primary);
   outline: none;
   outline-offset: 0;
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.35);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.3);
   transition:
     background-color var(--snice-transition-fast, 180ms) ease,
     border-color var(--snice-transition-fast, 180ms) ease,
@@ -62,21 +62,21 @@
   transform: scale(0.9);
 }
 
-/* Checked & Indeterminate */
+/* Checked & Indeterminate — translucent Liquid Glass disc, zero neon glow */
 [part~="checkbox-checked"],
 [part~="checkbox-indeterminate"] {
-  background: var(--snice-color-primary);
-  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 76%, hsl(0 0% 0% / 0.3));
   color: hsl(0 0% 100%);
   box-shadow:
-    inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
-    0 2px 6px -2px color-mix(in srgb, var(--snice-color-primary) 55%, transparent);
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.38),
+    0 1px 2px hsl(0 0% 0% / 0.14);
 }
 
 :host(:hover) [part~="checkbox-checked"],
 :host(:hover) [part~="checkbox-indeterminate"] {
   background: color-mix(in srgb, var(--snice-color-primary) 92%, white);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 92%, white);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 76%, hsl(0 0% 0% / 0.3));
 }
 
 /* Invalid */
@@ -91,12 +91,12 @@
 
 [part~="checkbox-invalid"][part~="checkbox-checked"],
 [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
-  background: var(--snice-color-danger);
-  border-color: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 76%, hsl(0 0% 0% / 0.3));
   color: hsl(0 0% 100%);
   box-shadow:
-    inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
-    0 2px 6px -2px color-mix(in srgb, var(--snice-color-danger) 50%, transparent);
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.38),
+    0 1px 2px hsl(0 0% 0% / 0.14);
 }
 
 :host(:hover) [part~="checkbox-invalid"][part~="checkbox-checked"],
@@ -188,24 +188,25 @@
   font-size: 1.0625rem;
 }
 
-/* Disabled & Loading States */
+/* Disabled & Loading States — opacity: 1 with crisp muted tokens so dark & light stay visible */
 [part~="base-disabled"] {
-  opacity: 0.4;
+  opacity: 1;
+  cursor: not-allowed;
 }
 
 [part~="base-loading"] {
-  opacity: 0.75;
+  opacity: 0.85;
   cursor: wait;
 }
 
 :host([loading]:hover) [part~="checkbox"] {
-  border-color: var(--snice-color-border-hover);
+  border-color: color-mix(in srgb, var(--snice-color-text) 28%, transparent);
 }
 
 :host([loading]:hover) [part~="checkbox-checked"],
 :host([loading]:hover) [part~="checkbox-indeterminate"] {
-  background: var(--snice-color-primary);
-  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 76%, hsl(0 0% 0% / 0.3));
 }
 
 :host([loading]:hover) [part~="checkbox-invalid"] {
@@ -214,8 +215,8 @@
 
 :host([loading]:hover) [part~="checkbox-invalid"][part~="checkbox-checked"],
 :host([loading]:hover) [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
-  background: var(--snice-color-danger);
-  border-color: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 76%, hsl(0 0% 0% / 0.3));
 }
 
 :host([loading]:active) [part~="checkbox"] {
@@ -227,15 +228,15 @@
 }
 
 :host([disabled]) [part~="base-loading"] {
-  opacity: 0.4;
+  opacity: 1;
   cursor: not-allowed;
 }
 
 :host([disabled]) [part~="checkbox"],
 :host([disabled]:hover) [part~="checkbox"] {
-  background: transparent;
-  border-color: var(--snice-color-border-hover);
-  color: var(--snice-color-neutral);
+  background: color-mix(in srgb, var(--snice-color-text) 6%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 28%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 45%, transparent);
   box-shadow: none;
 }
 
@@ -243,10 +244,14 @@
 :host([disabled]:hover) [part~="checkbox-checked"],
 :host([disabled]) [part~="checkbox-indeterminate"],
 :host([disabled]:hover) [part~="checkbox-indeterminate"] {
-  background: var(--snice-color-neutral);
-  border-color: var(--snice-color-neutral);
-  color: hsl(0 0% 100%);
+  background: color-mix(in srgb, var(--snice-color-text) 34%, transparent);
+  border-color: transparent;
+  color: var(--snice-color-surface);
   box-shadow: none;
+}
+
+:host([disabled]) [part~="icon"] {
+  color: var(--snice-color-surface);
 }
 
 :host([disabled]:active) [part~="checkbox"] {
@@ -254,6 +259,7 @@
 }
 
 :host([disabled]) [part~="label"] {
+  color: color-mix(in srgb, var(--snice-color-text) 48%, transparent);
   cursor: not-allowed;
 }
 

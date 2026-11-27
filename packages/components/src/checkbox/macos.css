@@ -61,20 +61,20 @@
   border-color: color-mix(in srgb, var(--snice-color-primary) 55%, var(--snice-color-border-hover));
 }
 
-/* Checked & Indeterminate — top-lit AppKit accent gradient */
+/* Checked & Indeterminate — macOS 26 Tahoe translucent glass accent fill */
 [part~="checkbox-checked"],
 [part~="checkbox-indeterminate"] {
-  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 82%, black);
+  background: color-mix(in srgb, var(--snice-color-primary) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 74%, hsl(0 0% 0% / 0.34));
   box-shadow:
-    inset 0 0.5px 0 hsl(0 0% 100% / 0.34),
-    0 0.5px 1.5px hsl(0 0% 0% / 0.2);
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.36),
+    0 0.5px 1.5px hsl(0 0% 0% / 0.18);
   color: hsl(0 0% 100%);
 }
 
 :host(:hover) [part~="checkbox-checked"],
 :host(:hover) [part~="checkbox-indeterminate"] {
-  border-color: color-mix(in srgb, var(--snice-color-primary) 82%, black);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 74%, hsl(0 0% 0% / 0.34));
   filter: brightness(1.05);
 }
 
@@ -207,7 +207,7 @@
 }
 
 :host([disabled]) [part~="label"] {
-  color: var(--snice-color-text);
+  color: color-mix(in srgb, var(--snice-color-text) 48%, transparent);
   cursor: not-allowed;
 }
 
@@ -226,7 +226,7 @@
   outline: none;
   outline-offset: 0;
   box-shadow:
-    inset 0 0.5px 0 hsl(0 0% 100% / 0.34),
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.36),
     var(--snice-macos-focus-halo);
 }
 
@@ -239,29 +239,29 @@
 
 /* Disabled & Loading wrapper opacity */
 [part~="base-disabled"] {
-  opacity: 0.44;
+  opacity: 1;
   cursor: not-allowed;
 }
 
 [part~="base-loading"] {
-  opacity: 0.75;
+  opacity: 0.85;
   cursor: wait;
 }
 
 :host([disabled]) [part~="base-disabled"] {
-  opacity: 0.44;
+  opacity: 1;
   cursor: not-allowed;
 }
 
-/* Disabled box surfaces — muted flat unchecked & neutral gray checked/indeterminate */
+/* Disabled box surfaces — clearly visible in both light & dark modes */
 :host([disabled]) [part~="checkbox"],
 :host([disabled]:hover) [part~="checkbox"],
 :host([disabled]:active) [part~="checkbox"] {
-  background: var(--snice-color-surface-container);
-  border-color: var(--snice-color-border);
+  background: color-mix(in srgb, var(--snice-color-text) 7%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 28%, transparent);
   box-shadow: none;
   filter: none;
-  color: var(--snice-color-text-secondary);
+  color: color-mix(in srgb, var(--snice-color-text) 45%, transparent);
 }
 
 :host([disabled]) [part~="checkbox-checked"],
@@ -270,11 +270,15 @@
 :host([disabled]) [part~="checkbox-indeterminate"],
 :host([disabled]:hover) [part~="checkbox-indeterminate"],
 :host([disabled]:active) [part~="checkbox-indeterminate"] {
-  background: var(--snice-color-neutral);
-  border-color: var(--snice-color-neutral);
+  background: color-mix(in srgb, var(--snice-color-text) 36%, transparent);
+  border-color: transparent;
   box-shadow: none;
   filter: none;
-  color: hsl(0 0% 100%);
+  color: var(--snice-color-surface);
+}
+
+:host([disabled]) [part~="icon"] {
+  color: var(--snice-color-surface);
 }
 
 @media (prefers-reduced-motion: reduce) {

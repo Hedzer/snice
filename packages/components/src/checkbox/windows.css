@@ -137,6 +137,24 @@
   color: inherit;
 }
 
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  width: 0.6875rem;
+  height: 0.6875rem;
+  border-width: 1.5px;
+}
+
+:host([size="small"]) [part~="spinner"]::after {
+  width: 0.5625rem;
+  height: 0.5625rem;
+}
+
+:host([size="large"]) [part~="spinner"]::after {
+  width: 0.8125rem;
+  height: 0.8125rem;
+  border-width: 1.75px;
+}
+
 /* Label — Segoe UI Variable desktop ramp */
 [part~="label"] {
   margin-left: 0.5rem;
@@ -165,12 +183,12 @@
 
 /* Disabled & Loading wrappers */
 [part~="base-disabled"] {
-  opacity: 0.55;
+  opacity: 1;
   cursor: not-allowed;
 }
 
 [part~="base-loading"] {
-  opacity: 0.75;
+  opacity: 0.85;
   cursor: wait;
 }
 
@@ -196,14 +214,14 @@
   cursor: wait;
 }
 
-/* Disabled — transparent unchecked box, tertiary fill + surface icon checked/indeterminate */
+/* Disabled — crisp visible WinUI 3 disabled boxes in both light & dark modes */
 :host([disabled]) [part~="checkbox"],
 :host([disabled]:hover) [part~="checkbox"],
 :host([disabled]:active) [part~="checkbox"],
 :host([disabled][data-win-pressed="true"]) [part~="checkbox"] {
-  background: transparent;
-  border-color: var(--snice-color-border-hover);
-  color: var(--snice-color-text-tertiary);
+  background: color-mix(in srgb, var(--snice-color-text) 5%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 28%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
 }
 
 :host([disabled]) [part~="checkbox-checked"],
@@ -214,7 +232,7 @@
 :host([disabled]:hover) [part~="checkbox-indeterminate"],
 :host([disabled]:active) [part~="checkbox-indeterminate"],
 :host([disabled][data-win-pressed="true"]) [part~="checkbox-indeterminate"] {
-  background: var(--snice-color-text-tertiary);
+  background: color-mix(in srgb, var(--snice-color-text) 34%, transparent);
   border-color: transparent;
   color: var(--snice-color-surface);
 }
@@ -224,7 +242,7 @@
 }
 
 :host([disabled]) [part~="label"] {
-  color: var(--snice-color-text-secondary);
+  color: color-mix(in srgb, var(--snice-color-text) 48%, transparent);
   cursor: not-allowed;
 }
 
