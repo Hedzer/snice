@@ -1,0 +1,100 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-avatar (Fluent 2 Persona Avatar / PersonPicture) */
+:host {
+  font-family: var(--snice-font-family);
+  --avatar-size: 2.5rem;
+  --avatar-bg: color-mix(in srgb, var(--snice-color-primary) 16%, var(--snice-color-surface-container-highest));
+  --avatar-color: var(--snice-color-text);
+  font-size: 0.875rem;
+
+  /* 15-color Fluent 2 Persona palette — soft tint light / deep tint dark, >= 6:1 with --snice-color-text */
+  --avatar-palette-red: color-mix(in srgb, hsl(356 76% 48%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-orange: color-mix(in srgb, hsl(24 88% 48%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-yellow: color-mix(in srgb, hsl(42 92% 46%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-lime: color-mix(in srgb, hsl(88 64% 42%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-green: color-mix(in srgb, hsl(128 60% 38%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-teal: color-mix(in srgb, hsl(178 76% 38%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-cyan: color-mix(in srgb, hsl(194 84% 44%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-sky: color-mix(in srgb, hsl(204 82% 46%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-blue: color-mix(in srgb, hsl(212 86% 50%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-indigo: color-mix(in srgb, hsl(232 68% 54%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-violet: color-mix(in srgb, hsl(262 60% 54%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-purple: color-mix(in srgb, hsl(286 58% 50%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-fuchsia: color-mix(in srgb, hsl(308 62% 50%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-pink: color-mix(in srgb, hsl(334 72% 52%) 24%, var(--snice-color-surface-container-highest));
+  --avatar-palette-rose: color-mix(in srgb, hsl(348 70% 48%) 24%, var(--snice-color-surface-container-highest));
+}
+
+:host([size="xs"]) {
+  --avatar-size: 1.5rem;
+  font-size: 0.625rem;
+}
+
+:host([size="small"]) {
+  --avatar-size: 2rem;
+  font-size: 0.75rem;
+}
+
+:host([size="medium"]) {
+  --avatar-size: 2.5rem;
+  font-size: 0.875rem;
+}
+
+:host([size="large"]) {
+  --avatar-size: 3rem;
+  font-size: 1rem;
+}
+
+:host([size="xl"]) {
+  --avatar-size: 4rem;
+  font-size: 1.25rem;
+}
+
+:host([size="xxl"]) {
+  --avatar-size: 6rem;
+  font-size: 2rem;
+}
+
+[part~="base"] {
+  font-family: var(--snice-font-family);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--avatar-color);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--snice-color-border-subtle);
+}
+
+:host([shape="square"]) [part~="base"] {
+  border-radius: 0;
+}
+
+:host([shape="rounded"]) [part~="base"] {
+  border-radius: 6px;
+}
+
+:host([shape="rounded"][size="xs"]) [part~="base"],
+:host([shape="rounded"][size="small"]) [part~="base"] {
+  border-radius: 4px;
+}
+
+:host([shape="rounded"][size="xl"]) [part~="base"],
+:host([shape="rounded"][size="xxl"]) [part~="base"] {
+  border-radius: 8px;
+}
+
+[part~="fallback"] {
+  transition: opacity 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="fallback"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    box-sizing: border-box;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,102 @@
+/* Android Material 3 Expressive — snice-avatar (Material You Tonal Container Monogram & Photo Avatar) */
+:host {
+  font-family: var(--snice-font-family);
+  --avatar-size: 2.5rem;
+  --avatar-bg: var(--snice-m3-primary-container);
+  --avatar-color: var(--snice-color-text);
+  font-size: 0.875rem;
+
+  /* 15-color Material You tonal containers — soft pastel light / rich tonal dark, >= 6:1 with --snice-color-text */
+  --avatar-palette-red: color-mix(in srgb, hsl(4 76% 52%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-orange: color-mix(in srgb, hsl(26 88% 50%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-yellow: color-mix(in srgb, hsl(44 90% 48%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-lime: color-mix(in srgb, hsl(84 68% 44%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-green: color-mix(in srgb, hsl(142 62% 44%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-teal: color-mix(in srgb, hsl(174 68% 42%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-cyan: color-mix(in srgb, hsl(192 78% 46%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-sky: color-mix(in srgb, hsl(204 82% 50%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-blue: color-mix(in srgb, hsl(218 82% 54%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-indigo: color-mix(in srgb, hsl(238 72% 58%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-violet: color-mix(in srgb, hsl(264 68% 58%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-purple: color-mix(in srgb, hsl(284 62% 54%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-fuchsia: color-mix(in srgb, hsl(306 66% 54%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-pink: color-mix(in srgb, hsl(336 74% 56%) 26%, var(--snice-color-surface-container-highest));
+  --avatar-palette-rose: color-mix(in srgb, hsl(350 76% 54%) 26%, var(--snice-color-surface-container-highest));
+}
+
+:host([size="xs"]) {
+  --avatar-size: 1.5rem;
+  font-size: 0.6875rem;
+}
+
+:host([size="small"]) {
+  --avatar-size: 2rem;
+  font-size: 0.75rem;
+}
+
+:host([size="medium"]) {
+  --avatar-size: 2.5rem;
+  font-size: 0.875rem;
+}
+
+:host([size="large"]) {
+  --avatar-size: 3rem;
+  font-size: 1rem;
+}
+
+:host([size="xl"]) {
+  --avatar-size: 4rem;
+  font-size: 1.375rem;
+}
+
+:host([size="xxl"]) {
+  --avatar-size: 6rem;
+  font-size: 2.125rem;
+}
+
+[part~="base"] {
+  font-family: var(--snice-font-family);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--avatar-color);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--snice-color-border-subtle) 70%, transparent);
+}
+
+:host([shape="square"]) [part~="base"] {
+  border-radius: 0;
+}
+
+:host([shape="rounded"]) [part~="base"] {
+  border-radius: 12px;
+}
+
+:host([shape="rounded"][size="xs"]) [part~="base"] {
+  border-radius: 6px;
+}
+
+:host([shape="rounded"][size="small"]) [part~="base"] {
+  border-radius: 8px;
+}
+
+:host([shape="rounded"][size="large"]) [part~="base"] {
+  border-radius: 14px;
+}
+
+:host([shape="rounded"][size="xl"]) [part~="base"] {
+  border-radius: 16px;
+}
+
+:host([shape="rounded"][size="xxl"]) [part~="base"] {
+  border-radius: 24px;
+}
+
+[part~="fallback"] {
+  transition: opacity 200ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="fallback"] {
+    transition: none;
+  }
+}

@@ -1,0 +1,85 @@
+/* iOS 26+ Liquid Glass — snice-avatar (Apple Contacts / Messages Monogram & Photo Avatar) */
+:host {
+  font-family: var(--snice-font-family-display, var(--snice-font-family));
+  --avatar-size: 2.5rem;
+  --avatar-bg: hsl(240 5% 48%);
+  --avatar-color: hsl(0 0% 100%);
+  font-size: 0.9375rem;
+
+  /* Apple Contacts 15-color system palette — calibrated for >= 4.5:1 with pure white ink */
+  --avatar-palette-red: hsl(4 78% 46%);
+  --avatar-palette-orange: hsl(28 92% 40%);
+  --avatar-palette-yellow: hsl(40 88% 36%);
+  --avatar-palette-lime: hsl(84 68% 34%);
+  --avatar-palette-green: hsl(142 66% 35%);
+  --avatar-palette-teal: hsl(176 74% 34%);
+  --avatar-palette-cyan: hsl(192 84% 36%);
+  --avatar-palette-sky: hsl(204 88% 40%);
+  --avatar-palette-blue: hsl(211 94% 46%);
+  --avatar-palette-indigo: hsl(236 68% 52%);
+  --avatar-palette-violet: hsl(262 66% 52%);
+  --avatar-palette-purple: hsl(280 62% 48%);
+  --avatar-palette-fuchsia: hsl(306 66% 46%);
+  --avatar-palette-pink: hsl(336 78% 48%);
+  --avatar-palette-rose: hsl(350 78% 47%);
+}
+
+:host([size="xs"]) {
+  --avatar-size: 1.5rem;
+  font-size: 0.6875rem;
+}
+
+:host([size="small"]) {
+  --avatar-size: 2rem;
+  font-size: 0.8125rem;
+}
+
+:host([size="medium"]) {
+  --avatar-size: 2.5rem;
+  font-size: 0.9375rem;
+}
+
+:host([size="large"]) {
+  --avatar-size: 3rem;
+  font-size: 1.125rem;
+}
+
+:host([size="xl"]) {
+  --avatar-size: 4rem;
+  font-size: 1.5rem;
+}
+
+:host([size="xxl"]) {
+  --avatar-size: 6rem;
+  font-size: 2.25rem;
+}
+
+[part~="base"] {
+  font-family: var(--snice-font-family-display, var(--snice-font-family));
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--avatar-color);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 0.5px hsl(0 0% 0% / 0.12), inset 0 1px 0 hsl(0 0% 100% / 0.22);
+  -webkit-font-smoothing: antialiased;
+}
+
+:host([shape="square"]) [part~="base"] {
+  border-radius: 0;
+}
+
+/* Proportional Apple continuous-corner squircle across all sizes */
+:host([shape="rounded"]) [part~="base"] {
+  border-radius: 26%;
+}
+
+[part~="fallback"] {
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14) 0%, hsl(0 0% 0% / 0.08) 100%);
+  transition: opacity 200ms var(--snice-ease-out, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="fallback"] {
+    transition: none;
+  }
+}
