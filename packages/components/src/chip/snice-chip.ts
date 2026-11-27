@@ -66,11 +66,12 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
            tabindex="${this.disabled ? '-1' : '0'}"
            aria-disabled="${this.disabled}"
            aria-selected="${this.selected}"
-           part="base"
+           part="base${this.selected ? ' base-selected' : ''}${this.disabled ? ' base-disabled' : ''}"
            @click=${(e: MouseEvent) => this.handleChipClick(e)}
            @keydown=${(e: KeyboardEvent) => this.handleKeydown(e)}>
+        <span class="chip-ripple" part="ripple" data-platform-only="material" aria-hidden="true" hidden></span>
         <if ${this.avatar}>
-          <img class="chip-avatar" src="${this.avatar}" alt="">
+          <img class="chip-avatar" src="${this.avatar}" alt="" part="avatar">
         </if>
         <if ${showIcon}>
           <span class="chip-icon-slot" part="icon">
@@ -81,14 +82,15 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
             </slot>
           </span>
         </if>
-        <span class="chip-label"><slot>${this.label}</slot></span>
+        <span class="chip-label" part="label"><slot>${this.label}</slot></span>
         <if ${this.removable}>
           <button class="chip-remove"
+                  part="remove-button"
                   type="button"
                   tabindex="-1"
                   aria-label="Remove ${this.label}"
                   @click=${(e: MouseEvent) => this.handleRemoveClick(e)}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" part="remove-icon">
               <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"/>
             </svg>
           </button>

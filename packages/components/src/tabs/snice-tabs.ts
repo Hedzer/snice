@@ -54,14 +54,15 @@ export class SniceTabs extends HTMLElement {
         <div class="tabs__nav-container" part="nav-container">
           <if ${!this.noScrollControls}>
             <button class="tabs__scroll-button tabs__scroll-button--start" part="scroll-button scroll-button-start" tabindex="-1" aria-label="Scroll left">
-              <svg viewBox="0 0 24 24" width="16" height="16">
+              <svg part="icon scroll-button-icon" viewBox="0 0 24 24" width="16" height="16">
                 <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
               </svg>
             </button>
           </if>
 
           <div class="tabs__nav" part="nav" role="tablist">
-            <div class="tabs__nav-track">
+            <div class="tabs__nav-track" part="nav-track">
+              <span class="tabs__pill" part="pill" data-platform-only="ios,macos" aria-hidden="true" hidden></span>
               <slot name="nav"></slot>
               <div class="tabs__indicator" part="indicator"></div>
             </div>
@@ -69,7 +70,7 @@ export class SniceTabs extends HTMLElement {
 
           <if ${!this.noScrollControls}>
             <button class="tabs__scroll-button tabs__scroll-button--end" part="scroll-button scroll-button-end" tabindex="-1" aria-label="Scroll right">
-              <svg viewBox="0 0 24 24" width="16" height="16">
+              <svg part="icon scroll-button-icon" viewBox="0 0 24 24" width="16" height="16">
                 <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
               </svg>
             </button>
@@ -240,6 +241,9 @@ export class SniceTabs extends HTMLElement {
       tab.setAttribute('aria-controls', panelId);
       tab.setAttribute('tabindex', isSelected ? '0' : '-1');
       tab.classList.toggle('snice-tab--active', isSelected);
+      if (typeof (tab as unknown as { setActiveState?: (active: boolean) => void }).setActiveState === 'function') {
+        (tab as unknown as { setActiveState: (active: boolean) => void }).setActiveState(isSelected);
+      }
 
       const panel = this.panels![index];
       if (panel) {

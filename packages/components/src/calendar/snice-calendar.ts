@@ -214,22 +214,27 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
 
     const title = document.createElement('div');
     title.className = 'calendar__title';
+    title.setAttribute('part', 'title');
 
     const nav = document.createElement('div');
     nav.className = 'calendar__nav';
+    nav.setAttribute('part', 'nav');
 
     const todayBtn = document.createElement('button');
     todayBtn.className = 'calendar__nav-button';
+    todayBtn.setAttribute('part', 'nav-button today-button');
     todayBtn.textContent = 'Today';
     todayBtn.onclick = () => this.goToToday();
 
     const prevBtn = document.createElement('button');
     prevBtn.className = 'calendar__nav-button';
+    prevBtn.setAttribute('part', 'nav-button prev-button');
     prevBtn.textContent = '‹';
     prevBtn.onclick = () => this.previousMonth();
 
     const nextBtn = document.createElement('button');
     nextBtn.className = 'calendar__nav-button';
+    nextBtn.setAttribute('part', 'nav-button next-button');
     nextBtn.textContent = '›';
     nextBtn.onclick = () => this.nextMonth();
 
@@ -252,6 +257,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     weekdays.forEach((day, i) => {
       const weekdayEl = document.createElement('div');
       weekdayEl.className = 'calendar__weekday';
+      weekdayEl.setAttribute('part', 'weekday');
       weekdayEl.textContent = day;
       weekdayEl.style.gridRow = '1';
       weekdayEl.style.gridColumn = String(i + 1 + this.columnOffset);
@@ -267,6 +273,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     for (let i = 0; i < 42; i++) {
       const dayCell = document.createElement('div');
       dayCell.className = 'calendar__day';
+      dayCell.setAttribute('part', 'day');
       dayCell.setAttribute('role', 'gridcell');
       // Roving tabindex: only one cell is tabbable at a time. Start by
       // making the first cell tabbable; updateView re-targets the focused
@@ -278,6 +285,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
 
       const dayNumber = document.createElement('div');
       dayNumber.className = 'calendar__day-number';
+      dayNumber.setAttribute('part', 'day-number');
       dayCell.appendChild(dayNumber);
 
       this.grid.appendChild(dayCell);
@@ -374,6 +382,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     const token = this.beginPopover(bar, event.title || 'Event details');
     const loading = document.createElement('div');
     loading.className = 'calendar__popover-loading';
+    loading.setAttribute('part', 'popover-loading');
     loading.textContent = 'Loading…';
     this.popoverEl.appendChild(loading);
     this.positionPopover(bar);
@@ -435,6 +444,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
 
     for (const event of hidden) {
       const item = document.createElement('li');
+      item.setAttribute('part', 'more-list-item');
       const entry = document.createElement('button');
       entry.type = 'button';
       entry.className = 'calendar__more-item';
@@ -448,6 +458,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
 
       const title = document.createElement('span');
       title.className = 'calendar__more-title';
+      title.setAttribute('part', 'more-title');
       title.textContent = event.title;
 
       entry.append(dot, title);
@@ -655,6 +666,22 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       if (this.noDaySelect) cell.classList.add('calendar__day--static');
       if (this.cellSizing === 'stretch') cell.classList.add('calendar__day--stretch');
 
+      // Hoisted so the part list holds part names only: the docs-alignment
+      // extractor reads every string literal in this call, and an inline
+      // `this.cellSizing === 'stretch'` would read as a part named `stretch`.
+      const isStretched = this.cellSizing === 'stretch';
+
+      cell.setAttribute('part', [
+        'day',
+        i % 7 === 0 ? 'day-week-start' : '',
+        isOtherMonth ? 'day-other-month' : '',
+        isToday ? 'day-today' : '',
+        isSelected ? 'day-selected' : '',
+        isDisabled ? 'day-disabled' : '',
+        this.noDaySelect ? 'day-static' : '',
+        isStretched ? 'day-stretch' : '',
+      ].filter(Boolean).join(' '));
+
       cell.setAttribute('role', 'gridcell');
       cell.setAttribute('aria-selected', isSelected ? 'true' : 'false');
       cell.setAttribute('aria-disabled', isDisabled ? 'true' : 'false');
@@ -681,6 +708,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   private syncWeekNumberColumn(days: Date[]) {
     const show = this.showWeekNumbers;
     this.container.classList.toggle('calendar--week-numbers', show);
+    this.container.setAttribute('part', show ? 'base base-week-numbers' : 'base');
 
     if (show) {
       // Inserted in reading order — the corner cell ahead of the weekday
@@ -1040,7 +1068,13 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
           ? item.event.className.split(/\s+/).filter(Boolean)
           : [];
         bar.classList.add(...customClasses);
-        bar.setAttribute('part', ['event-bar', ...customClasses].join(' '));
+        bar.setAttribute('part', [
+          'event-bar',
+          ...customClasses,
+          continuesLeft ? 'event-bar-continues-left' : '',
+          continuesRight ? 'event-bar-continues-right' : '',
+          compact ? 'event-bar-compact' : '',
+        ].filter(Boolean).join(' '));
 
         bar.setAttribute('data-event-id', String(item.event.id));
         bar.setAttribute('data-lane', String(lane));
@@ -1057,6 +1091,10 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
           const avatar = document.createElement('snice-avatar') as any;
           avatar.className = 'calendar__event-avatar';
           avatar.setAttribute('part', 'event-avatar');
+          avatar.setAttribute(
+            'exportparts',
+            'base: event-avatar-base, image: event-avatar-image, image-error: event-avatar-image-error, fallback: event-avatar-fallback, fallback-visible: event-avatar-fallback-visible, icon: event-avatar-icon',
+          );
           // Attributes, not property assignments: the avatar's shape/size CSS
           // matches on :host([shape])/:host([size]) attribute selectors.
           avatar.setAttribute('size', 'xs');
@@ -1071,6 +1109,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
         }
         const titleEl = document.createElement('span');
         titleEl.className = 'calendar__event-title';
+        titleEl.setAttribute('part', 'event-title');
         titleEl.textContent = item.event.title;
         bar.appendChild(titleEl);
 
@@ -1389,6 +1428,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     weekdays.forEach((day, i) => {
       const weekdayEl = document.createElement('div');
       weekdayEl.className = 'calendar__weekday';
+      weekdayEl.setAttribute('part', 'weekday');
       weekdayEl.textContent = day;
       weekdayEl.style.gridRow = '1';
       weekdayEl.style.gridColumn = String(i + 1 + this.columnOffset);

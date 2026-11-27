@@ -138,6 +138,7 @@ export class SniceDoc extends HTMLElement {
   private createToolbarButton(icon: string, title: string): HTMLButtonElement {
     const btn = document.createElement('button');
     btn.className = 'toolbar-btn';
+    btn.setAttribute('part', 'button toolbar-button');
     btn.title = title;
 
     const map = ICON_MAP[this.icons];
@@ -203,6 +204,7 @@ export class SniceDoc extends HTMLElement {
       if (tool.cmd === 'divider') {
         const divider = document.createElement('div');
         divider.className = 'toolbar-divider';
+        divider.setAttribute('part', 'divider');
         toolbar.appendChild(divider);
       } else {
         const btn = this.createToolbarButton(tool.icon!, tool.title!);
@@ -248,6 +250,7 @@ export class SniceDoc extends HTMLElement {
 
     const menu = document.createElement('div');
     menu.className = 'download-menu';
+    menu.setAttribute('part', 'menu');
 
     const formats: { format: 'html' | 'markdown' | 'text'; label: string }[] = [
       { format: 'html', label: 'HTML (.html)' },
@@ -265,6 +268,7 @@ export class SniceDoc extends HTMLElement {
     formats.forEach(f => {
       const item = document.createElement('button');
       item.className = 'download-menu-item';
+      item.setAttribute('part', 'menu-item');
       item.textContent = f.label;
       item.addEventListener('click', () => {
         this.downloadAs(f.format);

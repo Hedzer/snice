@@ -107,10 +107,12 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
     ].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <button class="${classes}" type="${this.type}" ?disabled="${effectiveDisabled}" aria-busy="${this.loading}" part="base" @click="${(e: MouseEvent) => this.handleInternalClick(e)}">
+      <button class="${classes}" type="${this.type}" ?disabled="${effectiveDisabled}" aria-busy="${this.loading}" part="base${this.outline ? ' base-outline' : ''}${this.pill ? ' base-pill' : ''}${this.circle ? ' base-circle' : ''}${this.loading ? ' base-loading' : ''}${effectiveDisabled ? ' base-disabled' : ''}" @click="${(e: MouseEvent) => this.handleInternalClick(e)}">
+        <span class="button-ripple" part="ripple" data-platform-only="material" aria-hidden="true" hidden></span>
+        <span class="button-sheen" part="sheen" data-platform-only="ios,macos" aria-hidden="true" hidden></span>
         <span class="spinner" part="spinner"></span>
         <if ${showIconStart}>
-          <span class="icon-slot" part="icon">
+          <span class="icon-slot" part="icon icon-start">
             <slot name="icon">
               <if ${this.icon}>
                 ${renderIcon(this.icon, 'icon')}
@@ -122,7 +124,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
           <slot></slot>
         </span>
         <if ${showIconEnd}>
-          <span class="icon-slot" part="icon">
+          <span class="icon-slot" part="icon icon-end">
             <slot name="icon">
               <if ${this.icon}>
                 ${renderIcon(this.icon, 'icon')}

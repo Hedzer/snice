@@ -106,7 +106,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     const labelClasses = `radio-label radio-label--${this.size}${this.required ? ' radio-label--required' : ''}`;
 
     return html/*html*/`
-      <label class="${wrapperClasses}">
+      <label class="${wrapperClasses}" part="base${isBlock ? ' base-block' : ''}${this.checked ? ' base-checked' : ''}${interactionDisabled ? ' base-disabled' : ''}${this.loading ? ' base-loading' : ''}">
         <input
           type="radio"
           class="radio-input"
@@ -118,16 +118,17 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
           .tabIndex=${this.tabIndexFor(group)}
           aria-invalid="${displayedInvalid ? 'true' : 'false'}"
           aria-checked="${this.checked}"
-          part="input"
+          part="input${this.checked ? ' input-checked' : ''}"
           @click=${this.handleInternalClick}
           @input=${this.handleInternalInput}
           @change=${this.handleInternalChange}
           @blur=${this.handleInternalBlur}
         />
 
-        <span class="${radioClasses}" part="radio">
+        <span class="${radioClasses}" part="radio${this.checked ? ' radio-checked' : ''}${displayedInvalid ? ' radio-invalid' : ''}${this.loading ? ' radio-loading' : ''}${this.keyboardFocused ? ' radio-keyboard-focus' : ''}">
+          <span class="radio-ripple" part="ripple" data-platform-only="material" aria-hidden="true" hidden></span>
           <if ${!this.loading}>
-            <span class="radio-dot" part="dot"></span>
+            <span class="radio-dot" part="dot${this.checked ? ' dot-checked' : ''}"></span>
           </if>
           <if ${this.loading}>
             <span class="radio-spinner" part="spinner"></span>
@@ -137,7 +138,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
         <if ${isBlock}>
           <span class="radio-content" part="content">
             <if ${this.label}>
-              <span class="${labelClasses}" part="label">
+              <span class="${labelClasses}" part="label${this.required ? ' label-required' : ''}">
                 ${this.label}
               </span>
             </if>
@@ -151,7 +152,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
 
         <if ${!isBlock}>
           <if ${this.label}>
-            <span class="${labelClasses}" part="label">
+            <span class="${labelClasses}" part="label${this.required ? ' label-required' : ''}">
               ${this.label}
             </span>
           </if>

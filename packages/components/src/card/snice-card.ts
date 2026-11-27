@@ -43,7 +43,7 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
     const ariaPressed = this.clickable ? String(!!this.selected) : nothing;
 
     return html/*html*/`
-      <div part="base" class="card"
+      <div part="base${this.selected ? ' base-selected' : ''}${this.disabled ? ' base-disabled' : ''}${this.clickable ? ' base-clickable' : ''}" class="card"
            role="${role}"
            tabindex="${tabindex}"
            aria-pressed=${ariaPressed}

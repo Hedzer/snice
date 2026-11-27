@@ -235,6 +235,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
       group.className = this.isActive(placard)
         ? 'nav__group nav__group--active'
         : 'nav__group';
+      group.setAttribute('part', this.isActive(placard) ? 'group group-active' : 'group');
 
       // Reuse or create the parent link as the first child.
       let parentLink = group.firstElementChild as HTMLElement | null;
@@ -258,6 +259,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
         if (!submenu) {
           submenu = document.createElement('ul');
           submenu.className = 'nav__submenu';
+          submenu.setAttribute('part', 'submenu');
           group.appendChild(submenu);
         }
         const subExisting = this.indexByName(
@@ -272,6 +274,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
             li.setAttribute(NAME_KEY, child.name);
           }
           li.className = this.isActive(child) ? 'nav__item nav__item--active' : 'nav__item';
+          li.setAttribute('part', this.isActive(child) ? 'item item-active' : 'item');
           let link = li.firstElementChild as HTMLElement | null;
           if (!link || link.tagName !== 'A') {
             link = this.buildNavLink(child);
@@ -318,6 +321,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
       if (!groupEl) {
         groupEl = document.createElement('div');
         groupEl.className = 'nav__group';
+        groupEl.setAttribute('part', 'group');
         groupEl.setAttribute(GROUP_KEY, groupName);
       }
 
@@ -329,6 +333,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
         if (!label) {
           label = document.createElement('div');
           label.className = 'nav__group-label';
+          label.setAttribute('part', 'group-label');
           groupEl.insertBefore(label, groupEl.firstChild);
         }
         if (label.textContent !== groupName) label.textContent = groupName;
@@ -391,6 +396,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
       }
     }
     item.className = this.isActive(placard) ? 'nav__item nav__item--active' : 'nav__item';
+    item.setAttribute('part', this.isActive(placard) ? 'item item-active' : 'item');
     return item;
   }
 
@@ -444,6 +450,8 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
 
     const wantClass = this.isActive(placard) ? 'nav__link nav__link--active' : 'nav__link';
     if (a.className !== wantClass) a.className = wantClass;
+
+    a.setAttribute('part', this.isActive(placard) ? 'link link-active' : 'link');
 
     if (this.isActive(placard)) {
       if (a.getAttribute('aria-current') !== 'page') a.setAttribute('aria-current', 'page');
@@ -510,6 +518,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
     if (!labelSpan) {
       labelSpan = document.createElement('span');
       labelSpan.className = 'nav__label';
+      labelSpan.setAttribute('part', 'label');
       a.appendChild(labelSpan);
     }
     if (labelSpan.textContent !== placard.title) labelSpan.textContent = placard.title;

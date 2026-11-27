@@ -150,25 +150,30 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
 
     const title = document.createElement('div');
     title.className = 'availability__title';
+    title.setAttribute('part', 'title');
     title.textContent = 'Weekly Availability';
     header.appendChild(title);
 
     if (!this.readonly) {
       const presets = document.createElement('div');
       presets.className = 'availability__presets';
+      presets.setAttribute('part', 'presets');
 
       const businessBtn = document.createElement('button');
       businessBtn.className = 'availability__preset';
+      businessBtn.setAttribute('part', 'preset preset-business');
       businessBtn.textContent = 'Business Hours';
       businessBtn.onclick = () => this.applyBusinessHours();
 
       const weekdaysBtn = document.createElement('button');
       weekdaysBtn.className = 'availability__preset';
+      weekdaysBtn.setAttribute('part', 'preset preset-weekdays');
       weekdaysBtn.textContent = 'Weekdays Only';
       weekdaysBtn.onclick = () => this.applyWeekdays();
 
       const clearBtn = document.createElement('button');
       clearBtn.className = 'availability__preset';
+      clearBtn.setAttribute('part', 'preset preset-clear');
       clearBtn.textContent = 'Clear All';
       clearBtn.onclick = () => this.clear();
 
@@ -183,6 +188,7 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
     // Grid
     const gridWrapper = document.createElement('div');
     gridWrapper.className = 'availability__grid-wrapper';
+    gridWrapper.setAttribute('part', 'grid-wrapper');
 
     const grid = document.createElement('div');
     grid.className = 'availability__grid';
@@ -194,12 +200,14 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
 
     const headerRow = document.createElement('div');
     headerRow.className = 'availability__row';
+    headerRow.setAttribute('part', 'row row-header');
     headerRow.setAttribute('role', 'row');
     headerRow.setAttribute('aria-rowindex', '1');
 
     // Corner cell
     const corner = document.createElement('div');
     corner.className = 'availability__corner';
+    corner.setAttribute('part', 'corner');
     corner.setAttribute('role', 'columnheader');
     corner.setAttribute('aria-colindex', '1');
     headerRow.appendChild(corner);
@@ -209,6 +217,7 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
     dayNames.forEach((name, i) => {
       const headerEl = document.createElement('div');
       headerEl.className = 'availability__day-header';
+      headerEl.setAttribute('part', 'day-header');
       headerEl.textContent = name;
       headerEl.setAttribute('role', 'columnheader');
       headerEl.setAttribute('aria-colindex', String(i + 2));
@@ -224,6 +233,7 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
 
       const row = document.createElement('div');
       row.className = 'availability__row';
+      row.setAttribute('part', 'row');
       row.setAttribute('role', 'row');
       row.setAttribute('aria-rowindex', String(rowIndex));
 
@@ -238,6 +248,7 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
       } else {
         timeLabel.classList.add('availability__time-label--sub-hour');
       }
+      timeLabel.setAttribute('part', isHourStart ? 'time-label time-label-hour' : 'time-label time-label-sub-hour');
       row.appendChild(timeLabel);
 
       // Day cells
@@ -258,6 +269,7 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
         if (this.activeCells.has(key)) {
           cell.classList.add('availability__cell--active');
         }
+        cell.setAttribute('part', 'cell ' + (isHourStart ? 'cell-hour-start' : 'cell-sub-hour') + (this.activeCells.has(key) ? ' cell-active' : ''));
         cell.setAttribute('aria-selected', this.activeCells.has(key) ? 'true' : 'false');
         cell.setAttribute('aria-label', `${dayNames[day]} ${this.formatTimeLabel(minutes)}`);
 
@@ -283,22 +295,28 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
     // Footer
     const footer = document.createElement('div');
     footer.className = 'availability__footer';
+    footer.setAttribute('part', 'footer');
 
     const legend = document.createElement('div');
     legend.className = 'availability__legend';
+    legend.setAttribute('part', 'legend');
 
     const availItem = document.createElement('span');
     availItem.className = 'availability__legend-item';
+    availItem.setAttribute('part', 'legend-item');
     const availSwatch = document.createElement('span');
     availSwatch.className = 'availability__legend-swatch availability__legend-swatch--available';
+    availSwatch.setAttribute('part', 'legend-swatch legend-swatch-available');
     availItem.appendChild(availSwatch);
     availItem.appendChild(document.createTextNode(' Available'));
     legend.appendChild(availItem);
 
     const unavailItem = document.createElement('span');
     unavailItem.className = 'availability__legend-item';
+    unavailItem.setAttribute('part', 'legend-item');
     const unavailSwatch = document.createElement('span');
     unavailSwatch.className = 'availability__legend-swatch availability__legend-swatch--unavailable';
+    unavailSwatch.setAttribute('part', 'legend-swatch legend-swatch-unavailable');
     unavailItem.appendChild(unavailSwatch);
     unavailItem.appendChild(document.createTextNode(' Unavailable'));
     legend.appendChild(unavailItem);
@@ -307,6 +325,7 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
 
     const count = document.createElement('div');
     count.className = 'availability__count';
+    count.setAttribute('part', 'count');
     const totalHours = this.activeCells.size * this.granularity / 60;
     count.textContent = `${totalHours}h selected`;
     footer.appendChild(count);
@@ -329,6 +348,8 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
       this.activeCells.add(key);
       cell.classList.add('availability__cell--active');
     }
+
+    cell.setAttribute('part', 'cell ' + (cell.classList.contains('availability__cell--hour-start') ? 'cell-hour-start' : 'cell-sub-hour') + (this.activeCells.has(key) ? ' cell-active' : ''));
   }
 
   private handleCellMouseEnter(e: MouseEvent, key: string, cell: HTMLElement): void {
@@ -341,6 +362,8 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
       this.activeCells.delete(key);
       cell.classList.remove('availability__cell--active');
     }
+
+    cell.setAttribute('part', 'cell ' + (cell.classList.contains('availability__cell--hour-start') ? 'cell-hour-start' : 'cell-sub-hour') + (this.activeCells.has(key) ? ' cell-active' : ''));
   }
 
   private formatTimeLabel(minutes: number): string {

@@ -428,7 +428,8 @@ export default [
           return null;
         }
       },
-      // Plugin to copy theme.css and modular theme/*.css slices
+      // Plugin to copy theme.css, modular theme/*.css slices, theme/platforms/*.css,
+      // and colocated <comp>/<platform>.css component platform stylesheets
       {
         name: 'copy-theme',
         generateBundle() {
@@ -443,6 +444,34 @@ export default [
               if (file.endsWith('.css')) {
                 fs.copyFileSync(path.join(themeSrcDir, file), path.join(themeDest, file));
               }
+            }
+
+            const platformsSrcDir = path.join(themeSrcDir, 'platforms');
+            const platformsDest = path.join(themeDest, 'platforms');
+            if (fs.existsSync(platformsSrcDir)) {
+              if (!fs.existsSync(platformsDest)) {
+                fs.mkdirSync(platformsDest, { recursive: true });
+              }
+              for (const file of fs.readdirSync(platformsSrcDir)) {
+                if (file.endsWith('.css')) {
+                  fs.copyFileSync(path.join(platformsSrcDir, file), path.join(platformsDest, file));
+                }
+              }
+            }
+          }
+
+          const wip = getWipComponents();
+          const platformCssFiles = new Set(['ios.css', 'material.css', 'windows.css', 'macos.css']);
+          for (const entry of fs.readdirSync(componentSource, { withFileTypes: true })) {
+            if (!entry.isDirectory() || entry.name === 'theme' || wip.has(entry.name)) continue;
+            const compSrcDir = path.join(componentSource, entry.name);
+            for (const file of fs.readdirSync(compSrcDir)) {
+              if (!platformCssFiles.has(file)) continue;
+              const compDestDir = path.join('dist/components', entry.name);
+              if (!fs.existsSync(compDestDir)) {
+                fs.mkdirSync(compDestDir, { recursive: true });
+              }
+              fs.copyFileSync(path.join(compSrcDir, file), path.join(compDestDir, file));
             }
           }
         }

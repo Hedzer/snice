@@ -82,6 +82,7 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
 
     const content = document.createElement('div');
     content.className = 'booking__content';
+    content.setAttribute('part', 'content');
 
     if (this.variant === 'stepper') {
       if (this.currentStep === 1) {
@@ -124,9 +125,16 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
       stepEl.className = 'booking__step';
       if (step.num === this.currentStep) stepEl.classList.add('booking__step--active');
       if (step.num < this.currentStep) stepEl.classList.add('booking__step--completed');
+      stepEl.setAttribute(
+        'part',
+        step.num === this.currentStep
+          ? 'step step-active'
+          : step.num < this.currentStep ? 'step step-completed' : 'step',
+      );
 
       const numEl = document.createElement('span');
       numEl.className = 'booking__step-number';
+      numEl.setAttribute('part', 'step-number');
       numEl.textContent = step.num < this.currentStep ? '\u2713' : String(step.num);
 
       stepEl.appendChild(numEl);
@@ -145,18 +153,22 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
     // Month header
     const monthHeader = document.createElement('div');
     monthHeader.className = 'booking__month-header';
+    monthHeader.setAttribute('part', 'month-header');
 
     const prevBtn = document.createElement('button');
     prevBtn.className = 'booking__month-nav';
+    prevBtn.setAttribute('part', 'month-nav month-nav-prev');
     prevBtn.textContent = '\u2039';
     prevBtn.onclick = () => this.prevMonth();
 
     const monthTitle = document.createElement('span');
     monthTitle.className = 'booking__month-title';
+    monthTitle.setAttribute('part', 'month-title');
     monthTitle.textContent = this.displayMonth.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 
     const nextBtn = document.createElement('button');
     nextBtn.className = 'booking__month-nav';
+    nextBtn.setAttribute('part', 'month-nav month-nav-next');
     nextBtn.textContent = '\u203A';
     nextBtn.onclick = () => this.nextMonth();
 
@@ -168,9 +180,11 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
     // Weekday headers
     const weekdays = document.createElement('div');
     weekdays.className = 'booking__weekdays';
+    weekdays.setAttribute('part', 'weekdays');
     ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].forEach(d => {
       const wdEl = document.createElement('div');
       wdEl.className = 'booking__weekday';
+      wdEl.setAttribute('part', 'weekday');
       wdEl.textContent = d;
       weekdays.appendChild(wdEl);
     });
@@ -179,6 +193,7 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
     // Days grid
     const daysGrid = document.createElement('div');
     daysGrid.className = 'booking__days';
+    daysGrid.setAttribute('part', 'days');
 
     const year = this.displayMonth.getFullYear();
     const month = this.displayMonth.getMonth();
@@ -210,6 +225,14 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
       if (isSelected) btn.classList.add('booking__day--selected');
       if (isAvailable && !isOtherMonth && !isDisabled) btn.classList.add('booking__day--available');
       const isSelectable = isAvailable && !isOtherMonth && !isDisabled;
+      btn.setAttribute('part', [
+        'day',
+        isOtherMonth ? 'day-other' : '',
+        isToday ? 'day-today' : '',
+        isSelected ? 'day-selected' : '',
+        isAvailable && !isOtherMonth && !isDisabled ? 'day-available' : '',
+        isSelectable ? '' : 'day-disabled',
+      ].filter(Boolean).join(' '));
       if (!isSelectable) {
         btn.classList.add('booking__day--disabled');
         btn.disabled = true;
@@ -233,6 +256,7 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
 
     const title = document.createElement('div');
     title.className = 'booking__slots-title';
+    title.setAttribute('part', 'slots-title');
     title.textContent = this.selectedDate
       ? `Available times for ${new Date(this.selectedDate + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}`
       : 'Select a date first';
@@ -243,25 +267,31 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
     if (filteredSlots.length === 0) {
       const noSlots = document.createElement('div');
       noSlots.className = 'booking__no-slots';
+      noSlots.setAttribute('part', 'no-slots');
       noSlots.textContent = this.selectedDate ? 'No available time slots' : 'Please select a date to see available times';
       slotsContainer.appendChild(noSlots);
     } else {
       const grid = document.createElement('div');
       grid.className = 'booking__slots-grid';
+      grid.setAttribute('part', 'slots-grid');
 
       filteredSlots.forEach(slot => {
         const slotBtn = document.createElement('button');
         slotBtn.className = 'booking__slot';
-        if (this.selectedSlot && this.selectedSlot.time === slot.time && this.selectedSlot.date === slot.date) {
+        const slotSelected = !!this.selectedSlot && this.selectedSlot.time === slot.time && this.selectedSlot.date === slot.date;
+        if (slotSelected) {
           slotBtn.classList.add('booking__slot--selected');
         }
+        slotBtn.setAttribute('part', slotSelected ? 'slot slot-selected' : 'slot');
 
         const timeEl = document.createElement('div');
         timeEl.className = 'booking__slot-time';
+        timeEl.setAttribute('part', 'slot-time');
         timeEl.textContent = this.formatSlotTime(slot.time);
 
         const durationEl = document.createElement('div');
         durationEl.className = 'booking__slot-duration';
+        durationEl.setAttribute('part', 'slot-duration');
         durationEl.textContent = `${slot.duration} min`;
 
         slotBtn.appendChild(timeEl);
@@ -286,14 +316,18 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
     if (this.selectedDate && this.selectedSlot) {
       const summary = document.createElement('div');
       summary.className = 'booking__summary';
+      summary.setAttribute('part', 'summary');
 
       const dateRow = document.createElement('div');
       dateRow.className = 'booking__summary-row';
+      dateRow.setAttribute('part', 'summary-row');
       const dateLabel = document.createElement('div');
       dateLabel.className = 'booking__summary-label';
+      dateLabel.setAttribute('part', 'summary-label');
       dateLabel.textContent = 'Date';
       const dateValue = document.createElement('div');
       dateValue.className = 'booking__summary-value';
+      dateValue.setAttribute('part', 'summary-value');
       dateValue.textContent = new Date(this.selectedDate + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
       dateRow.appendChild(dateLabel);
       dateRow.appendChild(dateValue);
@@ -301,11 +335,14 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
 
       const timeRow = document.createElement('div');
       timeRow.className = 'booking__summary-row';
+      timeRow.setAttribute('part', 'summary-row');
       const timeLabel = document.createElement('div');
       timeLabel.className = 'booking__summary-label';
+      timeLabel.setAttribute('part', 'summary-label');
       timeLabel.textContent = 'Time';
       const timeValue = document.createElement('div');
       timeValue.className = 'booking__summary-value';
+      timeValue.setAttribute('part', 'summary-value');
       timeValue.textContent = `${this.formatSlotTime(this.selectedSlot.time)} (${this.selectedSlot.duration} min)`;
       timeRow.appendChild(timeLabel);
       timeRow.appendChild(timeValue);
@@ -318,15 +355,18 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
     this.fields.forEach(field => {
       const fieldEl = document.createElement('div');
       fieldEl.className = 'booking__field';
+      fieldEl.setAttribute('part', 'field');
 
       const label = document.createElement('label');
       label.className = 'booking__label';
+      label.setAttribute('part', 'label');
       label.textContent = field.label + (field.required ? ' *' : '');
       fieldEl.appendChild(label);
 
       if (field.type === 'textarea') {
         const textarea = document.createElement('textarea');
         textarea.className = 'booking__input booking__textarea';
+        textarea.setAttribute('part', 'input input-textarea');
         if (field.placeholder) textarea.placeholder = field.placeholder;
         if (field.required) textarea.required = true;
         textarea.value = this.formValues[field.name] || '';
@@ -338,6 +378,7 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
       } else {
         const input = document.createElement('input');
         input.className = 'booking__input';
+        input.setAttribute('part', 'input');
         input.type = field.type;
         if (field.placeholder) input.placeholder = field.placeholder;
         if (field.required) input.required = true;
@@ -358,9 +399,11 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
   private renderActions(): void {
     const actions = document.createElement('div');
     actions.className = 'booking__actions';
+    actions.setAttribute('part', 'actions');
 
     const backBtn = document.createElement('button');
     backBtn.className = 'booking__btn';
+    backBtn.setAttribute('part', 'button back-button');
     backBtn.textContent = this.currentStep === 1 ? 'Cancel' : 'Back';
     backBtn.onclick = () => {
       if (this.currentStep === 1) {
@@ -373,6 +416,7 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
 
     const nextBtn = document.createElement('button');
     nextBtn.className = 'booking__btn booking__btn--primary';
+    nextBtn.setAttribute('part', 'button next-button');
 
     if (this.currentStep === 3) {
       nextBtn.textContent = 'Confirm Booking';
@@ -400,20 +444,24 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
 
     const icon = document.createElement('div');
     icon.className = 'booking__confirmation-icon';
+    icon.setAttribute('part', 'confirmation-icon');
     icon.textContent = '\u2713';
 
     const titleEl = document.createElement('div');
     titleEl.className = 'booking__confirmation-title';
+    titleEl.setAttribute('part', 'confirmation-title');
     titleEl.textContent = 'Booking Confirmed';
 
     const textEl = document.createElement('div');
     textEl.className = 'booking__confirmation-text';
+    textEl.setAttribute('part', 'confirmation-text');
     if (this.selectedDate && this.selectedSlot) {
       textEl.textContent = `${new Date(this.selectedDate + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })} at ${this.formatSlotTime(this.selectedSlot.time)}`;
     }
 
     const resetBtn = document.createElement('button');
     resetBtn.className = 'booking__btn';
+    resetBtn.setAttribute('part', 'button reset-button');
     resetBtn.textContent = 'Book Another';
     resetBtn.style.marginTop = '1rem';
     resetBtn.onclick = () => this.reset();

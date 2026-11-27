@@ -190,25 +190,26 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
     const ticks = this.showTicks ? Array.from({ length: tickCount }, (_, i) => i) : [];
 
     return html/*html*/`
-      <div class="${wrapperClasses}">
+      <div class="${wrapperClasses}" part="base${this.vertical ? ' base-vertical' : ''}">
         <if ${this.label}>
-          <label class="${labelClasses}" id="${this.labelId}">
+          <label class="${labelClasses}" part="label${this.required ? ' label-required' : ''}" id="${this.labelId}">
             ${this.label}
           </label>
         </if>
 
-        <div class="${containerClasses}">
+        <div class="${containerClasses}" part="controls${this.vertical ? ' controls-vertical' : ''}">
           <div
             class="${trackClasses}"
-            part="track"
+            part="track${this.vertical ? ' track-vertical' : ''}${this.interactionDisabled ? ' track-disabled' : ''}${displayedInvalid ? ' track-invalid' : ''}${this.loading ? ' track-loading' : ''}"
             @mousedown=${this.handleTrackMouseDown}
             @touchstart=${this.handleTrackTouchStart}
           >
-            <div class="${fillClasses}" style="${fillStyle}" part="fill"></div>
+            <div class="${fillClasses}" style="${fillStyle}" part="fill${this.vertical ? ' fill-vertical' : ''}${this.isDragging ? ' fill-dragging' : ''}"></div>
+            <span class="slider-stops" part="stops" data-platform-only="material" aria-hidden="true" hidden></span>
             <div
               class="${thumbClasses}"
               style="${thumbStyle}"
-              part="thumb"
+              part="thumb${this.vertical ? ' thumb-vertical' : ''}${this.isDragging ? ' thumb-dragging' : ''}${this.loading ? ' thumb-loading' : ''}${displayedInvalid ? ' thumb-invalid' : ''}"
               tabindex="${this.interactionDisabled ? -1 : 0}"
               role="slider"
               aria-valuemin="${this.min}"
@@ -222,20 +223,22 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
               @touchstart=${this.handleThumbTouchStart}
               @keydown=${this.handleKeyDown}
             >
+              <span class="slider-lens" part="lens" data-platform-only="ios,macos" aria-hidden="true" hidden></span>
+              <span class="slider-ripple" part="ripple" data-platform-only="material" aria-hidden="true" hidden></span>
               <if ${this.loading}>
                 <span class="slider-spinner" part="spinner"></span>
               </if>
             </div>
 
             <if ${this.showTicks}>
-              <div class="${ticksClasses}">
-                ${ticks.map(() => html`<div class="tick ${this.vertical ? 'tick--vertical' : ''}"></div>`)}
+              <div class="${ticksClasses}" part="ticks${this.vertical ? ' ticks-vertical' : ''}">
+                ${ticks.map(() => html`<div class="tick ${this.vertical ? 'tick--vertical' : ''}" part="tick${this.vertical ? ' tick-vertical' : ''}"></div>`)}
               </div>
             </if>
           </div>
 
           <if ${this.showValue}>
-            <div class="slider-value">${this.formatDisplayValue(this.value)}</div>
+            <div class="slider-value" part="value">${this.formatDisplayValue(this.value)}</div>
           </if>
 
           <input

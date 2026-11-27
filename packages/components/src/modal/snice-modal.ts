@@ -3,6 +3,9 @@ import { X_MARK } from '../icons';
 import cssContent from './snice-modal.css?inline';
 import type { ModalSize, SniceModalElement } from './snice-modal.types';
 
+/** Size state token added to the panel's part list — one entry per `ModalSize`. */
+const PANEL_SIZE_PARTS = { small: ' panel-small', medium: ' panel-medium', large: ' panel-large', fullscreen: ' panel-fullscreen' } satisfies Record<ModalSize, string>;
+
 @element('snice-modal')
 export class SniceModal extends HTMLElement implements SniceModalElement {
   @property({ type: Boolean,  })
@@ -79,6 +82,7 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
 
     return html/*html*/`
       <div class="${modalClass}"
+           part="base${this.open ? ' base-open' : ''}${this.containerActive ? ' base-container' : ''}"
            role="dialog"
            aria-modal="true"
            aria-label="${ariaLabel}"
@@ -86,10 +90,11 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
            aria-hidden="${ariaHidden}"
            @click=${this.handleBackdropClick}
            @keydown=${this.handleKeydown}>
-        <div class="modal__backdrop" part="backdrop"></div>
-        <div class="${panelClass}" part="panel">
+        <div class="modal__backdrop" part="backdrop${this.open ? ' backdrop-open' : ''}"></div>
+        <div class="${panelClass}" part="panel${PANEL_SIZE_PARTS[this.size] ?? ''}${this.open ? ' panel-open' : ''}">
+          <span class="modal__grabber" part="grabber" data-platform-only="ios" aria-hidden="true" hidden></span>
           <if ${!this.noHeader}>
-            <div class="modal__header${this.hasHeaderContent || !this.noCloseButton ? '' : ' modal__header--empty'}" part="header" id="${this.headerId}">
+            <div class="modal__header${this.hasHeaderContent || !this.noCloseButton ? '' : ' modal__header--empty'}" part="header${this.hasHeaderContent || !this.noCloseButton ? '' : ' header-empty'}" id="${this.headerId}">
               <slot name="header"></slot>
               <if ${!this.noCloseButton}>
                 <button class="modal__close"
@@ -103,7 +108,7 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
             <slot></slot>
           </div>
           <if ${!this.noFooter}>
-            <div class="modal__footer${this.hasFooterContent ? '' : ' modal__footer--empty'}" part="footer">
+            <div class="modal__footer${this.hasFooterContent ? '' : ' modal__footer--empty'}" part="footer${this.hasFooterContent ? '' : ' footer-empty'}">
               <slot name="footer"></slot>
             </div>
           </if>

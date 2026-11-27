@@ -1,4 +1,4 @@
-import { element, property, query, dispatch, render, styles, html, css } from 'snice';
+import { element, property, state, query, dispatch, render, styles, html, css } from 'snice';
 import cssContent from './snice-tab.css?inline';
 import type { TabSelectDetail, TabCloseDetail, SniceTabElement } from './snice-tabs.types';
 
@@ -10,24 +10,32 @@ export class SniceTab extends HTMLElement implements SniceTabElement {
   @property({ type: Boolean,  })
   closable = false;
 
+  @state()
+  private activeState = false;
+
   @query('.tab')
   tab?: HTMLElement;
 
   @query('.tab__close')
   closeButton?: HTMLButtonElement;
 
+  setActiveState(active: boolean) {
+    this.activeState = active;
+  }
+
   @render()
   render() {
     const tabClasses = `tab${this.disabled ? ' tab--disabled' : ''}`;
 
     return html/*html*/`
-      <div class="${tabClasses}" part="base" role="tab" tabindex="0" @click="${(e: MouseEvent) => this.handleClick(e)}">
+      <div class="${tabClasses}" part="base${this.activeState ? ' base-active base-selected' : ''}${this.disabled ? ' base-disabled' : ''}" role="tab" tabindex="0" @click="${(e: MouseEvent) => this.handleClick(e)}">
+        <span class="tab__ripple" part="ripple" data-platform-only="material" aria-hidden="true" hidden></span>
         <span class="tab__label" part="label">
           <slot></slot>
         </span>
         <if ${this.closable}>
           <button class="tab__close" part="close" tabindex="-1" aria-label="Close tab">
-            <svg viewBox="0 0 24 24" width="14" height="14">
+            <svg part="icon close-icon" viewBox="0 0 24 24" width="14" height="14">
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
             </svg>
           </button>

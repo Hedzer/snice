@@ -77,12 +77,13 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     // If there's a slotted title, reference it; otherwise fall back to a
     // static label so the dialog is never announced without a name.
     return html/*html*/`
-      <div class="drawer-backdrop" part="backdrop"></div>
+      <div class="drawer-backdrop" part="backdrop${this.open ? ' backdrop-open' : ''}"></div>
 
       <div class="drawer" role="dialog" aria-modal="true"
            aria-labelledby="${this.noHeader ? '' : titleId}"
            aria-label="${this.noHeader ? 'Drawer' : ''}"
-           tabindex="-1" part="base">
+           tabindex="-1" part="base${this.open ? ' base-open' : ''}">
+        <span class="drawer-grabber" part="grabber" data-platform-only="ios,material" aria-hidden="true" hidden></span>
         <span class="focus-trap-start" tabindex="0"></span>
 
         <if ${!this.noHeader}>
@@ -91,7 +92,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
               <slot name="title"></slot>
             </h2>
             <if ${!this.persistent}>
-              <button class="drawer-close" type="button" aria-label="Close" part="close">${unsafeHTML(X_MARK)}</button>
+              <button class="drawer-close" type="button" aria-label="Close" part="button close">${unsafeHTML(X_MARK)}</button>
             </if>
           </div>
         </if>
@@ -101,7 +102,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
         </div>
 
         <if ${!this.noFooter}>
-          <div class="drawer-footer${this.hasFooterContent ? '' : ' drawer-footer--empty'}" part="footer">
+          <div class="drawer-footer${this.hasFooterContent ? '' : ' drawer-footer--empty'}" part="footer${this.hasFooterContent ? '' : ' footer-empty'}">
             <slot name="footer"></slot>
           </div>
         </if>

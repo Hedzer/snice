@@ -94,7 +94,7 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
     const labelClasses = `checkbox-label checkbox-label--${this.size}${this.required ? ' checkbox-label--required' : ''}`;
 
     return html/*html*/`
-      <label class="${wrapperClasses}">
+      <label class="${wrapperClasses}" part="base${this.checked ? ' base-checked' : ''}${this.indeterminate ? ' base-indeterminate' : ''}${interactionDisabled ? ' base-disabled' : ''}${this.loading ? ' base-loading' : ''}">
         <input
           type="checkbox"
           class="checkbox-input"
@@ -112,13 +112,14 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
           @change=${this.handleInternalChange}
         />
 
-        <span class="${checkboxClasses}" part="checkbox">
+        <span class="${checkboxClasses}" part="checkbox${this.checked ? ' checkbox-checked' : ''}${displayedInvalid ? ' checkbox-invalid' : ''}${this.indeterminate ? ' checkbox-indeterminate' : ''}${this.loading ? ' checkbox-loading' : ''}">
+          <span class="checkbox-ripple" part="ripple" data-platform-only="material" aria-hidden="true" hidden></span>
           <if ${!this.loading}>
-            <svg class="checkbox-icon checkbox-icon--check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <svg class="checkbox-icon checkbox-icon--check" part="icon icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
 
-            <svg class="checkbox-icon checkbox-icon--indeterminate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <svg class="checkbox-icon checkbox-icon--indeterminate" part="icon icon-indeterminate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
           </if>
@@ -128,7 +129,7 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
         </span>
 
         <if ${this.label}>
-          <span class="${labelClasses}" part="label">
+          <span class="${labelClasses}" part="label${this.required ? ' label-required' : ''}">
             ${this.label}
           </span>
         </if>

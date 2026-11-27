@@ -250,13 +250,13 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     const optionsName = accessibleName ? `${accessibleName} options` : 'Options';
 
     return html/*html*/`
-      <div class="select-wrapper">
-        <label class="${labelClasses}" part="label" ?hidden="${!this.label}" @click="${() => this.focus()}">
+      <div class="select-wrapper" part="base">
+        <label class="${labelClasses}" part="label${this.required ? ' label-required' : ''}" ?hidden="${!this.label}" @click="${() => this.focus()}">
           ${this.label}
         </label>
 
         <if ${this.editable}>
-          <div class="select-editable-container">
+          <div class="select-editable-container" part="controls">
             <input
               type="text"
               class="select-editable-input select-editable-input--${this.size}"
@@ -270,7 +270,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
               aria-label="${accessibleName}"
               aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
               aria-invalid="${displayedInvalid ? 'true' : 'false'}"
-              part="input"
+              part="input${this.interactionDisabled ? ' input-disabled' : ''}${this.isOpen ? ' input-open' : ''}${displayedInvalid ? ' input-invalid' : ''}"
               @input="${(e: Event) => this.handleEditableInput(e)}"
               @focus="${() => this.handleEditableFocus()}"
               @blur="${(e: FocusEvent) => this.handleEditableBlur(e)}"
@@ -279,7 +279,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
             />
             <span class="select-editable-arrow" part="arrow"
                   @mousedown="${(e: MouseEvent) => this.handleEditableArrowClick(e)}">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+              <svg part="icon arrow-icon" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
                 <path d="M6 9L1 4h10L6 9z"/>
               </svg>
             </span>
@@ -296,17 +296,17 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
             aria-label="${accessibleName}"
             aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
             aria-invalid="${displayedInvalid ? 'true' : 'false'}"
-            part="trigger"
+            part="trigger${this.interactionDisabled ? ' trigger-disabled' : ''}${this.loading ? ' trigger-loading' : ''}${this.isOpen ? ' trigger-open' : ''}${displayedInvalid ? ' trigger-invalid' : ''}"
             @keydown="${(e: KeyboardEvent) => this.handleTriggerOpen(e)}"
             @click="${(e: MouseEvent) => this.handleTriggerClick(e)}">
 
             <div class="select-value" part="value">
-              <span class="select-placeholder">${this.placeholder}</span>
+              <span class="select-placeholder" part="placeholder">${this.placeholder}</span>
             </div>
 
-            <span class="select-icons">
-              <span role="button" tabindex="${this.interactionDisabled ? -1 : 0}" class="select-clear" aria-label="Clear selection" aria-disabled="${this.interactionDisabled ? 'true' : 'false'}" style="display: none;" @click="${(e: MouseEvent) => this.handleClearClick(e)}" @keydown="${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.handleClearClick(e as unknown as MouseEvent); } }}">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
+            <span class="select-icons" part="icons">
+              <span role="button" tabindex="${this.interactionDisabled ? -1 : 0}" class="select-clear" part="clear-button" aria-label="Clear selection" aria-disabled="${this.interactionDisabled ? 'true' : 'false'}" style="display: none;" @click="${(e: MouseEvent) => this.handleClearClick(e)}" @keydown="${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.handleClearClick(e as unknown as MouseEvent); } }}">
+                <svg part="icon clear-icon" width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
                   <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"/>
                 </svg>
               </span>
@@ -314,8 +314,8 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
                 <span class="select-spinner" part="spinner"></span>
               </if>
               <if ${!this.loading}>
-                <span class="select-arrow">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                <span class="select-arrow" part="arrow">
+                  <svg part="icon arrow-icon" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
                     <path d="M6 9L1 4h10L6 9z"/>
                   </svg>
                 </span>
@@ -327,7 +327,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
         <div class="select-dropdown"
              role="listbox"
              aria-label="${optionsName}"
-             part="dropdown"
+             part="dropdown${this.isOpen ? ' dropdown-open' : ''}"
              @mousedown="${(e: MouseEvent) => this.handleDropdownMousedown(e)}"
              @click="${(e: MouseEvent) => this.handleOptionsClick(e)}">
 
@@ -376,11 +376,14 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (this.remoteSearching) {
       const indicator = document.createElement('div');
       indicator.className = 'select-loading-indicator';
+      indicator.setAttribute('part', 'loading-indicator');
 
       const spinner = document.createElement('span');
       spinner.className = 'select-loading-spinner';
+      spinner.setAttribute('part', 'spinner loading-spinner');
 
       const message = document.createElement('span');
+      message.setAttribute('part', 'loading-text');
       message.textContent = 'Searching...';
 
       indicator.append(spinner, message);
@@ -393,15 +396,18 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (options.length === 0) {
       const noOptions = document.createElement('div');
       noOptions.className = 'select-no-options';
+      noOptions.setAttribute('part', 'empty');
 
       const noMatches = document.createElement('span');
       noMatches.className = 'select-no-options-text';
+      noMatches.setAttribute('part', 'empty-text');
       noMatches.dataset.search = 'true';
       noMatches.hidden = !(this.searchable || this.editable || this.remote) || this.filteredOptions.length > 0;
       noMatches.textContent = 'No matches found';
 
       const noAvailable = document.createElement('span');
       noAvailable.className = 'select-no-options-text';
+      noAvailable.setAttribute('part', 'empty-text');
       noAvailable.dataset.search = 'false';
       noAvailable.hidden = (this.searchable || this.editable || this.remote) && this.filteredOptions.length === 0;
       noAvailable.textContent = 'No options available';
@@ -426,24 +432,33 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       option.setAttribute('role', 'option');
       option.setAttribute('aria-selected', String(isSelected));
       option.setAttribute('aria-disabled', String(Boolean(opt.disabled)));
-      option.setAttribute('part', 'option');
+      option.setAttribute('part', [
+        'option',
+        isSelected ? 'option-selected' : '',
+        opt.disabled ? 'option-disabled' : '',
+      ].filter(Boolean).join(' '));
 
       const check = document.createElement('span');
       check.className = 'select-option-check';
+      check.setAttribute('part', 'option-check');
       check.setAttribute('aria-hidden', 'true');
       check.hidden = !this.multiple;
 
       const checkMark = document.createElement('span');
       checkMark.className = 'select-option-check-mark';
+      checkMark.setAttribute('part', 'option-check-mark');
       checkMark.hidden = !isSelected;
       checkMark.textContent = '✓';
       check.append(checkMark);
 
       const label = document.createElement('span');
       label.className = 'select-option-label';
+      label.setAttribute('part', 'option-label');
       label.textContent = opt.label;
 
-      option.append(check, this.createIcon('select-option-icon', opt.icon), label);
+      const optionIcon = this.createIcon('select-option-icon', opt.icon);
+      optionIcon.setAttribute('part', 'option-icon');
+      option.append(check, optionIcon, label);
       fragment.append(option);
     });
 
@@ -1221,20 +1236,25 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (this.multiple && selectedOptions.length > 0) {
       const values = document.createElement('div');
       values.className = 'select-value--multiple';
+      values.setAttribute('part', 'tags');
 
       selectedOptions.forEach(opt => {
         const tag = document.createElement('span');
         tag.className = 'select-tag';
+        tag.setAttribute('part', 'tag');
 
         const removeButton = document.createElement('span');
         removeButton.className = 'select-tag-remove';
+        removeButton.setAttribute('part', 'tag-remove');
         removeButton.setAttribute('data-value', opt.value);
         removeButton.setAttribute('aria-label', `Remove ${opt.label}`);
         removeButton.hidden = this.interactionDisabled || this.readonly;
         removeButton.textContent = '×';
 
+        const tagIcon = this.createIcon('select-tag-icon', opt.icon);
+        tagIcon.setAttribute('part', 'tag-icon');
         tag.append(
-          this.createIcon('select-tag-icon', opt.icon),
+          tagIcon,
           document.createTextNode(opt.label),
           removeButton
         );
@@ -1246,15 +1266,20 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       const selected = selectedOptions[0];
       const value = document.createElement('div');
       value.className = 'select-value--single';
+      value.setAttribute('part', 'value-single');
 
       const label = document.createElement('span');
+      label.setAttribute('part', 'value-label');
       label.textContent = selected.label;
 
-      value.append(this.createIcon('select-value-icon', selected.icon), label);
+      const valueIcon = this.createIcon('select-value-icon', selected.icon);
+      valueIcon.setAttribute('part', 'value-icon');
+      value.append(valueIcon, label);
       this.valueDisplay.replaceChildren(value);
     } else {
       const placeholder = document.createElement('span');
       placeholder.className = 'select-placeholder';
+      placeholder.setAttribute('part', 'placeholder');
       placeholder.textContent = this.placeholder;
       this.valueDisplay.replaceChildren(placeholder);
     }

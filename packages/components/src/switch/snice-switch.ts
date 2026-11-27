@@ -135,7 +135,7 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
     const labelClasses = `switch-label switch-label--${this.size}${this.required ? ' switch-label--required' : ''}`;
 
     return html/*html*/`
-      <label class="${wrapperClasses}" for="${this.inputId}">
+      <label class="${wrapperClasses}" part="base${this.checked ? ' base-checked' : ''}${this.interactionDisabled ? ' base-disabled' : ''}${this.loading ? ' base-loading' : ''}" for="${this.inputId}">
         <input
           id="${this.inputId}"
           type="checkbox"
@@ -153,8 +153,10 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
           @change=${this.handleChange}
         />
 
-        <span class="${trackClasses}" part="track">
-          <span class="switch-thumb" part="thumb">
+        <span class="${trackClasses}" part="track${this.checked ? ' track-checked' : ''}${displayedInvalid ? ' track-invalid' : ''}${this.loading ? ' track-loading' : ''}">
+          <span class="switch-thumb" part="thumb${this.checked ? ' thumb-checked' : ''}">
+            <span class="switch-ripple" part="ripple" data-platform-only="material" aria-hidden="true" hidden></span>
+            <span class="switch-lens" part="lens" data-platform-only="ios,macos" aria-hidden="true" hidden></span>
             <if ${this.loading}>
               <span class="switch-spinner" part="spinner"></span>
             </if>
@@ -170,7 +172,7 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
         </span>
 
         <if ${this.label}>
-          <span class="${labelClasses}" part="label" id="${this.labelId}">
+          <span class="${labelClasses}" part="label${this.required ? ' label-required' : ''}" id="${this.labelId}">
             ${this.label}
           </span>
         </if>
