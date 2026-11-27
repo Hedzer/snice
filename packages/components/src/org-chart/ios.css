@@ -49,7 +49,7 @@
 }
 
 [part~="avatar-placeholder"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 14%, var(--snice-color-surface-container-low));
+  background: color-mix(in srgb, var(--snice-color-primary) 9%, var(--snice-color-surface-container-low));
   color: var(--snice-color-primary);
   font-weight: 600;
 }

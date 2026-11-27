@@ -108,7 +108,7 @@
 }
 
 :host([variant="modern"]) [part~="meta-label"] {
-  color: color-mix(in srgb, var(--snice-win-on-accent) 78%, transparent);
+  color: color-mix(in srgb, var(--snice-win-on-accent) 88%, transparent);
 }
 
 :host([variant="modern"]) [part~="status"] {

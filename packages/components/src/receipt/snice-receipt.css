@@ -687,7 +687,7 @@
   --receipt-text-tertiary: var(--snice-color-text-tertiary, rgb(148 136 116));
   --receipt-border: color-mix(in srgb, var(--snice-color-border, rgb(216 208 192)) 85%, rgb(180 150 90));
   --receipt-paper-ink: var(--snice-color-text, rgb(43 38 31));
-  --receipt-paper-accent: rgb(186 96 74);
+  --receipt-paper-accent: color-mix(in srgb, var(--snice-color-danger, rgb(166 56 36)) 72%, var(--snice-color-warning, rgb(146 64 14)));
 }
 
 :host([variant="paper"]) .receipt {

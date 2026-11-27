@@ -68,7 +68,7 @@
 }
 
 [part~="link"][part~="link-active"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 15%, transparent);
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
   color: var(--snice-color-primary);
   font-weight: 600;
 }

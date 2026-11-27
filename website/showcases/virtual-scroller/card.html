@@ -46,7 +46,7 @@ scroller.scrollToIndex(2500); // jump to any index</snice-code-block>
     customElements.whenDefined('snice-virtual-scroller').then(() => {
       const vs = document.getElementById('demo-vscroll');
       if (!vs) return;
-      const colors = ['#3b82f6','#ef4444','#10b981','#f59e0b','#8b5cf6','#06b6d4','#ec4899','#14b8a6'];
+      const colors = ['#2563eb','#dc2626','#047857','#b45309','#6d28d9','#0e7490','#be185d','#0f766e'];
       vs.items = Array.from({ length: 5000 }, (_, i) => ({
         id: i,
         data: { name: `User ${i + 1}`, email: `user${i + 1}@example.com`, color: colors[i % colors.length] }
@@ -55,7 +55,7 @@ scroller.scrollToIndex(2500); // jump to any index</snice-code-block>
         const d = item.data;
         return `<div style="display:flex;align-items:center;gap:12px;padding:10px 16px;box-sizing:border-box;width:100%">
           <div style="width:32px;height:32px;border-radius:50%;background:${d.color};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:0.8rem;flex-shrink:0">${d.name.split(' ').map(w=>w[0]).join('')}</div>
-          <div style="min-width:0"><div style="font-weight:500;font-size:0.9rem">${d.name}</div><div style="font-size:0.8rem;opacity:0.55">${d.email}</div></div>
+          <div style="min-width:0"><div style="font-weight:500;font-size:0.9rem">${d.name}</div><div style="font-size:0.8rem;color:var(--snice-color-text-secondary)">${d.email}</div></div>
         </div>`;
       };
     });

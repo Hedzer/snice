@@ -118,7 +118,7 @@
 }
 
 :host([variant="modern"]) [part~="meta-label"] {
-  color: hsl(0 0% 100% / 0.78);
+  color: hsl(0 0% 100% / 0.92);
 }
 
 :host([variant="modern"]) [part~="status"] {

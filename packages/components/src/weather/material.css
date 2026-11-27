@@ -140,7 +140,7 @@
 :host([variant="compact"]) [part~="condition"] {
   font-size: 0.875rem;
   color: var(--snice-m3-on-primary-container);
-  opacity: 0.85;
+  opacity: 0.94;
   margin-top: 0.0625rem;
 }
 

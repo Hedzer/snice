@@ -58,8 +58,8 @@
 }
 
 [part~="tag"][part~="cuisine-tag"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 13%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 28%, transparent);
+  background: color-mix(in srgb, var(--snice-color-primary) 9%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 26%, transparent);
   color: var(--snice-color-primary);
   font-weight: 600;
 }

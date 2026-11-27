@@ -803,7 +803,7 @@
   --invoice-notes-bg: transparent;
   --invoice-qr-border: 1px solid var(--invoice-paper-ink);
   --invoice-paper-ink: var(--snice-color-text, rgb(43 38 31));
-  --invoice-paper-accent: rgb(186 96 74);
+  --invoice-paper-accent: color-mix(in srgb, var(--snice-color-danger, rgb(166 56 36)) 72%, var(--snice-color-warning, rgb(146 64 14)));
 }
 
 /* Sheet: grain + inner rule completing the double frame */

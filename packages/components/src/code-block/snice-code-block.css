@@ -20,15 +20,15 @@
   --_cb-function: #61afef;
   --_cb-string: #98c379;
   --_cb-number: #d19a66;
-  --_cb-comment: #6a9955;
+  --_cb-comment: #7eb268;
   --_cb-operator: #56b6c2;
   --_cb-punctuation: #abb2bf;
-  --_cb-tag: #e06c75;
+  --_cb-tag: #f07c86;
   --_cb-attr-name: #d19a66;
   --_cb-attr-value: #98c379;
   --_cb-constant: #d19a66;
   --_cb-class: #e5c07b;
-  --_cb-builtin: #e06c75;
+  --_cb-builtin: #f07c86;
   --_cb-regex: #98c379;
 }
 
@@ -45,20 +45,20 @@
     --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(160 160 160));
     --_cb-line-number: var(--snice-color-text-tertiary, #9d9d9f);
     --_cb-highlight-bg: rgb(0 0 0 / 0.05);
-    --_cb-keyword: #a626a4;
-    --_cb-function: #4078f2;
-    --_cb-string: #50a14f;
-    --_cb-number: #986801;
-    --_cb-comment: #a0a1a7;
-    --_cb-operator: #0184bc;
+    --_cb-keyword: #9a1e98;
+    --_cb-function: #2256c8;
+    --_cb-string: #256e24;
+    --_cb-number: #7c5200;
+    --_cb-comment: #585b66;
+    --_cb-operator: #006c9c;
     --_cb-punctuation: #383a42;
-    --_cb-tag: #e45649;
-    --_cb-attr-name: #986801;
-    --_cb-attr-value: #50a14f;
-    --_cb-constant: #986801;
-    --_cb-class: #c18401;
-    --_cb-builtin: #e45649;
-    --_cb-regex: #50a14f;
+    --_cb-tag: #b92d22;
+    --_cb-attr-name: #7c5200;
+    --_cb-attr-value: #256e24;
+    --_cb-constant: #7c5200;
+    --_cb-class: #855800;
+    --_cb-builtin: #b92d22;
+    --_cb-regex: #256e24;
   }
 }
 
@@ -78,15 +78,15 @@
   --_cb-function: #61afef;
   --_cb-string: #98c379;
   --_cb-number: #d19a66;
-  --_cb-comment: #6a9955;
+  --_cb-comment: #7eb268;
   --_cb-operator: #56b6c2;
   --_cb-punctuation: #abb2bf;
-  --_cb-tag: #e06c75;
+  --_cb-tag: #f07c86;
   --_cb-attr-name: #d19a66;
   --_cb-attr-value: #98c379;
   --_cb-constant: #d19a66;
   --_cb-class: #e5c07b;
-  --_cb-builtin: #e06c75;
+  --_cb-builtin: #f07c86;
   --_cb-regex: #98c379;
 }
 
@@ -102,20 +102,20 @@
   --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(160 160 160));
   --_cb-line-number: var(--snice-color-text-tertiary, #9d9d9f);
   --_cb-highlight-bg: rgb(0 0 0 / 0.05);
-  --_cb-keyword: #a626a4;
-  --_cb-function: #4078f2;
-  --_cb-string: #50a14f;
-  --_cb-number: #986801;
-  --_cb-comment: #a0a1a7;
-  --_cb-operator: #0184bc;
+  --_cb-keyword: #9a1e98;
+  --_cb-function: #2256c8;
+  --_cb-string: #256e24;
+  --_cb-number: #7c5200;
+  --_cb-comment: #585b66;
+  --_cb-operator: #006c9c;
   --_cb-punctuation: #383a42;
-  --_cb-tag: #e45649;
-  --_cb-attr-name: #986801;
-  --_cb-attr-value: #50a14f;
-  --_cb-constant: #986801;
-  --_cb-class: #c18401;
-  --_cb-builtin: #e45649;
-  --_cb-regex: #50a14f;
+  --_cb-tag: #b92d22;
+  --_cb-attr-name: #7c5200;
+  --_cb-attr-value: #256e24;
+  --_cb-constant: #7c5200;
+  --_cb-class: #855800;
+  --_cb-builtin: #b92d22;
+  --_cb-regex: #256e24;
 }
 
 /* Forced dark via attribute */
@@ -137,15 +137,15 @@
   --_cb-function: #61afef;
   --_cb-string: #98c379;
   --_cb-number: #d19a66;
-  --_cb-comment: #6a9955;
+  --_cb-comment: #7eb268;
   --_cb-operator: #56b6c2;
   --_cb-punctuation: #abb2bf;
-  --_cb-tag: #e06c75;
+  --_cb-tag: #f07c86;
   --_cb-attr-name: #d19a66;
   --_cb-attr-value: #98c379;
   --_cb-constant: #d19a66;
   --_cb-class: #e5c07b;
-  --_cb-builtin: #e06c75;
+  --_cb-builtin: #f07c86;
   --_cb-regex: #98c379;
 }
 
@@ -162,20 +162,20 @@
   --_cb-btn-hover-border: rgb(160 160 160);
   --_cb-line-number: #9d9d9f;
   --_cb-highlight-bg: rgb(0 0 0 / 0.05);
-  --_cb-keyword: #a626a4;
-  --_cb-function: #4078f2;
-  --_cb-string: #50a14f;
-  --_cb-number: #986801;
-  --_cb-comment: #a0a1a7;
-  --_cb-operator: #0184bc;
+  --_cb-keyword: #9a1e98;
+  --_cb-function: #2256c8;
+  --_cb-string: #256e24;
+  --_cb-number: #7c5200;
+  --_cb-comment: #585b66;
+  --_cb-operator: #006c9c;
   --_cb-punctuation: #383a42;
-  --_cb-tag: #e45649;
-  --_cb-attr-name: #986801;
-  --_cb-attr-value: #50a14f;
-  --_cb-constant: #986801;
-  --_cb-class: #c18401;
-  --_cb-builtin: #e45649;
-  --_cb-regex: #50a14f;
+  --_cb-tag: #b92d22;
+  --_cb-attr-name: #7c5200;
+  --_cb-attr-value: #256e24;
+  --_cb-constant: #7c5200;
+  --_cb-class: #855800;
+  --_cb-builtin: #b92d22;
+  --_cb-regex: #256e24;
 }
 
 /* ---- Layout ---- */

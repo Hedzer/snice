@@ -42,9 +42,9 @@
   --estimate-decline-border: var(--snice-color-danger, rgb(220 38 38));
 
   /* Optional items */
-  --estimate-optional-bg: var(--snice-color-warning-alpha, rgb(245 158 11 / 0.1));
-  --estimate-optional-text: var(--snice-estimate-warning-text, rgb(217 119 6));
-  --estimate-optional-border: var(--snice-color-warning-alpha-strong, rgb(245 158 11 / 0.3));
+  --estimate-optional-bg: color-mix(in srgb, var(--snice-color-warning, rgb(180 83 9)) 11%, transparent);
+  --estimate-optional-text: var(--snice-estimate-warning-text, var(--snice-color-warning, rgb(161 72 4)));
+  --estimate-optional-border: color-mix(in srgb, var(--snice-color-warning, rgb(180 83 9)) 30%, transparent);
 
   /* Status */
   --estimate-status-draft-bg: var(--snice-color-text-secondary-alpha, rgb(107 114 128 / 0.1));

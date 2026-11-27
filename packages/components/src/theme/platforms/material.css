@@ -23,9 +23,9 @@
      the entire 5-step tonal surface container ladder & state layers via color-mix(). */
   --snice-color-primary: hsl(256 34% 48%);
   --snice-color-success: hsl(142 56% 27%);
-  --snice-color-warning: hsl(28 90% 34%);
+  --snice-color-warning: hsl(28 92% 30%);
   --snice-color-danger: hsl(3 71% 41%);
-  --snice-color-neutral: hsl(264 6% 46%);
+  --snice-color-neutral: hsl(264 6% 43%);
 
   --snice-m3-on-primary: hsl(0 0% 100%);
   --snice-m3-primary-container: color-mix(in srgb, var(--snice-color-primary) 16%, hsl(0 0% 100%));
