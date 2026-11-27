@@ -16,12 +16,22 @@ function sanitizeHtml(html: string): string {
   const walk = (node: Element) => {
     const children = Array.from(node.children);
     for (const child of children) {
-      if (DANGEROUS_TAGS.test(child.tagName)) {
+      const isTaskCheckbox =
+        child.tagName === 'INPUT' &&
+        child.getAttribute('type') === 'checkbox' &&
+        child.hasAttribute('disabled') &&
+        child.parentElement?.classList.contains('task-list-item');
+
+      if (DANGEROUS_TAGS.test(child.tagName) && !isTaskCheckbox) {
         child.remove();
         continue;
       }
       const attrs = Array.from(child.attributes);
       for (const attr of attrs) {
+        if (isTaskCheckbox && !/^(type|checked|disabled)$/i.test(attr.name)) {
+          child.removeAttribute(attr.name);
+          continue;
+        }
         if (DANGEROUS_ATTRS.test(attr.name)) {
           child.removeAttribute(attr.name);
         }
@@ -100,11 +110,12 @@ function parseMarkdown(md: string): string {
   result = result.replace(/^(\s*)- \[x\]\s+(.+)$/gm, '$1<li class="task-list-item"><input type="checkbox" checked disabled> $2</li>');
   result = result.replace(/^(\s*)- \[ \]\s+(.+)$/gm, '$1<li class="task-list-item"><input type="checkbox" disabled> $2</li>');
 
-  // Unordered lists
-  result = result.replace(/^((?:\s*[-*+]\s+.+\n?)+)/gm, (match) => {
+  // Unordered lists (including GFM task list items)
+  result = result.replace(/^((?:\s*(?:[-*+]\s+.+|<li class="task-list-item">.+<\/li>)\n?)+)/gm, (match) => {
     const items = match.trim().split('\n').map(line => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('<li class="task-list-item">')) return trimmed;
       const content = line.replace(/^\s*[-*+]\s+/, '');
-      if (content.startsWith('<li class="task-list-item">')) return content;
       return `<li>${content}</li>`;
     }).join('');
     return `<ul>${items}</ul>`;

@@ -1,0 +1,73 @@
+/* Android Material 3 Expressive — snice-markdown
+ * M3 Editorial Prose: Roboto 16px Body Large, medium-weight Headline/Title
+ * hierarchy, soft outline-variant dividers, primary-tinted 5-step tonal code
+ * & table surfaces, secondary-container callout blockquotes, and Roboto Mono.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --md-font-size: 1rem;
+  --md-line-height: 1.55;
+  --md-letter-spacing: 0.01em;
+  --md-heading-weight: 500;
+  --md-heading-tracking: -0.015em;
+  --md-h1-size: 1.75rem;
+  --md-h2-size: 1.5rem;
+  --md-h3-size: 1.25rem;
+  --md-github-h1-size: 1.75rem;
+  --md-github-h2-size: 1.5rem;
+  --md-github-h3-size: 1.25rem;
+  --md-border-width: 1px;
+  --md-border-color: var(--snice-color-border-subtle);
+  --md-font-mono: var(--snice-font-family-mono);
+  --md-code-bg: var(--snice-color-surface-container-highest);
+  --md-code-radius: 6px;
+  --md-code-padding: 0.125rem 0.4375rem;
+  --md-code-border: none;
+  --md-pre-bg: var(--snice-color-surface-container);
+  --md-pre-radius: 12px;
+  --md-pre-padding: 1rem;
+  --md-pre-font-size: 0.875rem;
+  --md-blockquote-border-width: 4px;
+  --md-blockquote-border-color: var(--snice-color-primary);
+  --md-blockquote-bg: var(--snice-m3-secondary-container);
+  --md-blockquote-color: var(--snice-m3-on-secondary-container);
+  --md-blockquote-radius: 0 12px 12px 0;
+  --md-blockquote-padding: 0.75rem 1rem;
+  --md-github-blockquote-border-color: var(--snice-color-primary);
+  --md-github-blockquote-bg: var(--snice-m3-secondary-container);
+  --md-table-th-bg: var(--snice-color-surface-container-high);
+  --md-table-th-weight: 500;
+  --md-table-stripe-bg: var(--snice-color-surface-container-low);
+  --md-table-cell-padding: 0.5rem 0.75rem;
+  --md-table-font-size: 0.875rem;
+  --md-img-radius: 12px;
+  --md-link-weight: 500;
+  --md-link-decoration: underline;
+  --md-link-decoration-color: color-mix(in srgb, var(--snice-color-primary) 40%, transparent);
+  --md-link-hover-decoration: underline;
+  --md-link-hover-bg: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+  --md-link-active-bg: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  --md-link-radius: 4px;
+  --md-link-focus-outline: 3px solid var(--snice-focus-ring-color);
+  --md-link-focus-offset: 2px;
+  --md-link-focus-shadow: none;
+}
+
+:host [part~="base"] {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+}
+
+@media (forced-colors: active) {
+  :host {
+    --md-border-color: CanvasText;
+    --md-code-bg: Canvas;
+    --md-code-border: 1px solid CanvasText;
+    --md-pre-bg: Canvas;
+    --md-blockquote-bg: Canvas;
+    --md-blockquote-color: CanvasText;
+    --md-table-th-bg: Canvas;
+    --md-table-stripe-bg: Canvas;
+  }
+}
