@@ -41,12 +41,16 @@ describe('pure-CSS runtime multi-platform scoping compiler (PS-03)', () => {
     expect(scoped).not.toMatch(/(?:^|[},;])\s*:root\s*[{,]/);
     // Scoped light tokens
     expect(scoped).toContain('[data-platform="ios"]{');
-    // Scoped dark tokens (both on-element and ancestor)
+    // Scoped dark tokens (both on-element and ancestor, respecting nested light override)
     expect(scoped).toContain('[data-platform="ios"][data-theme="dark"]');
-    expect(scoped).toContain('[data-theme="dark"] [data-platform="ios"]');
+    expect(scoped).toContain('[data-theme="dark"] [data-platform="ios"]:not([data-theme="light"])');
     // Preserves prefers-color-scheme: dark, @supports, prefers-reduced-transparency, data URLs
     expect(scoped).toContain('@media (prefers-color-scheme: dark)');
-    expect(scoped).toContain('[data-platform="ios"]:not([data-theme])');
+    // Auto dark media must ONLY match when :root lacks data-theme (never bare [data-platform]:not([data-theme]),
+    // which would force dark mode on descendant [data-platform] subtrees even under <html data-theme="light">).
+    expect(scoped).toContain(':root[data-platform="ios"]:not([data-theme])');
+    expect(scoped).toContain(':root:not([data-theme]) [data-platform="ios"]:not([data-theme]):not([data-theme="light"] *)');
+    expect(scoped).not.toMatch(/(?:^|[},;])\s*\[data-platform="ios"\]:not\(\[data-theme\]\)/);
     expect(scoped).toContain('@supports not (backdrop-filter: blur(1px))');
     expect(scoped).toContain('@media (prefers-reduced-transparency: reduce)');
     expect(scoped).toContain('url("data:image/svg+xml;utf8,<svg/>")');

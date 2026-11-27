@@ -149,6 +149,7 @@
     --snice-color-border: hsl(270 8% 56%);
     --snice-color-border-hover: hsl(270 10% 72%);
     --snice-color-border-subtle: hsl(270 8% 30%);
+    --snice-color-overlay-hover: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
   }
 }
 

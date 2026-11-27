@@ -172,20 +172,23 @@ export function scopePlatformTokenCss(tokenCss, platform) {
       }
 
       if (s === '[data-theme="dark"]') {
-        out.push(`${scope}[data-theme="dark"]`, `[data-theme="dark"] ${scope}`);
+        out.push(
+          `${scope}[data-theme="dark"]`,
+          `[data-theme="dark"] ${scope}:not([data-theme="light"])`
+        );
         continue;
       }
 
       if (inDarkMedia && (s === ':root:not([data-theme])' || s === ':root[data-theme="auto"]')) {
         if (s === ':root:not([data-theme])') {
           out.push(
-            `${scope}:not([data-theme])`,
-            `:root:not([data-theme]) ${scope}:not([data-theme])`
+            `:root${scope}:not([data-theme])`,
+            `:root:not([data-theme]) ${scope}:not([data-theme]):not([data-theme="light"] *)`
           );
         } else {
           out.push(
             `${scope}[data-theme="auto"]`,
-            `[data-theme="auto"] ${scope}:not([data-theme])`
+            `[data-theme="auto"] ${scope}:not([data-theme]):not([data-theme="light"] *)`
           );
         }
         continue;

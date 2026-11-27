@@ -787,6 +787,8 @@ html.no-js .doc-file { display: block; }
   flex-direction: column;
   gap: 1rem;
   background: var(--snice-color-surface);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
 }
 .theme-preview-row {
   display: flex;

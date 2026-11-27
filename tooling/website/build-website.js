@@ -2302,9 +2302,13 @@ ${header('themes')}
             var btn = e.target.closest('[data-platform-choice]');
             if (btn) selectPlatform(btn.getAttribute('data-platform-choice'));
           });
-          var param = new URLSearchParams(location.search).get('platform');
-          var saved = (param && valid[param]) ? param : (localStorage.getItem('snice-platform') || 'default');
-          if (saved !== 'default') selectPlatform(saved);
+          function initPlatform() {
+            var param = new URLSearchParams(location.search).get('platform');
+            var saved = (param && valid[param]) ? param : (localStorage.getItem('snice-platform') || 'default');
+            if (saved !== 'default') selectPlatform(saved);
+          }
+          if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initPlatform);
+          else initPlatform();
         })();
       </script>
       <script type="module">
