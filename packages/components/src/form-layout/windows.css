@@ -1,0 +1,99 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-form-layout
+   Native counterpart: WinUI 3 desktop form grid & Settings Expander 4px spatial rhythm. */
+
+:host {
+  font-family: var(--snice-font-family);
+  --snice-form-label-align: left;
+  --snice-form-label-margin: 0 0 0.25rem 0;
+}
+
+:host([label-position="top"]) {
+  --snice-form-label-align: left;
+  --snice-form-label-margin: 0 0 0.25rem 0;
+}
+
+:host([label-position="left"]) {
+  --snice-form-label-align: left;
+  --snice-form-label-margin: 0 0.75rem 0 0;
+}
+
+:host([label-position="right"]) {
+  --snice-form-label-align: left;
+  --snice-form-label-margin: 0 0 0 0.75rem;
+}
+
+:host [part~="base"] {
+  background: transparent;
+  row-gap: 0.875rem;
+  column-gap: 1rem;
+}
+
+:host([gap="small"]) [part~="base"] {
+  row-gap: 0.5rem;
+  column-gap: 0.75rem;
+}
+
+:host([gap="medium"]) [part~="base"] {
+  row-gap: 0.875rem;
+  column-gap: 1rem;
+}
+
+:host([gap="large"]) [part~="base"] {
+  row-gap: 1.25rem;
+  column-gap: 1.5rem;
+}
+
+/* Compact WinUI desktop inspector density */
+:host([variant="compact"]) [part~="base"] {
+  row-gap: 0.5rem;
+  column-gap: 0.5rem;
+}
+
+:host([variant="compact"][gap="small"]) [part~="base"] {
+  row-gap: 0.375rem;
+  column-gap: 0.5rem;
+}
+
+:host([variant="compact"][gap="medium"]) [part~="base"] {
+  row-gap: 0.5rem;
+  column-gap: 0.5rem;
+}
+
+:host([variant="compact"][gap="large"]) [part~="base"] {
+  row-gap: 0.75rem;
+  column-gap: 0.75rem;
+}
+
+/* Inline variant */
+:host([variant="inline"]) [part~="base"] {
+  align-items: flex-end;
+  row-gap: 0.75rem;
+  column-gap: 0.75rem;
+}
+
+:host([variant="inline"][gap="small"]) [part~="base"] {
+  row-gap: 0.5rem;
+  column-gap: 0.5rem;
+}
+
+:host([variant="inline"][gap="medium"]) [part~="base"] {
+  row-gap: 0.75rem;
+  column-gap: 0.75rem;
+}
+
+:host([variant="inline"][gap="large"]) [part~="base"] {
+  row-gap: 1rem;
+  column-gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  :host([label-position="left"]),
+  :host([label-position="right"]) {
+    --snice-form-label-align: left;
+    --snice-form-label-margin: 0 0 0.25rem 0;
+  }
+
+  :host [part~="base"] {
+    row-gap: 0.75rem;
+  }
+}
