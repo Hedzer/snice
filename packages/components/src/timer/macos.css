@@ -93,7 +93,7 @@
 [part~="button"][part~="reset-button"] {
   background: var(--snice-macos-control-bg);
   color: var(--snice-color-text);
-  border-color: var(--snice-macos-control-border);
+  border-color: var(--snice-color-border);
   box-shadow: var(--snice-macos-control-shadow);
 }
 
