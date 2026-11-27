@@ -223,6 +223,61 @@ export function createSniceManualChunks(options?: SniceCachingOptions): SniceMan
 }
 
 /**
+ * Rolldown `advancedChunks.groups` / `codeSplitting.groups` entry shape.
+ */
+export interface RolldownChunkGroup {
+  name: string;
+  priority: number;
+  test: (id: string) => boolean;
+}
+
+/**
+ * Create Rolldown-compatible `advancedChunks.groups` / `codeSplitting.groups`
+ * implementing Snice's deterministic volatility-tiered caching strategy for
+ * Vite 6+ / Rolldown builds.
+ */
+export function createSniceAdvancedChunksGroups(
+  options?: SniceCachingOptions
+): RolldownChunkGroup[] {
+  const { isolateHeavy, heavySet, vendor, componentGroupMap } = resolveCachingConfig(options);
+  const groups: RolldownChunkGroup[] = [];
+
+  const matchTier = (expectedTier: string) => (id: string): boolean =>
+    classifyModuleTier(id, isolateHeavy, heavySet, vendor, componentGroupMap) === expectedTier;
+
+  groups.push({ name: 'snice-theme', priority: 60, test: matchTier('snice-theme') });
+  groups.push({ name: 'snice-runtime', priority: 50, test: matchTier('snice-runtime') });
+  groups.push({ name: 'vendor-react', priority: 45, test: matchTier('vendor-react') });
+
+  const emittedGroups = new Set<string>();
+  for (const groupName of componentGroupMap.values()) {
+    if (emittedGroups.has(groupName)) continue;
+    emittedGroups.add(groupName);
+    groups.push({ name: groupName, priority: 40, test: matchTier(groupName) });
+  }
+
+  if (componentGroupMap.size > 0) {
+    groups.push({ name: 'snice-shared', priority: 38, test: matchTier('snice-shared') });
+  }
+
+  if (isolateHeavy) {
+    for (const dir of heavySet) {
+      const heavyName = `snice-${dir}`;
+      if (emittedGroups.has(heavyName)) continue;
+      groups.push({ name: heavyName, priority: 35, test: matchTier(heavyName) });
+    }
+  }
+
+  groups.push({ name: 'snice-components', priority: 25, test: matchTier('snice-components') });
+
+  if (vendor) {
+    groups.push({ name: 'vendor', priority: 10, test: matchTier('vendor') });
+  }
+
+  return groups;
+}
+
+/**
  * Compose a Rollup object-form `manualChunks` map (`{ vendor: ['lodash'] }`)
  * with Snice's chunk classifier, preserving all user object assignments first.
  */

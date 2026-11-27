@@ -17,7 +17,12 @@ export type {
   SniceTableOptions,
   SniceTableOption,
 } from './types';
-export { createSniceManualChunks, DEFAULT_HEAVY_COMPONENTS } from './chunking';
+export {
+  createSniceManualChunks,
+  createSniceAdvancedChunksGroups,
+  DEFAULT_HEAVY_COMPONENTS,
+  type RolldownChunkGroup,
+} from './chunking';
 
 /**
  * Official Snice Vite plugin (`snice/vite`).

@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import {
   composeObjectManualChunks,
+  createSniceAdvancedChunksGroups,
   createSniceManualChunksController,
 } from './chunking';
 import {
@@ -278,6 +279,37 @@ export function createSniceCorePlugin(
       // (including `snice doctor`'s inline `manualChunks: () => undefined`).
       if (typeof opts.manualChunks === 'function') {
         return opts;
+      }
+
+      // Rolldown / Vite 6+ codeSplitting / advancedChunks support
+      const isRolldown = Boolean((this as any)?.meta?.rolldownVersion);
+      if (opts.codeSplitting !== undefined) {
+        if (opts.codeSplitting === false) return opts;
+        const existingGroups = Array.isArray(opts.codeSplitting?.groups)
+          ? opts.codeSplitting.groups
+          : [];
+        return {
+          ...opts,
+          codeSplitting: {
+            ...opts.codeSplitting,
+            groups: [...existingGroups, ...createSniceAdvancedChunksGroups(cachingOptions)],
+          },
+        };
+      }
+      if (opts.advancedChunks !== undefined || (isRolldown && !opts.manualChunks)) {
+        if (opts.advancedChunks === false) return opts;
+        const existingGroups = Array.isArray(opts.advancedChunks?.groups)
+          ? opts.advancedChunks.groups
+          : [];
+        return {
+          ...opts,
+          advancedChunks: {
+            ...(typeof opts.advancedChunks === 'object' && opts.advancedChunks !== null
+              ? opts.advancedChunks
+              : {}),
+            groups: [...existingGroups, ...createSniceAdvancedChunksGroups(cachingOptions)],
+          },
+        };
       }
 
       if (opts.manualChunks && typeof opts.manualChunks === 'object') {
