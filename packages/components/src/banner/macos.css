@@ -1,0 +1,221 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-banner (Floating Liquid Glass Window Banner) */
+:host {
+  transition: transform var(--snice-transition-medium, 220ms) var(--snice-ease-out, cubic-bezier(0.22, 0.8, 0.2, 1));
+}
+
+[part~="base"] {
+  box-sizing: border-box;
+  min-height: 2.5rem;
+  padding: 0.4375rem 1rem;
+  gap: 0.625rem;
+  border-radius: 0;
+  background: color-mix(
+    in srgb,
+    var(--snice-color-primary) 9%,
+    color-mix(in srgb, var(--snice-color-background-elevated) 90%, transparent)
+  );
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border-top: none;
+  border-bottom: 0.5px solid var(--snice-color-border);
+  color: var(--snice-color-text);
+  box-shadow: none;
+  font-family: var(--snice-font-family);
+}
+
+:host([open]) [part~="base"] {
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-md);
+}
+
+:host([position="bottom"]) [part~="base"] {
+  border-bottom: none;
+  border-top: 0.5px solid var(--snice-color-border);
+}
+
+:host([variant="info"]) [part~="base"] {
+  background: color-mix(
+    in srgb,
+    var(--snice-color-primary) 9%,
+    color-mix(in srgb, var(--snice-color-background-elevated) 90%, transparent)
+  );
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-text);
+}
+
+:host([variant="success"]) [part~="base"] {
+  background: color-mix(
+    in srgb,
+    var(--snice-color-success) 10%,
+    color-mix(in srgb, var(--snice-color-background-elevated) 90%, transparent)
+  );
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-text);
+}
+
+:host([variant="warning"]) [part~="base"] {
+  background: color-mix(
+    in srgb,
+    var(--snice-color-warning) 11%,
+    color-mix(in srgb, var(--snice-color-background-elevated) 90%, transparent)
+  );
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-text);
+}
+
+:host([variant="error"]) [part~="base"] {
+  background: color-mix(
+    in srgb,
+    var(--snice-color-danger) 10%,
+    color-mix(in srgb, var(--snice-color-background-elevated) 90%, transparent)
+  );
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-text);
+}
+
+[part~="icon"] {
+  color: var(--snice-color-primary);
+}
+
+:host([variant="info"]) [part~="icon"] {
+  color: var(--snice-color-primary);
+}
+
+:host([variant="success"]) [part~="icon"] {
+  color: var(--snice-color-success);
+}
+
+:host([variant="warning"]) [part~="icon"] {
+  color: var(--snice-color-warning);
+}
+
+:host([variant="error"]) [part~="icon"] {
+  color: var(--snice-color-danger);
+}
+
+[part~="message"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text);
+}
+
+[part~="action"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+  min-height: 1.5rem;
+  padding: 0 0.625rem;
+  border-radius: 5px;
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 12%, var(--snice-color-primary)) 0%,
+    var(--snice-color-primary) 100%
+  );
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-primary) 78%, black);
+  color: hsl(0 0% 100%);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.32), 0 0.5px 1px hsl(0 0% 0% / 0.2);
+  transition: filter 120ms ease, transform 120ms ease;
+}
+
+:host([variant="info"]) [part~="action"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 12%, var(--snice-color-primary)) 0%,
+    var(--snice-color-primary) 100%
+  );
+  border-color: color-mix(in srgb, var(--snice-color-primary) 78%, black);
+  color: hsl(0 0% 100%);
+}
+
+:host([variant="success"]) [part~="action"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 12%, var(--snice-color-success)) 0%,
+    var(--snice-color-success) 100%
+  );
+  border-color: color-mix(in srgb, var(--snice-color-success) 78%, black);
+  color: hsl(0 0% 100%);
+}
+
+:host([variant="warning"]) [part~="action"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 14%, var(--snice-color-warning)) 0%,
+    var(--snice-color-warning) 100%
+  );
+  border-color: color-mix(in srgb, var(--snice-color-warning) 78%, black);
+  color: hsl(26 42% 10%);
+}
+
+:host([variant="error"]) [part~="action"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 12%, var(--snice-color-danger)) 0%,
+    var(--snice-color-danger) 100%
+  );
+  border-color: color-mix(in srgb, var(--snice-color-danger) 78%, black);
+  color: hsl(0 0% 100%);
+}
+
+[part~="action"]:hover {
+  filter: brightness(1.05);
+}
+
+[part~="action"]:active {
+  transform: scale(0.98);
+  filter: brightness(0.94);
+}
+
+[part~="action"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+[part~="close"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--snice-color-text-secondary);
+  opacity: 1;
+  transition: background-color 120ms ease, color 120ms ease, transform 120ms ease;
+}
+
+[part~="close"]:hover {
+  background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-text);
+}
+
+[part~="close"]:active {
+  transform: scale(0.94);
+}
+
+[part~="close"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="base"] {
+    background: var(--snice-color-background-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  [part~="action"],
+  [part~="close"] {
+    transition-duration: 0.01ms;
+  }
+}
