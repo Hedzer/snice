@@ -1,13 +1,104 @@
-/* Material 3 Expressive — snice-chart */
-[part~="base"] {
-  border-radius: 16px;
-  background: var(--snice-color-surface-container-low);
-  border: 1px solid var(--snice-color-border-subtle);
-  padding: 1rem;
+/* Material 3 Expressive chart card skin */
+
+:host {
+  font-family: var(--snice-font-family);
 }
 
+[part~="base"] {
+  box-sizing: border-box;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="legend"] {
+  gap: 0.5rem;
+  padding: 0 0 0.75rem 0;
+}
+
+[part~="legend-item"] {
+  min-height: 2rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
+  transition:
+    border-radius 180ms cubic-bezier(0.2, 0, 0, 1),
+    background-color 160ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 160ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+[part~="legend-item"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container));
+  opacity: 1;
+}
+
+[part~="legend-item"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 0.5rem);
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, var(--snice-color-surface-container));
+}
+
+[part~="legend-item"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+[part~="legend-item-hidden"] {
+  opacity: 0.52;
+  background: transparent;
+  border-style: dashed;
+}
+
+[part~="legend-color"] {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+}
+
+[part~="legend-label"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.006em;
+  color: var(--snice-color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* M3 Rich Tooltip: opaque tonal elevation, explicit contrasting ink */
 [part~="tooltip"] {
-  border-radius: 12px;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
   background: var(--snice-color-surface-container-highest);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-color-border-subtle);
   box-shadow: var(--snice-shadow-md);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  transform: translateY(4px);
+  transition:
+    opacity 160ms cubic-bezier(0.2, 0, 0, 1),
+    transform 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+[part~="tooltip-visible"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="legend-item"],
+  [part~="tooltip"] {
+    transition: none;
+  }
+
+  [part~="legend-item"]:active {
+    border-radius: 9999px;
+  }
+
+  [part~="tooltip"],
+  [part~="tooltip-visible"] {
+    transform: none;
+  }
 }
