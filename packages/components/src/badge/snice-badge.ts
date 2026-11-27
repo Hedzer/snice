@@ -85,17 +85,29 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
   }
 
   private themeUnsubscribe?: () => void;
+  private platformObserver?: MutationObserver;
 
   @ready()
   init() {
     this.updateOffset();
     this.applyAutoContrastColor();
     this.themeUnsubscribe = onThemeChange(() => this.applyAutoContrastColor());
+    if (typeof MutationObserver !== 'undefined') {
+      const observer = new MutationObserver(() => this.applyAutoContrastColor());
+      let cur: Element | null = this;
+      while (cur) {
+        observer.observe(cur, { attributes: true, attributeFilter: ['data-platform'] });
+        cur = cur.parentElement;
+      }
+      this.platformObserver = observer;
+    }
   }
 
   @dispose()
   teardown() {
     this.themeUnsubscribe?.();
+    this.platformObserver?.disconnect();
+    this.platformObserver = undefined;
   }
 
   @watch('count', 'content', { immediate: false })
@@ -117,12 +129,17 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
   @watch('variant', 'dot', 'content', 'count')
   applyAutoContrastColor() {
     // If the consumer set an explicit text color on <snice-badge>, let it
-    // win. Otherwise compute from the actual resolved background — this
-    // covers theme swaps, custom CSS var overrides, and dot/not-dot cases.
+    // win. Under an active platform skin (Mode B `[data-platform]` or Mode A
+    // adopted platform sheet), defer to the platform stylesheet's calibrated
+    // semantic ink tokens so inline styles never override light/dark skin ink.
     const explicit = this.style.color;
     if (explicit) return;
     const badge = this.badgeElement;
     if (!badge) return;
+    if (this.closest('[data-platform]') || (this.shadowRoot?.adoptedStyleSheets?.length ?? 0) > 1) {
+      badge.style.color = '';
+      return;
+    }
     const bg = getComputedStyle(badge).backgroundColor;
     badge.style.color = pickContrastColor(bg);
   }

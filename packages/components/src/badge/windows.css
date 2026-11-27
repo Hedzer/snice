@@ -1,0 +1,99 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-badge (WinUI 3 InfoBadge) */
+[part~="badge"] {
+  min-width: 1.0625rem;
+  height: 1.0625rem;
+  padding: 0 0.3125rem;
+  border-radius: 9999px;
+  font-family: var(--snice-font-family);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  background: var(--snice-color-neutral);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+  box-shadow: 0 0 0 2px var(--snice-color-surface);
+}
+
+:host([size="small"]) [part~="badge"] {
+  min-width: 0.9375rem;
+  height: 0.9375rem;
+  padding: 0 0.25rem;
+  font-size: 0.625rem;
+}
+
+:host([size="large"]) [part~="badge"] {
+  min-width: 1.3125rem;
+  height: 1.3125rem;
+  padding: 0 0.4375rem;
+  font-size: 0.75rem;
+}
+
+:host([inline]) [part~="badge"] {
+  padding: 0 0.4375rem;
+  box-shadow: none;
+}
+
+:host([inline][size="small"]) [part~="badge"] {
+  padding: 0 0.3125rem;
+}
+
+:host([inline][size="large"]) [part~="badge"] {
+  padding: 0 0.5625rem;
+}
+
+[part~="badge-dot"] {
+  min-width: 0.5rem;
+  height: 0.5rem;
+  padding: 0;
+  border-radius: 50%;
+}
+
+:host([size="small"]) [part~="badge-dot"] {
+  min-width: 0.375rem;
+  height: 0.375rem;
+  padding: 0;
+}
+
+:host([size="large"]) [part~="badge-dot"] {
+  min-width: 0.625rem;
+  height: 0.625rem;
+  padding: 0;
+}
+
+:host([variant="default"]) [part~="badge"] {
+  background: var(--snice-color-neutral);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+}
+
+:host([variant="primary"]) [part~="badge"],
+:host([variant="info"]) [part~="badge"] {
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+}
+
+:host([variant="success"]) [part~="badge"] {
+  background: var(--snice-color-success);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+}
+
+:host([variant="warning"]) [part~="badge"] {
+  background: var(--snice-color-warning);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+}
+
+:host([variant="error"]) [part~="badge"] {
+  background: var(--snice-color-danger);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+}
+
+@media (forced-colors: active) {
+  [part~="badge"] {
+    background: Highlight;
+    color: HighlightText;
+    box-shadow: 0 0 0 2px Canvas;
+  }
+
+  :host([inline]) [part~="badge"] {
+    box-shadow: none;
+  }
+}
