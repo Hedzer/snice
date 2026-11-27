@@ -1,0 +1,37 @@
+/* Snice Theme — Motion slice
+   OS prefers-reduced-motion and manual [data-motion="reduce"|"off"] overrides. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --snice-transition-fast: 0ms;
+    --snice-transition-medium: 0ms;
+    --snice-transition-slow: 0ms;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+[data-motion="reduce"] {
+  --snice-transition-fast: 0ms;
+  --snice-transition-medium: 0ms;
+  --snice-transition-slow: 0ms;
+}
+[data-motion="reduce"] *,
+[data-motion="reduce"] *::before,
+[data-motion="reduce"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+[data-motion="off"],
+[data-motion="off"] *,
+[data-motion="off"] *::before,
+[data-motion="off"] *::after {
+  animation: none !important;
+  transition: none !important;
+}

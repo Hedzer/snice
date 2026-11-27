@@ -55,6 +55,7 @@
       "import": "./adapters/react/*.js"
     },
     "./components/theme/theme.css": "./dist/components/theme/theme.css",
+    "./components/theme/*.css": "./dist/components/theme/*.css",
     "./components/custom-elements": {
       "types": "./dist/components/custom-elements.d.ts"
     },

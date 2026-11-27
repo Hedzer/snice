@@ -1,108 +1,52 @@
 # Theme System
 
+## Modular Slices
+
+Import full self-contained `snice/components/theme/theme.css` or individual slices under `snice/components/theme/`:
+- `core.css` — HSL primitives, light semantic colors, surfaces, borders, overlays, spacing, typography, radius, transitions, easing, z-index, focus rings
+- `dark.css` — `[data-theme="dark"]` + `@media (prefers-color-scheme: dark)` (`:root:not([data-theme]), :root[data-theme="auto"]`)
+- `accents.css` — `--snice-color-accent-1..8`
+- `effects.css` — shadows, colored glows, convex gradients, `--snice-texture-noise`
+- `density.css` — `[data-density="compact"|"spacious"]`
+- `motion.css` — `prefers-reduced-motion: reduce`, `[data-motion="reduce"|"off"]`
+- `print.css` — `@media print`
+
 ## Color Format
 
-All colors use HSL format (space-separated): `hue saturation% lightness%`
+HSL space-separated channels: `hue saturation% lightness%`. Alpha syntax: `hsl(0 0% 0% / 0.15)` (not `hsla()`).
 
-Modern syntax with alpha: `hsl(0 0% 0% / 0.15)` (not `hsla(0, 0%, 0%, 0.15)`)
+## Primitives & CSS-First Seed Derivation
 
-## Color Primitives
+- **Primitives**: `gray`, `blue`, `green`, `red`, `yellow` (`50`–`950`), `purple` (`100`/`300`/`500`/`700`). Static across themes.
+- **Semantic seeds**: `--snice-color-primary`, `--snice-color-success`, `--snice-color-warning`, `--snice-color-danger`, `--snice-color-neutral`, `--snice-color-surface`, `--snice-color-text*`.
+- **Auto-derived via `color-mix()`**: `*-hover`, `*-subtle`, `*-subtle-hover`, `--snice-color-border-focus`, `--snice-color-overlay-selected*`, `--snice-focus-ring-color*`, `--snice-color-*-alpha*`, `--snice-shadow-glow-*`. Overriding `--snice-color-primary` automatically updates all derived tokens in light and dark modes (zero JS).
 
-**Gray Scale** (0 0% L%):
-- 50: 98%, 100: 95%, 200: 89%, 300: 82%, 400: 64%
-- 500: 45%, 600: 32%, 700: 25%, 800: 15%, 900: 9%, 950: 4%
-
-**Blue** (217 83% L% base), **Green** (142 71% L% base), **Red** (0 72% L% base), **Yellow** (41 96% L% base) — full 50-950 ranges.
-
-## Semantic Colors
+## Custom Themes
 
 ```css
---snice-color-primary: hsl(var(--snice-color-blue-600));
---snice-color-success: hsl(var(--snice-color-green-600));
---snice-color-warning: hsl(var(--snice-color-yellow-600));
---snice-color-danger: hsl(var(--snice-color-red-600));
+/* Minimal seed override */
+:root {
+  --snice-color-primary: hsl(265 75% 54%);
+  --snice-color-surface: hsl(40 20% 99%);
+  --snice-border-radius-md: 0.5rem;
+}
 
---snice-color-text: hsl(var(--snice-color-gray-900));
---snice-color-text-secondary: hsl(var(--snice-color-gray-600));
---snice-color-text-tertiary: hsl(var(--snice-color-gray-500));
+/* Named switchable theme — never clobbered by OS prefers-color-scheme: dark */
+[data-theme="brand"] {
+  --snice-color-primary: hsl(18 88% 52%);
+  --snice-color-surface: hsl(28 30% 98%);
+  color-scheme: light;
+}
 ```
 
-## Surfaces
+- Bundler plugin preserves custom `[data-theme="<name>"]` blocks under `theme: { prune: true, dark: false }`.
+- Standalone custom theme CSS only strips component fallbacks for `:root` `--snice-*` tokens it actually defines.
 
-```css
---snice-color-surface:                   hsl(0 0% 100%);           /* page/body */
---snice-color-surface-container-lowest:  hsl(0 0% 100%);           /* inputs, recessed fields */
---snice-color-surface-container-low:     hsl(var(--snice-color-gray-50));
---snice-color-surface-container:         hsl(var(--snice-color-gray-100));
---snice-color-surface-container-high:    hsl(40 9% 97%);           /* cards, panels */
---snice-color-surface-container-highest: hsl(0 0% 100%);           /* modals, popovers */
-```
+## Dark Mode & Native Controls
 
-## Borders
+- `data-theme="dark"` activates dark mode; `data-theme="light"` locks light; omitted or `data-theme="auto"` follows OS `prefers-color-scheme: dark`.
+- Native controls filter: `--snice-color-scheme-filter` (`none` in light, `invert(1) hue-rotate(180deg)` in dark).
 
-```css
---snice-color-border: hsl(var(--snice-color-gray-300));
---snice-color-border-hover: hsl(var(--snice-color-gray-400));
---snice-color-border-focus: hsl(var(--snice-color-blue-500));
---snice-color-border-subtle: hsl(0 0% 0% / 0.12);
-```
+## Complete Token List
 
-## Interactive States
-
-```css
---snice-color-surface-hover: hsl(var(--snice-color-gray-100));
---snice-color-surface-active: hsl(var(--snice-color-gray-200));
---snice-color-surface-disabled: hsl(var(--snice-color-gray-100));
---snice-color-text-disabled: hsl(var(--snice-color-gray-400));
-
---snice-color-overlay-hover: hsl(0 0% 0% / 0.04);
---snice-color-overlay-selected: hsl(var(--snice-color-blue-500) / 0.08);
---snice-color-overlay-selected-hover: hsl(var(--snice-color-blue-500) / 0.12);
---snice-color-overlay-stripe: hsl(0 0% 0% / 0.02);   /* dark: hsl(0 0% 100% / 0.11) */
-```
-
-## Layers (z-index)
-
-```css
---snice-z-base:         0;
---snice-z-raised:       1;
---snice-z-sticky:       10;
---snice-z-fixed:        30;
---snice-z-floating:     100;
---snice-z-scrim:        1000;
---snice-z-overlay:      1100;
---snice-z-popover-over: 1200;
---snice-z-notification: 1300;
-```
-
-## Shadows
-
-```css
---snice-shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.04), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
---snice-shadow-sm/md/lg/xl/2xl: progressively stronger
-```
-
-## Focus
-
-```css
---snice-focus-ring-width: 2px;
---snice-focus-ring-color: hsl(var(--snice-color-blue-500) / 0.5);
---snice-focus-ring-offset: 2px;
-```
-
-## Dark Theme
-
-Set `data-theme="dark"` on `<html>`. All semantic tokens (not primitives) switch to dark values automatically.
-
-## Native Controls
-
-```css
---snice-color-scheme-filter: none;                         /* light */
---snice-color-scheme-filter: invert(1) hue-rotate(180deg); /* dark */
-```
-
-Applied to `::-webkit-calendar-picker-indicator` with 0.7 opacity, 1.0 on hover.
-
-## Complete token list
-
-Exhaustive table (colors, surfaces, borders, overlays, motion, shadow glows, focus rings, density, texture, print, spacing, typography, radius, layers): components/theme.md
+Exhaustive token table: `components/theme.md`.

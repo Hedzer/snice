@@ -1,0 +1,20 @@
+/* Snice Theme — Print slice
+   Print media baseline collapsing shadows/animations while preserving exact colors. */
+@media print {
+  :root {
+    --snice-shadow-xs: none;
+    --snice-shadow-sm: none;
+    --snice-shadow-md: none;
+    --snice-shadow-lg: none;
+    --snice-shadow-xl: none;
+    --snice-shadow-2xl: none;
+    --snice-shadow-inset-sm: none;
+    --snice-shadow-inset-md: none;
+  }
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

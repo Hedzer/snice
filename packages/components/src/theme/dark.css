@@ -1,0 +1,136 @@
+/* Snice Theme — Dark slice
+   Manual [data-theme="dark"] and automatic OS prefers-color-scheme: dark. */
+[data-theme="dark"] {
+  --snice-color-primary: hsl(var(--snice-color-blue-500));
+  --snice-color-success: hsl(var(--snice-color-green-500));
+  --snice-color-warning: hsl(var(--snice-color-yellow-500));
+  --snice-color-danger: hsl(var(--snice-color-red-500));
+  --snice-color-neutral: hsl(var(--snice-color-gray-400));
+
+  --snice-color-primary-hover: color-mix(in srgb, var(--snice-color-primary) 80%, white);
+  --snice-color-success-hover: color-mix(in srgb, var(--snice-color-success) 80%, white);
+  --snice-color-warning-hover: color-mix(in srgb, var(--snice-color-warning) 80%, white);
+  --snice-color-danger-hover: color-mix(in srgb, var(--snice-color-danger) 80%, white);
+  --snice-color-neutral-hover: color-mix(in srgb, var(--snice-color-neutral) 75%, white);
+
+  --snice-color-text: hsl(var(--snice-color-gray-50));
+  --snice-color-text-secondary: hsl(var(--snice-color-gray-300));
+  --snice-color-text-tertiary: hsl(var(--snice-color-gray-400));
+  --snice-color-text-inverse: hsl(var(--snice-color-gray-900));
+
+  --snice-color-surface:                   hsl(var(--snice-color-gray-900));
+  --snice-color-surface-container-lowest:  hsl(0 0% 15%);
+  --snice-color-surface-container-low:     hsl(var(--snice-color-gray-800));
+  --snice-color-surface-container:         hsl(var(--snice-color-gray-700));
+  --snice-color-surface-container-high:    hsl(30 5% 18%);
+  --snice-color-surface-container-highest: hsl(var(--snice-color-gray-800));
+
+  --snice-color-border: hsl(0 0% 35%);
+  --snice-color-border-hover: hsl(var(--snice-color-gray-600));
+  --snice-color-border-focus: color-mix(in srgb, var(--snice-color-primary) 82%, white);
+  --snice-color-border-subtle: hsl(0 0% 100% / 0.12);
+
+  --snice-color-surface-hover: hsl(var(--snice-color-gray-700));
+  --snice-color-surface-active: hsl(var(--snice-color-gray-600));
+  --snice-color-surface-disabled: hsl(var(--snice-color-gray-800));
+  --snice-color-text-disabled: hsl(var(--snice-color-gray-600));
+
+  --snice-color-overlay-hover: hsl(0 0% 100% / 0.06);
+  --snice-color-overlay-selected: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+  --snice-color-overlay-selected-hover: color-mix(in srgb, var(--snice-color-primary) 22%, transparent);
+  --snice-color-overlay-stripe: hsl(0 0% 100% / 0.11);
+
+  --snice-color-primary-subtle: color-mix(in srgb, var(--snice-color-primary) 18%, var(--snice-color-surface));
+  --snice-color-primary-subtle-hover: color-mix(in srgb, var(--snice-color-primary) 28%, var(--snice-color-surface));
+  --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 18%, var(--snice-color-surface));
+  --snice-color-success-subtle-hover: color-mix(in srgb, var(--snice-color-success) 28%, var(--snice-color-surface));
+  --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 18%, var(--snice-color-surface));
+  --snice-color-warning-subtle-hover: color-mix(in srgb, var(--snice-color-warning) 28%, var(--snice-color-surface));
+  --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 18%, var(--snice-color-surface));
+  --snice-color-danger-subtle-hover: color-mix(in srgb, var(--snice-color-danger) 28%, var(--snice-color-surface));
+
+  --snice-shadow-xs: 0 0 0 1px hsl(0 0% 100% / 0.05), 0 1px 2px 0 hsl(0 0% 0% / 0.4);
+  --snice-shadow-sm: 0 0 0 1px hsl(0 0% 100% / 0.06), 0 2px 4px 0 hsl(0 0% 0% / 0.4);
+  --snice-shadow-md: 0 0 0 1px hsl(0 0% 100% / 0.07), 0 4px 10px -2px hsl(0 0% 0% / 0.45);
+  --snice-shadow-lg: 0 0 0 1px hsl(0 0% 100% / 0.08), 0 10px 24px -4px hsl(0 0% 0% / 0.5);
+  --snice-shadow-xl: 0 0 0 1px hsl(0 0% 100% / 0.08), 0 20px 32px -6px hsl(0 0% 0% / 0.55);
+  --snice-shadow-2xl: 0 0 0 1px hsl(0 0% 100% / 0.1), 0 25px 50px -12px hsl(0 0% 0% / 0.65);
+  --snice-shadow-inset-sm: inset 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+  --snice-shadow-inset-md: inset 0 2px 4px 0 hsl(0 0% 0% / 0.4);
+
+  --snice-gradient-subtle: linear-gradient(to bottom, hsl(0 0% 100% / 0.04), transparent 60%);
+  --snice-gradient-convex: linear-gradient(to bottom, hsl(0 0% 100% / 0.08), transparent 70%);
+  --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.03), transparent 50%);
+
+  --snice-color-scheme-filter: invert(1) hue-rotate(180deg);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]),
+  :root[data-theme="auto"] {
+    --snice-color-primary: hsl(var(--snice-color-blue-500));
+    --snice-color-success: hsl(var(--snice-color-green-500));
+    --snice-color-warning: hsl(var(--snice-color-yellow-500));
+    --snice-color-danger: hsl(var(--snice-color-red-500));
+    --snice-color-neutral: hsl(var(--snice-color-gray-400));
+
+    --snice-color-primary-hover: color-mix(in srgb, var(--snice-color-primary) 80%, white);
+    --snice-color-success-hover: color-mix(in srgb, var(--snice-color-success) 80%, white);
+    --snice-color-warning-hover: color-mix(in srgb, var(--snice-color-warning) 80%, white);
+    --snice-color-danger-hover: color-mix(in srgb, var(--snice-color-danger) 80%, white);
+    --snice-color-neutral-hover: color-mix(in srgb, var(--snice-color-neutral) 75%, white);
+
+    --snice-color-text: hsl(var(--snice-color-gray-50));
+    --snice-color-text-secondary: hsl(var(--snice-color-gray-300));
+    --snice-color-text-tertiary: hsl(var(--snice-color-gray-400));
+    --snice-color-text-inverse: hsl(var(--snice-color-gray-900));
+
+    --snice-color-surface:                   hsl(var(--snice-color-gray-900));
+    --snice-color-surface-container-lowest:  hsl(0 0% 15%);
+    --snice-color-surface-container-low:     hsl(var(--snice-color-gray-800));
+    --snice-color-surface-container:         hsl(var(--snice-color-gray-700));
+    --snice-color-surface-container-high:    hsl(30 5% 18%);
+    --snice-color-surface-container-highest: hsl(var(--snice-color-gray-800));
+
+    --snice-color-border: hsl(0 0% 35%);
+    --snice-color-border-hover: hsl(var(--snice-color-gray-600));
+    --snice-color-border-focus: color-mix(in srgb, var(--snice-color-primary) 82%, white);
+    --snice-color-border-subtle: hsl(0 0% 100% / 0.12);
+
+    --snice-color-surface-hover: hsl(var(--snice-color-gray-700));
+    --snice-color-surface-active: hsl(var(--snice-color-gray-600));
+    --snice-color-surface-disabled: hsl(var(--snice-color-gray-800));
+    --snice-color-text-disabled: hsl(var(--snice-color-gray-600));
+
+    --snice-color-overlay-hover: hsl(0 0% 100% / 0.06);
+    --snice-color-overlay-selected: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+    --snice-color-overlay-selected-hover: color-mix(in srgb, var(--snice-color-primary) 22%, transparent);
+    --snice-color-overlay-stripe: hsl(0 0% 100% / 0.11);
+
+    --snice-color-primary-subtle: color-mix(in srgb, var(--snice-color-primary) 18%, var(--snice-color-surface));
+    --snice-color-primary-subtle-hover: color-mix(in srgb, var(--snice-color-primary) 28%, var(--snice-color-surface));
+    --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 18%, var(--snice-color-surface));
+    --snice-color-success-subtle-hover: color-mix(in srgb, var(--snice-color-success) 28%, var(--snice-color-surface));
+    --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 18%, var(--snice-color-surface));
+    --snice-color-warning-subtle-hover: color-mix(in srgb, var(--snice-color-warning) 28%, var(--snice-color-surface));
+    --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 18%, var(--snice-color-surface));
+    --snice-color-danger-subtle-hover: color-mix(in srgb, var(--snice-color-danger) 28%, var(--snice-color-surface));
+
+    --snice-shadow-xs: 0 0 0 1px hsl(0 0% 100% / 0.05), 0 1px 2px 0 hsl(0 0% 0% / 0.4);
+    --snice-shadow-sm: 0 0 0 1px hsl(0 0% 100% / 0.06), 0 2px 4px 0 hsl(0 0% 0% / 0.4);
+    --snice-shadow-md: 0 0 0 1px hsl(0 0% 100% / 0.07), 0 4px 10px -2px hsl(0 0% 0% / 0.45);
+    --snice-shadow-lg: 0 0 0 1px hsl(0 0% 100% / 0.08), 0 10px 24px -4px hsl(0 0% 0% / 0.5);
+    --snice-shadow-xl: 0 0 0 1px hsl(0 0% 100% / 0.08), 0 20px 32px -6px hsl(0 0% 0% / 0.55);
+    --snice-shadow-2xl: 0 0 0 1px hsl(0 0% 100% / 0.1), 0 25px 50px -12px hsl(0 0% 0% / 0.65);
+    --snice-shadow-inset-sm: inset 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+    --snice-shadow-inset-md: inset 0 2px 4px 0 hsl(0 0% 0% / 0.4);
+
+    --snice-gradient-subtle: linear-gradient(to bottom, hsl(0 0% 100% / 0.04), transparent 60%);
+    --snice-gradient-convex: linear-gradient(to bottom, hsl(0 0% 100% / 0.08), transparent 70%);
+    --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.03), transparent 50%);
+
+    --snice-color-scheme-filter: invert(1) hue-rotate(180deg);
+    color-scheme: dark;
+  }
+}

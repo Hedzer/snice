@@ -9,7 +9,19 @@ import { parseModuleAst } from './parser';
 type AstNode = Record<string, any>;
 
 const SNICE_SPECIFIERS = new Set(['snice', 'snice/index', 'snice/index.js']);
-const THEME_CSS_ID_RE = /(?:^|[\\/])theme[\\/]theme\.css(?:\?.*)?$/;
+export const SNICE_THEME_SLICES = new Set([
+  'theme.css',
+  'core.css',
+  'dark.css',
+  'accents.css',
+  'effects.css',
+  'density.css',
+  'motion.css',
+  'print.css',
+]);
+const SNICE_THEME_SLICE_ID_RE =
+  /(?:^|[\\/])(?:snice[\\/](?:dist[\\/])?components|packages[\\/]components[\\/]src)[\\/]theme[\\/](theme|core|dark|accents|effects|density|motion|print)\.css(?:\?.*)?$/;
+const GENERIC_THEME_CSS_ID_RE = /(?:^|[\\/])theme[\\/]theme\.css(?:\?.*)?$/;
 const CALC_FN_NAMES = new Set(['calc', 'min', 'max', 'clamp']);
 const SNICE_TOKEN_RE = /--snice-[a-zA-Z0-9_-]+/g;
 const DYNAMIC_TOKEN_PREFIX_RE = /(--snice-[a-zA-Z0-9_-]+-)(?:\$\{|['"`]\s*\+)/g;
@@ -41,7 +53,11 @@ function escapeTemplateQuasi(str: string): string {
 }
 
 export function isThemeCssId(id: string): boolean {
-  return THEME_CSS_ID_RE.test(id);
+  return SNICE_THEME_SLICE_ID_RE.test(id) || GENERIC_THEME_CSS_ID_RE.test(id);
+}
+
+export function isFullThemeCssId(id: string): boolean {
+  return /(?:^|[\\/])theme[\\/]theme\.css(?:\?.*)?$/.test(id);
 }
 
 function isSniceImportSource(source: string): boolean {
@@ -795,11 +811,180 @@ export function collectReferencedSniceTokens(
   }
 }
 
+const BUILTIN_DATA_THEME_VALUES = new Set(['dark', 'light', 'auto']);
+
+function isBuiltinDarkSelector(selector: string): boolean {
+  const s = selector.trim();
+  return /^(?::root|html)?\s*\[\s*data-theme\s*=\s*(?:"dark"|'dark'|dark)\s*\]$/.test(s);
+}
+
+function isCustomDataThemeSelector(selector: string): boolean {
+  const re = /\[\s*data-theme\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s\]]+))\s*\]/g;
+  let found = false;
+  for (const m of selector.matchAll(re)) {
+    const val = (m[1] ?? m[2] ?? m[3] ?? '').trim();
+    if (val && !BUILTIN_DATA_THEME_VALUES.has(val)) {
+      found = true;
+    }
+  }
+  return found;
+}
+
+function isBuiltinAutoDarkChildSelector(selector: string): boolean {
+  const s = selector.trim();
+  return (
+    /^:root:not\(\[\s*data-theme(?:\s*=\s*(?:"light"|'light'|light))?\s*\]\)$/.test(s) ||
+    /^:root\[\s*data-theme\s*=\s*(?:"auto"|'auto'|auto)\s*\]$/.test(s)
+  );
+}
+
+function isDensitySelector(selector: string): boolean {
+  const s = selector.trim();
+  return /^(?::root|html)?\s*\[\s*data-density\s*=\s*(?:"(?:compact|spacious)"|'(?:compact|spacious)'|(?:compact|spacious))\s*\]$/.test(
+    s
+  );
+}
+
+function isMotionSelector(selector: string): boolean {
+  const s = selector.trim();
+  return /\[\s*data-motion\s*=\s*(?:"(?:reduce|off)"|'(?:reduce|off)'|(?:reduce|off))\s*\]/.test(s);
+}
+
+export interface PruneThemeFeatureOptions {
+  dark?: boolean | 'auto' | 'manual';
+  density?: boolean;
+  motion?: boolean;
+  print?: boolean;
+}
+
+/**
+ * Strip selected built-in Snice feature blocks (`dark`, `density`, `motion`, `print`)
+ * from an emitted Snice theme stylesheet while ALWAYS preserving custom user
+ * `[data-theme="<custom>"]` blocks untouched.
+ */
+export function pruneThemeFeatureBlocks(
+  themeCss: string,
+  options?: PruneThemeFeatureOptions
+): string {
+  if (!options) return themeCss;
+  const stripManualDark = options.dark === false || options.dark === 'auto';
+  const stripAutoDark = options.dark === false || options.dark === 'manual';
+  const stripDensity = options.density === false;
+  const stripMotion = options.motion === false;
+  const stripPrint = options.print === false;
+
+  if (!stripManualDark && !stripAutoDark && !stripDensity && !stripMotion && !stripPrint) {
+    return themeCss;
+  }
+
+  const blocks = parseCssBlocks(themeCss);
+  let changed = false;
+
+  const filterNodes = (nodes: CssBlockNode[]): CssBlockNode[] => {
+    const kept: CssBlockNode[] = [];
+    for (const node of nodes) {
+      if (node.kind === 'at-rule') {
+        const hdr = node.header.trim();
+        if (stripPrint && /^@media\s+print\b/i.test(hdr)) {
+          changed = true;
+          continue;
+        }
+        if (stripMotion && /^@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)$/i.test(hdr)) {
+          changed = true;
+          continue;
+        }
+        if (stripAutoDark && /^@media\s*\(\s*prefers-color-scheme\s*:\s*dark\s*\)$/i.test(hdr)) {
+          // Only strip Snice's built-in auto-dark inner rules; preserve any custom user rules inside @media
+          const remainingChildren: CssBlockNode[] = [];
+          for (const child of node.children) {
+            if (child.kind === 'rule') {
+              const sels = child.header.split(',').map((s) => s.trim()).filter(Boolean);
+              const keptSels = sels.filter((s) => !isBuiltinAutoDarkChildSelector(s));
+              if (keptSels.length === 0) {
+                changed = true;
+                continue;
+              }
+              if (keptSels.length !== sels.length) {
+                changed = true;
+                remainingChildren.push({ ...child, header: keptSels.join(',') });
+                continue;
+              }
+            }
+            remainingChildren.push(child);
+          }
+          if (remainingChildren.length === 0) {
+            changed = true;
+            continue;
+          }
+          kept.push({ ...node, children: remainingChildren });
+          continue;
+        }
+        if (node.children.length > 0) {
+          const nextChildren = filterNodes(node.children);
+          if (nextChildren.length === 0) {
+            changed = true;
+            continue;
+          }
+          kept.push({ ...node, children: nextChildren });
+          continue;
+        }
+        kept.push(node);
+        continue;
+      }
+
+      // Rule node: filter individual comma-separated selectors so custom [data-theme="brand"] is NEVER lost
+      const sels = node.header.split(',').map((s) => s.trim()).filter(Boolean);
+      const keptSels = sels.filter((sel) => {
+        if (isCustomDataThemeSelector(sel)) return true;
+        if (stripManualDark && isBuiltinDarkSelector(sel)) return false;
+        if (stripDensity && isDensitySelector(sel)) return false;
+        if (stripMotion && isMotionSelector(sel)) return false;
+        return true;
+      });
+
+      if (keptSels.length === 0) {
+        changed = true;
+        continue;
+      }
+      if (keptSels.length !== sels.length) {
+        changed = true;
+        kept.push({ ...node, header: keptSels.join(',') });
+        continue;
+      }
+      kept.push(node);
+    }
+    return kept;
+  };
+
+  const filtered = filterNodes(blocks);
+  if (!changed) return themeCss;
+
+  const emitNodes = (nodes: CssBlockNode[]): string => {
+    const out: string[] = [];
+    for (const node of nodes) {
+      if (node.kind === 'at-rule') {
+        if (node.children.length === 0) {
+          if (node.header) out.push(node.header);
+        } else {
+          const inner = emitNodes(node.children);
+          if (inner) out.push(`${node.header}{${inner}}`);
+        }
+      } else {
+        out.push(`${node.header}{${node.body}}`);
+      }
+    }
+    return out.join('');
+  };
+
+  return emitNodes(filtered);
+}
+
 /**
  * Prune unused `--snice-*` declarations from `theme.css` using O(T + E)
  * cross-block transitive dependency closure across ALL blocks (`:root`,
  * `[data-theme="dark"]`, `@media (prefers-color-scheme: dark)`, density,
- * print, motion). Removes empty blocks cleanly.
+ * print, motion). Removes empty blocks cleanly and ALWAYS preserves custom
+ * user `[data-theme="<custom>"]` blocks and their transitive token dependencies.
  */
 export function pruneThemeCss(
   themeCss: string,
@@ -809,9 +994,15 @@ export function pruneThemeCss(
 ): string {
   const blocks = parseCssBlocks(themeCss);
 
-  // 1. Collect all declared --snice-* tokens and build cross-block dependency edges
+  // 1. Collect all declared --snice-* tokens and build cross-block dependency edges.
+  //    Also seed any tokens defined or referenced inside custom user [data-theme="<custom>"] blocks.
   const allDeclared = new Set<string>();
   const deps = new Map<string, Set<string>>();
+  const customThemeSeedTokens = new Set<string>();
+
+  const isCustomBlock = (node: CssBlockNode): boolean =>
+    node.kind === 'rule' &&
+    node.header.split(',').some((sel) => isCustomDataThemeSelector(sel));
 
   const visitCollect = (nodes: CssBlockNode[]) => {
     for (const node of nodes) {
@@ -820,7 +1011,18 @@ export function pruneThemeCss(
         continue;
       }
       if (node.kind !== 'rule') continue;
+      const custom = isCustomBlock(node);
       for (const decl of splitCssDeclarations(node.body)) {
+        if (custom) {
+          if (decl.prop.startsWith('--snice-')) {
+            customThemeSeedTokens.add(decl.prop);
+          }
+          if (decl.value.includes('--snice-')) {
+            for (const m of decl.value.matchAll(SNICE_TOKEN_RE)) {
+              customThemeSeedTokens.add(m[0]);
+            }
+          }
+        }
         if (!decl.prop.startsWith('--snice-')) continue;
         allDeclared.add(decl.prop);
         let edgeSet = deps.get(decl.prop);
@@ -840,7 +1042,7 @@ export function pruneThemeCss(
   };
   visitCollect(blocks);
 
-  // 2. Seed BFS queue from referenced tokens, dynamic prefixes, and safelist
+  // 2. Seed BFS queue from referenced tokens, custom theme tokens, dynamic prefixes, and safelist
   const kept = new Set<string>();
   const queue: string[] = [];
   const enqueue = (token: string) => {
@@ -851,6 +1053,9 @@ export function pruneThemeCss(
   };
 
   for (const tok of referencedTokens) {
+    if (allDeclared.has(tok)) enqueue(tok);
+  }
+  for (const tok of customThemeSeedTokens) {
     if (allDeclared.has(tok)) enqueue(tok);
   }
   for (const declTok of allDeclared) {
@@ -891,6 +1096,7 @@ export function pruneThemeCss(
   }
 
   // 4. Reconstruct pruned CSS, dropping unreferenced --snice-* decls and empty blocks
+  //    while ALWAYS keeping custom user [data-theme="<custom>"] blocks intact.
   const emitBlocks = (nodes: CssBlockNode[]): string => {
     const parts: string[] = [];
     for (const node of nodes) {
@@ -905,10 +1111,11 @@ export function pruneThemeCss(
         }
         continue;
       }
+      const custom = isCustomBlock(node);
       const decls = splitCssDeclarations(node.body);
       const keptDecls: string[] = [];
       for (const decl of decls) {
-        if (decl.prop.startsWith('--snice-')) {
+        if (!custom && decl.prop.startsWith('--snice-')) {
           if (kept.has(decl.prop)) {
             keptDecls.push(`${decl.prop}:${decl.value}`);
           }

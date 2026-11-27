@@ -428,18 +428,22 @@ export default [
           return null;
         }
       },
-      // Plugin to copy theme.css for CDN builds
+      // Plugin to copy theme.css and modular theme/*.css slices
       {
         name: 'copy-theme',
         generateBundle() {
-          const themeSrc = `${componentSource}/theme/theme.css`;
+          const themeSrcDir = `${componentSource}/theme`;
           const themeDest = 'dist/components/theme';
 
-          if (fs.existsSync(themeSrc)) {
+          if (fs.existsSync(themeSrcDir)) {
             if (!fs.existsSync(themeDest)) {
               fs.mkdirSync(themeDest, { recursive: true });
             }
-            fs.copyFileSync(themeSrc, path.join(themeDest, 'theme.css'));
+            for (const file of fs.readdirSync(themeSrcDir)) {
+              if (file.endsWith('.css')) {
+                fs.copyFileSync(path.join(themeSrcDir, file), path.join(themeDest, file));
+              }
+            }
           }
         }
       },

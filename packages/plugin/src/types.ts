@@ -88,6 +88,28 @@ export interface SniceTableOptions {
 
 export type SniceTableOption = false | 'auto' | SniceTableOptions;
 
+export interface SniceThemeOptions {
+  /** Prune unused --snice-* tokens via cross-block transitive closure (default false; aliases `pruneTheme`). */
+  prune?: boolean;
+  /**
+   * Control Snice's built-in dark theme blocks in emitted theme CSS:
+   * - `true` (default): keep both `[data-theme="dark"]` and `@media (prefers-color-scheme: dark)`
+   * - `'auto'`: keep `@media (prefers-color-scheme: dark)` only
+   * - `'manual'`: keep `[data-theme="dark"]` only
+   * - `false`: strip both built-in dark blocks
+   * Custom user `[data-theme="<custom>"]` blocks are never stripped.
+   */
+  dark?: boolean | 'auto' | 'manual';
+  /** Keep `[data-density="compact"|"spacious"]` blocks (default true; `false` strips). */
+  density?: boolean;
+  /** Keep `prefers-reduced-motion` and `[data-motion="reduce"|"off"]` blocks (default true; `false` strips). */
+  motion?: boolean;
+  /** Keep `@media print` block (default true; `false` strips). */
+  print?: boolean;
+  /** Token names or RegExp patterns always kept during token pruning (merges with `themeSafelist`). */
+  safelist?: (string | RegExp)[];
+}
+
 export interface SnicePluginOptions {
   /** Build-time Snice decorator lowering + TC39 2022-03 fallback (BS-06, default true). */
   decorators?: boolean;
@@ -99,10 +121,12 @@ export interface SnicePluginOptions {
   minifyCss?: boolean;
   /** Allowlisted var(--snice-*, fallback) stripping (BS-08, default 'auto'). */
   stripCssFallbacks?: 'auto' | boolean;
-  /** Opt-in unused theme.css token pruning (BS-08, default false). */
+  /** Opt-in unused theme.css token pruning (BS-08, default false; alias for `theme.prune`). */
   pruneTheme?: boolean;
-  /** Token names or patterns kept when pruneTheme is true (BS-08, default []). */
+  /** Token names or patterns kept when pruneTheme is true (BS-08, default []; alias for `theme.safelist`). */
   themeSafelist?: (string | RegExp)[];
+  /** Modular theme feature-block & token pruning options (preserves custom user `[data-theme="..."]` blocks). */
+  theme?: SniceThemeOptions;
   /** Dev diagnostics flag: sets __SNICE_DEV__ (default: true in Vite serve/Vitest, false in prod builds; 'preserve' leaves __SNICE_DEV__ untouched for library builds). */
   dev?: boolean | 'preserve';
   /** Deterministic volatility-tiered caching chunks (default true for code-splitting builds). */
@@ -156,6 +180,34 @@ export function validateOptions(options: unknown): SnicePluginOptions {
       !opts.themeSafelist.every((item) => typeof item === 'string' || item instanceof RegExp)
     ) {
       throw new TypeError('snice plugin: "themeSafelist" must be an array of strings or RegExp.');
+    }
+  }
+
+  if (opts.theme !== undefined) {
+    if (typeof opts.theme !== 'object' || opts.theme === null || Array.isArray(opts.theme)) {
+      throw new TypeError('snice plugin: "theme" must be a SniceThemeOptions object.');
+    }
+    const theme = opts.theme as Record<string, unknown>;
+    assertBooleanOrUndefined(theme.prune, 'theme.prune');
+    assertBooleanOrUndefined(theme.density, 'theme.density');
+    assertBooleanOrUndefined(theme.motion, 'theme.motion');
+    assertBooleanOrUndefined(theme.print, 'theme.print');
+    if (
+      theme.dark !== undefined &&
+      typeof theme.dark !== 'boolean' &&
+      theme.dark !== 'auto' &&
+      theme.dark !== 'manual'
+    ) {
+      throw new TypeError(
+        `snice plugin: "theme.dark" must be a boolean, "auto", or "manual", received ${JSON.stringify(theme.dark)}.`
+      );
+    }
+    if (
+      theme.safelist !== undefined &&
+      (!Array.isArray(theme.safelist) ||
+        !theme.safelist.every((item) => typeof item === 'string' || item instanceof RegExp))
+    ) {
+      throw new TypeError('snice plugin: "theme.safelist" must be an array of strings or RegExp.');
     }
   }
 

@@ -704,7 +704,18 @@ const RULE_DEFINITIONS = [
         if (
           COMPONENT_MODULE_PATHS.has(path) ||
           COMPONENT_UTILITY_MODULE_PATHS.has(path) ||
-          ['snice/components/icons', 'snice/components/custom-elements', 'snice/components/theme/theme.css'].includes(path)
+          [
+            'snice/components/icons',
+            'snice/components/custom-elements',
+            'snice/components/theme/theme.css',
+            'snice/components/theme/core.css',
+            'snice/components/theme/dark.css',
+            'snice/components/theme/accents.css',
+            'snice/components/theme/effects.css',
+            'snice/components/theme/density.css',
+            'snice/components/theme/motion.css',
+            'snice/components/theme/print.css',
+          ].includes(path)
         ) continue;
 
         const segments = path.slice('snice/components/'.length).split('/');

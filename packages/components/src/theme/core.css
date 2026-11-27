@@ -1,0 +1,247 @@
+/* Snice Theme — Core slice
+   HSL primitives, light semantic colors (with CSS-first color-mix() derivation),
+   surfaces, borders, overlays, spacing, typography, radius, transitions, z-index, focus rings.
+   Pair optionally with dark.css, accents.css, effects.css, density.css, motion.css, print.css. */
+:root {
+  /* Color primitives - HSL format (hue saturation% lightness%) */
+  --snice-color-gray-50: 0 0% 98%;
+  --snice-color-gray-100: 0 0% 95%;
+  --snice-color-gray-200: 0 0% 89%;
+  --snice-color-gray-300: 0 0% 82%;
+  --snice-color-gray-400: 0 0% 64%;
+  --snice-color-gray-500: 0 0% 45%;
+  --snice-color-gray-600: 0 0% 32%;
+  --snice-color-gray-700: 0 0% 25%;
+  --snice-color-gray-800: 0 0% 15%;
+  --snice-color-gray-900: 0 0% 9%;
+  --snice-color-gray-950: 0 0% 4%;
+
+  --snice-color-blue-50: 214 100% 97%;
+  --snice-color-blue-100: 214 95% 93%;
+  --snice-color-blue-200: 213 97% 87%;
+  --snice-color-blue-300: 212 96% 78%;
+  --snice-color-blue-400: 213 94% 68%;
+  --snice-color-blue-500: 217 91% 60%;
+  --snice-color-blue-600: 217 83% 53%;
+  --snice-color-blue-700: 217 77% 48%;
+  --snice-color-blue-800: 217 71% 40%;
+  --snice-color-blue-900: 218 65% 33%;
+  --snice-color-blue-950: 221 56% 21%;
+
+  --snice-color-purple-100: 270 89% 94%;
+  --snice-color-purple-300: 270 80% 76%;
+  --snice-color-purple-500: 271 77% 57%;
+  --snice-color-purple-700: 273 71% 42%;
+
+  --snice-color-green-50: 138 76% 97%;
+  --snice-color-green-100: 141 84% 93%;
+  --snice-color-green-200: 141 79% 85%;
+  --snice-color-green-300: 142 77% 73%;
+  --snice-color-green-400: 142 69% 58%;
+  --snice-color-green-500: 142 71% 45%;
+  --snice-color-green-600: 142 76% 36%;
+  --snice-color-green-700: 142 72% 29%;
+  --snice-color-green-800: 143 64% 24%;
+  --snice-color-green-900: 144 61% 20%;
+  --snice-color-green-950: 145 80% 10%;
+
+  --snice-color-red-50: 0 86% 97%;
+  --snice-color-red-100: 0 93% 94%;
+  --snice-color-red-200: 0 96% 89%;
+  --snice-color-red-300: 0 94% 82%;
+  --snice-color-red-400: 0 91% 71%;
+  --snice-color-red-500: 0 84% 60%;
+  --snice-color-red-600: 0 72% 51%;
+  --snice-color-red-700: 0 74% 42%;
+  --snice-color-red-800: 0 70% 35%;
+  --snice-color-red-900: 0 63% 31%;
+  --snice-color-red-950: 0 75% 15%;
+
+  --snice-color-yellow-50: 55 92% 95%;
+  --snice-color-yellow-100: 55 97% 88%;
+  --snice-color-yellow-200: 53 98% 77%;
+  --snice-color-yellow-300: 50 98% 64%;
+  --snice-color-yellow-400: 48 96% 53%;
+  --snice-color-yellow-500: 45 93% 47%;
+  --snice-color-yellow-600: 41 96% 40%;
+  --snice-color-yellow-700: 36 88% 33%;
+  --snice-color-yellow-800: 32 81% 29%;
+  --snice-color-yellow-900: 28 73% 26%;
+  --snice-color-yellow-950: 24 71% 14%;
+
+  /* Light theme (default) — override these semantic seeds and hover, subtle,
+     focus rings, selection overlays, alpha tints, and glows derive automatically. */
+  --snice-color-primary: hsl(var(--snice-color-blue-600));
+  --snice-color-success: hsl(var(--snice-color-green-600));
+  --snice-color-warning: hsl(var(--snice-color-yellow-600));
+  --snice-color-danger: hsl(var(--snice-color-red-600));
+  --snice-color-neutral: hsl(var(--snice-color-gray-600));
+
+  /* Brand color */
+  --snice-color-brand: var(--snice-color-primary);
+  --snice-color-brand-hover: var(--snice-color-primary-hover);
+  --snice-color-brand-subtle: var(--snice-color-primary-subtle);
+
+  /* Derived hover states */
+  --snice-color-primary-hover: color-mix(in srgb, var(--snice-color-primary) 86%, black);
+  --snice-color-success-hover: color-mix(in srgb, var(--snice-color-success) 82%, black);
+  --snice-color-warning-hover: color-mix(in srgb, var(--snice-color-warning) 78%, black);
+  --snice-color-danger-hover: color-mix(in srgb, var(--snice-color-danger) 82%, black);
+  --snice-color-neutral-hover: color-mix(in srgb, var(--snice-color-neutral) 78%, black);
+
+  /* Semantic text colors */
+  --snice-color-text: hsl(var(--snice-color-gray-900));
+  --snice-color-text-secondary: hsl(var(--snice-color-gray-600));
+  --snice-color-text-tertiary: hsl(var(--snice-color-gray-500));
+  --snice-color-text-inverse: hsl(var(--snice-color-gray-50));
+
+  /* Surface density scale */
+  --snice-color-surface:                   hsl(0 0% 100%);
+  --snice-color-surface-container-lowest:  hsl(0 0% 100%);
+  --snice-color-surface-container-low:     hsl(var(--snice-color-gray-50));
+  --snice-color-surface-container:         hsl(var(--snice-color-gray-100));
+  --snice-color-surface-container-high:    hsl(40 9% 97%);
+  --snice-color-surface-container-highest: hsl(0 0% 100%);
+
+  /* Borders */
+  --snice-color-border: hsl(var(--snice-color-gray-300));
+  --snice-color-border-hover: hsl(var(--snice-color-gray-400));
+  --snice-color-border-focus: color-mix(in srgb, var(--snice-color-primary) 85%, white);
+  --snice-color-border-subtle: hsl(0 0% 0% / 0.12);
+
+  /* Interactive surface states */
+  --snice-color-surface-hover: hsl(var(--snice-color-gray-100));
+  --snice-color-surface-active: hsl(var(--snice-color-gray-200));
+  --snice-color-surface-disabled: hsl(var(--snice-color-gray-100));
+  --snice-color-text-disabled: hsl(var(--snice-color-gray-400));
+
+  /* Alpha overlays */
+  --snice-color-overlay-hover: hsl(0 0% 0% / 0.04);
+  --snice-color-overlay-selected: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+  --snice-color-overlay-selected-hover: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  --snice-color-overlay-stripe: hsl(0 0% 0% / 0.02);
+
+  /* Derived subtle surfaces */
+  --snice-color-primary-subtle: color-mix(in srgb, var(--snice-color-primary) 8%, var(--snice-color-surface));
+  --snice-color-primary-subtle-hover: color-mix(in srgb, var(--snice-color-primary) 15%, var(--snice-color-surface));
+  --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 8%, var(--snice-color-surface));
+  --snice-color-success-subtle-hover: color-mix(in srgb, var(--snice-color-success) 15%, var(--snice-color-surface));
+  --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 10%, var(--snice-color-surface));
+  --snice-color-warning-subtle-hover: color-mix(in srgb, var(--snice-color-warning) 18%, var(--snice-color-surface));
+  --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 8%, var(--snice-color-surface));
+  --snice-color-danger-subtle-hover: color-mix(in srgb, var(--snice-color-danger) 15%, var(--snice-color-surface));
+
+  /* Spacing */
+  --snice-spacing-3xs: 0.125rem;
+  --snice-spacing-2xs: 0.25rem;
+  --snice-spacing-xs: 0.5rem;
+  --snice-spacing-sm: 0.75rem;
+  --snice-spacing-md: 1rem;
+  --snice-spacing-lg: 1.5rem;
+  --snice-spacing-xl: 2rem;
+  --snice-spacing-2xl: 3rem;
+  --snice-spacing-3xl: 4rem;
+  --snice-spacing-4xl: 6rem;
+  --snice-spacing-5xl: 8rem;
+
+  /* Typography */
+  --snice-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --snice-font-family-display: var(--snice-font-family);
+  --snice-font-family-mono: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+
+  --snice-font-size-2xs: 0.625rem;
+  --snice-font-size-xs: 0.75rem;
+  --snice-font-size-sm: 0.875rem;
+  --snice-font-size-md: 1rem;
+  --snice-font-size-lg: 1.125rem;
+  --snice-font-size-xl: 1.25rem;
+  --snice-font-size-2xl: 1.5rem;
+  --snice-font-size-3xl: 1.875rem;
+  --snice-font-size-4xl: 2.25rem;
+
+  --snice-font-weight-light: 300;
+  --snice-font-weight-normal: 400;
+  --snice-font-weight-medium: 500;
+  --snice-font-weight-semibold: 600;
+  --snice-font-weight-bold: 700;
+
+  --snice-heading-xs: var(--snice-font-size-sm);
+  --snice-heading-sm: var(--snice-font-size-md);
+  --snice-heading-md: var(--snice-font-size-lg);
+  --snice-heading-lg: var(--snice-font-size-xl);
+  --snice-heading-xl: var(--snice-font-size-2xl);
+  --snice-heading-2xl: var(--snice-font-size-4xl);
+
+  --snice-line-height-dense: 1.25;
+  --snice-line-height-normal: 1.5;
+  --snice-line-height-loose: 1.75;
+
+  --snice-tracking-tight: -0.02em;
+  --snice-tracking-normal: 0;
+  --snice-tracking-wide: 0.03em;
+  --snice-tracking-widest: 0.1em;
+
+  /* Alpha tints of semantic colors */
+  --snice-color-primary-alpha: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+  --snice-color-primary-alpha-strong: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+  --snice-color-primary-alpha-dark: color-mix(in srgb, var(--snice-color-primary) 24%, transparent);
+  --snice-color-danger-alpha: color-mix(in srgb, var(--snice-color-danger) 10%, transparent);
+  --snice-color-danger-alpha-dark: color-mix(in srgb, var(--snice-color-danger) 24%, transparent);
+  --snice-color-success-alpha: color-mix(in srgb, var(--snice-color-success) 10%, transparent);
+  --snice-color-success-alpha-dark: color-mix(in srgb, var(--snice-color-success) 24%, transparent);
+  --snice-color-warning-alpha: color-mix(in srgb, var(--snice-color-warning) 10%, transparent);
+  --snice-color-warning-alpha-strong: color-mix(in srgb, var(--snice-color-warning) 16%, transparent);
+  --snice-color-warning-alpha-dark: color-mix(in srgb, var(--snice-color-warning) 24%, transparent);
+  --snice-color-text-secondary-alpha: color-mix(in srgb, var(--snice-color-text-secondary) 12%, transparent);
+
+  /* Motion + type + radius aliases */
+  --snice-transition-normal: 250ms;
+  --snice-line-height-tight: 1.25;
+  --snice-line-height-relaxed: 1.75;
+  --snice-border-radius-full: 9999px;
+  --snice-font-size-base: var(--snice-font-size-md);
+
+  /* Border radius */
+  --snice-border-radius-sm: 0.125rem;
+  --snice-border-radius-md: 0.25rem;
+  --snice-border-radius-lg: 0.5rem;
+  --snice-border-radius-xl: 1rem;
+  --snice-border-radius-circle: 50%;
+  --snice-border-radius-pill: 9999px;
+
+  /* Transitions */
+  --snice-transition-fast: 150ms;
+  --snice-transition-medium: 250ms;
+  --snice-transition-slow: 350ms;
+
+  /* Easing curves */
+  --snice-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --snice-ease-in: cubic-bezier(0.64, 0, 0.78, 0);
+  --snice-ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --snice-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --snice-ease-bounce: cubic-bezier(0.17, 0.87, 0.4, 1.32);
+
+  /* Z-index layer scale */
+  --snice-z-base:         0;
+  --snice-z-raised:       1;
+  --snice-z-sticky:       10;
+  --snice-z-fixed:        30;
+  --snice-z-floating:     100;
+  --snice-z-scrim:        1000;
+  --snice-z-overlay:      1100;
+  --snice-z-popover-over: 1200;
+  --snice-z-notification: 1300;
+
+  /* Focus */
+  --snice-focus-ring-width: 2px;
+  --snice-focus-ring-color: color-mix(in srgb, var(--snice-color-primary) 50%, transparent);
+  --snice-focus-ring-offset: 2px;
+  --snice-focus-ring-color-primary: color-mix(in srgb, var(--snice-color-primary) 50%, transparent);
+  --snice-focus-ring-color-success: color-mix(in srgb, var(--snice-color-success) 50%, transparent);
+  --snice-focus-ring-color-warning: color-mix(in srgb, var(--snice-color-warning) 55%, transparent);
+  --snice-focus-ring-color-danger: color-mix(in srgb, var(--snice-color-danger) 50%, transparent);
+
+  /* Color scheme for native controls */
+  --snice-color-scheme-filter: none;
+  color-scheme: light;
+}

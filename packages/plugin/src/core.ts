@@ -11,6 +11,7 @@ import {
   isThemeCssId,
   loadShippedThemeCss,
   pruneThemeCss,
+  pruneThemeFeatureBlocks,
   rehashBundleAsset,
   stripChunkCssFallbacks,
   stripVarFallbacks,
@@ -79,15 +80,26 @@ export function createSniceCorePlugin(
     : null;
 
   // Per-instance build-scoped CSS/theme and table-stripping state (reset in buildStart)
-  let themeDetected = false;
+  let sniceThemeDetected = false;
+  let fullThemeAtImportDetected = false;
   let themeAllowlist: Set<string> | null = null;
   let shippedAllowlistCache: Set<string> | null = null;
   let tableStripConfig: ResolvedTableStripConfig | null = null;
   let tableAutoEvaluated = false;
   let lastTableImporter: string | undefined;
 
+  function addToThemeAllowlist(source: string): boolean {
+    const extracted = extractTopLevelRootAllowlist(source);
+    if (extracted.size === 0) return false;
+    if (!themeAllowlist) themeAllowlist = new Set<string>();
+    for (const token of extracted) {
+      themeAllowlist.add(token);
+    }
+    return true;
+  }
+
   function recordThemeCss(id: string, cssSource?: string): void {
-    themeDetected = true;
+    sniceThemeDetected = true;
     let source = cssSource;
     if (!source) {
       const cleanPath = id.split('?')[0];
@@ -100,10 +112,26 @@ export function createSniceCorePlugin(
       }
     }
     if (source) {
-      const extracted = extractTopLevelRootAllowlist(source);
-      if (extracted.size > 0) {
-        themeAllowlist = extracted;
+      addToThemeAllowlist(source);
+    }
+  }
+
+  function recordCustomThemeCss(id: string, cssSource?: string): void {
+    if (id.includes('?inline')) return;
+    let source = cssSource;
+    if (!source || !source.includes('--snice-')) {
+      const cleanPath = id.split('?')[0];
+      if (existsSync(cleanPath)) {
+        try {
+          const disk = readFileSync(cleanPath, 'utf8');
+          if (disk.includes('--snice-')) source = disk;
+        } catch {
+          // ignore
+        }
       }
+    }
+    if (source && source.includes('--snice-')) {
+      addToThemeAllowlist(source);
     }
   }
 
@@ -111,8 +139,21 @@ export function createSniceCorePlugin(
     const mode = options.stripCssFallbacks ?? 'auto';
     if (mode === false) return null;
     if (mode === 'auto') {
-      if (runtimeEnv.isDev || !themeDetected) return null;
+      if (runtimeEnv.isDev) return null;
+      if (themeAllowlist && themeAllowlist.size > 0) return themeAllowlist;
+      // Only fall back to full shipped theme.css in 'auto' mode if full theme.css was
+      // pulled via CSS @import without hitting our load/transform hooks.
+      // Never broaden partial slice imports (e.g. core.css without effects.css).
+      if (fullThemeAtImportDetected) {
+        if (!shippedAllowlistCache) {
+          const shipped = loadShippedThemeCss();
+          shippedAllowlistCache = shipped ? extractTopLevelRootAllowlist(shipped) : new Set();
+        }
+        return shippedAllowlistCache.size > 0 ? shippedAllowlistCache : null;
+      }
+      return null;
     }
+    // Explicit stripCssFallbacks: true
     if (themeAllowlist && themeAllowlist.size > 0) return themeAllowlist;
     if (!shippedAllowlistCache) {
       const shipped = loadShippedThemeCss();
@@ -123,8 +164,17 @@ export function createSniceCorePlugin(
 
   function isThemeCssAsset(fileName: string, cssContent: string): boolean {
     if (/(?:^|\/)snice-theme(?:-[^/]+)?\.css$/.test(fileName)) return true;
-    if (/(?:^|\/)theme\.css$/.test(fileName)) return true;
-    if (themeDetected && cssContent.includes('--snice-color-gray-50:') && cssContent.includes('--snice-color-primary:')) {
+    if (/(?:^|\/)(?:theme|core|dark|accents|effects|density|motion|print)\.css$/.test(fileName) && sniceThemeDetected) {
+      return true;
+    }
+    if (
+      sniceThemeDetected &&
+      (cssContent.includes('--snice-color-gray-50:') ||
+        cssContent.includes('--snice-shadow-glow-primary:') ||
+        cssContent.includes('--snice-color-accent-1:') ||
+        cssContent.includes('[data-density=') ||
+        cssContent.includes('[data-motion='))
+    ) {
       return true;
     }
     return false;
@@ -135,7 +185,8 @@ export function createSniceCorePlugin(
 
     buildStart() {
       chunkController?.reset();
-      themeDetected = false;
+      sniceThemeDetected = false;
+      fullThemeAtImportDetected = false;
       themeAllowlist = null;
       lastTableImporter = undefined;
       tableAutoEvaluated = false;
@@ -163,7 +214,7 @@ export function createSniceCorePlugin(
         }
       }
       if (isThemeCssId(id)) {
-        themeDetected = true;
+        sniceThemeDetected = true;
       }
       return null;
     },
@@ -177,6 +228,8 @@ export function createSniceCorePlugin(
       }
       if (isThemeCssId(id)) {
         recordThemeCss(id);
+      } else if (id.split('?')[0].endsWith('.css')) {
+        recordCustomThemeCss(id);
       }
       return null;
     },
@@ -185,13 +238,25 @@ export function createSniceCorePlugin(
       if (id === TC39_VIRTUAL_ID || id.startsWith('\0')) return null;
       const cleanId = id.split('?')[0];
 
-      // Track theme.css in the module graph (direct JS import or CSS @import)
+      // Track Snice theme slices & user custom theme CSS in the module graph
       if (isThemeCssId(id)) {
-        recordThemeCss(id, code.trimStart().startsWith(':') || code.includes('--snice-color-gray-50') ? code : undefined);
+        const looksRawCss =
+          code.includes('--snice-') ||
+          code.includes('@media') ||
+          code.includes('[data-');
+        recordThemeCss(id, looksRawCss ? code : undefined);
         return null;
       }
-      if (cleanId.endsWith('.css') && /@import\s+['"][^'"]*theme\/theme\.css['"]/.test(code)) {
-        themeDetected = true;
+      if (cleanId.endsWith('.css')) {
+        if (/@import\s+['"][^'"]*theme\/theme\.css['"]/.test(code)) {
+          sniceThemeDetected = true;
+          fullThemeAtImportDetected = true;
+        } else if (
+          /@import\s+['"][^'"]*theme\/(?:core|dark|accents|effects|density|motion|print)\.css['"]/.test(code)
+        ) {
+          sniceThemeDetected = true;
+        }
+        recordCustomThemeCss(id, code);
         return null;
       }
 
@@ -354,21 +419,41 @@ export function createSniceCorePlugin(
           }
         }
 
-        // 2. Opt-in transitive theme.css token pruning (re-hashes emitted asset & updates references)
-        if (options.pruneTheme === true && !runtimeEnv.isDev && themeAssetNames.length > 0) {
+        // 2. Optional theme feature-block pruning (`theme: { dark, density, motion, print }`)
+        //    followed by opt-in transitive token pruning (`theme.prune` / `pruneTheme`).
+        //    Re-hashes emitted asset & updates references cleanly; preserves custom [data-theme="..."] blocks.
+        const themeOpts = options.theme;
+        const hasFeaturePruning = Boolean(
+          themeOpts &&
+            (themeOpts.dark === false ||
+              themeOpts.dark === 'auto' ||
+              themeOpts.dark === 'manual' ||
+              themeOpts.density === false ||
+              themeOpts.motion === false ||
+              themeOpts.print === false)
+        );
+        const shouldPruneTokens = (themeOpts?.prune ?? options.pruneTheme) === true;
+        const mergedSafelist = [
+          ...(options.themeSafelist ?? []),
+          ...(themeOpts?.safelist ?? []),
+        ];
+
+        if ((hasFeaturePruning || shouldPruneTokens) && !runtimeEnv.isDev && themeAssetNames.length > 0) {
           const referencedTokens = new Set<string>();
           const dynamicPrefixes = new Set<string>();
-          const themeSet = new Set(themeAssetNames);
 
-          for (const [fileName, item] of Object.entries(bundle)) {
-            if (themeSet.has(fileName)) continue;
-            if (item.type === 'chunk' && typeof item.code === 'string') {
-              collectReferencedSniceTokens(item.code, referencedTokens, dynamicPrefixes);
-            } else if (item.type === 'asset') {
-              const src = typeof item.source === 'string'
-                ? item.source
-                : Buffer.from(item.source).toString('utf8');
-              collectReferencedSniceTokens(src, referencedTokens, dynamicPrefixes);
+          if (shouldPruneTokens) {
+            const themeSet = new Set(themeAssetNames);
+            for (const [fileName, item] of Object.entries(bundle)) {
+              if (themeSet.has(fileName)) continue;
+              if (item.type === 'chunk' && typeof item.code === 'string') {
+                collectReferencedSniceTokens(item.code, referencedTokens, dynamicPrefixes);
+              } else if (item.type === 'asset') {
+                const src = typeof item.source === 'string'
+                  ? item.source
+                  : Buffer.from(item.source).toString('utf8');
+                collectReferencedSniceTokens(src, referencedTokens, dynamicPrefixes);
+              }
             }
           }
 
@@ -378,14 +463,20 @@ export function createSniceCorePlugin(
             const cssText = typeof asset.source === 'string'
               ? asset.source
               : Buffer.from(asset.source).toString('utf8');
-            const pruned = pruneThemeCss(
-              cssText,
-              referencedTokens,
-              dynamicPrefixes,
-              options.themeSafelist ?? []
-            );
-            if (pruned !== cssText) {
-              rehashBundleAsset(bundle, themeFile, pruned);
+            let nextCss = cssText;
+            if (hasFeaturePruning && themeOpts) {
+              nextCss = pruneThemeFeatureBlocks(nextCss, themeOpts);
+            }
+            if (shouldPruneTokens) {
+              nextCss = pruneThemeCss(
+                nextCss,
+                referencedTokens,
+                dynamicPrefixes,
+                mergedSafelist
+              );
+            }
+            if (nextCss !== cssText) {
+              rehashBundleAsset(bundle, themeFile, nextCss);
             }
           }
         }

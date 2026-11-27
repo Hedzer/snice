@@ -65,7 +65,8 @@
   --snice-color-yellow-900: 28 73% 26%;
   --snice-color-yellow-950: 24 71% 14%;
 
-  /* Light theme (default) */
+  /* Light theme (default) — override these semantic seeds and hover, subtle,
+     focus rings, selection overlays, alpha tints, and glows derive automatically. */
   --snice-color-primary: hsl(var(--snice-color-blue-600));
   --snice-color-success: hsl(var(--snice-color-green-600));
   --snice-color-warning: hsl(var(--snice-color-yellow-600));
@@ -92,13 +93,14 @@
   --snice-color-accent-7: hsl(110 32% 42%);   /* olive green */
   --snice-color-accent-8: hsl(195 45% 46%);   /* slate cyan */
 
-  --snice-color-primary-hover: hsl(var(--snice-color-blue-700));
-  --snice-color-success-hover: hsl(var(--snice-color-green-700));
-  --snice-color-warning-hover: hsl(var(--snice-color-yellow-700));
-  --snice-color-danger-hover: hsl(var(--snice-color-red-700));
-  --snice-color-neutral-hover: hsl(var(--snice-color-gray-700));
+  /* Derived hover states — automatically re-theme when semantic seeds change */
+  --snice-color-primary-hover: color-mix(in srgb, var(--snice-color-primary) 86%, black);
+  --snice-color-success-hover: color-mix(in srgb, var(--snice-color-success) 82%, black);
+  --snice-color-warning-hover: color-mix(in srgb, var(--snice-color-warning) 78%, black);
+  --snice-color-danger-hover: color-mix(in srgb, var(--snice-color-danger) 82%, black);
+  --snice-color-neutral-hover: color-mix(in srgb, var(--snice-color-neutral) 78%, black);
 
-  /* Semantic colors */
+  /* Semantic text colors */
   --snice-color-text: hsl(var(--snice-color-gray-900));
   --snice-color-text-secondary: hsl(var(--snice-color-gray-600));
   --snice-color-text-tertiary: hsl(var(--snice-color-gray-500));
@@ -116,7 +118,7 @@
 
   --snice-color-border: hsl(var(--snice-color-gray-300));
   --snice-color-border-hover: hsl(var(--snice-color-gray-400));
-  --snice-color-border-focus: hsl(var(--snice-color-blue-500));
+  --snice-color-border-focus: color-mix(in srgb, var(--snice-color-primary) 85%, white);
   /* Alpha-based subtle border — composites correctly over tinted surfaces. */
   --snice-color-border-subtle: hsl(0 0% 0% / 0.12);
 
@@ -132,22 +134,23 @@
      surface color rather than swapping background. Composites over any bg
      (white, tinted, primary) without fighting the palette. */
   --snice-color-overlay-hover: hsl(0 0% 0% / 0.04);
-  --snice-color-overlay-selected: hsl(var(--snice-color-blue-500) / 0.08);
-  --snice-color-overlay-selected-hover: hsl(var(--snice-color-blue-500) / 0.12);
+  --snice-color-overlay-selected: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+  --snice-color-overlay-selected-hover: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
   /* Zebra tint for alternating rows. Not a surface step: a solid surface token
      lands within a couple of luminance points of the body on ONE of the two
      themes and the striping disappears there. An alpha tint is tuned per
      theme, and composites over pinned/selected/tinted cells alike. */
   --snice-color-overlay-stripe: hsl(0 0% 0% / 0.02);
 
-  --snice-color-primary-subtle: hsl(var(--snice-color-blue-50));
-  --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-100));
-  --snice-color-success-subtle: hsl(var(--snice-color-green-50));
-  --snice-color-success-subtle-hover: hsl(var(--snice-color-green-100));
-  --snice-color-warning-subtle: hsl(var(--snice-color-yellow-50));
-  --snice-color-warning-subtle-hover: hsl(var(--snice-color-yellow-100));
-  --snice-color-danger-subtle: hsl(var(--snice-color-red-50));
-  --snice-color-danger-subtle-hover: hsl(var(--snice-color-red-100));
+  /* Derived subtle surfaces — automatically adapt to both semantic seeds and surface color */
+  --snice-color-primary-subtle: color-mix(in srgb, var(--snice-color-primary) 8%, var(--snice-color-surface));
+  --snice-color-primary-subtle-hover: color-mix(in srgb, var(--snice-color-primary) 15%, var(--snice-color-surface));
+  --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 8%, var(--snice-color-surface));
+  --snice-color-success-subtle-hover: color-mix(in srgb, var(--snice-color-success) 15%, var(--snice-color-surface));
+  --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 10%, var(--snice-color-surface));
+  --snice-color-warning-subtle-hover: color-mix(in srgb, var(--snice-color-warning) 18%, var(--snice-color-surface));
+  --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 8%, var(--snice-color-surface));
+  --snice-color-danger-subtle-hover: color-mix(in srgb, var(--snice-color-danger) 15%, var(--snice-color-surface));
 
   /* Spacing — regular scale. Upper end (4xl, 5xl) is for editorial surfaces
      like hero sections, marketing pages, empty states that want generous
@@ -247,10 +250,10 @@
   /* Colored glow shadows — for selected / focused / elevated interactive
      surfaces that want an accent halo instead of a neutral drop. Used via
      box-shadow: var(--snice-shadow-glow-primary). */
-  --snice-shadow-glow-primary: 0 0 0 4px hsl(var(--snice-color-blue-500) / 0.18), 0 4px 16px -4px hsl(var(--snice-color-blue-500) / 0.35);
-  --snice-shadow-glow-success: 0 0 0 4px hsl(var(--snice-color-green-500) / 0.18), 0 4px 16px -4px hsl(var(--snice-color-green-500) / 0.35);
-  --snice-shadow-glow-danger:  0 0 0 4px hsl(var(--snice-color-red-500)   / 0.18), 0 4px 16px -4px hsl(var(--snice-color-red-500)   / 0.35);
-  --snice-shadow-glow-warning: 0 0 0 4px hsl(var(--snice-color-yellow-500) / 0.2), 0 4px 16px -4px hsl(var(--snice-color-yellow-500) / 0.4);
+  --snice-shadow-glow-primary: 0 0 0 4px color-mix(in srgb, var(--snice-color-primary) 18%, transparent), 0 4px 16px -4px color-mix(in srgb, var(--snice-color-primary) 35%, transparent);
+  --snice-shadow-glow-success: 0 0 0 4px color-mix(in srgb, var(--snice-color-success) 18%, transparent), 0 4px 16px -4px color-mix(in srgb, var(--snice-color-success) 35%, transparent);
+  --snice-shadow-glow-danger:  0 0 0 4px color-mix(in srgb, var(--snice-color-danger) 18%, transparent), 0 4px 16px -4px color-mix(in srgb, var(--snice-color-danger) 35%, transparent);
+  --snice-shadow-glow-warning: 0 0 0 4px color-mix(in srgb, var(--snice-color-warning) 20%, transparent), 0 4px 16px -4px color-mix(in srgb, var(--snice-color-warning) 40%, transparent);
 
   /* Gradients — top-to-bottom highlight that gives buttons/cards/surfaces a
      subtle convex sheen (iOS/macOS-style). Tuned strong enough to read but
@@ -296,15 +299,15 @@
 
   /* Focus */
   --snice-focus-ring-width: 2px;
-  --snice-focus-ring-color: hsl(var(--snice-color-blue-500) / 0.5);
+  --snice-focus-ring-color: color-mix(in srgb, var(--snice-color-primary) 50%, transparent);
   --snice-focus-ring-offset: 2px;
   /* State-aware rings — use these on variant buttons/inputs so a danger button
      focuses red, success focuses green, etc. Defaults available so components
      can reference them without checking support. */
-  --snice-focus-ring-color-primary: hsl(var(--snice-color-blue-500) / 0.5);
-  --snice-focus-ring-color-success: hsl(var(--snice-color-green-500) / 0.5);
-  --snice-focus-ring-color-warning: hsl(var(--snice-color-yellow-500) / 0.55);
-  --snice-focus-ring-color-danger: hsl(var(--snice-color-red-500) / 0.5);
+  --snice-focus-ring-color-primary: color-mix(in srgb, var(--snice-color-primary) 50%, transparent);
+  --snice-focus-ring-color-success: color-mix(in srgb, var(--snice-color-success) 50%, transparent);
+  --snice-focus-ring-color-warning: color-mix(in srgb, var(--snice-color-warning) 55%, transparent);
+  --snice-focus-ring-color-danger: color-mix(in srgb, var(--snice-color-danger) 50%, transparent);
 
   /* Color scheme for native controls */
   --snice-color-scheme-filter: none;
@@ -319,11 +322,11 @@
   --snice-color-danger: hsl(var(--snice-color-red-500));
   --snice-color-neutral: hsl(var(--snice-color-gray-400));
 
-  --snice-color-primary-hover: hsl(var(--snice-color-blue-400));
-  --snice-color-success-hover: hsl(var(--snice-color-green-400));
-  --snice-color-warning-hover: hsl(var(--snice-color-yellow-400));
-  --snice-color-danger-hover: hsl(var(--snice-color-red-400));
-  --snice-color-neutral-hover: hsl(var(--snice-color-gray-300));
+  --snice-color-primary-hover: color-mix(in srgb, var(--snice-color-primary) 80%, white);
+  --snice-color-success-hover: color-mix(in srgb, var(--snice-color-success) 80%, white);
+  --snice-color-warning-hover: color-mix(in srgb, var(--snice-color-warning) 80%, white);
+  --snice-color-danger-hover: color-mix(in srgb, var(--snice-color-danger) 80%, white);
+  --snice-color-neutral-hover: color-mix(in srgb, var(--snice-color-neutral) 75%, white);
 
   --snice-color-text: hsl(var(--snice-color-gray-50));
   --snice-color-text-secondary: hsl(var(--snice-color-gray-300));
@@ -341,7 +344,7 @@
 
   --snice-color-border: hsl(0 0% 35%);
   --snice-color-border-hover: hsl(var(--snice-color-gray-600));
-  --snice-color-border-focus: hsl(var(--snice-color-blue-400));
+  --snice-color-border-focus: color-mix(in srgb, var(--snice-color-primary) 82%, white);
   --snice-color-border-subtle: hsl(0 0% 100% / 0.12);
 
   --snice-color-surface-hover: hsl(var(--snice-color-gray-700));
@@ -350,20 +353,20 @@
   --snice-color-text-disabled: hsl(var(--snice-color-gray-600));
 
   --snice-color-overlay-hover: hsl(0 0% 100% / 0.06);
-  --snice-color-overlay-selected: hsl(var(--snice-color-blue-400) / 0.16);
-  --snice-color-overlay-selected-hover: hsl(var(--snice-color-blue-400) / 0.22);
+  --snice-color-overlay-selected: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+  --snice-color-overlay-selected-hover: color-mix(in srgb, var(--snice-color-primary) 22%, transparent);
   /* Dark surfaces need a much larger step than light ones: the same tint
      that reads as a stripe on white is invisible on near-black. */
   --snice-color-overlay-stripe: hsl(0 0% 100% / 0.11);
 
-  --snice-color-primary-subtle: hsl(var(--snice-color-blue-950));
-  --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-900));
-  --snice-color-success-subtle: hsl(var(--snice-color-green-950));
-  --snice-color-success-subtle-hover: hsl(var(--snice-color-green-900));
-  --snice-color-warning-subtle: hsl(var(--snice-color-yellow-950));
-  --snice-color-warning-subtle-hover: hsl(var(--snice-color-yellow-900));
-  --snice-color-danger-subtle: hsl(var(--snice-color-red-950));
-  --snice-color-danger-subtle-hover: hsl(var(--snice-color-red-900));
+  --snice-color-primary-subtle: color-mix(in srgb, var(--snice-color-primary) 18%, var(--snice-color-surface));
+  --snice-color-primary-subtle-hover: color-mix(in srgb, var(--snice-color-primary) 28%, var(--snice-color-surface));
+  --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 18%, var(--snice-color-surface));
+  --snice-color-success-subtle-hover: color-mix(in srgb, var(--snice-color-success) 28%, var(--snice-color-surface));
+  --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 18%, var(--snice-color-surface));
+  --snice-color-warning-subtle-hover: color-mix(in srgb, var(--snice-color-warning) 28%, var(--snice-color-surface));
+  --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 18%, var(--snice-color-surface));
+  --snice-color-danger-subtle-hover: color-mix(in srgb, var(--snice-color-danger) 28%, var(--snice-color-surface));
 
   /* Dark shadows: hairline white-alpha ring does the primary separation
      work (drop shadows vanish on dark bg), plus a soft drop for depth. */
@@ -386,51 +389,59 @@
   color-scheme: dark;
 }
 
-/* Auto dark theme based on system preference */
+/* Auto dark theme based on system preference. Only activates when no custom
+   data-theme is set (or data-theme="auto"), so user [data-theme="brand"]
+   themes are never clobbered on dark OS preferences. */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme]),
+  :root[data-theme="auto"] {
     --snice-color-primary: hsl(var(--snice-color-blue-500));
     --snice-color-success: hsl(var(--snice-color-green-500));
     --snice-color-warning: hsl(var(--snice-color-yellow-500));
     --snice-color-danger: hsl(var(--snice-color-red-500));
     --snice-color-neutral: hsl(var(--snice-color-gray-400));
 
-    --snice-color-primary-hover: hsl(var(--snice-color-blue-400));
-    --snice-color-success-hover: hsl(var(--snice-color-green-400));
-    --snice-color-warning-hover: hsl(var(--snice-color-yellow-400));
-    --snice-color-danger-hover: hsl(var(--snice-color-red-400));
-    --snice-color-neutral-hover: hsl(var(--snice-color-gray-300));
+    --snice-color-primary-hover: color-mix(in srgb, var(--snice-color-primary) 80%, white);
+    --snice-color-success-hover: color-mix(in srgb, var(--snice-color-success) 80%, white);
+    --snice-color-warning-hover: color-mix(in srgb, var(--snice-color-warning) 80%, white);
+    --snice-color-danger-hover: color-mix(in srgb, var(--snice-color-danger) 80%, white);
+    --snice-color-neutral-hover: color-mix(in srgb, var(--snice-color-neutral) 75%, white);
 
     --snice-color-text: hsl(var(--snice-color-gray-50));
     --snice-color-text-secondary: hsl(var(--snice-color-gray-300));
     --snice-color-text-tertiary: hsl(var(--snice-color-gray-400));
     --snice-color-text-inverse: hsl(var(--snice-color-gray-900));
 
-    --snice-color-surface: hsl(var(--snice-color-gray-900));
-    --snice-color-surface-container-low: hsl(var(--snice-color-gray-800));
-    --snice-color-surface-container: hsl(var(--snice-color-gray-700));
-    --snice-color-surface-container-high: hsl(30 5% 18%);
-    --snice-color-surface-container-lowest: hsl(0 0% 15%);
+    --snice-color-surface:                   hsl(var(--snice-color-gray-900));
+    --snice-color-surface-container-lowest:  hsl(0 0% 15%);
+    --snice-color-surface-container-low:     hsl(var(--snice-color-gray-800));
+    --snice-color-surface-container:         hsl(var(--snice-color-gray-700));
+    --snice-color-surface-container-high:    hsl(30 5% 18%);
     --snice-color-surface-container-highest: hsl(var(--snice-color-gray-800));
 
     --snice-color-border: hsl(0 0% 35%);
     --snice-color-border-hover: hsl(var(--snice-color-gray-600));
-    --snice-color-border-focus: hsl(var(--snice-color-blue-400));
+    --snice-color-border-focus: color-mix(in srgb, var(--snice-color-primary) 82%, white);
+    --snice-color-border-subtle: hsl(0 0% 100% / 0.12);
 
     --snice-color-surface-hover: hsl(var(--snice-color-gray-700));
-    --snice-color-overlay-stripe: hsl(0 0% 100% / 0.11);
     --snice-color-surface-active: hsl(var(--snice-color-gray-600));
     --snice-color-surface-disabled: hsl(var(--snice-color-gray-800));
     --snice-color-text-disabled: hsl(var(--snice-color-gray-600));
 
-    --snice-color-primary-subtle: hsl(var(--snice-color-blue-950));
-    --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-900));
-    --snice-color-success-subtle: hsl(var(--snice-color-green-950));
-    --snice-color-success-subtle-hover: hsl(var(--snice-color-green-900));
-    --snice-color-warning-subtle: hsl(var(--snice-color-yellow-950));
-    --snice-color-warning-subtle-hover: hsl(var(--snice-color-yellow-900));
-    --snice-color-danger-subtle: hsl(var(--snice-color-red-950));
-    --snice-color-danger-subtle-hover: hsl(var(--snice-color-red-900));
+    --snice-color-overlay-hover: hsl(0 0% 100% / 0.06);
+    --snice-color-overlay-selected: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+    --snice-color-overlay-selected-hover: color-mix(in srgb, var(--snice-color-primary) 22%, transparent);
+    --snice-color-overlay-stripe: hsl(0 0% 100% / 0.11);
+
+    --snice-color-primary-subtle: color-mix(in srgb, var(--snice-color-primary) 18%, var(--snice-color-surface));
+    --snice-color-primary-subtle-hover: color-mix(in srgb, var(--snice-color-primary) 28%, var(--snice-color-surface));
+    --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 18%, var(--snice-color-surface));
+    --snice-color-success-subtle-hover: color-mix(in srgb, var(--snice-color-success) 28%, var(--snice-color-surface));
+    --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 18%, var(--snice-color-surface));
+    --snice-color-warning-subtle-hover: color-mix(in srgb, var(--snice-color-warning) 28%, var(--snice-color-surface));
+    --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 18%, var(--snice-color-surface));
+    --snice-color-danger-subtle-hover: color-mix(in srgb, var(--snice-color-danger) 28%, var(--snice-color-surface));
 
     --snice-shadow-xs: 0 0 0 1px hsl(0 0% 100% / 0.05), 0 1px 2px 0 hsl(0 0% 0% / 0.4);
     --snice-shadow-sm: 0 0 0 1px hsl(0 0% 100% / 0.06), 0 2px 4px 0 hsl(0 0% 0% / 0.4);
@@ -438,6 +449,12 @@
     --snice-shadow-lg: 0 0 0 1px hsl(0 0% 100% / 0.08), 0 10px 24px -4px hsl(0 0% 0% / 0.5);
     --snice-shadow-xl: 0 0 0 1px hsl(0 0% 100% / 0.08), 0 20px 32px -6px hsl(0 0% 0% / 0.55);
     --snice-shadow-2xl: 0 0 0 1px hsl(0 0% 100% / 0.1), 0 25px 50px -12px hsl(0 0% 0% / 0.65);
+    --snice-shadow-inset-sm: inset 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+    --snice-shadow-inset-md: inset 0 2px 4px 0 hsl(0 0% 0% / 0.4);
+
+    --snice-gradient-subtle: linear-gradient(to bottom, hsl(0 0% 100% / 0.04), transparent 60%);
+    --snice-gradient-convex: linear-gradient(to bottom, hsl(0 0% 100% / 0.08), transparent 70%);
+    --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.03), transparent 50%);
 
     /* Color scheme for native controls */
     --snice-color-scheme-filter: invert(1) hue-rotate(180deg);

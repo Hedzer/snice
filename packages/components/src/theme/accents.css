@@ -1,0 +1,12 @@
+/* Snice Theme — Accents slice
+   Data-visualization accent palette (--snice-color-accent-1..8). */
+:root {
+  --snice-color-accent-1: hsl(214 55% 48%);   /* steel blue */
+  --snice-color-accent-2: hsl(27 62% 50%);    /* muted orange */
+  --snice-color-accent-3: hsl(160 40% 40%);   /* forest teal */
+  --snice-color-accent-4: hsl(275 32% 52%);   /* dusty violet */
+  --snice-color-accent-5: hsl(42 62% 48%);    /* mustard */
+  --snice-color-accent-6: hsl(340 42% 55%);   /* dusty rose */
+  --snice-color-accent-7: hsl(110 32% 42%);   /* olive green */
+  --snice-color-accent-8: hsl(195 45% 46%);   /* slate cyan */
+}

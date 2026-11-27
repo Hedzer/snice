@@ -16,6 +16,7 @@ export type {
   SniceCacheDiffSummary,
   SniceTableOptions,
   SniceTableOption,
+  SniceThemeOptions,
 } from './types';
 export {
   createSniceManualChunks,

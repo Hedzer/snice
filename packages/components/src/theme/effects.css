@@ -1,0 +1,23 @@
+/* Snice Theme — Effects slice
+   Elevation shadows, colored glows, convex gradients, and noise texture. */
+:root {
+  --snice-shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.04), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
+  --snice-shadow-sm: 0 2px 6px 0 hsl(0 0% 0% / 0.04), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
+  --snice-shadow-md: 0 4px 12px 0 hsl(0 0% 0% / 0.05), 0 2px 8px -2px hsl(0 0% 0% / 0.06);
+  --snice-shadow-lg: 0 10px 24px -3px hsl(0 0% 0% / 0.05), 0 4px 12px -4px hsl(0 0% 0% / 0.06);
+  --snice-shadow-xl: 0 20px 32px -5px hsl(0 0% 0% / 0.06), 0 8px 16px -6px hsl(0 0% 0% / 0.08);
+  --snice-shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.12);
+  --snice-shadow-inset-sm: inset 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+  --snice-shadow-inset-md: inset 0 2px 4px 0 hsl(0 0% 0% / 0.06);
+
+  --snice-shadow-glow-primary: 0 0 0 4px color-mix(in srgb, var(--snice-color-primary) 18%, transparent), 0 4px 16px -4px color-mix(in srgb, var(--snice-color-primary) 35%, transparent);
+  --snice-shadow-glow-success: 0 0 0 4px color-mix(in srgb, var(--snice-color-success) 18%, transparent), 0 4px 16px -4px color-mix(in srgb, var(--snice-color-success) 35%, transparent);
+  --snice-shadow-glow-danger:  0 0 0 4px color-mix(in srgb, var(--snice-color-danger) 18%, transparent), 0 4px 16px -4px color-mix(in srgb, var(--snice-color-danger) 35%, transparent);
+  --snice-shadow-glow-warning: 0 0 0 4px color-mix(in srgb, var(--snice-color-warning) 20%, transparent), 0 4px 16px -4px color-mix(in srgb, var(--snice-color-warning) 40%, transparent);
+
+  --snice-gradient-subtle:  linear-gradient(to bottom, hsl(0 0% 100% / 0.08), transparent 60%);
+  --snice-gradient-convex:  linear-gradient(to bottom, hsl(0 0% 100% / 0.14), transparent 70%);
+  --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.06), transparent 50%);
+
+  --snice-texture-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.04 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}

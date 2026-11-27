@@ -142,7 +142,7 @@ describe('BS-08: Build-time CSS pipeline', () => {
 
     // Full 170-file real component CSS corpus test
     const componentCssFiles = collectFilesRecursive(resolve(ROOT, 'packages/components/src'), ['.css'])
-      .filter((f) => !f.endsWith('/theme/theme.css'));
+      .filter((f) => !/\/theme\/[^/]+\.css$/.test(f));
     expect(componentCssFiles.length).toBeGreaterThanOrEqual(160);
 
     let totalBefore = 0;
@@ -357,11 +357,12 @@ describe('BS-08: Build-time CSS pipeline', () => {
 
     // Shrunk substantially compared to full 27 KB theme.css
     expect(themeCss1.length).toBeLessThan(fullTheme.length * 0.7);
-    // Dark-mode transitive primitives preserved (--snice-color-primary & -hover use blue-600/700 in light and blue-500/400 in dark!)
+    // Dark-mode transitive primitives preserved (--snice-color-primary uses blue-600 in light and blue-500 in dark;
+    // dark hover/subtle derive via color-mix() directly from --snice-color-primary, and dark surface uses gray-900/800)
     expect(themeCss1).toContain('--snice-color-primary:');
     expect(themeCss1).toContain('--snice-color-blue-600:');
     expect(themeCss1).toContain('--snice-color-blue-500:');
-    expect(themeCss1).toContain('--snice-color-blue-400:');
+    expect(themeCss1).toContain('--snice-color-gray-900:');
     expect(themeCss1).toMatch(/\[data-theme=["']?dark["']?\]/);
     // Dynamic --snice-color-accent-1..8 preserved because snice-chart uses getAccentPalette
     for (let i = 1; i <= 8; i++) {

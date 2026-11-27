@@ -1,6 +1,6 @@
 # Bundler Plugin (`snice/vite`, `snice/rollup`)
 
-Built-in Vite and Rollup plugin for decorator lowering, template/CSS minification, allowlisted `var()` fallback stripping, dev-diagnostic DCE (`__SNICE_DEV__`), and deterministic volatility-tiered caching.
+Built-in Vite and Rollup plugin for decorator lowering, template/CSS minification, lean pre-compiled templates, partial-theme allowlisted `var()` fallback stripping, theme feature-block/token pruning, dev-only `@element` HMR, dev-diagnostic DCE (`__SNICE_DEV__`), and deterministic volatility-tiered caching (Rollup `manualChunks` + Vite 6+/Rolldown `advancedChunks`/`codeSplitting`).
 
 ## Usage
 
@@ -29,24 +29,42 @@ export default {
 
 ```typescript
 interface SnicePluginOptions {
-  decorators?: boolean;                    // default: true (lowers Snice decorators; TC39 2022-03 fallback)
+  decorators?: boolean;                    // default: true (lowers Snice decorators; handles satisfies/using/accessor; TC39 fallback)
   minifyTemplates?: boolean;               // default: !dev (minifies html`` / svg``; preserves pre/code/textarea/script/style)
-  precompileTemplates?: boolean;           // default: false (opt-in hoisted template descriptors)
+  precompileTemplates?: boolean;           // default: false (emits minimal per-part imports; bypasses runtime HTML/TreeWalker parser)
   minifyCss?: boolean;                     // default: !dev (minifies inline css`` & folds static .css?inline)
-  stripCssFallbacks?: 'auto' | boolean;    // default: 'auto' (strips allowlisted :root --snice-* fallbacks when theme.css is imported; true uses shipped theme.css)
-  pruneTheme?: boolean;                    // default: false (opt-in cross-block transitive theme.css pruning + re-hashing)
-  themeSafelist?: (string | RegExp)[];     // default: [] (tokens kept when pruneTheme: true)
-  dev?: boolean;                           // default: true in Vite serve/Vitest, false in prod (folds __SNICE_DEV__)
+  stripCssFallbacks?: 'auto' | boolean;    // default: 'auto' (union allowlist of imported theme slices & custom :root CSS; true = shipped theme.css)
+  pruneTheme?: boolean;                    // default: false (alias for theme.prune)
+  themeSafelist?: (string | RegExp)[];     // default: [] (alias for theme.safelist)
+  theme?: {
+    prune?: boolean;                       // cross-block transitive token pruning + re-hashing
+    dark?: boolean | 'auto' | 'manual';    // prune Snice dark blocks; NEVER strips custom [data-theme="<name>"]
+    density?: boolean;                     // false strips [data-density="compact"|"spacious"]
+    motion?: boolean;                      // false strips prefers-reduced-motion & [data-motion=...]
+    print?: boolean;                       // false strips @media print
+    safelist?: (string | RegExp)[];
+  };
+  dev?: boolean | 'preserve';              // default: true in Vite serve/Vitest, false in prod; 'preserve' for libs
   caching?: boolean | {                    // default: true (code-splitting builds only)
     isolateHeavy?: boolean;                // default: true (table, pdf-viewer, qr-reader, chart, calendar, code-block, flow, kanban)
     isolateComponents?: string[];
     replaceDefaults?: boolean;
+    vendor?: boolean;                      // default: true (isolates third-party node_modules into `vendor`)
+    componentGroups?: Record<string, string[]>; // e.g. { forms: ['input', 'select'] } -> snice-forms-[hash].js
   };
   target?: string | false;                 // default: 'es2022' when build.target unset; false disables
-  report?: boolean | ((r: SniceBuildReport) => void); // default: false
-  table?: {
-    cells?: string[];                      // undefined = all 21 cells; [] = core 'text' only (accepts aliases)
-    features?: string[];                   // undefined = all 11 optional features; [] = core only; transitive deps auto-added
+  hmr?: boolean;                           // default: true in Vite serve mode only (0 bytes in prod/Rollup)
+  report?: boolean | ((r: SniceBuildReport) => void) | {
+    print?: boolean;
+    compareWith?: string;                  // previous manifest JSON -> STABLE / CHANGED / NEW diff
+    writeManifest?: string;                // write manifest JSON
+    budgets?: Record<string, { raw?: number; gzip?: number; brotli?: number }>;
+    failOnBudget?: boolean;                // default: true
+    onReport?: (r: SniceBuildReport) => void;
+  };
+  table?: false | 'auto' | {
+    cells?: string[];                      // undefined = all 21 cells; [] = core 'text' only
+    features?: string[];                   // undefined = all 11 features; [] = core only; transitive deps auto-added
   };
 }
 ```
@@ -55,17 +73,20 @@ interface SnicePluginOptions {
 
 - `snice-runtime-[hash].js` — tree-shaken Snice core (`dist/_core/*`)
 - `vendor-react-[hash].js` — `react` / `react-dom` / `scheduler`
-- `snice-theme-[hash].css` — `snice/components/theme/theme.css`
+- `vendor-[hash].js` — third-party `node_modules` (`caching.vendor`, default `true`)
+- `snice-theme-[hash].css` — `snice/components/theme/*.css` (`theme.css` or modular slices)
+- `snice-<group>-[hash].js` — user `caching.componentGroups` (shared helpers go to `snice-shared`)
 - `snice-components-[hash].js` — standard Snice components
 - `snice-<heavy>-[hash].js` — isolated heavy components
 - `index-[hash].js` — volatile app code
+- Rolldown / Vite 6+: auto-configures `advancedChunks.groups` / `codeSplitting.groups` (also exported as `createSniceAdvancedChunksGroups()`).
 - Bypassed automatically for `iife`/`umd`, `build.lib`, `inlineDynamicImports`, or user `manualChunks` function.
 - Recommended headers: `Cache-Control: public, max-age=31536000, immutable` on hashed assets, `no-cache` on `index.html`.
 
 ## Rules & Migration
 
-- Replaces `unplugin-swc` in both `vite.config.ts` and `vitest.config.ts` (remove `unplugin-swc`, `build.target: 'es2015'`, and naive `manualChunks`).
-- `stripCssFallbacks: 'auto'` is import-order independent and never strips non-theme `--snice-<comp>-*` tokens.
-- `pruneTheme: true` preserves dark-mode transitive primitives (`[data-theme="dark"]`, `prefers-color-scheme: dark`), data URIs, and dynamic `--snice-color-accent-*` tokens; use `themeSafelist` for custom dynamic lookups.
-- Both `'snice/vite'` and `'snice/rollup'` are accepted by `npx snice check` and `npx snice doctor`.
-- `table.features` valid names: `virtualizer`, `filter`, `editor`, `export`, `masterDetail`, `toolbar`, `treeData`, `grouping`, `columnMenu`, `rowDnD`, `columnDnD`. Unknown names fail fast in `buildStart`. Without the plugin, import `snice/components/table/snice-table-core` directly.
+- Replaces `unplugin-swc` in `vite.config.ts` and `vitest.config.ts`.
+- `stripCssFallbacks: 'auto'` is import-order independent, uses the union of top-level `:root` tokens across imported theme slices and custom theme CSS, and never strips non-theme `--snice-<comp>-*` tokens.
+- `theme` pruning preserves custom `[data-theme="<name>"]` blocks, dark-mode transitive primitives, data URIs, and dynamic `--snice-color-accent-*` tokens.
+- `table: 'auto'` conservatively falls back to full `snice-table` whenever columns or spreads are dynamic.
+- `table.features` valid names: `virtualizer`, `filter`, `editor`, `export`, `masterDetail`, `toolbar`, `treeData`, `grouping`, `columnMenu`, `rowDnD`, `columnDnD`. Unknown names fail fast in `buildStart`. Without the plugin, import `snice/components/table/snice-table-core`.

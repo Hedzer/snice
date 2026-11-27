@@ -1,0 +1,29 @@
+/* Snice Theme — Density slice
+   Compact and spacious spacing scale presets. */
+[data-density="compact"] {
+  --snice-spacing-3xs: 0.0625rem;
+  --snice-spacing-2xs: 0.125rem;
+  --snice-spacing-xs: 0.3125rem;
+  --snice-spacing-sm: 0.5rem;
+  --snice-spacing-md: 0.625rem;
+  --snice-spacing-lg: 0.875rem;
+  --snice-spacing-xl: 1.25rem;
+  --snice-spacing-2xl: 1.75rem;
+  --snice-spacing-3xl: 2.5rem;
+  --snice-spacing-4xl: 3.75rem;
+  --snice-spacing-5xl: 5rem;
+}
+
+[data-density="spacious"] {
+  --snice-spacing-3xs: 0.1875rem;
+  --snice-spacing-2xs: 0.375rem;
+  --snice-spacing-xs: 0.75rem;
+  --snice-spacing-sm: 1.125rem;
+  --snice-spacing-md: 1.5rem;
+  --snice-spacing-lg: 2.25rem;
+  --snice-spacing-xl: 3rem;
+  --snice-spacing-2xl: 4.5rem;
+  --snice-spacing-3xl: 6rem;
+  --snice-spacing-4xl: 9rem;
+  --snice-spacing-5xl: 12rem;
+}
