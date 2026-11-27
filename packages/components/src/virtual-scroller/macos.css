@@ -1,0 +1,48 @@
+/* macOS 26+ Tahoe AppKit — snice-virtual-scroller
+   Native counterpart: AppKit NSScrollView / NSTableView Viewport (compact 10px frame, 13px SF Pro, zero blur/transform). */
+
+:host {
+  font-family: var(--snice-font-family);
+  background: var(--snice-color-background-element);
+  color: var(--snice-color-text);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 10px;
+  box-shadow: var(--snice-shadow-xs);
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--snice-color-text) 28%, transparent) transparent;
+}
+
+:host:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Never declare transform or override position: absolute — JS owns virtualized translateY positioning! */
+:host [part~="item"] {
+  box-sizing: border-box;
+  font-size: 0.8125rem;
+  letter-spacing: -0.005em;
+  color: var(--snice-color-text);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  transition: background-color 110ms ease;
+}
+
+:host [part~="item"]:hover {
+  background-color: var(--snice-color-overlay-hover);
+}
+
+:host [part~="item"]:active {
+  background-color: color-mix(in srgb, var(--snice-color-text) 9%, transparent);
+}
+
+@media (forced-colors: active) {
+  :host {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="item"] {
+    border-bottom: 1px solid CanvasText;
+  }
+}

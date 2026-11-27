@@ -1,0 +1,47 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-virtual-scroller
+   Native counterpart: WinUI 3 ScrollViewer + ItemsRepeater (8px Mica card, 14px Segoe UI Variable, zero Acrylic/transform). */
+
+:host {
+  font-family: var(--snice-font-family);
+  background: var(--snice-color-surface-container-lowest);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 8px;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--snice-color-text) 32%, transparent) transparent;
+}
+
+:host:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* Never declare transform or override position: absolute — JS owns virtualized translateY positioning! */
+:host [part~="item"] {
+  box-sizing: border-box;
+  font-size: 0.875rem;
+  color: var(--snice-color-text);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="item"]:hover {
+  background-color: color-mix(in srgb, var(--snice-color-text) 4.5%, transparent);
+}
+
+:host [part~="item"]:active {
+  background-color: color-mix(in srgb, var(--snice-color-text) 3%, transparent);
+}
+
+@media (forced-colors: active) {
+  :host {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+
+  :host [part~="item"] {
+    border-bottom-color: CanvasText;
+  }
+}

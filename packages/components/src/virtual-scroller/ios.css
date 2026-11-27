@@ -1,0 +1,48 @@
+/* iOS 26+ Liquid Glass — snice-virtual-scroller
+   Native counterpart: iOS 26 UIScrollView / Inset Grouped Virtualized List (opaque 20px frame, zero blur, zero transform). */
+
+:host {
+  font-family: var(--snice-font-family);
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 20px;
+  box-shadow: var(--snice-shadow-sm);
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--snice-color-text) 24%, transparent) transparent;
+}
+
+:host:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Never declare transform or override position: absolute — JS owns virtualized translateY positioning! */
+:host [part~="item"] {
+  box-sizing: border-box;
+  font-size: 0.9375rem;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  transition: background-color 120ms ease;
+}
+
+:host [part~="item"]:hover {
+  background-color: color-mix(in srgb, var(--snice-color-text) 3.5%, transparent);
+}
+
+:host [part~="item"]:active {
+  background-color: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+@media (forced-colors: active) {
+  :host {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="item"] {
+    border-bottom: 1px solid CanvasText;
+  }
+}

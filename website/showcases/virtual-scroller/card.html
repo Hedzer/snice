@@ -10,7 +10,13 @@
             <snice-button variant="default" size="small" onclick="document.getElementById('demo-vscroll').scrollToIndex(4999)">Bottom</snice-button>
             <span style="font-size:0.8rem;opacity:0.6;align-self:center;margin-left:auto">5,000 items &mdash; only ~15 rendered</span>
           </div>
-          <snice-virtual-scroller id="demo-vscroll" style="height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px" item-height="56"></snice-virtual-scroller>
+          <style>
+            :where(.demo-vscroll-frame) {
+              border: 1px solid rgba(128, 128, 128, 0.2);
+              border-radius: 8px;
+            }
+          </style>
+          <snice-virtual-scroller id="demo-vscroll" class="demo-vscroll-frame" style="height:300px" item-height="56"></snice-virtual-scroller>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
@@ -47,9 +53,9 @@ scroller.scrollToIndex(2500); // jump to any index</snice-code-block>
       }));
       vs.renderItem = (item) => {
         const d = item.data;
-        return `<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(128,128,128,0.12)">
+        return `<div style="display:flex;align-items:center;gap:12px;padding:10px 16px;box-sizing:border-box;width:100%">
           <div style="width:32px;height:32px;border-radius:50%;background:${d.color};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:0.8rem;flex-shrink:0">${d.name.split(' ').map(w=>w[0]).join('')}</div>
-          <div style="min-width:0"><div style="font-weight:500;font-size:0.9rem">${d.name}</div><div style="font-size:0.8rem;opacity:0.5">${d.email}</div></div>
+          <div style="min-width:0"><div style="font-weight:500;font-size:0.9rem">${d.name}</div><div style="font-size:0.8rem;opacity:0.55">${d.email}</div></div>
         </div>`;
       };
     });
