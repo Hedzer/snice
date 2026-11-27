@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 215
 created: 2026-08-12
 deps: [SNICE-208, SNICE-209, SNICE-210, SNICE-211]
+status: superseded
+absorbed_by: [PS-01, PS-08]
 ---
 
 ## Goal
@@ -24,3 +26,4 @@ Define the release, compatibility, and maintenance process for platform profiles
 ## Worklog
 
 - 2026-08-12: Added maintenance gates so "native fidelity" remains a durable compatibility promise.
+- 2026-11-26: Single repo/single version stamp; per-profile semver skew machinery dropped.

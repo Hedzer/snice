@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 210
 created: 2026-08-12
 deps: [SNICE-200, SNICE-207]
+status: superseded
+superseded_by: [PS-02, PS-08]
 ---
 
 ## Goal
@@ -24,3 +26,4 @@ Ship platform profiles as versioned, selectable assets with deterministic loadin
 ## Worklog
 
 - 2026-08-12: Added performance and progressive enhancement as fidelity constraints, especially for glass materials.
+- 2026-11-26: Dropped runtime asset loader; replaced by 0-byte build-time compilation (PS-02) and automated budget gates (PS-08).

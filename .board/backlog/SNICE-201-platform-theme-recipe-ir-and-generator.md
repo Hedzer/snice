@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 201
 created: 2026-08-12
 deps: [SNICE-199]
+status: superseded
+superseded_by: [PS-02]
 ---
 
 ## Goal
@@ -28,3 +30,4 @@ Hand-maintaining hundreds of component selectors per profile will drift. The rec
 ## Worklog
 
 - 2026-08-12: Required generation as the only sustainable route to full-catalog fidelity.
+- 2026-11-26: Dropped custom recipe IR/generator in favor of plain CSS (--snice-* + ::part()) + build-time snice({ platform }) folding (.local/design/platform-skins/).

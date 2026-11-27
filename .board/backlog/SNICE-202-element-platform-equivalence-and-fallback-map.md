@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 202
 created: 2026-08-12
 deps: [SNICE-199, SNICE-201]
+status: superseded
+absorbed_by: [PS-01, PS-04, PS-05, PS-06, PS-07]
 ---
 
 ## Goal
@@ -28,3 +30,4 @@ Each element must be classified as: a direct native analogue, a composition of o
 ## Worklog
 
 - 2026-08-12: Made non-native fallback treatment an explicit per-element design decision.
+- 2026-11-26: Full 134-component equivalence & non-native element discipline absorbed into PS-01 and PS-04..PS-07 without recipe-IR coupling.

@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 212
 created: 2026-08-12
 deps: [SNICE-200, SNICE-201, SNICE-202, SNICE-216]
+status: superseded
+superseded_by: [PS-06]
 ---
 
 ## Goal
@@ -33,3 +35,4 @@ Official references: https://fluent2.microsoft.design/ and https://learn.microso
 
 - 2026-08-12: Prioritized Fluent as the strongest additional OS and enterprise-revenue profile.
 - 2026-08-12: Made full implementation conditional on its measured marginal theme cost.
+- 2026-11-26: Modernized to Windows 11 Fluent 2 / WinUI 3 vertical slice in PS-06.

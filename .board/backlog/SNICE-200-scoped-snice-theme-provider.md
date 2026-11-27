@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 200
 created: 2026-08-12
 deps: [SNICE-199]
+status: superseded
+superseded_by: [PS-03]
 ---
 
 ## Goal
@@ -28,3 +30,4 @@ The provider must remain light-DOM friendly and framework neutral. A nested prov
 ## Worklog
 
 - 2026-08-12: Chose a scoped web component so whole-app and subsection theming share one native API.
+- 2026-11-26: Dropped runtime <snice-theme> JS provider in favor of pure-CSS [data-platform] scoping + opt-in lazy behavior binder (.local/design/platform-skins/).

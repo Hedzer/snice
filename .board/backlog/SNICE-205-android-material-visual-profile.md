@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 205
 created: 2026-08-12
 deps: [SNICE-200, SNICE-201, SNICE-202]
+status: superseded
+superseded_by: [PS-05]
 ---
 
 ## Goal
@@ -30,3 +32,4 @@ Official reference: https://m3.material.io/
 ## Worklog
 
 - 2026-08-12: Chose current Material 3, not a legacy generic Material skin, as the Android target.
+- 2026-11-26: Modernized to Android Material 3 Expressive vertical slice (visuals + contemporary native behaviors) in PS-05.

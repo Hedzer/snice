@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 204
 created: 2026-08-12
 deps: [SNICE-203]
+status: superseded
+absorbed_by: [PS-04]
 ---
 
 ## Goal
@@ -24,3 +26,4 @@ Make the iOS profile behave like the corresponding iOS controls and official com
 ## Worklog
 
 - 2026-08-12: Separated behavioral conformance from the visual material implementation.
+- 2026-11-26: Co-owned vertical slice with tree-shakeable platform-behaviors/ios.ts in PS-04.

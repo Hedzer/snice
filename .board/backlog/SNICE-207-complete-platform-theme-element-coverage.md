@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 207
 created: 2026-08-12
 deps: [SNICE-202, SNICE-204, SNICE-206]
+status: superseded
+absorbed_by: [PS-01, PS-04, PS-05, PS-08]
 ---
 
 ## Goal
@@ -24,3 +26,4 @@ Apply the approved iOS and Android recipes to the complete released element cata
 ## Worklog
 
 - 2026-08-12: Set complete catalog coverage as the finish line rather than a showcase subset.
+- 2026-11-26: Full-catalog 134-component coverage & completeness gates absorbed into PS-01, PS-04, PS-05, and PS-08.

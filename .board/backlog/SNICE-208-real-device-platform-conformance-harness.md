@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 208
 created: 2026-08-12
 deps: [SNICE-207]
+status: superseded
+superseded_by: [PS-08]
 ---
 
 ## Goal
@@ -24,3 +26,4 @@ Prove visual, thematic, and behavioral fidelity against pinned platform referenc
 ## Worklog
 
 - 2026-08-12: Made actual device evidence and human visual review release gates for the word "perfect."
+- 2026-11-26: Visual/pixel/behavioral conformance harness realigned in PS-08 across 3-engine Playwright + visual matrix + main-session visual review.

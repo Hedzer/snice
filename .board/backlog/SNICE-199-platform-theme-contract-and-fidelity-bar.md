@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 199
 created: 2026-08-12
 deps: []
+status: superseded
+superseded_by: [PS-01]
 ---
 
 ## Goal
@@ -36,3 +38,4 @@ The API is ordinary web-component markup, with no `data-*` convention and no fra
 ## Worklog
 
 - 2026-08-12: Established exact platform fidelity and guideline-based non-native treatment as the governing contract.
+- 2026-11-26: Realigned with pure-CSS + snice({ platform }) architecture in .local/design/platform-skins/ (full contemporary fidelity bar preserved).

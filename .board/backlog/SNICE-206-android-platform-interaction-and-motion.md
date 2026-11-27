@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 206
 created: 2026-08-12
 deps: [SNICE-205]
+status: superseded
+absorbed_by: [PS-05]
 ---
 
 ## Goal
@@ -24,3 +26,4 @@ Make the Android profile reproduce Material state, input, navigation, and motion
 ## Worklog
 
 - 2026-08-12: Required Material behavior and adaptive composition in addition to visual tokens.
+- 2026-11-26: Co-owned vertical slice with tree-shakeable platform-behaviors/material.ts in PS-05.

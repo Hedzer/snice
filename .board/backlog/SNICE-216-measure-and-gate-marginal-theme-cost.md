@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 216
 created: 2026-08-12
 deps: [SNICE-208, SNICE-210]
+status: superseded
+superseded_by: [PS-06, PS-07, PS-08]
 ---
 
 ## Goal
@@ -35,3 +37,4 @@ A profile is not "cheap" if savings come from incomplete element coverage, gener
 ## Worklog
 
 - 2026-08-12: Added a shared product/runtime cost gate before expanding from Apple and Android into a theme portfolio.
+- 2026-11-26: Replaced by automated snice({ report: { budgets } }) gates and empirical desktop platform proof in PS-06..PS-08.

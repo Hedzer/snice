@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 209
 created: 2026-08-12
 deps: [SNICE-207]
+status: superseded
+superseded_by: [PS-09]
 ---
 
 ## Goal
@@ -24,3 +26,4 @@ Provide a complete theme lab, examples, and documentation for applying, nesting,
 ## Worklog
 
 - 2026-08-12: Reserved Storybook for the eventual executable theme lab rather than using stories as the design source of truth.
+- 2026-11-26: Docs, Storybook Platform Skins Lab, and live showcase realigned in PS-09.

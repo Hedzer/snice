@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 203
 created: 2026-08-12
 deps: [SNICE-200, SNICE-201, SNICE-202]
+status: superseded
+superseded_by: [PS-04]
 ---
 
 ## Goal
@@ -30,3 +32,4 @@ Official reference: https://developer.apple.com/design/human-interface-guideline
 ## Worklog
 
 - 2026-08-12: Scoped Apple glass to iOS and made functional material hierarchy part of visual parity.
+- 2026-11-26: Modernized to iOS 26+ Liquid Glass vertical slice (visuals + contemporary native behaviors) in PS-04.

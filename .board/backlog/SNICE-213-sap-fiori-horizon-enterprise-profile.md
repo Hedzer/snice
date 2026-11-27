@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 213
 created: 2026-08-12
 deps: [SNICE-200, SNICE-201, SNICE-202, SNICE-216]
+status: deferred
+deferred_after: [PS-01, PS-02, PS-03, PS-08]
 ---
 
 ## Goal
@@ -33,3 +35,4 @@ Official reference: https://www.sap.com/design-system/fiori-design-web/
 
 - 2026-08-12: Added SAP Horizon as the strongest specialized enterprise-suite opportunity after Fluent.
 - 2026-08-12: Made full implementation conditional on its measured marginal theme cost.
+- 2026-11-26: Deferred until core 4 OS platforms (iOS, Android, Windows, macOS) ship; becomes a single pure-CSS + micro-behavior story under .local/design/platform-skins/.

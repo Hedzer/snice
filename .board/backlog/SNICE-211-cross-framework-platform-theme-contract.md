@@ -5,6 +5,8 @@ epic: platform-themes
 priority: 211
 created: 2026-08-12
 deps: [SNICE-174, SNICE-179, SNICE-200]
+status: superseded
+absorbed_by: [PS-01, PS-03, PS-08]
 ---
 
 ## Goal
@@ -23,3 +25,4 @@ Make `<snice-theme>` and its typed `theme`/`platform` contract first-class in va
 ## Worklog
 
 - 2026-08-12: Connected platform theming to the Rust expansion while keeping web components as the runtime boundary.
+- 2026-11-26: Standard Web Components + CSS tokens/parts work across Vanilla, React, Vue, Svelte, Yew, Leptos, Blazor with zero adapter rewrites.
