@@ -1,0 +1,24 @@
+/* Material 3 Expressive — snice-kanban (Tonal Container Columns + 16px Cards) */
+[part~="column"] {
+  border-radius: 20px;
+  background: var(--snice-color-surface-container);
+  border: none;
+  padding: 0.75rem;
+}
+
+[part~="column-count"] {
+  border-radius: 9999px;
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+}
+
+[part~="card"] {
+  border-radius: 16px;
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="card-label"] {
+  border-radius: 8px;
+}

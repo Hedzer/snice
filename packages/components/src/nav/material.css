@@ -1,0 +1,35 @@
+/* Material 3 Expressive — snice-nav (Floating Pill Toolbar & Tonal Navigation Rail) */
+[part~="nav"] {
+  padding: 0.5rem 0.75rem;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container);
+  box-shadow: var(--snice-shadow-sm);
+  gap: 0.25rem;
+}
+
+:host([orientation="vertical"]) [part~="nav"] {
+  border-radius: 16px;
+  padding: 0.75rem;
+  box-shadow: none;
+}
+
+[part~="link"] {
+  min-height: 3rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+  transition: background-color var(--snice-transition-fast, 150ms) ease, color var(--snice-transition-fast, 150ms) ease;
+}
+
+[part~="link"]:hover {
+  background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-text);
+}
+
+[part~="link-active"] {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  font-weight: 600;
+}

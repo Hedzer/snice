@@ -1,0 +1,42 @@
+/* Material 3 Expressive — snice-drawer (Modal Bottom Sheet with 32x4dp Handle / Side Sheet) */
+[part~="backdrop"] {
+  background: hsl(0 0% 0% / 0.4);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+[part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host([position="bottom"]) [part~="base"] {
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+}
+
+:host([position="left"]) [part~="base"] {
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+:host([position="right"]) [part~="base"] {
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+
+:host([position="bottom"]) [part~="grabber"] {
+  display: block;
+  width: 2rem;
+  height: 4px;
+  margin: 1rem auto 0.5rem;
+  border-radius: 9999px;
+  background: var(--snice-color-text-tertiary);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+[part~="header"] {
+  border-bottom: none;
+  padding: 0.75rem 1.5rem;
+}

@@ -1,0 +1,188 @@
+/* ==========================================================================
+   Snice Platform Skin — Android Material 3 Expressive
+   Pinned Spec: Material Design 3 Expressive (https://m3.material.io/)
+   Verified:    2026-08-20
+   Provenance:  System/open Roboto font stack ('Roboto', system-ui, sans-serif).
+                Zero proprietary font/icon binary redistribution.
+   Browser limits: OS-private Android WallpaperColors dynamic color API and
+                system slider haptic ticks are unavailable to web pages; CSS
+                color-mix() tonal derivation from --snice-color-primary and
+                visual stop indicators/spatial springs deliver deterministic
+                cross-browser parity.
+   ========================================================================== */
+
+:root {
+  /* Typography — Roboto Expressive stack */
+  --snice-font-family: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --snice-font-family-display: 'Roboto', system-ui, -apple-system, sans-serif;
+  --snice-font-family-mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --snice-tracking-tight: -0.015em;
+  --snice-tracking-normal: 0.005em;
+
+  /* M3 Expressive Semantic Seeds — overriding --snice-color-primary regenerates
+     the entire 5-step tonal surface container ladder & state layers via color-mix(). */
+  --snice-color-primary: hsl(265 44% 48%);
+  --snice-color-success: hsl(146 58% 34%);
+  --snice-color-warning: hsl(34 88% 42%);
+  --snice-color-danger: hsl(3 66% 44%);
+  --snice-color-neutral: hsl(264 6% 46%);
+
+  --snice-m3-on-primary: hsl(0 0% 100%);
+  --snice-m3-primary-container: color-mix(in srgb, var(--snice-color-primary) 16%, hsl(0 0% 100%));
+  --snice-m3-on-primary-container: color-mix(in srgb, var(--snice-color-primary) 86%, black);
+  --snice-m3-secondary-container: color-mix(in srgb, var(--snice-color-primary) 12%, hsl(270 14% 94%));
+  --snice-m3-on-secondary-container: color-mix(in srgb, var(--snice-color-primary) 72%, hsl(270 10% 15%));
+
+  /* M3 5-Step Tonal Surface Container Ladder (auto-tinted from primary seed) */
+  --snice-color-surface: color-mix(in srgb, var(--snice-color-primary) 2%, hsl(270 25% 99%));
+  --snice-color-surface-container-lowest: hsl(0 0% 100%);
+  --snice-color-surface-container-low: color-mix(in srgb, var(--snice-color-primary) 4.5%, hsl(270 20% 98%));
+  --snice-color-surface-container: color-mix(in srgb, var(--snice-color-primary) 7.5%, hsl(270 16% 96%));
+  --snice-color-surface-container-high: color-mix(in srgb, var(--snice-color-primary) 10.5%, hsl(270 14% 95%));
+  --snice-color-surface-container-highest: color-mix(in srgb, var(--snice-color-primary) 13.5%, hsl(270 12% 93%));
+
+  /* Text & Outlines */
+  --snice-color-text: hsl(270 10% 12%);
+  --snice-color-text-secondary: hsl(270 6% 32%);
+  --snice-color-text-tertiary: hsl(270 5% 48%);
+  --snice-color-text-inverse: hsl(270 14% 96%);
+  --snice-color-border: hsl(270 6% 48%);
+  --snice-color-border-hover: hsl(270 8% 36%);
+  --snice-color-border-subtle: hsl(270 8% 78%);
+
+  /* M3 State-Layer Opacities */
+  --snice-m3-state-hover: 8%;
+  --snice-m3-state-focus: 10%;
+  --snice-m3-state-press: 10%;
+  --snice-m3-state-drag: 16%;
+  --snice-color-overlay-hover: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  --snice-color-overlay-selected: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+
+  /* M3 Expressive Shape Scale & Press Morph Targets */
+  --snice-border-radius-sm: 4px;
+  --snice-border-radius-md: 12px;
+  --snice-border-radius-lg: 16px;
+  --snice-border-radius-xl: 28px;
+  --snice-border-radius-pill: 9999px;
+  --snice-m3-shape-morph-pressed: 8px;
+  --snice-m3-shape-morph-selected: 12px;
+
+  /* M3 Elevation Levels */
+  --snice-shadow-xs: 0 1px 2px hsl(0 0% 0% / 0.14), 0 1px 3px 1px hsl(0 0% 0% / 0.08);
+  --snice-shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.16), 0 2px 6px 2px hsl(0 0% 0% / 0.09);
+  --snice-shadow-md: 0 2px 4px hsl(0 0% 0% / 0.14), 0 4px 10px 3px hsl(0 0% 0% / 0.1);
+  --snice-shadow-lg: 0 4px 8px hsl(0 0% 0% / 0.16), 0 8px 16px 4px hsl(0 0% 0% / 0.12);
+  --snice-shadow-xl: 0 6px 12px hsl(0 0% 0% / 0.18), 0 12px 24px 6px hsl(0 0% 0% / 0.14);
+
+  /* M3 Expressive Dual Spring Physics: Spatial (expressive overshoot) vs Effects (critically damped) */
+  --snice-m3-spring-spatial-fast: cubic-bezier(0.38, 1.28, 0.28, 1);
+  --snice-m3-spring-spatial: cubic-bezier(0.34, 1.38, 0.32, 1);
+  --snice-m3-spring-effects: cubic-bezier(0.2, 0, 0, 1);
+  --snice-ease-spring: var(--snice-m3-spring-spatial);
+  --snice-ease-out: var(--snice-m3-spring-effects);
+  --snice-transition-fast: 150ms;
+  --snice-transition-medium: 280ms;
+  --snice-transition-slow: 420ms;
+
+  /* Focus Ring */
+  --snice-focus-ring-width: 3px;
+  --snice-focus-ring-offset: 2px;
+  --snice-focus-ring-color: color-mix(in srgb, var(--snice-color-primary) 42%, transparent);
+}
+
+[data-theme="dark"] {
+  --snice-color-primary: hsl(259 100% 87%);
+  --snice-color-success: hsl(142 62% 68%);
+  --snice-color-warning: hsl(38 96% 68%);
+  --snice-color-danger: hsl(5 88% 82%);
+  --snice-color-neutral: hsl(264 8% 64%);
+
+  --snice-m3-on-primary: hsl(265 58% 22%);
+  --snice-m3-primary-container: color-mix(in srgb, var(--snice-color-primary) 30%, hsl(270 14% 12%));
+  --snice-m3-on-primary-container: color-mix(in srgb, var(--snice-color-primary) 92%, white);
+  --snice-m3-secondary-container: color-mix(in srgb, var(--snice-color-primary) 22%, hsl(270 12% 18%));
+  --snice-m3-on-secondary-container: color-mix(in srgb, var(--snice-color-primary) 86%, white);
+
+  --snice-color-surface: color-mix(in srgb, var(--snice-color-primary) 3%, hsl(266 14% 8%));
+  --snice-color-surface-container-lowest: hsl(266 16% 6%);
+  --snice-color-surface-container-low: color-mix(in srgb, var(--snice-color-primary) 5%, hsl(266 12% 11%));
+  --snice-color-surface-container: color-mix(in srgb, var(--snice-color-primary) 7%, hsl(266 11% 13%));
+  --snice-color-surface-container-high: color-mix(in srgb, var(--snice-color-primary) 10%, hsl(266 10% 17%));
+  --snice-color-surface-container-highest: color-mix(in srgb, var(--snice-color-primary) 13%, hsl(266 9% 21%));
+
+  --snice-color-text: hsl(270 14% 92%);
+  --snice-color-text-secondary: hsl(270 8% 76%);
+  --snice-color-text-tertiary: hsl(270 6% 58%);
+  --snice-color-text-inverse: hsl(266 14% 12%);
+  --snice-color-border: hsl(270 8% 56%);
+  --snice-color-border-hover: hsl(270 10% 72%);
+  --snice-color-border-subtle: hsl(270 8% 30%);
+  --snice-color-overlay-hover: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]),
+  :root[data-theme="auto"] {
+    --snice-color-primary: hsl(259 100% 87%);
+    --snice-color-success: hsl(142 62% 68%);
+    --snice-color-warning: hsl(38 96% 68%);
+    --snice-color-danger: hsl(5 88% 82%);
+    --snice-color-neutral: hsl(264 8% 64%);
+
+    --snice-m3-on-primary: hsl(265 58% 22%);
+    --snice-m3-primary-container: color-mix(in srgb, var(--snice-color-primary) 30%, hsl(270 14% 12%));
+    --snice-m3-on-primary-container: color-mix(in srgb, var(--snice-color-primary) 92%, white);
+    --snice-m3-secondary-container: color-mix(in srgb, var(--snice-color-primary) 22%, hsl(270 12% 18%));
+    --snice-m3-on-secondary-container: color-mix(in srgb, var(--snice-color-primary) 86%, white);
+
+    --snice-color-surface: color-mix(in srgb, var(--snice-color-primary) 3%, hsl(266 14% 8%));
+    --snice-color-surface-container-lowest: hsl(266 16% 6%);
+    --snice-color-surface-container-low: color-mix(in srgb, var(--snice-color-primary) 5%, hsl(266 12% 11%));
+    --snice-color-surface-container: color-mix(in srgb, var(--snice-color-primary) 7%, hsl(266 11% 13%));
+    --snice-color-surface-container-high: color-mix(in srgb, var(--snice-color-primary) 10%, hsl(266 10% 17%));
+    --snice-color-surface-container-highest: color-mix(in srgb, var(--snice-color-primary) 13%, hsl(266 9% 21%));
+
+    --snice-color-text: hsl(270 14% 92%);
+    --snice-color-text-secondary: hsl(270 8% 76%);
+    --snice-color-text-tertiary: hsl(270 6% 58%);
+    --snice-color-text-inverse: hsl(266 14% 12%);
+    --snice-color-border: hsl(270 8% 56%);
+    --snice-color-border-hover: hsl(270 10% 72%);
+    --snice-color-border-subtle: hsl(270 8% 30%);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --snice-color-border: var(--snice-color-text);
+    --snice-color-border-subtle: var(--snice-color-text-secondary);
+    --snice-focus-ring-width: 3px;
+  }
+}
+
+@media (forced-colors: active) {
+  :root {
+    --snice-focus-ring-color: Highlight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --snice-transition-fast: 0ms;
+    --snice-transition-medium: 0ms;
+    --snice-transition-slow: 0ms;
+    --snice-m3-spring-spatial-fast: linear;
+    --snice-m3-spring-spatial: linear;
+    --snice-ease-spring: linear;
+  }
+}
+
+[data-motion="reduce"],
+[data-motion="off"] {
+  --snice-transition-fast: 0ms;
+  --snice-transition-medium: 0ms;
+  --snice-transition-slow: 0ms;
+  --snice-m3-spring-spatial-fast: linear;
+  --snice-m3-spring-spatial: linear;
+  --snice-ease-spring: linear;
+}

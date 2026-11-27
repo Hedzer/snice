@@ -1,0 +1,12 @@
+/* Material 3 Expressive — snice-work-order */
+[part~="base"] {
+  border-radius: 20px;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="status"],
+[part~="priority"],
+[part~="sign-button"] {
+  border-radius: 9999px;
+}

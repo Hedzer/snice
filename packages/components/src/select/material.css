@@ -1,0 +1,27 @@
+/* Material 3 Expressive — snice-select */
+[part~="trigger"] {
+  min-height: 3.5rem;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid var(--snice-color-border);
+  padding: 0.75rem 1rem;
+}
+
+[part~="trigger"]:focus-visible {
+  border-color: var(--snice-color-primary);
+  border-width: 2px;
+  box-shadow: none;
+}
+
+[part~="dropdown"] {
+  border-radius: 8px;
+  background: var(--snice-color-surface-container);
+  border: none;
+  box-shadow: var(--snice-shadow-md);
+  padding: 0.5rem 0;
+}
+
+[part~="option"] {
+  min-height: 3rem;
+  padding: 0.625rem 1rem;
+}

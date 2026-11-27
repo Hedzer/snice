@@ -1,0 +1,48 @@
+/* Material 3 Expressive — snice-slider (Tall Rounded Track, Pill Handle with Gap, Stop Dots) */
+[part~="controls"] {
+  min-height: 3rem;
+}
+
+[part~="track"] {
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--snice-m3-secondary-container);
+}
+
+[part~="fill"] {
+  border-radius: 9999px 4px 4px 9999px;
+  background: var(--snice-color-primary);
+}
+
+/* Updated M3 Expressive end-stop indicator dot */
+[part~="stops"] {
+  display: block;
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  transform: translateY(-50%);
+  background: var(--snice-color-primary);
+  pointer-events: none;
+}
+
+/* Updated M3 Expressive tall vertical pill handle with surface-colored gap halo */
+[part~="thumb"] {
+  width: 4px;
+  height: 2.75rem;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  border: none;
+  box-shadow: 0 0 0 6px var(--snice-color-surface);
+  transition:
+    width var(--snice-transition-fast, 150ms) var(--snice-m3-spring-spatial-fast, ease),
+    transform var(--snice-transition-fast, 150ms) var(--snice-m3-spring-spatial-fast, ease);
+}
+
+:host([data-m3-dragging="true"]) [part~="thumb"],
+[part~="thumb-dragging"] {
+  width: 2px;
+  box-shadow: 0 0 0 6px var(--snice-color-surface);
+}

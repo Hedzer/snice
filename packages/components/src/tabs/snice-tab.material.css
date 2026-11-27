@@ -1,0 +1,36 @@
+/* Material 3 Expressive — snice-tab */
+[part~="base"] {
+  position: relative;
+  overflow: hidden;
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.008em;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="base-active"] {
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+[part~="ripple"] {
+  display: block;
+  position: absolute;
+  left: var(--snice-ripple-x, 50%);
+  top: var(--snice-ripple-y, 50%);
+  width: var(--snice-ripple-size, 120px);
+  height: var(--snice-ripple-size, 120px);
+  border-radius: 9999px;
+  pointer-events: none;
+  background: var(--snice-color-primary);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  transition: opacity 220ms ease, transform 320ms var(--snice-m3-spring-effects, ease);
+}
+
+:host([data-m3-ripple="active"]) [part~="ripple"] {
+  opacity: 0.12;
+  transform: translate(-50%, -50%) scale(1);
+}

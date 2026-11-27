@@ -1,0 +1,22 @@
+/* Material 3 Expressive — snice-card (Tonal Surface Container Card) */
+:host {
+  --card-border-radius: 16px;
+  --card-bg: var(--snice-color-surface-container-low);
+  --card-shadow: var(--snice-shadow-xs);
+}
+
+[part~="base"] {
+  border-radius: 16px;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="base"]::before {
+  display: none;
+}
+
+[part~="header"] {
+  border-bottom: none;
+  font-weight: 500;
+}

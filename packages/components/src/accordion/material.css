@@ -1,0 +1,11 @@
+/* Material 3 Expressive — snice-accordion */
+[part~="base"] {
+  border-radius: 16px;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  overflow: hidden;
+}
+
+[part~="header"] {
+  min-height: 3rem;
+}

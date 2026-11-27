@@ -1,0 +1,7 @@
+/* Material 3 Expressive — snice-alert */
+[part~="base"] {
+  border-radius: 16px;
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  border: none;
+}

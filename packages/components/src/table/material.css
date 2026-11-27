@@ -1,0 +1,31 @@
+/* Material 3 Expressive — snice-table (Tonal Container Data Table) */
+[part~="frame"],
+[part~="container"] {
+  border-radius: 16px;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  overflow: hidden;
+}
+
+[part~="toolbar"] {
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  padding: 0.75rem 1rem;
+}
+
+[part~="header-cell"] {
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="cell"] {
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="pagination-button"] {
+  border-radius: 9999px;
+}

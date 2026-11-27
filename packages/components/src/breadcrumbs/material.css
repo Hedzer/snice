@@ -1,0 +1,6 @@
+/* Material 3 Expressive — snice-breadcrumbs */
+[part~="link"] {
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  color: var(--snice-color-primary);
+}

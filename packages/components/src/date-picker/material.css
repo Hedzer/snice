@@ -1,0 +1,18 @@
+/* Material 3 Expressive — snice-date-picker */
+[part~="input"] {
+  min-height: 3.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--snice-color-border);
+}
+
+[part~="calendar"] {
+  border-radius: 28px;
+  background: var(--snice-color-surface-container-high);
+  box-shadow: var(--snice-shadow-lg);
+}
+
+[part~="day"],
+[part~="nav-button"],
+[part~="today-button"] {
+  border-radius: 9999px;
+}

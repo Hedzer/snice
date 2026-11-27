@@ -1,0 +1,32 @@
+/* Material 3 Expressive — snice-input (M3 Outlined TextField) */
+[part~="label"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="input"] {
+  min-height: 3.5rem;
+  padding: 0.875rem 1rem;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text);
+  font-size: 1rem;
+}
+
+:host([size="small"]) [part~="input"] {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.875rem;
+}
+
+[part~="input"]:focus-visible {
+  border-color: var(--snice-color-primary);
+  border-width: 2px;
+  box-shadow: none;
+}
+
+[part~="input-invalid"] {
+  border-color: var(--snice-color-danger);
+}

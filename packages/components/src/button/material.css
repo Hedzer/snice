@@ -1,0 +1,107 @@
+/* Material 3 Expressive — snice-button (Pill -> Squircle Press Shape Morph + Ripple) */
+[part~="base"] {
+  min-height: 2.5rem;
+  padding: 0 1.5rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.008em;
+  overflow: hidden;
+  border: none;
+  box-shadow: none;
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  transition:
+    border-radius var(--snice-transition-medium, 240ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.28, 0.28, 1)),
+    background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    box-shadow var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+[part~="base"]::before {
+  display: none;
+}
+
+:host([size="small"]) [part~="base"] {
+  min-height: 2.25rem;
+  height: 2.25rem;
+  padding: 0 1rem;
+}
+
+:host([size="large"]) [part~="base"] {
+  min-height: 3.5rem;
+  height: 3.5rem;
+  padding: 0 2rem;
+  font-size: 1rem;
+}
+
+:host([variant="primary"]) [part~="base"] {
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary, hsl(0 0% 100%));
+}
+
+:host([variant="primary"]) [part~="base"]:hover {
+  box-shadow: var(--snice-shadow-xs);
+  transform: none;
+}
+
+:host([variant="danger"]) [part~="base"] {
+  background: var(--snice-color-danger);
+  color: hsl(0 0% 100%);
+}
+
+:host([variant="text"]) [part~="base"] {
+  background: transparent;
+  color: var(--snice-color-primary);
+  padding: 0 0.75rem;
+}
+
+[part~="base-outline"] {
+  background: transparent;
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-primary);
+}
+
+/* M3 Expressive press shape morph: full pill -> expressive rounded squircle */
+[part~="base"]:active,
+:host([data-m3-pressed="true"]) [part~="base"] {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  transform: none;
+}
+
+/* Connected button group neighbor corner tightening */
+:host([data-m3-neighbor-pressed="end"]) [part~="base"] {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+:host([data-m3-neighbor-pressed="start"]) [part~="base"] {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+/* Pointer-origin Material state-layer ripple */
+[part~="ripple"] {
+  display: block;
+  position: absolute;
+  left: var(--snice-ripple-x, 50%);
+  top: var(--snice-ripple-y, 50%);
+  width: var(--snice-ripple-size, 120px);
+  height: var(--snice-ripple-size, 120px);
+  border-radius: 9999px;
+  pointer-events: none;
+  background: currentColor;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  transition: opacity 240ms var(--snice-m3-spring-effects, ease), transform 340ms var(--snice-m3-spring-effects, ease);
+}
+
+:host([data-m3-ripple="active"]) [part~="ripple"] {
+  opacity: 0.14;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+:host([data-m3-ripple="static"]) [part~="ripple"] {
+  opacity: 0.12;
+  transform: translate(-50%, -50%) scale(1);
+  transition: none;
+}

@@ -1,0 +1,8 @@
+/* Material 3 Expressive — snice-tooltip */
+[part~="tooltip"],
+[part~="content"] {
+  border-radius: 8px;
+  background: var(--snice-color-text);
+  color: var(--snice-color-text-inverse);
+  font-size: 0.75rem;
+}

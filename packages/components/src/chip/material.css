@@ -1,0 +1,43 @@
+/* Material 3 Expressive — snice-chip (8px -> Pill Selection Shape Morph + Ripple) */
+[part~="base"] {
+  position: relative;
+  overflow: hidden;
+  min-height: 2rem;
+  padding: 0 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: transparent;
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text);
+  transition:
+    border-radius var(--snice-transition-medium, 240ms) var(--snice-m3-spring-spatial-fast, ease),
+    background-color var(--snice-transition-fast, 150ms) ease;
+}
+
+[part~="base-selected"] {
+  border-radius: 16px;
+  background: var(--snice-m3-secondary-container);
+  border-color: transparent;
+  color: var(--snice-m3-on-secondary-container);
+}
+
+[part~="ripple"] {
+  display: block;
+  position: absolute;
+  left: var(--snice-ripple-x, 50%);
+  top: var(--snice-ripple-y, 50%);
+  width: var(--snice-ripple-size, 100px);
+  height: var(--snice-ripple-size, 100px);
+  border-radius: 9999px;
+  pointer-events: none;
+  background: currentColor;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  transition: opacity 220ms ease, transform 300ms var(--snice-m3-spring-effects, ease);
+}
+
+:host([data-m3-ripple="active"]) [part~="ripple"] {
+  opacity: 0.12;
+  transform: translate(-50%, -50%) scale(1);
+}

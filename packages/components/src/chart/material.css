@@ -1,0 +1,13 @@
+/* Material 3 Expressive — snice-chart */
+[part~="base"] {
+  border-radius: 16px;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  padding: 1rem;
+}
+
+[part~="tooltip"] {
+  border-radius: 12px;
+  background: var(--snice-color-surface-container-highest);
+  box-shadow: var(--snice-shadow-md);
+}

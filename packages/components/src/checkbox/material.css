@@ -1,0 +1,41 @@
+/* Material 3 Expressive — snice-checkbox */
+:host {
+  min-height: 3rem;
+}
+
+[part~="checkbox"] {
+  position: relative;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 2px;
+  border: 2px solid var(--snice-color-text-secondary);
+  background: transparent;
+}
+
+[part~="checkbox-checked"],
+[part~="checkbox-indeterminate"] {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary, hsl(0 0% 100%));
+}
+
+[part~="ripple"] {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: var(--snice-color-primary);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.5);
+  transition: opacity 180ms ease, transform 220ms var(--snice-m3-spring-spatial-fast, ease);
+}
+
+:host([data-m3-ripple="active"]) [part~="ripple"],
+:host([data-m3-ripple="static"]) [part~="ripple"] {
+  opacity: 0.14;
+  transform: translate(-50%, -50%) scale(1);
+}

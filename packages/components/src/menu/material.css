@@ -1,0 +1,14 @@
+/* Material 3 Expressive — snice-menu */
+[part~="panel"] {
+  border-radius: 12px;
+  background: var(--snice-color-surface-container);
+  border: none;
+  box-shadow: var(--snice-shadow-md);
+  padding: 0.5rem 0;
+}
+
+[part~="item"] {
+  min-height: 3rem;
+  border-radius: 0;
+  padding: 0.625rem 1rem;
+}

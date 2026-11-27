@@ -1,0 +1,29 @@
+/* Material 3 Expressive — snice-calendar */
+[part~="base"] {
+  border-radius: 28px;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  overflow: hidden;
+}
+
+[part~="header"] {
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="nav-button"] {
+  border-radius: 9999px;
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+}
+
+[part~="day-selected"] {
+  background: var(--snice-m3-primary-container);
+  color: var(--snice-m3-on-primary-container);
+}
+
+[part~="event-popover"] {
+  border-radius: 16px;
+  background: var(--snice-color-surface-container-high);
+  box-shadow: var(--snice-shadow-lg);
+}

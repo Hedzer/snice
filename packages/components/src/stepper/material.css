@@ -1,0 +1,4 @@
+/* Material 3 Expressive — snice-stepper */
+[part~="step-indicator"] {
+  border-radius: 9999px;
+}

@@ -1,0 +1,20 @@
+/* Material 3 Expressive — snice-gantt */
+[part~="base"] {
+  border-radius: 16px;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  overflow: hidden;
+}
+
+[part~="header"] {
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="zoom-button"] {
+  border-radius: 9999px;
+}
+
+[part~="bar"] {
+  border-radius: 9999px;
+}

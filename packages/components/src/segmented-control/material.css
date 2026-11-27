@@ -1,0 +1,19 @@
+/* Material 3 Expressive — snice-segmented-control (Connected Segmented Pill Group) */
+[part~="base"] {
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border);
+  padding: 0.125rem;
+}
+
+[part~="indicator"] {
+  border-radius: 9999px;
+  background: var(--snice-m3-secondary-container);
+  box-shadow: none;
+}
+
+[part~="segment"] {
+  min-height: 2.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
+}

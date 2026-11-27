@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en" data-platform="material">
+<head>
+  <meta charset="utf-8" />
+  <title>Android Material 3 Expressive Conformance Fixture</title>
+  <link rel="stylesheet" href="/dist/components/theme/core.css" />
+  <link rel="stylesheet" href="/dist/components/theme/dark.css" />
+  <link rel="stylesheet" href="/dist/components/theme/platforms/material-scoped.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+      font-family: var(--snice-font-family);
+    }
+    .grid { display: grid; gap: 16px; max-width: 960px; }
+    .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  </style>
+  <style id="brand-css"></style>
+</head>
+<body>
+  <div class="grid">
+    <snice-nav id="m3-nav" orientation="horizontal"></snice-nav>
+
+    <div class="row" role="group" data-m3-connected>
+      <snice-button id="btn-primary" variant="primary">Compose</snice-button>
+      <snice-button id="btn-tonal">Tonal Action</snice-button>
+      <snice-button id="btn-outline" outline>Outline</snice-button>
+    </div>
+
+    <div class="row">
+      <snice-switch id="sw-m3" label="Adaptive Brightness" checked></snice-switch>
+      <snice-checkbox id="cb-m3" label="Notifications" checked></snice-checkbox>
+      <snice-radio id="rad-m3" name="m3-r" label="Expressive" checked></snice-radio>
+      <snice-chip id="chip-m3" label="Material" selectable></snice-chip>
+    </div>
+
+    <div class="row">
+      <snice-input id="inp-m3" label="Email" placeholder="name@example.com"></snice-input>
+      <snice-slider id="sld-m3" label="Volume" value="60" min="0" max="100"></snice-slider>
+    </div>
+
+    <snice-tabs id="tabs-m3">
+      <snice-tab slot="nav">For You</snice-tab>
+      <snice-tab slot="nav">Following</snice-tab>
+      <snice-tab-panel>For You panel</snice-tab-panel>
+      <snice-tab-panel>Following panel</snice-tab-panel>
+    </snice-tabs>
+
+    <snice-card id="card-m3">
+      <span slot="header">Tonal Card</span>
+      <p>Material 3 Expressive surface container card.</p>
+    </snice-card>
+
+    <snice-table id="table-m3"></snice-table>
+    <snice-kanban id="kanban-m3"></snice-kanban>
+    <snice-calendar id="cal-m3"></snice-calendar>
+  </div>
+
+  <script type="module">
+    import '/dist/components/button/snice-button.js';
+    import '/dist/components/switch/snice-switch.js';
+    import '/dist/components/checkbox/snice-checkbox.js';
+    import '/dist/components/radio/snice-radio.js';
+    import '/dist/components/chip/snice-chip.js';
+    import '/dist/components/input/snice-input.js';
+    import '/dist/components/slider/snice-slider.js';
+    import '/dist/components/tabs/snice-tabs.js';
+    import '/dist/components/tabs/snice-tab.js';
+    import '/dist/components/tabs/snice-tab-panel.js';
+    import '/dist/components/card/snice-card.js';
+    import '/dist/components/nav/snice-nav.js';
+    import '/dist/components/table/snice-table.js';
+    import '/dist/components/kanban/snice-kanban.js';
+    import '/dist/components/calendar/snice-calendar.js';
+    import { enableRuntimePlatformBehaviors } from '/dist/components/platform-behaviors/runtime.js';
+
+    const nav = document.getElementById('m3-nav');
+    nav.update([
+      { name: 'home', title: 'Home', href: '#home' },
+      { name: 'explore', title: 'Explore', href: '#explore' },
+      { name: 'library', title: 'Library', href: '#library' },
+    ], undefined, 'home');
+
+    const table = document.getElementById('table-m3');
+    table.columns = [
+      { key: 'app', label: 'App', type: 'text' },
+      { key: 'state', label: 'State', type: 'text' },
+    ];
+    table.data = [
+      { app: 'Messages', state: 'Updated' },
+      { app: 'Photos', state: 'Synced' },
+    ];
+
+    const kanban = document.getElementById('kanban-m3');
+    kanban.columns = [
+      { id: 'backlog', title: 'Backlog', cards: [{ id: '1', title: 'M3 Springs' }] },
+      { id: 'active', title: 'Active', cards: [{ id: '2', title: 'Shape Morph' }] },
+    ];
+
+    window.__m3Handle = enableRuntimePlatformBehaviors(document);
+    window.__m3Ready = Promise.all([
+      customElements.whenDefined('snice-button'),
+      customElements.whenDefined('snice-switch'),
+      customElements.whenDefined('snice-slider'),
+      customElements.whenDefined('snice-chip'),
+      customElements.whenDefined('snice-tabs'),
+      customElements.whenDefined('snice-table'),
+    ]).then(() => new Promise((r) => setTimeout(r, 80)));
+  </script>
+</body>
+</html>

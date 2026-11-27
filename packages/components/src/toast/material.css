@@ -1,0 +1,8 @@
+/* Material 3 Expressive — snice-toast (M3 Inverse Surface Snackbar) */
+[part~="toast"],
+[part~="base"] {
+  border-radius: 8px;
+  background: var(--snice-color-text);
+  color: var(--snice-color-text-inverse);
+  box-shadow: var(--snice-shadow-md);
+}
