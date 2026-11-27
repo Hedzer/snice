@@ -1,13 +1,191 @@
 /* Windows 11 Fluent 2 / WinUI 3 — snice-command-palette (PowerToys Run / Acrylic Overlay) */
+[part~="backdrop"] {
+  background: hsl(0 0% 0% / 0.3);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 [part~="container"] {
   border-radius: 8px;
   background: var(--snice-win-acrylic-bg);
   backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
   -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  border: 1px solid var(--snice-color-border);
-  box-shadow: var(--snice-shadow-xl);
+  border: 1px solid var(--snice-color-border-hover);
+  box-shadow: var(--snice-shadow-2xl);
+  font-family: var(--snice-font-family);
+  animation: snice-win-palette-in 187ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="search"] {
+  padding: 0.5rem 0.5rem 0.375rem;
+  border-bottom: 1px solid var(--snice-color-border);
+  background: transparent;
+}
+
+[part~="input"] {
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom: 1px solid var(--snice-win-stroke-input-bottom);
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  color: var(--snice-color-text);
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1), border-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="input"]:focus {
+  background: var(--snice-color-surface-container-lowest);
+  border-bottom: 2px solid var(--snice-color-primary);
+  padding-bottom: calc(0.5rem - 1px);
+}
+
+[part~="results"] {
+  padding: 0.375rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+[part~="category"] {
+  background: transparent;
+  border-top: none;
+  padding: 0.5rem 0.625rem 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--snice-color-text-secondary);
 }
 
 [part~="item"] {
+  position: relative;
+  box-sizing: border-box;
+  min-height: 2.25rem;
+  padding: 0.4375rem 0.75rem;
   border-radius: 4px;
+  gap: 0.625rem;
+  background: transparent;
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="item"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+[part~="item-active"],
+[part~="item-active"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+[part~="item-active"]::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 1rem;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+[part~="item"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+[part~="item"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+[part~="item-disabled"] {
+  opacity: 0.45;
+  background: transparent;
+}
+
+[part~="item-icon"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--snice-color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+[part~="item-label"] {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--snice-color-text);
+}
+
+[part~="item-description"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="item-shortcut"] {
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="empty"] {
+  padding: 2rem 1.25rem;
+  font-size: 0.875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+@keyframes snice-win-palette-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="container"] {
+    background: var(--snice-color-surface-container-highest);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="container"],
+  [part~="input"],
+  [part~="item"] {
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="container"] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+    backdrop-filter: none;
+  }
+
+  [part~="item-active"]::before {
+    background: Highlight;
+  }
+
+  [part~="input"]:focus {
+    border-bottom-color: Highlight;
+  }
+
+  [part~="item"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
 }

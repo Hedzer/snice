@@ -1,10 +1,148 @@
-/* Material 3 Expressive — snice-command-palette (M3 Search View) */
+/* Android Material 3 Expressive — snice-command-palette (M3 Docked SearchView) */
+[part~="backdrop"] {
+  background: hsl(0 0% 0% / 0.4);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 [part~="container"] {
   border-radius: 28px;
   background: var(--snice-color-surface-container-high);
+  border: none;
   box-shadow: var(--snice-shadow-xl);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  font-family: var(--snice-font-family);
+  animation: snice-m3-palette-in 220ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="search"] {
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  background: transparent;
+}
+
+[part~="input"] {
+  min-height: 3.5rem;
+  padding: 0.75rem 1rem;
+  font-family: var(--snice-font-family);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--snice-color-text);
+  background: transparent;
+}
+
+[part~="input"]::placeholder {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="results"] {
+  padding: 0.5rem 0.75rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+[part~="category"] {
+  background: transparent;
+  border-top: none;
+  padding: 0.75rem 1rem 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--snice-color-text-secondary);
 }
 
 [part~="item"] {
+  box-sizing: border-box;
+  min-height: 3rem;
+  padding: 0.5rem 1rem;
   border-radius: 9999px;
+  gap: 0.75rem;
+  background: transparent;
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects, ease),
+    border-radius 150ms var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1));
+}
+
+[part~="item"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+[part~="item-active"],
+[part~="item-active"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, var(--snice-m3-secondary-container));
+  color: var(--snice-m3-on-secondary-container, var(--snice-color-text));
+}
+
+[part~="item"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  border-radius: 12px;
+}
+
+[part~="item"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: -3px;
+}
+
+[part~="item-disabled"] {
+  opacity: 1;
+  background: transparent;
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+[part~="item-icon"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: inherit;
+  opacity: 0.78;
+}
+
+[part~="item-label"] {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: inherit;
+}
+
+[part~="item-description"] {
+  font-size: 0.8125rem;
+  color: inherit;
+  opacity: 0.72;
+}
+
+[part~="item-shortcut"] {
+  padding: 0.1875rem 0.5rem;
+  border-radius: 8px;
+  background: var(--snice-color-surface-container-highest);
+  border: none;
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="empty"] {
+  padding: 2.5rem 1.5rem;
+  font-size: 0.875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+@keyframes snice-m3-palette-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="container"],
+  [part~="item"] {
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+  }
 }
