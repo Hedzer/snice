@@ -1,0 +1,132 @@
+/* iOS 26+ Liquid Glass — snice-user-card
+   Native counterpart: iOS 26 Contacts Profile Card & Apple Account Grouped Cell (opaque 20px card, zero blur). */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 20px;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="base"],
+:host([variant="card"]) [part~="base"] {
+  padding: 1.5rem 1.25rem;
+}
+
+:host([variant="horizontal"]) [part~="base"] {
+  padding: 1.25rem;
+}
+
+:host([variant="compact"]) [part~="base"] {
+  border-radius: 16px;
+  padding: 0.75rem 1rem;
+}
+
+:host [part~="avatar-image"] {
+  box-shadow: 0 0 0 0.5px var(--snice-color-border-subtle);
+}
+
+/* Explicit white ink on saturated iOS blue — never --snice-color-text-inverse (black in dark mode!) */
+:host [part~="avatar-fallback"] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--snice-color-primary) 88%, white), var(--snice-color-primary));
+  color: hsl(0 0% 100%);
+  font-family: var(--snice-font-family-display);
+  font-weight: 600;
+}
+
+:host [part~="status"] {
+  border: 2.5px solid var(--snice-color-surface-container-high);
+}
+
+:host [part~="name"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--snice-color-text);
+}
+
+:host([variant="compact"]) [part~="name"] {
+  font-size: 1rem;
+  letter-spacing: -0.015em;
+}
+
+:host [part~="role"] {
+  font-size: 0.875rem;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text-secondary);
+}
+
+:host([variant="compact"]) [part~="role"] {
+  font-size: 0.8125rem;
+}
+
+:host [part~="contact-item"] {
+  font-size: 0.875rem;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="contact-icon"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+:host [part~="contact-link"] {
+  color: var(--snice-color-primary);
+  font-weight: 500;
+  transition: opacity 140ms ease;
+}
+
+:host [part~="contact-link"]:hover {
+  opacity: 0.75;
+  text-decoration: none;
+}
+
+:host [part~="contact-link"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+:host [part~="social-link"] {
+  width: 2.375rem;
+  height: 2.375rem;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-primary);
+  transition:
+    background-color var(--snice-transition-fast, 160ms) var(--snice-ease-out),
+    color var(--snice-transition-fast, 160ms) var(--snice-ease-out),
+    transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring);
+}
+
+:host [part~="social-link"]:hover {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="social-link"]:active {
+  transform: scale(0.92);
+}
+
+:host [part~="social-link"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+  border-radius: 9999px;
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="avatar-fallback"] {
+    background: Highlight;
+    color: HighlightText;
+  }
+}

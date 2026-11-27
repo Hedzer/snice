@@ -1,0 +1,97 @@
+/* Android Material 3 Expressive — snice-user-card
+   Native counterpart: M3 Elevated/Outlined Contact Card (surface-container-low, 16px radius, tonal monogram & icon buttons). */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 16px;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host([variant="compact"]) [part~="base"] {
+  border-radius: 16px;
+  padding: 0.75rem 1rem;
+}
+
+:host [part~="avatar-fallback"] {
+  background: var(--snice-m3-primary-container);
+  color: var(--snice-m3-on-primary-container);
+  font-weight: 500;
+}
+
+:host [part~="status"] {
+  border: 2px solid var(--snice-color-surface-container-low);
+}
+
+:host [part~="name"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--snice-color-text);
+}
+
+:host([variant="compact"]) [part~="name"] {
+  font-size: 1rem;
+}
+
+:host [part~="role"] {
+  font-size: 0.875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host([variant="compact"]) [part~="role"] {
+  font-size: 0.75rem;
+}
+
+:host [part~="contact-link"] {
+  color: var(--snice-color-primary);
+  font-weight: 500;
+}
+
+:host [part~="contact-link"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+:host [part~="social-link"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects),
+    color 150ms var(--snice-m3-spring-effects),
+    border-radius 180ms var(--snice-m3-spring-spatial-fast);
+}
+
+:host [part~="social-link"]:hover {
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
+}
+
+:host [part~="social-link"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+:host [part~="social-link"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="avatar-fallback"] {
+    background: Highlight;
+    color: HighlightText;
+  }
+}
