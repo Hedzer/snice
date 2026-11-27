@@ -1,9 +1,18 @@
-/* Material 3 Expressive permission matrix skin */
+/* Android Material 3 Expressive / Admin IAM Tonal Matrix — snice-permission-matrix
+ * 24px borderless primary-tinted tonal surface (-low), surface-container sticky header,
+ * M3 18px 3px checkboxes with --snice-m3-on-primary dark-safe checkmark, and WHCM.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  /* Keeps sticky Role column opaque at rest while letting base tr:hover highlight the entire row */
+  --snice-color-surface-container-high: var(--snice-color-surface-container-low);
+}
 
 [part~="base"] {
   background: var(--snice-color-surface-container-low);
-  border: 1px solid var(--snice-color-border-subtle);
-  border-radius: 1rem;
+  border: none;
+  border-radius: 24px;
   box-shadow: var(--snice-shadow-xs);
 }
 
@@ -15,22 +24,23 @@
   font-weight: 600;
 }
 
-[part~="role-header-cell"] {
-  background: var(--snice-color-surface-container);
-}
-
 [part~="role-cell"],
 [part~="permission-cell"] {
   border-bottom-color: var(--snice-color-border-subtle);
-  padding: 0.625rem 1rem;
-}
-
-[part~="role-cell"] {
-  background: var(--snice-color-surface-container-low);
+  padding: 0.6875rem 1rem;
 }
 
 [part~="role-name"] {
   font-weight: 600;
+}
+
+[part~="role-description"],
+[part~="permission-description"] {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="permission-description"] {
+  max-width: 10rem;
 }
 
 /* M3 18px 3px checkbox with dark-mode T80-safe checkmark */
@@ -38,15 +48,26 @@
   box-sizing: border-box;
   width: 1.125rem;
   height: 1.125rem;
-  border-radius: 0.1875rem;
-  border: 2px solid var(--snice-color-border, var(--snice-color-border-hover));
+  border-radius: 3px;
+  border: 2px solid var(--snice-color-border);
   background: transparent;
-  transition: background-color 160ms cubic-bezier(0.2, 0, 0, 1), border-color 160ms cubic-bezier(0.2, 0, 0, 1);
+  transition: background-color 150ms var(--snice-m3-spring-effects),
+              border-color 150ms var(--snice-m3-spring-effects);
+}
+
+[part~="checkbox"]:hover:not(:disabled) {
+  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
 }
 
 [part~="checkbox"]:checked {
   background: var(--snice-color-primary);
   border-color: var(--snice-color-primary);
+}
+
+[part~="checkbox"]:checked:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 10%, var(--snice-color-primary));
+  border-color: color-mix(in srgb, var(--snice-m3-on-primary) 10%, var(--snice-color-primary));
 }
 
 [part~="checkbox"]:checked::after {
@@ -60,12 +81,53 @@
 }
 
 [part~="checkbox"]:focus-visible {
-  outline: 2px solid var(--snice-color-primary);
+  outline: 3px solid var(--snice-color-primary);
   outline-offset: 2px;
+}
+
+[part~="check-icon"] {
+  color: var(--snice-color-success);
+}
+
+[part~="dash-icon"] {
+  color: var(--snice-color-text-tertiary);
 }
 
 @media (prefers-reduced-motion: reduce) {
   [part~="checkbox"] {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="header-cell"],
+  [part~="checkbox"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="checkbox"]:checked {
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  [part~="checkbox"]:checked::after {
+    border-color: HighlightText;
+  }
+
+  [part~="check-icon"] {
+    color: Highlight;
+  }
+
+  [part~="dash-icon"] {
+    color: GrayText;
+  }
+
+  [part~="checkbox"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
   }
 }

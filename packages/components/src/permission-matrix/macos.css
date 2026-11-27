@@ -1,37 +1,37 @@
-/* macOS 26 Tahoe AppKit permission matrix skin */
+/* macOS 26+ Tahoe AppKit / Sharing & ACL Inspector Table — snice-permission-matrix
+ * Crisp 10px AppKit table window, compact desktop row density, SF Mono 11px permission
+ * & role captions, 16px 4px beveled AppKit checkboxes using dark-safe --snice-macos-fill-primary, and WHCM.
+ */
 
 :host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
   font-size: 0.8125rem;
+  /* Keeps sticky Role column opaque at rest while letting base tr:hover highlight the entire row */
+  --snice-color-surface-container-high: var(--snice-color-background-element);
 }
 
 [part~="base"] {
   background: var(--snice-color-background-element);
-  border: 1px solid var(--snice-color-border);
-  border-radius: 0.75rem;
-  box-shadow: var(--snice-shadow-sm);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 10px;
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.1), var(--snice-shadow-sm);
 }
 
 [part~="header-cell"] {
-  background: var(--snice-color-surface-container-low);
-  border-bottom: 1px solid var(--snice-color-border);
+  background: color-mix(in srgb, black 4%, var(--snice-color-surface));
+  border-bottom: 0.5px solid var(--snice-color-border);
   color: var(--snice-color-text-secondary);
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 0.5625rem 0.875rem;
-}
-
-[part~="role-header-cell"] {
-  background: var(--snice-color-surface-container-low);
+  padding: 0.5rem 0.875rem;
 }
 
 [part~="role-cell"],
 [part~="permission-cell"] {
-  border-bottom-color: var(--snice-color-border);
+  border-bottom-width: 0.5px;
+  border-bottom-color: var(--snice-color-border-subtle);
   padding: 0.4375rem 0.875rem;
-}
-
-[part~="role-cell"] {
-  background: var(--snice-color-background-element);
 }
 
 [part~="role-name"] {
@@ -39,22 +39,42 @@
   font-weight: 600;
 }
 
-/* Compact 16px AppKit 4px bezel checkbox */
+[part~="role-description"],
+[part~="permission-description"] {
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.6875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="permission-description"] {
+  max-width: 10rem;
+}
+
+/* Compact 16px AppKit 4px beveled checkbox with dark-safe fill */
 [part~="checkbox"] {
   box-sizing: border-box;
   width: 1rem;
   height: 1rem;
-  border-radius: 0.25rem;
-  border: 1px solid var(--snice-color-border-hover);
+  border-radius: 4px;
+  border: 0.5px solid var(--snice-color-border-hover);
   background: var(--snice-macos-control-bg);
-  box-shadow: inset 0 0.5px 0 rgb(255 255 255 / 0.14), 0 0.5px 1px rgb(0 0 0 / 0.08);
-  transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.14), 0 0.5px 1px hsl(0 0% 0% / 0.14);
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+[part~="checkbox"]:hover:not(:disabled) {
+  border-color: var(--snice-color-primary);
 }
 
 [part~="checkbox"]:checked {
-  background: var(--snice-color-primary);
-  border-color: var(--snice-color-primary);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28);
+  background: var(--snice-macos-fill-primary);
+  border-color: var(--snice-macos-fill-primary);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.24);
+}
+
+[part~="checkbox"]:checked:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--snice-macos-fill-primary) 86%, white);
+  border-color: color-mix(in srgb, var(--snice-macos-fill-primary) 86%, white);
 }
 
 [part~="checkbox"]:checked::after {
@@ -72,8 +92,50 @@
   box-shadow: var(--snice-macos-focus-halo);
 }
 
+[part~="check-icon"] {
+  color: var(--snice-color-success);
+}
+
+[part~="dash-icon"] {
+  color: var(--snice-color-text-tertiary);
+}
+
 @media (prefers-reduced-motion: reduce) {
   [part~="checkbox"] {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="header-cell"],
+  [part~="checkbox"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="checkbox"]:checked {
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  [part~="checkbox"]:checked::after {
+    border-color: HighlightText;
+  }
+
+  [part~="check-icon"] {
+    color: Highlight;
+  }
+
+  [part~="dash-icon"] {
+    color: GrayText;
+  }
+
+  [part~="checkbox"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

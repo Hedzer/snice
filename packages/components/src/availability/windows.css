@@ -1,9 +1,18 @@
-/* Windows 11 Fluent 2 / WinUI 3 weekly availability grid skin */
+/* Windows 11 Fluent 2 / Microsoft Bookings & Teams WinUI 3 — snice-availability
+ * Crisp 8px top-lit opaque Mica card, 32px 4px WinUI top-lit preset controls,
+ * structured grid lines (preserving base :last-child right border removal),
+ * sharp 2px legend swatches, 100ms fast-out motion, and complete WHCM.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
 
 [part~="base"] {
-  background: var(--snice-color-surface-container-high);
-  border: 1px solid var(--snice-color-border);
-  border-radius: 0.5rem;
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  border-radius: 8px;
   box-shadow: var(--snice-shadow-xs);
 }
 
@@ -21,30 +30,45 @@
 }
 
 [part~="title"] {
+  font-family: var(--snice-font-family);
   font-weight: 600;
 }
 
-/* 26px WinUI top-lit preset buttons */
+/* Iconic 32px 4px WinUI 3 top-lit preset controls */
 [part~="preset"] {
-  min-height: 1.625rem;
+  min-height: 2rem;
   padding: 0 0.75rem;
-  border-radius: 0.25rem;
-  border: 1px solid var(--snice-win-stroke-top, var(--snice-color-border));
-  border-bottom-color: var(--snice-win-stroke-bottom, var(--snice-color-border-hover));
-  background: var(--snice-color-surface-container-low);
+  border-radius: 4px;
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  background: var(--snice-win-control-bg);
   color: var(--snice-color-text);
   font-size: 0.75rem;
   font-weight: 500;
-  transition: background-color 100ms cubic-bezier(0, 0, 0, 1), border-color 100ms cubic-bezier(0, 0, 0, 1);
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1),
+              border-color 100ms cubic-bezier(0, 0, 0, 1);
 }
 
 [part~="preset"]:hover {
-  background: var(--snice-color-surface-container);
+  background: var(--snice-win-control-bg-hover);
+}
+
+[part~="preset"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="preset-clear"] {
+  color: var(--snice-color-danger);
 }
 
 [part~="preset-clear"]:hover {
-  color: var(--snice-color-danger);
   border-color: var(--snice-color-danger);
+}
+
+[part~="preset-clear"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  color: var(--snice-color-danger);
 }
 
 [part~="preset"]:focus-visible {
@@ -52,23 +76,20 @@
   box-shadow: var(--snice-win-focus-shadow);
 }
 
-/* Grid headers & cells: synchronized 1.5rem row height */
+/* Grid headers & cells: color/width only so base :last-child border-right-style: none stays intact */
 [part~="corner"],
 [part~="day-header"] {
   background: var(--snice-color-surface-container);
-  border-bottom: 1px solid var(--snice-color-border);
-  border-right: 1px solid var(--snice-color-border);
+  border-bottom-color: var(--snice-color-border);
+  border-right-color: var(--snice-color-border);
   color: var(--snice-color-text-secondary);
-}
-
-[part~="day-header"]:last-child {
-  border-right: none;
 }
 
 [part~="time-label"] {
   height: 1.5rem;
   border-right-color: var(--snice-color-border);
   border-bottom-color: var(--snice-color-border);
+  color: var(--snice-color-text-secondary);
 }
 
 [part~="cell"] {
@@ -78,12 +99,8 @@
   transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
 }
 
-[part~="cell"]:last-child {
-  border-right: none;
-}
-
 [part~="cell"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
 }
 
 [part~="cell-active"] {
@@ -108,16 +125,17 @@
 }
 
 [part~="legend-swatch"] {
-  border-radius: 0.125rem;
+  border-radius: 2px;
 }
 
 [part~="legend-swatch-unavailable"] {
-  background: var(--snice-color-surface-container-high);
-  border-color: var(--snice-color-border);
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-color-border-hover);
 }
 
 [part~="count"] {
   font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -129,10 +147,23 @@
 
 @media (forced-colors: active) {
   [part~="base"],
-  [part~="preset"],
+  [part~="header"],
+  [part~="footer"],
+  [part~="corner"],
+  [part~="day-header"],
   [part~="cell"],
   [part~="legend-swatch-unavailable"] {
-    border-color: ButtonText;
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="preset"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+    box-shadow: none;
   }
 
   [part~="cell-active"],

@@ -1,9 +1,19 @@
-/* Windows 11 Fluent 2 / WinUI 3 permission matrix skin */
+/* Windows 11 Fluent 2 / Azure RBAC WinUI 3 Matrix — snice-permission-matrix
+ * Crisp 8px top-lit opaque Mica card, surface-container sticky header, 20px 4px WinUI
+ * checkboxes with --snice-win-on-accent checkmark, 100ms fast-out, and complete WHCM.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  /* Keeps sticky Role column opaque Mica at rest while letting base tr:hover highlight the entire row */
+  --snice-color-surface-container-high: var(--snice-color-surface-container-highest);
+}
 
 [part~="base"] {
-  background: var(--snice-color-surface-container-high);
-  border: 1px solid var(--snice-color-border);
-  border-radius: 0.5rem;
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  border-radius: 8px;
   box-shadow: var(--snice-shadow-xs);
 }
 
@@ -15,22 +25,23 @@
   font-weight: 600;
 }
 
-[part~="role-header-cell"] {
-  background: var(--snice-color-surface-container);
-}
-
 [part~="role-cell"],
 [part~="permission-cell"] {
   border-bottom-color: var(--snice-color-border);
-  padding: 0.5rem 0.875rem;
-}
-
-[part~="role-cell"] {
-  background: var(--snice-color-surface-container-high);
+  padding: 0.5625rem 0.875rem;
 }
 
 [part~="role-name"] {
   font-weight: 600;
+}
+
+[part~="role-description"],
+[part~="permission-description"] {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="permission-description"] {
+  max-width: 10rem;
 }
 
 /* WinUI 20px 4px checkbox with dark-mode accent-safe checkmark */
@@ -38,15 +49,26 @@
   box-sizing: border-box;
   width: 1.25rem;
   height: 1.25rem;
-  border-radius: 0.25rem;
+  border-radius: 4px;
   border: 1px solid var(--snice-color-border-hover);
-  background: var(--snice-color-surface-container-low);
-  transition: background-color 100ms cubic-bezier(0, 0, 0, 1), border-color 100ms cubic-bezier(0, 0, 0, 1);
+  background: var(--snice-win-control-bg);
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1),
+              border-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="checkbox"]:hover:not(:disabled) {
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-color-primary);
 }
 
 [part~="checkbox"]:checked {
   background: var(--snice-color-primary);
   border-color: var(--snice-color-primary);
+}
+
+[part~="checkbox"]:checked:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--snice-color-primary) 88%, var(--snice-win-on-accent));
+  border-color: color-mix(in srgb, var(--snice-color-primary) 88%, var(--snice-win-on-accent));
 }
 
 [part~="checkbox"]:checked::after {
@@ -64,6 +86,14 @@
   box-shadow: var(--snice-win-focus-shadow);
 }
 
+[part~="check-icon"] {
+  color: var(--snice-color-success);
+}
+
+[part~="dash-icon"] {
+  color: var(--snice-color-text-tertiary);
+}
+
 @media (prefers-reduced-motion: reduce) {
   [part~="checkbox"] {
     transition: none;
@@ -72,8 +102,12 @@
 
 @media (forced-colors: active) {
   [part~="base"],
+  [part~="header-cell"],
   [part~="checkbox"] {
+    background: Canvas;
+    color: CanvasText;
     border-color: ButtonText;
+    box-shadow: none;
   }
 
   [part~="checkbox"]:checked {
@@ -83,6 +117,14 @@
 
   [part~="checkbox"]:checked::after {
     border-color: HighlightText;
+  }
+
+  [part~="check-icon"] {
+    color: Highlight;
+  }
+
+  [part~="dash-icon"] {
+    color: GrayText;
   }
 
   [part~="checkbox"]:focus-visible {

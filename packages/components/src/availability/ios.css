@@ -1,47 +1,63 @@
-/* iOS 26+ Liquid Glass / UIKit weekly availability grid skin */
+/* iOS 26+ Liquid Glass / Apple Calendar Availability Grid — snice-availability
+ * 20px luminous grouped card with top sheen & catchlight, floating Liquid Glass capsule
+ * preset pills, 0.5px hairlines (preserving base :last-child right border removal),
+ * --snice-ios-fill-primary slots, circular 9999px legend swatches, and complete WHCM.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+}
 
 [part~="base"] {
   background: var(--snice-color-surface-container-high);
-  border: 0.5px solid var(--snice-color-border-subtle);
-  border-radius: 1.25rem;
-  box-shadow: var(--snice-shadow-sm);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 20px;
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-sm);
 }
 
 [part~="header"],
 [part~="footer"] {
-  background: var(--snice-color-surface-container-low);
   padding: 0.75rem 1rem;
 }
 
 [part~="header"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 5%, var(--snice-color-surface-container-low)) 0%,
+    var(--snice-color-surface-container-low) 100%
+  );
   border-bottom: 0.5px solid var(--snice-color-border-subtle);
 }
 
 [part~="footer"] {
+  background: var(--snice-color-surface-container-low);
   border-top: 0.5px solid var(--snice-color-border-subtle);
 }
 
 [part~="title"] {
+  font-family: var(--snice-font-family-display);
   font-size: 0.9375rem;
   font-weight: 600;
   letter-spacing: -0.015em;
 }
 
-/* Capsule preset buttons */
+/* Liquid Glass capsule preset buttons */
 [part~="preset"] {
   min-height: 1.875rem;
-  padding: 0 0.75rem;
+  padding: 0 0.8125rem;
   border-radius: 9999px;
-  border: none;
-  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-ios-glass-border);
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, var(--snice-color-surface-container-high));
   color: var(--snice-color-primary);
   font-size: 0.75rem;
   font-weight: 600;
-  transition: background-color 180ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-xs);
+  transition: background-color 160ms var(--snice-ease-out), transform 150ms var(--snice-ease-spring);
 }
 
 [part~="preset"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+  background: color-mix(in srgb, var(--snice-color-primary) 20%, var(--snice-color-surface-container-high));
 }
 
 [part~="preset"]:active {
@@ -49,62 +65,59 @@
 }
 
 [part~="preset-clear"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 12%, var(--snice-color-surface-container-high));
   color: var(--snice-color-danger);
 }
 
 [part~="preset-clear"]:hover {
-  background: color-mix(in srgb, var(--snice-color-danger) 12%, transparent);
+  background: color-mix(in srgb, var(--snice-color-danger) 20%, var(--snice-color-surface-container-high));
 }
 
 [part~="preset"]:focus-visible {
-  outline: 2px solid var(--snice-focus-ring-color);
+  outline: 3px solid var(--snice-focus-ring-color);
   outline-offset: 2px;
   box-shadow: none;
 }
 
-/* Grid headers & cells: hairline separators + synchronized 2rem row height */
+/* Grid headers & cells: set width/color only so base :last-child border-right-style: none stays intact */
 [part~="corner"],
 [part~="day-header"] {
   background: var(--snice-color-surface-container-low);
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
-  border-right: 0.5px solid var(--snice-color-border-subtle);
+  border-bottom-width: 0.5px;
+  border-bottom-color: var(--snice-color-border-subtle);
+  border-right-width: 0.5px;
+  border-right-color: var(--snice-color-border-subtle);
   color: var(--snice-color-text-secondary);
-}
-
-[part~="day-header"]:last-child {
-  border-right: none;
 }
 
 [part~="time-label"] {
   height: 2rem;
-  border-right: 0.5px solid var(--snice-color-border-subtle);
+  border-right-width: 0.5px;
+  border-right-color: var(--snice-color-border-subtle);
   border-bottom-width: 0.5px;
   border-bottom-color: var(--snice-color-border-subtle);
-  color: var(--snice-color-text-tertiary);
+  color: var(--snice-color-text-secondary);
 }
 
 [part~="cell"] {
   height: 2rem;
-  border-right: 0.5px solid var(--snice-color-border-subtle);
+  border-right-width: 0.5px;
+  border-right-color: var(--snice-color-border-subtle);
   border-bottom-width: 0.5px;
   border-bottom-color: var(--snice-color-border-subtle);
-  transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-[part~="cell"]:last-child {
-  border-right: none;
+  transition: background-color 160ms var(--snice-ease-out);
 }
 
 [part~="cell"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  background: color-mix(in srgb, var(--snice-ios-fill-primary) 16%, transparent);
 }
 
 [part~="cell-active"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
 }
 
 [part~="cell-active"]:hover {
-  background: var(--snice-color-primary-hover);
+  background: color-mix(in srgb, var(--snice-ios-fill-primary) 86%, white);
 }
 
 [part~="cell"]:focus-visible {
@@ -117,7 +130,7 @@
 }
 
 :host([readonly]) [part~="cell-active"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-ios-fill-primary);
 }
 
 /* Legend & count */
@@ -125,13 +138,18 @@
   border-radius: 9999px;
 }
 
+[part~="legend-swatch-available"] {
+  background: var(--snice-ios-fill-primary);
+}
+
 [part~="legend-swatch-unavailable"] {
   background: var(--snice-color-surface-container-high);
-  border: 0.5px solid var(--snice-color-border);
+  border: 1px solid var(--snice-color-border-hover);
 }
 
 [part~="count"] {
   font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -142,5 +160,39 @@
 
   [part~="preset"]:active {
     transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="header"],
+  [part~="footer"],
+  [part~="corner"],
+  [part~="day-header"],
+  [part~="cell"],
+  [part~="legend-swatch-unavailable"] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="preset"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="cell-active"],
+  [part~="legend-swatch-available"] {
+    background: Highlight;
+  }
+
+  [part~="preset"]:focus-visible,
+  [part~="cell"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    box-shadow: none;
   }
 }
