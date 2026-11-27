@@ -1,0 +1,201 @@
+/* iOS 26+ Liquid Glass — snice-diff
+ * Grouped inset code comparison card: opaque 16px surface (zero glass blur on
+ * scrolling diff rows), 0.5px hairlines, SF Mono lines with adaptive color-mix
+ * green/red washes, tinted pill +/- stats, and an iOS 26 capsule segmented
+ * Unified/Split control with elevated Liquid Glass active thumb.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --diff-add-bg: color-mix(in srgb, var(--snice-color-success) 14%, transparent);
+  --diff-remove-bg: color-mix(in srgb, var(--snice-color-danger) 14%, transparent);
+  --diff-add-word-bg: color-mix(in srgb, var(--snice-color-success) 28%, transparent);
+  --diff-remove-word-bg: color-mix(in srgb, var(--snice-color-danger) 28%, transparent);
+}
+
+/* Opaque Grouped Diff Card */
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border-radius: 16px;
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="header"] {
+  min-height: 3.25rem;
+  padding: 0.5rem 1rem;
+  gap: 0.5rem;
+  background: var(--snice-color-surface-container-low);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  font-family: var(--snice-font-family);
+}
+
+/* Pill Addition / Deletion Counters */
+:host [part~="stat"] {
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  padding: 0.1875rem 0.5625rem;
+  border-radius: 9999px;
+  line-height: 1.3;
+}
+
+:host [part~="stat-additions"] {
+  background: color-mix(in srgb, var(--snice-color-success) 15%, transparent);
+  color: var(--snice-color-success);
+}
+
+:host [part~="stat-deletions"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 15%, transparent);
+  color: var(--snice-color-danger);
+}
+
+/* iOS 26 Capsule Segmented Control */
+:host [part~="controls"] {
+  padding: 3px;
+  gap: 2px;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-lowest);
+  border: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="mode-button"],
+:host [part~="mode-button-unified"],
+:host [part~="mode-button-split"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0 0.875rem;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: var(--snice-color-text-secondary);
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition:
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out),
+    color var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="mode-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 6%, transparent);
+  color: var(--snice-color-text);
+}
+
+:host [part~="mode-button"]:active {
+  transform: scale(0.96);
+}
+
+:host [part~="mode-button"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Elevated Liquid Glass Active Segment Pill */
+:host [part~="mode-button-active"],
+:host [part~="mode-button-active"]:hover {
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 0.5px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-xs);
+  color: var(--snice-color-text);
+}
+
+/* Diff Code Body */
+:host [part~="content"] {
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--snice-color-text);
+}
+
+:host [part~="gutter"],
+:host [part~="marker"] {
+  border-right: 0.5px solid var(--snice-color-border-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+:host [part~="pane-old"] {
+  border-right: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="hunk-separator"] {
+  padding: 0.5rem 1rem;
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-primary);
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="hunk-separator"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, var(--snice-color-surface-container-low));
+}
+
+:host [part~="hunk-separator"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-focus-ring-color);
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="mode-button-active"],
+  :host [part~="mode-button-active"]:hover {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :host [part~="mode-button-active"],
+  :host [part~="mode-button-active"]:hover {
+    background: var(--snice-color-surface-container-high);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="mode-button"],
+  :host [part~="hunk-separator"] {
+    transition: none;
+  }
+
+  :host [part~="mode-button"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="header"] {
+    border-bottom: 1px solid CanvasText;
+  }
+
+  :host [part~="mode-button"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="mode-button-active"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+  }
+}

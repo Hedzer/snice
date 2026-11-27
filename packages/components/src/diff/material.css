@@ -1,0 +1,184 @@
+/* Android Material 3 Expressive — snice-diff
+ * M3 Tonal Diff Card: 16px primary-tinted tonal surface (zero glass blur),
+ * Roboto Mono lines, 8px tonal +/- badges, and an authentic pill-ended M3
+ * Segmented Button with secondary-container active fill & 8%/10% state layers.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --diff-add-bg: color-mix(in srgb, var(--snice-color-success) 13%, transparent);
+  --diff-remove-bg: color-mix(in srgb, var(--snice-color-danger) 13%, transparent);
+  --diff-add-word-bg: color-mix(in srgb, var(--snice-color-success) 26%, transparent);
+  --diff-remove-word-bg: color-mix(in srgb, var(--snice-color-danger) 26%, transparent);
+}
+
+/* M3 16px Tonal Container */
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+:host [part~="header"] {
+  min-height: 3.5rem;
+  padding: 0.5rem 1rem;
+  gap: 0.5rem;
+  background: var(--snice-color-surface-container-high);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  font-family: var(--snice-font-family);
+}
+
+/* M3 8px Tonal Stat Badges */
+:host [part~="stat"] {
+  border-radius: 8px;
+  padding: 0.25rem 0.625rem;
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+}
+
+:host [part~="stat-additions"] {
+  background: color-mix(in srgb, var(--snice-color-success) 14%, transparent);
+  color: var(--snice-color-success);
+}
+
+:host [part~="stat-deletions"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 14%, transparent);
+  color: var(--snice-color-danger);
+}
+
+/* M3 Pill-Ended Segmented Button */
+:host [part~="mode-button"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: 0 1rem;
+  border: 1px solid var(--snice-color-border);
+  background: transparent;
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition:
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    border-radius var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.42, 1.4, 0.24, 1));
+}
+
+:host [part~="mode-button-unified"] {
+  border-radius: 9999px 0 0 9999px;
+}
+
+:host [part~="mode-button-split"] {
+  border-radius: 0 9999px 9999px 0;
+  border-left: none;
+}
+
+:host [part~="mode-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+:host [part~="mode-button"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+}
+
+:host [part~="mode-button-unified"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px) 0 0 var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+:host [part~="mode-button-split"]:active {
+  border-radius: 0 var(--snice-m3-shape-morph-pressed, 8px) var(--snice-m3-shape-morph-pressed, 8px) 0;
+}
+
+:host [part~="mode-button"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+:host [part~="mode-button-active"] {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  border-color: var(--snice-color-border);
+}
+
+:host [part~="mode-button-active"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) 8%, var(--snice-m3-secondary-container));
+}
+
+:host [part~="mode-button-active"]:active {
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) 10%, var(--snice-m3-secondary-container));
+}
+
+/* Diff Code Body */
+:host [part~="content"] {
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--snice-color-text);
+}
+
+:host [part~="gutter"],
+:host [part~="marker"],
+:host [part~="pane-old"] {
+  border-right: 1px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="gutter"] {
+  font-variant-numeric: tabular-nums;
+}
+
+:host [part~="hunk-separator"] {
+  padding: 0.5rem 1rem;
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-primary);
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-top: 1px solid var(--snice-color-border-subtle);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="hunk-separator"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 8%, var(--snice-color-surface-container));
+}
+
+:host [part~="hunk-separator"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: -3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="mode-button"],
+  :host [part~="hunk-separator"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    background: Canvas;
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="header"] {
+    border-bottom: 1px solid CanvasText;
+  }
+
+  :host [part~="mode-button"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="mode-button-active"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+  }
+}
