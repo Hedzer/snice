@@ -168,7 +168,7 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
 
   private renderCheckSvg(): unknown {
     return html/*html*/`
-      <svg viewBox="0 0 12 12" fill="currentColor">
+      <svg part="task-check-icon" viewBox="0 0 12 12" fill="currentColor">
         <path d="M10 3L4.5 8.5 2 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     `;
@@ -179,7 +179,7 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
     if (this.qrPosition !== position) return '';
 
     return html/*html*/`
-      <div class="wo__qr wo__qr--${position}" part="qr-container">
+      <div class="wo__qr wo__qr--${position}" part="qr-container qr-container-${position}">
         <slot name="qr"></slot>
       </div>
     `;
@@ -191,27 +191,27 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
 
     return html/*html*/`
       <div class="wo__header" part="header">
-        <div class="wo__header-left">
+        <div class="wo__header-left" part="header-left">
           <span class="wo__title" part="title"><slot name="title">Work Order</slot></span>
           <h2 class="wo__number" part="wo-number">${this.woNumber || '---'}</h2>
-          <div class="wo__dates">
+          <div class="wo__dates" part="dates">
             <if ${this.date}>
-              <div class="wo__date-item">
-                <span class="wo__date-label">Date</span>
+              <div class="wo__date-item" part="date-item">
+                <span class="wo__date-label" part="date-label">Date</span>
                 <span class="wo__date-value" part="date">${this.date}</span>
               </div>
             </if>
             <if ${this.dueDate}>
-              <div class="wo__date-item">
-                <span class="wo__date-label">Due</span>
+              <div class="wo__date-item" part="date-item">
+                <span class="wo__date-label" part="date-label">Due</span>
                 <span class="wo__date-value" part="due-date">${this.dueDate}</span>
               </div>
             </if>
           </div>
         </div>
-        <div class="wo__header-right">
-          <span class="wo__badge wo__priority--${this.priority}" part="priority">${this.priority}</span>
-          <span class="wo__badge wo__status--${this.status}" part="status">${this.status.replace('-', ' ')}</span>
+        <div class="wo__header-right" part="header-right">
+          <span class="wo__badge wo__priority--${this.priority}" part="priority${({ low: ' priority-low', medium: ' priority-medium', high: ' priority-high', urgent: ' priority-urgent' })[this.priority] || ''}">${this.priority}</span>
+          <span class="wo__badge wo__status--${this.status}" part="status status-${this.status}">${this.status.replace('-', ' ')}</span>
         </div>
         <if ${hasQrTopRight}>
           ${this.renderQr('top-right')}
@@ -228,28 +228,28 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
 
     return html/*html*/`
       <div class="wo__section" part="customer">
-        <h3 class="wo__section-title">Customer</h3>
-        <div class="wo__customer">
-          <div class="wo__customer-field">
-            <span class="wo__customer-label">Name</span>
+        <h3 class="wo__section-title" part="section-title">Customer</h3>
+        <div class="wo__customer" part="customer-fields">
+          <div class="wo__customer-field" part="customer-field">
+            <span class="wo__customer-label" part="customer-label">Name</span>
             <span class="wo__customer-value" part="customer-name">${this.customer.name}</span>
           </div>
           <if ${this.customer.address}>
-            <div class="wo__customer-field">
-              <span class="wo__customer-label">Address</span>
+            <div class="wo__customer-field" part="customer-field">
+              <span class="wo__customer-label" part="customer-label">Address</span>
               <span class="wo__customer-value" part="customer-address">${this.customer.address}</span>
             </div>
           </if>
           <if ${this.customer.phone}>
-            <div class="wo__customer-field">
-              <span class="wo__customer-label">Phone</span>
+            <div class="wo__customer-field" part="customer-field">
+              <span class="wo__customer-label" part="customer-label">Phone</span>
               <span class="wo__customer-value" part="customer-contact">${this.customer.phone}</span>
             </div>
           </if>
           <if ${this.customer.email}>
-            <div class="wo__customer-field">
-              <span class="wo__customer-label">Email</span>
-              <span class="wo__customer-value">${this.customer.email}</span>
+            <div class="wo__customer-field" part="customer-field">
+              <span class="wo__customer-label" part="customer-label">Email</span>
+              <span class="wo__customer-value" part="customer-email">${this.customer.email}</span>
             </div>
           </if>
         </div>
@@ -262,32 +262,32 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
 
     return html/*html*/`
       <div class="wo__section" part="asset">
-        <h3 class="wo__section-title">Equipment / Asset</h3>
-        <div class="wo__asset">
-          <div class="wo__asset-field">
-            <span class="wo__asset-label">Asset ID</span>
+        <h3 class="wo__section-title" part="section-title">Equipment / Asset</h3>
+        <div class="wo__asset" part="asset-fields">
+          <div class="wo__asset-field" part="asset-field">
+            <span class="wo__asset-label" part="asset-label">Asset ID</span>
             <span class="wo__asset-value" part="asset-id">${this.asset.id}</span>
           </div>
-          <div class="wo__asset-field">
-            <span class="wo__asset-label">Name</span>
+          <div class="wo__asset-field" part="asset-field">
+            <span class="wo__asset-label" part="asset-label">Name</span>
             <span class="wo__asset-value" part="asset-name">${this.asset.name}</span>
           </div>
           <if ${this.asset.location}>
-            <div class="wo__asset-field">
-              <span class="wo__asset-label">Location</span>
-              <span class="wo__asset-value">${this.asset.location}</span>
+            <div class="wo__asset-field" part="asset-field">
+              <span class="wo__asset-label" part="asset-label">Location</span>
+              <span class="wo__asset-value" part="asset-location">${this.asset.location}</span>
             </div>
           </if>
           <if ${this.asset.serial}>
-            <div class="wo__asset-field">
-              <span class="wo__asset-label">Serial #</span>
-              <span class="wo__asset-value">${this.asset.serial}</span>
+            <div class="wo__asset-field" part="asset-field">
+              <span class="wo__asset-label" part="asset-label">Serial #</span>
+              <span class="wo__asset-value" part="asset-serial">${this.asset.serial}</span>
             </div>
           </if>
           <if ${this.asset.lastService}>
-            <div class="wo__asset-field">
-              <span class="wo__asset-label">Last Service</span>
-              <span class="wo__asset-value">${this.asset.lastService}</span>
+            <div class="wo__asset-field" part="asset-field">
+              <span class="wo__asset-label" part="asset-label">Last Service</span>
+              <span class="wo__asset-value" part="asset-last-service">${this.asset.lastService}</span>
             </div>
           </if>
         </div>
@@ -300,7 +300,7 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
 
     return html/*html*/`
       <div class="wo__section" part="description">
-        <h3 class="wo__section-title" part="description-label">Scope of Work</h3>
+        <h3 class="wo__section-title" part="section-title description-label">Scope of Work</h3>
         <p class="wo__description" part="description-content">${this.description}</p>
       </div>
     `;
@@ -311,28 +311,28 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
 
     return html/*html*/`
       <div class="wo__section" part="tasks">
-        <h3 class="wo__section-title">Tasks</h3>
-        <ul class="wo__tasks">
+        <h3 class="wo__section-title" part="section-title">Tasks</h3>
+        <ul class="wo__tasks" part="task-list">
           ${this.tasks.map((task, index) => {
             const isCompleted = task.completed === true;
             const hasHours = task.hours !== undefined && task.hours !== null;
             return html/*html*/`
-              <li class="wo__task ${isCompleted ? 'wo__task--completed' : ''}" part="task">
+              <li class="wo__task ${isCompleted ? 'wo__task--completed' : ''}" part="task${isCompleted ? ' task-completed' : ''}">
                 <button
                   class="wo__task-checkbox ${isCompleted ? 'wo__task-checkbox--checked' : ''}"
                   @click=${() => this.handleTaskToggle(index)}
                   aria-label="${isCompleted ? 'Mark incomplete' : 'Mark complete'}"
-                  part="task-checkbox">
+                  part="task-checkbox${isCompleted ? ' task-checkbox-checked' : ''}">
                   ${this.renderCheckSvg()}
                 </button>
-                <div class="wo__task-content">
+                <div class="wo__task-content" part="task-content">
                   <span class="wo__task-description" part="task-description">${task.description}</span>
-                  <div class="wo__task-meta">
+                  <div class="wo__task-meta" part="task-meta">
                     <if ${task.assignee}>
                       <span class="wo__task-assignee" part="task-assignee">${task.assignee}</span>
                     </if>
                     <if ${hasHours}>
-                      <span class="wo__task-hours">${task.hours}h</span>
+                      <span class="wo__task-hours" part="task-hours">${task.hours}h</span>
                     </if>
                   </div>
                 </div>
@@ -351,32 +351,32 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
 
     return html/*html*/`
       <div class="wo__section" part="parts">
-        <h3 class="wo__section-title">Parts & Materials</h3>
+        <h3 class="wo__section-title" part="section-title">Parts & Materials</h3>
         <table class="wo__parts-table" part="parts-table">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Part #</th>
-              <th>Qty</th>
-              <th>Unit Cost</th>
-              <th>Total</th>
+          <thead part="parts-head">
+            <tr part="parts-header-row">
+              <th part="parts-header-cell">Item</th>
+              <th part="parts-header-cell">Part #</th>
+              <th part="parts-header-cell">Qty</th>
+              <th part="parts-header-cell">Unit Cost</th>
+              <th part="parts-header-cell">Total</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody part="parts-body">
             ${this.parts.map(part => html/*html*/`
               <tr part="parts-row">
                 <td part="part-name">${part.name}</td>
                 <td part="part-number">${part.partNumber || '---'}</td>
                 <td part="part-qty">${part.quantity}</td>
                 <td part="part-cost">${this.formatCurrency(part.unitCost)}</td>
-                <td>${this.formatCurrency(part.quantity * part.unitCost)}</td>
+                <td part="part-total">${this.formatCurrency(part.quantity * part.unitCost)}</td>
               </tr>
             `)}
           </tbody>
         </table>
         <div class="wo__parts-total" part="parts-total">
-          <span>Parts Total:</span>
-          <span>${this.formatCurrency(totalPartsCost)}</span>
+          <span part="parts-total-label">Parts Total:</span>
+          <span part="parts-total-value">${this.formatCurrency(totalPartsCost)}</span>
         </div>
       </div>
     `;
@@ -392,19 +392,19 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
 
     return html/*html*/`
       <div class="wo__section" part="labor">
-        <h3 class="wo__section-title">Labor</h3>
-        <div class="wo__labor">
-          <div class="wo__labor-field">
-            <span class="wo__labor-label">Total Hours</span>
+        <h3 class="wo__section-title" part="section-title">Labor</h3>
+        <div class="wo__labor" part="labor-fields">
+          <div class="wo__labor-field" part="labor-field">
+            <span class="wo__labor-label" part="labor-label">Total Hours</span>
             <span class="wo__labor-value" part="labor-hours">${totalHours}h</span>
           </div>
           <if ${laborRateGtZero}>
-            <div class="wo__labor-field">
-              <span class="wo__labor-label">Rate</span>
+            <div class="wo__labor-field" part="labor-field">
+              <span class="wo__labor-label" part="labor-label">Rate</span>
               <span class="wo__labor-value" part="labor-rate">${this.formatCurrency(this.laborRate)}/hr</span>
             </div>
-            <div class="wo__labor-field">
-              <span class="wo__labor-label">Labor Cost</span>
+            <div class="wo__labor-field" part="labor-field">
+              <span class="wo__labor-label" part="labor-label">Labor Cost</span>
               <span class="wo__labor-value" part="labor-total">${this.formatCurrency(this.getTotalLaborCost())}</span>
             </div>
           </if>
@@ -418,7 +418,7 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
 
     return html/*html*/`
       <div class="wo__section" part="notes">
-        <h3 class="wo__section-title" part="notes-label">Notes</h3>
+        <h3 class="wo__section-title" part="section-title notes-label">Notes</h3>
         <p class="wo__notes" part="notes-content">${this.notes}</p>
       </div>
     `;
@@ -427,16 +427,16 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
   private renderSignature(): unknown {
     return html/*html*/`
       <div class="wo__section wo__signature" part="signature">
-        <h3 class="wo__section-title">Sign-Off</h3>
+        <h3 class="wo__section-title" part="section-title">Sign-Off</h3>
         <slot name="signature"></slot>
-        <div class="wo__signature-lines">
-          <div class="wo__signature-field">
+        <div class="wo__signature-lines" part="signature-lines">
+          <div class="wo__signature-field" part="signature-field">
             <div class="wo__signature-line" part="signature-line"></div>
-            <span class="wo__signature-label">Signature</span>
+            <span class="wo__signature-label" part="signature-label">Signature</span>
           </div>
-          <div class="wo__signature-field">
+          <div class="wo__signature-field" part="signature-field">
             <div class="wo__signature-line" part="signature-date"></div>
-            <span class="wo__signature-label">Date</span>
+            <span class="wo__signature-label" part="signature-label">Date</span>
           </div>
         </div>
         <button class="wo__sign-btn" @click=${() => this.handleSign()} part="sign-button">
@@ -455,21 +455,21 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
 
     return html/*html*/`
       <div class="wo__costs" part="costs">
-        <div class="wo__costs-table">
+        <div class="wo__costs-table" part="costs-table">
           <if ${hasParts}>
-            <div class="wo__cost-row">
-              <span>Parts</span>
+            <div class="wo__cost-row" part="cost-row">
+              <span part="cost-label">Parts</span>
               <span part="parts-total">${this.formatCurrency(this.getTotalPartsCost())}</span>
             </div>
           </if>
           <if ${hasLabor}>
-            <div class="wo__cost-row">
-              <span>Labor (${this.getTotalLaborHours()}h)</span>
+            <div class="wo__cost-row" part="cost-row">
+              <span part="cost-label">Labor (${this.getTotalLaborHours()}h)</span>
               <span part="labor-total">${this.formatCurrency(this.getTotalLaborCost())}</span>
             </div>
           </if>
-          <div class="wo__cost-row wo__cost-row--grand">
-            <span>Total</span>
+          <div class="wo__cost-row wo__cost-row--grand" part="cost-row cost-row-grand">
+            <span part="cost-label">Total</span>
             <span part="grand-total">${this.formatCurrency(this.getTotalCost())}</span>
           </div>
         </div>

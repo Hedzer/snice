@@ -797,25 +797,83 @@ the corresponding user-action event; density is the explicit exception.
 
 | Element | Part | Description |
 |---------|------|-------------|
-| `filter-button` | Column filter trigger |
-| `sort-indicator` | Column sort direction indicator |
+| `<snice-table>` | `base` | Root wrapper inside the shadow root |
+| `<snice-table>` | `frame` | Scroll frame around the native table |
+| `<snice-table>` | `table` | The native `<table>` element |
 | `<snice-table>` | `superheader` | Wrapper for the `header` slot in native-table mode |
-| `<snice-table>` | `controls` | Legacy search/selector controls |
+| `<snice-table>` | `controls` | Legacy search/selector controls row |
 | `<snice-table>` | `toolbar` | Toolbar installed by `setToolbar()` |
-| `<snice-table>` | `pagination` | Pagination wrapper |
-| `<snice-table>` | `loading-overlay` | Refetch spinner overlay shown while `loading` with rows present |
-| `<snice-row>` | `container` | Standalone declarative row wrapper |
-| `<snice-row>` | `checkbox-cell` | Standalone row selection cell |
-| `<snice-row>` | `cell` | Standalone row data cells |
+| `<snice-table>` | `header-row` | Column header row |
+| `<snice-table>` | `header-cell` | Column header cell (data and tool columns) |
+| `<snice-table>` | `sort-header` | Label + indicator row inside a sortable native header cell |
+| `<snice-table>` | `cell-label` | Column label inside `sort-header` |
+| `<snice-table>` | `sort-indicator` | Sort glyph group inside a sortable native header cell |
+| `<snice-table>` | `sort-indicator-active` | Added to `sort-indicator` while that column is part of the current sort |
+| `<snice-table>` | `sort-order` | Rank number shown on a column in a multi-column sort |
+| `<snice-table>` | `pin-indicator` | Pin glyph on a pinned column's header |
+| `<snice-table>` | `drag-handle-cell` / `detail-toggle-cell` / `selection-cell` | Tool-column cells, in the header row and in body rows |
+| `<snice-table>` | `drag-handle` | Added to `drag-handle-cell` on the body cell that is the reorder grip |
+| `<snice-table>` | `detail-toggle` | Master-detail expand/collapse button |
+| `<snice-table>` | `detail-toggle-expanded` | Added to `detail-toggle` while its row is expanded |
+| `<snice-table>` | `detail-toggle-icon` | Default chevron inside `detail-toggle` |
+| `<snice-table>` | `column-group-row` | Column-group header row |
+| `<snice-table>` | `column-group-cell` | Column-group header cell (grouped and ungrouped spans) |
+| `<snice-table>` | `filter-row` / `filter-cell` | Header-filter row and its cells |
+| `<snice-table>` | `resize-handle` | Column resize grip |
 | `<snice-table>` | `row` | Each native body row (`<tr>`) |
 | `<snice-table>` | `cell` | Each native body cell (`<td>`) |
-| Cell components | `content` | Inner content on standalone `snice-cell*` elements |
-| `<snice-cell-actions>` | `action-button` | Each standalone action button |
+| `<snice-table>` | `list-cell` | Full-width cell of a `list`-mode row |
+| `<snice-table>` | `tree-label` | Label beside a tree-data toggle |
+| `<snice-table>` | `group-header-row` / `group-header-cell` / `group-header-label` / `group-header-count` | Grouping header row and its contents |
+| `<snice-table>` | `group-aggregate-row` / `aggregate-cell` / `aggregate-label` | Aggregate (subtotal/total) row and its cells |
+| `<snice-table>` | `message-row` / `message-cell` | Full-width row carrying the empty, loading or error state |
+| `<snice-table>` | `loading-state` / `loading-label` | Zero-row loading message and its label |
+| `<snice-table>` | `loading-overlay` | Refetch spinner overlay shown while `loading` with rows present |
+| `<snice-table>` | `loading-spinner-base` / `loading-spinner-base-indeterminate` / `loading-spinner-circle` / `loading-spinner-circle-bg` / `loading-spinner-circle-bar` / `loading-spinner-circle-bar-indeterminate` | Exported parts of the `snice-progress` ring both loading affordances draw |
+| `<snice-table>` | `loading-spinner-bar` / `loading-spinner-bar-indeterminate` / `loading-spinner-base-with-label` / `loading-spinner-label` | The remaining exported parts of that `snice-progress`. The table builds it `variant="circular"`, so these only appear if the element is reconfigured |
+| `<snice-table>` | `error-message` | Failed remote load message |
+| `<snice-table>` | `empty-state-base` / `empty-state-container` / `empty-state-icon` / `empty-state-title` / `empty-state-description` / `empty-state-action` / `empty-state-extra` | Exported parts of the default `snice-empty-state` (absent when the `empty-state` slot is filled) |
+| `<snice-table>` | `pagination` | Pagination wrapper |
+| `<snice-table>` | `pagination-info` | "Showing x–y of z" text |
+| `<snice-table>` | `pagination-controls` | Page-button row |
+| `<snice-table>` | `pagination-button` | Any page button |
+| `<snice-table>` | `pagination-first` / `pagination-prev` / `pagination-next` / `pagination-last` / `pagination-page` | Added to `pagination-button` for that particular button |
+| `<snice-table>` | `pagination-button-active` | Added to `pagination-button` on the current page |
+| `<snice-table>` | `pagination-size` / `pagination-size-label` / `pagination-size-select` | Rows-per-page control |
+| `<snice-table>` | `checkbox-base` / `checkbox-input` / `checkbox-checkbox` / `checkbox-spinner` / `checkbox-label` / `checkbox-icon` / `checkbox-icon-check` / `checkbox-icon-indeterminate` / `checkbox-base-disabled` / `checkbox-base-loading` / `checkbox-checkbox-invalid` / `checkbox-checkbox-indeterminate` / `checkbox-checkbox-loading` / `checkbox-label-required` | Exported parts of the selection checkboxes (row, select-all, group) |
+| `<snice-table>` | `filter-input-base` / `filter-input-wrapper` / `filter-input-label` / `filter-input-container` / `filter-input-input` / `filter-input-prefix-icon` / `filter-input-suffix-icon` / `filter-input-clear` / `filter-input-clear-icon` / `filter-input-spinner` / `filter-input-password-toggle` / `filter-input-password-icon` / `filter-input-helper-text` / `filter-input-error-text` / `filter-input-label-required` / `filter-input-input-invalid` / `filter-input-input-loading` / `filter-input-input-clearable` / `filter-input-clear-with-suffix` / `filter-input-password-icon-hidden` / `filter-input-password-icon-visible` | Exported parts of every `snice-input` the table owns: the legacy search / quick-filter row, the header-filter inputs, the toolbar search box, and the filter panel's value field |
+| `<snice-table>` | `select-base` / `select-label` / `select-label-required` / `select-controls` / `select-input` / `select-input-disabled` / `select-input-open` / `select-input-invalid` / `select-trigger` / `select-trigger-disabled` / `select-trigger-loading` / `select-trigger-open` / `select-trigger-invalid` / `select-value` / `select-placeholder` / `select-value-single` / `select-value-label` / `select-value-icon` / `select-tags` / `select-tag` / `select-tag-icon` / `select-tag-remove` / `select-icons` / `select-clear-button` / `select-arrow` / `select-icon` / `select-arrow-icon` / `select-clear-icon` / `select-spinner` / `select-dropdown` / `select-search` / `select-search-input` / `select-options` / `select-option` / `select-option-selected` / `select-option-disabled` / `select-option-check` / `select-option-check-mark` / `select-option-icon` / `select-option-label` / `select-loading-indicator` / `select-loading-spinner` / `select-loading-text` / `select-empty` / `select-empty-text` / `select-helper-text` / `select-error-text` | Exported parts of every `snice-select` the table owns: the page-size picker, the legacy filter select, and the toolbar's sort and filter panel selects |
+| `<snice-header>` | `base` / `container` | Standalone header wrapper |
+| `<snice-header>` | `cells` | Header cells container |
+| `<snice-header>` | `checkbox-cell` / `checkbox` | Select-all cell and its checkbox input |
+| `<snice-header>` | `cell` | Header cell |
+| `<snice-header>` | `cell-sortable` | Added to `cell` when the column is sortable |
+| `<snice-header>` | `cell-sorted` | Added to `cell` while the column is the current sort |
+| `<snice-header>` | `cell-label` | Header label text |
+| `<snice-header>` | `sort-indicator` | Sort direction glyph |
+| `<snice-header>` | `sort-indicator-neutral` / `sort-indicator-ascending` / `sort-indicator-descending` | Added to `sort-indicator` for the current direction |
+| `<snice-header>` | `filter-button` | Column filter trigger |
+| `<snice-row>` | `base` / `container` | Standalone declarative row wrapper |
+| `<snice-row>` | `cells` | Cells container |
+| `<snice-row>` | `checkbox-cell` / `checkbox` | Row selection cell and its checkbox input |
+| `<snice-row>` | `cell` | Standalone row data cell |
+| Cell components | `content` | Inner content wrapper on every `snice-cell*` element |
+| `<snice-cell-actions>` | `actions` / `action-button` | Action button row and each button in it |
 | `<snice-cell-json>` | `toggle` | JSON expand/collapse button |
-| `<snice-cell-tag>` | `tag` | Rendered tag badge |
+| `<snice-cell-json>` | `viewer` | JSON viewer body |
+| `<snice-cell-json>` | `viewer-collapsed` / `viewer-expanded` | Added to `viewer` in that state |
+| `<snice-cell-json>` | `empty` | Placeholder shown for a null value |
+| `<snice-cell-tag>` | `tags` / `tag` | Tag row and each rendered tag badge |
 | `<snice-cell-link>`, `<snice-cell-email>`, `<snice-cell-phone>`, `<snice-cell-location>` | `link` | Rendered anchor |
+| `<snice-cell-link>`, `<snice-cell-location>`, `<snice-cell-color>` | `text` | Text beside an adornment |
+| `<snice-cell-email>`, `<snice-cell-phone>`, `<snice-cell-location>`, `<snice-cell-image>` | `icon` | Leading glyph (image placeholder glyph included) |
+| `<snice-cell-link>` | `external-icon` | External-link glyph |
+| `<snice-cell-image>` | `image` / `placeholder` | Rendered image and the placeholder box |
+| `<snice-cell-color>` | `swatch` | Colour swatch |
+| `<snice-cell-status>` | `dot` / `status` | Status dot and status label |
+| `<snice-cell-percentage>` | `trend` | Trend arrow |
 
-The internal native body exposes `row` and `cell` parts, so page CSS can style body rows and cells directly (e.g. `snice-table::part(cell) { ... }`). Standalone cell-component parts are not forwarded through `<snice-table>`.
+The internal native body exposes `row` and `cell` parts, so page CSS can style body rows and cells directly (e.g. `snice-table::part(cell) { ... }`). Typed cell-component parts (`content` and friends) are not forwarded through `<snice-table>`; the selection checkbox, the filter inputs and the selects the table builds for its own chrome are, under the `checkbox-`, `filter-input-` and `select-` prefixes above.
 
 When a sized host is taller than its rows, the table appends an inert filler row so the column grid reaches the bottom edge of the frame (this happens on the virtualized path too). The filler is not data: it carries no row identity, no ARIA, no selection state, and no `row`/`cell` part — a `::part(row)` border rule therefore stops at the last real row instead of drawing a phantom one underneath it.
 

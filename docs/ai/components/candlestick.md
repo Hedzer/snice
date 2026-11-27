@@ -38,6 +38,31 @@ animation: boolean = true;
 - `base` - Outer chart container
 - `canvas` - SVG chart element
 - `tooltip` - OHLC tooltip overlay
+- `chart-content` - SVG `<g>` holding grid, axes, volume, and candles
+- `grid-line` - Horizontal grid line
+- `axis-label` - Axis tick label
+- `axis-label-y` - Added to `axis-label` on the price axis
+- `axis-label-x` - Added to `axis-label` on the time axis
+- `wick` - High/low wick line of a candle
+- `wick-bullish` - Added to `wick` when the candle closed up
+- `wick-bearish` - Added to `wick` when the candle closed down
+- `candle` - Open/close body rect of a candle
+- `candle-bullish` - Added to `candle` when the candle closed up
+- `candle-bearish` - Added to `candle` when the candle closed down
+- `volume-bar` - Volume bar beneath the price chart
+- `volume-bar-bullish` - Added to `volume-bar` when the candle closed up
+- `volume-bar-bearish` - Added to `volume-bar` when the candle closed down
+- `crosshair` - SVG `<g>` holding the crosshair overlay
+- `crosshair-line` - A crosshair line
+- `crosshair-line-horizontal` - Added to `crosshair-line` on the price line
+- `crosshair-line-vertical` - Added to `crosshair-line` on the time line
+- `crosshair-label-background` - Backing rect behind a crosshair label
+- `crosshair-label` - Crosshair price/date label text
+- `tooltip-row` - One row inside the tooltip
+- `tooltip-label` - Row label inside the tooltip
+- `tooltip-value` - Row value inside the tooltip
+- `tooltip-value-bullish` - Added to `tooltip-value` on an up close
+- `tooltip-value-bearish` - Added to `tooltip-value` on a down close
 
 ## Basic Usage
 

@@ -88,6 +88,18 @@ interface ToastOptions {
 | `base` | Outer toast container (includes type modifier class) |
 | `icon` | Wrapper around the type-specific SVG icon |
 | `content` | The message text element |
+| `close-button` | Dismiss button, rendered when `closable` is true |
+
+### snice-toast-container
+
+| Part | Description |
+|------|-------------|
+| `base` | Wrapper that stacks the toasts |
+| `toast` | Each `<snice-toast>` host inside the wrapper |
+| `toast-base` | Exported `base` of each toast |
+| `toast-icon` | Exported `icon` of each toast |
+| `toast-content` | Exported `content` of each toast |
+| `toast-close-button` | Exported `close-button` of each toast |
 
 ## Basic Usage
 

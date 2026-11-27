@@ -23,7 +23,7 @@ export class SnicePermissionMatrix extends HTMLElement implements SnicePermissio
     if (!hasData) {
       return html/*html*/`
         <div part="base" class="matrix">
-          <div class="matrix-empty">No roles or permissions configured.</div>
+          <div class="matrix-empty" part="empty">No roles or permissions configured.</div>
         </div>
       `;
     }
@@ -34,29 +34,29 @@ export class SnicePermissionMatrix extends HTMLElement implements SnicePermissio
 
     return html/*html*/`
       <div part="base" class="matrix">
-        <table class="matrix-table" role="grid" aria-label="Permission matrix">
-          <thead>
-            <tr>
-              <th scope="col">Role</th>
+        <table class="matrix-table" part="table" role="grid" aria-label="Permission matrix">
+          <thead part="table-header">
+            <tr part="table-row">
+              <th scope="col" part="table-cell header-cell role-header-cell">Role</th>
               ${this.permissions.map(perm => html/*html*/`
-                <th scope="col">
-                  <div class="matrix-perm-header">
-                    <span class="matrix-perm-name">${perm.name}</span>
+                <th scope="col" part="table-cell header-cell permission-header-cell">
+                  <div class="matrix-perm-header" part="permission-header">
+                    <span class="matrix-perm-name" part="permission-name">${perm.name}</span>
                     <if ${perm.description}>
-                      <span class="matrix-perm-desc" title="${perm.description}">${perm.description}</span>
+                      <span class="matrix-perm-desc" part="permission-description" title="${perm.description}">${perm.description}</span>
                     </if>
                   </div>
                 </th>
               `)}
             </tr>
           </thead>
-          <tbody @change=${this.handleCheckboxChange}>
+          <tbody part="table-body" @change=${this.handleCheckboxChange}>
             ${this.roles.map(role => html/*html*/`
-              <tr>
-                <td class="matrix-role-cell">
-                  <div class="matrix-role-name">${role.name}</div>
+              <tr part="table-row">
+                <td class="matrix-role-cell" part="table-cell role-cell">
+                  <div class="matrix-role-name" part="role-name">${role.name}</div>
                   <if ${role.description}>
-                    <div class="matrix-role-desc">${role.description}</div>
+                    <div class="matrix-role-desc" part="role-description">${role.description}</div>
                   </if>
                 </td>
                 ${this.permissions.map(perm => {
@@ -74,15 +74,15 @@ export class SnicePermissionMatrix extends HTMLElement implements SnicePermissio
   private renderCell(roleId: string, permId: string, granted: boolean) {
     if (this.readonly) {
       return html/*html*/`
-        <td class="matrix-cell">
-          <span class="matrix-readonly-indicator" role="img" aria-label="${granted ? 'Granted' : 'Not granted'}">
+        <td class="matrix-cell" part="table-cell permission-cell">
+          <span class="matrix-readonly-indicator" part="indicator${granted ? ' indicator-granted' : ' indicator-denied'}" role="img" aria-label="${granted ? 'Granted' : 'Not granted'}">
             <if ${granted}>
-              <svg class="matrix-readonly-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="matrix-readonly-check" part="icon check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
             </if>
             <if ${!granted}>
-              <svg class="matrix-readonly-dash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <svg class="matrix-readonly-dash" part="icon dash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
             </if>
@@ -92,9 +92,10 @@ export class SnicePermissionMatrix extends HTMLElement implements SnicePermissio
     }
 
     return html/*html*/`
-      <td class="matrix-cell">
+      <td class="matrix-cell" part="table-cell permission-cell">
         <input type="checkbox"
                class="matrix-checkbox"
+               part="input checkbox${granted ? ' checkbox-checked' : ''}"
                ?checked=${granted}
                data-role="${roleId}"
                data-perm="${permId}"

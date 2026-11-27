@@ -43,6 +43,7 @@ import {
   installInternalsMock, restoreInternalsMock, internalsFor, activeFlags,
   type TimeCombo,
 } from './time-picker-support';
+import { exactPart } from '../part-exact';
 
 describe('time-picker matrix: the live/default lifecycle', () => {
   beforeEach(() => { installInternalsMock(); });
@@ -249,7 +250,8 @@ describe('time-picker matrix: submission and blocked states', () => {
 
       await typeInto(el, '11:45');
       // The selector options are disabled; clicking one must change nothing.
-      const option = el.shadowRoot.querySelector('[part="hours"] .selector-item') as HTMLButtonElement;
+      const option = exactPart(el, 'hours')!
+        .querySelector('.selector-item') as HTMLButtonElement;
       option.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
       part<HTMLElement>(el, 'toggle')?.dispatchEvent(
         new MouseEvent('click', { bubbles: true, composed: true }));

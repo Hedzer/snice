@@ -25,7 +25,7 @@
  * DOM tier; this tier must never reach the network.
  *
  * ── Layer 1 (every combo): geometry + computed style + occlusion ────────────
- *   · the host is the documented `inline-block` and `[part="base"]` fills it;
+ *   · the host is the documented `inline-block` and `[part~="base"]` fills it;
  *   · the icon region is painted exactly when `showIcon` says so, at a real
  *     size, to the LEFT of the content and never on top of it;
  *   · each mode paints exactly the rows it documents and no others;
@@ -130,7 +130,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
     if (!sr) { say('no shadow root'); return problems; }
 
     const rect = (el: Element) => el.getBoundingClientRect();
-    const partOf = (name: string) => sr.querySelector(`[part="${name}"]`) as HTMLElement | null;
+    const partOf = (name: string) => sr.querySelector(`[part~="${name}"]`) as HTMLElement | null;
     const painted = (node: Element | null) => {
       if (!node) return false;
       const b = rect(node);
@@ -145,7 +145,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
     const content = partOf('content');
     const icon = partOf('icon');
     const map = partOf('map');
-    if (!base) { say('no [part="base"]'); return problems; }
+    if (!base) { say('no [part~="base"]'); return problems; }
     if (!content) { say('no [part="content"]'); return problems; }
     const baseBox = rect(base);
     const contentBox = rect(content);
@@ -156,7 +156,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
         say(`${what} escapes ${of}`);
       }
     };
-    within(contentBox, baseBox, '[part="content"]', '[part="base"]');
+    within(contentBox, baseBox, '[part="content"]', '[part~="base"]');
 
     // ── The icon region ─────────────────────────────────────────────────────
     if (combo.showIcon) {
@@ -169,7 +169,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
           say(`the icon (right ${ib.right.toFixed(1)}) is not left of the content`
             + ` (left ${contentBox.left.toFixed(1)})`);
         }
-        within(ib, baseBox, '[part="icon"]', '[part="base"]');
+        within(ib, baseBox, '[part="icon"]', '[part~="base"]');
       }
     } else if (painted(icon)) {
       say('showIcon is false but an icon region is painted');
@@ -288,7 +288,7 @@ test.describe('location visual matrix: the compact mode', () => {
       const content = sr.querySelector('[part="content"]') as HTMLElement;
       const address = sr.querySelector('.address') as HTMLElement | null;
       return {
-        height: sr.querySelector('[part="base"]')!.getBoundingClientRect().height,
+        height: sr.querySelector('[part~="base"]')!.getBoundingClientRect().height,
         gap: parseFloat(getComputedStyle(content).rowGap || '0'),
         addressDisplay: address ? getComputedStyle(address).display : 'absent',
       };
@@ -321,7 +321,7 @@ test.describe('location visual matrix: the compact mode', () => {
       await page.evaluate(c => (window as any).matrix.mount(c), { ...data, mode } as any);
       expect(await page.evaluate(() => {
         const sr = document.getElementById('subject')!.shadowRoot!;
-        const base = sr.querySelector('[part="base"]')!.getBoundingClientRect();
+        const base = sr.querySelector('[part~="base"]')!.getBoundingClientRect();
         const content = sr.querySelector('[part="content"]')!.getBoundingClientRect();
         return content.right <= base.right + 1 && content.bottom <= base.bottom + 1;
       }), `mode="${mode}": the content area escapes the card`).toBe(true);

@@ -139,6 +139,32 @@ setCustomValidity(message: string): void;
 - `timepicker-open` / `timepicker-close` -> `{ timePicker }`.
 - Property assignment, form reset, and form-state restore emit no synthetic user-change event.
 
-## CSS parts
+## CSS Parts
 
-`base`, `label`, `input`, `toggle`, `clear`, `spinner`, `dropdown`, `hours`, `minutes`, `seconds`, `period`, `helper-text`, `error-text`.
+- `base` - Wrapper
+- `label` - Visible label
+- `label-required` - Added to `label` when `required`
+- `container` - Input row holding the input, toggle, clear button and spinner
+- `input` - Editable text input
+- `input-invalid` - Added to `input` while invalid
+- `input-loading` - Added to `input` while loading
+- `toggle` - Clock toggle button
+- `clear` - Clear button
+- `icon` - Any button glyph (clock, clear)
+- `toggle-icon` - Added to `icon` for the clock glyph
+- `clear-icon` - Added to `icon` for the clear glyph
+- `spinner` - Loading spinner
+- `dropdown` - Dropdown or inline selector container
+- `dropdown-inline` - Added to `dropdown` for the `inline` variant
+- `selectors` - Row of selector columns inside `dropdown`
+- `selector-column` - Every selector column (hours, minutes, seconds, period)
+- `hours` - Added to `selector-column` for the hour column
+- `minutes` - Added to `selector-column` for the minute column
+- `seconds` - Added to `selector-column` for the optional seconds column
+- `period` - Added to `selector-column` for the optional AM/PM column
+- `selector-title` - Column heading (Hr/Min/Sec/Period)
+- `selector-list` - Scrollable option list in a column
+- `selector-item` - One option button
+- `selector-item-selected` - Added to `selector-item` while selected
+- `helper-text` - Helper text
+- `error-text` - Error text

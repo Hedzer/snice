@@ -45,7 +45,7 @@ export class SniceCellLink extends HTMLElement implements SniceCellElement {
     // Consumer-supplied: resolve through renderIcon so registry names and
     // image paths work, and so the value can never be spliced in as markup.
     const iconHTML = this.icon ? renderIcon(this.icon, 'link-icon') : '';
-    const externalIcon = isExternal ? '<span class="external-icon">↗</span>' : '';
+    const externalIcon = isExternal ? '<span class="external-icon" part="external-icon">↗</span>' : '';
 
     return html/*html*/`
       <div class="cell-content cell-content--link" part="content">
@@ -57,7 +57,7 @@ export class SniceCellLink extends HTMLElement implements SniceCellElement {
           part="link"
         >
           ${iconHTML}
-          <span class="link-text">${linkText}</span>
+          <span class="link-text" part="text">${linkText}</span>
           ${unsafeHTML(externalIcon)}
         </a>
       </div>

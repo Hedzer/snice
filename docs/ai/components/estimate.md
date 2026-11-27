@@ -42,7 +42,66 @@ items: EstimateItem[] = [];               // JS only
 
 ## CSS Parts
 
-`base`, `header`, `logo`, `title`, `status`, `expiry`, `expiry-date`, `meta`, `parties`, `party`, `party-label`, `party-name`, `party-detail`, `table`, `table-header`, `table-row`, `table-cell`, `item-toggle`, `summary`, `subtotal`, `discount-row`, `tax-row`, `total`, `notes`, `notes-label`, `notes-content`, `terms`, `actions`, `accept-button`, `decline-button`, `footer`, `qr-container`, `qr`, `comparison`, `option`, `option-button`
+- `base` - Root container
+- `header` - Header section
+- `header-left` - Header column holding the logo, title and date
+- `header-right` - Header column holding the status and expiry
+- `logo` - Logo slot container
+- `title` - Estimate title
+- `meta` - Date meta
+- `status` - Status badge
+- `expiry` - Expiry date container
+- `expiry-date` - Expiry date value
+- `qr-container` - QR code container
+- `qr` - QR code element
+- `parties` - From/To section
+- `party` - Individual party
+- `party-label` - Party label ("From", "To")
+- `party-name` - Party name
+- `party-detail` - Party details
+- `table` - Items table section
+- `table-inner` - The `<table>` element inside `table`
+- `table-header` - Table header row
+- `table-header-cell` - A header cell (also carries `table-cell`)
+- `table-row` - Table body rows
+- `table-cell` - Table cells
+- `badge` - A small inline tag such as the optional-item tag
+- `optional-tag` - The "optional" tag on an optional item
+- `item-toggle` - Optional item toggle button
+- `summary` - Totals section
+- `summary-inner` - Inner wrapper of the totals section
+- `summary-label` - Label span of a totals row
+- `summary-value` - Value span of a totals row
+- `subtotal` - Subtotal row
+- `discount-row` - Discount row
+- `tax-row` - Tax row
+- `total` - Grand total row
+- `notes` - Notes section
+- `notes-label` - Notes heading
+- `notes-content` - Notes text
+- `terms` - Terms section
+- `terms-label` - Terms heading
+- `terms-content` - Terms text
+- `actions` - Action buttons container
+- `accept-button` - Accept estimate button
+- `decline-button` - Decline estimate button
+- `comparison` - Comparison view container
+- `option` - Comparison option card
+- `option-title` - Comparison option title
+- `option-total` - Comparison option total row
+- `option-button` - Select option button
+- `footer` - Footer area
+
+State tokens:
+
+- `status-draft` - Added to `status` while `status` is `draft`
+- `status-sent` - Added to `status` while `status` is `sent`
+- `status-accepted` - Added to `status` while `status` is `accepted`
+- `status-declined` - Added to `status` while `status` is `declined`
+- `status-expired` - Added to `status` while `status` is `expired`
+- `table-row-optional` - Added to `table-row` for an optional line
+- `table-row-included` - Added to `table-row` while the line counts toward the totals
+- `item-toggle-active` - Added to `item-toggle` while its line is included
 
 ## CSS Custom Properties
 

@@ -89,8 +89,8 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
       >
         <div class="map-tiles" part="tiles">
           ${tiles.map(tile => html`
-            <div class="map-tile" style="left: ${tile.pixelX}px; top: ${tile.pixelY}px">
-              <img src="${this.getTileUrl(tile.x, tile.y, tile.z)}" alt="" loading="lazy" />
+            <div class="map-tile" part="tile" style="left: ${tile.pixelX}px; top: ${tile.pixelY}px">
+              <img part="tile-image" src="${this.getTileUrl(tile.x, tile.y, tile.z)}" alt="" loading="lazy" />
             </div>
           `)}
         </div>
@@ -105,23 +105,24 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
             return html`
               <div
                 class="map-marker"
+                part="marker${showPopup ? ' marker-active' : ''}"
                 style="left: ${mp.x}px; top: ${mp.y}px"
                 @click=${(e: Event) => { e.stopPropagation(); this.handleMarkerClick(mp.marker); }}
               >
-                <div class="map-marker-pin">
+                <div class="map-marker-pin" part="marker-pin">
                   ${icon
                     ? (isImageIcon
-                      ? html`<img class="map-marker-icon" src="${escapeAttr(icon)}" alt="" loading="lazy" />`
-                      : html`<span class="map-marker-icon">${escapeHtml(icon)}</span>`)
+                      ? html`<img class="map-marker-icon" part="marker-icon" src="${escapeAttr(icon)}" alt="" loading="lazy" />`
+                      : html`<span class="map-marker-icon" part="marker-icon">${escapeHtml(icon)}</span>`)
                     : html`
-                      <svg viewBox="0 0 24 36" fill="var(--snice-color-danger, rgb(220 38 38))">
+                      <svg part="marker-icon" viewBox="0 0 24 36" fill="var(--snice-color-danger, rgb(220 38 38))">
                         <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"/>
                         <circle cx="12" cy="12" r="4" fill="white"/>
                       </svg>
                     `}
                 </div>
                 <if ${showPopup && hasPopupContent}>
-                  <div class="map-popup">${popupContent}</div>
+                  <div class="map-popup" part="popup">${popupContent}</div>
                 </if>
               </div>
             `;
@@ -129,11 +130,11 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
         </div>
 
         <div class="map-controls" part="controls">
-          <button class="map-control-btn" @click=${(e: Event) => { e.stopPropagation(); this.setZoom(Math.min(this.zoom + 1, this.maxZoom)); }}>+</button>
-          <button class="map-control-btn" @click=${(e: Event) => { e.stopPropagation(); this.setZoom(Math.max(this.zoom - 1, this.minZoom)); }}>-</button>
+          <button class="map-control-btn" part="control zoom-in" @click=${(e: Event) => { e.stopPropagation(); this.setZoom(Math.min(this.zoom + 1, this.maxZoom)); }}>+</button>
+          <button class="map-control-btn" part="control zoom-out" @click=${(e: Event) => { e.stopPropagation(); this.setZoom(Math.max(this.zoom - 1, this.minZoom)); }}>-</button>
         </div>
 
-        <div class="map-attribution">${unsafeHTML('&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>')}</div>
+        <div class="map-attribution" part="attribution">${unsafeHTML('&copy; <a part="attribution-link" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>')}</div>
       </div>
     `;
   }

@@ -72,6 +72,7 @@ Display code with syntax highlighting, line numbers, and copy functionality. Use
 
 | Part | Description |
 |------|-------------|
+| `base` | The outer code block wrapper (same element as `container`) |
 | `container` | The outer code block wrapper |
 | `header` | The header bar with filename and copy button |
 | `filename` | The filename display |
@@ -79,6 +80,9 @@ Display code with syntax highlighting, line numbers, and copy functionality. Use
 | `content` | The scrollable code content area |
 | `pre` | The pre-formatted code container |
 | `code` | The code element containing highlighted tokens |
+| `line` | One rendered code line (when line numbers or line highlighting are enabled) |
+| `line-highlight` | Added to `line` for a highlighted line |
+| `line-number` | The line-number gutter span |
 
 ## Basic Usage
 

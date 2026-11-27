@@ -49,8 +49,13 @@ readonly labels: NodeList | null;
 ## CSS Parts
 
 - `base` - Outer container
+- `base-invalid` - Added to `base` while the value fails validation
 - `decrement-button` - Minus button
 - `increment-button` - Plus button
+- `button` - Either stepper button
+- `icon` - Either stepper button glyph
+- `decrement-icon` - Added to `icon` for the minus glyph
+- `increment-icon` - Added to `icon` for the plus glyph
 - `input` - Number input field
 
 ## Basic Usage

@@ -65,7 +65,36 @@ interface DiffHunk {
 |------|-------------|
 | `base` | Outer diff container |
 | `header` | Header with addition/deletion stats and mode toggle buttons |
+| `stat` | A change count in the header |
+| `stat-additions` | The additions count `stat` |
+| `stat-deletions` | The deletions count `stat` |
+| `controls` | Mode toggle button group |
+| `button` | A mode toggle button |
+| `mode-button` | A mode toggle button (same element as `button`) |
+| `mode-button-unified` | The unified `mode-button` |
+| `mode-button-split` | The split `mode-button` |
 | `content` | Diff content area containing the diff table(s) |
+| `split` | Split-view wrapper holding both panes |
+| `pane` | A split-view pane |
+| `pane-old` | The old-text `pane` |
+| `pane-new` | The new-text `pane` |
+| `table` | A diff table |
+| `row` | A diff table row |
+| `cell` | A diff table cell |
+| `gutter` | A line-number `cell` |
+| `marker` | A `+`/`-` marker `cell` |
+| `code` | A code content `cell` |
+| `hunk-separator` | The collapsed-hunk `cell` (click to expand) |
+
+**State tokens** (added alongside the base token):
+
+| Part | Description |
+|------|-------------|
+| `mode-button-active` | Added to `mode-button` while that mode is selected |
+| `row-added` | Added to `row` for an added line |
+| `row-removed` | Added to `row` for a removed line |
+| `row-unchanged` | Added to `row` for an unchanged line |
+| `row-hunk` | Added to `row` for a collapsed-hunk separator row |
 
 ```css
 snice-diff::part(base) {

@@ -37,11 +37,11 @@ export class SnicePagination extends HTMLElement {
       <nav part="base" class="pagination" aria-label="Pagination">
         <if ${this.showFirst}>
           <button
-            part="button first-button"
+            part="button first-button${this.current === 1 ? ' button-disabled' : ''}"
             class="pagination-button pagination-first"
             ?disabled="${this.current === 1}"
             aria-label="First page">
-            <svg width="16" height="16" viewBox="0 0 16 16">
+            <svg part="icon first-icon" width="16" height="16" viewBox="0 0 16 16">
               <path d="M11 12L7 8L11 4M5 4V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
             </svg>
           </button>
@@ -49,11 +49,11 @@ export class SnicePagination extends HTMLElement {
 
         <if ${this.showPrev}>
           <button
-            part="button prev-button"
+            part="button prev-button${this.current === 1 ? ' button-disabled' : ''}"
             class="pagination-button pagination-prev"
             ?disabled="${this.current === 1}"
             aria-label="Previous page">
-            <svg width="16" height="16" viewBox="0 0 16 16">
+            <svg part="icon prev-icon" width="16" height="16" viewBox="0 0 16 16">
               <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
             </svg>
           </button>
@@ -71,6 +71,7 @@ export class SnicePagination extends HTMLElement {
             </if>
             <if ${isCurrentPage}>
               <button
+                part="page page-current"
                 class="${pageClasses}"
                 data-page="${page}"
                 aria-label="Page ${page}"
@@ -80,6 +81,7 @@ export class SnicePagination extends HTMLElement {
             </if>
             <if ${isOtherPage}>
               <button
+                part="page"
                 class="${pageClasses}"
                 data-page="${page}"
                 aria-label="Page ${page}">
@@ -91,11 +93,11 @@ export class SnicePagination extends HTMLElement {
 
         <if ${this.showNext}>
           <button
-            part="button next-button"
+            part="button next-button${this.current === this.total ? ' button-disabled' : ''}"
             class="pagination-button pagination-next"
             ?disabled="${this.current === this.total}"
             aria-label="Next page">
-            <svg width="16" height="16" viewBox="0 0 16 16">
+            <svg part="icon next-icon" width="16" height="16" viewBox="0 0 16 16">
               <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
             </svg>
           </button>
@@ -103,11 +105,11 @@ export class SnicePagination extends HTMLElement {
 
         <if ${this.showLast}>
           <button
-            part="button last-button"
+            part="button last-button${this.current === this.total ? ' button-disabled' : ''}"
             class="pagination-button pagination-last"
             ?disabled="${this.current === this.total}"
             aria-label="Last page">
-            <svg width="16" height="16" viewBox="0 0 16 16">
+            <svg part="icon last-icon" width="16" height="16" viewBox="0 0 16 16">
               <path d="M5 12L9 8L5 4M11 4V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
             </svg>
           </button>

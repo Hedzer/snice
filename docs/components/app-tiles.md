@@ -74,7 +74,15 @@ interface AppTile {
 | Part | Description |
 |------|-------------|
 | `base` | Root container |
+| `tile` | A single tile button |
+| `icon-container` | The tile's icon box (image, emoji, letter or ligature) |
+| `image` | The tile icon image |
 | `icon` | Material Symbols ligature icon span (inside rendered tiles) |
+| `name` | Tile label |
+| `badge-base` | Exported `base` of the internal `snice-badge` (tiles with a `badge`) |
+| `badge-badge` | Exported `badge` of the internal `snice-badge` |
+| `badge-badge-dot` | Exported `badge-dot` of the internal `snice-badge` (badge while `dot` is set) |
+| `badge-badge-pulse` | Exported `badge-pulse` of the internal `snice-badge` (badge while `pulse` is set) |
 
 ## Basic Usage
 

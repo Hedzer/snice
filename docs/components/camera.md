@@ -91,6 +91,14 @@ interface CapturedImage {
 |------|-------------|
 | `base` | Outer camera container holding the video feed |
 | `controls` | Built-in control buttons area (capture and switch camera) |
+| `video` | The live `<video>` preview element |
+| `button` | Any built-in control button |
+| `switch-button` | Added to `button` on the switch-camera button |
+| `capture-button` | Added to `button` on the capture button |
+| `icon` | The `<svg>` glyph inside a control button |
+| `switch-icon` | Added to `icon` on the switch-camera glyph |
+| `capture-icon` | Added to `icon` on the capture glyph |
+| `custom-controls` | Wrapper for the `controls` slot |
 
 ## Basic Usage
 

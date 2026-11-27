@@ -30,9 +30,43 @@ placement: 'start'|'end' = 'end';        // Panel alignment side
 ## CSS Parts
 
 - `trigger` - The bell icon button
+- `badge` - The internal `<snice-badge>` carrying the unread count
 - `icon` - The bell icon span
 - `panel` - The dropdown notification panel
 - `panel-header` - Panel header with title and mark-all-read action
+- `panel-title` - Panel title text
+- `mark-all-button` - Mark-all-read button
+- `list` - The `<ul>` of notifications
+- `item` - One notification `<li>`
+- `item-icon` - Notification type icon
+- `item-content` - Notification text block
+- `item-title` - Notification title
+- `item-message` - Notification message
+- `item-time` - Notification timestamp
+- `dismiss` - Per-notification dismiss button
+- `empty-state` - The internal `<snice-empty-state>` shown with no notifications
+
+State tokens:
+
+- `trigger-open` - Added to `trigger` while the panel is open
+- `item-unread` - Added to `item` while the notification is unread
+
+Forwarded from the unread `<snice-badge>` via `exportparts`:
+
+- `badge-base` - Exported `base` of the internal badge
+- `badge-badge` - Exported `badge` of the internal badge
+- `badge-badge-dot` - Exported `badge-dot` of the internal badge (badge while `dot` is set)
+- `badge-badge-pulse` - Exported `badge-pulse` of the internal badge (badge while `pulse` is set)
+
+Forwarded from the empty `<snice-empty-state>` via `exportparts`:
+
+- `empty-state-base` - Exported `base` of the internal empty state
+- `empty-state-container` - Exported `container` of the internal empty state
+- `empty-state-icon` - Exported `icon` of the internal empty state
+- `empty-state-title` - Exported `title` of the internal empty state
+- `empty-state-description` - Exported `description` of the internal empty state
+- `empty-state-action` - Exported `action` of the internal empty state
+- `empty-state-extra` - Exported `extra` of the internal empty state
 
 ## CSS Custom Properties
 

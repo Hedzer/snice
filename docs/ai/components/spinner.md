@@ -15,8 +15,15 @@ thickness: number = 4;   // only applies to arc variant
 ## CSS Parts
 
 - `base` - Outer spinner container
-- `circle` - Arc variant's SVG circle
+- `circle` - Arc variant's SVG element
+- `track` - Arc variant's background circle
+- `fill` - Arc variant's animated arc circle
 - `dots` / `pulse` / `orbit` / `bars` - Variant wrapper parts
+- `dot` - Individual dot (dots and orbit variants)
+- `orbit-dot` - Added to `dot` for the orbit variant's dots
+- `bar` - Individual bar (bars variant)
+- `ring` - Orbit variant's rotating ring
+- `ring-a` / `ring-b` / `ring-c` - Added to `ring` for the first, second, and third orbit ring
 - `label` - Label text element
 
 ## Basic Usage

@@ -70,15 +70,46 @@ interface LoginResult {
 - `header` - Header section
 - `title` - H1 title element
 - `form` - The login form
+- `subtitle` - Default subtitle paragraph
+- `field` - A form field wrapper
+- `username-field` - Added to the username `field`
+- `password-field` - Added to the password `field`
+- `label` - A field label
+- `username-label` - Added to the username `label`
+- `password-label` - Added to the password `label`
+- `input` - A field input
+- `username-input` - Added to the username `input`
+- `password-input` - Added to the password `input`
+- `options` - Remember-me / forgot-password row
+- `remember` - Remember-me label wrapper
+- `checkbox` - Remember-me checkbox
+- `forgot-link` - Forgot-password link
 - `submit-button` - The `<snice-button>` submit control
+- `alert` - The inline `<snice-alert>` banner
 - `footer` - Footer section
+
+Forwarded from the inline `<snice-alert>` via `exportparts`:
+
+- `alert-base` - Exported `base` of the alert banner
+- `alert-body` - Exported `body` of the alert banner
+- `alert-icon` - Exported `icon` of the alert banner
+- `alert-icon-content` - Exported `icon-content` of the alert banner
+- `alert-content` - Exported `content` of the alert banner
+- `alert-title` - Exported `title` of the alert banner
+- `alert-description` - Exported `description` of the alert banner
+- `alert-close` - Exported `close` of the alert banner
+- `alert-close-icon` - Exported `close-icon` of the alert banner
 
 Forwarded from the submit `<snice-button>` via `exportparts`:
 
 - `submit-button-base` - The inner `<button>` (focus ring, padding, colors)
+- `submit-button-spinner` - Submit loading spinner
 - `submit-button-label` - Submit label wrapper
 - `submit-button-icon` - Submit icon slot wrapper
-- `submit-button-spinner` - Submit loading spinner
+- `submit-button-icon-start` - Exported `icon-start` of the submit button
+- `submit-button-icon-end` - Exported `icon-end` of the submit button
+- `submit-button-base-loading` - Exported `base-loading` of the submit button
+- `submit-button-base-disabled` - Exported `base-disabled` of the submit button
 
 ```css
 snice-login::part(submit-button) { width: 100%; }

@@ -253,6 +253,14 @@ export function checkNoUndocumentedParts(el: HTMLElement, problems: Problems): v
     'party-name', 'party-detail', 'table', 'table-header', 'table-row', 'table-cell',
     'summary', 'summary-row', 'summary-label', 'summary-value', 'discount-row', 'tax-row',
     'total', 'notes', 'notes-label', 'notes-content', 'qr', 'qr-container', 'footer',
+    'header-left', 'meta-row', 'meta-label', 'meta-value', 'table-header-row',
+    'table-header-cell', 'table-body', 'line-number', 'item-tax', 'summary-table',
+    'qr-placeholder',
+    // State tokens, added beside the base token on the same element.
+    'status-draft', 'status-sent', 'status-paid', 'status-overdue', 'status-cancelled',
+    'table-cell-line', 'table-cell-description', 'table-cell-qty', 'table-cell-price',
+    'table-cell-amount',
+    'qr-top-right', 'qr-bottom-right', 'qr-bottom-left', 'qr-footer',
   ]);
   for (const node of all(el, '[part]')) {
     for (const name of partTokens(node)) {

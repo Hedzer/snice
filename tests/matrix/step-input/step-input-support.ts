@@ -237,14 +237,21 @@ export const incrementButton = (el: HTMLElement) =>
   part<HTMLButtonElement>(el, 'increment-button');
 
 export function partNames(el: HTMLElement): string[] {
-  return [...shadow(el).querySelectorAll('[part]')]
+  return [...new Set([...shadow(el).querySelectorAll('[part]')]
     .flatMap(node => (node.getAttribute('part') ?? '').split(/\s+/))
-    .filter(Boolean)
-    .sort();
+    .filter(Boolean))].sort();
 }
 
-/** Every part the docs list, in the documented spelling. */
-export const DOCUMENTED_PARTS = ['base', 'decrement-button', 'increment-button', 'input'];
+/**
+ * Every part the docs list unconditionally, in the documented spelling. The
+ * one state token the docs describe as "added to ... while" (`base-invalid`)
+ * is not here: it appears only under a custom validity error, which no shape
+ * vector sets.
+ */
+export const DOCUMENTED_PARTS = [
+  'base', 'button', 'decrement-button', 'decrement-icon', 'icon',
+  'increment-button', 'increment-icon', 'input',
+];
 
 // ── Oracles ─────────────────────────────────────────────────────────────────
 

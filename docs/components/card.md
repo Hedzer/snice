@@ -46,6 +46,9 @@ Container for grouped content with support for headers, footers, images, visual 
 | `header` | Card header section |
 | `body` | Card body section |
 | `footer` | Card footer section |
+| `base-clickable` | Added to `base` when `clickable` is set |
+| `base-selected` | Added to `base` when `selected` is set |
+| `base-disabled` | Added to `base` when `disabled` is set |
 
 ```css
 snice-card::part(header) {

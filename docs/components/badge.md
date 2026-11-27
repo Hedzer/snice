@@ -56,6 +56,8 @@ badge would overlay.
 |------|---------|-------------|
 | `base` | `<div>` | Outer wrapper element |
 | `badge` | `<span>` | The badge indicator element |
+| `badge-dot` | `<span>` | Added to `badge` when `dot` is set |
+| `badge-pulse` | `<span>` | Added to `badge` when `pulse` is set |
 
 ```css
 snice-badge::part(badge) {

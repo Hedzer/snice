@@ -163,6 +163,8 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
 
     const trackClasses = `range-slider__track${this.interactionDisabled ? ' range-slider__track--disabled' : ''}${this.constraintInvalid ? ' range-slider__track--invalid' : ''}`;
     const isDragging = this.draggingThumb !== null;
+    const lowDragging = this.draggingThumb === 'low';
+    const highDragging = this.draggingThumb === 'high';
     const rangeClasses = `range-slider__range${isDragging ? ' range-slider__range--dragging' : ''}`;
 
     const lowThumbClasses = [
@@ -182,20 +184,20 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
     ].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <div class="${wrapperClass}">
-        <div class="${containerClass}">
+      <div class="${wrapperClass}" part="base">
+        <div class="${containerClass}" part="container${isVertical ? ' container-vertical' : ''}">
           <div
             class="${trackClasses}"
-            part="track"
+            part="track${this.interactionDisabled ? ' track-disabled' : ''}${this.constraintInvalid ? ' track-invalid' : ''}"
             @mousedown=${this.handleTrackMouseDown}
             @touchstart=${this.handleTrackTouchStart}
           >
-            <div class="${rangeClasses}" style="${rangeStyle}" part="range"></div>
+            <div class="${rangeClasses}" style="${rangeStyle}" part="range${isDragging ? ' range-dragging' : ''}"></div>
 
             <div
               class="${lowThumbClasses}"
               style="${lowThumbStyle}"
-              part="thumb-low"
+              part="thumb thumb-low${this.interactionDisabled ? ' thumb-disabled' : ''}${this.constraintInvalid ? ' thumb-invalid' : ''}${lowDragging ? ' thumb-dragging' : ''}"
               tabindex="${this.interactionDisabled ? -1 : 0}"
               role="slider"
               aria-label="Range minimum"
@@ -208,14 +210,14 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
               @keydown=${this.handleLowKeyDown}
             >
               <if ${this.showTooltip}>
-                <span class="range-slider__tooltip">${this.valueLow}</span>
+                <span class="range-slider__tooltip" part="tooltip">${this.valueLow}</span>
               </if>
             </div>
 
             <div
               class="${highThumbClasses}"
               style="${highThumbStyle}"
-              part="thumb-high"
+              part="thumb thumb-high${this.interactionDisabled ? ' thumb-disabled' : ''}${this.constraintInvalid ? ' thumb-invalid' : ''}${highDragging ? ' thumb-dragging' : ''}"
               tabindex="${this.interactionDisabled ? -1 : 0}"
               role="slider"
               aria-label="Range maximum"
@@ -228,16 +230,16 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
               @keydown=${this.handleHighKeyDown}
             >
               <if ${this.showTooltip}>
-                <span class="range-slider__tooltip">${this.valueHigh}</span>
+                <span class="range-slider__tooltip" part="tooltip">${this.valueHigh}</span>
               </if>
             </div>
           </div>
         </div>
 
         <if ${this.showLabels}>
-          <div class="range-slider__labels">
-            <span part="label-min">${this.min}</span>
-            <span part="label-max">${this.max}</span>
+          <div class="range-slider__labels" part="labels">
+            <span part="label label-min">${this.min}</span>
+            <span part="label label-max">${this.max}</span>
           </div>
         </if>
       </div>

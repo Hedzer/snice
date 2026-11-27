@@ -13,6 +13,8 @@ import type {
   QrPosition
 } from './snice-estimate.types';
 
+const STATUS_PARTS = { draft: ' status-draft', sent: ' status-sent', accepted: ' status-accepted', declined: ' status-declined', expired: ' status-expired' } satisfies Record<EstimateStatus, string>;
+
 @element('snice-estimate')
 export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
   @property({ attribute: 'estimate-number' })
@@ -213,13 +215,13 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
   private renderHeader(): unknown {
     return html/*html*/`
       <div class="est__header" part="header">
-        <div class="est__header-left">
+        <div class="est__header-left" part="header-left">
           <slot name="logo" part="logo" class="est__logo"></slot>
           <h2 class="est__title" part="title">Estimate ${this.estimateNumber ? '#' + this.estimateNumber : ''}</h2>
           ${this.renderDate()}
         </div>
-        <div class="est__header-right">
-          <span class="est__badge est__status--${this.status}" part="status">${this.status}</span>
+        <div class="est__header-right" part="header-right">
+          <span class="est__badge est__status--${this.status}" part="status${STATUS_PARTS[this.status] ?? ''}">${this.status}</span>
           ${this.renderExpiry()}
         </div>
         ${this.renderHeaderQr()}
@@ -243,14 +245,14 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
 
     return html/*html*/`
       <div class="est__table-section" part="table">
-        <table class="est__table">
+        <table class="est__table" part="table-inner">
           <thead>
             <tr part="table-header">
-              <th class="est__table-header">Description</th>
-              <th class="est__table-header">Qty</th>
-              <th class="est__table-header">Unit Price</th>
-              <th class="est__table-header">Total</th>
-              <th class="est__table-header"></th>
+              <th class="est__table-header" part="table-cell table-header-cell">Description</th>
+              <th class="est__table-header" part="table-cell table-header-cell">Qty</th>
+              <th class="est__table-header" part="table-cell table-header-cell">Unit Price</th>
+              <th class="est__table-header" part="table-cell table-header-cell">Total</th>
+              <th class="est__table-header" part="table-cell table-header-cell"></th>
             </tr>
           </thead>
           <tbody>
@@ -262,18 +264,18 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
                 isIncluded ? 'est__row--included' : ''
               ].filter(Boolean).join(' ');
 
-              const optionalTag = isOptional ? html/*html*/`<span class="est__optional-tag">optional</span>` : '';
+              const optionalTag = isOptional ? html/*html*/`<span class="est__optional-tag" part="badge optional-tag">optional</span>` : '';
               const toggleBtn = isOptional ? html/*html*/`
                 <button
                   class="est__toggle ${isIncluded ? 'est__toggle--active' : ''}"
+                  part="item-toggle${isIncluded ? ' item-toggle-active' : ''}"
                   @click=${() => this.handleItemToggle(index)}
-                  aria-label="${isIncluded ? 'Exclude item' : 'Include item'}"
-                  part="item-toggle">
+                  aria-label="${isIncluded ? 'Exclude item' : 'Include item'}">
                 </button>
               ` : '';
 
               return html/*html*/`
-                <tr class="${rowClasses}" part="table-row">
+                <tr class="${rowClasses}" part="table-row${isOptional ? ' table-row-optional' : ''}${isIncluded ? ' table-row-included' : ''}">
                   <td class="est__table-cell" part="table-cell">
                     ${item.description}
                     ${optionalTag}
@@ -301,30 +303,30 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
 
     const discountRow = this.discount > 0 ? html/*html*/`
       <div class="est__discount-row" part="discount-row">
-        <span>Discount (${this.discount}%)</span>
-        <span>-${this.formatCurrency(discountAmount)}</span>
+        <span part="summary-label">Discount (${this.discount}%)</span>
+        <span part="summary-value">-${this.formatCurrency(discountAmount)}</span>
       </div>
     ` : '';
 
     const taxRow = this.taxRate > 0 ? html/*html*/`
       <div class="est__tax-row" part="tax-row">
-        <span>Tax (${this.taxRate}%)</span>
-        <span>${this.formatCurrency(taxAmount)}</span>
+        <span part="summary-label">Tax (${this.taxRate}%)</span>
+        <span part="summary-value">${this.formatCurrency(taxAmount)}</span>
       </div>
     ` : '';
 
     return html/*html*/`
       <div class="est__summary" part="summary">
-        <div class="est__summary-inner">
+        <div class="est__summary-inner" part="summary-inner">
           <div class="est__subtotal-row" part="subtotal">
-            <span>Subtotal</span>
-            <span>${this.formatCurrency(subtotal)}</span>
+            <span part="summary-label">Subtotal</span>
+            <span part="summary-value">${this.formatCurrency(subtotal)}</span>
           </div>
           ${discountRow}
           ${taxRow}
           <div class="est__total-row" part="total">
-            <span>Total</span>
-            <span>${this.formatCurrency(total)}</span>
+            <span part="summary-label">Total</span>
+            <span part="summary-value">${this.formatCurrency(total)}</span>
           </div>
         </div>
       </div>
@@ -347,8 +349,8 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
 
     return html/*html*/`
       <div class="est__terms-section" part="terms">
-        <h3 class="est__terms-label">Terms & Conditions</h3>
-        <p class="est__terms-content">${this.terms}</p>
+        <h3 class="est__terms-label" part="terms-label">Terms & Conditions</h3>
+        <p class="est__terms-content" part="terms-content">${this.terms}</p>
       </div>
     `;
   }
@@ -383,10 +385,10 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
       <div class="est__comparison" part="comparison">
         ${this.items.map((item, index) => html/*html*/`
           <div class="est__option" part="option">
-            <h3 class="est__option-title">${item.description}</h3>
-            <div class="est__option-total">
-              <span>Total</span>
-              <span>${this.formatCurrency(item.quantity * item.unitPrice)}</span>
+            <h3 class="est__option-title" part="option-title">${item.description}</h3>
+            <div class="est__option-total" part="option-total">
+              <span part="summary-label">Total</span>
+              <span part="summary-value">${this.formatCurrency(item.quantity * item.unitPrice)}</span>
             </div>
             <button
               class="est__option-btn"

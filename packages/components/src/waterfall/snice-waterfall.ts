@@ -131,7 +131,7 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
     const zeroY = toY(0);
 
     const parts: string[] = [];
-    parts.push(`<line class="waterfall-axis" x1="${padding.left}" y1="${zeroY}" x2="${chartWidth - padding.right}" y2="${zeroY}" />`);
+    parts.push(`<line part="axis" class="waterfall-axis" x1="${padding.left}" y1="${zeroY}" x2="${chartWidth - padding.right}" y2="${zeroY}" />`);
 
     for (let i = 0; i < this.bars.length; i++) {
       const bar = this.bars[i];
@@ -144,13 +144,13 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
         const prevBar = this.bars[i - 1];
         const prevX = toX(i - 1) + barWidth;
         const connY = toY(prevBar.end);
-        parts.push(`<line class="waterfall-connector" x1="${prevX}" y1="${connY}" x2="${x}" y2="${connY}" />`);
+        parts.push(`<line part="connector" class="waterfall-connector" x1="${prevX}" y1="${connY}" x2="${x}" y2="${connY}" />`);
       }
 
       parts.push(this.barRect(bar, x, barTop, barWidth, barHeight));
 
       const labelX = x + barWidth / 2;
-      parts.push(`<text class="waterfall-label" x="${labelX}" y="${chartHeight - 5}">${this.escSvg(bar.label)}</text>`);
+      parts.push(`<text part="label" class="waterfall-label" x="${labelX}" y="${chartHeight - 5}">${this.escSvg(bar.label)}</text>`);
 
       if (this.showValues) {
         const valY = barTop - 5;
@@ -158,7 +158,7 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
       }
     }
 
-    this.chartEl.innerHTML = `<svg viewBox="0 0 ${chartWidth} ${chartHeight}" preserveAspectRatio="xMidYMid meet">${parts.join('')}</svg>`;
+    this.chartEl.innerHTML = `<svg part="svg" viewBox="0 0 ${chartWidth} ${chartHeight}" preserveAspectRatio="xMidYMid meet">${parts.join('')}</svg>`;
   }
 
   /** horizontal: values run across the page, bars advance down it. */
@@ -181,7 +181,7 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
     const zeroX = toX(0);
 
     const parts: string[] = [];
-    parts.push(`<line class="waterfall-axis" x1="${zeroX}" y1="${padding.top}" x2="${zeroX}" y2="${chartHeight - padding.bottom}" />`);
+    parts.push(`<line part="axis" class="waterfall-axis" x1="${zeroX}" y1="${padding.top}" x2="${zeroX}" y2="${chartHeight - padding.bottom}" />`);
 
     for (let i = 0; i < this.bars.length; i++) {
       const bar = this.bars[i];
@@ -194,20 +194,20 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
         const prevBar = this.bars[i - 1];
         const prevY = toY(i - 1) + barWidth;
         const connX = toX(prevBar.end);
-        parts.push(`<line class="waterfall-connector" x1="${connX}" y1="${prevY}" x2="${connX}" y2="${y}" />`);
+        parts.push(`<line part="connector" class="waterfall-connector" x1="${connX}" y1="${prevY}" x2="${connX}" y2="${y}" />`);
       }
 
       parts.push(this.barRect(bar, barLeft, y, barHeight, barWidth));
 
       const labelY = y + barWidth / 2;
-      parts.push(`<text class="waterfall-label" x="${padding.left - 5}" y="${labelY}" text-anchor="end">${this.escSvg(bar.label)}</text>`);
+      parts.push(`<text part="label" class="waterfall-label" x="${padding.left - 5}" y="${labelY}" text-anchor="end">${this.escSvg(bar.label)}</text>`);
 
       if (this.showValues) {
         parts.push(this.valueText(bar, barRight + 5, labelY, 'start'));
       }
     }
 
-    this.chartEl.innerHTML = `<svg viewBox="0 0 ${chartWidth} ${chartHeight}" preserveAspectRatio="xMidYMid meet">${parts.join('')}</svg>`;
+    this.chartEl.innerHTML = `<svg part="svg" viewBox="0 0 ${chartWidth} ${chartHeight}" preserveAspectRatio="xMidYMid meet">${parts.join('')}</svg>`;
   }
 
   private valueRange(): { paddedMin: number; totalRange: number } {
@@ -225,12 +225,12 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
   }
 
   private barRect(bar: ComputedBar, x: number, y: number, width: number, height: number): string {
-    return `<rect class="${this.barClass(bar.type)}" x="${x}" y="${y}" width="${width}" height="${height}" rx="2" data-index="${bar.index}" role="graphics-symbol" tabindex="0" aria-label="${this.escSvg(bar.label)}: ${this.formatValue(bar.value)}" />`;
+    return `<rect part="bar${({ increase: ' bar-increase', decrease: ' bar-decrease', total: ' bar-total' })[bar.type] || ''}${this.animated ? ' bar-animated' : ''}" class="${this.barClass(bar.type)}" x="${x}" y="${y}" width="${width}" height="${height}" rx="2" data-index="${bar.index}" role="graphics-symbol" tabindex="0" aria-label="${this.escSvg(bar.label)}: ${this.formatValue(bar.value)}" />`;
   }
 
   private valueText(bar: ComputedBar, x: number, y: number, anchor = 'middle'): string {
     const prefix = bar.type === 'total' ? '' : (bar.value >= 0 ? '+' : '');
-    return `<text class="waterfall-value waterfall-value-${bar.type}" x="${x}" y="${y}" text-anchor="${anchor}">${prefix}${this.formatValue(bar.value)}</text>`;
+    return `<text part="value${({ increase: ' value-increase', decrease: ' value-decrease', total: ' value-total' })[bar.type] || ''}" class="waterfall-value waterfall-value-${bar.type}" x="${x}" y="${y}" text-anchor="${anchor}">${prefix}${this.formatValue(bar.value)}</text>`;
   }
 
   @render({ once: true })

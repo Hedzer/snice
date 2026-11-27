@@ -21,7 +21,7 @@
  *
  * ── Layer 1 (every combo, closed and then open): geometry + style + occlusion ─
  *   · primary, divider and toggle sit in that order, left to right, each with a
- *     real box, all three inside `[part="base"]`;
+ *     real box, all three inside `[part~="base"]`;
  *   · the closed menu paints nothing;
  *   · the open menu is below the base, right-aligned to it, at least as wide;
  *   · every action is a real row, rows descend without overlapping, and each
@@ -99,7 +99,7 @@ async function visualProblems(combo: Combo, open: boolean): Promise<string[]> {
     if (!sr) { say('no shadow root'); return problems; }
 
     const rect = (el: Element) => el.getBoundingClientRect();
-    const partOf = (name: string) => sr.querySelector(`[part="${name}"]`) as HTMLElement | null;
+    const partOf = (name: string) => sr.querySelector(`[part~="${name}"]`) as HTMLElement | null;
     const painted = (node: Element | null) => {
       if (!node) return false;
       const b = rect(node);
@@ -130,7 +130,7 @@ async function visualProblems(combo: Combo, open: boolean): Promise<string[]> {
       }
       if (box.left < baseBox.left - 1 || box.right > baseBox.right + 1
         || box.top < baseBox.top - 1 || box.bottom > baseBox.bottom + 1) {
-        say(`[part="${name}"] escapes [part="base"]`);
+        say(`[part="${name}"] escapes [part~="base"]`);
       }
     }
     if (!(primaryBox.right <= dividerBox.left + 1)) {
@@ -189,7 +189,7 @@ async function visualProblems(combo: Combo, open: boolean): Promise<string[]> {
     }
 
     // ── Every action is a row, and the rows descend inside the wrapper ─────
-    const actions = [...sr.querySelectorAll('[part="action"]')] as HTMLElement[];
+    const actions = [...sr.querySelectorAll('[part~="action"]')] as HTMLElement[];
     if (actions.length === 0) say('the open menu holds no actions');
     const itemsBox = items ? rect(items) : menuBox;
     for (const [i, action] of actions.entries()) {
@@ -249,7 +249,7 @@ test.describe('split-button visual matrix: live behaviour', () => {
     const height = async (size: Size) => {
       await page.evaluate(c => (window as any).matrix.mount(c), { ...plain, size } as any);
       return page.evaluate(() => document.getElementById('subject')!.shadowRoot!
-        .querySelector('[part="base"]')!.getBoundingClientRect().height);
+        .querySelector('[part~="base"]')!.getBoundingClientRect().height);
     };
     const small = await height('small');
     const medium = await height('medium');
@@ -263,7 +263,7 @@ test.describe('split-button visual matrix: live behaviour', () => {
       await page.evaluate(c => (window as any).matrix.mount(c), { ...plain, pill } as any);
       return page.evaluate(() => {
         const sr = document.getElementById('subject')!.shadowRoot!;
-        return parseFloat(getComputedStyle(sr.querySelector('[part="primary"]')!)
+        return parseFloat(getComputedStyle(sr.querySelector('[part~="primary"]')!)
           .borderTopLeftRadius);
       });
     };
@@ -301,8 +301,8 @@ test.describe('split-button visual matrix: live behaviour', () => {
       return {
         spinner: !!spinner && !!box && box.width > 0 && box.height > 0,
         icon: !!sr.querySelector('.split-button__icon'),
-        primaryDisabled: (sr.querySelector('[part="primary"]') as HTMLButtonElement).disabled,
-        toggleDisabled: (sr.querySelector('[part="toggle"]') as HTMLButtonElement).disabled,
+        primaryDisabled: (sr.querySelector('[part~="primary"]') as HTMLButtonElement).disabled,
+        toggleDisabled: (sr.querySelector('[part~="toggle"]') as HTMLButtonElement).disabled,
       };
     })).toEqual({ spinner: true, icon: false, primaryDisabled: true, toggleDisabled: true });
   });
@@ -367,7 +367,7 @@ test.describe('split-button visual matrix: marquee pixels', () => {
       page, 'body', `split-button-${name}`,
       `() => {
         const sr = document.getElementById('subject').shadowRoot;
-        const box = sr.querySelector('[part="primary"]').getBoundingClientRect();
+        const box = sr.querySelector('[part~="primary"]').getBoundingClientRect();
         // Two pixels inside the top-left corner: past any border, clear of the
         // label's glyphs.
         return [{ x: box.x + 3, y: box.y + 3 }];

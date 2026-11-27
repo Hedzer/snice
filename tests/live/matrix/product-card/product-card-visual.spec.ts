@@ -194,7 +194,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
     // ── Images: painted, stacked, inside the gallery ─────────────────────────
     const images = partsOf('image');
     if (images.length !== combo.images) {
-      say(`${images.length} [part="image"] elements for ${combo.images} images`);
+      say(`${images.length} [part~="image"] elements for ${combo.images} images`);
     }
     if (gallery && images.length) {
       const g = rect(gallery);
@@ -226,8 +226,8 @@ async function visualProblems(combo: Combo): Promise<string[]> {
 
     // ── Price: the documented strikethrough ──────────────────────────────────
     const current = partOf('price-current');
-    if (!current) say('no [part="price-current"]');
-    else if (rect(current).height <= 0) say('[part="price-current"] has no box');
+    if (!current) say('no [part~="price-current"]');
+    else if (rect(current).height <= 0) say('[part~="price-current"] has no box');
 
     const original = partOf('price-original');
     if (combo.sale) {
@@ -255,12 +255,12 @@ async function visualProblems(combo: Combo): Promise<string[]> {
 
     // ── Stock line ───────────────────────────────────────────────────────────
     const stock = partOf('stock');
-    if (!stock) say('no [part="stock"]');
-    else if (rect(stock).height <= 0) say('[part="stock"] has no box');
+    if (!stock) say('no [part~="stock"]');
+    else if (rect(stock).height <= 0) say('[part~="stock"] has no box');
 
     // ── Variant options ──────────────────────────────────────────────────────
     const options = partsOf('variant-option');
-    if (options.length !== 3) say(`${options.length} [part="variant-option"] buttons, expected 3`);
+    if (options.length !== 3) say(`${options.length} [part~="variant-option"] buttons, expected 3`);
     let previousRight = -Infinity;
     for (const option of options) {
       const box = rect(option);

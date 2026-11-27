@@ -59,8 +59,10 @@ If your content is a list of selectable actions, prefer `<snice-menu>`. If it's 
 
 | Part | Description |
 |------|-------------|
+| `base` | Anchor wrapper around the trigger and panel |
 | `trigger` | Trigger wrapper |
 | `panel` | Floating panel |
+| `panel-open` | Added to `panel` while the popover is open |
 | `content` | Inner content wrapper |
 
 ## CSS Custom Properties

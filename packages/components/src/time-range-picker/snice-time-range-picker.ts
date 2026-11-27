@@ -69,8 +69,8 @@ export class SniceTimeRangePicker extends HTMLElement implements SniceTimeRangeP
     return html`
       <div part="base" class="wrapper">
         <div part="header" class="header">
-          <span class="header-label">Time</span>
-          <span class="${displayValue ? 'header-value' : 'header-value header-value--empty'}">
+          <span part="label" class="header-label">Time</span>
+          <span part="value${displayValue ? '' : ' value-empty'}" class="${displayValue ? 'header-value' : 'header-value header-value--empty'}">
             ${displayValue || 'No selection'}
           </span>
         </div>
@@ -98,6 +98,7 @@ export class SniceTimeRangePicker extends HTMLElement implements SniceTimeRangeP
 
             return html`
               <div class="${classes}"
+                part="slot${isSelected ? ' slot-selected' : ''}${isDisabled ? ' slot-disabled' : ''}${isDragging ? ' slot-dragging' : ''}${isHourStart ? ' slot-hour-start' : ''}${isRangeStart ? ' slot-range-start' : ''}${isRangeEnd ? ' slot-range-end' : ''}"
                 data-index="${index}"
                 data-time="${time}"
                 tabindex="${isDisabled ? '-1' : '0'}"
@@ -105,8 +106,8 @@ export class SniceTimeRangePicker extends HTMLElement implements SniceTimeRangeP
                 aria-selected="${isSelected || isDragging ? 'true' : 'false'}"
                 aria-disabled="${isDisabled ? 'true' : 'false'}"
                 @keydown=${(e: KeyboardEvent) => this.handleSlotKeydown(e, index)}>
-                <span class="slot-time">${this.formatTime(time)}</span>
-                <span class="slot-separator"></span>
+                <span part="slot-time" class="slot-time">${this.formatTime(time)}</span>
+                <span part="slot-separator" class="slot-separator"></span>
               </div>
             `;
           })}

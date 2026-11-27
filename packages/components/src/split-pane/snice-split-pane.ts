@@ -199,7 +199,7 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
       </div>
 
       <div
-        part="divider"
+        part="divider${this.disabled ? ' divider-disabled' : ''}"
         class="divider ${this.disabled ? 'divider--disabled' : ''}"
         role="separator"
         aria-orientation="${this.direction === 'horizontal' ? 'vertical' : 'horizontal'}"

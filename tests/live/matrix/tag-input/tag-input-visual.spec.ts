@@ -107,7 +107,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
     const rect = (el: Element) => el.getBoundingClientRect();
     const chips = [...sr.querySelectorAll('[part="tag"]')]
       .filter(n => (n.getAttribute('part') ?? '').split(/\s+/).includes('tag')) as HTMLElement[];
-    const container = sr.querySelector('[part="container"]') as HTMLElement | null;
+    const container = sr.querySelector('[part~="container"]') as HTMLElement | null;
     if (!container) { say('no part="container"'); return problems; }
     const containerBox = rect(container);
     if (containerBox.width <= 0 || containerBox.height <= 0) {
@@ -380,7 +380,7 @@ test.describe('tag-input visual matrix: interaction', () => {
       const matrix = (window as any).matrix;
       return matrix.mount({ value: [] }).then(() => {
         const container = () => matrix.el.shadowRoot
-          .querySelector('[part="container"]').getBoundingClientRect();
+          .querySelector('[part~="container"]').getBoundingClientRect();
         const empty = container().height;
         return matrix.mount({ value: ['JavaScript', 'TypeScript', 'CSS', 'HTML', 'Rust', 'Go'] })
           .then(() => {
@@ -450,7 +450,7 @@ test.describe('tag-input visual matrix: marquee pixels', () => {
       page, '#subject', 'tag-input-chip-vs-surface',
       `(host) => {
         const chip = host.shadowRoot.querySelector('[part="tag"]');
-        const container = host.shadowRoot.querySelector('[part="container"]');
+        const container = host.shadowRoot.querySelector('[part~="container"]');
         const c = chip.getBoundingClientRect();
         const b = container.getBoundingClientRect();
         return [
@@ -471,7 +471,7 @@ test.describe('tag-input visual matrix: marquee pixels', () => {
       const [border] = await capture(
         page, '#subject', `tag-input-${borders.length === 0 ? 'valid' : 'invalid'}`,
         `(host) => {
-          const container = host.shadowRoot.querySelector('[part="container"]');
+          const container = host.shadowRoot.querySelector('[part~="container"]');
           const b = container.getBoundingClientRect();
           return [{ x: b.x + b.width / 2, y: b.y + 0.4 }];
         }`,
@@ -499,7 +499,7 @@ test.describe('tag-input visual matrix: marquee pixels', () => {
       `() => {
         const host = document.getElementById('subject');
         const drop = host.shadowRoot.querySelector('[part="suggestions"]');
-        const container = host.shadowRoot.querySelector('[part="container"]');
+        const container = host.shadowRoot.querySelector('[part~="container"]');
         const d = drop.getBoundingClientRect();
         const c = container.getBoundingClientRect();
         return [

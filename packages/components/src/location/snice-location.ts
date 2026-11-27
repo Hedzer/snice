@@ -155,7 +155,7 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
     return html/*html*/`
       <div
         class="location ${this.clickable ? 'location--clickable' : ''}"
-        part="base"
+        part="base${this.clickable ? ' base-clickable' : ''}"
         role=${this.clickable ? 'link' : nothing}
         tabindex=${this.clickable ? '0' : nothing}
       >
@@ -169,20 +169,20 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
 
         <div class="content" part="content">
           <if ${this.name && (this.mode === 'full' || this.mode === 'compact' || this.mode === 'address')}>
-            <div class="name">${this.name}</div>
+            <div class="name" part="name">${this.name}</div>
           </if>
 
           <if ${fullAddress && (this.mode === 'full' || this.mode === 'compact' || this.mode === 'address')}>
-            <div class="address">${fullAddress}</div>
+            <div class="address" part="address">${fullAddress}</div>
           </if>
 
           <if ${coords && (this.mode === 'full' || this.mode === 'compact' || this.mode === 'coordinates')}>
-            <div class="coordinates">${coords ? `${coords.latitude.toFixed(6)}, ${coords.longitude.toFixed(6)}` : ''}</div>
+            <div class="coordinates" part="coordinates">${coords ? `${coords.latitude.toFixed(6)}, ${coords.longitude.toFixed(6)}` : ''}</div>
           </if>
 
           <if ${this.showMap && mapEmbedUrl}>
             <div class="map-container" part="map">
-              <iframe src="${mapEmbedUrl}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <iframe part="frame" src="${mapEmbedUrl}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
           </if>
         </div>

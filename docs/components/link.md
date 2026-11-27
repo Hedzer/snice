@@ -44,8 +44,19 @@ A customizable hyperlink component with variants, external link handling, and ha
 
 | Part | Element | Description |
 |------|---------|-------------|
+| `base` | `<a>` | The root anchor element (the same node as `link`) |
 | `link` | `<a>` | The anchor element |
+| `icon` | `<span>` | The icon wrapper inside the anchor |
 | `external-icon` | `<span>` | The external link arrow icon (visible when `external` is set) |
+
+State tokens are added alongside the base token on the same element, so they
+can be targeted with `::part(link link-disabled)`.
+
+| Part | Added to | Description |
+|------|----------|-------------|
+| `link-disabled` | `link` | Present while `disabled` is set |
+| `link-underline` | `link` | Present while `underline` is set |
+| `link-external` | `link` | Present while `external` is set |
 
 ## Basic Usage
 

@@ -39,7 +39,7 @@ export class SniceColorDisplay extends HTMLElement implements SniceColorDisplayE
     ].join(' ');
 
     return html/*html*/`
-      <div class="color-display" part="container">
+      <div class="color-display" part="base container">
         <if ${this.showSwatch}>
           <span
             class="${swatchClasses}"

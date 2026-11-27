@@ -60,10 +60,16 @@ call them). Assigning `value`, `clear()`, reset, and restoration are silent, so 
 - `base` - Outer wrapper div
 - `label` - Label element
 - `container` - Tags + input container
+- `container-disabled` - Added to `container` while disabled
+- `container-invalid` - Added to `container` while the value fails validation
 - `tag` - Individual tag span
 - `tag-text` - Tag text content
+- `tag-remove` - Remove button on a tag (hidden while disabled/readonly)
+- `tag-remove-icon` - X icon inside a tag's remove button
 - `input` - Text input field
 - `suggestions` - Suggestions dropdown
+- `suggestion` - One suggestion row
+- `suggestion-highlighted` - Added to `suggestion` while keyboard-highlighted
 
 ## Keyboard Navigation
 

@@ -137,12 +137,14 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
   private applyOverlays() {
     const svg = this.container?.querySelector('svg');
     if (svg) {
+      svg.setAttribute('part', 'svg');
       this.applySvgOverlays(svg);
       return;
     }
 
     const canvas = this.container?.querySelector('canvas') as HTMLCanvasElement;
     if (!canvas) return;
+    canvas.setAttribute('part', 'canvas');
 
     let ctx;
     try {
@@ -213,6 +215,7 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
         const dataUrl = off.toDataURL('image/png');
 
         const svgImg = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+        svgImg.setAttribute('part', 'center-image');
         svgImg.setAttribute('x', String(imgX));
         svgImg.setAttribute('y', String(imgY));
         svgImg.setAttribute('width', String(imgSize));
@@ -236,6 +239,7 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
 
     // Outline text
     const outline = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    outline.setAttribute('part', 'center-text center-text-outline');
     outline.setAttribute('x', String(center));
     outline.setAttribute('y', String(center));
     outline.setAttribute('text-anchor', 'middle');
@@ -252,6 +256,7 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
 
     // Fill text
     const fill = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    fill.setAttribute('part', 'center-text center-text-fill');
     fill.setAttribute('x', String(center));
     fill.setAttribute('y', String(center));
     fill.setAttribute('text-anchor', 'middle');

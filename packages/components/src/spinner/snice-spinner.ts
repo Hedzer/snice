@@ -41,9 +41,9 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
     if (this.variant === 'dots') {
       return shell(html`
         <div part="dots" class="spinner__dots" style="--dot-size: ${Math.max(4, size / 6)}px">
-          <span class="spinner__dot"></span>
-          <span class="spinner__dot"></span>
-          <span class="spinner__dot"></span>
+          <span part="dot" class="spinner__dot"></span>
+          <span part="dot" class="spinner__dot"></span>
+          <span part="dot" class="spinner__dot"></span>
         </div>
       `);
     }
@@ -57,10 +57,10 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
     if (this.variant === 'bars') {
       return shell(html`
         <div part="bars" class="spinner__bars" style="--bar-height:${size}px;--bar-width:${Math.max(3, size / 10)}px">
-          <span class="spinner__bar"></span>
-          <span class="spinner__bar"></span>
-          <span class="spinner__bar"></span>
-          <span class="spinner__bar"></span>
+          <span part="bar" class="spinner__bar"></span>
+          <span part="bar" class="spinner__bar"></span>
+          <span part="bar" class="spinner__bar"></span>
+          <span part="bar" class="spinner__bar"></span>
         </div>
       `);
     }
@@ -68,14 +68,14 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
     if (this.variant === 'orbit') {
       return shell(html`
         <div part="orbit" class="spinner__orbit" style="width:${size}px;height:${size}px">
-          <span class="spinner__orbit-ring spinner__orbit-ring--a">
-            <span class="spinner__orbit-dot"></span>
+          <span part="ring ring-a" class="spinner__orbit-ring spinner__orbit-ring--a">
+            <span part="dot orbit-dot" class="spinner__orbit-dot"></span>
           </span>
-          <span class="spinner__orbit-ring spinner__orbit-ring--b">
-            <span class="spinner__orbit-dot"></span>
+          <span part="ring ring-b" class="spinner__orbit-ring spinner__orbit-ring--b">
+            <span part="dot orbit-dot" class="spinner__orbit-dot"></span>
           </span>
-          <span class="spinner__orbit-ring spinner__orbit-ring--c">
-            <span class="spinner__orbit-dot"></span>
+          <span part="ring ring-c" class="spinner__orbit-ring spinner__orbit-ring--c">
+            <span part="dot orbit-dot" class="spinner__orbit-dot"></span>
           </span>
         </div>
       `);
@@ -93,12 +93,14 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
         xmlns="http://www.w3.org/2000/svg"
       >
         <circle
+          part="track"
           class="spinner__circle-bg"
           cx="${cx}"
           cy="${cy}"
           r="${radius}"
         ></circle>
         <circle
+          part="fill"
           class="spinner__circle-bar"
           cx="${cx}"
           cy="${cy}"

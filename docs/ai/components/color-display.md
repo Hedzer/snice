@@ -15,6 +15,7 @@ label: string = '';
 
 ## CSS Parts
 
+- `base` - Root wrapper (same element as `container`)
 - `container` - Outer container
 - `swatch` - Color swatch element
 - `label` - Color label text

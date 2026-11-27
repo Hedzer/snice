@@ -35,7 +35,18 @@ interface SankeyLink { source: string; target: string; value: number; color?: st
 
 - `base` - Outer container
 - `chart` - SVG chart area
+- `svg` - The generated SVG element
+- `links` - Group holding every link
+- `link` - One link group
+- `link-path` - The stroked path inside a link
+- `nodes` - Group holding every node
+- `node` - One node group
+- `node-rect` - The filled rectangle inside a node
+- `label` - Node label text
+- `value` - Node value text
 - `tooltip` - Hover tooltip
+- `tooltip-label` - Tooltip label line
+- `tooltip-value` - Tooltip value line
 
 ## Layout
 

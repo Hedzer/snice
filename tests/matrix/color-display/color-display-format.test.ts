@@ -54,7 +54,7 @@ describe(`color-display matrix: format x label (${COMBOS.length} combos)`, () =>
       expectShape(readAxes(el), expectedAxes(c), `axes ${id(c)}`);
       // Every documented part is present in a combo that shows both blocks.
       expect(partNames(el).sort(), `parts ${id(c)}`)
-        .toEqual(['container', 'label', 'swatch']);
+        .toEqual(['base', 'container', 'label', 'swatch']);
     });
   }
 });

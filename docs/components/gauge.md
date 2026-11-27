@@ -31,6 +31,10 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | Part | Element | Description |
 |------|---------|-------------|
 | `base` | `<div>` | Outer gauge container with `role="meter"` |
+| `chart` | `<div>` | Chart area wrapping the arc and value text |
+| `svg` | `<svg>` | The gauge SVG element |
+| `track` | `<path>` | Background arc path |
+| `fill` | `<path>` | Progress arc path |
 | `value` | `<span>` | Numeric value text displayed inside the gauge |
 | `label` | `<span>` | Label text displayed below the gauge |
 

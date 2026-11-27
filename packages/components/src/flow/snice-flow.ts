@@ -537,7 +537,7 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
     }
 
     const d = this.bezierPath(x1, y1, x2, y2);
-    this.previewGroupEl.innerHTML = `<path class="flow__edge-preview" d="${d}" />`;
+    this.previewGroupEl.innerHTML = `<path class="flow__edge-preview" part="edge-preview" d="${d}" />`;
   }
 
   private clearEdgePreview() {
@@ -550,7 +550,7 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
 
   private gridPatternSvg(): string {
     const g = this.gridSize;
-    return `<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="flow-grid-small" width="${g}" height="${g}" patternUnits="userSpaceOnUse" patternTransform="translate(${this.panX % (g * this.zoomScale)}, ${this.panY % (g * this.zoomScale)}) scale(${this.zoomScale})"><circle cx="${g / 2}" cy="${g / 2}" r="0.5" fill="var(--snice-color-text-tertiary, rgb(115 115 115))" opacity="0.3"/></pattern></defs><rect width="100%" height="100%" fill="url(#flow-grid-small)"/></svg>`;
+    return `<svg part="grid-svg" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="flow-grid-small" width="${g}" height="${g}" patternUnits="userSpaceOnUse" patternTransform="translate(${this.panX % (g * this.zoomScale)}, ${this.panY % (g * this.zoomScale)}) scale(${this.zoomScale})"><circle cx="${g / 2}" cy="${g / 2}" r="0.5" fill="var(--snice-color-text-tertiary, rgb(115 115 115))" opacity="0.3"/></pattern></defs><rect width="100%" height="100%" fill="url(#flow-grid-small)"/></svg>`;
   }
 
   // --- Rebuild ---
@@ -632,12 +632,12 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
       const colorAttr = edge.color ? ` stroke="${edge.color}"` : '';
       const colorStyle = edge.color
         ? ` style="--flow-edge-stroke:${escapeAttr(edge.color)}"` : '';
-      parts += `<path class="${cls.join(' ')}" d="${d}" data-edge-id="${edge.id}" marker-end="url(#flow-arrow)"${colorAttr}${colorStyle} />`;
+      parts += `<path class="${cls.join(' ')}" part="edge${edge.id === this.selectedEdgeId ? ' edge-selected' : ''}${edge.animated ? ' edge-animated' : ''}" d="${d}" data-edge-id="${edge.id}" marker-end="url(#flow-arrow)"${colorAttr}${colorStyle} />`;
 
       if (edge.label) {
         const mx = (p1.x + p2.x) / 2;
         const my = (p1.y + p2.y) / 2;
-        parts += `<text class="flow__edge-label" x="${mx}" y="${my - 8}">${escapeHtml(edge.label)}</text>`;
+        parts += `<text class="flow__edge-label" part="edge-label" x="${mx}" y="${my - 8}">${escapeHtml(edge.label)}</text>`;
       }
     }
 
@@ -664,23 +664,23 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
       // Scale the whole node uniformly so port positions match the edges'
       // canvas-space endpoints. Width+height stay in canvas units; CSS scale
       // maps them to screen pixels.
-      nodesHtml += `<div class="${cls.join(' ')}" data-node-id="${escapeAttr(node.id)}" style="left:${x}px;top:${y}px;width:${w}px;transform-origin:top left;transform:scale(${this.zoomScale});">`;
-      nodesHtml += `<div class="flow__node-header" style="${headerBg}">`;
-      if (node.type) nodesHtml += `<span class="flow__node-type">${escapeHtml(node.type)}</span>`;
-      nodesHtml += `<span>${escapeHtml(node.label || node.id)}</span>`;
+      nodesHtml += `<div class="${cls.join(' ')}" part="node${node.id === this.selectedNodeId ? ' node-selected' : ''}${this.dragNode && this.dragNode.id === node.id ? ' node-dragging' : ''}" data-node-id="${escapeAttr(node.id)}" style="left:${x}px;top:${y}px;width:${w}px;transform-origin:top left;transform:scale(${this.zoomScale});">`;
+      nodesHtml += `<div class="flow__node-header" part="node-header" style="${headerBg}">`;
+      if (node.type) nodesHtml += `<span class="flow__node-type" part="node-type">${escapeHtml(node.type)}</span>`;
+      nodesHtml += `<span part="node-label">${escapeHtml(node.label || node.id)}</span>`;
       nodesHtml += `</div>`;
-      nodesHtml += `<div class="flow__node-body">`;
+      nodesHtml += `<div class="flow__node-body" part="node-body">`;
 
       // Inputs
       const inputs = node.inputs || [];
       if (inputs.length > 0) {
-        nodesHtml += `<div class="flow__node-inputs">`;
+        nodesHtml += `<div class="flow__node-inputs" part="node-inputs">`;
         for (const port of inputs) {
           const connected = this.isPortConnected(node.id, port.id, false);
           const pcls = ['flow__port', connected ? 'flow__port--connected' : ''].filter(Boolean).join(' ');
-          nodesHtml += `<div class="${pcls}" data-port-id="${escapeAttr(port.id)}" data-port-type="input" data-node-id="${escapeAttr(node.id)}">`;
-          nodesHtml += `<span class="flow__port-dot"></span>`;
-          if (port.label) nodesHtml += `<span>${escapeHtml(port.label)}</span>`;
+          nodesHtml += `<div class="${pcls}" part="port port-input${connected ? ' port-connected' : ''}" data-port-id="${escapeAttr(port.id)}" data-port-type="input" data-node-id="${escapeAttr(node.id)}">`;
+          nodesHtml += `<span class="flow__port-dot" part="port-dot"></span>`;
+          if (port.label) nodesHtml += `<span part="port-label">${escapeHtml(port.label)}</span>`;
           nodesHtml += `</div>`;
         }
         nodesHtml += `</div>`;
@@ -689,13 +689,13 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
       // Outputs
       const outputs = node.outputs || [];
       if (outputs.length > 0) {
-        nodesHtml += `<div class="flow__node-outputs">`;
+        nodesHtml += `<div class="flow__node-outputs" part="node-outputs">`;
         for (const port of outputs) {
           const connected = this.isPortConnected(node.id, port.id, true);
           const pcls = ['flow__port', 'flow__port--output', connected ? 'flow__port--connected' : ''].filter(Boolean).join(' ');
-          nodesHtml += `<div class="${pcls}" data-port-id="${escapeAttr(port.id)}" data-port-type="output" data-node-id="${escapeAttr(node.id)}">`;
-          if (port.label) nodesHtml += `<span>${escapeHtml(port.label)}</span>`;
-          nodesHtml += `<span class="flow__port-dot"></span>`;
+          nodesHtml += `<div class="${pcls}" part="port port-output${connected ? ' port-connected' : ''}" data-port-id="${escapeAttr(port.id)}" data-port-type="output" data-node-id="${escapeAttr(node.id)}">`;
+          if (port.label) nodesHtml += `<span part="port-label">${escapeHtml(port.label)}</span>`;
+          nodesHtml += `<span class="flow__port-dot" part="port-dot"></span>`;
           nodesHtml += `</div>`;
         }
         nodesHtml += `</div>`;
@@ -781,14 +781,14 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
       const targetPort = edge.targetPort || (this.nodes.find(n => n.id === edge.target)?.inputs?.[0]?.id || '');
       const p1 = this.getPortPosition(edge.source, sourcePort, true);
       const p2 = this.getPortPosition(edge.target, targetPort, false);
-      parts += `<line class="flow__minimap-edge" x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" />`;
+      parts += `<line class="flow__minimap-edge" part="minimap-edge" x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" />`;
     }
 
     // Nodes
     for (const node of this.nodes) {
       const w = node.width || DEFAULT_NODE_WIDTH;
       const h = node.height || DEFAULT_NODE_HEIGHT;
-      parts += `<rect class="flow__minimap-node" x="${node.x}" y="${node.y}" width="${w}" height="${h}" rx="2" />`;
+      parts += `<rect class="flow__minimap-node" part="minimap-node" x="${node.x}" y="${node.y}" width="${w}" height="${h}" rx="2" />`;
     }
 
     // Viewport indicator
@@ -796,7 +796,7 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
     const vpY = -this.panY / this.zoomScale;
     const vpW = this.containerWidth / this.zoomScale;
     const vpH = this.containerHeight / this.zoomScale;
-    parts += `<rect class="flow__minimap-viewport" x="${vpX}" y="${vpY}" width="${vpW}" height="${vpH}" />`;
+    parts += `<rect class="flow__minimap-viewport" part="minimap-viewport" x="${vpX}" y="${vpY}" width="${vpW}" height="${vpH}" />`;
 
     svg.innerHTML = parts;
   }
@@ -805,11 +805,11 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
   renderContent() {
     return html/*html*/`
       <div class="flow" part="base" role="application" aria-label="Flow editor" tabindex="0">
-        <div class="flow__grid" aria-hidden="true"></div>
+        <div class="flow__grid" part="grid" aria-hidden="true"></div>
         <svg class="flow__svg" part="canvas" aria-hidden="true"></svg>
         <div class="flow__nodes" part="nodes"></div>
         <div class="flow__minimap" part="minimap" style="${this.minimap ? '' : 'display:none'}">
-          <svg class="flow__minimap-svg"></svg>
+          <svg class="flow__minimap-svg" part="minimap-svg"></svg>
         </div>
       </div>
     `;

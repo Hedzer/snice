@@ -33,9 +33,9 @@ export class SniceDivider extends HTMLElement implements SniceDividerElement {
     if (this.text && this.orientation === 'horizontal') {
       return html/*html*/`
         <div part="base" class="divider-container" role="separator" aria-orientation="${this.orientation}">
-          <div part="line" class="divider divider--before"></div>
+          <div part="line line-before" class="divider divider--before"></div>
           <span part="text" class="divider-text">${this.text}</span>
-          <div part="line" class="divider divider--after"></div>
+          <div part="line line-after" class="divider divider--after"></div>
         </div>
       `;
     }

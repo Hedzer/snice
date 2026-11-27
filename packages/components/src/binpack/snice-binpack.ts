@@ -445,7 +445,7 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
     return html`
       <div class="binpack" part="base" role="list">
         <slot @slotchange="${() => this.handleSlotChange()}"></slot>
-        <div class="binpack-drop-placeholder"></div>
+        <div class="binpack-drop-placeholder" part="drop-placeholder"></div>
       </div>
     `;
   }
@@ -923,6 +923,7 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
     this.dropPlaceholder.style.width = `${item.offsetWidth}px`;
     this.dropPlaceholder.style.height = `${item.offsetHeight}px`;
     this.dropPlaceholder.classList.add('visible');
+    this.dropPlaceholder.setAttribute('part', 'drop-placeholder drop-placeholder-visible');
     this.positionPlaceholder();
   }
 
@@ -934,6 +935,7 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
   private hidePlaceholder(): void {
     if (!this.dropPlaceholder) return;
     this.dropPlaceholder.classList.remove('visible');
+    this.dropPlaceholder.setAttribute('part', 'drop-placeholder');
   }
 
   private sortItemsByPosition(): void {

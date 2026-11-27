@@ -59,10 +59,15 @@ interface ReceiptTaxLine { label: string; rate?: number; amount: number; }
 - `base` - Root container
 - `divider` - Section dividers
 - `header`, `logo`, `merchant-name`, `merchant-address`, `merchant-contact` - Merchant section
-- `meta`, `receipt-number`, `date` - Metadata section
-- `items-header`, `items`, `item`, `item-name`, `item-sku`, `item-qty`, `item-price` - Items section
-- `totals`, `subtotal-row`, `discount-row`, `tax-row`, `tip-row`, `total-row` - Totals section
-- `payment`, `payment-method`, `payment-details` - Payment section
+- `meta`, `meta-item`, `meta-label` - Metadata section
+- `meta-value` - Every metadata field value
+- `receipt-number`, `date`, `cashier`, `terminal` - Added to `meta-value` to name the individual field
+- `items-header`, `items`, `item`, `item-info`, `item-name`, `item-sku`, `item-note`, `item-discount`, `item-qty`, `item-price` - Items section
+- `totals` - Totals section
+- `row` - Every totals row
+- `subtotal-row`, `discount-row`, `tax-row`, `tip-row`, `total-row` - Added to `row` to name the individual totals row
+- `row-label` / `row-value` - Label and amount cells of the items header and every totals row
+- `payment`, `payment-label`, `payment-method`, `payment-details` - Payment section
 - `qr-container`, `barcode-area`, `footer`, `thank-you` - Footer section
 
 ## Basic Usage

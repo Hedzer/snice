@@ -44,7 +44,7 @@ export class SniceOrgChart extends HTMLElement implements SniceOrgChartElement {
     if (!hasData) {
       return html`
         <div class="org-container" part="base">
-          <div style="text-align: center; color: var(--snice-color-text-tertiary, rgb(115 115 115)); padding: 2rem;">
+          <div part="empty" style="text-align: center; color: var(--snice-color-text-tertiary, rgb(115 115 115)); padding: 2rem;">
             No data provided
           </div>
         </div>
@@ -56,7 +56,7 @@ export class SniceOrgChart extends HTMLElement implements SniceOrgChartElement {
 
     return html`
       <div class="org-container" part="base">
-        <div class="org-tree ${isLeftRight ? 'org-tree--left-right' : ''}" part="tree" role="tree" aria-label="Organization chart">
+        <div class="org-tree ${isLeftRight ? 'org-tree--left-right' : ''}" part="tree${isLeftRight ? ' tree-left-right' : ''}" role="tree" aria-label="Organization chart">
           ${treeHtml}
         </div>
       </div>
@@ -80,46 +80,47 @@ export class SniceOrgChart extends HTMLElement implements SniceOrgChartElement {
     if (showChildren && node.children) {
       for (const child of node.children) {
         const childHtml = this.buildNodeHtml(child);
-        childTemplates.push(html`<div class="org-branch">${childHtml}</div>`);
+        childTemplates.push(html`<div class="org-branch" part="branch">${childHtml}</div>`);
       }
     }
 
     const toggleIcon = isCollapsed
-      ? html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>`
-      : html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>`;
+      ? html`<svg part="icon toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>`
+      : html`<svg part="icon toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>`;
 
     const avatarHtml = hasAvatar
-      ? html`<img class="org-avatar ${isCompact ? 'org-avatar--compact' : ''}" src="${node.avatar}" alt="${node.name}" />`
-      : html`<div class="org-avatar-placeholder ${isCompact ? 'org-avatar-placeholder--compact' : ''}">${initials}</div>`;
+      ? html`<img class="org-avatar ${isCompact ? 'org-avatar--compact' : ''}" part="avatar${isCompact ? ' avatar-compact' : ''}" src="${node.avatar}" alt="${node.name}" />`
+      : html`<div class="org-avatar-placeholder ${isCompact ? 'org-avatar-placeholder--compact' : ''}" part="avatar avatar-placeholder${isCompact ? ' avatar-compact' : ''}">${initials}</div>`;
 
     const titleHtml = hasTitle
-      ? html`<span class="org-node-title">${node.title}</span>`
+      ? html`<span class="org-node-title" part="node-title">${node.title}</span>`
       : '';
 
     const toggleHtml = hasChildren
       ? html`<button class="org-toggle"
+                     part="toggle ${isCollapsed ? 'toggle-collapsed' : 'toggle-expanded'}"
                      type="button"
                      aria-label="${isCollapsed ? 'Expand' : 'Collapse'} ${node.name}"
                      @click=${(e: Event) => { e.stopPropagation(); this.toggleNode(node); }}>${toggleIcon}</button>`
       : '';
 
     const childrenHtml = showChildren
-      ? html`<div class="org-children" role="group">${childTemplates}</div>`
+      ? html`<div class="org-children" part="children" role="group">${childTemplates}</div>`
       : '';
 
     const expandedAttr = hasChildren ? (isCollapsed ? 'false' : 'true') : '';
     const ariaLabel = hasTitle ? `${node.name}, ${node.title}` : node.name;
 
     return html`
-      <div class="org-node-wrapper" role="treeitem" aria-expanded="${expandedAttr}" aria-label="${ariaLabel}">
+      <div class="org-node-wrapper" part="node-wrapper" role="treeitem" aria-expanded="${expandedAttr}" aria-label="${ariaLabel}">
         <div class="org-node ${isCompact ? 'org-node--compact' : ''}"
-             part="node"
+             part="node${isCompact ? ' node-compact' : ''}"
              tabindex="0"
              @click=${() => this.emitNodeClick(node)}
              @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.emitNodeClick(node); } }}>
           ${avatarHtml}
-          <div class="org-node-info">
-            <span class="org-node-name">${node.name}</span>
+          <div class="org-node-info" part="node-info">
+            <span class="org-node-name" part="node-name">${node.name}</span>
             ${titleHtml}
           </div>
           ${toggleHtml}

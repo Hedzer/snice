@@ -47,8 +47,31 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | Part | Element | Description |
 |------|---------|-------------|
 | `base` | `<div>` | The outer chart container |
+| `empty` | `<div>` | The placeholder shown when no data is provided |
 | `tree` | `<div>` | The tree layout wrapper |
+| `branch` | `<div>` | The wrapper around one child subtree |
+| `node-wrapper` | `<div>` | The tree item wrapping a node and its children |
 | `node` | `<div>` | Individual node cards |
+| `avatar` | `<img>` or `<div>` | The node avatar, image or initials placeholder |
+| `avatar-placeholder` | `<div>` | Added to `avatar` when initials are shown |
+| `node-info` | `<div>` | The node text block |
+| `node-name` | `<span>` | The node name |
+| `node-title` | `<span>` | The node title |
+| `toggle` | `<button>` | The collapse/expand button |
+| `icon` | `<svg>` | Shared token on the collapse/expand icon |
+| `toggle-icon` | `<svg>` | The collapse/expand button icon |
+| `children` | `<div>` | The container of a node's children |
+
+State tokens are added alongside the base token, so they are matched with
+`::part(node node-compact)`.
+
+| Token | Description |
+|-------|-------------|
+| `tree-left-right` | Added to `tree` while `direction` is `left-right` |
+| `node-compact` | Added to `node` in compact mode |
+| `avatar-compact` | Added to `avatar` in compact mode |
+| `toggle-collapsed` | Added to `toggle` while the branch is collapsed |
+| `toggle-expanded` | Added to `toggle` while the branch is expanded |
 
 ```css
 snice-org-chart::part(node) {

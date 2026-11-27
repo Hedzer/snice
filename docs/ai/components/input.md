@@ -84,7 +84,33 @@ readonly labels: NodeList | null;
 
 ## CSS Parts
 
-`wrapper`, `label`, `container`, `input`, `prefix-icon`, `suffix-icon`, `clear`, `spinner`, `password-toggle`, `helper-text`, `error-text`
+- `base` - Outer wrapper (same node as `wrapper`)
+- `wrapper` - Outer wrapper element
+- `label` - Label element
+- `container` - Input container (input + icons)
+- `input` - Native input element
+- `prefix-icon` - Prefix icon container
+- `suffix-icon` - Suffix icon container
+- `clear` - Clear button
+- `clear-icon` - Glyph inside the clear button
+- `spinner` - Loading spinner
+- `password-toggle` - Password visibility toggle button
+- `password-icon` - Glyph inside the password toggle
+- `helper-text` - Helper text element
+- `error-text` - Error text element
+
+State tokens:
+
+- `label-required` - Added to `label` while `required`
+- `input-invalid` - Added to `input` while invalid
+- `input-loading` - Added to `input` while `loading`
+- `input-clearable` - Added to `input` while `clearable`
+- `clear-with-suffix` - Added to `clear` when a suffix adornment shares the row
+- `password-icon-hidden` - Added to the `password-icon` shown while the password is masked
+- `password-icon-visible` - Added to the `password-icon` shown while the password is revealed
+- `container-disabled` - Added to `container` while disabled
+- `container-invalid` - Added to `container` while invalid
+- `input-disabled` - Added to `input` while disabled
 
 ## Basic Usage
 

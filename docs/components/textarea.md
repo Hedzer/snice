@@ -69,7 +69,15 @@ A multi-line text input with validation, character counting, and optional auto-g
 
 | Part | Description |
 |------|-------------|
+| `base` | The outer wrapper |
+| `label` | The label element (rendered when `label` is set) |
+| `label-required` | Added to `label` when `required` |
+| `container` | The textarea and spinner container |
 | `textarea` | The native textarea element |
+| `textarea-invalid` | Added to `textarea` while invalid |
+| `textarea-loading` | Added to `textarea` while loading |
+| `character-count` | The character counter (rendered when `maxlength` > 0) |
+| `character-count-exceeded` | Added to `character-count` once the limit is passed |
 | `spinner` | Loading spinner |
 | `error-text` | Error message container |
 | `helper-text` | Helper text container |

@@ -147,9 +147,16 @@ export function checkChain(
     steps.length, 'steps declared as listitems');
 }
 
+/**
+ * Every token `docs/ai/components/approval-flow.md` lists under `## CSS Parts`,
+ * including the state tokens the doc spells out separately: `step-current` and
+ * the `step-<status>` run it names for all four statuses.
+ */
 const DOCUMENTED_PARTS = new Set([
-  'container', 'step', 'avatar', 'content', 'name', 'role', 'status', 'comment',
-  'timestamp', 'actions', 'connector',
+  'base', 'container', 'step', 'step-current', ...STATUSES.map(s => `step-${s}`),
+  'avatar', 'avatar-image', 'content', 'name', 'role', 'status', 'status-icon',
+  'status-label', 'comment', 'timestamp', 'actions', 'button', 'button-approve',
+  'button-reject', 'input', 'connector',
 ]);
 
 export function checkNoUndocumentedParts(el: HTMLElement, problems: Problems): void {

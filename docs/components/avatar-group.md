@@ -58,6 +58,9 @@ This component does not expose public methods.
 |------|-------------|
 | `base` | The avatar group container |
 | `avatar` | Individual avatar buttons |
+| `avatar-image` | Image inside an avatar button |
+| `initials` | Initials text inside an avatar button |
+| `icon` | Default person icon (no image, no initials) |
 | `overflow` | The "+N" overflow button |
 
 ```css

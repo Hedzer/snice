@@ -45,7 +45,7 @@ export class SniceProgressRing extends HTMLElement implements SniceProgressRingE
            aria-valuemin="0"
            aria-valuemax="${this.max}"
            aria-label="${this.label || `${Math.round(percentage)}% complete`}">
-        <svg class="progress-ring__svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}">
+        <svg class="progress-ring__svg" part="svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}">
           <circle
             class="progress-ring__track"
             part="track"

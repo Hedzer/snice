@@ -62,11 +62,33 @@ The `<snice-file-upload>` component provides a file upload interface with drag-a
 
 | Part | Description |
 |------|-------------|
+| `base` | Outer wrapper |
+| `label` | Field label |
 | `upload-area` | Drop zone container |
+| `icon` | An icon element |
+| `upload-icon` | Paperclip icon in the drop zone |
+| `upload-text` | Drag-and-drop instruction text |
+| `button` | A button |
 | `input` | Hidden file input |
+| `file-list` | Selected file list |
 | `file-item` | Individual file entry |
+| `image` | Image preview thumbnail |
+| `file-icon` | Fallback file icon |
+| `file-info` | Name and size wrapper |
+| `file-name` | File name |
+| `file-size` | Formatted file size |
+| `file-remove` | Remove-file button |
 | `error-text` | Error text element |
 | `helper-text` | Helper text element |
+
+**State tokens** (added alongside the base token):
+
+| Part | Description |
+|------|-------------|
+| `label-required` | Added to `label` while `required` is set |
+| `upload-area-disabled` | Added to `upload-area` while the field is disabled |
+| `upload-area-drag-over` | Added to `upload-area` while a drag is over it |
+| `upload-area-invalid` | Added to `upload-area` while the field is invalid |
 
 ## Basic Usage
 

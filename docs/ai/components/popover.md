@@ -43,8 +43,10 @@ noEscapeDismiss: boolean = false;            // attr: no-escape-dismiss
 
 ## CSS Parts
 
+- `base` - Anchor wrapper around the trigger and panel
 - `trigger` - Trigger wrapper
 - `panel` - Floating panel
+- `panel-open` - Added to `panel` while the popover is open
 - `content` - Inner content wrapper
 
 ## Basic Usage

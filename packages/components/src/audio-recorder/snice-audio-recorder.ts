@@ -113,38 +113,38 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     return html/*html*/`
       <div class="recorder-container" part="base">
         <if ${showingPlayback}>
-          <div class="recorder-status" role="status" aria-live="polite">
-            <div class="recorder-state inactive">
-              <div class="recorder-state-icon" style="background: var(--snice-color-primary, rgb(37 99 235));"></div>
-              <span>Playback</span>
+          <div class="recorder-status" part="status" role="status" aria-live="polite">
+            <div class="recorder-state inactive" part="state state-inactive">
+              <div class="recorder-state-icon" part="state-icon" style="background: var(--snice-color-primary, rgb(37 99 235));"></div>
+              <span part="state-label">Playback</span>
             </div>
           </div>
 
           <if ${this.showTimer}>
-            <div class="recorder-timer">${this.formatTime(this.playbackTime)}</div>
+            <div class="recorder-timer" part="timer">${this.formatTime(this.playbackTime)}</div>
           </if>
 
           <div class="playback-progress" part="progress" @click=${(e: MouseEvent) => this.handleSeek(e)}>
-            <div class="playback-progress-fill" style="width: ${this.duration > 0 ? (this.playbackTime / this.duration) * 100 : 0}%"></div>
+            <div class="playback-progress-fill" part="fill" style="width: ${this.duration > 0 ? (this.playbackTime / this.duration) * 100 : 0}%"></div>
           </div>
 
           <div class="recorder-controls" part="controls">
-            <button class="recorder-btn ${this.isPlaying ? 'pause' : 'play'}" @click=${() => this.handleTogglePlayback()} aria-label="${this.isPlaying ? 'Pause' : 'Play'}" title="${this.isPlaying ? 'Pause' : 'Play'}">
+            <button class="recorder-btn ${this.isPlaying ? 'pause' : 'play'}" part="button${this.isPlaying ? ' button-pause' : ' button-play'}" @click=${() => this.handleTogglePlayback()} aria-label="${this.isPlaying ? 'Pause' : 'Play'}" title="${this.isPlaying ? 'Pause' : 'Play'}">
               <if ${this.isPlaying}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <svg part="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                   <rect x="6" y="4" width="4" height="16"></rect>
                   <rect x="14" y="4" width="4" height="16"></rect>
                 </svg>
               </if>
               <if ${!this.isPlaying}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <svg part="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
               </if>
             </button>
             <if ${this.showControls}>
-              <button class="recorder-btn record" @click=${() => this.reset()} aria-label="Record Again" title="Record Again">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <button class="recorder-btn record" part="button button-record" @click=${() => this.reset()} aria-label="Record Again" title="Record Again">
+                <svg part="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                   <circle cx="12" cy="12" r="8"/>
                 </svg>
               </button>
@@ -153,15 +153,15 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
         </if>
 
         <if ${!showingPlayback}>
-          <div class="recorder-status" role="status" aria-live="polite">
-            <div class="recorder-state ${this.state}">
-              <div class="recorder-state-icon"></div>
-              <span>${this.getStateLabel()}</span>
+          <div class="recorder-status" part="status" role="status" aria-live="polite">
+            <div class="recorder-state ${this.state}" part="state state-${this.state}">
+              <div class="recorder-state-icon" part="state-icon"></div>
+              <span part="state-label">${this.getStateLabel()}</span>
             </div>
           </div>
 
           <if ${this.showTimer}>
-            <div class="recorder-timer">${this.formatTime(this.duration)}</div>
+            <div class="recorder-timer" part="timer">${this.formatTime(this.duration)}</div>
           </if>
 
           <if ${this.showVisualizer}>
@@ -173,7 +173,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
           </if>
 
           <if ${this.errorMessage}>
-            <div class="recorder-error">${this.errorMessage}</div>
+            <div class="recorder-error" part="error-text">${this.errorMessage}</div>
           </if>
         </if>
       </div>
@@ -183,7 +183,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
   private renderVisualizer() {
     const bars = Array.from({ length: 32 }, (_, i) => {
       const height = this.getVisualizerHeight(i);
-      return html/*html*/`<div class="visualizer-bar" style="height: ${height}px;"></div>`;
+      return html/*html*/`<div class="visualizer-bar" part="bar" style="height: ${height}px;"></div>`;
     });
 
     return html/*html*/`<div class="recorder-visualizer" part="visualizer">${bars}</div>`;
@@ -193,8 +193,8 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     if (this.state === 'inactive') {
       return html/*html*/`
         <div class="recorder-controls" part="controls">
-          <button class="recorder-btn record" @click=${() => this.start()} aria-label="Start Recording" title="Start Recording">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <button class="recorder-btn record" part="button button-record" @click=${() => this.start()} aria-label="Start Recording" title="Start Recording">
+            <svg part="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="12" cy="12" r="8"/>
             </svg>
           </button>
@@ -205,20 +205,20 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     if (this.state === 'recording') {
       return html/*html*/`
         <div class="recorder-controls" part="controls">
-          <button class="recorder-btn cancel" @click=${() => this.cancel()} aria-label="Cancel" title="Cancel">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button class="recorder-btn cancel" part="button button-cancel" @click=${() => this.cancel()} aria-label="Cancel" title="Cancel">
+            <svg part="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
-          <button class="recorder-btn pause" @click=${() => this.pause()} aria-label="Pause" title="Pause">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <button class="recorder-btn pause" part="button button-pause" @click=${() => this.pause()} aria-label="Pause" title="Pause">
+            <svg part="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <rect x="6" y="4" width="4" height="16"></rect>
               <rect x="14" y="4" width="4" height="16"></rect>
             </svg>
           </button>
-          <button class="recorder-btn stop" @click=${() => this.stop()} aria-label="Stop" title="Stop">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <button class="recorder-btn stop" part="button button-stop" @click=${() => this.stop()} aria-label="Stop" title="Stop">
+            <svg part="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <rect x="6" y="6" width="12" height="12"></rect>
             </svg>
           </button>
@@ -229,19 +229,19 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     if (this.state === 'paused') {
       return html/*html*/`
         <div class="recorder-controls" part="controls">
-          <button class="recorder-btn cancel" @click=${() => this.cancel()} aria-label="Cancel" title="Cancel">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button class="recorder-btn cancel" part="button button-cancel" @click=${() => this.cancel()} aria-label="Cancel" title="Cancel">
+            <svg part="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
-          <button class="recorder-btn record" @click=${() => this.resume()} aria-label="Resume" title="Resume">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <button class="recorder-btn record" part="button button-record" @click=${() => this.resume()} aria-label="Resume" title="Resume">
+            <svg part="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7z"/>
             </svg>
           </button>
-          <button class="recorder-btn stop" @click=${() => this.stop()} aria-label="Stop" title="Stop">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <button class="recorder-btn stop" part="button button-stop" @click=${() => this.stop()} aria-label="Stop" title="Stop">
+            <svg part="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <rect x="6" y="6" width="12" height="12"></rect>
             </svg>
           </button>

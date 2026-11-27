@@ -114,6 +114,14 @@ breadcrumbs.addEventListener('breadcrumb-click', (e) => {
 | `link` | `<a>` | Individual breadcrumb links |
 | `separator` | `<span>` | Separator characters between items |
 | `ellipsis` | `<button>` | Collapse ellipsis button |
+| `ellipsis-icon` | `<span>` | Icon wrapper inside the ellipsis button |
+| `item` | `<li>` | Each breadcrumb list item |
+| `text` | `<span>` | Non-link breadcrumb text |
+| `list-collapsed` | `<ol>` | Added to `list` while items are collapsed |
+| `item-active` | `<li>` | Added to `item` for the active/last crumb |
+| `item-hidden` | `<li>` | Added to `item` while the crumb is collapsed out of view |
+| `item-overflow` | `<li>` | Added to `item` for the ellipsis list item |
+| `text-current` | `<span>` | Added to `text` on the current-page crumb |
 
 ```css
 snice-breadcrumbs::part(link) {

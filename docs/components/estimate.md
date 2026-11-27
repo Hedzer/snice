@@ -87,6 +87,8 @@ interface EstimateItem {
 |------|-------------|
 | `base` | Root container |
 | `header` | Header section |
+| `header-left` | Header column holding the logo, title and date |
+| `header-right` | Header column holding the status and expiry |
 | `logo` | Logo slot container |
 | `title` | Estimate title |
 | `meta` | Date meta |
@@ -100,12 +102,19 @@ interface EstimateItem {
 | `party-label` | Party label ("From", "To") |
 | `party-name` | Party name |
 | `party-detail` | Party details |
-| `table` | Items table |
+| `table` | Items table section |
+| `table-inner` | The `<table>` element inside `table` |
 | `table-header` | Table header row |
+| `table-header-cell` | A header cell (also carries `table-cell`) |
 | `table-row` | Table body rows |
 | `table-cell` | Table cells |
+| `badge` | A small inline tag such as the optional-item tag |
+| `optional-tag` | The "optional" tag on an optional item |
 | `item-toggle` | Optional item toggle button |
 | `summary` | Totals section |
+| `summary-inner` | Inner wrapper of the totals section |
+| `summary-label` | Label span of a totals row |
+| `summary-value` | Value span of a totals row |
 | `subtotal` | Subtotal row |
 | `discount-row` | Discount row |
 | `tax-row` | Tax row |
@@ -114,13 +123,30 @@ interface EstimateItem {
 | `notes-label` | Notes heading |
 | `notes-content` | Notes text |
 | `terms` | Terms section |
+| `terms-label` | Terms heading |
+| `terms-content` | Terms text |
 | `actions` | Action buttons container |
 | `accept-button` | Accept estimate button |
 | `decline-button` | Decline estimate button |
 | `comparison` | Comparison view container |
 | `option` | Comparison option card |
+| `option-title` | Comparison option title |
+| `option-total` | Comparison option total row |
 | `option-button` | Select option button |
 | `footer` | Footer area |
+
+**State tokens** (added alongside the base token):
+
+| Part | Description |
+|------|-------------|
+| `status-draft` | Added to `status` while `status` is `draft` |
+| `status-sent` | Added to `status` while `status` is `sent` |
+| `status-accepted` | Added to `status` while `status` is `accepted` |
+| `status-declined` | Added to `status` while `status` is `declined` |
+| `status-expired` | Added to `status` while `status` is `expired` |
+| `table-row-optional` | Added to `table-row` for an optional line |
+| `table-row-included` | Added to `table-row` while the line counts toward the totals |
+| `item-toggle-active` | Added to `item-toggle` while its line is included |
 
 ## CSS Custom Properties
 

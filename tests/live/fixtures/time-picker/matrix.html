@@ -58,6 +58,12 @@
         await nextFrame();
       }
 
+      /** The leading (role) token of a node's `part` list, or null. */
+      function rolePart(node) {
+        const value = node?.getAttribute('part');
+        return value ? value.trim().split(/\s+/)[0] : null;
+      }
+
       const api = {
         /**
          * Mount one combo inside a real form.
@@ -120,7 +126,7 @@
 
         async pressKey(key) {
           const sr = document.getElementById('subject').shadowRoot;
-          const input = sr.querySelector('[part="input"]');
+          const input = sr.querySelector('[part~="input"]');
           input.focus();
           input.dispatchEvent(new KeyboardEvent('keydown', {
             key, bubbles: true, composed: true, cancelable: true,
@@ -132,7 +138,7 @@
         /** Click one option in a selector column, by its rendered label. */
         async pick(unit, label) {
           const sr = document.getElementById('subject').shadowRoot;
-          const column = sr.querySelector(`[part="${unit}"]`);
+          const column = sr.querySelector(`[part~="${unit}"]`);
           const option = [...column.querySelectorAll('.selector-item')]
             .find(item => item.textContent.trim() === label);
           option.click();
@@ -155,11 +161,11 @@
               display: cs.display, visibility: cs.visibility, overflowY: cs.overflowY };
           };
           const column = (unit) => {
-            const node = sr.querySelector(`[part="${unit}"]`);
+            const node = sr.querySelector(`[part~="${unit}"]`);
             if (!node) return null;
             const items = [...node.querySelectorAll('.selector-item')];
             return {
-              ...box(`[part="${unit}"]`),
+              ...box(`[part~="${unit}"]`),
               items: items.map(item => {
                 const r = item.getBoundingClientRect();
                 return { label: item.textContent.trim(), disabled: item.disabled,
@@ -174,21 +180,21 @@
             host: (({ x, y, width, height, top, left, right, bottom }) =>
               ({ x, y, width, height, top, left, right, bottom }))(el.getBoundingClientRect()),
             base: box('[part="base"]'),
-            label: box('[part="label"]'),
-            input: box('[part="input"]'),
+            label: box('[part~="label"]'),
+            input: box('[part~="input"]'),
             toggle: box('[part="toggle"]'),
             clear: box('[part="clear"]'),
             spinner: box('[part="spinner"]'),
-            dropdown: box('[part="dropdown"]'),
+            dropdown: box('[part~="dropdown"]'),
             helper: box('[part="helper-text"]'),
             error: box('[part="error-text"]'),
             hours: column('hours'),
             minutes: column('minutes'),
             seconds: column('seconds'),
             period: column('period'),
-            open: !sr.querySelector('[part="dropdown"]').hasAttribute('hidden'),
+            open: !sr.querySelector('[part~="dropdown"]').hasAttribute('hidden'),
             value: el.value,
-            inputValue: sr.querySelector('[part="input"]')?.value ?? null,
+            inputValue: sr.querySelector('[part~="input"]')?.value ?? null,
           };
         },
 
@@ -219,12 +225,16 @@
           return api.geometry();
         },
 
-        /** Where the documented `focus()` lands, by part name. */
+        /**
+         * Where the documented `focus()` lands, by part ROLE name. Parts carry
+         * state tokens beside the role (`dropdown dropdown-inline`), so the
+         * leading role token is the stable answer to "which part is focused".
+         */
         async focusHost() {
           const el = document.getElementById('subject');
           el.focus();
           await settle();
-          return el.shadowRoot.activeElement?.getAttribute('part') ?? null;
+          return rolePart(el.shadowRoot.activeElement);
         },
 
         /** Click an external <label for>, the documented activation path. */
@@ -234,8 +244,8 @@
           await settle();
           const el = document.getElementById('subject');
           return {
-            focused: el.shadowRoot.activeElement?.getAttribute('part') ?? null,
-            open: !el.shadowRoot.querySelector('[part="dropdown"]').hasAttribute('hidden'),
+            focused: rolePart(el.shadowRoot.activeElement),
+            open: !el.shadowRoot.querySelector('[part~="dropdown"]').hasAttribute('hidden'),
           };
         },
 

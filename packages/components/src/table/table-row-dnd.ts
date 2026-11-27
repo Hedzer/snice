@@ -79,6 +79,7 @@ export class TableRowDnD {
   createDragHandle(): HTMLTableCellElement {
     const td = document.createElement('td');
     td.className = 'drag-handle-cell';
+    td.setAttribute('part', 'drag-handle-cell drag-handle');
     td.textContent = '\u2817';
     td.setAttribute('aria-label', 'Drag to reorder');
     return td;

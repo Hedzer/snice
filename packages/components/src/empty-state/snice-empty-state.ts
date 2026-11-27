@@ -28,7 +28,7 @@ export class SniceEmptyState extends HTMLElement implements SniceEmptyStateEleme
     const emptyStateClasses = ['empty-state', `empty-state--${this.size}`].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <div class="${emptyStateClasses}" part="container">
+      <div class="${emptyStateClasses}" part="base container">
         <div class="empty-state__icon-wrapper" part="icon">
           <slot name="icon">
             ${renderIcon(this.icon, 'empty-state__icon')}
@@ -58,7 +58,7 @@ export class SniceEmptyState extends HTMLElement implements SniceEmptyStateEleme
             </when>
           </case>
         </if>
-        <div class="empty-state__extra"><slot></slot></div>
+        <div class="empty-state__extra" part="extra"><slot></slot></div>
       </div>
     `;
   }

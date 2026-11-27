@@ -75,7 +75,7 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
 
     this.shadowRoot!.innerHTML = `
       <style>${cssContent}</style>
-      <div class="tree" part="container" role="tree">
+      <div class="tree" part="base container" role="tree">
         <div class="tree__content" part="content"></div>
       </div>
     `;
@@ -148,6 +148,8 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     // read the same objects or those writes land where nothing looks.
     this.internalNodes.forEach(node => {
       const item = document.createElement('snice-tree-item');
+      item.setAttribute('part', 'item');
+      item.setAttribute('exportparts', 'base: item-base, content: item-content, content-selected: item-content-selected, content-disabled: item-content-disabled, loading: item-loading, expander: item-expander, expander-expanded: item-expander-expanded, expander-hidden: item-expander-hidden, expander-icon: item-expander-icon, checkbox: item-checkbox, icon: item-icon, icon-image: item-icon-image, icon-text: item-icon-text, label: item-label, children: item-children, children-expanded: item-children-expanded, item: item, spinner-base: item-spinner-base, spinner-circle: item-spinner-circle, spinner-track: item-spinner-track, spinner-fill: item-spinner-fill, spinner-dots: item-spinner-dots, spinner-pulse: item-spinner-pulse, spinner-orbit: item-spinner-orbit, spinner-bars: item-spinner-bars, spinner-dot: item-spinner-dot, spinner-orbit-dot: item-spinner-orbit-dot, spinner-bar: item-spinner-bar, spinner-ring: item-spinner-ring, spinner-ring-a: item-spinner-ring-a, spinner-ring-b: item-spinner-ring-b, spinner-ring-c: item-spinner-ring-c, spinner-label: item-spinner-label, checkbox-base: item-checkbox-base, checkbox-input: item-checkbox-input, checkbox-checkbox: item-checkbox-checkbox, checkbox-spinner: item-checkbox-spinner, checkbox-label: item-checkbox-label, checkbox-icon: item-checkbox-icon, checkbox-icon-check: item-checkbox-icon-check, checkbox-icon-indeterminate: item-checkbox-icon-indeterminate, checkbox-base-disabled: item-checkbox-base-disabled, checkbox-base-loading: item-checkbox-base-loading, checkbox-checkbox-invalid: item-checkbox-checkbox-invalid, checkbox-checkbox-indeterminate: item-checkbox-checkbox-indeterminate, checkbox-checkbox-loading: item-checkbox-checkbox-loading, checkbox-label-required: item-checkbox-label-required');
       if (this.showCheckboxes) item.setAttribute('show-checkbox', '');
       if (this.showIcons) item.setAttribute('show-icon', '');
       content.appendChild(item);

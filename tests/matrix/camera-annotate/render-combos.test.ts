@@ -19,6 +19,7 @@ import {
   swatches, annotationItems, partEl, text, isHidden, DATA_FIXTURES, sr,
   type MediaMock, type SniceCameraAnnotateElement,
 } from './camera-annotate-support';
+import { exactPartsIn } from '../part-exact';
 
 let media: MediaMock;
 
@@ -57,9 +58,13 @@ describe('snice-camera-annotate matrix: the documented parts are addressable', (
       // `snice-camera-annotate::part(toolbar)`. Every named part must resolve,
       // and each to exactly one node — two nodes carrying the same part name
       // make `::part()` ambiguous.
+      // Token-exact: happy-dom's `[part~="canvas"]` also answers with
+      // `draw-canvas`, and `[part~="sidebar"]` with `sidebar-header` /
+      // `sidebar-title`, so the count reads the attribute and splits it
+      // itself (`tests/matrix/part-exact.ts`).
       const counts = DOC_PARTS.map(name => ({
         name,
-        count: sr(el).querySelectorAll(`[part~="${name}"]`).length,
+        count: exactPartsIn(sr(el), name).length,
       }));
       expect(counts, `mode=${mode}`).toEqual(DOC_PARTS.map(name => ({ name, count: 1 })));
     });

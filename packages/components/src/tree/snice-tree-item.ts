@@ -242,12 +242,12 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
     const ariaExpanded = hasChildren ? this.expanded.toString() : nothing;
 
     return html`
-      <div class="tree-item" style:--tree-level=${this.level.toString()}>
+      <div class="tree-item" part="base" style:--tree-level=${this.level.toString()}>
         <div
           class="tree-item__content"
           class:tree-item__content--selected=${this.selected}
           class:tree-item__content--disabled=${Boolean(this.node.disabled)}
-          part="content"
+          part="content${this.selected ? ' content-selected' : ''}${this.node.disabled ? ' content-disabled' : ''}"
           role="treeitem"
           tabindex=${this.node.disabled ? '-1' : '0'}
           aria-selected=${this.selected.toString()}
@@ -265,18 +265,18 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
             part="loading"
             style:display=${this.loading ? 'inline-flex' : 'none'}
           >
-            <snice-spinner size="small"></snice-spinner>
+            <snice-spinner size="small" exportparts="base: spinner-base, circle: spinner-circle, track: spinner-track, fill: spinner-fill, dots: spinner-dots, pulse: spinner-pulse, orbit: spinner-orbit, bars: spinner-bars, dot: spinner-dot, orbit-dot: spinner-orbit-dot, bar: spinner-bar, ring: spinner-ring, ring-a: spinner-ring-a, ring-b: spinner-ring-b, ring-c: spinner-ring-c, label: spinner-label"></snice-spinner>
           </div>
 
           <div
             class="tree-item__expander"
             class:tree-item__expander--expanded=${this.expanded}
             class:tree-item__expander--hidden=${!hasChildren}
-            part="expander"
+            part="expander${this.expanded ? ' expander-expanded' : ''}${hasChildren ? '' : ' expander-hidden'}"
             style:display=${this.loading ? 'none' : nothing}
             @click|stop=${this.handleExpanderClick}
           >
-            <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+            <svg part="expander-icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
           </div>
 
           <div
@@ -286,6 +286,7 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
             @click|stop=${this.handleCheckboxClick}
           >
             <snice-checkbox
+              exportparts="base: checkbox-base, input: checkbox-input, checkbox: checkbox-checkbox, spinner: checkbox-spinner, label: checkbox-label, icon: checkbox-icon, icon-check: checkbox-icon-check, icon-indeterminate: checkbox-icon-indeterminate, base-disabled: checkbox-base-disabled, base-loading: checkbox-base-loading, checkbox-invalid: checkbox-checkbox-invalid, checkbox-indeterminate: checkbox-checkbox-indeterminate, checkbox-loading: checkbox-checkbox-loading, label-required: checkbox-label-required"
               size="small"
               .checked=${this.checked}
               .indeterminate=${this.indeterminate}
@@ -320,13 +321,15 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
         <div
           class="tree-item__children"
           class:tree-item__children--expanded=${this.expanded}
-          part="children"
+          part="children${this.expanded ? ' children-expanded' : ''}"
           role="group"
         >
           ${repeat(children, {
             key: child => child.id,
             render: (child, index) => html`
               <snice-tree-item
+                part="item"
+                exportparts="base, content, content-selected, content-disabled, loading, expander, expander-expanded, expander-hidden, expander-icon, checkbox, icon, icon-image, icon-text, label, children, children-expanded, item, spinner-base, spinner-circle, spinner-track, spinner-fill, spinner-dots, spinner-pulse, spinner-orbit, spinner-bars, spinner-dot, spinner-orbit-dot, spinner-bar, spinner-ring, spinner-ring-a, spinner-ring-b, spinner-ring-c, spinner-label, checkbox-base, checkbox-input, checkbox-checkbox, checkbox-spinner, checkbox-label, checkbox-icon, checkbox-icon-check, checkbox-icon-indeterminate, checkbox-base-disabled, checkbox-base-loading, checkbox-checkbox-invalid, checkbox-checkbox-indeterminate, checkbox-checkbox-loading, checkbox-label-required"
                 .treeitemnode=${child}
                 .treeitemlevel=${this.level + 1}
                 .treeitemposition=${index + 1}

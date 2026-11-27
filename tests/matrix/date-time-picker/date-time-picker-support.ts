@@ -51,6 +51,7 @@
 import { expect } from 'vitest';
 import { createComponent, wait } from '../../components/test-utils';
 import { installInternalsMock, restoreInternalsMock, internalsFor, activeFlags } from '../internals-mock';
+import { exactPart, exactParts } from '../part-exact';
 import '../../../packages/components/src/date-time-picker/snice-date-time-picker';
 import type {
   SniceDateTimePickerElement,
@@ -76,7 +77,7 @@ export const TIME_FORMATS: readonly DateTimePickerTimeFormat[] = ['24h', '12h'];
 export const SIZES: readonly DateTimePickerSize[] = ['small', 'medium', 'large'];
 export const VARIANTS: readonly DateTimePickerVariant[] = ['dropdown', 'inline'];
 
-/** The documented CSS parts, in the order the docs list them. */
+/** The documented top-level CSS parts this oracle accounts for, in doc order. */
 export const PARTS = [
   'base', 'label', 'input', 'toggle', 'panel', 'calendar', 'time',
   'clear', 'spinner', 'helper-text', 'error-text',
@@ -349,11 +350,18 @@ export function shadow(el: HTMLElement): ShadowRoot {
   return root;
 }
 
+/**
+ * EXACT part lookup. `[part~="input"]` also matches the hyphen-prefixed
+ * `input-container` in happy-dom (see ../part-exact.ts), and that wrapper comes
+ * FIRST in the shadow tree — so the `~=` selector answered "input" with a div
+ * that has no value, no `aria-describedby`, and no `aria-invalid`. Every part
+ * read here is token-exact.
+ */
 export const part = <T extends Element = HTMLElement>(el: HTMLElement, name: string): T | null =>
-  shadow(el).querySelector<T>(`[part~="${name}"]`);
+  exactPart<T>(el, name);
 
 export const partsNamed = <T extends Element = HTMLElement>(el: HTMLElement, name: string): T[] =>
-  [...shadow(el).querySelectorAll<T>(`[part~="${name}"]`)];
+  exactParts<T>(el, name);
 
 export const textOf = (node: Element | null | undefined): string =>
   (node?.textContent ?? '').replace(/\s+/g, ' ').trim();

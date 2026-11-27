@@ -24,11 +24,13 @@ actionHref: string = '';       // attribute: action-href
 
 ## CSS Parts
 
+- `base` - Outer empty state wrapper (same element as `container`)
 - `container` - Outer empty state wrapper
 - `icon` - Icon wrapper
 - `title` - Title element
 - `description` - Description paragraph
 - `action` - Action button or link
+- `extra` - Wrapper for the default slot content
 
 ## Basic Usage
 

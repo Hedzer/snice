@@ -91,6 +91,26 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `base` | `<div>` | Outer kanban board container |
 | `column-header` | `<div>` | Column header with title and card count |
 | `column-cards` | `<div>` | Card list area within a column |
+| `column` | `<div>` | A column container |
+| `column-title` | `<div>` | The column title text |
+| `column-count` | `<span>` | The column card-count badge |
+| `empty` | `<div>` | The "No cards" placeholder inside an empty column |
+| `card` | `<div>` | A card |
+| `card-title` | `<div>` | A card's title |
+| `card-description` | `<div>` | A card's description |
+| `card-meta` | `<div>` | A card's meta row (assignee and labels) |
+| `card-assignee` | `<div>` | A card's assignee row |
+| `card-labels` | `<div>` | A card's label list |
+| `card-label` | `<span>` | A single card label |
+| `card-label-icon` | `<span>` | The icon wrapper inside a card label |
+
+State tokens are added alongside the base token on the same element, so they can
+be targeted with `::part(card card-grabbed)`.
+
+| Part | Added to | Description |
+|------|----------|-------------|
+| `column-collapsed` | `column` | Present while the column is collapsed |
+| `card-grabbed` | `card` | Present while the card is held by keyboard drag |
 
 ```css
 snice-kanban::part(column-header) {

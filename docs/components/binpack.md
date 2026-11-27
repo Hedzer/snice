@@ -72,6 +72,8 @@ A JavaScript-driven bin-packing layout component. Uses the maximal rectangles al
 | Part | Description |
 |------|-------------|
 | `base` | The inner container element |
+| `drop-placeholder` | Drop target outline shown while dragging |
+| `drop-placeholder-visible` | Added to `drop-placeholder` while the placeholder is shown |
 
 ## Basic Usage
 

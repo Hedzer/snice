@@ -40,6 +40,23 @@ variant: 'card'|'horizontal'|'compact' = 'card';
 - `contact` - Contact info section
 - `social` - Social links row
 - `actions` - Actions slot wrapper
+- `avatar-image` - Avatar `<img>` when `avatar` is set
+- `avatar-fallback` - Initials shown when there is no avatar image
+- `content` - Info column beside the avatar
+- `contact-item` - A single contact row
+- `contact-item-email` - Added to `contact-item` on the email row
+- `contact-item-phone` - Added to `contact-item` on the phone row
+- `contact-item-location` - Added to `contact-item` on the location row
+- `contact-icon` - Icon inside a contact row
+- `contact-icon-email` - Added to `contact-icon` on the email row
+- `contact-icon-phone` - Added to `contact-icon` on the phone row
+- `contact-icon-location` - Added to `contact-icon` on the location row
+- `contact-link` - Anchor inside a contact row
+- `contact-link-email` - Added to `contact-link` on the email row
+- `contact-link-phone` - Added to `contact-link` on the phone row
+- `contact-text` - Non-link contact text (location)
+- `social-link` - A social platform button
+- `social-icon` - SVG glyph inside a social button
 
 ## Basic Usage
 

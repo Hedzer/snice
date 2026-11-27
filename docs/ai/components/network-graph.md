@@ -26,7 +26,24 @@ animation: boolean = true;
 
 - `base` - The outer graph container
 - `canvas` - The SVG element
+- `viewport` - Pan/zoom transform `<g>`
+- `edges` - `<g>` holding every edge
+- `nodes` - `<g>` holding every node
+- `edge` - One edge `<path>`
+- `edge-label` - One edge label `<text>`
+- `node` - One node `<g>`
+- `node-circle` - The node's `<circle>`
+- `node-label` - The node's label `<text>`
 - `tooltip` - The hover tooltip element
+
+State tokens:
+
+- `edge-highlighted` - Added to `edge` when it touches the hovered node
+- `edge-dimmed` - Added to `edge` when another node is hovered
+- `edge-label-dimmed` - Added to `edge-label` when another node is hovered
+- `node-dimmed` - Added to `node` when another, unconnected node is hovered
+- `node-dragging` - Added to `node` while it is being dragged
+- `node-label-dimmed` - Added to `node-label` when another node is hovered
 
 ## Basic Usage
 

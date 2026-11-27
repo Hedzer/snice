@@ -172,7 +172,7 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
     const labelX = svgWidth - 10;
     const firstValue = data[0].value || 1;
 
-    let svg = `<svg class="funnel__svg" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Funnel chart">`;
+    let svg = `<svg class="funnel__svg" part="svg" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Funnel chart">`;
 
     for (let i = 0; i < count; i++) {
       const stage = data[i];
@@ -191,20 +191,20 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
       const textY = y + stageHeight / 2;
       const ariaLabel = escapeHTML(`${stage.label}: ${stage.value} (${this.getPercentage(i)})`);
 
-      svg += `<g class="funnel__stage" data-index="${i}" tabindex="0" role="button" aria-label="${ariaLabel}">`;
-      svg += `<path class="funnel__stage-shape" d="${path}" fill="${color}"${delay}/>`;
+      svg += `<g class="funnel__stage" part="stage" data-index="${i}" tabindex="0" role="button" aria-label="${ariaLabel}">`;
+      svg += `<path class="funnel__stage-shape" part="stage-shape" d="${path}" fill="${color}"${delay}/>`;
 
       if (this.showLabels) {
         const labelY = (this.showValues || this.showPercentages) ? textY - 6 : textY;
-        svg += `<text class="funnel__label" x="${labelX}" y="${labelY}" text-anchor="end" dominant-baseline="middle">${escapeHTML(stage.label)}</text>`;
+        svg += `<text class="funnel__label" part="label" x="${labelX}" y="${labelY}" text-anchor="end" dominant-baseline="middle">${escapeHTML(stage.label)}</text>`;
       }
       if (this.showValues) {
         const valY = this.showLabels ? textY + 8 : textY;
-        svg += `<text class="funnel__value" x="${labelX}" y="${valY}" text-anchor="end" dominant-baseline="middle">${escapeHTML(this.formatValue(stage.value))}</text>`;
+        svg += `<text class="funnel__value" part="value" x="${labelX}" y="${valY}" text-anchor="end" dominant-baseline="middle">${escapeHTML(this.formatValue(stage.value))}</text>`;
       }
       if (this.showPercentages && i > 0) {
         const pctY = this.showLabels ? textY + 20 : (this.showValues ? textY + 12 : textY);
-        svg += `<text class="funnel__percentage" x="${labelX}" y="${pctY}" text-anchor="end" dominant-baseline="middle">${escapeHTML(this.getPercentage(i))}</text>`;
+        svg += `<text class="funnel__percentage" part="percentage" x="${labelX}" y="${pctY}" text-anchor="end" dominant-baseline="middle">${escapeHTML(this.getPercentage(i))}</text>`;
       }
 
       svg += `</g>`;
@@ -226,7 +226,7 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
     const minHeight = maxHeight * 0.25;
     const firstValue = data[0].value || 1;
 
-    let svg = `<svg class="funnel__svg" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Funnel chart">`;
+    let svg = `<svg class="funnel__svg" part="svg" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Funnel chart">`;
 
     for (let i = 0; i < count; i++) {
       const stage = data[i];
@@ -248,17 +248,17 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
       const textY = svgHeight * 0.45 + maxHeight / 2 + 16;
       const ariaLabel = escapeHTML(`${stage.label}: ${stage.value} (${this.getPercentage(i)})`);
 
-      svg += `<g class="funnel__stage" data-index="${i}" tabindex="0" role="button" aria-label="${ariaLabel}">`;
-      svg += `<path class="funnel__stage-shape" d="${path}" fill="${color}"${delay}/>`;
+      svg += `<g class="funnel__stage" part="stage" data-index="${i}" tabindex="0" role="button" aria-label="${ariaLabel}">`;
+      svg += `<path class="funnel__stage-shape" part="stage-shape" d="${path}" fill="${color}"${delay}/>`;
 
       if (this.showLabels) {
-        svg += `<text class="funnel__label" x="${textX}" y="${textY}" text-anchor="middle">${escapeHTML(stage.label)}</text>`;
+        svg += `<text class="funnel__label" part="label" x="${textX}" y="${textY}" text-anchor="middle">${escapeHTML(stage.label)}</text>`;
       }
       if (this.showValues) {
-        svg += `<text class="funnel__value" x="${textX}" y="${textY + 16}" text-anchor="middle">${escapeHTML(this.formatValue(stage.value))}</text>`;
+        svg += `<text class="funnel__value" part="value" x="${textX}" y="${textY + 16}" text-anchor="middle">${escapeHTML(this.formatValue(stage.value))}</text>`;
       }
       if (this.showPercentages && i > 0) {
-        svg += `<text class="funnel__percentage" x="${textX}" y="${textY + 30}" text-anchor="middle">${escapeHTML(this.getPercentage(i))}</text>`;
+        svg += `<text class="funnel__percentage" part="percentage" x="${textX}" y="${textY + 30}" text-anchor="middle">${escapeHTML(this.getPercentage(i))}</text>`;
       }
 
       svg += `</g>`;
@@ -303,8 +303,8 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
            @keydown=${(e: KeyboardEvent) => this.handleSvgKeyDown(e)}>
         <div class="funnel__chart" part="chart"></div>
         <div class="funnel__tooltip" part="tooltip" style="display:none;transform:translate(-50%,-100%)">
-          <div class="funnel__tooltip-label"></div>
-          <div class="funnel__tooltip-value"></div>
+          <div class="funnel__tooltip-label" part="tooltip-label"></div>
+          <div class="funnel__tooltip-value" part="tooltip-value"></div>
         </div>
       </div>
     `;

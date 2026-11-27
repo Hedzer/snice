@@ -30,7 +30,7 @@ export class SniceSegmentedControl extends HTMLElement implements SniceSegmented
     return html/*html*/`
       <div class="segmented-control segmented-control--${this.size}"
            role="radiogroup"
-           part="base">
+           part="base${this.disabled ? ' base-disabled' : ''}">
         <div class="segmented-control__indicator" part="indicator"></div>
         ${this.options.map((opt, index) => {
           const isSelected = opt.value === this.value;
@@ -50,12 +50,12 @@ export class SniceSegmentedControl extends HTMLElement implements SniceSegmented
               ?disabled="${opt.disabled || this.disabled}"
               data-value="${opt.value}"
               data-index="${index}"
-              part="segment"
+              part="segment${isSelected ? ' segment-selected' : ''}${opt.disabled ? ' segment-disabled' : ''}"
               @click="${() => this.handleSegmentClick(opt)}">
               <if ${opt.icon}>
-                <img class="segmented-control__icon" src="${opt.icon || ''}" alt="" />
+                <img part="icon" class="segmented-control__icon" src="${opt.icon || ''}" alt="" />
               </if>
-              <span class="segmented-control__label">${opt.label}</span>
+              <span part="label" class="segmented-control__label">${opt.label}</span>
             </button>
           `;
         })}

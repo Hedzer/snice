@@ -265,7 +265,7 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
         </if>
 
         <div
-          part="container"
+          part="container${isDisabled ? ' container-disabled' : ''}${this.constraintInvalid ? ' container-invalid' : ''}"
           class="tag-input-container ${isDisabled ? 'tag-input-container--disabled' : ''} ${this.constraintInvalid ? 'tag-input-container--invalid' : ''}"
           aria-invalid="${this.constraintInvalid ? 'true' : 'false'}"
           @click=${() => this.focus()}
@@ -276,12 +276,13 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
               <if ${!isDisabled && !isReadonly}>
                 <button
                   class="tag-remove"
+                  part="tag-remove"
                   type="button"
                   tabindex="-1"
                   @click=${(e: Event) => { e.stopPropagation(); this.removeTag(index); }}
                   title="Remove ${tag}"
                 >
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+                  <svg part="tag-remove-icon" viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
                     <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                   </svg>
                 </button>
@@ -310,6 +311,7 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
             <div part="suggestions" class="tag-suggestions">
               ${this.filteredSuggestions.map((suggestion, i) => html/*html*/`
                 <div
+                  part="suggestion${i === this.highlightedIndex ? ' suggestion-highlighted' : ''}"
                   class="tag-suggestion-item ${i === this.highlightedIndex ? 'tag-suggestion-item--highlighted' : ''}"
                   @mousedown=${(e: Event) => { e.preventDefault(); this.selectSuggestion(suggestion); }}
                 >

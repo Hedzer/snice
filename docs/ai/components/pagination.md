@@ -34,10 +34,21 @@ variant: 'default'|'rounded'|'text' = 'default';
 - `button` - All navigation buttons (shared)
 - `first-button` - First page button
 - `prev-button` - Previous page button
-- `pages` - Page numbers container
-- `ellipsis` - Ellipsis span
 - `next-button` - Next page button
 - `last-button` - Last page button
+- `icon` - All navigation button icons (shared)
+- `first-icon` - First page icon
+- `prev-icon` - Previous page icon
+- `next-icon` - Next page icon
+- `last-icon` - Last page icon
+- `pages` - Page numbers container
+- `page` - A page number button
+- `ellipsis` - Ellipsis span
+
+State tokens:
+
+- `button-disabled` - Added to `button` while the navigation button is disabled
+- `page-current` - Added to `page` on the current page
 
 ## CSS Custom Properties
 

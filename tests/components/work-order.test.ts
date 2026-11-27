@@ -1,7 +1,8 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
+import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
+import { exactPart, exactParts } from '../matrix/part-exact';
 import '../../packages/components/src/work-order/snice-work-order';
 import type { SniceWorkOrderElement, WorkOrderTask, WorkOrderPart, WorkOrderCustomer, WorkOrderAsset } from '../../packages/components/src/work-order/snice-work-order.types';
 
@@ -43,7 +44,7 @@ describe('snice-work-order', () => {
 
     it('should render base container', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
-      const container = queryShadow(wo, '[part="base"]');
+      const container = exactPart(wo, 'base');
       expect(container).toBeTruthy();
     });
   });
@@ -53,7 +54,7 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.woNumber = 'WO-2024-001';
       await wait(10);
-      const number = queryShadow(wo, '[part="wo-number"]');
+      const number = exactPart(wo, 'wo-number');
       expect(number?.textContent).toContain('WO-2024-001');
     });
 
@@ -61,7 +62,7 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.date = '2024-03-15';
       await wait(10);
-      const date = queryShadow(wo, '[part="date"]');
+      const date = exactPart(wo, 'date');
       expect(date?.textContent).toBe('2024-03-15');
     });
 
@@ -69,7 +70,7 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.dueDate = '2024-03-20';
       await wait(10);
-      const dueDate = queryShadow(wo, '[part="due-date"]');
+      const dueDate = exactPart(wo, 'due-date');
       expect(dueDate?.textContent).toBe('2024-03-20');
     });
 
@@ -93,7 +94,7 @@ describe('snice-work-order', () => {
 
     it('should render title label', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
-      const title = queryShadow(wo, '[part="title"]');
+      const title = exactPart(wo, 'title');
       expect(title?.textContent).toContain('Work Order');
     });
   });
@@ -103,14 +104,14 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.customer = { name: 'Acme Corp', address: '123 Main St', phone: '555-1234', email: 'info@acme.com' };
       await wait(10);
-      const section = queryShadow(wo, '[part="customer"]');
+      const section = exactPart(wo, 'customer');
       expect(section).toBeTruthy();
     });
 
     it('should not render customer section when null', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       await wait(10);
-      const section = queryShadow(wo, '[part="customer"]');
+      const section = exactPart(wo, 'customer');
       expect(section).toBeFalsy();
     });
 
@@ -118,7 +119,7 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.customer = { name: 'Acme Corp' };
       await wait(10);
-      const name = queryShadow(wo, '[part="customer-name"]');
+      const name = exactPart(wo, 'customer-name');
       expect(name?.textContent).toBe('Acme Corp');
     });
   });
@@ -136,14 +137,14 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.asset = testAsset;
       await wait(10);
-      const section = queryShadow(wo, '[part="asset"]');
+      const section = exactPart(wo, 'asset');
       expect(section).toBeTruthy();
     });
 
     it('should not render asset section when null', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       await wait(10);
-      const section = queryShadow(wo, '[part="asset"]');
+      const section = exactPart(wo, 'asset');
       expect(section).toBeFalsy();
     });
 
@@ -151,7 +152,7 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.asset = testAsset;
       await wait(10);
-      const id = queryShadow(wo, '[part="asset-id"]');
+      const id = exactPart(wo, 'asset-id');
       expect(id?.textContent).toBe('HVAC-301');
     });
 
@@ -159,7 +160,7 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.asset = testAsset;
       await wait(10);
-      const name = queryShadow(wo, '[part="asset-name"]');
+      const name = exactPart(wo, 'asset-name');
       expect(name?.textContent).toBe('Rooftop HVAC Unit');
     });
   });
@@ -169,14 +170,14 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.description = 'Replace HVAC system on 3rd floor';
       await wait(10);
-      const desc = queryShadow(wo, '[part="description-content"]');
+      const desc = exactPart(wo, 'description-content');
       expect(desc?.textContent).toBe('Replace HVAC system on 3rd floor');
     });
 
     it('should not render description section when empty', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       await wait(10);
-      const section = queryShadow(wo, '[part="description"]');
+      const section = exactPart(wo, 'description');
       expect(section).toBeFalsy();
     });
   });
@@ -191,7 +192,7 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.tasks = testTasks;
       await wait(10);
-      const tasks = queryShadowAll(wo, '[part="task"]');
+      const tasks = exactParts(wo, 'task');
       expect(tasks.length).toBe(2);
     });
 
@@ -211,7 +212,7 @@ describe('snice-work-order', () => {
       const handler = vi.fn();
       wo.addEventListener('task-toggle', handler);
 
-      const checkbox = queryShadow(wo, '[part="task-checkbox"]') as HTMLButtonElement;
+      const checkbox = exactPart(wo, 'task-checkbox') as HTMLButtonElement;
       checkbox?.click();
       await wait(10);
 
@@ -224,7 +225,7 @@ describe('snice-work-order', () => {
       wo.tasks = [{ description: 'Test task', completed: false }];
       await wait(10);
 
-      const checkbox = queryShadow(wo, '[part="task-checkbox"]') as HTMLButtonElement;
+      const checkbox = exactPart(wo, 'task-checkbox') as HTMLButtonElement;
       checkbox?.click();
       await wait(10);
 
@@ -234,7 +235,7 @@ describe('snice-work-order', () => {
     it('should not render tasks section when empty', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       await wait(10);
-      const section = queryShadow(wo, '[part="tasks"]');
+      const section = exactPart(wo, 'tasks');
       expect(section).toBeFalsy();
     });
 
@@ -242,7 +243,7 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.tasks = [{ description: 'Task', assignee: 'John Smith' }];
       await wait(10);
-      const assignee = queryShadow(wo, '[part="task-assignee"]');
+      const assignee = exactPart(wo, 'task-assignee');
       expect(assignee?.textContent).toBe('John Smith');
     });
   });
@@ -257,7 +258,7 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.parts = testParts;
       await wait(10);
-      const table = queryShadow(wo, '[part="parts-table"]');
+      const table = exactPart(wo, 'parts-table');
       expect(table).toBeTruthy();
     });
 
@@ -273,14 +274,14 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.parts = testParts;
       await wait(10);
-      const rows = queryShadowAll(wo, '[part="parts-row"]');
+      const rows = exactParts(wo, 'parts-row');
       expect(rows.length).toBe(2);
     });
 
     it('should not render parts section when empty', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       await wait(10);
-      const section = queryShadow(wo, '[part="parts"]');
+      const section = exactPart(wo, 'parts');
       expect(section).toBeFalsy();
     });
   });
@@ -291,7 +292,7 @@ describe('snice-work-order', () => {
       wo.tasks = [{ description: 'Task 1', hours: 3 }];
       wo.laborRate = 75;
       await wait(10);
-      const section = queryShadow(wo, '[part="labor"]');
+      const section = exactPart(wo, 'labor');
       expect(section).toBeTruthy();
     });
 
@@ -299,7 +300,7 @@ describe('snice-work-order', () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       wo.tasks = [{ description: 'Task 1', hours: 3 }, { description: 'Task 2', hours: 2 }];
       await wait(10);
-      const hours = queryShadow(wo, '[part="labor-hours"]');
+      const hours = exactPart(wo, 'labor-hours');
       expect(hours?.textContent).toBe('5h');
     });
 
@@ -308,14 +309,14 @@ describe('snice-work-order', () => {
       wo.tasks = [{ description: 'Task', hours: 1 }];
       wo.laborRate = 75;
       await wait(10);
-      const rate = queryShadow(wo, '[part="labor-rate"]');
+      const rate = exactPart(wo, 'labor-rate');
       expect(rate?.textContent).toContain('75');
     });
 
     it('should not render labor section without data', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       await wait(10);
-      const section = queryShadow(wo, '[part="labor"]');
+      const section = exactPart(wo, 'labor');
       expect(section).toBeFalsy();
     });
   });
@@ -324,28 +325,28 @@ describe('snice-work-order', () => {
     it('should render signature section', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       await wait(10);
-      const section = queryShadow(wo, '[part="signature"]');
+      const section = exactPart(wo, 'signature');
       expect(section).toBeTruthy();
     });
 
     it('should render signature line', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       await wait(10);
-      const line = queryShadow(wo, '[part="signature-line"]');
+      const line = exactPart(wo, 'signature-line');
       expect(line).toBeTruthy();
     });
 
     it('should render signature date line', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       await wait(10);
-      const dateLine = queryShadow(wo, '[part="signature-date"]');
+      const dateLine = exactPart(wo, 'signature-date');
       expect(dateLine).toBeTruthy();
     });
 
     it('should render sign button', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       await wait(10);
-      const btn = queryShadow(wo, '[part="sign-button"]');
+      const btn = exactPart(wo, 'sign-button');
       expect(btn).toBeTruthy();
     });
 
@@ -357,7 +358,7 @@ describe('snice-work-order', () => {
       const handler = vi.fn();
       wo.addEventListener('wo-sign', handler);
 
-      const btn = queryShadow(wo, '[part="sign-button"]') as HTMLButtonElement;
+      const btn = exactPart(wo, 'sign-button') as HTMLButtonElement;
       btn?.click();
       await wait(10);
 
@@ -374,7 +375,7 @@ describe('snice-work-order', () => {
       wo.tasks = [{ description: 'Task', hours: 2 }];
       wo.laborRate = 50;
       await wait(10);
-      const costs = queryShadow(wo, '[part="costs"]');
+      const costs = exactPart(wo, 'costs');
       expect(costs).toBeTruthy();
     });
 
@@ -384,14 +385,14 @@ describe('snice-work-order', () => {
       wo.tasks = [{ description: 'Task', hours: 3 }];
       wo.laborRate = 75;
       await wait(10);
-      const grandTotal = queryShadow(wo, '[part="grand-total"]');
+      const grandTotal = exactPart(wo, 'grand-total');
       expect(grandTotal).toBeTruthy();
     });
 
     it('should not render costs without data', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       await wait(10);
-      const costs = queryShadow(wo, '[part="costs"]');
+      const costs = exactPart(wo, 'costs');
       expect(costs).toBeFalsy();
     });
   });
@@ -400,7 +401,7 @@ describe('snice-work-order', () => {
     it('should not render QR slot when showQr is false', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
       await wait(10);
-      const qr = queryShadow(wo, '[part="qr-container"]');
+      const qr = exactPart(wo, 'qr-container');
       expect(qr).toBeFalsy();
     });
 
@@ -410,7 +411,7 @@ describe('snice-work-order', () => {
         qrPosition: 'top-right'
       });
       await wait(10);
-      const qr = queryShadow(wo, '[part="qr-container"]');
+      const qr = exactPart(wo, 'qr-container');
       expect(qr).toBeTruthy();
     });
 
@@ -571,49 +572,49 @@ describe('snice-work-order', () => {
   describe('CSS parts', () => {
     it('should have base part', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
-      expect(queryShadow(wo, '[part="base"]')).toBeTruthy();
+      expect(exactPart(wo, 'base')).toBeTruthy();
     });
 
     it('should have header part', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
-      expect(queryShadow(wo, '[part="header"]')).toBeTruthy();
+      expect(exactPart(wo, 'header')).toBeTruthy();
     });
 
     it('should have title part', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
-      expect(queryShadow(wo, '[part="title"]')).toBeTruthy();
+      expect(exactPart(wo, 'title')).toBeTruthy();
     });
 
     it('should have wo-number part', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
-      expect(queryShadow(wo, '[part="wo-number"]')).toBeTruthy();
+      expect(exactPart(wo, 'wo-number')).toBeTruthy();
     });
 
     it('should have priority part', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
-      expect(queryShadow(wo, '[part="priority"]')).toBeTruthy();
+      expect(exactPart(wo, 'priority')).toBeTruthy();
     });
 
     it('should have status part', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
-      expect(queryShadow(wo, '[part="status"]')).toBeTruthy();
+      expect(exactPart(wo, 'status')).toBeTruthy();
     });
 
     it('should have footer part', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
-      expect(queryShadow(wo, '[part="footer"]')).toBeTruthy();
+      expect(exactPart(wo, 'footer')).toBeTruthy();
     });
 
     it('should have sign-button part', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
-      expect(queryShadow(wo, '[part="sign-button"]')).toBeTruthy();
+      expect(exactPart(wo, 'sign-button')).toBeTruthy();
     });
 
     it('should have signature parts', async () => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order');
-      expect(queryShadow(wo, '[part="signature"]')).toBeTruthy();
-      expect(queryShadow(wo, '[part="signature-line"]')).toBeTruthy();
-      expect(queryShadow(wo, '[part="signature-date"]')).toBeTruthy();
+      expect(exactPart(wo, 'signature')).toBeTruthy();
+      expect(exactPart(wo, 'signature-line')).toBeTruthy();
+      expect(exactPart(wo, 'signature-date')).toBeTruthy();
     });
   });
   describe('attribute contract', () => {

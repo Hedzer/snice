@@ -53,12 +53,23 @@ readonly labels: NodeList | null;
 
 ## CSS Parts
 
+- `base` - The wrapping label element
+- `base-disabled` - Added to `base` while disabled or loading
+- `base-loading` - Added to `base` while loading
 - `input` - Hidden input element
 - `track` - Switch track
+- `track-invalid` - Added to `track` while invalid
+- `track-loading` - Added to `track` while loading
 - `thumb` - Switch thumb
 - `spinner` - Loading spinner
 - `label` - Label text
+- `label-required` - Added to `label` when `required`
 - `label-on` / `label-off` - State text inside the track (render when set)
+- `base-checked` - Added to `base` while checked
+- `track-checked` - Added to `track` while checked
+- `thumb-checked` - Added to `thumb` while checked
+- `lens` - Hidden iOS/macOS Liquid Glass thumb magnification lens (`data-platform-only="ios,macos"`)
+- `ripple` - Hidden Material 3 state-layer ripple helper (`data-platform-only="material"`)
 
 State labels: track auto-sizes to the widest label (medium/large; small hides them); checked thumb travel follows actual track width, so `::part(track)` width overrides stay aligned.
 

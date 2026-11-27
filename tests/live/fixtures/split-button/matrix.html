@@ -108,7 +108,7 @@
             // transition (reduced motion, @starting-style fast-path).
             setTimeout(resolve, 400);
           });
-          sr.querySelector('[part="toggle"]').click();
+          sr.querySelector('[part~="toggle"]').click();
           await settle();
           // The open menu slides in over 150ms (translateY(-8px) → 0);
           // measuring mid-transition reads a menu that has not landed yet.
@@ -118,7 +118,7 @@
         },
 
         async clickPrimary() {
-          document.getElementById('subject').shadowRoot.querySelector('[part="primary"]').click();
+          document.getElementById('subject').shadowRoot.querySelector('[part~="primary"]').click();
           await settle();
         },
 
@@ -139,7 +139,7 @@
           return {
             mounted: true,
             open: menu?.classList.contains('split-button__menu--open') ?? false,
-            actions: sr.querySelectorAll('[part="action"]').length,
+            actions: sr.querySelectorAll('[part~="action"]').length,
           };
         },
 

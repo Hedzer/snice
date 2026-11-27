@@ -26,8 +26,28 @@ compact: boolean = false;
 ## CSS Parts
 
 - `base` - Outer chart container
+- `empty` - Placeholder shown when no data is provided
 - `tree` - Tree layout wrapper
-- `node` - Individual node cards
+- `branch` - Wrapper around one child subtree
+- `node-wrapper` - Tree item wrapper around a node and its children
+- `node` - Individual node card
+- `avatar` - Node avatar (image or initials placeholder)
+- `avatar-placeholder` - Added to `avatar` when initials are shown instead of an image
+- `node-info` - Node text block
+- `node-name` - Node name
+- `node-title` - Node title
+- `toggle` - Collapse/expand button
+- `icon` - Shared token on the collapse/expand `<svg>` icon
+- `toggle-icon` - Collapse/expand button icon
+- `children` - Container of a node's children
+
+State tokens:
+
+- `tree-left-right` - Added to `tree` while `direction` is `left-right`
+- `node-compact` - Added to `node` in compact mode
+- `avatar-compact` - Added to `avatar` in compact mode
+- `toggle-collapsed` - Added to `toggle` while the branch is collapsed
+- `toggle-expanded` - Added to `toggle` while the branch is expanded
 
 ## Basic Usage
 

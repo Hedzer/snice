@@ -139,7 +139,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
     // ── The editable field (dropdown only — inline is a composite panel) ────
     if (combo.variant === 'dropdown') {
       const input = partNamed('input');
-      if (!input) { say('no [part="input"] rendered'); return problems; }
+      if (!input) { say('no [part~="input"] rendered'); return problems; }
       const inputBox = rect(input);
       if (inputBox.width <= 0 || inputBox.height <= 0) {
         say(`input renders at ${inputBox.width}x${inputBox.height}`);
@@ -173,7 +173,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
 
     // ── The panel ───────────────────────────────────────────────────────────
     const panel = partNamed('panel');
-    if (!panel) { say('no [part="panel"] rendered'); return problems; }
+    if (!panel) { say('no [part~="panel"] rendered'); return problems; }
 
     const shown = !panel.hasAttribute('hidden');
     if (combo.variant === 'inline' && !shown) say('an inline panel is hidden');

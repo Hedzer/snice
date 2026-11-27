@@ -213,36 +213,37 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
       <div class="gantt-container" part="base" role="region" aria-label="Gantt chart">
         <div class="gantt-header" part="header">
           <div class="gantt-zoom-toggle" part="controls" role="group" aria-label="Zoom level">
-            <button class="gantt-zoom-btn ${isDay ? 'active' : ''}" aria-pressed="${isDay ? 'true' : 'false'}" aria-label="Day zoom" @click=${() => { this.zoom = 'day'; }}>Day</button>
-            <button class="gantt-zoom-btn ${isWeek ? 'active' : ''}" aria-pressed="${isWeek ? 'true' : 'false'}" aria-label="Week zoom" @click=${() => { this.zoom = 'week'; }}>Week</button>
-            <button class="gantt-zoom-btn ${isMonth ? 'active' : ''}" aria-pressed="${isMonth ? 'true' : 'false'}" aria-label="Month zoom" @click=${() => { this.zoom = 'month'; }}>Month</button>
+            <button class="gantt-zoom-btn ${isDay ? 'active' : ''}" part="button zoom-button zoom-button-day${isDay ? ' zoom-button-active' : ''}" aria-pressed="${isDay ? 'true' : 'false'}" aria-label="Day zoom" @click=${() => { this.zoom = 'day'; }}>Day</button>
+            <button class="gantt-zoom-btn ${isWeek ? 'active' : ''}" part="button zoom-button zoom-button-week${isWeek ? ' zoom-button-active' : ''}" aria-pressed="${isWeek ? 'true' : 'false'}" aria-label="Week zoom" @click=${() => { this.zoom = 'week'; }}>Week</button>
+            <button class="gantt-zoom-btn ${isMonth ? 'active' : ''}" part="button zoom-button zoom-button-month${isMonth ? ' zoom-button-active' : ''}" aria-pressed="${isMonth ? 'true' : 'false'}" aria-label="Month zoom" @click=${() => { this.zoom = 'month'; }}>Month</button>
           </div>
         </div>
 
         <div class="gantt-body" part="body">
           <div class="gantt-task-list" part="task-list">
-            <div class="gantt-task-list-header">Task</div>
+            <div class="gantt-task-list-header" part="task-list-header">Task</div>
             ${orderedItems.map(item => {
               if ('__group' in item) {
-                return html`<div class="gantt-group-header">${item.__group}</div>`;
+                return html`<div class="gantt-group-header" part="group-header">${item.__group}</div>`;
               }
               return html`
-                <div class="gantt-task-name" @click=${() => this.emitTaskClick(item)}>${item.name}</div>
+                <div class="gantt-task-name" part="task-name" @click=${() => this.emitTaskClick(item)}>${item.name}</div>
               `;
             })}
           </div>
 
           <div class="gantt-timeline" part="timeline">
-            <div class="gantt-timeline-header" style="width: ${totalWidth}px">
+            <div class="gantt-timeline-header" part="timeline-header" style="width: ${totalWidth}px">
               ${headerCells.map(cell => html`
                 <div
                   class="gantt-timeline-cell ${cell.isToday ? 'gantt-timeline-cell--today' : ''}"
+                  part="cell timeline-cell${cell.isToday ? ' timeline-cell-today' : ''}"
                   style="width: ${cell.span * this.cellWidth}px"
                 >${cell.label}</div>
               `)}
             </div>
 
-            <div class="gantt-timeline-rows" style="width: ${totalWidth}px; height: ${taskRowIndex * 2.25}rem">
+            <div class="gantt-timeline-rows" part="timeline-rows" style="width: ${totalWidth}px; height: ${taskRowIndex * 2.25}rem">
               ${taskItems.map(task => {
                 const left = this.dateToX(task.start);
                 const right = this.dateToX(task.end);
@@ -256,26 +257,27 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
                 return html`
                   <div
                     class="gantt-bar"
+                    part="bar"
                     style="left: ${left}px; width: ${width}px; top: calc(${top}rem + 0.375rem); background: ${bgColor}"
                     @click=${() => this.handleBarClick(task)}
                     @mousedown=${(e: MouseEvent) => this.handleBarMouseDown(e, task, 'move')}
                   >
                     <if ${hasProgress}>
-                      <div class="gantt-bar-progress" style="width: ${progress}%"></div>
+                      <div class="gantt-bar-progress" part="bar-progress" style="width: ${progress}%"></div>
                     </if>
-                    <span class="gantt-bar-label">${task.name}</span>
-                    <div class="gantt-bar-handle gantt-bar-handle--left" @mousedown=${(e: MouseEvent) => { e.stopPropagation(); this.handleBarMouseDown(e, task, 'resize-left'); }}></div>
-                    <div class="gantt-bar-handle gantt-bar-handle--right" @mousedown=${(e: MouseEvent) => { e.stopPropagation(); this.handleBarMouseDown(e, task, 'resize-right'); }}></div>
+                    <span class="gantt-bar-label" part="bar-label">${task.name}</span>
+                    <div class="gantt-bar-handle gantt-bar-handle--left" part="handle handle-start" @mousedown=${(e: MouseEvent) => { e.stopPropagation(); this.handleBarMouseDown(e, task, 'resize-left'); }}></div>
+                    <div class="gantt-bar-handle gantt-bar-handle--right" part="handle handle-end" @mousedown=${(e: MouseEvent) => { e.stopPropagation(); this.handleBarMouseDown(e, task, 'resize-right'); }}></div>
                   </div>
                 `;
               })}
 
               ${dependencyLinks.map(link => html`
-                <svg class="gantt-dependency-arrow"><path d="${link.d}" /></svg>
+                <svg class="gantt-dependency-arrow" part="dependency-arrow"><path part="dependency-path" d="${link.d}" /></svg>
               `)}
 
               <if ${todayVisible}>
-                <div class="gantt-today-line" style="left: ${todayX}px"></div>
+                <div class="gantt-today-line" part="today-line" style="left: ${todayX}px"></div>
               </if>
             </div>
           </div>

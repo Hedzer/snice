@@ -48,8 +48,29 @@ colors: string[];  // getter/setter, default: ['#3b82f6','#ef4444','#10b981','#f
 
 - `base` - Outer paint container
 - `toolbar` - Toolbar with controls
+- `toolbar-label` - Toolbar group label ("Color", "Size")
+- `separator` - Toolbar separator
+- `swatches` - Colour swatch row
+- `swatch` - One preset colour swatch
+- `swatch-select` - One custom-colour `<input type="color">`
+- `size-slider` - Brush size range input
+- `button` - All toolbar buttons (shared)
+- `button-icon` - Toolbar button icon
+- `eraser-button` - Eraser toggle
+- `undo-button` - Undo button
+- `redo-button` - Redo button
+- `clear-button` - Clear canvas button
 - `canvas-wrap` - Canvas wrapper element
 - `canvas` - Drawing canvas element
+
+State tokens:
+
+- `canvas-tool-pen` - Added to `canvas` while the pen tool is active
+- `canvas-tool-eraser` - Added to `canvas` while the eraser tool is active
+- `swatch-active` - Added to `swatch` on the selected colour
+- `swatch-select-used` - Added to `swatch-select` once its colour has been picked
+- `swatch-select-active` - Added to `swatch-select` when its colour is selected
+- `button-active` - Added to `button` on the eraser toggle while erasing
 
 ## Basic Usage
 

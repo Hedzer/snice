@@ -109,7 +109,7 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
   @render()
   render() {
     return html/*html*/`
-      <div class="terminal-container" part="container" @click="${() => this.handleContainerClick()}">
+      <div class="terminal-container" part="base container" @click="${() => this.handleContainerClick()}">
         <div class="terminal-output" part="output" role="log" aria-live="polite" aria-atomic="false">
           ${this.lines.map(line => this.renderLine(line))}
         </div>
@@ -144,7 +144,7 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
       : '';
 
     return html/*html*/`
-      <div class="terminal-line ${line.type}" part="line" data-type="${line.type}">
+      <div class="terminal-line ${line.type}" part="line${({ input: ' line-input', output: ' line-output', error: ' line-error', info: ' line-info', success: ' line-success', warning: ' line-warning' })[line.type] || ''}" data-type="${line.type}">
         <if ${this.showTimestamps}>
           <span class="line-timestamp" part="timestamp">${timestamp}</span>
         </if>
@@ -310,7 +310,7 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
       } else {
         for (const code of codeList) {
           if (ansiColorMap[code]) {
-            parts.push(`<span class="${ansiColorMap[code]}">`);
+            parts.push(`<span class="${ansiColorMap[code]}" part="ansi">`);
             break;
           }
         }

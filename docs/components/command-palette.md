@@ -71,6 +71,9 @@ interface CommandItem {
 
 | Part | Description |
 |------|-------------|
+| `base` | Root wrapper (present whether or not the palette is open) |
+| `base-open` | Added to `base` while the palette is open |
+| `backdrop` | Click-away backdrop behind the palette |
 | `container` | Main palette container |
 | `search` | Search area wrapper |
 | `input` | Search input element |
@@ -78,6 +81,8 @@ interface CommandItem {
 | `empty` | Empty state message |
 | `category` | Category group header |
 | `item` | Individual command item button |
+| `item-active` | Added to `item` while it is the active (highlighted) command |
+| `item-disabled` | Added to `item` when the command is disabled |
 | `item-icon` | Item icon wrapper |
 | `item-icon-image` | Item icon image element |
 | `item-content` | Item label and description wrapper |

@@ -47,8 +47,9 @@ describe(`color-display matrix: visibility x swatch size (${COMBOS.length} combo
       expectShape(readAxes(el), expectedAxes(c), `axes ${id(c)}`);
 
       // The parts the docs list, present exactly when their flag says so.
-      // `container` is listed unconditionally and no property removes it.
-      const expectedParts = ['container',
+      // The root carries `base` and `container` unconditionally; no property
+      // removes either.
+      const expectedParts = ['base', 'container',
         ...(c.showSwatch ? ['swatch'] : []),
         ...(c.showLabel ? ['label'] : [])].sort();
       expect(partNames(el).sort(), `parts ${id(c)}`).toEqual(expectedParts);
@@ -66,7 +67,7 @@ describe('color-display matrix: the documented usage examples', () => {
     const el = await mountColorDisplay(combo({
       value: '#3b82f6', showLabel: false, swatchSize: 'large', channel: 'attr',
     }));
-    expect(partNames(el).sort()).toEqual(['container', 'swatch']);
+    expect(partNames(el).sort()).toEqual(['base', 'container', 'swatch']);
     expect((el as any).showLabel).toBe(false);
     expect((el as any).showSwatch).toBe(true);
   });
@@ -75,12 +76,12 @@ describe('color-display matrix: the documented usage examples', () => {
     const el = await mountColorDisplay(combo({
       value: '#3b82f6', showSwatch: false, format: 'rgb', channel: 'attr',
     }));
-    expect(partNames(el).sort()).toEqual(['container', 'label']);
+    expect(partNames(el).sort()).toEqual(['base', 'container', 'label']);
     expect(readShape(el).labelText).toBe('rgb(59, 130, 246)');
   });
 
   it('both flags false still renders the documented container', async () => {
     const el = await mountColorDisplay(combo({ showSwatch: false, showLabel: false }));
-    expect(partNames(el)).toEqual(['container']);
+    expect(partNames(el)).toEqual(['base', 'container']);
   });
 });

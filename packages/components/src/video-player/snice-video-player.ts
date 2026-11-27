@@ -463,7 +463,7 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
 
     return html`
       <div
-        part="base"
+        part="base${isPlaying ? '' : ' base-paused'}${this.controlsVisible ? ' base-controls-visible' : ''}"
         class="${containerClass}"
         tabindex="0"
         @mousemove=${() => this.handleContainerMouseMove()}
@@ -495,12 +495,13 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
 
         <if ${this.showPoster && this.poster}>
           <div
+            part="poster"
             class="video-poster"
             style="background-image: url('${encodePosterUrl(this.poster)}')"
             @click=${() => this.handlePosterClick()}
           >
-            <div class="video-poster-play">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+            <div part="poster-play" class="video-poster-play">
+              <svg part="icon poster-play-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M8 5v14l11-7z"/>
               </svg>
             </div>
@@ -508,14 +509,14 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
         </if>
 
         <if ${this.loading}>
-          <div class="video-loading">
-            <div class="video-loading-spinner"></div>
+          <div part="loading" class="video-loading">
+            <div part="spinner" class="video-loading-spinner"></div>
           </div>
         </if>
 
         <if ${!isPlaying && !this.showPoster && hasSource}>
-          <div class="video-center-play">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+          <div part="center-play" class="video-center-play">
+            <svg part="icon center-play-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7z"/>
             </svg>
           </div>
@@ -524,55 +525,57 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
         <if ${this.controls && hasSource}>
           <div part="controls" class="video-controls">
             <div
+              part="progress-container"
               class="video-progress-container"
               @click=${(e: MouseEvent) => this.handleProgressClick(e)}
               @mousedown=${(e: MouseEvent) => this.handleProgressMouseDown(e)}
             >
               <div part="progress" class="video-progress-track">
-                <div class="video-progress-buffered" style="width: ${this.bufferedPercent}%"></div>
-                <div class="video-progress-bar" style="width: ${progress}%"></div>
+                <div part="buffered" class="video-progress-buffered" style="width: ${this.bufferedPercent}%"></div>
+                <div part="played" class="video-progress-bar" style="width: ${progress}%"></div>
               </div>
             </div>
 
-            <div class="video-controls-row">
-              <div class="video-controls-left">
-                <button class="video-btn video-btn-play" @click=${() => this.toggle()} aria-label="${isPlaying ? "Pause" : "Play"}" title="${isPlaying ? "Pause" : "Play"}">
+            <div part="controls-row" class="video-controls-row">
+              <div part="controls-left" class="video-controls-left">
+                <button part="button play-button" class="video-btn video-btn-play" @click=${() => this.toggle()} aria-label="${isPlaying ? "Pause" : "Play"}" title="${isPlaying ? "Pause" : "Play"}">
                   <if ${isPlaying}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <svg part="icon pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                       <rect x="6" y="4" width="4" height="16"></rect>
                       <rect x="14" y="4" width="4" height="16"></rect>
                     </svg>
                   </if>
                   <if ${!isPlaying}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <svg part="icon play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M8 5v14l11-7z"/>
                     </svg>
                   </if>
                 </button>
 
-                <div class="video-volume">
-                  <button class="video-btn video-btn-volume" @click=${() => this.toggleMute()} aria-label="${isMutedOrZero ? 'Unmute' : 'Mute'}" title="${isMutedOrZero ? 'Unmute' : 'Mute'}">
+                <div part="volume" class="video-volume">
+                  <button part="button volume-button" class="video-btn video-btn-volume" @click=${() => this.toggleMute()} aria-label="${isMutedOrZero ? 'Unmute' : 'Mute'}" title="${isMutedOrZero ? 'Unmute' : 'Mute'}">
                     <if ${isMutedOrZero}>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <svg part="icon volume-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M11 5L6 9H2v6h4l5 4V5z"/>
                         <line x1="23" y1="9" x2="17" y2="15"/>
                         <line x1="17" y1="9" x2="23" y2="15"/>
                       </svg>
                     </if>
                     <if ${!isMutedOrZero && this.volume > 0.5}>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <svg part="icon volume-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M11 5L6 9H2v6h4l5 4V5z"/>
                         <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
                       </svg>
                     </if>
                     <if ${!isMutedOrZero && this.volume > 0 && this.volume <= 0.5}>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <svg part="icon volume-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M11 5L6 9H2v6h4l5 4V5z"/>
                         <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
                       </svg>
                     </if>
                   </button>
                   <input
+                    part="input volume-slider"
                     class="video-volume-slider"
                     type="range"
                     aria-label="Volume"
@@ -584,23 +587,23 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
                   />
                 </div>
 
-                <span class="video-time">${this.formatTime(this.currentTime)} / ${this.formatTime(this.duration)}</span>
+                <span part="time" class="video-time">${this.formatTime(this.currentTime)} / ${this.formatTime(this.duration)}</span>
               </div>
 
-              <div class="video-controls-right">
-                <button class="video-btn video-rate-btn" @click=${() => this.cyclePlaybackRate()} aria-label="Playback speed" title="Playback speed">
+              <div part="controls-right" class="video-controls-right">
+                <button part="button rate-button" class="video-btn video-rate-btn" @click=${() => this.cyclePlaybackRate()} aria-label="Playback speed" title="Playback speed">
                   ${this.playbackRate}x
                 </button>
 
-                <button class="video-btn video-btn-pip" @click=${() => this.requestPictureInPicture()} aria-label="Picture-in-Picture" title="Picture-in-Picture">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button part="button pip-button" class="video-btn video-btn-pip" @click=${() => this.requestPictureInPicture()} aria-label="Picture-in-Picture" title="Picture-in-Picture">
+                  <svg part="icon pip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
                     <rect x="11" y="9" width="9" height="7" rx="1" fill="currentColor" opacity="0.5"/>
                   </svg>
                 </button>
 
-                <button class="video-btn video-btn-fullscreen" @click=${() => this.toggleFullscreen()} aria-label="Fullscreen" title="Fullscreen">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button part="button fullscreen-button" class="video-btn video-btn-fullscreen" @click=${() => this.toggleFullscreen()} aria-label="Fullscreen" title="Fullscreen">
+                  <svg part="icon fullscreen-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
                   </svg>
                 </button>

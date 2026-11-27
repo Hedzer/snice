@@ -18,6 +18,10 @@ thickness: number = 8;
 ## CSS Parts
 
 - `base` - Outer gauge container div with role="meter"
+- `chart` - Chart area wrapping the arc and value text
+- `svg` - The gauge SVG element
+- `track` - Background arc path
+- `fill` - Progress arc path
 - `value` - Numeric value text span
 - `label` - Label text span below the gauge
 

@@ -166,8 +166,8 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
     ].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <div class="menu">
-        <div class="menu__trigger" part="trigger"
+      <div class="menu" part="base">
+        <div class="menu__trigger" part="trigger${this.open ? ' trigger-open' : ''}"
              tabindex="0"
              role="button"
              aria-haspopup="menu"
@@ -181,7 +181,7 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
           </span>
         </div>
 
-        <div class="${panelClasses}" part="panel" role="menu" popover="manual">
+        <div class="${panelClasses}" part="panel${this.open ? ' panel-open' : ''}" role="menu" popover="manual">
           <div class="menu__content" part="content">
             <slot></slot>
           </div>

@@ -41,7 +41,7 @@ export class SniceCellLocation extends HTMLElement implements SniceCellElement {
   @render()
   render() {
     const locationValue = this.address || this.value;
-    const iconHTML = this.showIcon ? '<span class="location-icon">📍</span>' : '';
+    const iconHTML = this.showIcon ? '<span class="location-icon" part="icon">📍</span>' : '';
     const mapLink = this.getMapLink();
 
     if (!locationValue && !this.latitude && !this.longitude) {
@@ -61,7 +61,7 @@ export class SniceCellLocation extends HTMLElement implements SniceCellElement {
           ? html`<a href="${mapLink}" target="_blank" rel="noopener noreferrer" class="location-link" part="link">
               ${displayText}
             </a>`
-          : html`<span class="location-text">${displayText}</span>`
+          : html`<span class="location-text" part="text">${displayText}</span>`
         }
       </div>
     `;

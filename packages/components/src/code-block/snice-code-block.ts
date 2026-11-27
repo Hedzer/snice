@@ -145,7 +145,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   template() {
     return html/*html*/`
       <slot style="display:none"></slot>
-      <div class="code-block" part="container">
+      <div class="code-block" part="base container">
         <div class="code-block__header" part="header">
           <div class="code-block__filename" part="filename">${this.filename}</div>
           <button
@@ -275,10 +275,10 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
         ].filter(Boolean).join(' ');
 
         const lineNumberHtml = this.showLineNumbers
-          ? `<span class="code-block__line-number">${lineNumber}</span>`
+          ? `<span class="code-block__line-number" part="line-number">${lineNumber}</span>`
           : '';
 
-        return `<span class="${lineClasses}">${lineNumberHtml}${line}\n</span>`;
+        return `<span class="${lineClasses}" part="line${isHighlighted ? ' line-highlight' : ''}">${lineNumberHtml}${line}\n</span>`;
       }).join('');
 
       this.codeEl.innerHTML = markup;

@@ -9,6 +9,7 @@
  */
 import { expect } from 'vitest';
 import { createComponent, wait } from '../../components/test-utils';
+import { exactPart } from '../part-exact';
 import '../../../packages/components/src/chip/snice-chip';
 
 export { wait, createComponent };
@@ -124,7 +125,7 @@ export async function makeChip(c: ChipCombo): Promise<any> {
 // ── The oracle ──────────────────────────────────────────────────────────────
 
 export interface ChipFacts {
-  /** A `[part="base"]` container is always rendered. */
+  /** A `base` part container is always rendered. */
   hasBase: boolean;
   /** Text the user reads — slotted content wins over `label`. */
   text: string;
@@ -182,7 +183,8 @@ export function expectedFacts(c: ChipCombo): ChipFacts {
 /** ACTUAL facts, read from the rendered shadow tree. */
 export function readFacts(chip: any): ChipFacts {
   const sr = chip.shadowRoot as ShadowRoot;
-  const base = sr.querySelector('[part="base"]') as HTMLElement | null;
+  // Token-exact: `base` also carries `base-selected` / `base-disabled`.
+  const base = exactPart(chip as HTMLElement, 'base');
   const iconPart = sr.querySelector('[part="icon"]') as HTMLElement | null;
   const avatar = sr.querySelector('img.chip-avatar') as HTMLImageElement | null;
   const remove = sr.querySelector('.chip-remove') as HTMLButtonElement | null;
@@ -265,7 +267,7 @@ export function collectEvents(chip: HTMLElement, types = ['chip-click', 'chip-re
 
 /** Click the chip body (never the remove button). */
 export function clickBody(chip: any): void {
-  const base = chip.shadowRoot.querySelector('[part="base"]') as HTMLElement;
+  const base = exactPart(chip as HTMLElement, 'base')!;
   base.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
 }
 
@@ -279,6 +281,6 @@ export function clickRemove(chip: any): boolean {
 
 /** Press a key on the chip body. */
 export function press(chip: any, key: string): void {
-  const base = chip.shadowRoot.querySelector('[part="base"]') as HTMLElement;
+  const base = exactPart(chip as HTMLElement, 'base')!;
   base.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, composed: true, cancelable: true }));
 }

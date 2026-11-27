@@ -58,6 +58,31 @@ interface LeaderboardEntry {
 - `title` - Title heading
 - `list` - Entries list
 - `empty` - Empty state
+- `podium` - Podium row (variant `podium`)
+- `podium-entry` - A podium entry
+- `podium-avatar` - A podium entry avatar
+- `podium-avatar-placeholder` - A podium entry initial placeholder
+- `podium-rank` - A podium entry rank badge
+- `podium-name` - A podium entry name
+- `podium-score` - A podium entry score
+- `entry` - A list entry row
+- `rank` - A list entry rank
+- `avatar` - An entry avatar (image or initial placeholder)
+- `avatar-placeholder` - A list entry initial placeholder
+- `info` - A list entry name column
+- `name` - A list entry name
+- `score` - A list entry score
+- `change` - A list entry change indicator
+
+State tokens:
+
+- `entry-highlighted` - Added to `entry` while the entry is highlighted
+- `rank-1` / `rank-2` / `rank-3` - Added to `rank` for the top three ranks
+- `podium-entry-1` / `podium-entry-2` / `podium-entry-3` - Added to `podium-entry` by rank
+- `podium-rank-1` / `podium-rank-2` / `podium-rank-3` - Added to `podium-rank` by rank
+- `change-up` - Added to `change` when the entry moved up
+- `change-down` - Added to `change` when the entry moved down
+- `change-none` - Added to `change` when the entry did not move
 
 ## Basic Usage
 

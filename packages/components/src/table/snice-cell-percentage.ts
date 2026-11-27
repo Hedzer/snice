@@ -45,7 +45,7 @@ export class SniceCellPercentage extends HTMLElement implements SniceCellElement
     return html/*html*/`
       <div class="cell-content cell-content--percentage" part="content" style="${styles}">
         ${formattedValue}
-        ${this.shouldShowTrend() && trendArrow ? unsafeHTML(`<span class="percentage-trend">${trendArrow}</span>`) : ''}
+        ${this.shouldShowTrend() && trendArrow ? unsafeHTML(`<span class="percentage-trend" part="trend">${trendArrow}</span>`) : ''}
       </div>
     `;
   }

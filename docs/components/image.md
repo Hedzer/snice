@@ -38,9 +38,21 @@ The `<snice-image>` component provides a flexible image display with variants, s
 
 | Part | Description |
 |------|-------------|
+| `base` | The root image container div (the same node as `container`) |
 | `container` | Image container div |
 | `image` | The img element |
 | `placeholder` | Placeholder element (shown when loading or no src) |
+| `placeholder-empty` | The placeholder box rendered when no `src` is set |
+| `icon` | Wrapper around the default placeholder glyph |
+| `placeholder-icon` | The default placeholder glyph wrapper (same node as `icon`) |
+
+State tokens are added alongside the base token on the same element, so they can
+be targeted with `::part(image image-loaded)`.
+
+| Part | Added to | Description |
+|------|----------|-------------|
+| `image-loaded` | `image` | Present once the image has finished loading |
+| `placeholder-hidden` | `placeholder` | Present on the low-res placeholder once the image has loaded |
 
 ```css
 snice-image::part(container) {

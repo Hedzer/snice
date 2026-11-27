@@ -118,6 +118,37 @@ interface InvoiceItem {
 | `qr-container` | QR code container |
 | `qr` | QR code element |
 | `footer` | Footer area |
+| `header-left` | Logo/title/status column of the header |
+| `meta-row` | One metadata line |
+| `meta-label` | Metadata label text |
+| `meta-value` | Metadata value text |
+| `table-header-row` | Table head row |
+| `table-header-cell` | Table head cell |
+| `table-body` | Table body |
+| `line-number` | Line number inside the first detailed cell |
+| `item-tax` | Per-item tax note |
+| `summary-table` | Summary rows container |
+| `qr-placeholder` | Default QR placeholder box |
+
+State tokens are added alongside the base token on the same element, so they can
+be targeted with `::part(status status-paid)`.
+
+| Part | Added to | Description |
+|------|----------|-------------|
+| `status-draft` | `status` | Present while `status` is `draft` |
+| `status-sent` | `status` | Present while `status` is `sent` |
+| `status-paid` | `status` | Present while `status` is `paid` |
+| `status-overdue` | `status` | Present while `status` is `overdue` |
+| `status-cancelled` | `status` | Present while `status` is `cancelled` |
+| `table-cell-line` | `table-cell` | Present on the line-number cell |
+| `table-cell-description` | `table-cell` | Present on the description cell |
+| `table-cell-qty` | `table-cell` | Present on the quantity cell |
+| `table-cell-price` | `table-cell` | Present on the unit-price cell |
+| `table-cell-amount` | `table-cell` | Present on the line-amount cell |
+| `qr-top-right` | `qr-container` | Present while `qr-position` is `top-right` |
+| `qr-bottom-right` | `qr-container` | Present while `qr-position` is `bottom-right` |
+| `qr-bottom-left` | `qr-container` | Present while `qr-position` is `bottom-left` |
+| `qr-footer` | `qr-container` | Present while `qr-position` is `footer` |
 
 ## CSS Custom Properties
 

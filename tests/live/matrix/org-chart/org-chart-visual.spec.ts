@@ -85,7 +85,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
     if (!base) { say('no part="base"'); return problems; }
     if (getComputedStyle(base).visibility !== 'visible') say('the container is not visible');
 
-    const tree = sr.querySelector('[part="tree"]') as HTMLElement | null;
+    const tree = sr.querySelector('[part~="tree"]') as HTMLElement | null;
     if (combo.tree === 'none') {
       if (tree) say('a chart with no data still painted a tree');
       if (rect(base).height <= 0) say('the empty-state message has no box');
@@ -251,7 +251,7 @@ test.describe('org-chart visual matrix: collapsing removes paint', () => {
       const sr = document.getElementById('subject')!.shadowRoot!;
       return {
         cards: sr.querySelectorAll('.org-node').length,
-        height: sr.querySelector('[part="tree"]')!.getBoundingClientRect().height,
+        height: sr.querySelector('[part~="tree"]')!.getBoundingClientRect().height,
       };
     });
 
@@ -261,7 +261,7 @@ test.describe('org-chart visual matrix: collapsing removes paint', () => {
       const sr = document.getElementById('subject')!.shadowRoot!;
       return {
         cards: sr.querySelectorAll('.org-node').length,
-        height: sr.querySelector('[part="tree"]')!.getBoundingClientRect().height,
+        height: sr.querySelector('[part~="tree"]')!.getBoundingClientRect().height,
       };
     });
 

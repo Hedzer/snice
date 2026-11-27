@@ -88,9 +88,25 @@ interface AudioRecording {
 | Part | Element | Description |
 |------|---------|-------------|
 | `base` | `<div>` | Outer recorder container |
-| `controls` | `<div>` | Recording and playback control buttons |
+| `status` | `<div>` | Status region (`role="status"`) |
+| `state` | `<div>` | State pill inside the status region |
+| `state-inactive` | `<div>` | Added to `state` while idle and during playback; `state-recording` and `state-paused` mirror the live state |
+| `state-icon` | `<div>` | Dot inside the state pill |
+| `state-label` | `<span>` | Text label inside the state pill |
+| `timer` | `<div>` | Elapsed/playback time readout |
 | `visualizer` | `<div>` | Audio frequency visualizer bar container |
+| `bar` | `<div>` | A single visualizer bar |
+| `controls` | `<div>` | Recording and playback control buttons |
+| `button` | `<button>` | Any control button |
+| `button-record` | `<button>` | Added to `button` on the record/resume button |
+| `button-pause` | `<button>` | Added to `button` on the pause button |
+| `button-play` | `<button>` | Added to `button` on the play button |
+| `button-stop` | `<button>` | Added to `button` on the stop button |
+| `button-cancel` | `<button>` | Added to `button` on the cancel button |
+| `icon` | `<svg>` | Glyph inside a control button |
 | `progress` | `<div>` | Playback progress bar (visible after recording) |
+| `fill` | `<div>` | Elapsed portion of the progress bar |
+| `error-text` | `<div>` | Error message |
 
 ```css
 snice-audio-recorder::part(base) {

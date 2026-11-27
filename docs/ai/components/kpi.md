@@ -33,6 +33,25 @@ colorValue: boolean = false;           // attr: color-value — apply sentiment 
 - `trend-icon` - Trend icon (up/down/neutral arrow)
 - `trend-value` - Trend value text
 - `sparkline` - Sparkline container
+- `base` - Main container (same node as `container`)
+- `sparkline-chart` - The internal `<snice-sparkline>` element
+
+State tokens:
+
+- `trend-up` - Added to `trend` while `sentiment` is `up`
+- `trend-down` - Added to `trend` while `sentiment` is `down`
+- `trend-neutral` - Added to `trend` while `sentiment` is `neutral`
+- `value-colored` - Added to `value` while `color-value` tints it by sentiment
+
+Forwarded from the internal `<snice-sparkline>` via `exportparts`:
+
+- `sparkline-base` - Exported `base` of the sparkline (same node as `sparkline-container`)
+- `sparkline-container` - Exported `container` of the sparkline
+- `sparkline-svg` - Exported `svg` of the sparkline
+- `sparkline-line` - Exported `line` of the sparkline
+- `sparkline-area` - Exported `area` of the sparkline
+- `sparkline-dot` - Exported `dot` of the sparkline
+- `sparkline-bar` - Exported `bar` of the sparkline
 
 ## Basic Usage
 

@@ -499,7 +499,9 @@ test.describe('file-upload visual matrix: marquee pixels', () => {
       return capture(
         page, '#subject', `file-upload-${invalid ? 'invalid' : 'valid'}`,
         `(host) => {
-          const area = host.shadowRoot.querySelector('[part="upload-area"]').getBoundingClientRect();
+          const area = [...host.shadowRoot.querySelectorAll('[part]')]
+            .find(n => (n.getAttribute('part') || '').split(/\\s+/).includes('upload-area'))
+            .getBoundingClientRect();
           const points = [];
           for (let x = 2; x < area.width - 2; x += 3) {
             points.push({ x: area.x + x, y: area.y + 1 });
@@ -526,7 +528,9 @@ test.describe('file-upload visual matrix: marquee pixels', () => {
       const [surface] = await capture(
         page, '#subject', `file-upload-${variant}`,
         `(host) => {
-          const area = host.shadowRoot.querySelector('[part="upload-area"]').getBoundingClientRect();
+          const area = [...host.shadowRoot.querySelectorAll('[part]')]
+            .find(n => (n.getAttribute('part') || '').split(/\\s+/).includes('upload-area'))
+            .getBoundingClientRect();
           return [{ x: area.x + 8, y: area.y + area.height - 8 }];
         }`,
       );

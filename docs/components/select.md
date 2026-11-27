@@ -98,19 +98,48 @@ A customizable dropdown selection with single/multiple selection, search filteri
 
 | Part | Description |
 |------|-------------|
+| `base` | The outer wrapper |
 | `label` | The label text |
-| `trigger` | The trigger button or input container |
-| `value` | The displayed value text |
+| `label-required` | Added to `label` while `required` is set |
+| `controls` | The editable-mode input row |
 | `input` | The editable-mode text input |
-| `arrow` | The dropdown arrow icon |
+| `input-disabled` / `input-open` / `input-invalid` | Added to `input` in the matching state |
+| `trigger` | The trigger button |
+| `trigger-disabled` / `trigger-loading` / `trigger-open` / `trigger-invalid` | Added to `trigger` in the matching state |
+| `value` | The displayed value container |
+| `placeholder` | The placeholder text |
+| `value-single` | The single-selection value wrapper |
+| `value-label` | The selected option label in single selection |
+| `value-icon` | The selected option icon in single selection |
+| `tags` | The multi-selection tag row |
+| `tag` | One selected-value tag |
+| `tag-icon` | The icon inside a tag |
+| `tag-remove` | The remove button inside a tag |
+| `icons` | The trigger icon cluster |
+| `clear-button` | The clear-selection button |
+| `arrow` | The dropdown arrow wrapper |
+| `icon` | Any inline SVG icon |
+| `arrow-icon` | Added to `icon` on the dropdown arrow |
+| `clear-icon` | Added to `icon` on the clear glyph |
 | `spinner` | The loading spinner |
 | `dropdown` | The dropdown container |
 | `search` | The search wrapper |
 | `search-input` | The search text input |
 | `options` | The options list container |
 | `option` | Individual option items |
+| `option-selected` / `option-disabled` | Added to `option` in the matching state |
+| `option-check` | The multi-select check slot in an option |
+| `option-check-mark` | The check glyph inside `option-check` |
+| `option-icon` | The option icon |
+| `option-label` | The option label text |
+| `loading-indicator` | The remote-search loading row |
+| `loading-spinner` | Added to `spinner` on the remote-search spinner |
+| `loading-text` | The remote-search loading text |
+| `empty` | The empty-state container |
+| `empty-text` | The empty-state message |
 | `helper-text` | Helper description below the control |
 | `error-text` | Error description below the control |
+| `dropdown-open` | Added to `dropdown` while open |
 
 ## Basic Usage
 

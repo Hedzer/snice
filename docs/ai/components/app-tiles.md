@@ -44,7 +44,15 @@ interface AppTile {
 ## CSS Parts
 
 - `base` - Root container
+- `tile` - A single tile button
+- `icon-container` - The tile's icon box (image, emoji, letter or ligature)
+- `image` - The tile icon image
 - `icon` - Material Symbols ligature icon span
+- `name` - Tile label
+- `badge-base` - Exported `base` of the internal badge (tiles with a `badge`)
+- `badge-badge` - Exported `badge` of the internal badge
+- `badge-badge-dot` - Exported `badge-dot` of the internal badge (badge while `dot` is set)
+- `badge-badge-pulse` - Exported `badge-pulse` of the internal badge (badge while `pulse` is set)
 
 ## Basic Usage
 

@@ -37,12 +37,12 @@ export class SniceCellStatus extends HTMLElement implements SniceCellElement {
     const statusValue = this.status || this.value;
     const statusLabel = this.label || statusValue;
     const statusVariant = this.getStatusVariant(statusValue);
-    const dotHTML = this.showDot ? `<span class="status-dot status-dot--${statusVariant}"></span>` : '';
+    const dotHTML = this.showDot ? `<span class="status-dot status-dot--${statusVariant}" part="dot"></span>` : '';
 
     return html/*html*/`
       <div class="cell-content cell-content--status" part="content">
         ${unsafeHTML(dotHTML)}
-        <span class="status-label status-label--${statusVariant}">${statusLabel}</span>
+        <span class="status-label status-label--${statusVariant}" part="status">${statusLabel}</span>
       </div>
     `;
   }

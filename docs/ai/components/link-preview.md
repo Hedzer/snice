@@ -24,6 +24,16 @@ size: 'small'|'medium'|'large' = 'medium';
 - `base` - Outer preview card container
 - `content` - Text content area (title, description, footer)
 - `title` - Title text element
+- `media` - Image/placeholder area above the content
+- `image` - The preview `<img>` (when `image` is set)
+- `placeholder` - Fallback box shown when no `image` is set
+- `icon` - Placeholder link glyph
+- `description` - Description paragraph
+- `footer` - Footer row (favicon, site name, domain)
+- `favicon` - Favicon image in the footer
+- `site-name` - Site name text in the footer
+- `separator` - Dot between site name and domain
+- `domain` - Domain text in the footer
 
 ## Basic Usage
 

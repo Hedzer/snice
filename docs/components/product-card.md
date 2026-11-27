@@ -52,23 +52,59 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | Part | Element | Description |
 |------|---------|-------------|
 | `base` | `<div>` | The outer card container |
+| `base-skeleton` | `<div>` | Added to `base` while the card renders its loading skeleton |
 | `gallery` | `<div>` | Image gallery area |
+| `gallery-images` | `<div>` | Image stack wrapper inside the gallery |
+| `gallery-images-empty` | `<div>` | Added to `gallery-images` when no images are supplied |
+| `image` | `<img>` | Gallery image element |
+| `image-active` | `<img>` | Added to `image` for the visible image |
+| `gallery-gradient` | `<div>` | Featured-variant overlay gradient |
+| `gallery-nav` | `<button>` | Gallery navigation arrow |
+| `gallery-nav-prev` | `<button>` | Added to `gallery-nav` on the previous arrow |
+| `gallery-nav-next` | `<button>` | Added to `gallery-nav` on the next arrow |
+| `gallery-dots` | `<div>` | Gallery pagination dots container |
+| `gallery-dot` | `<button>` | Individual gallery dot |
+| `gallery-dot-active` | `<button>` | Added to `gallery-dot` for the visible image |
+| `badge` | `<span>` | Product badge |
+| `favorite-btn` | `<button>` | Favorite/heart button |
+| `favorite-icon` | `<svg>` | Heart glyph inside the favorite button |
+| `favorite-icon-active` | `<svg>` | Added to `favorite-icon` while favorited |
+| `favorite-icon-animate` | `<svg>` | Added to `favorite-icon` while the favorite toggle animation plays |
+| `quick-view` | `<button>` | Quick view button |
+| `quick-view-label` | `<span>` | Quick view button label wrapper |
+| `quick-view-icon` | `<svg>` | Quick view button glyph |
 | `body` | `<div>` | Card body content |
 | `title` | `<h3>` | Product name heading |
 | `rating` | `<div>` | Star rating area |
 | `stars` | `<div>` | Star rating container |
+| `star` | `<svg>` | Individual rating star |
+| `star-filled` | `<svg>` | Added to `star` for a filled star |
+| `star-half` | `<svg>` | Added to `star` for a half star |
+| `star-empty` | `<svg>` | Added to `star` for an empty star |
+| `review-count` | `<span>` | Review count text |
 | `price` | `<div>` | Price display area |
 | `price-current` | `<span>` | Current price display |
+| `price-current-sale` | `<span>` | Added to `price-current` while a sale price applies |
 | `price-original` | `<span>` | Original price (strikethrough on sale) |
 | `discount` | `<span>` | Discount percentage badge |
 | `stock` | `<div>` | Stock status indicator |
+| `stock-in` | `<div>` | Added to `stock` while in stock |
+| `stock-out` | `<div>` | Added to `stock` while out of stock |
+| `stock-dot` | `<span>` | Stock status dot |
+| `stock-urgency` | `<span>` | Low stock urgency text |
 | `variants` | `<div>` | Variant selectors area |
 | `variant-group` | `<div>` | Variant selector group |
+| `variant-label` | `<span>` | Variant group label |
+| `variant-options` | `<div>` | Variant option buttons container |
 | `variant-option` | `<button>` | Individual variant option button |
+| `variant-option-color` | `<button>` | Added to `variant-option` for colour swatches |
+| `variant-option-selected` | `<button>` | Added to `variant-option` for the selected option |
 | `cta` | `<button>` | Add-to-cart button |
-| `badge` | `<span>` | Product badge |
-| `favorite-btn` | `<button>` | Favorite/heart button |
-| `image` | `<img>` | Gallery image element |
+| `cta-loading` | `<button>` | Added to `cta` while the card is loading |
+| `cta-icon` | `<svg>` | Add-to-cart button glyph |
+| `spinner` | `<span>` | Add-to-cart loading spinner |
+| `skeleton-image` | `<div>` | Skeleton gallery placeholder |
+| `skeleton-line` | `<div>` | Skeleton text placeholder line |
 
 ## Basic Usage
 

@@ -534,8 +534,10 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
 
   private renderEmptyState() {
     return html/*html*/`
-      <div style="padding: 2rem;">
+      <div style="padding: 2rem;" part="empty">
         <snice-empty-state 
+          part="empty-state"
+          exportparts="base: empty-state-base, container: empty-state-container, icon: empty-state-icon, title: empty-state-title, description: empty-state-description, action: empty-state-action, extra: empty-state-extra"
           icon="💬" 
           title="No messages yet" 
           description="Start the conversation!"
@@ -566,7 +568,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
 
   private renderMessageBody(message: ChatMessage) {
     if (this.shouldRenderMarkdown(message)) {
-      return html/*html*/`<snice-markdown part="message-text" class="message-text" .content=${message.content}></snice-markdown>`;
+      return html/*html*/`<snice-markdown part="message-text" exportparts="base: message-text-base" class="message-text" .content=${message.content}></snice-markdown>`;
     }
 
     return html/*html*/`<div part="message-text" class="message-text">${message.content}</div>`;
@@ -579,7 +581,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
     if (isSystem) {
       return html/*html*/`
         <div part="message system-message" class="message system" data-message-id="${message.id}">
-          <div class="message-content">
+          <div class="message-content" part="message-content">
             <div part="message-text" class="message-text">${message.content}</div>
           </div>
         </div>
@@ -600,13 +602,13 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
           ? html`
               <div part="avatar" class="message-avatar">
                 ${message.avatar
-                  ? html`<img src="${message.avatar}" alt="${message.author}" />`
+                  ? html`<img src="${message.avatar}" alt="${message.author}" part="avatar-image" />`
                   : getInitials(message.author)}
               </div>
             `
           : ''}
-        <div class="message-content">
-          <div class="message-header">
+        <div class="message-content" part="message-content">
+          <div class="message-header" part="message-header">
             <span part="author" class="message-author" style="${authorStyle}">${message.author}</span>
             ${this.showTimestamps
               ? html`<span part="timestamp" class="message-timestamp">${formatTime(message.timestamp)}</span>`
@@ -629,14 +631,14 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   // Shift+Enter newlines, Esc cancels.
   private renderEditor(message: ChatMessage) {
     return html/*html*/`
-      <div class="message-edit">
+      <div class="message-edit" part="edit">
         <textarea
           part="edit-input"
           class="edit-field"
           .value=${message.content}
           @keydown=${(e: KeyboardEvent) => this.handleEditKeydown(e, message.id)}
         ></textarea>
-        <div class="edit-actions">
+        <div class="edit-actions" part="edit-actions">
           <button part="edit-save" class="edit-button edit-save" @click=${() => this.commitEdit(message.id)}>Save</button>
           <button part="edit-cancel" class="edit-button" @click=${() => this.cancelEdit()}>Cancel</button>
         </div>
@@ -649,8 +651,8 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   private renderDeleteConfirm(message: ChatMessage) {
     return html/*html*/`
       <div part="delete-confirm" class="message-confirm">
-        <span class="confirm-text">Delete this message?</span>
-        <div class="confirm-actions">
+        <span class="confirm-text" part="delete-confirm-text">Delete this message?</span>
+        <div class="confirm-actions" part="delete-confirm-actions">
           <button part="delete-confirm-yes" class="confirm-button confirm-delete" @click=${() => this.confirmDelete(message.id)}>Delete</button>
           <button part="delete-confirm-no" class="confirm-button" @click=${() => this.cancelDelete()}>Cancel</button>
         </div>
@@ -663,15 +665,15 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   private renderActions(messageId: string, isCurrentUser: boolean) {
     return html/*html*/`
       <div part="actions" class="message-actions">
-        <button class="action-button" @click=${() => this.handleReaction(messageId, '👍')} title="React" aria-label="React">
-          <span class="action-emoji" aria-hidden="true">🙂</span>
+        <button class="action-button" part="action-button react-action" @click=${() => this.handleReaction(messageId, '👍')} title="React" aria-label="React">
+          <span class="action-emoji" part="action-emoji" aria-hidden="true">🙂</span>
         </button>
         ${isCurrentUser
           ? html`
-              <button class="action-button" @click=${() => this.startEdit(messageId)} title="Edit" aria-label="Edit message">
+              <button class="action-button" part="action-button edit-action" @click=${() => this.startEdit(messageId)} title="Edit" aria-label="Edit message">
                 ${unsafeHTML(PENCIL)}
               </button>
-              <button class="action-button" @click=${() => this.handleDelete(messageId)} title="Delete" aria-label="Delete message">
+              <button class="action-button" part="action-button delete-action" @click=${() => this.handleDelete(messageId)} title="Delete" aria-label="Delete message">
                 ${unsafeHTML(TRASH)}
               </button>
             `
@@ -686,25 +688,25 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
     if (attachment.type === 'image') {
       return html/*html*/`
         <div part="attachment" class="message-attachment">
-          <img src="${attachment.url}" alt="${attachment.name}" />
+          <img src="${attachment.url}" alt="${attachment.name}" part="attachment-image" />
         </div>
       `;
     }
 
     return html/*html*/`
       <div part="attachment" class="message-attachment">
-        <div class="attachment-file">
-          <div class="attachment-icon">
-            <svg viewBox="0 0 16 16" fill="currentColor">
+        <div class="attachment-file" part="attachment-file">
+          <div class="attachment-icon" part="attachment-icon">
+            <svg viewBox="0 0 16 16" fill="currentColor" part="attachment-icon-glyph">
               <path
                 d="M3.5 1.75a.25.25 0 0 1 .25-.25h3.5a.75.75 0 0 0 0 1.5h.75a.25.25 0 0 1 .25.25v2.75a.75.75 0 0 0 1.5 0V2.25c0-.69-.56-1.25-1.25-1.25h-.75c0-.69-.56-1.25-1.25-1.25h-4c-.69 0-1.25.56-1.25 1.25v11.5c0 .69.56 1.25 1.25 1.25h8.5c.69 0 1.25-.56 1.25-1.25V6.25a.75.75 0 0 0-1.5 0v7.5a.25.25 0 0 1-.25.25h-8.5a.25.25 0 0 1-.25-.25V1.75z"
               />
             </svg>
           </div>
-          <div class="attachment-info">
-            <div class="attachment-name">${attachment.name}</div>
+          <div class="attachment-info" part="attachment-info">
+            <div class="attachment-name" part="attachment-name">${attachment.name}</div>
             ${attachment.size
-              ? html`<div class="attachment-size">${formatFileSize(attachment.size)}</div>`
+              ? html`<div class="attachment-size" part="attachment-size">${formatFileSize(attachment.size)}</div>`
               : ''}
           </div>
         </div>
@@ -724,12 +726,12 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
           const isActive = reaction.users.includes(this.currentUser);
           return html`
             <div
-              part="reaction ${isActive ? 'reaction-active' : ''}"
+              part="reaction${isActive ? ' reaction-active' : ''}"
               class="reaction ${isActive ? 'active' : ''}"
               @click="${() => this.handleReaction(messageId, reaction.emoji)}"
             >
-              <span class="reaction-emoji">${reaction.emoji}</span>
-              <span class="reaction-count">${reaction.count}</span>
+              <span class="reaction-emoji" part="reaction-emoji">${reaction.emoji}</span>
+              <span class="reaction-count" part="reaction-count">${reaction.count}</span>
             </div>
           `;
         })}
@@ -742,13 +744,13 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
     if (users.length === 0) return '';
 
     return html/*html*/`
-      <div class="typing-indicators">
+      <div class="typing-indicators" part="typing-indicators">
         <div part="typing-indicator" class="typing-indicator">
           <span>${users.map((u) => u.user).join(', ')} ${users.length === 1 ? 'is' : 'are'} typing</span>
-          <div class="typing-dots">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
+          <div class="typing-dots" part="typing-dots">
+            <div class="typing-dot" part="typing-dot"></div>
+            <div class="typing-dot" part="typing-dot"></div>
+            <div class="typing-dot" part="typing-dot"></div>
           </div>
         </div>
       </div>
@@ -767,11 +769,12 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
             @focus="${() => this.adjustTextareaHeight()}"
             rows="1"
           ></textarea>
-          <div class="input-buttons">
+          <div class="input-buttons" part="input-buttons">
             ${this.allowFiles
               ? html`
                   <button
                     class="input-button"
+                    part="input-button attach-button"
                     @click="${() => this.handleFileClick()}"
                     title="Attach file"
                   >
@@ -779,7 +782,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
                   </button>
                 `
               : ''}
-            <button class="input-button send" @click="${() => this.sendMessage()}" title="Send">
+            <button class="input-button send" part="input-button send-button" @click="${() => this.sendMessage()}" title="Send">
               ${unsafeHTML(PAPER_AIRPLANE_SOLID)}
             </button>
           </div>

@@ -25,6 +25,31 @@ readonly: boolean = false;
 ## CSS Parts
 
 - `base` - Outer container
+- `empty` - Message shown when no roles or permissions are configured
+- `table` - The permission grid
+- `table-header` - Grid header section
+- `table-body` - Grid body section
+- `table-row` - Any header or role row
+- `table-cell` - Any header or body cell
+- `header-cell` - Added to `table-cell` on header cells
+- `role-header-cell` - Added to `header-cell` on the leading Role column header
+- `permission-header-cell` - Added to `header-cell` on a permission column header
+- `permission-header` - Permission header content wrapper
+- `permission-name` - Permission name text
+- `permission-description` - Permission description text
+- `role-cell` - Added to `table-cell` on the leading role cell of a row
+- `role-name` - Role name text
+- `role-description` - Role description text
+- `permission-cell` - Added to `table-cell` on a role/permission intersection cell
+- `indicator` - Read-only grant indicator
+- `indicator-granted` - Added to `indicator` when the permission is granted
+- `indicator-denied` - Added to `indicator` when the permission is not granted
+- `icon` - Read-only indicator glyph
+- `check-icon` - Added to `icon` on the granted check mark
+- `dash-icon` - Added to `icon` on the not-granted dash
+- `input` - Editable grant checkbox
+- `checkbox` - Added to `input` on the grant checkbox
+- `checkbox-checked` - Added to `checkbox` while the permission is granted
 
 ## Basic Usage
 

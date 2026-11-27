@@ -82,6 +82,7 @@ These attributes are set on child elements (not on `<snice-grid>` itself):
 | Part | Description |
 |------|-------------|
 | `base` | The inner container element |
+| `drop-placeholder` | The drop target indicator shown while an item is dragged |
 
 ## Basic Usage
 

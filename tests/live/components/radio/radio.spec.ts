@@ -65,10 +65,13 @@ test.describe('Snice Radio full showcase', () => {
           wrapper: Boolean(radio.shadowRoot!.querySelector('.radio-wrapper--block')),
           content: Boolean(radio.shadowRoot!.querySelector('[part="content"]'))
         })),
+        // Token-exact: `input`, `radio` and `label` each carry state tokens
+        // (`input-checked`, `radio-invalid`, `label-required`, …), so the part
+        // list is matched by token — `~=` — never by whole-attribute equality.
         parts: radios.every(radio =>
-          radio.shadowRoot!.querySelector('[part="input"]')
-          && radio.shadowRoot!.querySelector('[part="radio"]')
-          && (!radio.getAttribute('label') || radio.shadowRoot!.querySelector('[part="label"]'))
+          radio.shadowRoot!.querySelector('[part~="input"]')
+          && radio.shadowRoot!.querySelector('[part~="radio"]')
+          && (!radio.getAttribute('label') || radio.shadowRoot!.querySelector('[part~="label"]'))
         ),
         formDemo: Boolean(document.querySelector('#radio-showcase-form')),
         eventDemo: Boolean(document.querySelector('#radio-showcase-event-a')),

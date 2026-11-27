@@ -66,11 +66,11 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
     const isDisabled = this.disabled || this.loading;
 
     return html/*html*/`
-      <div class="${classes}" part="base">
+      <div class="${classes}" part="base${this.loading ? ' base-loading' : ''}">
         <button
           type="button"
           class="split-button__primary"
-          part="primary"
+          part="primary${isDisabled ? ' primary-disabled' : ''}"
           ?disabled="${isDisabled}"
           @click="${(e: MouseEvent) => this.handlePrimaryClick(e)}">
           <if ${this.loading}>
@@ -79,7 +79,7 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
           <if ${!this.loading && this.icon && this.iconPlacement === 'start'}>
             ${iconHtml}
           </if>
-          <span class="split-button__label"><slot>${this.label}</slot></span>
+          <span class="split-button__label" part="label"><slot>${this.label}</slot></span>
           <if ${!this.loading && this.icon && this.iconPlacement === 'end'}>
             ${iconHtml}
           </if>
@@ -90,14 +90,14 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
         <button
           type="button"
           class="split-button__toggle"
-          part="toggle"
+          part="toggle${isDisabled ? ' toggle-disabled' : ''}"
           aria-haspopup="true"
           aria-expanded="false"
           aria-label="More actions"
           ?disabled="${isDisabled}"
           @click="${(e: MouseEvent) => this.handleToggleClick(e)}">
-          <span class="split-button__arrow">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+          <span class="split-button__arrow" part="arrow">
+            <svg part="arrow-icon" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
               <path d="M6 9L1 4h10L6 9z"/>
             </svg>
           </span>
@@ -122,9 +122,9 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
         role="menuitem"
         ?disabled="${action.disabled}"
         ${action.disabled ? 'disabled' : ''}
-        part="action">
-        <img class="split-button__action-icon" src="${action.icon || ''}" alt="" ${!action.icon ? 'hidden' : ''} />
-        <span class="split-button__action-label">${action.label}</span>
+        part="action${action.disabled ? ' action-disabled' : ''}">
+        <img class="split-button__action-icon" part="action-icon" src="${action.icon || ''}" alt="" ${!action.icon ? 'hidden' : ''} />
+        <span class="split-button__action-label" part="action-label">${action.label}</span>
       </button>
     `).join('');
   }

@@ -79,30 +79,48 @@ A dropdown menu with composable items, dividers, icons, and keyboard shortcut hi
 
 ## CSS Parts
 
+Style internal elements from outside the shadow DOM using `::part()`.
+
 ### snice-menu
 
 | Part | Element | Description |
 |------|---------|-------------|
+| `base` | `<div>` | The menu root wrapper |
 | `trigger` | `<div>` | The trigger wrapper element |
 | `image-left` | `<span>` | Left image container |
 | `image-right` | `<span>` | Right image container |
 | `panel` | `<div>` | The dropdown panel |
 | `content` | `<div>` | Panel content wrapper |
 
+State tokens are added alongside the base token, so they are matched with
+`::part(panel panel-open)`.
+
+| Token | Description |
+|-------|-------------|
+| `trigger-open` | Added to `trigger` while the menu is open |
+| `panel-open` | Added to `panel` while the menu is open |
+
 ### snice-menu-item
 
 | Part | Element | Description |
 |------|---------|-------------|
 | `item` | `<div>` | The menu item container |
+| `base` | `<div>` | The same element as `item`, the item's root wrapper |
 | `icon` | `<span>` | Icon wrapper |
 | `label` | `<span>` | Label wrapper |
 | `shortcut` | `<span>` | Keyboard shortcut wrapper |
+
+| Token | Description |
+|-------|-------------|
+| `item-selected` | Added to `item` while the item is selected |
+| `item-disabled` | Added to `item` while the item is disabled |
 
 ### snice-menu-divider
 
 | Part | Element | Description |
 |------|---------|-------------|
 | `divider` | `<div>` | The separator line |
+| `base` | `<div>` | The same element as `divider`, the divider's root wrapper |
 
 ## CSS Custom Properties
 

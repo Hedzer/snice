@@ -93,6 +93,7 @@ A shell terminal emulator with command execution, history navigation, and ANSI c
 
 | Part | Description |
 |------|-------------|
+| `base` | The terminal container (same element as `container`) |
 | `container` | The terminal container |
 | `output` | The scrollable output area |
 | `input-line` | The input line wrapper |
@@ -101,6 +102,13 @@ A shell terminal emulator with command execution, history navigation, and ANSI c
 | `line` | Individual output line |
 | `timestamp` | Line timestamp |
 | `line-content` | Line text content |
+| `line-input` | Added to `line` for an echoed command line |
+| `line-output` | Added to `line` for an output line |
+| `line-error` | Added to `line` for an error line |
+| `line-info` | Added to `line` for an info line |
+| `line-success` | Added to `line` for a success line |
+| `line-warning` | Added to `line` for a warning line |
+| `ansi` | Each span an ANSI colour escape opens inside `line-content` |
 
 ## Basic Usage
 

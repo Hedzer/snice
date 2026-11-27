@@ -68,7 +68,58 @@ Style internal elements from outside the shadow DOM using `::part()`.
 |------|---------|-------------|
 | `base` | `<div>` | Outer player container |
 | `info` | `<div>` | Artwork and episode metadata section |
-| `controls` | `<div>` | Playback controls, skip buttons, and progress bar |
+| `artwork` | `<div>` | Episode artwork frame |
+| `artwork-image` | `<img>` | Episode artwork image |
+| `artwork-placeholder` | `<div>` | Placeholder shown when no artwork is set |
+| `icon` | `<svg>` | Any icon inside a control or placeholder |
+| `artwork-icon` | `<svg>` | Added to `icon` on the artwork placeholder glyph |
+| `meta` | `<div>` | Show, title, and description column |
+| `show` | `<div>` | Show name |
+| `title` | `<div>` | Episode title |
+| `description` | `<div>` | Episode description |
+| `controls` | `<div>` | Playback controls and progress bar |
+| `control-buttons` | `<div>` | Row of transport buttons |
+| `button` | `<button>` | Every control button |
+| `speed-button` | `<button>` | Added to `button` on the playback speed control |
+| `speed-button-active` | `<button>` | Added to `speed-button` while the rate is not 1x |
+| `skip-back-button` | `<button>` | Added to `button` on the skip-backward control |
+| `skip-forward-button` | `<button>` | Added to `button` on the skip-forward control |
+| `skip-label` | `<span>` | Seconds label on a skip button |
+| `play-button` | `<button>` | Added to `button` on the play/pause control |
+| `sleep-button` | `<button>` | Added to `button` on the sleep timer control |
+| `sleep-button-active` | `<button>` | Added to `sleep-button` while a sleep timer runs |
+| `progress-container` | `<div>` | Times, seek bar, and volume row |
+| `time` | `<span>` | A time readout |
+| `time-current` | `<span>` | Added to `time` on the elapsed readout |
+| `time-remaining` | `<span>` | Added to `time` on the remaining readout |
+| `progress` | `<div>` | Seek bar track |
+| `progress-bar` | `<div>` | Played portion of the seek bar |
+| `volume` | `<div>` | Volume control wrapper |
+| `volume-button` | `<button>` | Added to `button` on the volume control |
+| `volume-slider-container` | `<div>` | Volume slider popover |
+| `volume-slider` | `<input>` | Volume range input |
+| `bottom-bar` | `<div>` | Sleep timer bar |
+| `sleep` | `<div>` | Sleep timer readout wrapper |
+| `sleep-label` | `<span>` | Sleep timer label |
+| `sleep-time` | `<span>` | Remaining sleep time |
+| `chapters` | `<div>` | Chapter list section |
+| `chapters-header` | `<div>` | Chapter list heading |
+| `chapter` | `<div>` | Chapter row |
+| `chapter-active` | `<div>` | Added to `chapter` for the chapter being played |
+| `chapter-time` | `<span>` | Chapter start time |
+| `chapter-title` | `<span>` | Chapter title |
+| `episodes` | `<div>` | Episode list section |
+| `episodes-header` | `<div>` | Episode list heading |
+| `episode-list` | `<div>` | Episode rows container |
+| `episode` | `<div>` | Episode row |
+| `episode-active` | `<div>` | Added to `episode` for the loaded episode |
+| `episode-artwork` | `<img>` | Episode row artwork |
+| `episode-info` | `<div>` | Episode row text column |
+| `episode-title` | `<div>` | Episode row title |
+| `episode-date` | `<div>` | Episode publication date |
+| `episode-playing-icon` | `<div>` | Animated now-playing indicator |
+| `episode-playing-bar` | `<span>` | One equaliser bar inside `episode-playing-icon` |
+| `episode-duration` | `<div>` | Episode duration |
 
 ```css
 snice-podcast-player::part(base) {

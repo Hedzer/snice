@@ -39,7 +39,7 @@ export class SniceCellPhone extends HTMLElement implements SniceCellElement {
   render() {
     const phoneNumber = this.phone || this.value;
     const displayText = this.displayText || (this.format ? this.formatPhoneNumber(phoneNumber) : phoneNumber);
-    const iconHTML = this.showIcon ? '<span class="phone-icon">📞</span>' : '';
+    const iconHTML = this.showIcon ? '<span class="phone-icon" part="icon">📞</span>' : '';
 
     if (!phoneNumber) {
       return html/*html*/`

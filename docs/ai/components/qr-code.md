@@ -38,6 +38,12 @@ textOutlineColor: string = '#ffffff';             // attr: text-outline-color
 ## CSS Parts
 
 - `base` - QR code container div
+- `canvas` - Generated `<canvas>` (canvas render mode), tagged after generation
+- `svg` - Generated `<svg>` (svg render mode), tagged after generation
+- `center-image` - Centre logo `<image>` overlay in svg render mode
+- `center-text` - Centre text `<text>` node in svg render mode
+- `center-text-outline` - Added to `center-text` on the stroked outline copy
+- `center-text-fill` - Added to `center-text` on the filled copy
 
 ## Basic Usage
 

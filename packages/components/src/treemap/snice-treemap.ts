@@ -300,7 +300,7 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     this.rects = this.computeRects();
 
     let svg = '';
-    svg += `<svg class="treemap__svg" viewBox="0 0 ${this.width} ${this.height}" preserveAspectRatio="none">`;
+    svg += `<svg part="svg" class="treemap__svg" viewBox="0 0 ${this.width} ${this.height}" preserveAspectRatio="none">`;
 
     for (let i = 0; i < this.rects.length; i++) {
       svg += this.buildRectGroup(this.rects[i], i);
@@ -354,15 +354,15 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
 
     let parts = '';
 
-    parts += `<rect class="treemap__rect" data-index="${index}" x="${rect.x}" y="${rect.y}" width="${rect.width}" height="${rect.height}" fill="${color}" />`;
-    parts += `<rect class="treemap__rect-stroke" x="${rect.x}" y="${rect.y}" width="${rect.width}" height="${rect.height}" />`;
+    parts += `<rect part="tile" class="treemap__rect" data-index="${index}" x="${rect.x}" y="${rect.y}" width="${rect.width}" height="${rect.height}" fill="${color}" />`;
+    parts += `<rect part="tile-border" class="treemap__rect-stroke" x="${rect.x}" y="${rect.y}" width="${rect.width}" height="${rect.height}" />`;
 
     if (showLabel) {
-      parts += `<text class="treemap__label" x="${cx}" y="${labelY}" style="font-size: ${fontSize}px">${escapeHtml(rect.node.label)}</text>`;
+      parts += `<text part="label" class="treemap__label" x="${cx}" y="${labelY}" style="font-size: ${fontSize}px">${escapeHtml(rect.node.label)}</text>`;
     }
 
     if (showValue) {
-      parts += `<text class="treemap__value" x="${cx}" y="${valueY}">${escapeHtml(sumValues(rect.node).toLocaleString())}</text>`;
+      parts += `<text part="value" class="treemap__value" x="${cx}" y="${valueY}">${escapeHtml(sumValues(rect.node).toLocaleString())}</text>`;
     }
 
     return parts;
@@ -400,18 +400,18 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     el.style.display = '';
     let html = '';
 
-    html += `<button class="treemap__breadcrumb" data-drill-root>${escapeHtml(this.cachedData.label || 'Root')}</button>`;
+    html += `<button part="breadcrumb breadcrumb-root" class="treemap__breadcrumb" data-drill-root>${escapeHtml(this.cachedData.label || 'Root')}</button>`;
 
     for (let i = 0; i < this.drillPathState.length; i++) {
       const node = this.drillPathState[i];
       const isLast = i === this.drillPathState.length - 1;
 
-      html += '<span class="treemap__separator">/</span>';
+      html += '<span part="separator" class="treemap__separator">/</span>';
 
       if (isLast) {
-        html += `<span class="treemap__breadcrumb treemap__breadcrumb--current">${escapeHtml(node.label)}</span>`;
+        html += `<span part="breadcrumb breadcrumb-current" class="treemap__breadcrumb treemap__breadcrumb--current">${escapeHtml(node.label)}</span>`;
       } else {
-        html += `<button class="treemap__breadcrumb" data-drill-index="${i}">${escapeHtml(node.label)}</button>`;
+        html += `<button part="breadcrumb" class="treemap__breadcrumb" data-drill-index="${i}">${escapeHtml(node.label)}</button>`;
       }
     }
 

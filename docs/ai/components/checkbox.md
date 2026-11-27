@@ -96,10 +96,24 @@ checkbox.addEventListener('checkbox-change', event => {
 
 ## CSS Parts
 
+- `base` - outer `<label>` wrapper
 - `input` - native checkbox input
 - `checkbox` - visual checkbox
 - `spinner` - loading spinner
 - `label` - label text
+- `icon` - check/indeterminate `<svg>` glyph
+- `icon-check` - Added to `icon` on the checkmark glyph
+- `icon-indeterminate` - Added to `icon` on the dash glyph
+- `base-disabled` - Added to `base` while interaction is disabled
+- `base-loading` - Added to `base` while loading
+- `checkbox-invalid` - Added to `checkbox` while invalid
+- `checkbox-indeterminate` - Added to `checkbox` while indeterminate
+- `checkbox-loading` - Added to `checkbox` while loading
+- `label-required` - Added to `label` while required
+- `base-checked` - Added to `base` while checked
+- `base-indeterminate` - Added to `base` while indeterminate
+- `checkbox-checked` - Added to `checkbox` while checked
+- `ripple` - Hidden Material 3 state-layer ripple helper (`data-platform-only="material"`)
 
 ## Keyboard/accessibility
 

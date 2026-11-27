@@ -55,21 +55,21 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
     const defaultSvg = DEFAULT_BANNER_ICONS[this.variant];
 
     return html/*html*/`
-      <div class="${bannerClasses}" role="alert" aria-label="${this.label || `${this.variant} banner`}" part="banner">
+      <div class="${bannerClasses}" role="alert" aria-label="${this.label || `${this.variant} banner`}" part="banner base">
         <span class="banner__icon-slot" part="icon">
           <slot name="icon">
             <if ${this.icon}>
               ${renderIcon(this.icon, 'banner__icon')}
             </if>
             <if ${!this.icon && defaultSvg}>
-              <span class="banner__icon" aria-hidden="true">${unsafeHTML(defaultSvg)}</span>
+              <span class="banner__icon" part="icon-content" aria-hidden="true">${unsafeHTML(defaultSvg)}</span>
             </if>
           </slot>
         </span>
 
         <span class="banner__message" part="message">${this.message}</span>
 
-        <div class="banner__slot">
+        <div class="banner__slot" part="content">
           <slot></slot>
         </div>
 
@@ -89,7 +89,7 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
             type="button"
             aria-label="Close"
             @click=${this.handleClose}
-          ><span class="banner__close-icon" aria-hidden="true">${unsafeHTML(X_MARK)}</span></button>
+          ><span class="banner__close-icon" part="close-icon" aria-hidden="true">${unsafeHTML(X_MARK)}</span></button>
         </if>
       </div>
     `;

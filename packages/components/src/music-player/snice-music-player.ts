@@ -190,18 +190,20 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
   renderPlayer() {
     const currentTrack = this.getCurrentTrack();
     const progress = this.duration > 0 ? (this.currentTime / this.duration) * 100 : 0;
+    const isPlaying = this.state === 'playing';
+    const repeatOn = this.repeat !== 'off';
 
     return html/*html*/`
-      <div part="base" class="player-container ${this.compact ? 'player-container--compact' : ''}">
+      <div part="base${this.compact ? ' base-compact' : ''}" class="player-container ${this.compact ? 'player-container--compact' : ''}">
         <if ${this.showArtwork || this.showTrackInfo}>
-          <div class="player-info">
+          <div class="player-info" part="info">
             <if ${this.showArtwork}>
-              <div class="player-artwork">
+              <div class="player-artwork" part="artwork">
                 <if ${currentTrack?.artwork}>
-                  <img src="${currentTrack?.artwork}" alt="${currentTrack?.title || 'Track artwork'}" />
+                  <img part="artwork-image" src="${currentTrack?.artwork}" alt="${currentTrack?.title || 'Track artwork'}" />
                 </if>
                 <if ${!currentTrack?.artwork}>
-                  <div class="player-artwork-placeholder">
+                  <div class="player-artwork-placeholder" part="artwork-placeholder">
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <circle cx="12" cy="12" r="10"></circle>
                       <circle cx="12" cy="12" r="3"></circle>
@@ -212,21 +214,21 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
             </if>
 
             <if ${this.showTrackInfo}>
-              <div class="player-track-info">
+              <div class="player-track-info" part="track-info">
                 <if ${currentTrack?.trackUrl}>
-                  <a class="player-track-title is-linked" href="${currentTrack?.trackUrl}" target="_blank" rel="noopener noreferrer">${currentTrack?.title || 'No track loaded'}</a>
+                  <a class="player-track-title is-linked" part="track-title track-title-link" href="${currentTrack?.trackUrl}" target="_blank" rel="noopener noreferrer">${currentTrack?.title || 'No track loaded'}</a>
                 </if>
                 <if ${!currentTrack?.trackUrl}>
-                  <div class="player-track-title">${currentTrack?.title || 'No track loaded'}</div>
+                  <div class="player-track-title" part="track-title">${currentTrack?.title || 'No track loaded'}</div>
                 </if>
                 <if ${currentTrack?.artist && currentTrack?.artistUrl}>
-                  <a class="player-track-artist is-linked" href="${currentTrack?.artistUrl}" target="_blank" rel="noopener noreferrer">${currentTrack?.artist}</a>
+                  <a class="player-track-artist is-linked" part="track-artist track-artist-link" href="${currentTrack?.artistUrl}" target="_blank" rel="noopener noreferrer">${currentTrack?.artist}</a>
                 </if>
                 <if ${currentTrack?.artist && !currentTrack?.artistUrl}>
-                  <div class="player-track-artist">${currentTrack?.artist}</div>
+                  <div class="player-track-artist" part="track-artist">${currentTrack?.artist}</div>
                 </if>
                 <if ${currentTrack?.album}>
-                  <div class="player-track-album">${currentTrack?.album}</div>
+                  <div class="player-track-album" part="track-album">${currentTrack?.album}</div>
                 </if>
               </div>
             </if>
@@ -235,42 +237,45 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
 
         <if ${this.showControls}>
           <div part="controls" class="player-controls">
-            <div class="player-control-buttons">
+            <div class="player-control-buttons" part="control-buttons">
               <button
                 class="player-btn player-btn-shuffle ${this.shuffle ? 'active' : ''}"
+                part="button shuffle-button${this.shuffle ? ' button-active' : ''}"
                 @click=${() => this.toggleShuffle()}
                 aria-label="Shuffle"                title="Shuffle"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg part="icon shuffle-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
                 </svg>
               </button>
 
               <button
                 class="player-btn player-btn-prev"
+                part="button prev-button"
                 @click=${() => this.previous()}
                 aria-label="Previous"                title="Previous"
                 ?disabled=${this.tracks.length === 0}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <svg part="icon prev-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
                 </svg>
               </button>
 
               <button
                 class="player-btn player-btn-play-pause ${this.state === 'playing' ? 'playing' : ''}"
+                part="button play-button${isPlaying ? ' button-playing' : ''}"
                 @click=${() => this.state === 'playing' ? this.pause() : this.play()}
                 aria-label="${this.state === 'playing' ? 'Pause' : 'Play'}"                title="${this.state === 'playing' ? 'Pause' : 'Play'}"
                 ?disabled=${this.tracks.length === 0}
               >
                 <if ${this.state === 'playing'}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                  <svg part="icon play-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
                     <rect x="6" y="4" width="4" height="16"></rect>
                     <rect x="14" y="4" width="4" height="16"></rect>
                   </svg>
                 </if>
                 <if ${this.state !== 'playing'}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                  <svg part="icon play-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 5v14l11-7z"/>
                   </svg>
                 </if>
@@ -278,22 +283,24 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
 
               <button
                 class="player-btn player-btn-next"
+                part="button next-button"
                 @click=${() => this.next()}
                 aria-label="Next"                title="Next"
                 ?disabled=${this.tracks.length === 0}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <svg part="icon next-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M16 18h2V6h-2zM6 18l8.5-6L6 6z"/>
                 </svg>
               </button>
 
               <button
                 class="player-btn player-btn-repeat ${this.repeat !== 'off' ? 'active' : ''}"
+                part="button repeat-button${repeatOn ? ' button-active' : ''}"
                 @click=${() => this.cycleRepeat()}
                 aria-label="Repeat ${this.repeat}"                title="Repeat ${this.repeat}"
               >
                 <if ${this.repeat === 'one'}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg part="icon repeat-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M17 1l4 4-4 4"/>
                     <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
                     <path d="M7 23l-4-4 4-4"/>
@@ -302,7 +309,7 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
                   </svg>
                 </if>
                 <if ${this.repeat !== 'one'}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg part="icon repeat-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M17 1l4 4-4 4"/>
                     <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
                     <path d="M7 23l-4-4 4-4"/>
@@ -312,9 +319,10 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
               </button>
             </div>
 
-            <div class="player-progress-container">
-              <span class="player-time player-time-current">${this.formatTime(this.currentTime)}</span>
+            <div class="player-progress-container" part="progress">
+              <span class="player-time player-time-current" part="time current-time">${this.formatTime(this.currentTime)}</span>
               <div class="player-progress"
+                   part="progress-track"
                    role="slider"
                    tabindex="0"
                    aria-label="Seek"
@@ -324,40 +332,42 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
                    aria-valuetext="${this.formatTime(this.currentTime)} of ${this.formatTime(this.duration)}"
                    @click=${(e: MouseEvent) => this.handleSeek(e)}
                    @keydown=${(e: KeyboardEvent) => this.handleSeekKeydown(e)}>
-                <div class="player-progress-bar" style="width: ${progress}%"></div>
+                <div class="player-progress-bar" part="progress-fill" style="width: ${progress}%"></div>
               </div>
-              <span class="player-time player-time-duration">${this.formatTime(this.duration)}</span>
+              <span class="player-time player-time-duration" part="time duration-time">${this.formatTime(this.duration)}</span>
               <if ${this.showVolume}>
-                <div class="player-volume">
+                <div class="player-volume" part="volume">
             <button
               class="player-btn player-btn-volume"
+              part="button volume-button"
               @click=${() => this.toggleVolumeSlider()}
               aria-label="Volume"              title="Volume"
             >
               <if ${this.muted || this.volume === 0}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg part="icon volume-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M11 5L6 9H2v6h4l5 4V5z"/>
                   <line x1="23" y1="9" x2="17" y2="15"/>
                   <line x1="17" y1="9" x2="23" y2="15"/>
                 </svg>
               </if>
               <if ${!this.muted && this.volume > 0.5}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg part="icon volume-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M11 5L6 9H2v6h4l5 4V5z"/>
                   <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
                 </svg>
               </if>
               <if ${!this.muted && this.volume > 0 && this.volume <= 0.5}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg part="icon volume-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M11 5L6 9H2v6h4l5 4V5z"/>
                   <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
                 </svg>
               </if>
             </button>
             <if ${this.showVolumeSlider}>
-              <div class="player-volume-slider-container">
+              <div class="player-volume-slider-container" part="volume-panel">
                 <input
                   class="player-volume-slider"
+                  part="volume-slider"
                   type="range"
                   min="0"
                   max="1"
@@ -376,26 +386,27 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
 
         <if ${this.showPlaylist && this.tracks.length > 0}>
           <div part="playlist" class="player-playlist">
-            <div class="player-playlist-header">Playlist</div>
-            <div class="player-playlist-items">
+            <div class="player-playlist-header" part="playlist-header">Playlist</div>
+            <div class="player-playlist-items" part="playlist-items">
               ${this.tracks.map((track, index) => html/*html*/`
                 <div
                   class="player-playlist-item ${index === this.currentTrackIndex ? 'active' : ''}"
+                  part="playlist-item${index === this.currentTrackIndex ? ' playlist-item-active' : ''}"
                   @click=${() => this.loadTrack(index)}
                   key=${track.id}
                 >
-                  <div class="player-playlist-item-number">${index + 1}</div>
+                  <div class="player-playlist-item-number" part="playlist-item-number">${index + 1}</div>
                   <if ${track.artwork}>
-                    <img class="player-playlist-item-artwork" src="${track.artwork}" alt="${track.title}" />
+                    <img class="player-playlist-item-artwork" part="playlist-item-artwork" src="${track.artwork}" alt="${track.title}" />
                   </if>
-                  <div class="player-playlist-item-info">
-                    <div class="player-playlist-item-title">${track.title}</div>
+                  <div class="player-playlist-item-info" part="playlist-item-info">
+                    <div class="player-playlist-item-title" part="playlist-item-title">${track.title}</div>
                     <if ${track.artist}>
-                      <div class="player-playlist-item-artist">${track.artist}</div>
+                      <div class="player-playlist-item-artist" part="playlist-item-artist">${track.artist}</div>
                     </if>
                   </div>
                   <if ${track.duration}>
-                    <div class="player-playlist-item-duration">${this.formatTime(track.duration || 0)}</div>
+                    <div class="player-playlist-item-duration" part="playlist-item-duration">${this.formatTime(track.duration || 0)}</div>
                   </if>
                 </div>
               `)}

@@ -86,7 +86,32 @@ availability.addEventListener('availability-change', (e) => {
 |------|---------|-------------|
 | `base` | `<div>` | Main container |
 | `header` | `<div>` | Header with title and presets |
+| `title` | `<div>` | Header title text |
+| `presets` | `<div>` | Preset button row |
+| `preset` | `<button>` | A preset button |
+| `preset-business` | `<button>` | Added to `preset` on the Business Hours button |
+| `preset-weekdays` | `<button>` | Added to `preset` on the Weekdays Only button |
+| `preset-clear` | `<button>` | Added to `preset` on the Clear All button |
+| `grid-wrapper` | `<div>` | Scroll wrapper around the grid |
 | `grid` | `<div>` | The availability grid |
+| `row` | `<div>` | A grid row |
+| `row-header` | `<div>` | Added to `row` on the day-name header row |
+| `corner` | `<div>` | Empty corner cell above the time column |
+| `day-header` | `<div>` | A day-name column header |
+| `time-label` | `<div>` | A time-column label |
+| `time-label-hour` | `<div>` | Added to `time-label` on hour boundaries |
+| `time-label-sub-hour` | `<div>` | Added to `time-label` between hour boundaries |
+| `cell` | `<div>` | A selectable slot cell |
+| `cell-hour-start` | `<div>` | Added to `cell` on hour boundaries |
+| `cell-sub-hour` | `<div>` | Added to `cell` between hour boundaries |
+| `cell-active` | `<div>` | Added to `cell` while the slot is selected |
+| `footer` | `<div>` | Footer with legend and count |
+| `legend` | `<div>` | Legend container |
+| `legend-item` | `<span>` | A legend entry |
+| `legend-swatch` | `<span>` | A legend color swatch |
+| `legend-swatch-available` | `<span>` | Added to `legend-swatch` on the available swatch |
+| `legend-swatch-unavailable` | `<span>` | Added to `legend-swatch` on the unavailable swatch |
+| `count` | `<div>` | Selected-hours summary text |
 
 ```css
 snice-availability::part(base) {

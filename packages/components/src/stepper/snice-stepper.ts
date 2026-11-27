@@ -95,7 +95,7 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
     ].join(' ');
 
     return html/*html*/`
-      <div class="${stepperClasses}" part="container">
+      <div class="${stepperClasses}" part="base container">
         ${this.steps.map((step: Step, index: number) => {
           const status = this.getStepStatus(index, step);
           const stepClasses = [
@@ -111,7 +111,7 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
           return html/*html*/`
             <div
               class="${stepClasses}"
-              part="step"
+              part="step${({ pending: ' step-pending', active: ' step-active', completed: ' step-completed', error: ' step-error' })[status] || ''}${this.clickable ? ' step-clickable' : ''}"
               data-step-index="${index}"
               role="${stepRole ?? ''}"
               tabindex="${stepTabindex ?? ''}"

@@ -37,7 +37,7 @@ export class SniceTestimonial extends HTMLElement implements SniceTestimonialEle
 
   private renderAvatar() {
     if (!this.avatar) return html``;
-    return html`<img class="avatar" src="${this.avatar}" alt="${this.author}" />`;
+    return html`<img part="avatar" class="avatar" src="${this.avatar}" alt="${this.author}" />`;
   }
 
   private renderRole() {
@@ -45,20 +45,20 @@ export class SniceTestimonial extends HTMLElement implements SniceTestimonialEle
     if (this.role) parts.push(this.role);
     if (this.company) parts.push(this.company);
     if (parts.length === 0) return html``;
-    return html`<div class="author-role">${parts.join(' at ')}</div>`;
+    return html`<div part="author-role" class="author-role">${parts.join(' at ')}</div>`;
   }
 
   @render()
   template() {
     return html`
       <div part="base" class="testimonial">
-        <div class="quote-icon">\u201C</div>
+        <div part="quotation-mark" class="quote-icon">\u201C</div>
         ${this.renderStars()}
         <div part="quote" class="quote">${this.quote}</div>
         <div part="author" class="author-info">
           ${this.renderAvatar()}
-          <div>
-            <div class="author-name">${this.author}</div>
+          <div part="author-details">
+            <div part="author-name" class="author-name">${this.author}</div>
             ${this.renderRole()}
           </div>
         </div>

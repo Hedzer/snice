@@ -233,12 +233,14 @@ export class SniceActivityFeed extends HTMLElement implements SniceActivityFeedE
     return html/*html*/`
       <div class="feed__filters" part="filters">
         <button class="feed__filter ${!this.filter ? 'feed__filter--active' : ''}"
+                part="filter${!this.filter ? ' filter-active' : ''}"
                 aria-pressed="${!this.filter}"
                 @click=${() => this.clearFilter()}>
           ${this.allLabel}
         </button>
         ${types.map(type => html/*html*/`
           <button class="feed__filter ${this.filter === type ? 'feed__filter--active' : ''}"
+                  part="filter${this.filter === type ? ' filter-active' : ''}"
                   aria-pressed="${this.filter === type}"
                   @click=${() => this.handleFilterClick(type)}>
             ${type}
@@ -253,9 +255,9 @@ export class SniceActivityFeed extends HTMLElement implements SniceActivityFeedE
     const showImage = avatar && !this.failedAvatars.has(avatar);
 
     return html/*html*/`
-      <span class="feed__actor-avatar">
+      <span class="feed__actor-avatar" part="avatar">
         <if ${showImage}>
-          <img src="${avatar}" alt="${activity.actor.name}" loading="lazy"
+          <img part="avatar-image" src="${avatar}" alt="${activity.actor.name}" loading="lazy"
                @error=${() => this.handleAvatarError(avatar!)} />
         </if>
         <if ${!showImage}>
@@ -278,17 +280,17 @@ export class SniceActivityFeed extends HTMLElement implements SniceActivityFeedE
            @keydown=${(e: KeyboardEvent) => this.handleEntryKeydown(e, activity)}>
         <div class="feed__icon" part="icon">${renderIcon(this.getIconName(activity), 'feed__icon-glyph')}</div>
         <div class="feed__content" part="content">
-          <div class="feed__description">
-            <span class="feed__actor">
+          <div class="feed__description" part="description">
+            <span class="feed__actor" part="actor">
               ${this.renderAvatar(activity)}
               ${activity.actor.name}
             </span>
-            <span class="feed__action"> ${activity.action} </span>
+            <span class="feed__action" part="action"> ${activity.action} </span>
             <if ${activity.target}>
-              <span class="feed__target">${activity.target}</span>
+              <span class="feed__target" part="target">${activity.target}</span>
             </if>
             <if ${activity.type}>
-              <span class="feed__type-badge">${activity.type}</span>
+              <span class="feed__type-badge" part="badge">${activity.type}</span>
             </if>
           </div>
           <div class="feed__timestamp" part="timestamp">${this.formatTimestamp(activity.timestamp)}</div>
@@ -369,8 +371,9 @@ export class SniceActivityFeed extends HTMLElement implements SniceActivityFeedE
         </if>
 
         <if ${showLoadMore}>
-          <div class="feed__load-more">
+          <div class="feed__load-more" part="load-more">
             <button class="feed__load-more-btn"
+                    part="load-more-button"
                     @click=${() => this.handleLoadMore()}>
               ${this.loadMoreLabel}
             </button>
@@ -378,7 +381,7 @@ export class SniceActivityFeed extends HTMLElement implements SniceActivityFeedE
         </if>
 
         <if ${!hasActivities}>
-          <div class="feed__empty">${this.emptyMessage}</div>
+          <div class="feed__empty" part="empty">${this.emptyMessage}</div>
         </if>
       </div>
     `;

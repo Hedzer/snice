@@ -39,7 +39,7 @@ export class SniceCellColor extends HTMLElement implements SniceCellElement {
   render() {
     const colorValue = this.color || this.value;
     const swatchHTML = this.showSwatch
-      ? `<span class="color-swatch color-swatch--${this.swatchSize}" style="background-color: ${colorValue};"></span>`
+      ? `<span class="color-swatch color-swatch--${this.swatchSize}" part="swatch" style="background-color: ${colorValue};"></span>`
       : '';
 
     const textDisplay = this.getDisplayText(colorValue);
@@ -47,7 +47,7 @@ export class SniceCellColor extends HTMLElement implements SniceCellElement {
     return html/*html*/`
       <div class="cell-content cell-content--color" part="content">
         ${unsafeHTML(swatchHTML)}
-        ${textDisplay ? html`<span class="color-text">${textDisplay}</span>` : ''}
+        ${textDisplay ? html`<span class="color-text" part="text">${textDisplay}</span>` : ''}
       </div>
     `;
   }

@@ -69,14 +69,14 @@ export class SniceLinkPreview extends HTMLElement implements SniceLinkPreviewEle
            tabindex="0"
            aria-label="${this.title || 'Link preview'}">
         <if ${this.image}>
-          <div class="link-preview__image">
-            <img src="${this.image}" alt="" loading="lazy">
+          <div part="media" class="link-preview__image">
+            <img part="image" src="${this.image}" alt="" loading="lazy">
           </div>
         </if>
         <if ${!this.image}>
-          <div class="link-preview__image">
-            <div class="link-preview__image-placeholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <div part="media" class="link-preview__image">
+            <div part="placeholder" class="link-preview__image-placeholder">
+              <svg part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m9.924-1.024a4.5 4.5 0 0 0-1.242-7.244l-4.5-4.5a4.5 4.5 0 0 0-6.364 6.364L4.75 8.064" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
@@ -87,21 +87,21 @@ export class SniceLinkPreview extends HTMLElement implements SniceLinkPreviewEle
             <p part="title" class="link-preview__title">${this.title}</p>
           </if>
           <if ${this.description}>
-            <p class="link-preview__description">${this.description}</p>
+            <p part="description" class="link-preview__description">${this.description}</p>
           </if>
           <if ${hasFooter}>
-            <div class="link-preview__footer">
+            <div part="footer" class="link-preview__footer">
               <if ${this.favicon}>
-                <img class="link-preview__favicon" src="${this.favicon}" alt="">
+                <img part="favicon" class="link-preview__favicon" src="${this.favicon}" alt="">
               </if>
               <if ${this.siteName}>
-                <span class="link-preview__site-name">${this.siteName}</span>
+                <span part="site-name" class="link-preview__site-name">${this.siteName}</span>
               </if>
               <if ${this.siteName && domain}>
-                <span class="link-preview__footer-separator">&middot;</span>
+                <span part="separator" class="link-preview__footer-separator">&middot;</span>
               </if>
               <if ${domain}>
-                <span class="link-preview__domain">${domain}</span>
+                <span part="domain" class="link-preview__domain">${domain}</span>
               </if>
             </div>
           </if>

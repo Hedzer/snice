@@ -17,12 +17,12 @@ export class SniceLayoutSplit extends HTMLElement implements Layout {
   @render()
   render() {
     return html/*html*/`
-      <div class="layout">
-        <div class="panel panel-left">
+      <div class="layout" part="base">
+        <div class="panel panel-left" part="panel panel-left">
           <slot name="left"></slot>
         </div>
-        <div class="divider"></div>
-        <div class="panel panel-right">
+        <div class="divider" part="divider"></div>
+        <div class="panel panel-right" part="panel panel-right">
           <slot name="right"></slot>
         </div>
       </div>

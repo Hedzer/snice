@@ -11,7 +11,7 @@
  *
  *  1. WHERE THE THUMBS ARE. A range slider is a picture of two numbers. The
  *     component paints that picture with `left: <pct>%` / `bottom: <pct>%` and
- *     a `[part="range"]` bar spanning the gap; happy-dom resolves no
+ *     a `[part~="range"]` bar spanning the gap; happy-dom resolves no
  *     percentage and lays out no box, so a slider that draws both thumbs on
  *     top of each other passes every DOM assertion ever written.
  *
@@ -149,8 +149,8 @@ function geometryProblems(combo: Combo, g: Geometry): string[] {
 
   if (!g.mounted) { say('nothing mounted'); return problems; }
   const { track, rangeBar, low, high } = g;
-  if (!track) { say('no [part="track"]'); return problems; }
-  if (!rangeBar) { say('no [part="range"]'); return problems; }
+  if (!track) { say('no [part~="track"]'); return problems; }
+  if (!rangeBar) { say('no [part~="range"]'); return problems; }
   if (!low || !high) { say('a thumb is missing'); return problems; }
 
   for (const [name, box] of [['track', track], ['thumb-low', low],
@@ -228,8 +228,8 @@ function geometryProblems(combo: Combo, g: Geometry): string[] {
       }
       // The two bounds are drawn at the two ends, not on top of each other.
       if (g.labelMin.right > g.labelMax.left + 1) {
-        say(`[part="label-min"] (right ${g.labelMin.right.toFixed(1)}) overlaps`
-          + ` [part="label-max"] (left ${g.labelMax.left.toFixed(1)})`);
+        say(`[part~="label-min"] (right ${g.labelMin.right.toFixed(1)}) overlaps`
+          + ` [part~="label-max"] (left ${g.labelMax.left.toFixed(1)})`);
       }
     }
   } else if (g.labelMin || g.labelMax) {
@@ -296,7 +296,7 @@ test.describe('range-slider visual matrix: the picture follows the value', () =>
   test('the host focus() lands on the low thumb', async () => {
     await page.evaluate(c => (window as any).matrix.mount(c),
       { ...base, orientation: 'horizontal' } as any);
-    expect(await page.evaluate(() => (window as any).matrix.focusHost())).toBe('thumb-low');
+    expect(await page.evaluate(() => (window as any).matrix.focusHost())).toContain('thumb-low');
   });
 
   test('a disabled slider does not move under either input', async () => {
@@ -385,8 +385,8 @@ test.describe('range-slider visual matrix: marquee pixels', () => {
       page, 'body', 'range-slider-range-bar',
       `() => {
         const sr = document.getElementById('subject').shadowRoot;
-        const track = sr.querySelector('[part="track"]').getBoundingClientRect();
-        const bar = sr.querySelector('[part="range"]').getBoundingClientRect();
+        const track = sr.querySelector('[part~="track"]').getBoundingClientRect();
+        const bar = sr.querySelector('[part~="range"]').getBoundingClientRect();
         return [
           // Inside the selected span, clear of both thumbs…
           { x: bar.x + bar.width / 2, y: bar.y + bar.height / 2 },
@@ -406,7 +406,7 @@ test.describe('range-slider visual matrix: marquee pixels', () => {
   test('a disabled slider paints a quieter range than an enabled one', async () => {
     const probe = `() => {
       const sr = document.getElementById('subject').shadowRoot;
-      const bar = sr.querySelector('[part="range"]').getBoundingClientRect();
+      const bar = sr.querySelector('[part~="range"]').getBoundingClientRect();
       return [{ x: bar.x + bar.width / 2, y: bar.y + bar.height / 2 }];
     }`;
     await page.evaluate(c => (window as any).matrix.mount(c), base as any);

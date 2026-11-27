@@ -32,7 +32,7 @@ export class SniceCellTag extends HTMLElement implements SniceCellElement {
 
     return html/*html*/`
       <div class="cell-content cell-content--tag" part="content">
-        <div class="tags-container">
+        <div class="tags-container" part="tags">
           ${tagList.map(tag => this.renderTag(tag))}
         </div>
       </div>

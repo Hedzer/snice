@@ -30,9 +30,17 @@ interface FunnelStage { label: string; value: number; color?: string; }
 
 ## CSS Parts
 
-- `base` - Outer funnel container
-- `chart` - SVG chart rendering area
-- `tooltip` - Hover tooltip element
+- `base` - Root funnel container
+- `chart` - Chart area holding the SVG
+- `svg` - The funnel SVG
+- `stage` - A stage group
+- `stage-shape` - The filled shape of a stage
+- `label` - Stage label text
+- `value` - Stage value text
+- `percentage` - Stage conversion percentage text
+- `tooltip` - Hover tooltip
+- `tooltip-label` - Tooltip label line
+- `tooltip-value` - Tooltip value line
 
 ## Basic Usage
 

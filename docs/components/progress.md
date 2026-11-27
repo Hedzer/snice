@@ -53,7 +53,10 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | Part | Element | Description |
 |------|---------|-------------|
 | `base` | `<div>` | Outer progress container |
+| `base-with-label` | `<div>` | Added to `base` when `show-label` is set |
+| `base-indeterminate` | `<div>` | Added to `base` while indeterminate |
 | `bar` | `<div>` | The progress bar fill |
+| `bar-indeterminate` | `<div>` | Added to `bar` while indeterminate |
 | `label` | `<span>` | Percentage or custom label text |
 
 ### Circular Variant
@@ -61,9 +64,11 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | Part | Element | Description |
 |------|---------|-------------|
 | `base` | `<div>` | Outer progress container |
+| `base-indeterminate` | `<div>` | Added to `base` while indeterminate |
 | `circle` | `<svg>` | The SVG element |
 | `circle-bg` | `<circle>` | Background circle stroke |
 | `circle-bar` | `<circle>` | Foreground progress arc |
+| `circle-bar-indeterminate` | `<circle>` | Added to `circle-bar` while indeterminate |
 | `label` | `<div>` | Percentage or custom label text |
 
 ## CSS Custom Properties

@@ -40,10 +40,10 @@ describe('color-display matrix smoke', () => {
 
   it('show-swatch="false" and show-label="false" each drop their own part', async () => {
     const noSwatch = await mountColorDisplay(combo({ showSwatch: false }));
-    expect(partNames(noSwatch).sort()).toEqual(['container', 'label']);
+    expect(partNames(noSwatch).sort()).toEqual(['base', 'container', 'label']);
     unmountAll();
     const noLabel = await mountColorDisplay(combo({ showLabel: false }));
-    expect(partNames(noLabel).sort()).toEqual(['container', 'swatch']);
+    expect(partNames(noLabel).sort()).toEqual(['base', 'container', 'swatch']);
   });
 
   it('swatch-size reaches both the attribute CSS sees and the swatch class', async () => {

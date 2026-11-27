@@ -52,12 +52,24 @@ interface Activity {
 
 - `base` - Feed container
 - `filters` - Filter bar
+- `filter` - Filter button inside the filter bar
+- `filter-active` - Added to `filter` while that filter is selected
 - `list` - Activity list (role="feed")
 - `entry` - Single activity row (role="article")
 - `icon` - Activity icon
 - `content` - Activity content area
+- `description` - Actor/action/target line
+- `actor` - Actor name wrapper
+- `avatar` - Actor avatar circle
+- `avatar-image` - Actor avatar image
+- `action` - Action text
+- `target` - Target text
+- `badge` - Activity type badge
 - `timestamp` - Timestamp text
 - `group-header` - Date group header
+- `load-more` - Load-more row
+- `load-more-button` - Load-more button
+- `empty` - Empty state message
 
 ## Basic Usage
 

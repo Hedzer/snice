@@ -21,7 +21,7 @@ max?: number;                      // auto-calculated if unset
 
 ## CSS Parts
 
-- `container` - Outer container
+- `base` / `container` - Outer container (both tokens are on the same element)
 - `svg` - SVG element
 - `line` - Line path
 - `area` - Area fill path

@@ -144,29 +144,30 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
     const buttonClasses = ['upload-button', `upload-button--${this.size}`].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <div class="${wrapperClasses}">
+      <div class="${wrapperClasses}" part="base">
         <if ${this.label}>
-          <label class="${labelClasses}" @click=${() => this.focus()}>
+          <label class="${labelClasses}" part="label${this.required ? ' label-required' : ''}" @click=${() => this.focus()}>
             ${this.label}
           </label>
         </if>
 
         <div
           class="${uploadAreaClasses}"
-          part="upload-area"
+          part="upload-area${this.interactionDisabled ? ' upload-area-disabled' : ''}${this.isDragOver ? ' upload-area-drag-over' : ''}${displayedInvalid ? ' upload-area-invalid' : ''}"
           @click=${this.handleAreaClick}
           @dragover=${this.handleDragOver}
           @dragleave=${this.handleDragLeave}
           @drop=${this.handleDrop}
         >
-          <div class="${iconClasses}">📎</div>
-          <div class="upload-text">
+          <div class="${iconClasses}" part="icon upload-icon">📎</div>
+          <div class="upload-text" part="upload-text">
             <if ${this.dragDrop}>
               Drag and drop ${this.multiple ? 'files' : 'a file'} here or
             </if>
           </div>
           <button
             class="${buttonClasses}"
+            part="button"
             type="button"
             ?disabled="${this.interactionDisabled}"
             @click="${this.handleButtonClick}"
@@ -191,7 +192,7 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
         </div>
 
         <if ${this.selectedFiles.length > 0}>
-          <div class="file-list">
+          <div class="file-list" part="file-list">
             ${this.selectedFiles.map((file, index) => this.renderFileItem(file, index))}
           </div>
         </if>
@@ -241,19 +242,20 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
     return html/*html*/`
       <div class="file-item" part="file-item">
         <if ${isImage && this.showPreview}>
-          <img class="file-preview" src="${fileUrl}" alt="${file.name}" />
+          <img class="file-preview" part="image" src="${fileUrl}" alt="${file.name}" />
         </if>
         <if ${!isImage || !this.showPreview}>
-          <div class="file-icon">📄</div>
+          <div class="file-icon" part="icon file-icon">📄</div>
         </if>
 
-        <div class="file-info">
-          <div class="file-name">${file.name}</div>
-          <div class="file-size">${formattedSize}</div>
+        <div class="file-info" part="file-info">
+          <div class="file-name" part="file-name">${file.name}</div>
+          <div class="file-size" part="file-size">${formattedSize}</div>
         </div>
 
         <button
           class="file-remove"
+          part="button file-remove"
           type="button"
           .disabled=${this.interactionDisabled}
           @click=${() => this.handleRemoveFile(index)}

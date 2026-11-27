@@ -100,6 +100,40 @@ leaderboard.addEventListener('entry-click', (e) => {
 | `title` | The title heading |
 | `list` | The entries list |
 | `empty` | The empty state message |
+| `podium` | The podium row (variant `podium`) |
+| `podium-entry` | A podium entry |
+| `podium-avatar` | A podium entry avatar image |
+| `podium-avatar-placeholder` | A podium entry initial placeholder |
+| `podium-rank` | A podium entry rank badge |
+| `podium-name` | A podium entry name |
+| `podium-score` | A podium entry score |
+| `entry` | A list entry row |
+| `rank` | A list entry rank |
+| `avatar` | An entry avatar (image or initial placeholder) |
+| `avatar-placeholder` | A list entry initial placeholder |
+| `info` | A list entry name column |
+| `name` | A list entry name |
+| `score` | A list entry score |
+| `change` | A list entry change indicator |
+
+State tokens are added alongside the base token on the same element, so they can
+be targeted with `::part(entry entry-highlighted)`.
+
+| Part | Added to | Description |
+|------|----------|-------------|
+| `entry-highlighted` | `entry` | Present while the entry is highlighted |
+| `rank-1` | `rank` | Present on the first-place rank |
+| `rank-2` | `rank` | Present on the second-place rank |
+| `rank-3` | `rank` | Present on the third-place rank |
+| `podium-entry-1` | `podium-entry` | Present on the first-place podium entry |
+| `podium-entry-2` | `podium-entry` | Present on the second-place podium entry |
+| `podium-entry-3` | `podium-entry` | Present on the third-place podium entry |
+| `podium-rank-1` | `podium-rank` | Present on the first-place podium rank badge |
+| `podium-rank-2` | `podium-rank` | Present on the second-place podium rank badge |
+| `podium-rank-3` | `podium-rank` | Present on the third-place podium rank badge |
+| `change-up` | `change` | Present when the entry moved up |
+| `change-down` | `change` | Present when the entry moved down |
+| `change-none` | `change` | Present when the entry did not move |
 
 ## Basic Usage
 

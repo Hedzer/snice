@@ -267,7 +267,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
       <div class="draw-container" part="base">
         <canvas
           class="draw-canvas tool-${this.tool} ${this.disabled ? 'disabled' : ''}"
-          part="canvas"
+          part="canvas${this.disabled ? ' canvas-disabled' : ''}"
           role="img"
           aria-label="Drawing canvas">
         </canvas>

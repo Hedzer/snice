@@ -54,6 +54,7 @@ Content carousel with autoplay, looping, navigation controls, slide indicators, 
 
 | Part | Description |
 |------|-------------|
+| `base` | The outermost carousel wrapper (same element as `container`) |
 | `container` | The outermost carousel wrapper |
 | `viewport` | The visible slide area |
 | `slides-container` | The flex container holding all slides |
@@ -62,6 +63,12 @@ Content carousel with autoplay, looping, navigation controls, slide indicators, 
 | `button-next` | The next slide button |
 | `indicators` | The slide indicator dot container |
 | `indicator` | Individual slide indicator dot |
+| `button-icon` | The chevron glyph inside a navigation button |
+| `button-icon-prev` | Added to `button-icon` in the previous button |
+| `button-icon-next` | Added to `button-icon` in the next button |
+| `button-prev-disabled` | Added to `button-prev` when there is no previous slide |
+| `button-next-disabled` | Added to `button-next` when there is no next slide |
+| `indicator-active` | Added to `indicator` for the active slide |
 
 ## Basic Usage
 

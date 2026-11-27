@@ -30,6 +30,16 @@ avatar: string = '';    // Avatar image URL (takes precedence over icon slot)
 
 - `base` - Root container
 - `icon` - Icon wrapper element
+- `avatar` - Avatar `<img>` element
+- `label` - Chip label wrapper
+- `remove-button` - Remove (×) button
+- `remove-icon` - `<svg>` inside the remove button
+
+State tokens:
+
+- `base-selected` - Added to `base` while `selected`
+- `base-disabled` - Added to `base` while `disabled`
+- `ripple` - Hidden Material 3 state-layer ripple helper (`data-platform-only="material"`)
 
 ## Basic Usage
 

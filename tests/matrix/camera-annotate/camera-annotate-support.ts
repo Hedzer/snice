@@ -48,6 +48,7 @@
  */
 import { expect } from 'vitest';
 import { wait } from '../../components/test-utils';
+import { exactPartIn } from '../part-exact';
 import {
   installCaptureStack, restoreCaptureStack, primeVideo,
   type MediaMock, type CanvasMock,
@@ -174,8 +175,13 @@ export function sr(el: SniceCameraAnnotateElement): ShadowRoot {
   return root;
 }
 
+/**
+ * Token-exact: happy-dom answers `[part~="sidebar"]` with `sidebar-header` and
+ * `sidebar-title` too, so the lookup splits the attribute itself
+ * (`tests/matrix/part-exact.ts`).
+ */
 export function partEl(el: SniceCameraAnnotateElement, name: string): HTMLElement | null {
-  return sr(el).querySelector<HTMLElement>(`[part~="${name}"]`);
+  return exactPartIn<HTMLElement>(sr(el), name);
 }
 
 export function videoEl(el: SniceCameraAnnotateElement): HTMLVideoElement | null {

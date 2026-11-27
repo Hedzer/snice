@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
+import { exactPart, exactParts } from '../matrix/part-exact';
 import '../../packages/components/src/receipt/snice-receipt';
 import type { SniceReceiptElement } from '../../packages/components/src/receipt/snice-receipt.types';
 
@@ -99,7 +100,7 @@ describe('snice-receipt', () => {
       receipt = await createComponent<SniceReceiptElement>('snice-receipt');
       receipt.receiptNumber = 'REC-001';
       await wait(10);
-      const value = queryShadow(receipt, '[part="receipt-number"]');
+      const value = exactPart(receipt, 'receipt-number');
       expect(value?.textContent).toBe('REC-001');
     });
 
@@ -108,7 +109,7 @@ describe('snice-receipt', () => {
         date: '2026-02-27'
       });
       await wait(10);
-      const value = queryShadow(receipt, '[part="date"]');
+      const value = exactPart(receipt, 'date');
       expect(value?.textContent).toBe('2026-02-27');
     });
 
@@ -196,7 +197,7 @@ describe('snice-receipt', () => {
         { name: 'B', quantity: 1, price: 20 }
       ];
       await wait(10);
-      const subtotalRow = queryShadow(receipt, '[part="subtotal-row"]');
+      const subtotalRow = exactPart(receipt, 'subtotal-row');
       expect(subtotalRow).toBeTruthy();
     });
 
@@ -215,7 +216,7 @@ describe('snice-receipt', () => {
       receipt.tax = 5.25;
       receipt.total = 55.25;
       await wait(10);
-      const taxRow = queryShadow(receipt, '[part="tax-row"]');
+      const taxRow = exactPart(receipt, 'tax-row');
       expect(taxRow).toBeTruthy();
     });
 
@@ -223,7 +224,7 @@ describe('snice-receipt', () => {
       receipt = await createComponent<SniceReceiptElement>('snice-receipt');
       receipt.total = 50;
       await wait(10);
-      const taxRow = queryShadow(receipt, '[part="tax-row"]');
+      const taxRow = exactPart(receipt, 'tax-row');
       expect(taxRow).toBeFalsy();
     });
 
@@ -231,7 +232,7 @@ describe('snice-receipt', () => {
       receipt = await createComponent<SniceReceiptElement>('snice-receipt');
       receipt.total = 42.50;
       await wait(10);
-      const totalRow = queryShadow(receipt, '[part="total-row"]');
+      const totalRow = exactPart(receipt, 'total-row');
       expect(totalRow).toBeTruthy();
     });
 
@@ -240,7 +241,7 @@ describe('snice-receipt', () => {
       receipt.discount = 5;
       receipt.total = 45;
       await wait(10);
-      const discountRow = queryShadow(receipt, '[part="discount-row"]');
+      const discountRow = exactPart(receipt, 'discount-row');
       expect(discountRow).toBeTruthy();
     });
 
@@ -250,7 +251,7 @@ describe('snice-receipt', () => {
       receipt.discountLabel = 'Promo Code';
       receipt.total = 90;
       await wait(10);
-      const discountRow = queryShadow(receipt, '[part="discount-row"]');
+      const discountRow = exactPart(receipt, 'discount-row');
       expect(discountRow?.textContent).toContain('Promo Code');
     });
 
@@ -259,7 +260,7 @@ describe('snice-receipt', () => {
       receipt.tip = 8.00;
       receipt.total = 58;
       await wait(10);
-      const tipRow = queryShadow(receipt, '[part="tip-row"]');
+      const tipRow = exactPart(receipt, 'tip-row');
       expect(tipRow).toBeTruthy();
     });
 
@@ -271,7 +272,7 @@ describe('snice-receipt', () => {
       ];
       receipt.total = 54;
       await wait(10);
-      const taxRows = queryShadowAll(receipt, '[part="tax-row"]');
+      const taxRows = exactParts(receipt, 'tax-row');
       expect(taxRows.length).toBe(2);
     });
   });
@@ -430,7 +431,7 @@ describe('snice-receipt', () => {
       ];
 
       for (const part of parts) {
-        const el = queryShadow(receipt, `[part="${part}"]`);
+        const el = exactPart(receipt, part);
         expect(el, `part="${part}" should exist`).toBeTruthy();
       }
     });

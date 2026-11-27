@@ -54,7 +54,7 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
 
     return html/*html*/`
       <div class="${classes}" part="base" @animationend=${this.handleAnimationEnd}>
-        <div class="alert-region" role="alert" aria-live="polite">
+        <div class="alert-region" part="body" role="alert" aria-live="polite">
           <if value="${hasIcon}">
             <div class="${iconClasses}" part="icon">
               <slot name="icon">
@@ -62,18 +62,18 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
               </slot>
             </div>
           </if>
-          <div class="alert-content">
+          <div class="alert-content" part="content">
             <if value="${this.title}">
-              <div class="alert-title">${this.title}</div>
+              <div class="alert-title" part="title">${this.title}</div>
             </if>
-            <div class="alert-description">
+            <div class="alert-description" part="description">
               <slot></slot>
             </div>
           </div>
         </div>
         <if value="${this.dismissible}">
-          <button class="alert-dismiss" type="button" aria-label="Dismiss alert" @click=${this.handleDismiss}>
-            <svg viewBox="0 0 24 24" fill="currentColor">
+          <button class="alert-dismiss" part="close" type="button" aria-label="Dismiss alert" @click=${this.handleDismiss}>
+            <svg part="close-icon" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"/>
             </svg>
           </button>
@@ -177,7 +177,7 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
       error:   X_CIRCLE_SOLID,
       info:    INFO_CIRCLE_SOLID,
     }[this.variant] ?? INFO_CIRCLE_SOLID;
-    return html/*html*/`<span class="alert-icon-content" aria-hidden="true">${unsafeHTML(svg)}</span>`;
+    return html/*html*/`<span class="alert-icon-content" part="icon-content" aria-hidden="true">${unsafeHTML(svg)}</span>`;
   }
 
 

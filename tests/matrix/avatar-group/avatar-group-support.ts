@@ -44,7 +44,10 @@ export const DEFAULTS = {
   overlap: 8,
 };
 
-export const DOCUMENTED_PARTS = ['base', 'avatar', 'overflow'];
+/** Every token `docs/ai/components/avatar-group.md` lists under `## CSS Parts`. */
+export const DOCUMENTED_PARTS = [
+  'base', 'avatar', 'avatar-image', 'initials', 'icon', 'overflow',
+];
 
 // ── The documented item model ───────────────────────────────────────────────
 

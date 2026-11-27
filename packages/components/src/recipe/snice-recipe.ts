@@ -290,43 +290,43 @@ export class SniceRecipe extends HTMLElement implements SniceRecipeElement {
     const ingredientItems: any[] = [];
     for (const [groupName, items] of groups.entries()) {
       if (groupName) {
-        ingredientItems.push(html`<li class="recipe__ingredient-group-title">${groupName}</li>`);
+        ingredientItems.push(html`<li class="recipe__ingredient-group-title" part="ingredient-group-title">${groupName}</li>`);
       }
       for (const { ingredient, index } of items) {
         const isChecked = this.checkedIngredients[index] || false;
         const checkedClass = isChecked ? 'recipe__ingredient--checked' : '';
         ingredientItems.push(html`
-          <li class="recipe__ingredient ${checkedClass}" @click=${() => this.toggleIngredient(index)}>
-            <input type="checkbox" class="recipe__ingredient-checkbox" aria-label="${ingredient.name}" ?checked=${isChecked} @click=${(e: Event) => e.stopPropagation()} @change=${() => this.toggleIngredient(index)} />
-            <span class="recipe__ingredient-amount">${this.formatAmount(ingredient.amount)} ${ingredient.unit}</span>
-            <span class="recipe__ingredient-text">${ingredient.name}</span>
+          <li class="recipe__ingredient ${checkedClass}" part="ingredient${isChecked ? ' ingredient-checked' : ''}" @click=${() => this.toggleIngredient(index)}>
+            <input type="checkbox" class="recipe__ingredient-checkbox" part="checkbox" aria-label="${ingredient.name}" ?checked=${isChecked} @click=${(e: Event) => e.stopPropagation()} @change=${() => this.toggleIngredient(index)} />
+            <span class="recipe__ingredient-amount" part="ingredient-amount">${this.formatAmount(ingredient.amount)} ${ingredient.unit}</span>
+            <span class="recipe__ingredient-text" part="ingredient-text">${ingredient.name}</span>
           </li>
         `);
       }
     }
 
     return html/*html*/`
-      <div class="recipe" part="container">
+      <div class="recipe" part="base container">
         <if ${this.image}>
           <div class="recipe__hero" part="hero">
-            <img src="${this.image}" alt="${this.title}" loading="lazy" />
+            <img part="hero-image" src="${this.image}" alt="${this.title}" loading="lazy" />
           </div>
         </if>
 
         <div class="recipe__header" part="header">
-          <h2 class="recipe__title">${this.title}</h2>
+          <h2 class="recipe__title" part="title">${this.title}</h2>
           <if ${this.description}>
-            <p class="recipe__description">${this.description}</p>
+            <p class="recipe__description" part="description">${this.description}</p>
           </if>
           <if ${this.author}>
-            <span class="recipe__author">By ${this.author}</span>
+            <span class="recipe__author" part="author">By ${this.author}</span>
           </if>
           <if ${hasTags}>
-            <div class="recipe__tags">
+            <div class="recipe__tags" part="tags">
               <if ${hasCuisine}>
-                <span class="recipe__tag">${this.cuisine}</span>
+                <span class="recipe__tag" part="tag cuisine-tag">${this.cuisine}</span>
               </if>
-              ${this.tags.map(tag => html`<span class="recipe__tag">${tag}</span>`)}
+              ${this.tags.map(tag => html`<span class="recipe__tag" part="tag">${tag}</span>`)}
             </div>
           </if>
         </div>
@@ -334,33 +334,33 @@ export class SniceRecipe extends HTMLElement implements SniceRecipeElement {
         <if ${hasMeta}>
           <div class="recipe__meta" part="meta">
             <if ${this.prepTime > 0}>
-              <div class="recipe__meta-item">
-                <span class="recipe__meta-label">Prep</span>
-                <span class="recipe__meta-value">${this.formatMinutes(this.prepTime)}</span>
+              <div class="recipe__meta-item" part="meta-item">
+                <span class="recipe__meta-label" part="meta-label">Prep</span>
+                <span class="recipe__meta-value" part="meta-value">${this.formatMinutes(this.prepTime)}</span>
               </div>
             </if>
             <if ${this.cookTime > 0}>
-              <div class="recipe__meta-item">
-                <span class="recipe__meta-label">Cook</span>
-                <span class="recipe__meta-value">${this.formatMinutes(this.cookTime)}</span>
+              <div class="recipe__meta-item" part="meta-item">
+                <span class="recipe__meta-label" part="meta-label">Cook</span>
+                <span class="recipe__meta-value" part="meta-value">${this.formatMinutes(this.cookTime)}</span>
               </div>
             </if>
             <if ${totalTime > 0}>
-              <div class="recipe__meta-item">
-                <span class="recipe__meta-label">Total</span>
-                <span class="recipe__meta-value">${this.formatMinutes(totalTime)}</span>
+              <div class="recipe__meta-item" part="meta-item">
+                <span class="recipe__meta-label" part="meta-label">Total</span>
+                <span class="recipe__meta-value" part="meta-value">${this.formatMinutes(totalTime)}</span>
               </div>
             </if>
             <if ${this.currentServings > 0}>
-              <div class="recipe__meta-item">
-                <span class="recipe__meta-label">Servings</span>
-                <span class="recipe__meta-value">${this.currentServings}</span>
+              <div class="recipe__meta-item" part="meta-item">
+                <span class="recipe__meta-label" part="meta-label">Servings</span>
+                <span class="recipe__meta-value" part="meta-value">${this.currentServings}</span>
               </div>
             </if>
             <if ${this.difficulty}>
-              <div class="recipe__meta-item">
-                <span class="recipe__meta-label">Difficulty</span>
-                <span class="recipe__meta-value recipe__difficulty--${this.difficulty}">${this.difficulty}</span>
+              <div class="recipe__meta-item" part="meta-item">
+                <span class="recipe__meta-label" part="meta-label">Difficulty</span>
+                <span class="recipe__meta-value recipe__difficulty--${this.difficulty}" part="meta-value difficulty">${this.difficulty}</span>
               </div>
             </if>
           </div>
@@ -370,14 +370,14 @@ export class SniceRecipe extends HTMLElement implements SniceRecipeElement {
           <div class="recipe__content" part="content">
             <if ${hasIngredients}>
               <div class="recipe__ingredients-section" part="ingredients">
-                <h3 class="recipe__section-title">Ingredients</h3>
-                <div class="recipe__servings-adjuster">
-                  <button class="recipe__servings-btn" @click=${() => this.decrementServings()} aria-label="Decrease servings">-</button>
-                  <span class="recipe__servings-count">${this.currentServings}</span>
-                  <button class="recipe__servings-btn" @click=${() => this.incrementServings()} aria-label="Increase servings">+</button>
-                  <span>servings</span>
+                <h3 class="recipe__section-title" part="section-title">Ingredients</h3>
+                <div class="recipe__servings-adjuster" part="servings-adjuster">
+                  <button class="recipe__servings-btn" part="servings-button servings-decrease" @click=${() => this.decrementServings()} aria-label="Decrease servings">-</button>
+                  <span class="recipe__servings-count" part="servings-count">${this.currentServings}</span>
+                  <button class="recipe__servings-btn" part="servings-button servings-increase" @click=${() => this.incrementServings()} aria-label="Increase servings">+</button>
+                  <span part="servings-label">servings</span>
                 </div>
-                <ul class="recipe__ingredients-list">
+                <ul class="recipe__ingredients-list" part="list ingredients-list">
                   ${ingredientItems}
                 </ul>
               </div>
@@ -385,8 +385,8 @@ export class SniceRecipe extends HTMLElement implements SniceRecipeElement {
 
             <if ${hasSteps}>
               <div class="recipe__steps-section" part="steps">
-                <h3 class="recipe__section-title">Instructions</h3>
-                <ol class="recipe__steps-list">
+                <h3 class="recipe__section-title" part="section-title">Instructions</h3>
+                <ol class="recipe__steps-list" part="list steps-list">
                   ${this.steps.map((step, i) => {
                     const isCompleted = this.completedSteps[i] || false;
                     const isActive = this.activeStep === i;
@@ -397,30 +397,30 @@ export class SniceRecipe extends HTMLElement implements SniceRecipeElement {
                     const timerText = hasTimer ? (timer.done ? 'Done!' : this.formatTimer(timer.remaining)) : '';
                     const showTimerBtn = step.time && !hasTimer;
                     return html`
-                      <li class="recipe__step ${isCompleted ? 'recipe__step--completed' : ''} ${isActive ? 'recipe__step--active' : ''}">
-                        <span class="recipe__step-number" @click=${() => this.toggleStepComplete(i)} title="${isCompleted ? 'Mark incomplete' : 'Mark complete'}">
+                      <li class="recipe__step ${isCompleted ? 'recipe__step--completed' : ''} ${isActive ? 'recipe__step--active' : ''}" part="step${isCompleted ? ' step-completed' : ''}${isActive ? ' step-active' : ''}">
+                        <span class="recipe__step-number" part="step-number" @click=${() => this.toggleStepComplete(i)} title="${isCompleted ? 'Mark incomplete' : 'Mark complete'}">
                           ${isCompleted ? '\u2713' : i + 1}
                         </span>
-                        <div class="recipe__step-body">
-                          <div class="recipe__step-text">${step.text}</div>
+                        <div class="recipe__step-body" part="step-body">
+                          <div class="recipe__step-text" part="step-text">${step.text}</div>
                           <if ${step.tip}>
-                            <div class="recipe__step-tip">${step.tip}</div>
+                            <div class="recipe__step-tip" part="step-tip">${step.tip}</div>
                           </if>
                           <if ${step.image}>
-                            <img class="recipe__step-image" src="${step.image}" alt="Step ${i + 1}" loading="lazy" />
+                            <img class="recipe__step-image" part="step-image" src="${step.image}" alt="Step ${i + 1}" loading="lazy" />
                           </if>
                           <if ${showTimerBtn}>
-                            <button class="recipe__step-timer-btn" @click=${() => this.startTimer(i, step.time!)}>
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <button class="recipe__step-timer-btn" part="button timer-button" @click=${() => this.startTimer(i, step.time!)}>
+                              <svg part="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                               </svg>
                               ${this.formatMinutes(step.time!)}
                             </button>
                           </if>
                           <if ${hasTimer}>
-                            <span class="recipe__active-timer ${timerClass}">
+                            <span class="recipe__active-timer ${timerClass}" part="timer${timerDone ? ' timer-done' : ''}">
                               ${timerText}
-                              <button class="recipe__timer-cancel" @click=${() => this.cancelTimer(i)} title="Cancel timer">\u2715</button>
+                              <button class="recipe__timer-cancel" part="button timer-cancel-button" @click=${() => this.cancelTimer(i)} title="Cancel timer">\u2715</button>
                             </span>
                           </if>
                         </div>
@@ -435,35 +435,35 @@ export class SniceRecipe extends HTMLElement implements SniceRecipeElement {
 
         <if ${hasNutrition}>
           <div class="recipe__nutrition" part="nutrition">
-            <h3 class="recipe__section-title">Nutrition Facts</h3>
-            <span class="recipe__author">Per serving</span>
-            <div class="recipe__nutrition-grid">
-              <div class="recipe__nutrition-item">
-                <div class="recipe__nutrition-value">${nutritionCalories}</div>
-                <div class="recipe__nutrition-label">Calories</div>
+            <h3 class="recipe__section-title" part="section-title">Nutrition Facts</h3>
+            <span class="recipe__author" part="nutrition-note">Per serving</span>
+            <div class="recipe__nutrition-grid" part="nutrition-grid">
+              <div class="recipe__nutrition-item" part="nutrition-item">
+                <div class="recipe__nutrition-value" part="nutrition-value">${nutritionCalories}</div>
+                <div class="recipe__nutrition-label" part="nutrition-label">Calories</div>
               </div>
-              <div class="recipe__nutrition-item">
-                <div class="recipe__nutrition-value">${nutritionProtein}g</div>
-                <div class="recipe__nutrition-label">Protein</div>
+              <div class="recipe__nutrition-item" part="nutrition-item">
+                <div class="recipe__nutrition-value" part="nutrition-value">${nutritionProtein}g</div>
+                <div class="recipe__nutrition-label" part="nutrition-label">Protein</div>
               </div>
-              <div class="recipe__nutrition-item">
-                <div class="recipe__nutrition-value">${nutritionCarbs}g</div>
-                <div class="recipe__nutrition-label">Carbs</div>
+              <div class="recipe__nutrition-item" part="nutrition-item">
+                <div class="recipe__nutrition-value" part="nutrition-value">${nutritionCarbs}g</div>
+                <div class="recipe__nutrition-label" part="nutrition-label">Carbs</div>
               </div>
-              <div class="recipe__nutrition-item">
-                <div class="recipe__nutrition-value">${nutritionFat}g</div>
-                <div class="recipe__nutrition-label">Fat</div>
+              <div class="recipe__nutrition-item" part="nutrition-item">
+                <div class="recipe__nutrition-value" part="nutrition-value">${nutritionFat}g</div>
+                <div class="recipe__nutrition-label" part="nutrition-label">Fat</div>
               </div>
               <if ${hasFiber}>
-                <div class="recipe__nutrition-item">
-                  <div class="recipe__nutrition-value">${nutritionFiber}g</div>
-                  <div class="recipe__nutrition-label">Fiber</div>
+                <div class="recipe__nutrition-item" part="nutrition-item">
+                  <div class="recipe__nutrition-value" part="nutrition-value">${nutritionFiber}g</div>
+                  <div class="recipe__nutrition-label" part="nutrition-label">Fiber</div>
                 </div>
               </if>
               <if ${hasSodium}>
-                <div class="recipe__nutrition-item">
-                  <div class="recipe__nutrition-value">${nutritionSodium}mg</div>
-                  <div class="recipe__nutrition-label">Sodium</div>
+                <div class="recipe__nutrition-item" part="nutrition-item">
+                  <div class="recipe__nutrition-value" part="nutrition-value">${nutritionSodium}mg</div>
+                  <div class="recipe__nutrition-label" part="nutrition-label">Sodium</div>
                 </div>
               </if>
             </div>
@@ -473,16 +473,16 @@ export class SniceRecipe extends HTMLElement implements SniceRecipeElement {
         <if ${hasSteps}>
           <div class="recipe__step-controls" part="controls">
             <if ${!hasStepByStep}>
-              <button @click=${() => this.startStepByStep()}>Step-by-Step</button>
+              <button part="button step-by-step-button" @click=${() => this.startStepByStep()}>Step-by-Step</button>
             </if>
             <if ${hasStepByStep}>
-              <button @click=${() => this.goToPrevStep()} ?disabled=${this.activeStep <= 0}>Previous</button>
-              <button @click=${() => this.goToNextStep()}>
+              <button part="button prev-button" @click=${() => this.goToPrevStep()} ?disabled=${this.activeStep <= 0}>Previous</button>
+              <button part="button next-button" @click=${() => this.goToNextStep()}>
                 ${this.activeStep >= this.steps.length - 1 ? 'Finish' : 'Next'}
               </button>
             </if>
-            <button class="recipe__print-btn" @click=${() => this.print()}>Print</button>
-            <button @click=${() => this.reset()}>Reset</button>
+            <button class="recipe__print-btn" part="button print-button" @click=${() => this.print()}>Print</button>
+            <button part="button reset-button" @click=${() => this.reset()}>Reset</button>
           </div>
         </if>
       </div>

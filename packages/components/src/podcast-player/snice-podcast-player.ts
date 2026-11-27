@@ -189,13 +189,13 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
     return html/*html*/`
       <div part="base" class="podcast-container">
         <div part="info" class="podcast-info">
-          <div class="podcast-artwork">
+          <div class="podcast-artwork" part="artwork">
             <if ${displayArtwork}>
-              <img src="${displayArtwork}" alt="${displayTitle}" />
+              <img src="${displayArtwork}" alt="${displayTitle}" part="artwork-image" />
             </if>
             <if ${!displayArtwork}>
-              <div class="podcast-artwork-placeholder">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <div class="podcast-artwork-placeholder" part="artwork-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" part="icon artwork-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
                   <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
                   <line x1="12" y1="19" x2="12" y2="23"/>
@@ -205,52 +205,55 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
             </if>
           </div>
 
-          <div class="podcast-meta">
+          <div class="podcast-meta" part="meta">
             <if ${displayShow}>
-              <div class="podcast-show">${displayShow}</div>
+              <div class="podcast-show" part="show">${displayShow}</div>
             </if>
-            <div class="podcast-title">${displayTitle}</div>
+            <div class="podcast-title" part="title">${displayTitle}</div>
             <if ${displayDescription}>
-              <div class="podcast-description">${displayDescription}</div>
+              <div class="podcast-description" part="description">${displayDescription}</div>
             </if>
           </div>
         </div>
 
         <div part="controls" class="podcast-controls">
-          <div class="podcast-control-buttons">
+          <div class="podcast-control-buttons" part="control-buttons">
             <button
               class="podcast-btn podcast-btn-speed ${rateIsNotOne ? 'active' : ''}"
+              part="button speed-button${rateIsNotOne ? ' speed-button-active' : ''}"
               @click=${() => this.cyclePlaybackRate()}
               aria-label="Playback speed"              title="Playback speed"
             >${this.playbackRate}x</button>
 
             <button
               class="podcast-btn"
+              part="button skip-back-button"
               @click=${() => this.doSkipBack()}
               aria-label="Skip back ${this.skipBack}s"              title="Skip back ${this.skipBack}s"
               ?disabled=${!hasSource}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" part="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M1 4v6h6"/>
                 <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
               </svg>
-              <span class="podcast-btn-skip-label">${this.skipBack}</span>
+              <span class="podcast-btn-skip-label" part="skip-label">${this.skipBack}</span>
             </button>
 
             <button
               class="podcast-btn podcast-btn-play"
+              part="button play-button"
               @click=${() => this.toggle()}
               aria-label="${isPlaying ? 'Pause' : 'Play'}"              title="${isPlaying ? 'Pause' : 'Play'}"
               ?disabled=${!hasSource}
             >
               <if ${isPlaying}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" part="icon" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
                   <rect x="6" y="4" width="4" height="16"></rect>
                   <rect x="14" y="4" width="4" height="16"></rect>
                 </svg>
               </if>
               <if ${!isPlaying}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" part="icon" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
               </if>
@@ -258,31 +261,34 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
 
             <button
               class="podcast-btn"
+              part="button skip-forward-button"
               @click=${() => this.doSkipForward()}
               aria-label="Skip forward ${this.skipForward}s"              title="Skip forward ${this.skipForward}s"
               ?disabled=${!hasSource}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" part="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M23 4v6h-6"/>
                 <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
               </svg>
-              <span class="podcast-btn-skip-label">${this.skipForward}</span>
+              <span class="podcast-btn-skip-label" part="skip-label">${this.skipForward}</span>
             </button>
 
             <button
               class="podcast-btn podcast-btn-sleep ${hasSleepTimer ? 'active' : ''}"
+              part="button sleep-button${hasSleepTimer ? ' sleep-button-active' : ''}"
               @click=${() => this.cycleSleepTimer()}
               aria-label="Sleep timer"              title="Sleep timer"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" part="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
               </svg>
             </button>
           </div>
 
-          <div class="podcast-progress-container">
-            <span class="podcast-time podcast-time-current">${this.formatTime(this.currentTime)}</span>
+          <div class="podcast-progress-container" part="progress-container">
+            <span class="podcast-time podcast-time-current" part="time time-current">${this.formatTime(this.currentTime)}</span>
             <div class="podcast-progress"
+                 part="progress"
                  role="slider"
                  tabindex="0"
                  aria-label="Seek"
@@ -292,39 +298,41 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
                  aria-valuetext="${this.formatTime(this.currentTime)} of ${this.formatTime(this.duration)}"
                  @click=${(e: MouseEvent) => this.handleSeek(e)}
                  @keydown=${(e: KeyboardEvent) => this.handleSeekKeydown(e)}>
-              <div class="podcast-progress-bar" style="width: ${progress}%"></div>
+              <div class="podcast-progress-bar" part="progress-bar" style="width: ${progress}%"></div>
             </div>
-            <span class="podcast-time podcast-time-remaining">-${this.formatTime(this.duration - this.currentTime)}</span>
-            <div class="podcast-volume">
+            <span class="podcast-time podcast-time-remaining" part="time time-remaining">-${this.formatTime(this.duration - this.currentTime)}</span>
+            <div class="podcast-volume" part="volume">
               <button
                 class="podcast-btn"
+                part="button volume-button"
                 @click=${() => this.toggleVolumeSlider()}
                 aria-label="Volume"                title="Volume"
               >
                 <if ${isMutedOrZero}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg xmlns="http://www.w3.org/2000/svg" part="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M11 5L6 9H2v6h4l5 4V5z"/>
                     <line x1="23" y1="9" x2="17" y2="15"/>
                     <line x1="17" y1="9" x2="23" y2="15"/>
                   </svg>
                 </if>
                 <if ${isHighVolume}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg xmlns="http://www.w3.org/2000/svg" part="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M11 5L6 9H2v6h4l5 4V5z"/>
                     <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
                   </svg>
                 </if>
                 <if ${!isMutedOrZero && !isHighVolume}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg xmlns="http://www.w3.org/2000/svg" part="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M11 5L6 9H2v6h4l5 4V5z"/>
                     <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
                   </svg>
                 </if>
               </button>
               <if ${showVolSlider}>
-                <div class="podcast-volume-slider-container">
+                <div class="podcast-volume-slider-container" part="volume-slider-container">
                   <input
                     class="podcast-volume-slider"
+                    part="volume-slider"
                     type="range"
                     min="0"
                     max="1"
@@ -340,26 +348,27 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
         </div>
 
         <if ${hasSleepTimer}>
-          <div class="podcast-bottom-bar">
-            <div class="podcast-sleep">
-              <span class="podcast-sleep-label">Sleep in</span>
-              <span class="podcast-sleep-time">${this.formatTime(this.sleepTimerRemaining)}</span>
+          <div class="podcast-bottom-bar" part="bottom-bar">
+            <div class="podcast-sleep" part="sleep">
+              <span class="podcast-sleep-label" part="sleep-label">Sleep in</span>
+              <span class="podcast-sleep-time" part="sleep-time">${this.formatTime(this.sleepTimerRemaining)}</span>
             </div>
           </div>
         </if>
 
         <if ${hasChapters}>
-          <div class="podcast-chapters">
-            <div class="podcast-chapters-header">Chapters</div>
+          <div class="podcast-chapters" part="chapters">
+            <div class="podcast-chapters-header" part="chapters-header">Chapters</div>
             ${chapters.map((chapter, i) => {
               const isActive = this.isActiveChapter(chapter, chapters, i);
               return html/*html*/`
                 <div
                   class="podcast-chapter-item ${isActive ? 'active' : ''}"
+                  part="chapter${isActive ? ' chapter-active' : ''}"
                   @click=${() => this.seekTo(chapter.startTime)}
                 >
-                  <span class="podcast-chapter-time">${this.formatTime(chapter.startTime)}</span>
-                  <span class="podcast-chapter-title">${chapter.title}</span>
+                  <span class="podcast-chapter-time" part="chapter-time">${this.formatTime(chapter.startTime)}</span>
+                  <span class="podcast-chapter-title" part="chapter-title">${chapter.title}</span>
                 </div>
               `;
             })}
@@ -367,33 +376,34 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
         </if>
 
         <if ${hasEpisodes}>
-          <div class="podcast-episodes">
-            <div class="podcast-episodes-header">Episodes</div>
-            <div class="podcast-episode-list">
+          <div class="podcast-episodes" part="episodes">
+            <div class="podcast-episodes-header" part="episodes-header">Episodes</div>
+            <div class="podcast-episode-list" part="episode-list">
               ${this.episodes.map((episode, index) => {
                 const isActive = index === this.currentEpisodeIndex;
                 const isEpPlaying = isActive && isPlaying;
                 return html/*html*/`
                   <div
                     class="podcast-episode-item ${isActive ? 'active' : ''}"
+                    part="episode${isActive ? ' episode-active' : ''}"
                     @click=${() => this.loadEpisode(index)}
                   >
                     <if ${episode.artwork}>
-                      <img class="podcast-episode-artwork" src="${episode.artwork}" alt="${episode.title}" />
+                      <img class="podcast-episode-artwork" part="episode-artwork" src="${episode.artwork}" alt="${episode.title}" />
                     </if>
-                    <div class="podcast-episode-info">
-                      <div class="podcast-episode-title">${episode.title}</div>
+                    <div class="podcast-episode-info" part="episode-info">
+                      <div class="podcast-episode-title" part="episode-title">${episode.title}</div>
                       <if ${episode.pubDate}>
-                        <div class="podcast-episode-date">${episode.pubDate}</div>
+                        <div class="podcast-episode-date" part="episode-date">${episode.pubDate}</div>
                       </if>
                     </div>
                     <if ${isEpPlaying}>
-                      <div class="podcast-episode-playing-icon">
-                        <span></span><span></span><span></span>
+                      <div class="podcast-episode-playing-icon" part="episode-playing-icon">
+                        <span part="episode-playing-bar"></span><span part="episode-playing-bar"></span><span part="episode-playing-bar"></span>
                       </div>
                     </if>
                     <if ${!isEpPlaying && episode.duration}>
-                      <div class="podcast-episode-duration">${this.formatTime(episode.duration || 0)}</div>
+                      <div class="podcast-episode-duration" part="episode-duration">${this.formatTime(episode.duration || 0)}</div>
                     </if>
                   </div>
                 `;

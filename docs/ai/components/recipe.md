@@ -50,15 +50,61 @@ interface RecipeNutrition {
 
 ## CSS Parts
 
-- `container` - Outer recipe container
+- `base` / `container` - Outer recipe container (both tokens are on the same element)
 - `hero` - Hero image area
+- `hero-image` - Hero image
 - `header` - Title/description/author
+- `title` - Recipe title
+- `description` - Recipe description
+- `author` - Author line
+- `tags` - Tag row
+- `tag` - Individual tag
+- `cuisine-tag` - Added to `tag` on the cuisine tag
 - `meta` - Metadata bar (times, servings, difficulty)
+- `meta-item` - One metadata field
+- `meta-label` - Metadata field label
+- `meta-value` - Metadata field value
+- `difficulty` - Added to `meta-value` on the difficulty field
 - `content` - Main content (ingredients + steps)
+- `section-title` - Section heading
 - `ingredients` - Ingredients section
+- `servings-adjuster` - Servings stepper row
+- `servings-button` - Servings stepper button
+- `servings-decrease` / `servings-increase` - Added to `servings-button` on the minus and plus buttons
+- `servings-count` - Current servings number
+- `servings-label` - The "servings" word
+- `list` - Ingredients and steps lists
+- `ingredients-list` - Added to `list` on the ingredients list
+- `ingredient-group-title` - Ingredient group heading row
+- `ingredient` - Ingredient row
+- `ingredient-checked` - Added to `ingredient` while checked off
+- `checkbox` - Ingredient checkbox
+- `ingredient-amount` - Ingredient amount and unit
+- `ingredient-text` - Ingredient name
 - `steps` - Instructions section
+- `steps-list` - Added to `list` on the steps list
+- `step` - Step row
+- `step-completed` - Added to `step` while completed
+- `step-active` - Added to `step` while it is the active step
+- `step-number` - Step number badge
+- `step-body` - Step content column
+- `step-text` - Step instruction text
+- `step-tip` - Step tip
+- `step-image` - Step image
+- `button` - Any recipe button
+- `timer-button` - Added to `button` on the start-timer button
+- `icon` - Timer button icon
+- `timer` - Running timer chip
+- `timer-done` - Added to `timer` when the timer has finished
+- `timer-cancel-button` - Added to `button` on the timer cancel button
 - `nutrition` - Nutrition facts panel
+- `nutrition-note` - The "Per serving" note
+- `nutrition-grid` - Nutrition value grid
+- `nutrition-item` - One nutrition figure
+- `nutrition-value` - Nutrition figure value
+- `nutrition-label` - Nutrition figure label
 - `controls` - Bottom control buttons
+- `step-by-step-button` / `prev-button` / `next-button` / `print-button` / `reset-button` - Added to `button` on the matching control
 
 ## Basic Usage
 

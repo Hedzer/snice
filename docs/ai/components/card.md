@@ -32,6 +32,9 @@ disabled: boolean = false;
 - `header` - Card header section
 - `body` - Card body section
 - `footer` - Card footer section
+- `base-clickable` - Added to `base` when `clickable` is set
+- `base-selected` - Added to `base` when `selected` is set
+- `base-disabled` - Added to `base` when `disabled` is set
 
 ## Basic Usage
 

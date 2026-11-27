@@ -327,7 +327,7 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
     return html`
       <div class="grid" part="base" role="list">
         <slot @slotchange="${() => this.handleSlotChange()}"></slot>
-        <div class="grid-drop-placeholder"></div>
+        <div class="grid-drop-placeholder" part="drop-placeholder"></div>
       </div>
     `;
   }

@@ -119,17 +119,17 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
     const disableInc = this.interactionDisabled || (!this.wrap && isMaxBound);
 
     return html/*html*/`
-      <div class="${classes}" part="base">
+      <div class="${classes}" part="base${this.constraintInvalid ? ' base-invalid' : ''}">
         <button
           class="step-input__button step-input__button--decrement"
           type="button"
-          part="decrement-button"
+          part="button decrement-button"
           aria-label="Decrease value"
           ?disabled="${disableDec}"
           tabindex="-1"
           @click=${this.handleDecrement}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <svg part="icon decrement-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
         </button>
@@ -157,13 +157,13 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
         <button
           class="step-input__button step-input__button--increment"
           type="button"
-          part="increment-button"
+          part="button increment-button"
           aria-label="Increase value"
           ?disabled="${disableInc}"
           tabindex="-1"
           @click=${this.handleIncrement}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <svg part="icon increment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <line x1="12" y1="5" x2="12" y2="19"/>
             <line x1="5" y1="12" x2="19" y2="12"/>
           </svg>

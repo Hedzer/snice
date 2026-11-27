@@ -75,6 +75,14 @@ interface ChartOptions {
 | `base` | Outer chart container |
 | `canvas` | Chart canvas rendering area |
 | `legend` | Legend container |
+| `render-canvas` | The `<canvas>` the chart is drawn on |
+| `tooltip` | Hover tooltip overlay |
+| `tooltip-visible` | Added to `tooltip` while it is shown |
+| `base-animated` | Added to `base` while animation is enabled |
+| `legend-item` | One legend entry |
+| `legend-item-hidden` | Added to `legend-item` while its dataset is hidden |
+| `legend-color` | Color swatch in a legend entry |
+| `legend-label` | Label text in a legend entry |
 
 ## Basic Usage
 

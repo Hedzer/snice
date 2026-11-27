@@ -125,15 +125,15 @@ export class SniceAppTiles extends HTMLElement implements SniceAppTilesElement {
       const tile = this.tiles[i];
       const iconHtml = this.buildTileIcon(tile, i);
 
-      tilesHtml += `<button class="tile" data-tile-index="${i}" title="${this.escAttr(tile.name)}">`;
+      tilesHtml += `<button class="tile" part="tile" data-tile-index="${i}" title="${this.escAttr(tile.name)}">`;
       if (tile.badge) {
-        tilesHtml += `<snice-badge content="${this.escAttr(tile.badge)}" variant="error" size="small" position="top-right">`;
+        tilesHtml += `<snice-badge exportparts="base: badge-base, badge: badge-badge, badge-dot: badge-badge-dot, badge-pulse: badge-badge-pulse" content="${this.escAttr(tile.badge)}" variant="error" size="small" position="top-right">`;
         tilesHtml += iconHtml;
         tilesHtml += `</snice-badge>`;
       } else {
         tilesHtml += iconHtml;
       }
-      tilesHtml += `<span class="tile__name">${this.esc(tile.name)}</span>`;
+      tilesHtml += `<span class="tile__name" part="name">${this.esc(tile.name)}</span>`;
       tilesHtml += `</button>`;
     }
 
@@ -156,7 +156,7 @@ export class SniceAppTiles extends HTMLElement implements SniceAppTilesElement {
     if (!raw) {
       const letter = tile.name.charAt(0).toUpperCase();
       const bg = tile.color || DEFAULT_COLORS[index % DEFAULT_COLORS.length];
-      return `<div class="tile__icon tile__icon--text" style="background:${bg}">${letter}</div>`;
+      return `<div class="tile__icon tile__icon--text" part="icon-container" style="background:${bg}">${letter}</div>`;
     }
 
     // Strip scheme override prefix for src/content
@@ -167,16 +167,16 @@ export class SniceAppTiles extends HTMLElement implements SniceAppTilesElement {
     const type = iconType(raw);
 
     if (type === 'img') {
-      return `<div class="tile__icon"><img src="${this.escAttr(src)}" alt="${this.escAttr(tile.name)}" /></div>`;
+      return `<div class="tile__icon" part="icon-container"><img part="image" src="${this.escAttr(src)}" alt="${this.escAttr(tile.name)}" /></div>`;
     }
 
     // Text icon: emoji or Material Symbols ligature
     const bg = tile.color ? `background:${tile.color}` : '';
     if (isEmoji(src)) {
-      return `<div class="tile__icon tile__icon--emoji" style="${bg}">${this.esc(src)}</div>`;
+      return `<div class="tile__icon tile__icon--emoji" part="icon-container" style="${bg}">${this.esc(src)}</div>`;
     }
     // Ligature (e.g. Material Symbols)
-    return `<div class="tile__icon tile__icon--ligature" style="${bg}"><span class="icon" part="icon">${this.esc(src)}</span></div>`;
+    return `<div class="tile__icon tile__icon--ligature" part="icon-container" style="${bg}"><span class="icon" part="icon">${this.esc(src)}</span></div>`;
   }
 
   private esc(str: string): string {

@@ -59,8 +59,13 @@ A numeric stepper control with visible increment and decrement buttons flanking 
 | Part | Description |
 |------|-------------|
 | `base` | The outer container |
+| `base-invalid` | Added to `base` while the value fails validation |
 | `decrement-button` | The minus (-) button |
 | `increment-button` | The plus (+) button |
+| `button` | Either stepper button |
+| `icon` | Either stepper button glyph |
+| `decrement-icon` | Added to `icon` for the minus glyph |
+| `increment-icon` | Added to `icon` for the plus glyph |
 | `input` | The number input field |
 
 ## Basic Usage

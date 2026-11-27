@@ -114,7 +114,18 @@ export const VARIANTS: readonly DateRangePickerVariant[] = ['outlined', 'filled'
 
 /** The documented CSS parts, in the order the docs list them. */
 export const PARTS = [
-  'input', 'calendar-toggle', 'clear', 'spinner', 'calendar',
+  'base', 'label', 'label-required', 'input-container', 'input',
+  'input-invalid', 'input-clearable', 'input-loading', 'calendar-toggle',
+  'clear', 'clear-visible', 'spinner', 'calendar', 'calendar-open',
+  'calendar-body', 'presets', 'preset', 'months', 'month',
+  'calendar-header', 'nav-button', 'nav-button-prev', 'nav-button-next',
+  'nav-button-hidden', 'calendar-title', 'month-label', 'year-button',
+  'year-grid', 'year-cell', 'year-cell-current', 'year-cell-selected',
+  'weekdays', 'weekday', 'days', 'day', 'day-today', 'day-range-start',
+  'day-range-end', 'day-in-range', 'day-range-preview',
+  'day-preset-preview', 'day-preset-preview-endpoint', 'day-disabled',
+  'day-empty', 'calendar-footer', 'today-button', 'today-button-base',
+  'today-button-label', 'today-button-icon', 'today-button-spinner',
   'helper-text', 'error-text',
 ] as const;
 

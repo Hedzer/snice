@@ -46,7 +46,10 @@ Displays a user profile image with automatic fallback to name-based initials or 
 |------|---------|-------------|
 | `base` | `<div>` | Outer avatar container |
 | `image` | `<img>` | The profile image element (when loaded) |
+| `image-error` | `<img>` | Added to `image` when the image fails to load |
 | `fallback` | `<div>` | Initials or default icon container |
+| `fallback-visible` | `<div>` | Added to `fallback` while the fallback is shown |
+| `icon` | `<svg>` | Default person icon (shown when there are no initials) |
 
 ```css
 snice-avatar::part(base) {

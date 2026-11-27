@@ -148,6 +148,7 @@ export class TableMasterDetail {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = `detail-toggle${expanded ? ' detail-toggle--expanded' : ''}`;
+    btn.setAttribute('part', expanded ? 'detail-toggle detail-toggle-expanded' : 'detail-toggle');
     btn.setAttribute('aria-expanded', String(expanded));
     btn.setAttribute('aria-label', expanded ? 'Collapse row' : 'Expand row');
     const customIcon = expanded ? this.options?.collapseIcon : this.options?.expandIcon;
@@ -155,7 +156,7 @@ export class TableMasterDetail {
       if (customIcon.trim().startsWith('<')) btn.innerHTML = customIcon;
       else btn.textContent = customIcon;
     } else {
-      btn.innerHTML = `<svg class="detail-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>`;
+      btn.innerHTML = `<svg class="detail-toggle-icon" part="detail-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>`;
     }
 
     btn.addEventListener('click', (e) => {

@@ -162,7 +162,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
 
     const input = partNamed('input') as HTMLInputElement | null;
     const toggle = partNamed('calendar-toggle');
-    if (!input) { say('no [part="input"] rendered'); return problems; }
+    if (!input) { say('no [part~="input"] rendered'); return problems; }
     if (!toggle) { say('no [part="calendar-toggle"] rendered'); return problems; }
     const inputBox = rect(input);
 
@@ -261,7 +261,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
 
     // ── The clear button only paints for clearable + a value ──────────────
     const clear = partNamed('clear');
-    if (!clear) { say('no [part="clear"] rendered'); }
+    if (!clear) { say('no [part~="clear"] rendered'); }
     else {
       const visible = getComputedStyle(clear).display !== 'none';
       const wantVisible = !!combo.clearable && !!combo.value && !combo.disabled;
@@ -296,7 +296,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
 
     // ── A closed picker shows no panel ────────────────────────────────────
     const panel = partNamed('calendar');
-    if (!panel) { say('no [part="calendar"] rendered'); return problems; }
+    if (!panel) { say('no [part~="calendar"] rendered'); return problems; }
     if (!combo.open) {
       if (!panel.hasAttribute('hidden')) say('a closed picker still shows its calendar');
       if (rect(panel).width > 0 && getComputedStyle(panel).display !== 'none') {

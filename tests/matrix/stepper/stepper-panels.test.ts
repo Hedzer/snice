@@ -20,7 +20,7 @@
 import { describe, it, afterEach } from 'vitest';
 import {
   SETTLE,
-  combo, exactPart, expect, expectStepperMatches, ladder, makeStepper, mount,
+  combo, exactPart, exactPartIn, expect, expectStepperMatches, ladder, makeStepper, mount,
   panelsOf, teardown, wait,
 } from './stepper-support';
 
@@ -90,7 +90,7 @@ describe('snice-stepper matrix — panels', () => {
 
   it('a panel renders part="panel" wrapping its default slot', async () => {
     const panel = await mount<any>('snice-stepper-panel', {}, 'Body');
-    const part = panel.shadowRoot.querySelector('[part="panel"]');
+    const part = exactPartIn<HTMLElement>(panel.shadowRoot, 'panel');
     expect(part, 'part="panel"').not.toBeNull();
     expect(part.querySelector('slot:not([name])'), 'wrapping the default slot').not.toBeNull();
   });

@@ -59,42 +59,43 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
     const scrimClass = this.mobileOpen ? ' scrim--visible' : '';
     const layoutMobileClass = this.mobileViewport ? ' layout--mobile' : '';
     const expanded = this.mobileOpen || !this.collapsed;
+    const sidebarStateParts = (isRail ? ' sidebar-rail' : '') + (canCollapse && this.collapsed ? ' sidebar-collapsed' : '') + (this.mobileOpen ? ' sidebar-mobile-open' : '');
 
     return html/*html*/`
-      <div class="layout${layoutMobileClass}">
+      <div class="layout${layoutMobileClass}" part="base${this.mobileViewport ? ' base-mobile' : ''}">
         <header class="header" part="header">
           <if ${canCollapse}>
-            <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="${expanded}" @click=${this.handleSidebarToggle}>
-              <svg viewBox="0 0 24 24" width="20" height="20">
+            <button class="sidebar-toggle" part="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="${expanded}" @click=${this.handleSidebarToggle}>
+              <svg part="sidebar-toggle-icon" viewBox="0 0 24 24" width="20" height="20">
                 <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor"/>
               </svg>
             </button>
           </if>
-          <div class="header-brand">
+          <div class="header-brand" part="brand">
             <slot name="brand">
-              <h2>App</h2>
+              <h2 part="brand-fallback">App</h2>
             </slot>
           </div>
-          <div class="header-content">
+          <div class="header-content" part="header-content">
             <slot name="header"></slot>
           </div>
         </header>
 
-        <div class="body-area">
-          <aside class="sidebar${sidebarRailClass}${sidebarCollapsedClass}${sidebarMobileClass}" part="sidebar">
+        <div class="body-area" part="body">
+          <aside class="sidebar${sidebarRailClass}${sidebarCollapsedClass}${sidebarMobileClass}" part="sidebar${sidebarStateParts}">
             <slot name="sidebar">
-              <snice-nav class="sidebar-nav" variant="hierarchical" orientation="vertical"></snice-nav>
+              <snice-nav class="sidebar-nav" part="nav" exportparts="base: nav-base, nav: nav-nav, group: nav-group, group-label: nav-group-label, submenu: nav-submenu, item: nav-item, link: nav-link, icon: nav-icon, label: nav-label, item-active: nav-item-active, group-active: nav-group-active, link-active: nav-link-active" variant="hierarchical" orientation="vertical"></snice-nav>
             </slot>
           </aside>
 
-          <div class="scrim${scrimClass}" part="scrim" @click=${this.handleScrimClick}></div>
+          <div class="scrim${scrimClass}" part="scrim${this.mobileOpen ? ' scrim-visible' : ''}" @click=${this.handleScrimClick}></div>
 
           <main class="main" part="main">
             <slot name="page"></slot>
           </main>
         </div>
 
-        <footer class="footer${this.hasFooterContent ? '' : ' footer--empty'}" part="footer">
+        <footer class="footer${this.hasFooterContent ? '' : ' footer--empty'}" part="footer${this.hasFooterContent ? '' : ' footer-empty'}">
           <slot name="footer"></slot>
         </footer>
       </div>

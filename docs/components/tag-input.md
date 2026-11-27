@@ -69,10 +69,16 @@ binding `value` to the `tag-change` payload never re-enters.
 | `base` | The outer wrapper div |
 | `label` | The label element above the input |
 | `container` | Container holding tags and the input field |
+| `container-disabled` | Added to `container` while disabled |
+| `container-invalid` | Added to `container` while the value fails validation |
 | `tag` | An individual tag chip |
 | `tag-text` | The text content inside a tag |
+| `tag-remove` | The remove button on a tag (hidden while disabled/readonly) |
+| `tag-remove-icon` | The X icon inside a tag's remove button |
 | `input` | The text input field |
 | `suggestions` | The autocomplete suggestions dropdown |
+| `suggestion` | One suggestion row |
+| `suggestion-highlighted` | Added to `suggestion` while keyboard-highlighted |
 
 ## Basic Usage
 

@@ -28,6 +28,9 @@ interface VirtualScrollerItem {
 ## CSS Parts
 
 - `base` - The outer scroller container
+- `spacer` - Full-height sizing element that drives the scrollbar
+- `viewport` - Translated window that holds the rendered rows
+- `item` - A rendered row
 
 ## Basic Usage
 

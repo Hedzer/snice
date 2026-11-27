@@ -35,39 +35,40 @@ export class SniceLayoutDocs extends HTMLElement implements Layout {
     const tocClass = this.hasToc ? '' : ' toc--empty';
 
     return html/*html*/`
-      <div class="layout">
-        <a class="skip-link" href="#snice-docs-main">Skip to content</a>
+      <div class="layout" part="base">
+        <a class="skip-link" part="skip-link" href="#snice-docs-main">Skip to content</a>
 
         <header class="header" part="header">
           <button
             class="sidebar-toggle"
+            part="sidebar-toggle"
             type="button"
             aria-label="Toggle documentation navigation"
             aria-expanded="${this.sidebarOpen}"
             @click=${this.handleSidebarToggle}
           >
-            <svg viewBox="0 0 24 24" width="20" height="20">
+            <svg part="sidebar-toggle-icon" viewBox="0 0 24 24" width="20" height="20">
               <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor"/>
             </svg>
           </button>
-          <div class="header-brand">
+          <div class="header-brand" part="brand">
             <slot name="brand">
-              <span class="brand-fallback">Documentation</span>
+              <span class="brand-fallback" part="brand-fallback">Documentation</span>
             </slot>
           </div>
-          <div class="header-content">
+          <div class="header-content" part="header-content">
             <slot name="header"></slot>
           </div>
         </header>
 
-        <div class="body-area">
-          <nav class="sidebar${sidebarClass}" part="sidebar" aria-label="Documentation">
+        <div class="body-area" part="body">
+          <nav class="sidebar${sidebarClass}" part="sidebar${this.sidebarOpen ? ' sidebar-open' : ''}" aria-label="Documentation">
             <slot name="sidebar">
-              <snice-nav class="sidebar-nav" variant="hierarchical" orientation="vertical"></snice-nav>
+              <snice-nav class="sidebar-nav" part="nav" exportparts="base: nav-base, nav: nav-nav, group: nav-group, group-label: nav-group-label, submenu: nav-submenu, item: nav-item, link: nav-link, icon: nav-icon, label: nav-label, item-active: nav-item-active, group-active: nav-group-active, link-active: nav-link-active" variant="hierarchical" orientation="vertical"></snice-nav>
             </slot>
           </nav>
 
-          <div class="scrim${scrimClass}" part="scrim" @click=${this.handleScrimClick}></div>
+          <div class="scrim${scrimClass}" part="scrim${this.sidebarOpen ? ' scrim-visible' : ''}" @click=${this.handleScrimClick}></div>
 
           <main class="content" id="snice-docs-main" part="main">
             <article class="prose" part="prose">
@@ -78,7 +79,7 @@ export class SniceLayoutDocs extends HTMLElement implements Layout {
             </footer>
           </main>
 
-          <aside class="toc${tocClass}" part="toc" aria-label="On this page">
+          <aside class="toc${tocClass}" part="toc${this.hasToc ? '' : ' toc-empty'}" aria-label="On this page">
             <slot name="toc"></slot>
           </aside>
         </div>

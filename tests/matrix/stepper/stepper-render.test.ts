@@ -22,7 +22,7 @@
 import { describe, it, afterEach } from 'vitest';
 import {
   DEFAULTS, ORIENTATIONS, PARTS, SAMPLE,
-  combo, exactPart, exactParts, exactPartsIn, expect, expectStepperMatches, ladder,
+  combo, exactPart, exactPartIn, exactParts, exactPartsIn, expect, expectStepperMatches, ladder,
   makeStepper, stepsOf, teardown, textOf, wait,
 } from './stepper-support';
 
@@ -137,8 +137,8 @@ describe('snice-stepper matrix — render', () => {
     const missing = PARTS.filter((name) => {
       if (name === 'panel') {
         // `panel` is the PANEL element's own part, not the stepper's.
-        return el.querySelector('snice-stepper-panel')
-          ?.shadowRoot?.querySelector('[part="panel"]') == null;
+        const shadow = el.querySelector('snice-stepper-panel')?.shadowRoot;
+        return !shadow || exactPartIn<HTMLElement>(shadow, 'panel') == null;
       }
       return exactParts(el, name).length === 0;
     });

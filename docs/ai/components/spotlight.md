@@ -61,6 +61,11 @@ spotlight.addEventListener('spotlight-target-missing', (e) => console.warn('Miss
 
 ## CSS Parts
 
+NOTE: the overlay is a LIGHT-DOM portal appended to `document.body`, not shadow
+content, so `snice-spotlight::part(...)` reaches none of these. Target them
+through the portal instead: `[data-snice-spotlight-portal] [part~="popover"]`.
+The tokens below are the `part` attributes those portal elements carry.
+
 - `base` - Root container
 - `backdrop` - Dimmed overlay
 - `cutout` - Transparent target cutout
@@ -69,6 +74,11 @@ spotlight.addEventListener('spotlight-target-missing', (e) => console.warn('Miss
 - `description` - Step description
 - `actions` - Step action buttons
 - `step-indicator` - Current step indicator
+- `footer` - Popover footer holding the indicator and actions
+- `button` - Any popover action button
+- `button-skip` - Added to `button` for the Skip button
+- `button-back` - Added to `button` for the Back button (hidden on the first step)
+- `button-next` - Added to `button` for the Next/Done button
 
 ## Accessibility
 

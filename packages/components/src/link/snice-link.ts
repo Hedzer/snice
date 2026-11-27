@@ -91,12 +91,12 @@ export class SniceLink extends HTMLElement implements SniceLinkElement {
         target="${linkTarget}"
         rel="${linkRel}"
         class="${linkClasses}"
-        part="link"
+        part="base link${this.disabled ? ' link-disabled' : ''}${this.underline ? ' link-underline' : ''}${this.external ? ' link-external' : ''}"
         @click="${(e: MouseEvent) => this.handleClick(e)}"
       >
         <slot></slot>
         <if ${this.external}>
-          <span class="link__external-icon" part="external-icon">↗</span>
+          <span class="link__external-icon" part="icon external-icon">↗</span>
         </if>
       </a>
     `;

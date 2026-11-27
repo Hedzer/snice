@@ -61,6 +61,11 @@ A simple WYSIWYG document editor component with formatting toolbar and content i
 | `editor` | The editable content area |
 | `toolbar` | The formatting toolbar |
 | `icon` | Toolbar icon element |
+| `button` | A toolbar button |
+| `toolbar-button` | A toolbar button (same element as `button`) |
+| `divider` | A separator between toolbar button groups |
+| `menu` | Download format menu |
+| `menu-item` | A download format button in the `menu` |
 
 ```css
 snice-doc::part(base) {

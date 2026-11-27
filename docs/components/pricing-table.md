@@ -66,12 +66,38 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | Part | Element | Description |
 |------|---------|-------------|
 | `base` | `<div>` | The outer container |
+| `toggle` | `<div>` | Billing toggle switch area |
+| `toggle-button` | `<button>` | Monthly or annual billing button |
+| `toggle-button-active` | `<button>` | Added to `toggle-button` for the selected billing period |
 | `cards` | `<div>` | The cards layout container |
 | `card` | `<div>` | Individual plan card |
+| `card-highlighted` | `<div>` | Added to `card` for a highlighted plan |
+| `badge` | `<span>` | Plan badge |
+| `plan-header` | `<div>` | Plan name and description wrapper |
+| `plan-name` | `<h3>` | Plan name heading |
+| `plan-description` | `<p>` | Plan description text |
+| `price` | `<div>` | Card price block |
+| `currency` | `<span>` | Currency symbol |
+| `amount` | `<span>`/`<strong>` | Formatted price amount. In the card variant the currency sits in its own `currency` part; in the table variant the `amount` text includes the currency symbol |
+| `period` | `<span>` | Billing period suffix |
+| `features` | `<ul>` | Card feature list |
+| `feature` | `<li>` | Individual feature row |
+| `feature-excluded` | `<li>` | Added to `feature` when the plan excludes it |
+| `feature-icon` | `<svg>` | Included or excluded feature glyph |
+| `feature-icon-included` | `<svg>` | Added to `feature-icon` for an included feature |
+| `feature-icon-excluded` | `<svg>` | Added to `feature-icon` for an excluded feature |
+| `feature-name` | `<span>` | Feature label wrapper inside a feature row |
+| `feature-value` | `<span>` | Value text for a non-boolean feature |
 | `cta` | `<button>` | Call-to-action button |
-| `toggle` | `<div>` | Billing toggle switch area |
 | `table-wrapper` | `<div>` | Table layout wrapper |
 | `table` | `<table>` | The comparison table element |
+| `table-header` | `<thead>` | Comparison table header section |
+| `table-body` | `<tbody>` | Comparison table body section |
+| `table-row` | `<tr>` | Any comparison table row |
+| `table-cell` | `<th>/<td>` | Any comparison table cell |
+| `header-cell` | `<th>` | Added to `table-cell` on header cells |
+| `header-cell-highlighted` | `<th>` | Added to `header-cell` for a highlighted plan column |
+| `table-cell-highlighted` | `<td>` | Added to `table-cell` for a highlighted plan column |
 
 ## Basic Usage
 

@@ -24,7 +24,10 @@ test.describe('Snice Empty State visual integrity', () => {
       const problems: string[] = [];
       document.querySelectorAll('snice-empty-state').forEach((host, i) => {
         const root = (host as any).shadowRoot as ShadowRoot;
-        const container = root.querySelector('[part="container"]') as HTMLElement | null;
+        // Token-exact: the root carries `part="base container"`, so an exact
+        // `[part~="container"]` match no longer finds it.
+        const container = ([...root.querySelectorAll('[part]')].find(node =>
+          (node.getAttribute('part') ?? '').split(/\s+/).includes('container')) ?? null) as HTMLElement | null;
         if (!container) { problems.push(`es[${i}]: no container`); return; }
         const cr = container.getBoundingClientRect();
         if (cr.width === 0 || cr.height === 0) { problems.push(`es[${i}]: container 0-size`); return; }

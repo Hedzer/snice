@@ -52,7 +52,8 @@ qrPosition: 'top-right'|'header'|'footer' = 'top-right'; // attr: qr-position
 - `base` - Root container
 - `header` - Header section
 - `title` / `wo-number` / `date` / `due-date` - Header fields
-- `priority` / `status` - Badge elements
+- `priority` / `status` - Badge elements; `status` also carries `status-open`, `status-in-progress`, `status-completed`, or `status-cancelled` for the current status
+- `priority-low` / `priority-medium` / `priority-high` / `priority-urgent` - Added to `priority` for the current priority
 - `customer` / `customer-name` / `customer-address` / `customer-contact`
 - `asset` / `asset-id` / `asset-name`
 - `description` / `description-label` / `description-content`
@@ -62,7 +63,47 @@ qrPosition: 'top-right'|'header'|'footer' = 'top-right'; // attr: qr-position
 - `costs` / `grand-total`
 - `notes` / `notes-label` / `notes-content`
 - `signature` / `signature-line` / `signature-date` / `sign-button`
-- `qr-container` / `footer`
+- `qr-container` / `footer` - QR wrapper and document footer; `qr-container` also carries `qr-container-top-right`, `qr-container-header`, or `qr-container-footer` for the active placement
+- `section-title` - Heading of a section
+- `header-left` - Left column of the header (title, number, dates)
+- `header-right` - Right column of the header (badges)
+- `dates` - Date row in the header
+- `date-item` - A single date field in the header
+- `date-label` - Label of a header date field
+- `customer-fields` - Customer field grid
+- `customer-field` - A single customer field
+- `customer-label` - Label of a customer field
+- `customer-email` - Email value of the customer section
+- `asset-fields` - Asset field grid
+- `asset-field` - A single asset field
+- `asset-label` - Label of an asset field
+- `asset-location` - Location value of the asset section
+- `asset-serial` - Serial value of the asset section
+- `asset-last-service` - Last-service value of the asset section
+- `task-list` - Task list element
+- `task-completed` - Added to `task` while the task is completed
+- `task-checkbox-checked` - Added to `task-checkbox` while the task is completed
+- `task-check-icon` - Check glyph inside the task checkbox
+- `task-content` - Description and meta column of a task
+- `task-meta` - Assignee and hours row of a task
+- `task-hours` - Task hours text
+- `parts-head` - Parts table head
+- `parts-header-row` - Parts table header row
+- `parts-header-cell` - Parts table header cell
+- `parts-body` - Parts table body
+- `part-total` - Line total cell of a parts row
+- `parts-total-label` - "Parts Total:" label
+- `parts-total-value` - Parts total amount
+- `labor-fields` - Labor field grid
+- `labor-field` - A single labor field
+- `labor-label` - Label of a labor field
+- `signature-lines` - Signature line row
+- `signature-field` - A single signature field
+- `signature-label` - Label under a signature line
+- `costs-table` - Cost summary rows wrapper
+- `cost-row` - A cost summary row
+- `cost-row-grand` - Added to `cost-row` on the grand-total row
+- `cost-label` - Label of a cost summary row
 
 ## CSS Custom Properties
 

@@ -38,6 +38,7 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | Part | Element | Description |
 |------|---------|-------------|
 | `base` | `<div>` | Outer container with `role="progressbar"` |
+| `svg` | `<svg>` | The ring SVG canvas |
 | `track` | `<circle>` | Background circle |
 | `fill` | `<circle>` | Progress circle |
 | `center` | `<div>` | Center text container |

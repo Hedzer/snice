@@ -89,10 +89,41 @@ interface FlowEdge {
 
 | Part | Description |
 |------|-------------|
-| `base` | Outer flow container |
-| `canvas` | SVG layer for edges and connections |
-| `nodes` | Container for all node elements |
-| `minimap` | Minimap overview panel |
+| `base` | Root flow editor container |
+| `grid` | Background grid layer |
+| `grid-svg` | SVG holding the grid pattern |
+| `canvas` | Edge SVG canvas |
+| `edge` | An edge path |
+| `edge-label` | An edge label |
+| `edge-preview` | The edge being drawn from a port |
+| `nodes` | Node layer |
+| `node` | A node card |
+| `node-header` | Node header bar |
+| `node-type` | Node type chip in the header |
+| `node-label` | Node label in the header |
+| `node-body` | Node body |
+| `node-inputs` | Input port column |
+| `node-outputs` | Output port column |
+| `port` | A node port |
+| `port-input` | An input `port` |
+| `port-output` | An output `port` |
+| `port-dot` | Connector dot of a port |
+| `port-label` | Label of a port |
+| `minimap` | Minimap container |
+| `minimap-svg` | Minimap SVG |
+| `minimap-edge` | An edge line in the minimap |
+| `minimap-node` | A node rectangle in the minimap |
+| `minimap-viewport` | Viewport indicator in the minimap |
+
+**State tokens** (added alongside the base token):
+
+| Part | Description |
+|------|-------------|
+| `edge-selected` | Added to `edge` while it is selected |
+| `edge-animated` | Added to `edge` while it is animated |
+| `node-selected` | Added to `node` while it is selected |
+| `node-dragging` | Added to `node` while it is being dragged |
+| `port-connected` | Added to `port` while it has a connection |
 
 ```css
 snice-flow::part(base) {

@@ -61,7 +61,36 @@ readonly labels: NodeList | null;
 
 ## CSS Parts
 
-- `track`, `fill`, `thumb`, `spinner`, `error-text`, `helper-text`
+- `base` - Outer wrapper
+- `base-vertical` - Added to `base` while `vertical` is set
+- `label` - Label element
+- `label-required` - Added to `label` while `required` is set
+- `controls` - Row wrapping the track and value readout
+- `controls-vertical` - Added to `controls` while `vertical` is set
+- `track` - Slider track
+- `track-vertical` - Added to `track` while `vertical` is set
+- `track-disabled` - Added to `track` while interaction is disabled
+- `track-invalid` - Added to `track` while invalid
+- `track-loading` - Added to `track` while loading
+- `fill` - Filled portion of the track
+- `fill-vertical` - Added to `fill` while `vertical` is set
+- `fill-dragging` - Added to `fill` while the thumb is being dragged
+- `thumb` - Draggable thumb
+- `thumb-vertical` - Added to `thumb` while `vertical` is set
+- `thumb-dragging` - Added to `thumb` while being dragged
+- `thumb-loading` - Added to `thumb` while loading
+- `thumb-invalid` - Added to `thumb` while invalid
+- `spinner` - Loading spinner inside the thumb
+- `ticks` - Tick mark container
+- `ticks-vertical` - Added to `ticks` while `vertical` is set
+- `tick` - Individual tick mark
+- `tick-vertical` - Added to `tick` while `vertical` is set
+- `value` - Value readout
+- `error-text` - Error message container
+- `helper-text` - Helper text container
+- `lens` - Hidden iOS/macOS Liquid Glass thumb magnification lens (`data-platform-only="ios,macos"`)
+- `ripple` - Hidden Material 3 state-layer ripple helper (`data-platform-only="material"`)
+- `stops` - Hidden Material 3 slider stop-indicator helper (`data-platform-only="material"`)
 
 ## Basic Usage
 

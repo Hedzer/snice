@@ -25,8 +25,16 @@ hash: boolean = false;        // auto-prepend # to href
 
 ## CSS Parts
 
+- `base` - Anchor element (same node as `link`)
 - `link` - Anchor element
+- `icon` - Icon wrapper inside the anchor
 - `external-icon` - External arrow icon
+
+State tokens:
+
+- `link-disabled` - Added to `link` while `disabled`
+- `link-underline` - Added to `link` while `underline`
+- `link-external` - Added to `link` while `external`
 
 ## Basic Usage
 

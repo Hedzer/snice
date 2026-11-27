@@ -32,6 +32,7 @@ spaceBetween: number = 0;                                  // attribute: space-b
 
 ## CSS Parts
 
+- `base` - Outermost wrapper (same element as `container`)
 - `container` - Outermost wrapper
 - `viewport` - Visible slide area
 - `slides-container` - Flex container holding slides
@@ -39,6 +40,12 @@ spaceBetween: number = 0;                                  // attribute: space-b
 - `button-prev` / `button-next` - Navigation buttons
 - `indicators` - Indicator dot container
 - `indicator` - Individual indicator dot
+- `button-icon` - Chevron glyph inside a navigation button
+- `button-icon-prev` - Added to `button-icon` in the previous button
+- `button-icon-next` - Added to `button-icon` in the next button
+- `button-prev-disabled` - Added to `button-prev` when there is no previous slide
+- `button-next-disabled` - Added to `button-next` when there is no next slide
+- `indicator-active` - Added to `indicator` for the active slide
 
 ## Basic Usage
 

@@ -66,15 +66,32 @@ const data = await reader.scanImage(file);
 ## CSS Parts
 
 - `base` - Root container
+- `viewport` - Scanning viewport framing the video
 - `video` - Live camera video element
-- `canvas` - Offscreen capture canvas
-- `viewport` - Scanning viewport
-- `controls` - Control bar
-- `button-start` - Start scanning button
-- `button-stop` - Stop scanning button
-- `button-switch` - Switch camera button
+- `canvas` - Offscreen canvas used for frame capture
+- `overlay` - Idle overlay shown before scanning starts
+- `message` - Idle overlay message block
+- `icon` - Any overlay or button glyph
+- `message-icon` - Added to `icon` on the idle overlay glyph
+- `message-text` - Idle overlay message text
+- `corners` - Scanning corner brackets container
+- `corner` - Individual corner bracket
+- `corner-top-left` - Added to `corner` on the top-left bracket
+- `corner-top-right` - Added to `corner` on the top-right bracket
+- `corner-bottom-left` - Added to `corner` on the bottom-left bracket
+- `corner-bottom-right` - Added to `corner` on the bottom-right bracket
 - `result` - Decoded result output
+- `result-label` - "Scanned:" label inside `result`
 - `error-text` - Error message
+- `controls` - Control bar
+- `button` - Every control bar button
+- `button-start` - Added to `button` on the start/snapshot control
+- `button-stop` - Added to `button` on the stop control
+- `button-switch` - Added to `button` on the switch camera control
+- `start-icon` - Added to `icon` on the start button glyph
+- `stop-icon` - Added to `icon` on the stop button glyph
+- `snap-icon` - Added to `icon` on the snapshot button glyph
+- `switch-icon` - Added to `icon` on the switch camera button glyph
 
 ## Accessibility
 

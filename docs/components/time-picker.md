@@ -16,7 +16,7 @@
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
-- [CSS parts](#css-parts)
+- [CSS Parts](#css-parts)
 
 ## Basic usage
 
@@ -235,20 +235,34 @@ The dropdown opens from input click, the clock button, `Enter`, or `ArrowDown`; 
 
 Property assignment, reset, and browser restoration do not synthesize user change events.
 
-## CSS parts
+## CSS Parts
 
 | Part | Element |
 |---|---|
 | `base` | Wrapper |
 | `label` | Visible label |
+| `label-required` | Added to `label` when `required` |
+| `container` | Input row holding the input, toggle, clear button and spinner |
 | `input` | Editable text input |
+| `input-invalid` | Added to `input` while invalid |
+| `input-loading` | Added to `input` while loading |
 | `toggle` | Clock toggle |
 | `clear` | Clear button |
+| `icon` | Any button glyph (clock, clear) |
+| `toggle-icon` | Added to `icon` for the clock glyph |
+| `clear-icon` | Added to `icon` for the clear glyph |
 | `spinner` | Loading spinner |
 | `dropdown` | Dropdown or inline selector container |
-| `hours` | Hour column |
-| `minutes` | Minute column |
-| `seconds` | Optional seconds column |
-| `period` | Optional AM/PM column |
+| `dropdown-inline` | Added to `dropdown` for the `inline` variant |
+| `selectors` | Row of selector columns inside the dropdown |
+| `selector-column` | Every selector column (hours, minutes, seconds, period) |
+| `hours` | Added to `selector-column` for the hour column |
+| `minutes` | Added to `selector-column` for the minute column |
+| `seconds` | Added to `selector-column` for the optional seconds column |
+| `period` | Added to `selector-column` for the optional AM/PM column |
+| `selector-title` | Column heading (Hr/Min/Sec/Period) |
+| `selector-list` | Scrollable option list in a column |
+| `selector-item` | One option button |
+| `selector-item-selected` | Added to `selector-item` while selected |
 | `helper-text` | Helper text |
 | `error-text` | Error text |

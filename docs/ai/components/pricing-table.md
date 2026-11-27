@@ -24,13 +24,39 @@ Attributes: `excluded` (boolean), `value` (string for custom display)
 
 ## CSS Parts
 
-- `base` - Outer container
-- `cards` - Cards layout container
-- `card` - Individual plan card
-- `cta` - Call-to-action button
+- `base` - The outer container
 - `toggle` - Billing toggle switch area
+- `toggle-button` - Monthly or annual billing button
+- `toggle-button-active` - Added to `toggle-button` for the selected billing period
+- `cards` - The cards layout container
+- `card` - Individual plan card
+- `card-highlighted` - Added to `card` for a highlighted plan
+- `badge` - Plan badge
+- `plan-header` - Plan name and description wrapper
+- `plan-name` - Plan name heading
+- `plan-description` - Plan description text
+- `price` - Card price block
+- `currency` - Currency symbol
+- `amount` - Formatted price amount; in the table variant it also includes the currency symbol
+- `period` - Billing period suffix
+- `features` - Card feature list
+- `feature` - Individual feature row
+- `feature-excluded` - Added to `feature` when the plan excludes it
+- `feature-icon` - Included or excluded feature glyph
+- `feature-icon-included` - Added to `feature-icon` for an included feature
+- `feature-icon-excluded` - Added to `feature-icon` for an excluded feature
+- `feature-name` - Feature label wrapper inside a feature row
+- `feature-value` - Value text for a non-boolean feature
+- `cta` - Call-to-action button
 - `table-wrapper` - Table layout wrapper
-- `table` - Comparison table element
+- `table` - The comparison table element
+- `table-header` - Comparison table header section
+- `table-body` - Comparison table body section
+- `table-row` - Any comparison table row
+- `table-cell` - Any comparison table cell
+- `header-cell` - Added to `table-cell` on header cells
+- `header-cell-highlighted` - Added to `header-cell` for a highlighted plan column
+- `table-cell-highlighted` - Added to `table-cell` for a highlighted plan column
 
 ## Basic Usage
 

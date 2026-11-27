@@ -55,6 +55,48 @@ A multi-step appointment booking widget with date selection, time slot picking, 
 | `slots` | `<div>` | Time slots section |
 | `form` | `<div>` | Confirmation form section |
 | `confirmation` | `<div>` | Success message |
+| `content` | `<div>` | Wrapper around the current step body |
+| `step` | `<div>` | One step in the stepper header |
+| `step-active` | `<div>` | Added to `step` for the current step |
+| `step-completed` | `<div>` | Added to `step` for a completed step |
+| `step-number` | `<span>` | Step number/checkmark badge |
+| `month-header` | `<div>` | Month navigation row |
+| `month-nav` | `<button>` | A month navigation button |
+| `month-nav-prev` | `<button>` | Added to `month-nav` on the previous-month button |
+| `month-nav-next` | `<button>` | Added to `month-nav` on the next-month button |
+| `month-title` | `<span>` | Month and year label |
+| `weekdays` | `<div>` | Weekday header row |
+| `weekday` | `<div>` | One weekday header cell |
+| `days` | `<div>` | Day grid |
+| `day` | `<button>` | One day cell |
+| `day-other` | `<button>` | Added to `day` for a day outside the displayed month |
+| `day-today` | `<button>` | Added to `day` for today |
+| `day-selected` | `<button>` | Added to `day` for the selected date |
+| `day-available` | `<button>` | Added to `day` for a selectable available date |
+| `day-disabled` | `<button>` | Added to `day` for a non-selectable date |
+| `slots-title` | `<div>` | Heading above the time slots |
+| `no-slots` | `<div>` | Empty-state message when no slots are available |
+| `slots-grid` | `<div>` | Grid of time slot buttons |
+| `slot` | `<button>` | One time slot button |
+| `slot-selected` | `<button>` | Added to `slot` for the selected slot |
+| `slot-time` | `<div>` | Time label inside a slot |
+| `slot-duration` | `<div>` | Duration label inside a slot |
+| `summary` | `<div>` | Booking summary block in the form step |
+| `summary-row` | `<div>` | One summary line |
+| `summary-label` | `<div>` | Summary line label |
+| `summary-value` | `<div>` | Summary line value |
+| `field` | `<div>` | One custom form field wrapper |
+| `label` | `<label>` | Field label |
+| `input` | `<input>` | Field input control |
+| `input-textarea` | `<textarea>` | Added to `input` on a textarea field |
+| `actions` | `<div>` | Stepper action bar |
+| `button` | `<button>` | An action-bar or confirmation button |
+| `back-button` | `<button>` | Added to `button` on the back/cancel button |
+| `next-button` | `<button>` | Added to `button` on the next/confirm button |
+| `reset-button` | `<button>` | Added to `button` on the "Book Another" button |
+| `confirmation-icon` | `<div>` | Success checkmark |
+| `confirmation-title` | `<div>` | Success heading |
+| `confirmation-text` | `<div>` | Success detail text |
 
 ```css
 snice-booking::part(base) {

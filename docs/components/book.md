@@ -78,6 +78,16 @@ Individual page element. Each child becomes one page in the book. Supports `fron
 |------|---------|-------------|
 | `base` | `<div>` | The outer cover container |
 | `book` | `<div>` | The inner book element |
+| `page` | `<label>` | Any page surface (cover, last page, or flippable leaf) |
+| `page-cover` | `<label>` | Variant token: a second token on the same `page` element, on the left-hand cover panel |
+| `page-last` | `<label>` | Variant token: a second token on the same `page` element, on the right-hand final page panel |
+| `page-leaf` | `<label>` | Variant token: a second token on the same `page` element, on each flippable leaf |
+| `page-front` | `<div>` | Child element inside a `page page-leaf` — the leaf's front face, not a token on `page` |
+| `page-back` | `<div>` | Child element inside a `page page-leaf` — the leaf's back face, not a token on `page` |
+| `cover-image` | `<img>` | Cover artwork image |
+| `title` | `<div>` | Book title on the cover |
+| `author` | `<div>` | Author line on the cover |
+| `content` | `<div>` | Projected page content container |
 
 ```css
 snice-book::part(base) {

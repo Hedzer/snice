@@ -45,20 +45,20 @@ export class SniceStatGroup extends HTMLElement implements SniceStatGroupElement
   private renderTrendIcon(trend: string): unknown {
     if (trend === 'up') {
       return html/*html*/`
-        <svg class="stat__trend-icon stat__trend-icon--up" viewBox="0 0 20 20" fill="currentColor">
+        <svg part="trend-icon trend-icon-up" class="stat__trend-icon stat__trend-icon--up" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
         </svg>
       `;
     }
     if (trend === 'down') {
       return html/*html*/`
-        <svg class="stat__trend-icon stat__trend-icon--down" viewBox="0 0 20 20" fill="currentColor">
+        <svg part="trend-icon trend-icon-down" class="stat__trend-icon stat__trend-icon--down" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
         </svg>
       `;
     }
     return html/*html*/`
-      <svg class="stat__trend-icon stat__trend-icon--neutral" viewBox="0 0 20 20" fill="currentColor">
+      <svg part="trend-icon trend-icon-neutral" class="stat__trend-icon stat__trend-icon--neutral" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
       </svg>
     `;
@@ -75,20 +75,20 @@ export class SniceStatGroup extends HTMLElement implements SniceStatGroupElement
            @click=${() => this.handleStatClick(stat, index)}
            @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.handleStatClick(stat, index); } }}>
         <if ${stat.icon}>
-          <div class="stat__icon" style="${hasColor ? `color: ${stat.color}` : ''}">
+          <div class="stat__icon" part="icon" style="${hasColor ? `color: ${stat.color}` : ''}">
             ${renderIcon(stat.icon!, 'stat__icon-glyph')}
           </div>
         </if>
-        <div class="stat__content">
-          <span class="stat__label">${stat.label}</span>
-          <span class="stat__value" style="${hasColor ? `color: ${stat.color}` : ''}">${stat.value}</span>
+        <div class="stat__content" part="content">
+          <span class="stat__label" part="label">${stat.label}</span>
+          <span class="stat__value" part="value" style="${hasColor ? `color: ${stat.color}` : ''}">${stat.value}</span>
           <if ${stat.trend || stat.trendValue}>
-            <div class="stat__trend stat__trend--${stat.trend || 'neutral'}">
+            <div class="stat__trend stat__trend--${stat.trend || 'neutral'}" part="trend${({ up: ' trend-up', down: ' trend-down', neutral: ' trend-neutral' })[stat.trend!] ?? ' trend-neutral'}">
               <if ${stat.trend}>
                 ${this.renderTrendIcon(stat.trend!)}
               </if>
               <if ${stat.trendValue}>
-                <span class="stat__trend-value">${stat.trendValue}</span>
+                <span class="stat__trend-value" part="trend-value">${stat.trendValue}</span>
               </if>
             </div>
           </if>

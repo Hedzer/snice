@@ -51,6 +51,23 @@ readonly totalPages: number      // Getter, count of slotted page elements
 
 - `base` - Outer cover container
 - `book` - Inner book element
+- `page` - Any page surface (cover, last page, or flippable leaf)
+
+Variant tokens — a second token on the SAME `page` element, never their own node:
+
+- `page-cover` - Added to `page` on the left-hand cover panel
+- `page-last` - Added to `page` on the right-hand final page panel
+- `page-leaf` - Added to `page` on each flippable leaf
+
+Child elements — separate nodes INSIDE a `page page-leaf`, not tokens on it:
+
+- `page-front` - The `<div>` front face of a flippable leaf
+- `page-back` - The `<div>` back face of a flippable leaf
+
+- `cover-image` - Cover artwork `<img>`
+- `title` - Book title on the cover
+- `author` - Author line on the cover
+- `content` - Projected page content container
 
 ## Keyboard Navigation
 

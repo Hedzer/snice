@@ -63,16 +63,23 @@ interface DataCardField {
 
 | Part | Description |
 |------|-------------|
+| `base` | Root wrapper (same element as `container`) |
 | `container` | Main card container |
 | `header` | Header section |
 | `title` | Title text |
 | `edit-toggle` | Edit mode toggle button |
+| `edit-toggle-active` | Added to `edit-toggle` while edit mode is on |
+| `edit-icon` | Icon inside the edit toggle |
 | `group` | Field group container |
 | `group-title` | Group heading text |
 | `field` | Individual field row |
 | `field-icon` | Field icon |
 | `field-label` | Field label text |
 | `field-value` | Field value display |
+| `field-value-link` | Added to `field-value` for `type: 'link'` fields |
+| `field-value-badge` | Added to `field-value` for `type: 'badge'` fields |
+| `field-value-date` | Added to `field-value` for `type: 'date'` fields |
+| `field-value-currency` | Added to `field-value` for `type: 'currency'` fields |
 | `field-input` | Edit mode input field |
 | `field-save` | Save button in edit mode |
 | `field-edit` | Edit button per field |

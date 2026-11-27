@@ -115,7 +115,7 @@ export class SniceAvatarGroup extends HTMLElement implements SniceAvatarGroupEle
                 title="${name}"
                 aria-label="${name || 'Avatar'}"
                 @click=${() => this.handleAvatarClick(avatar, index)}>
-          <img src="${avatar.src}" alt="${name}" @error=${(e: Event) => this.handleImgError(e, initials)}>
+          <img part="avatar-image" src="${avatar.src}" alt="${name}" @error=${(e: Event) => this.handleImgError(e, initials)}>
         </button>
       `;
     }
@@ -129,7 +129,7 @@ export class SniceAvatarGroup extends HTMLElement implements SniceAvatarGroupEle
                 title="${name}"
                 aria-label="${name || 'Avatar'}"
                 @click=${() => this.handleAvatarClick(avatar, index)}>
-          <span class="avatar-initials">${initials}</span>
+          <span class="avatar-initials" part="initials">${initials}</span>
         </button>
       `;
     }
@@ -142,7 +142,7 @@ export class SniceAvatarGroup extends HTMLElement implements SniceAvatarGroupEle
               title="${name}"
               aria-label="${name || 'Avatar'}"
               @click=${() => this.handleAvatarClick(avatar, index)}>
-        <svg class="avatar-fallback-icon" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="avatar-fallback-icon" part="icon" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
         </svg>
       </button>
@@ -156,6 +156,7 @@ export class SniceAvatarGroup extends HTMLElement implements SniceAvatarGroupEle
       img.style.display = 'none';
       const span = document.createElement('span');
       span.className = 'avatar-initials';
+      span.setAttribute('part', 'initials');
       span.textContent = initials;
       parent.appendChild(span);
     }

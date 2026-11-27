@@ -20,7 +20,7 @@
  *   · every documented part that the combo asks for has a real, visible box,
  *     and every part it does not ask for is absent rather than collapsed;
  *   · the regions stack downward — hero, header, meta, content, controls —
- *     without overlapping, each contained by `[part="container"]`;
+ *     without overlapping, each contained by `[part~="container"]`;
  *   · `full` lays ingredients and steps side by side; `card` stacks them;
  *   · ingredient rows and step rows descend inside their own sections and stay
  *     inside them, and a row's checkbox never sits on its text;
@@ -139,11 +139,11 @@ async function visualProblems(combo: Combo): Promise<string[]> {
     if (!sr) { say('no shadow root'); return problems; }
 
     const rect = (el: Element) => el.getBoundingClientRect();
-    const partOf = (name: string) => sr.querySelector(`[part="${name}"]`) as HTMLElement | null;
+    const partOf = (name: string) => sr.querySelector(`[part~="${name}"]`) as HTMLElement | null;
     const hostBox = rect(host);
 
     const container = partOf('container');
-    if (!container) { say('no [part="container"]'); return problems; }
+    if (!container) { say('no [part~="container"]'); return problems; }
     const containerBox = rect(container);
 
     const within = (inner: DOMRect, outer: DOMRect, what: string, of: string) => {
@@ -189,9 +189,9 @@ async function visualProblems(combo: Combo): Promise<string[]> {
       if (b.width <= 0 || b.height <= 0) say(`[part="${name}"] renders at ${b.width}x${b.height}`);
       if (cs.visibility !== 'visible') say(`[part="${name}"] visibility "${cs.visibility}"`);
       if (Number(cs.opacity) <= 0) say(`[part="${name}"] opacity "${cs.opacity}"`);
-      if (name !== 'container') within(b, containerBox, `[part="${name}"]`, '[part="container"]');
+      if (name !== 'container') within(b, containerBox, `[part="${name}"]`, '[part~="container"]');
     }
-    within(containerBox, hostBox, '[part="container"]', 'the host');
+    within(containerBox, hostBox, '[part~="container"]', 'the host');
 
     // ── The regions stack downward, in documented reading order ─────────────
     const order = ['hero', 'header', 'meta', 'content', 'controls']

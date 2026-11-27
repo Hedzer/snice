@@ -79,6 +79,7 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
       <div class="camera-container" part="base">
         <video
           class="${this.getVideoClass()}"
+          part="video"
           autoplay
           playsinline
           muted>
@@ -86,23 +87,23 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
         <if value=${this.showControls}>
           <div class="camera-controls ${this.getControlsPosition()}" part="controls">
             <if value=${this.hasMultipleCameras}>
-              <button class="camera-btn switch" type="button" aria-label="Switch camera" @click=${this.switchCamera}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <button class="camera-btn switch" part="button switch-button" type="button" aria-label="Switch camera" @click=${this.switchCamera}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon switch-icon">
                   <path d="M9 2L7 5H4C2.9 5 2 5.9 2 7V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V7C22 5.9 21.1 5 20 5H17L15 2H9Z"/>
                   <circle cx="12" cy="13" r="3"/>
                   <path d="M15 7h2v2h-2z"/>
                 </svg>
               </button>
             </if>
-            <button class="camera-btn capture" type="button" aria-label="Take photo" @click=${this.capture}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <button class="camera-btn capture" part="button capture-button" type="button" aria-label="Take photo" @click=${this.capture}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" part="icon capture-icon">
                 <circle cx="12" cy="12" r="10" fill="white" stroke="currentColor" stroke-width="2"/>
                 <circle cx="12" cy="12" r="6"/>
               </svg>
             </button>
           </div>
         </if>
-        <div class="custom-controls">
+        <div class="custom-controls" part="custom-controls">
           <slot name="controls"></slot>
         </div>
       </div>

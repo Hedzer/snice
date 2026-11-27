@@ -38,14 +38,14 @@ export class SniceCellActions extends HTMLElement implements SniceCellElement {
     if (this.actions.length === 0) {
       return html/*html*/`
         <div class="cell-content cell-content--actions" part="content">
-          <div class="actions-container"></div>
+          <div class="actions-container" part="actions"></div>
         </div>
       `;
     }
 
     return html/*html*/`
       <div class="cell-content cell-content--actions" part="content">
-        <div class="actions-container">
+        <div class="actions-container" part="actions">
           ${this.actions.map(action => this.renderActionButton(action))}
         </div>
       </div>

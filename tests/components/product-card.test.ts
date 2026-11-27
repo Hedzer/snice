@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
+import { exactPart } from '../matrix/part-exact';
 import '../../packages/components/src/product-card/snice-product-card';
 import type { SniceProductCardElement, ProductVariant } from '../../packages/components/src/product-card/snice-product-card.types';
 
@@ -514,8 +515,9 @@ describe('snice-product-card', () => {
 
     const parts = ['base', 'gallery', 'body', 'title', 'rating', 'stars', 'price', 'price-current', 'stock', 'cta', 'badge', 'favorite-btn'];
     for (const part of parts) {
-      const found = queryShadow(el as HTMLElement, `[part="${part}"]`);
-      expect(found).toBeTruthy();
+      // `[part~="x"]` is not token-exact in happy-dom (it also matches
+      // `part="x-suffix"`), so resolve the token list ourselves.
+      expect(exactPart(el as HTMLElement, part), `missing part token "${part}"`).toBeTruthy();
     }
   });
 

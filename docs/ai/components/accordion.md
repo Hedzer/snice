@@ -63,6 +63,9 @@ disabled: boolean = false;
 
 ## CSS Parts
 
+(on snice-accordion)
+- `base` - The accordion container
+
 (on snice-accordion-item)
 - `header` - The clickable button trigger
 - `title` - Span wrapping the header slot

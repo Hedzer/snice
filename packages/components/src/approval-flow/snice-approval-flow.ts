@@ -84,7 +84,7 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
     ].join(' ');
 
     return html/*html*/`
-      <div class="${flowClasses}" part="container" role="list">
+      <div class="${flowClasses}" part="container base" role="list">
         ${this.steps.map((step: ApprovalStep) => this.renderStep(step))}
       </div>
     `;
@@ -100,10 +100,10 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
     ].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <div class="${stepClasses}" part="step" role="listitem">
+      <div class="${stepClasses}" part="step step-${step.status}${isCurrent ? ' step-current' : ''}" role="listitem">
         <div class="step__avatar" part="avatar">
           <if ${step.avatar}>
-            <img src="${step.avatar}" alt="${step.approver}" />
+            <img part="avatar-image" src="${step.avatar}" alt="${step.approver}" />
           </if>
           <if ${!step.avatar}>
             ${this.getInitials(step.approver)}
@@ -116,8 +116,8 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
             <div class="step__role" part="role">${step.role}</div>
           </if>
           <div class="step__status" part="status">
-            <span class="step__status-icon" aria-hidden="true">${unsafeHTML(this.getStatusIcon(step.status))}</span>
-            <span>${this.getStatusLabel(step.status)}</span>
+            <span class="step__status-icon" part="status-icon" aria-hidden="true">${unsafeHTML(this.getStatusIcon(step.status))}</span>
+            <span part="status-label">${this.getStatusLabel(step.status)}</span>
           </div>
           <if ${step.comment}>
             <div class="step__comment" part="comment">"${step.comment}"</div>
@@ -127,10 +127,11 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
           </if>
           <if ${showActions}>
             <div class="step__actions" part="actions">
-              <button class="step__btn step__btn--approve" @click=${() => this.handleApprove(step)}>Approve</button>
-              <button class="step__btn step__btn--reject" @click=${() => this.handleReject(step)}>Reject</button>
+              <button class="step__btn step__btn--approve" part="button button-approve" @click=${() => this.handleApprove(step)}>Approve</button>
+              <button class="step__btn step__btn--reject" part="button button-reject" @click=${() => this.handleReject(step)}>Reject</button>
               <input
                 class="step__comment-input"
+                part="input"
                 type="text"
                 placeholder="Add a comment"
                 aria-label="Add a comment to this step"

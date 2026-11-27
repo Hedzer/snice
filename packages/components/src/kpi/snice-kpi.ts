@@ -72,21 +72,23 @@ export class SniceKpi extends HTMLElement implements SniceKpiElement {
       this.colorValue && this.sentiment ? `kpi__value--${this.sentiment}` : ''
     ].filter(Boolean).join(' ');
 
+    const sentimentPart = this.sentiment ? ({ up: ' trend-up', down: ' trend-down', neutral: ' trend-neutral' }[this.sentiment] ?? '') : '';
+    const valueSentimentPart = this.colorValue && this.sentiment ? ' value-colored' : '';
     const hasTrend = this.trendValue !== undefined || this.sentiment !== undefined;
     const hasSparkline = this.showSparkline && this.trendData !== undefined && this.trendData.length > 0;
 
     return html/*html*/`
-      <div class="${kpiClasses}" part="container">
+      <div class="${kpiClasses}" part="base container">
         <slot name="before"></slot>
 
         <div class="kpi__header" part="header">
           <div class="kpi__main" part="main">
             <div class="kpi__label" part="label">${this.label}</div>
-            <div class="${valueClasses}" part="value">${this.value}</div>
+            <div class="${valueClasses}" part="value${valueSentimentPart}">${this.value}</div>
           </div>
 
           <if ${hasTrend}>
-            <div class="kpi__trend kpi__trend--${this.sentiment || 'neutral'}" part="trend">
+            <div class="kpi__trend kpi__trend--${this.sentiment || 'neutral'}" part="trend${sentimentPart}">
               <if ${this.sentiment}>
                 <span class="kpi__trend-icon" part="trend-icon" aria-hidden="true">${unsafeHTML(this.getTrendIcon())}</span>
               </if>
@@ -100,6 +102,8 @@ export class SniceKpi extends HTMLElement implements SniceKpiElement {
         <if ${hasSparkline}>
           <div class="kpi__sparkline" part="sparkline">
             <snice-sparkline
+              part="sparkline-chart"
+              exportparts="base: sparkline-base, container: sparkline-container, svg: sparkline-svg, line: sparkline-line, area: sparkline-area, dot: sparkline-dot, bar: sparkline-bar"
               .data="${this.trendData}"
               color="${this.getSparklineColor()}"
               width="120"

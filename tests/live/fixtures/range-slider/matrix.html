@@ -107,14 +107,14 @@
             mounted: true,
             host: (({ x, y, width, height, top, left, right, bottom }) =>
               ({ x, y, width, height, top, left, right, bottom }))(el.getBoundingClientRect()),
-            track: box('[part="track"]'),
-            rangeBar: box('[part="range"]'),
-            low: box('[part="thumb-low"]'),
-            high: box('[part="thumb-high"]'),
-            labelMin: box('[part="label-min"]'),
-            labelMax: box('[part="label-max"]'),
-            lowTooltip: tooltipText('[part="thumb-low"]'),
-            highTooltip: tooltipText('[part="thumb-high"]'),
+            track: box('[part~="track"]'),
+            rangeBar: box('[part~="range"]'),
+            low: box('[part~="thumb-low"]'),
+            high: box('[part~="thumb-high"]'),
+            labelMin: box('[part~="label-min"]'),
+            labelMax: box('[part~="label-max"]'),
+            lowTooltip: tooltipText('[part~="thumb-low"]'),
+            highTooltip: tooltipText('[part~="thumb-high"]'),
             valueLow: el.valueLow,
             valueHigh: el.valueHigh,
           };
@@ -123,7 +123,7 @@
         /** Drive a thumb with a real key event, through real focus. */
         async pressKey(thumb, key) {
           const sr = document.getElementById('subject').shadowRoot;
-          const node = sr.querySelector(`[part="thumb-${thumb}"]`);
+          const node = sr.querySelector(`[part~="thumb-${thumb}"]`);
           node.focus();
           node.dispatchEvent(new KeyboardEvent('keydown', {
             key, bubbles: true, composed: true, cancelable: true,
@@ -135,7 +135,7 @@
         /** Press the track at a fraction of its length, as a pointer would. */
         async pressTrack(fraction) {
           const sr = document.getElementById('subject').shadowRoot;
-          const track = sr.querySelector('[part="track"]');
+          const track = sr.querySelector('[part~="track"]');
           const r = track.getBoundingClientRect();
           track.dispatchEvent(new MouseEvent('mousedown', {
             bubbles: true, composed: true, cancelable: true,
@@ -185,12 +185,18 @@
           await settle();
         },
 
-        /** Focus the low thumb through the documented host method. */
+        /**
+         * Focus the low thumb through the documented host method, and answer
+         * with the focused node's part TOKENS. The thumb carries a role token
+         * beside its identity one (`part="thumb thumb-low"`, plus state tokens
+         * such as `thumb-disabled`), so the whole attribute is never one name.
+         */
         async focusHost() {
           document.getElementById('subject').focus();
           await settle();
           const sr = document.getElementById('subject').shadowRoot;
-          return sr.activeElement?.getAttribute('part') ?? null;
+          const part = sr.activeElement?.getAttribute('part');
+          return part == null ? null : part.split(/\s+/).filter(Boolean);
         },
 
         unmount() {

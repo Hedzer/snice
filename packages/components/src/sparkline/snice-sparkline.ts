@@ -212,7 +212,7 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
     ` : '';
 
     return html/*html*/`
-      <div class="${containerClasses}" part="container" style="${customStyle}">
+      <div class="${containerClasses}" part="base container" style="${customStyle}">
         ${unsafeHTML(this.buildSVGString())}
       </div>
     `;

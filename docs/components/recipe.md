@@ -80,15 +80,61 @@ interface RecipeNutrition {
 
 | Part | Description |
 |------|-------------|
-| `container` | The outer recipe container |
+| `base` / `container` | The outer recipe container (both tokens are on the same element) |
 | `hero` | The hero image area |
+| `hero-image` | The hero image |
 | `header` | Title, description, and author section |
+| `title` | The recipe title |
+| `description` | The recipe description |
+| `author` | The author line |
+| `tags` | The tag row |
+| `tag` | An individual tag |
+| `cuisine-tag` | Added to `tag` on the cuisine tag |
 | `meta` | Metadata bar (prep time, cook time, servings, difficulty) |
+| `meta-item` | One metadata field |
+| `meta-label` | A metadata field label |
+| `meta-value` | A metadata field value |
+| `difficulty` | Added to `meta-value` on the difficulty field |
 | `content` | Main content area (ingredients + steps) |
+| `section-title` | A section heading |
 | `ingredients` | Ingredients section |
+| `servings-adjuster` | The servings stepper row |
+| `servings-button` | A servings stepper button |
+| `servings-decrease` / `servings-increase` | Added to `servings-button` on the minus and plus buttons |
+| `servings-count` | The current servings number |
+| `servings-label` | The "servings" word |
+| `list` | The ingredients and steps lists |
+| `ingredients-list` | Added to `list` on the ingredients list |
+| `ingredient-group-title` | An ingredient group heading row |
+| `ingredient` | An ingredient row |
+| `ingredient-checked` | Added to `ingredient` while checked off |
+| `checkbox` | An ingredient checkbox |
+| `ingredient-amount` | The ingredient amount and unit |
+| `ingredient-text` | The ingredient name |
 | `steps` | Steps/instructions section |
+| `steps-list` | Added to `list` on the steps list |
+| `step` | A step row |
+| `step-completed` | Added to `step` while completed |
+| `step-active` | Added to `step` while it is the active step |
+| `step-number` | The step number badge |
+| `step-body` | The step content column |
+| `step-text` | The step instruction text |
+| `step-tip` | A step tip |
+| `step-image` | A step image |
+| `button` | Any recipe button |
+| `timer-button` | Added to `button` on the start-timer button |
+| `icon` | The timer button icon |
+| `timer` | A running timer chip |
+| `timer-done` | Added to `timer` when the timer has finished |
+| `timer-cancel-button` | Added to `button` on the timer cancel button |
 | `nutrition` | Nutrition facts panel |
+| `nutrition-note` | The "Per serving" note |
+| `nutrition-grid` | The nutrition value grid |
+| `nutrition-item` | One nutrition figure |
+| `nutrition-value` | A nutrition figure value |
+| `nutrition-label` | A nutrition figure label |
 | `controls` | Bottom control buttons (step-by-step, print, reset) |
+| `step-by-step-button` / `prev-button` / `next-button` / `print-button` / `reset-button` | Added to `button` on the matching control |
 
 ## Basic Usage
 

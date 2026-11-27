@@ -362,7 +362,7 @@ test.describe('time-picker visual matrix: the dropdown', () => {
     expect(closed.open, 'Escape left the dropdown open').toBe(false);
     await expect.poll(async () => page.evaluate(() => {
       const box = document.getElementById('subject')!.shadowRoot!
-        .querySelector('[part="dropdown"]')!.getBoundingClientRect();
+        .querySelector('[part~="dropdown"]')!.getBoundingClientRect();
       return box.width * box.height;
     }), { message: 'the dismissed dropdown never stopped occupying a box' }).toBe(0);
   });
@@ -457,7 +457,7 @@ test.describe('time-picker visual matrix: the real form platform', () => {
     await page.evaluate(c => (window as any).matrix.mount(c), base as any);
     await page.evaluate(() => {
       const input = document.getElementById('subject')!.shadowRoot!
-        .querySelector('[part="input"]') as HTMLInputElement;
+        .querySelector('[part~="input"]') as HTMLInputElement;
       input.value = 'lunchtime';
       input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
     });
@@ -520,7 +520,7 @@ test.describe('time-picker visual matrix: marquee pixels', () => {
       page, 'body', 'time-picker-selected-option',
       `() => {
         const sr = document.getElementById('subject').shadowRoot;
-        const items = [...sr.querySelectorAll('[part="minutes"] .selector-item')];
+        const items = [...sr.querySelectorAll('[part~="minutes"] .selector-item')];
         const chosen = items.find(item => item.classList.contains('selector-item--selected'));
         const other = items.find(item => item !== chosen && !item.disabled);
         // The left edge of each row, clear of the digits.
@@ -544,7 +544,7 @@ test.describe('time-picker visual matrix: marquee pixels', () => {
       page, 'body', 'time-picker-disabled-option',
       `() => {
         const sr = document.getElementById('subject').shadowRoot;
-        const items = [...sr.querySelectorAll('[part="hours"] .selector-item')];
+        const items = [...sr.querySelectorAll('[part~="hours"] .selector-item')];
         const off = items.find(item => item.disabled);
         const on = items.find(item => !item.disabled && !item.classList.contains('selector-item--selected'));
         // Walk each item's glyph row every 2px: an item's exact centre falls

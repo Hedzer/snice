@@ -54,7 +54,7 @@ export class SniceCellImage extends HTMLElement implements SniceCellElement {
     if (this.imageError && this.fallback) {
       return html/*html*/`
         <div class="cell-content cell-content--image" part="content">
-          <img src="${this.fallback}" alt="${imageAlt}" class="${classes}" />
+          <img src="${this.fallback}" alt="${imageAlt}" class="${classes}" part="image" />
         </div>
       `;
     }
@@ -62,15 +62,15 @@ export class SniceCellImage extends HTMLElement implements SniceCellElement {
     if (imageSrc) {
       return html/*html*/`
         <div class="cell-content cell-content--image" part="content">
-          <img src="${imageSrc}" alt="${imageAlt}" loading="${loadingAttr}" class="${classes}" @error=${this.handleImageError} />
+          <img src="${imageSrc}" alt="${imageAlt}" loading="${loadingAttr}" class="${classes}" part="image" @error=${this.handleImageError} />
         </div>
       `;
     }
 
     return html/*html*/`
       <div class="cell-content cell-content--image" part="content">
-        <div class="${classes} cell-image--placeholder">
-          <span class="cell-image__placeholder-icon" aria-hidden="true">${unsafeHTML(PHOTO)}</span>
+        <div class="${classes} cell-image--placeholder" part="placeholder">
+          <span class="cell-image__placeholder-icon" part="icon" aria-hidden="true">${unsafeHTML(PHOTO)}</span>
         </div>
       </div>
     `;

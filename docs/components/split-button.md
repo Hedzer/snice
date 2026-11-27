@@ -52,12 +52,21 @@ interface SplitButtonAction {
 |------|-------------|
 | `spinner` | Loading spinner shown while `loading` is set |
 | `base` | The button container |
+| `base-loading` | Added to `base` while `loading` is set |
 | `primary` | The primary button |
+| `primary-disabled` | Added to `primary` while disabled or loading |
+| `label` | The primary button label |
 | `divider` | The divider between primary and toggle buttons |
 | `toggle` | The dropdown toggle button (chevron) |
+| `toggle-disabled` | Added to `toggle` while disabled or loading |
+| `arrow` | The chevron wrapper inside the toggle |
+| `arrow-icon` | The chevron `<svg>` inside `arrow` |
 | `menu` | The dropdown menu container |
 | `menu-items` | The menu items wrapper |
 | `action` | Each individual menu action button |
+| `action-disabled` | Added to `action` while that action is disabled |
+| `action-icon` | The icon image inside an action |
+| `action-label` | The label text inside an action |
 
 ## Basic Usage
 

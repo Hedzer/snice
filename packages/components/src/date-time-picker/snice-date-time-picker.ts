@@ -175,11 +175,11 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     return html/*html*/`
       <div class="datetime-wrapper" part="base">
         <if ${this.label}>
-          <label class="${labelClasses}" part="label" @click=${() => this.focus()}>${this.label}</label>
+          <label class="${labelClasses}" part="label${this.required ? ' label-required' : ''}" @click=${() => this.focus()}>${this.label}</label>
         </if>
 
         <if ${!isInline}>
-          <div class="input-container">
+          <div class="input-container" part="input-container">
             <input
               class="${inputClasses}"
               type="text"
@@ -191,7 +191,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
               aria-label="${accessibleName}"
               aria-describedby="${describedBy}"
               aria-invalid="${this.invalid || validityInvalid ? 'true' : 'false'}"
-              part="input"
+              part="input${this.invalid || validityInvalid ? ' input-invalid' : ''}${this.loading ? ' input-loading' : ''}"
               autocomplete="off"
               @input=${this.handleInput}
               @change=${this.handleChange}
@@ -238,7 +238,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
 
         <div
           class="panel ${isInline ? 'panel--inline' : ''}"
-          part="panel"
+          part="panel${isInline ? ' panel-inline' : ''}"
           role="group"
           aria-label="${accessibleName} controls"
           aria-describedby="${isInline ? describedBy : ''}"
@@ -270,59 +270,59 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     return html/*html*/`
       <case ${this.calendarView}>
         <when value="years">
-          <div class="calendar-header">
-            <button class="nav-button" type="button" aria-label="Previous years" .disabled=${this.interactionDisabled || this.readonly} @click=${this.prevYears}>
+          <div class="calendar-header" part="calendar-header">
+            <button class="nav-button" part="nav-button nav-button-prev" type="button" aria-label="Previous years" .disabled=${this.interactionDisabled || this.readonly} @click=${this.prevYears}>
               <svg viewBox="0 0 24 24" width="20" height="20">
                 <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
               </svg>
             </button>
 
-            <div class="calendar-title">
-              <span class="month-label">${this.yearRangeStart} — ${this.yearRangeStart + 11}</span>
+            <div class="calendar-title" part="calendar-title">
+              <span class="month-label" part="month-label">${this.yearRangeStart} — ${this.yearRangeStart + 11}</span>
             </div>
 
-            <button class="nav-button" type="button" aria-label="Next years" .disabled=${this.interactionDisabled || this.readonly} @click=${this.nextYears}>
+            <button class="nav-button" part="nav-button nav-button-next" type="button" aria-label="Next years" .disabled=${this.interactionDisabled || this.readonly} @click=${this.nextYears}>
               <svg viewBox="0 0 24 24" width="20" height="20">
                 <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
               </svg>
             </button>
           </div>
 
-          <div class="year-grid" @click=${(e: Event) => this.handleYearClick(e)}>
+          <div class="year-grid" part="year-grid" @click=${(e: Event) => this.handleYearClick(e)}>
             ${this.getYearsGrid()}
           </div>
         </when>
         <default>
-          <div class="calendar-header">
-            <button class="nav-button" type="button" aria-label="Previous month" .disabled=${this.interactionDisabled || this.readonly} @click=${this.prevMonth}>
+          <div class="calendar-header" part="calendar-header">
+            <button class="nav-button" part="nav-button nav-button-prev" type="button" aria-label="Previous month" .disabled=${this.interactionDisabled || this.readonly} @click=${this.prevMonth}>
               <svg viewBox="0 0 24 24" width="20" height="20">
                 <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
               </svg>
             </button>
 
-            <div class="calendar-title">
-              <span class="month-label">${this.monthNames[this.viewDate.getMonth()]} </span><button class="year-button" type="button" .disabled=${this.interactionDisabled || this.readonly} @click=${this.showYears}>${this.viewDate.getFullYear()}</button>
+            <div class="calendar-title" part="calendar-title">
+              <span class="month-label" part="month-label">${this.monthNames[this.viewDate.getMonth()]} </span><button class="year-button" part="year-button" type="button" .disabled=${this.interactionDisabled || this.readonly} @click=${this.showYears}>${this.viewDate.getFullYear()}</button>
             </div>
 
-            <button class="nav-button" type="button" aria-label="Next month" .disabled=${this.interactionDisabled || this.readonly} @click=${this.nextMonth}>
+            <button class="nav-button" part="nav-button nav-button-next" type="button" aria-label="Next month" .disabled=${this.interactionDisabled || this.readonly} @click=${this.nextMonth}>
               <svg viewBox="0 0 24 24" width="20" height="20">
                 <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
               </svg>
             </button>
           </div>
 
-          <div class="calendar-weekdays">
-            ${this.dayNames.map(day => html`<div class="weekday">${day}</div>`)}
+          <div class="calendar-weekdays" part="weekdays">
+            ${this.dayNames.map(day => html`<div class="weekday" part="weekday">${day}</div>`)}
           </div>
 
-          <div class="calendar-days" role="grid" aria-label="Calendar days" @click=${(e: Event) => this.handleDayClick(e)}>
+          <div class="calendar-days" part="days" role="grid" aria-label="Calendar days" @click=${(e: Event) => this.handleDayClick(e)}>
             ${this.getDaysGrid()}
           </div>
         </default>
       </case>
 
-      <div class="calendar-footer">
-        <button class="today-button" type="button" .disabled=${this.interactionDisabled || this.readonly || !this.dateIntersectsRange(new Date())} @click=${this.goToToday}>Today</button>
+      <div class="calendar-footer" part="calendar-footer">
+        <button class="today-button" part="today-button" type="button" .disabled=${this.interactionDisabled || this.readonly || !this.dateIntersectsRange(new Date())} @click=${this.goToToday}>Today</button>
       </div>
     `;
   }
@@ -333,17 +333,18 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     const accessibleName = this.labelAssociation.accessibleName;
 
     return html/*html*/`
-      <div class="time-header">Time</div>
-      <div class="time-selectors">
-        <div class="time-column" role="group" data-time-unit="hours" aria-label="${accessibleName} hours">
-          <label class="time-label">Hr</label>
-          <div class="time-list" role="listbox" @click=${(e: Event) => this.handleHourClick(e)}>
+      <div class="time-header" part="time-header">Time</div>
+      <div class="time-selectors" part="time-selectors">
+        <div class="time-column" part="time-column" role="group" data-time-unit="hours" aria-label="${accessibleName} hours">
+          <label class="time-label" part="time-label">Hr</label>
+          <div class="time-list" part="time-list" role="listbox" @click=${(e: Event) => this.handleHourClick(e)}>
             ${Array.from({ length: hourMax - hourStart + 1 }, (_, i) => i + hourStart).map(h => {
               const displayH = this.timeFormat === '12h' ? this.hours : this.hours;
               const isSelected = h === (this.timeFormat === '12h' ? (this.hours === 0 ? 12 : this.hours > 12 ? this.hours - 12 : this.hours) : this.hours);
               return html`
                 <button
                   class="time-item ${isSelected ? 'time-item--selected' : ''}"
+                  part="time-item${isSelected ? ' time-item-selected' : ''}"
                   type="button"
                   role="option"
                   aria-selected="${isSelected ? 'true' : 'false'}"
@@ -355,14 +356,15 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
           </div>
         </div>
 
-        <div class="time-column" role="group" data-time-unit="minutes" aria-label="${accessibleName} minutes">
-          <label class="time-label">Min</label>
-          <div class="time-list" role="listbox" @click=${(e: Event) => this.handleMinuteClick(e)}>
+        <div class="time-column" part="time-column" role="group" data-time-unit="minutes" aria-label="${accessibleName} minutes">
+          <label class="time-label" part="time-label">Min</label>
+          <div class="time-list" part="time-list" role="listbox" @click=${(e: Event) => this.handleMinuteClick(e)}>
             ${Array.from({ length: 12 }, (_, i) => i * 5).map(m => {
               const isSelected = m === this.minutes;
               return html`
                 <button
                   class="time-item ${isSelected ? 'time-item--selected' : ''}"
+                  part="time-item${isSelected ? ' time-item-selected' : ''}"
                   type="button"
                   role="option"
                   aria-selected="${isSelected ? 'true' : 'false'}"
@@ -375,14 +377,15 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
         </div>
 
         <if ${this.showSeconds}>
-          <div class="time-column" role="group" data-time-unit="seconds" aria-label="${accessibleName} seconds">
-            <label class="time-label">Sec</label>
-            <div class="time-list" role="listbox" @click=${(e: Event) => this.handleSecondClick(e)}>
+          <div class="time-column" part="time-column" role="group" data-time-unit="seconds" aria-label="${accessibleName} seconds">
+            <label class="time-label" part="time-label">Sec</label>
+            <div class="time-list" part="time-list" role="listbox" @click=${(e: Event) => this.handleSecondClick(e)}>
               ${Array.from({ length: 12 }, (_, i) => i * 5).map(s => {
                 const isSelected = s === this.seconds;
                 return html`
                   <button
                     class="time-item ${isSelected ? 'time-item--selected' : ''}"
+                    part="time-item${isSelected ? ' time-item-selected' : ''}"
                     type="button"
                     role="option"
                     aria-selected="${isSelected ? 'true' : 'false'}"
@@ -396,11 +399,12 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
         </if>
 
         <if ${this.timeFormat === '12h'}>
-          <div class="time-column time-column--period" role="group" data-time-unit="period" aria-label="${accessibleName} period">
-            <label class="time-label">Period</label>
-            <div class="time-list" role="listbox">
+          <div class="time-column time-column--period" part="time-column time-column-period" role="group" data-time-unit="period" aria-label="${accessibleName} period">
+            <label class="time-label" part="time-label">Period</label>
+            <div class="time-list" part="time-list" role="listbox">
               <button
                 class="time-item ${this.period === 'AM' ? 'time-item--selected' : ''}"
+                part="time-item${this.period === 'AM' ? ' time-item-selected' : ''}"
                 type="button"
                 role="option"
                 aria-selected="${this.period === 'AM' ? 'true' : 'false'}"
@@ -409,6 +413,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
               >AM</button>
               <button
                 class="time-item ${this.period === 'PM' ? 'time-item--selected' : ''}"
+                part="time-item${this.period === 'PM' ? ' time-item-selected' : ''}"
                 type="button"
                 role="option"
                 aria-selected="${this.period === 'PM' ? 'true' : 'false'}"
@@ -777,7 +782,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     const days = [];
 
     for (let i = 0; i < startingDay; i++) {
-      days.push(html`<div class="day day--empty" role="gridcell" aria-hidden="true"></div>`);
+      days.push(html`<div class="day day--empty" part="day day-empty" role="gridcell" aria-hidden="true"></div>`);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -795,6 +800,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
       days.push(html`
         <button
           class="${classes.join(' ')}"
+          part="day${classes.includes('day--today') ? ' day-today' : ''}${classes.includes('day--selected') ? ' day-selected' : ''}${classes.includes('day--disabled') ? ' day-disabled' : ''}"
           type="button"
           role="gridcell"
           data-date="${dateStr}"
@@ -819,7 +825,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
       if (year === currentYear) classes.push('year-cell--current');
       if (year === selectedYear) classes.push('year-cell--selected');
       years.push(html`
-        <button class="${classes.join(' ')}" type="button" data-year="${year}" .disabled=${this.interactionDisabled || this.readonly}>${year}</button>
+        <button class="${classes.join(' ')}" part="year-cell${classes.includes('year-cell--current') ? ' year-cell-current' : ''}${classes.includes('year-cell--selected') ? ' year-cell-selected' : ''}" type="button" data-year="${year}" .disabled=${this.interactionDisabled || this.readonly}>${year}</button>
       `);
     }
     return years;

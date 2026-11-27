@@ -61,12 +61,30 @@ Style internal elements from outside the shadow DOM using `::part()`.
 
 | Part | Element | Description |
 |------|---------|-------------|
+| `base` | `<div>` | The dialog root container holding the backdrop and panel |
 | `backdrop` | `<div>` | The backdrop overlay |
 | `panel` | `<div>` | The modal panel container |
 | `header` | `<div>` | Header section |
 | `close` | `<button>` | Close button |
 | `body` | `<div>` | Body content section |
 | `footer` | `<div>` | Footer section |
+
+State tokens are added alongside the base token, so they are matched with
+`::part(base base-open)`.
+
+| Token | Description |
+|-------|-------------|
+| `base-open` | Added to `base` while the modal is open |
+| `base-container` | Added to `base` while the modal is scoped to a container |
+| `panel-small` | Added to `panel` when `size` is `small` |
+| `panel-medium` | Added to `panel` when `size` is `medium` |
+| `panel-large` | Added to `panel` when `size` is `large` |
+| `panel-fullscreen` | Added to `panel` when `size` is `fullscreen` |
+| `header-empty` | Added to `header` when it has no content and no close button |
+| `footer-empty` | Added to `footer` when it has no content |
+| — | `backdrop-open` | Added to `backdrop` while open |
+| — | `panel-open` | Added to `panel` while open |
+| — | `grabber` | Hidden iOS/Material sheet drag grabber handle (`data-platform-only="ios,material"`) |
 
 ## Basic Usage
 

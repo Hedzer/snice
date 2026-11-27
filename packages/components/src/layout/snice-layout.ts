@@ -26,17 +26,17 @@ export class SniceLayout extends HTMLElement implements Layout {
         <header class="header" part="header">
           <div class="brand" part="brand">
             <slot name="brand">
-              <h1>App</h1>
+              <h1 part="brand-fallback">App</h1>
             </slot>
           </div>
-          <snice-nav class="nav" variant="flat" orientation="horizontal"></snice-nav>
+          <snice-nav class="nav" part="nav" exportparts="base: nav-base, nav: nav-nav, group: nav-group, group-label: nav-group-label, submenu: nav-submenu, item: nav-item, link: nav-link, icon: nav-icon, label: nav-label, item-active: nav-item-active, group-active: nav-group-active, link-active: nav-link-active" variant="flat" orientation="horizontal"></snice-nav>
         </header>
 
         <main class="main" part="main">
           <slot name="page"></slot>
         </main>
 
-        <footer class="footer${this.hasFooterContent ? '' : ' footer--empty'}" part="footer">
+        <footer class="footer${this.hasFooterContent ? '' : ' footer--empty'}" part="footer${this.hasFooterContent ? '' : ' footer-empty'}">
           <slot name="footer">
           </slot>
         </footer>

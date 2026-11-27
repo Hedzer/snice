@@ -549,44 +549,44 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
     const nodes = this.layoutNodes;
     const links = this.layoutLinks;
 
-    let svg = `<svg class="sankey__svg" viewBox="0 0 ${this.chartWidth} ${this.chartHeight}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sankey diagram">`;
+    let svg = `<svg class="sankey__svg" part="svg" viewBox="0 0 ${this.chartWidth} ${this.chartHeight}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sankey diagram">`;
 
     // Links
-    svg += `<g class="sankey__links">`;
+    svg += `<g class="sankey__links" part="links">`;
     for (let i = 0; i < links.length; i++) {
       const link = links[i];
       const path = escapeHTML(this.getLinkPath(link));
       const color = escapeHTML(link.color);
-      svg += `<g class="sankey__link" data-link-index="${i}">`;
-      svg += `<path d="${path}" stroke="${color}" stroke-width="${Math.max(1, link.width)}"/>`;
+      svg += `<g class="sankey__link" part="link" data-link-index="${i}">`;
+      svg += `<path part="link-path" d="${path}" stroke="${color}" stroke-width="${Math.max(1, link.width)}"/>`;
       svg += `</g>`;
     }
     svg += `</g>`;
 
     // Nodes
-    svg += `<g class="sankey__nodes">`;
+    svg += `<g class="sankey__nodes" part="nodes">`;
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
       const color = escapeHTML(node.color);
       const nodeId = escapeHTML(node.id);
-      svg += `<g class="sankey__node" data-node-id="${nodeId}">`;
-      svg += `<rect x="${node.x}" y="${node.y}" width="${node.width}" height="${Math.max(node.height, 2)}" fill="${color}"/>`;
+      svg += `<g class="sankey__node" part="node" data-node-id="${nodeId}">`;
+      svg += `<rect part="node-rect" x="${node.x}" y="${node.y}" width="${node.width}" height="${Math.max(node.height, 2)}" fill="${color}"/>`;
 
       if (this.showLabels) {
         const label = escapeHTML(node.label);
         if (node.depth === 0) {
-          svg += `<text class="sankey__label" x="${node.x - 6}" y="${node.y + node.height / 2}" text-anchor="end">${label}</text>`;
+          svg += `<text class="sankey__label" part="label" x="${node.x - 6}" y="${node.y + node.height / 2}" text-anchor="end">${label}</text>`;
         } else {
-          svg += `<text class="sankey__label" x="${node.x + node.width + 6}" y="${node.y + node.height / 2}" text-anchor="start">${label}</text>`;
+          svg += `<text class="sankey__label" part="label" x="${node.x + node.width + 6}" y="${node.y + node.height / 2}" text-anchor="start">${label}</text>`;
         }
       }
 
       if (this.showValues && node.height > 12) {
         const value = escapeHTML(node.value.toLocaleString());
         if (node.depth === 0) {
-          svg += `<text class="sankey__value" x="${node.x - 6}" y="${node.y + node.height / 2 + 12}" text-anchor="end">${value}</text>`;
+          svg += `<text class="sankey__value" part="value" x="${node.x - 6}" y="${node.y + node.height / 2 + 12}" text-anchor="end">${value}</text>`;
         } else {
-          svg += `<text class="sankey__value" x="${node.x + node.width + 6}" y="${node.y + node.height / 2 + 12}" text-anchor="start">${value}</text>`;
+          svg += `<text class="sankey__value" part="value" x="${node.x + node.width + 6}" y="${node.y + node.height / 2 + 12}" text-anchor="start">${value}</text>`;
         }
       }
 
@@ -610,8 +610,8 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
            @mouseleave=${() => this.handleSvgMouseLeave()}>
         <div class="sankey__chart" part="chart"></div>
         <div class="sankey__tooltip" part="tooltip">
-          <div class="sankey__tooltip-label"></div>
-          <div class="sankey__tooltip-value"></div>
+          <div class="sankey__tooltip-label" part="tooltip-label"></div>
+          <div class="sankey__tooltip-value" part="tooltip-value"></div>
         </div>
       </div>
     `;

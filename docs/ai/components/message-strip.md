@@ -26,9 +26,16 @@ icon: string = '';  // Custom icon (set "none" to hide)
 
 ## CSS Parts
 
+- `base` - Strip root container
 - `icon` - Icon container
 - `content` - Message content area
 - `dismiss` - Dismiss button
+- `dismiss-icon` - Cross `<svg>` inside the dismiss button
+
+State tokens:
+
+- `base-hidden` - Added to `base` while the strip is hidden
+- `icon-default` - Added to `icon` while the built-in variant icon is shown
 
 ## Basic Usage
 

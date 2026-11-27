@@ -42,6 +42,16 @@ outputType: 'png'|'jpeg'|'webp' = 'png';           // attribute: output-type
 - `base` - Outer cropper container
 - `image-container` - Image display area
 - `crop-area` - Draggable/resizable crop region
+- `image` - The `<img>` being cropped
+- `handle` - Any resize handle on the crop region
+- `handle-nw` - Added to `handle` on the north-west corner handle
+- `handle-ne` - Added to `handle` on the north-east corner handle
+- `handle-sw` - Added to `handle` on the south-west corner handle
+- `handle-se` - Added to `handle` on the south-east corner handle
+- `handle-n` - Added to `handle` on the north edge handle
+- `handle-s` - Added to `handle` on the south edge handle
+- `handle-w` - Added to `handle` on the west edge handle
+- `handle-e` - Added to `handle` on the east edge handle
 
 ## Basic Usage
 

@@ -40,7 +40,7 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
     return html/*html*/`
       <slot style="display: none" @slotchange="${() => this.handleSlotChange()}"></slot>
       <nav part="base" aria-label="Breadcrumb" @click="${(e: Event) => this.handleClick(e)}">
-        <ol part="list" class="${breadcrumbClass}">
+        <ol part="list${hasCollapsed ? ' list-collapsed' : ''}" class="${breadcrumbClass}">
           ${visibleItems.map((item, index) => {
             const isLast = index === visibleItems.length - 1;
             const isActive = item.active || isLast;
@@ -52,7 +52,7 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
             const showInactiveText = !showLink && !isActive;
 
             return html/*html*/`
-              <li class="${itemClass}">
+              <li class="${itemClass}" part="item${isActive ? ' item-active' : ''}${isHidden ? ' item-hidden' : ''}">
                 <if ${showLink}>
                   <a part="link" href="${item.href}"
                      class="breadcrumb-link"
@@ -63,13 +63,13 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
                   </a>
                 </if>
                 <if ${showActiveText}>
-                  <span class="breadcrumb-text" aria-current="page">
+                  <span class="breadcrumb-text" part="text text-current" aria-current="page">
                     ${this.renderItemIcon(item)}
                     ${item.label}
                   </span>
                 </if>
                 <if ${showInactiveText}>
-                  <span class="breadcrumb-text">
+                  <span class="breadcrumb-text" part="text">
                     ${this.renderItemIcon(item)}
                     ${item.label}
                   </span>
@@ -81,14 +81,14 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
                 </if>
               </li>
               <if ${hasCollapsed && index === 0 && allItems.length > this.maxItems}>
-                <li class="breadcrumb-item">
+                <li class="breadcrumb-item" part="item item-overflow">
                   <button part="ellipsis" class="breadcrumb-ellipsis"
                           aria-label="Show all breadcrumbs"
                           aria-expanded="false"
                           tabindex="0">
-                    <span class="breadcrumb-ellipsis-icon" aria-hidden="true">${unsafeHTML(ELLIPSIS_HORIZONTAL)}</span>
+                    <span class="breadcrumb-ellipsis-icon" part="ellipsis-icon" aria-hidden="true">${unsafeHTML(ELLIPSIS_HORIZONTAL)}</span>
                   </button>
-                  <span class="breadcrumb-separator" aria-hidden="true">
+                  <span class="breadcrumb-separator" part="separator" aria-hidden="true">
                     ${this.separator}
                   </span>
                 </li>

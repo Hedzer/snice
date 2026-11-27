@@ -70,10 +70,24 @@ All three bubble from the `<snice-checkbox>` host and cross shadow boundaries. D
 
 | Part | Description |
 |------|-------------|
+| `base` | Outer `<label>` wrapper. |
 | `input` | Native checkbox input. |
 | `checkbox` | Visual checkbox. |
 | `spinner` | Loading spinner. |
 | `label` | Label text. |
+| `icon` | The check/indeterminate `<svg>` glyph. |
+| `icon-check` | Added to `icon` on the checkmark glyph. |
+| `icon-indeterminate` | Added to `icon` on the dash glyph. |
+| `base-disabled` | Added to `base` while interaction is disabled. |
+| `base-loading` | Added to `base` while loading. |
+| `checkbox-invalid` | Added to `checkbox` while invalid. |
+| `checkbox-indeterminate` | Added to `checkbox` while indeterminate. |
+| `checkbox-loading` | Added to `checkbox` while loading. |
+| `label-required` | Added to `label` while required. |
+| `base-checked` | Added to `base` while checked |
+| `base-indeterminate` | Added to `base` while indeterminate |
+| `checkbox-checked` | Added to `checkbox` while checked |
+| `ripple` | Hidden Material 3 state-layer ripple helper (`data-platform-only="material"`) |
 
 ## Basic Usage
 

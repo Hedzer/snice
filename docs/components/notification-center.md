@@ -55,9 +55,47 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | Part | Element | Description |
 |------|---------|-------------|
 | `trigger` | `<button>` | The bell icon button |
+| `badge` | `<snice-badge>` | The badge carrying the unread count |
 | `icon` | `<span>` | The bell icon span |
 | `panel` | `<div>` | The dropdown notification panel |
 | `panel-header` | `<div>` | The panel header with title and mark-all-read action |
+| `panel-title` | `<span>` | The panel title text |
+| `mark-all-button` | `<button>` | The mark-all-read button |
+| `list` | `<ul>` | The list of notifications |
+| `item` | `<li>` | One notification row |
+| `item-icon` | `<span>` | The notification type icon |
+| `item-content` | `<div>` | The notification text block |
+| `item-title` | `<div>` | The notification title |
+| `item-message` | `<div>` | The notification message |
+| `item-time` | `<div>` | The notification timestamp |
+| `dismiss` | `<button>` | The per-notification dismiss button |
+| `empty-state` | `<snice-empty-state>` | The empty state shown with no notifications |
+
+State tokens are added alongside the base token, so they are matched with
+`::part(item item-unread)`.
+
+| Token | Description |
+|-------|-------------|
+| `trigger-open` | Added to `trigger` while the panel is open |
+| `item-unread` | Added to `item` while the notification is unread |
+
+The unread count is a `<snice-badge>` and the empty state is a
+`<snice-empty-state>`, so their own parts are forwarded through with a
+`badge-` and `empty-state-` prefix.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `badge-base` | `<span>` | The badge's outer wrapper |
+| `badge-badge` | `<span>` | The badge indicator itself |
+| `badge-badge-dot` | `<span>` | The badge indicator while the badge is in `dot` mode |
+| `badge-badge-pulse` | `<span>` | The badge indicator while the badge is `pulse`ing |
+| `empty-state-base` | `<div>` | The empty state's outer wrapper |
+| `empty-state-container` | `<div>` | The empty state's container |
+| `empty-state-icon` | `<div>` | The empty state's icon wrapper |
+| `empty-state-title` | `<h3>` | The empty state's title |
+| `empty-state-description` | `<p>` | The empty state's description |
+| `empty-state-action` | `<div>` | The empty state's action wrapper |
+| `empty-state-extra` | `<div>` | The empty state's extra slot wrapper |
 
 ```css
 snice-notification-center::part(trigger) {

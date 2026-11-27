@@ -406,8 +406,11 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
     const ns = 'http://www.w3.org/2000/svg';
     this.transformGroupEl = document.createElementNS(ns, 'g') as SVGGElement;
     this.transformGroupEl.setAttribute('transform', 'translate(0, 0) scale(1)');
+    this.transformGroupEl.setAttribute('part', 'viewport');
     this.edgesGroupEl = document.createElementNS(ns, 'g') as SVGGElement;
+    this.edgesGroupEl.setAttribute('part', 'edges');
     this.nodesGroupEl = document.createElementNS(ns, 'g') as SVGGElement;
+    this.nodesGroupEl.setAttribute('part', 'nodes');
     this.transformGroupEl.appendChild(this.edgesGroupEl);
     this.transformGroupEl.appendChild(this.nodesGroupEl);
     svg.appendChild(this.transformGroupEl);
@@ -449,13 +452,13 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
       if (hasHover && connected) cls.push('network-graph__edge--highlighted');
       if (hasHover && !connected) cls.push('network-graph__edge--dimmed');
 
-      parts += `<path class="${cls.join(' ')}" d="${path}"${strokeAttr} stroke-width="${Math.max(1, weight)}" data-edge-idx="${idx}" />`;
+      parts += `<path class="${cls.join(' ')}" part="edge${hasHover && connected ? ' edge-highlighted' : ''}${hasHover && !connected ? ' edge-dimmed' : ''}" d="${path}"${strokeAttr} stroke-width="${Math.max(1, weight)}" data-edge-idx="${idx}" />`;
 
       if (this.showLabels && se.edge.label) {
         const labelCls = hasHover && !connected ? 'network-graph__edge-label network-graph__edge-label--dimmed' : 'network-graph__edge-label';
         const mx = (se.source.x + se.target.x) / 2;
         const my = (se.source.y + se.target.y) / 2;
-        parts += `<text class="${labelCls}" x="${mx}" y="${my}">${escapeHtml(se.edge.label)}</text>`;
+        parts += `<text class="${labelCls}" part="edge-label${hasHover && !connected ? ' edge-label-dimmed' : ''}" x="${mx}" y="${my}">${escapeHtml(se.edge.label)}</text>`;
       }
     });
 
@@ -476,12 +479,12 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
       if (!connected) cls.push('network-graph__node--dimmed');
       if (isDragging) cls.push('network-graph__node--dragging');
 
-      parts += `<g class="${cls.join(' ')}" data-node-id="${escapeAttr(node.id)}">`;
-      parts += `<circle class="network-graph__node-circle" cx="${node.x}" cy="${node.y}" r="${r}" fill="${escapeAttr(fill)}" />`;
+      parts += `<g class="${cls.join(' ')}" part="node${!connected ? ' node-dimmed' : ''}${isDragging ? ' node-dragging' : ''}" data-node-id="${escapeAttr(node.id)}">`;
+      parts += `<circle class="network-graph__node-circle" part="node-circle" cx="${node.x}" cy="${node.y}" r="${r}" fill="${escapeAttr(fill)}" />`;
 
       if (this.showLabels && (node.label || node.id)) {
         const labelCls = !connected ? 'network-graph__node-label network-graph__node-label--dimmed' : 'network-graph__node-label';
-        parts += `<text class="${labelCls}" x="${node.x}" y="${node.y + r + 14}">${escapeHtml(node.label || node.id)}</text>`;
+        parts += `<text class="${labelCls}" part="node-label${!connected ? ' node-label-dimmed' : ''}" x="${node.x}" y="${node.y + r + 14}">${escapeHtml(node.label || node.id)}</text>`;
       }
 
       parts += `</g>`;

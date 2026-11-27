@@ -108,7 +108,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
     const backdrop = partOf('backdrop');
     const panel = partOf('panel');
     if (!backdrop) { say('no [part="backdrop"]'); return problems; }
-    if (!panel) { say('no [part="panel"]'); return problems; }
+    if (!panel) { say('no [part~="panel"]'); return problems; }
 
     const beacon = document.getElementById('beacon')!.getBoundingClientRect();
 

@@ -27,6 +27,7 @@ interface Step {
 
 ## CSS Parts
 
+- `base` - Stepper container (`snice-stepper`) / panel container (`snice-stepper-panel`)
 - `panel` - Step content panel
 - `container` - Main container
 - `step` - Individual step wrapper
@@ -35,6 +36,11 @@ interface Step {
 - `step-label` - Step label text
 - `step-description` - Description text
 - `step-connector` - Line between steps
+- `step-pending` - Added to `step` while the step is pending
+- `step-active` - Added to `step` while the step is active
+- `step-completed` - Added to `step` once the step is completed
+- `step-error` - Added to `step` when the step status is `error`
+- `step-clickable` - Added to `step` while `clickable`
 - `panels` - Panels container (wraps slotted content)
 
 ## Basic Usage

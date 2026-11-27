@@ -153,22 +153,34 @@ interface ReceiptTaxLine {
 | `merchant-address` | Merchant address |
 | `merchant-contact` | Contact info line |
 | `meta` | Receipt metadata section |
+| `meta-item` | A single metadata field |
+| `meta-label` | Metadata field label |
+| `meta-value` | Every metadata field value |
 | `receipt-number` | Receipt number value |
 | `date` | Date value |
+| `cashier` | Cashier value |
+| `terminal` | Terminal id value |
 | `items-header` | Items column header row |
 | `items` | Items container |
 | `item` | Individual item row |
+| `item-info` | Name/SKU/note column of an item row |
 | `item-name` | Item name |
 | `item-sku` | Item SKU (detailed variant) |
+| `item-note` | Item note (detailed variant) |
+| `item-discount` | Per-item discount (detailed variant) |
 | `item-qty` | Item quantity |
 | `item-price` | Item price |
 | `totals` | Totals section |
+| `row-label` | The label cell of the items header or a totals row |
+| `row-value` | The amount cell of the items header or a totals row |
+| `row` | Every totals row |
 | `subtotal-row` | Subtotal row |
 | `discount-row` | Discount row |
 | `tax-row` | Tax row(s) |
 | `tip-row` | Tip row |
 | `total-row` | Grand total row |
 | `payment` | Payment method section |
+| `payment-label` | The "Paid with" label |
 | `payment-method` | Payment method text |
 | `payment-details` | Payment details |
 | `qr-container` | QR code container |

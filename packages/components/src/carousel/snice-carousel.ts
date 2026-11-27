@@ -148,7 +148,7 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
     const canGoNext = this.loop || this.activeIndex < this.slideCount - this.slidesPerView;
 
     return html/*html*/`
-      <div class="carousel" part="container" role="region" aria-roledescription="carousel" aria-label="Carousel">
+      <div class="carousel" part="base container" role="region" aria-roledescription="carousel" aria-label="Carousel">
         <div class="carousel__viewport" part="viewport">
           <div class="carousel__container" part="slides-container" aria-live="${this.autoplay ? 'off' : 'polite'}" aria-atomic="false">
             <slot></slot>
@@ -158,19 +158,19 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
             <div class="carousel__controls" part="controls">
               <button
                 class="carousel__button carousel__button--prev"
-                part="button-prev"
+                part="button-prev${!canGoPrev ? ' button-prev-disabled' : ''}"
                 @click="${() => this.prev()}"
                 ?disabled="${!canGoPrev}"
                 aria-label="Previous slide">
-                <span>‹</span>
+                <span part="button-icon button-icon-prev">‹</span>
               </button>
               <button
                 class="carousel__button carousel__button--next"
-                part="button-next"
+                part="button-next${!canGoNext ? ' button-next-disabled' : ''}"
                 @click="${() => this.next()}"
                 ?disabled="${!canGoNext}"
                 aria-label="Next slide">
-                <span>›</span>
+                <span part="button-icon button-icon-next">›</span>
               </button>
             </div>
           </if>
@@ -187,7 +187,7 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
               return html/*html*/`
                 <button
                   class="${indicatorClasses}"
-                  part="indicator"
+                  part="indicator${index === this.activeIndex ? ' indicator-active' : ''}"
                   @click="${() => this.goToSlide(index)}"
                   aria-label="Go to slide ${index + 1}">
                 </button>

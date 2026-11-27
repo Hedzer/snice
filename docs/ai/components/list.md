@@ -48,10 +48,43 @@ disabled: boolean = false;
 
 ## CSS Parts (snice-list)
 
+- `base` - Outer list container (same node as `container`)
 - `container` - Outer list container
 - `search` - Search input wrapper
+- `input` - Search `<input>` element
+- `search-input` - Search `<input>` element (same node as `input`)
+- `empty` - Wrapper around the default no-results state
+- `empty-state` - The internal `<snice-empty-state>`
 - `loading` - Loading skeletons wrapper
+- `skeleton` - A default loading `<snice-skeleton>`
 - `sentinel` - Infinite scroll sentinel
+
+Forwarded from the internal `<snice-empty-state>` via `exportparts`:
+
+- `empty-state-base` - Exported `base` of the empty state (same node as `empty-state-container`)
+- `empty-state-container` - Exported `container` of the empty state
+- `empty-state-icon` - Exported `icon` of the empty state
+- `empty-state-title` - Exported `title` of the empty state
+- `empty-state-description` - Exported `description` of the empty state
+- `empty-state-action` - Exported `action` of the empty state
+- `empty-state-extra` - Exported `extra` of the empty state
+
+Forwarded from the loading `<snice-skeleton>` elements via `exportparts`:
+
+- `skeleton-base` - Exported `base` of each loading skeleton
+- `skeleton-bone` - Exported `bone` of each loading skeleton
+
+## CSS Parts (snice-list-item)
+
+- `base` - Outer list item container
+- `content` - Heading/description/content column
+- `heading` - Heading text
+- `description` - Description text
+
+State tokens:
+
+- `base-selected` - Added to `base` while `selected`
+- `base-disabled` - Added to `base` while `disabled`
 
 ## Basic Usage
 

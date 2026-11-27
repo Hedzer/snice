@@ -21,9 +21,18 @@ height: string = '';
 
 ## CSS Parts
 
+- `base` - Image container div (same node as `container`)
 - `container` - Image container div
 - `image` - The img element
 - `placeholder` - Placeholder element (shown when loading or no src)
+- `placeholder-empty` - The no-src placeholder box
+- `icon` - Wrapper around the default placeholder glyph
+- `placeholder-icon` - The default placeholder glyph wrapper
+
+State tokens:
+
+- `image-loaded` - Added to `image` once the image has loaded
+- `placeholder-hidden` - Added to `placeholder` once the image has loaded
 
 ## Basic Usage
 

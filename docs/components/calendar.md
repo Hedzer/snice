@@ -98,6 +98,36 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `event-avatar` | The `<snice-avatar>` at the start of an event bar (segments ≥ `4.5rem` only) |
 | `event-tooltip` | The shared tooltip overlay shown on event hover |
 | `event-popover` | The popover opened by a `popover`-enabled event |
+| `base-week-numbers` | Added to `base` while the week-number column is shown |
+| `title` | The month/year title in the header |
+| `nav` | The navigation button group |
+| `nav-button` | A header navigation button |
+| `today-button` | Added to `nav-button` on the Today button |
+| `prev-button` | Added to `nav-button` on the previous-month button |
+| `next-button` | Added to `nav-button` on the next-month button |
+| `weekday` | A weekday header cell |
+| `day` | A day cell |
+| `day-week-start` | Added to `day` on the first cell of a week row |
+| `day-other-month` | Added to `day` for a day outside the displayed month |
+| `day-today` | Added to `day` for today |
+| `day-selected` | Added to `day` for the selected date |
+| `day-disabled` | Added to `day` for a disabled date |
+| `day-static` | Added to `day` while `no-day-select` is set |
+| `day-stretch` | Added to `day` while `cell-sizing="stretch"` |
+| `day-number` | The date number inside a day cell |
+| `event-title` | The title text inside an event bar |
+| `event-bar-continues-left` | Added to `event-bar` on a segment that continues into the previous week row |
+| `event-bar-continues-right` | Added to `event-bar` on a segment that continues into the next week row |
+| `event-bar-compact` | Added to `event-bar` on a segment too narrow for an avatar |
+| `popover-loading` | The loading placeholder inside `event-popover` |
+| `more-list-item` | The `<li>` wrapper around a hidden-event entry |
+| `more-title` | The event title on a hidden-event entry |
+| `event-avatar-base` | Exported `base` of the event `<snice-avatar>` |
+| `event-avatar-image` | Exported `image` of the event `<snice-avatar>` |
+| `event-avatar-image-error` | Exported `image-error` of the event `<snice-avatar>` |
+| `event-avatar-fallback` | Exported `fallback` of the event `<snice-avatar>` |
+| `event-avatar-fallback-visible` | Exported `fallback-visible` of the event `<snice-avatar>` |
+| `event-avatar-icon` | Exported `icon` of the event `<snice-avatar>` |
 
 ```css
 snice-calendar::part(base) {

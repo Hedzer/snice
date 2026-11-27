@@ -10,6 +10,7 @@
  */
 import { expect } from 'vitest';
 import { mount, settle, shadow, wait, type Shape } from '../matrix-utils';
+import { exactPartIn } from '../part-exact';
 import '../../../packages/components/src/breadcrumbs/snice-breadcrumbs';
 import '../../../packages/components/src/breadcrumbs/snice-crumb';
 
@@ -125,7 +126,8 @@ export function readTrail(el: HTMLElement): Shape {
     current: crumbs.map(li => !!li.querySelector('[aria-current="page"]')),
     separators: [...shadow(el).querySelectorAll('[part~="separator"]')]
       .map(node => (node.textContent ?? '').trim()),
-    hasEllipsis: !!shadow(el).querySelector('[part~="ellipsis"]'),
+    // Token-exact: happy-dom answers `[part~="ellipsis"]` with `ellipsis-icon` too.
+    hasEllipsis: !!exactPartIn(shadow(el), 'ellipsis'),
   };
 }
 
@@ -191,7 +193,7 @@ export function clickCrumb(el: HTMLElement, index: number): void {
 }
 
 export function clickEllipsis(el: HTMLElement): void {
-  const button = shadow(el).querySelector('[part~="ellipsis"]') as HTMLElement | null;
+  const button = exactPartIn<HTMLElement>(shadow(el), 'ellipsis');
   button?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true, cancelable: true }));
 }
 

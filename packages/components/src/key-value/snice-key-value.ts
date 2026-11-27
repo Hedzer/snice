@@ -681,8 +681,8 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
 
     return html`
       <div class="kv__row" part="row">
-        <div class="kv__fields">
-          <div class="kv__pair">
+        <div class="kv__fields" part="fields">
+          <div class="kv__pair" part="pair">
             <input
               class="kv__input ${keyInvalid ? 'kv__input--invalid' : ''}"
               part="key-input"
@@ -732,7 +732,7 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
             .disabled=${this.interactionDisabled || this.readonly}
             @click=${() => this.handleDelete(index)}
           >
-            <svg viewBox="0 0 24 24" fill="currentColor">
+            <svg part="delete-icon" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
             </svg>
           </button>
@@ -748,7 +748,7 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
     return html`
       <div class="kv__view-row" part="view-row">
         <span class="kv__view-key" part="view-key">${item.key}</span>
-        <div>
+        <div part="view-body">
           <span class="kv__view-value" part="view-value">${item.value}</span>
           <if ${hasDesc}>
             <div class="kv__view-desc" part="view-desc">${item.description}</div>
@@ -772,12 +772,12 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
         @click=${() => this.handleCopy()}
       >
         <if ${isCopied}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg part="copy-icon copy-icon-copied" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M20 6L9 17l-5-5"/>
           </svg>
         </if>
         <if ${!isCopied}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg part="copy-icon copy-icon-idle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
             <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
           </svg>
@@ -806,7 +806,7 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
         aria-required="${this.required ? 'true' : 'false'}"
       >
         <if ${hasTitle || showCopyBtn}>
-          <div class="kv__header">
+          <div class="kv__header" part="header">
             <if ${hasTitle}>
               <h3 id="kv-title" class="kv__title" part="title">
                 ${this.label}${this.required ? ' *' : ''}

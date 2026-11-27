@@ -39,7 +39,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
   @render()
   render() {
     return html/*html*/`
-      <div class="header-container" part="container">
+      <div class="header-container" part="base container">
         <if ${this.selectable}>
           ${this.renderSelectAllCheckbox()}
         </if>
@@ -115,6 +115,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
         <input
           type="checkbox"
           class="select-all-checkbox"
+          part="checkbox"
           ?checked=${this.allSelected}
           title="Select all rows"
           tabindex="0"
@@ -130,7 +131,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
     }
 
     return html/*html*/`
-      <div class="cells-container" @click=${(e: MouseEvent) => this.handleClick(e)} @keydown=${(e: KeyboardEvent) => this.handleKeyDown(e)}>
+      <div class="cells-container" part="cells" @click=${(e: MouseEvent) => this.handleClick(e)} @keydown=${(e: KeyboardEvent) => this.handleKeyDown(e)}>
         ${this.columns.map((column, index) => this.renderHeaderCell(column, index))}
       </div>
     `;
@@ -144,7 +145,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
     return html/*html*/`
       <div
         class="header-cell header-cell--${column.type || 'text'}"
-        part="cell"
+        part="cell${isSortable ? ' cell-sortable' : ''}${isCurrentSort ? ' cell-sorted' : ''}"
         data-column-key="${column.key}"
         data-column-index="${index}"
         data-sortable="${isSortable}"
@@ -155,7 +156,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
         aria-sort="${isCurrentSort ? this.getAriaSortValue(sortDirection) : ''}"
       >
         <div class="header-cell-content">
-          <span class="header-cell-label">${column.label}</span>
+          <span class="header-cell-label" part="cell-label">${column.label}</span>
           <if ${isSortable}>
             ${this.renderSortIndicator(sortDirection)}
           </if>
@@ -182,7 +183,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
     return html/*html*/`
       <span
         class="sort-indicator sort-indicator--${state}"
-        part="sort-indicator"
+        part="sort-indicator${({ neutral: ' sort-indicator-neutral', ascending: ' sort-indicator-ascending', descending: ' sort-indicator-descending' } as Record<string, string>)[state] || ''}"
         aria-hidden="true"
       >${unsafeHTML(icon)}</span>
     `;

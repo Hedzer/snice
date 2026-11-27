@@ -63,9 +63,32 @@ description: string = '';
 
 ## CSS Parts
 
-- `base`, `title`, `copy-button`, `rows`, `row`
-- `key-input`, `value-input`, `description-input`, `delete-button`, `error`
-- `view-row`, `view-key`, `view-value`, `view-desc`, `empty`
+- `base` - Root bordered group
+- `title` - Visible title
+- `copy-button` - Copy button
+- `rows` - Rows container
+- `row` - Edit-mode row
+- `key-input` - Key input
+- `value-input` - Value input
+- `description-input` - Optional description input
+- `delete-button` - Variable-row delete button
+- `error` - Current native validation message
+- `view-row` - View-mode row
+- `view-key` - View-mode key
+- `view-value` - View-mode value
+- `view-desc` - View-mode description
+- `empty` - View-mode empty state
+- `header` - Header row holding the title and copy button
+- `fields` - Key/value/description field column of an edit row
+- `pair` - Key + value input pair of an edit row
+- `delete-icon` - Glyph inside `delete-button`
+- `copy-icon` - Glyph inside `copy-button`
+- `view-body` - View-mode value + description column
+
+State tokens:
+
+- `copy-icon-copied` - Added to `copy-icon` while showing the copied checkmark
+- `copy-icon-idle` - Added to `copy-icon` while showing the copy glyph
 
 ## Basic Usage
 

@@ -47,6 +47,15 @@ readonly labels: NodeList | null;
 - `spinner` - Loading spinner
 - `label` - Button label text
 - `icon` - Icon container
+- `icon-start` - Added to `icon` when the icon renders before the label
+- `icon-end` - Added to `icon` when the icon renders after the label
+- `base-loading` - Added to `base` while loading
+- `base-disabled` - Added to `base` while disabled
+- `base-outline` - Added to `base` when `outline` is set
+- `base-pill` - Added to `base` when `pill` is set
+- `base-circle` - Added to `base` when `circle` is set
+- `ripple` - Hidden Material 3 pointer-origin ripple helper (`data-platform-only="material"`)
+- `sheen` - Hidden iOS/macOS Liquid Glass highlight sheen helper (`data-platform-only="ios,macos"`)
 
 ## Basic Usage
 

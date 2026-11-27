@@ -48,7 +48,7 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
         </if>
         <span part="content" class="toast-content">${this.message}</span>
         <if ${this.closable}>
-          <button class="toast-close" aria-label="Close" @click=${this.dispatchCloseEvent}>${unsafeHTML(X_MARK)}</button>
+          <button part="close-button" class="toast-close" aria-label="Close" @click=${this.dispatchCloseEvent}>${unsafeHTML(X_MARK)}</button>
         </if>
       </div>
     `;

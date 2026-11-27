@@ -162,14 +162,14 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     const describedBy = this.errorText || this.helperText ? this.descriptionId : '';
 
     return html/*html*/`
-      <div class="date-picker-wrapper">
+      <div class="date-picker-wrapper" part="base">
         <if ${this.label}>
-          <label class="${labelClasses}" @click=${() => this.focus()}>
+          <label class="${labelClasses}" part="label${this.required ? ' label-required' : ''}" @click=${() => this.focus()}>
             ${this.label}
           </label>
         </if>
 
-        <div class="input-container">
+        <div class="input-container" part="input-container">
           <input
             class="${inputClasses}"
             type="text"
@@ -182,7 +182,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             aria-label="${accessibleName}"
             aria-describedby="${describedBy}"
             aria-invalid="${displayedInvalid ? 'true' : 'false'}"
-            part="input"
+            part="input${displayedInvalid ? ' input-invalid' : ''}${this.clearable ? ' input-clearable' : ''}${this.loading ? ' input-loading' : ''}"
             autocomplete="off"
             @input=${(e: Event) => this.handleInput(e)}
             @change=${(e: Event) => this.handleChange(e)}
@@ -211,7 +211,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             type="button"
             aria-label="Clear"
             tabindex="-1"
-            part="clear"
+            part="clear${showClear ? ' clear-visible' : ''}"
             style="${showClear ? '' : 'display: none;'}"
             .disabled=${interactionDisabled || this.readonly}
             @click=${(e: Event) => this.handleClear(e)}
@@ -225,60 +225,62 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             <span class="spinner" part="spinner"></span>
           </if>
 
-          <div class="calendar" part="calendar" popover="manual" role="group" aria-label="${accessibleName} calendar" ?hidden=${!this.open} @click=${(e: Event) => this.handleCalendarClick(e)}>
+          <div class="calendar" part="calendar${this.open ? ' calendar-open' : ''}" popover="manual" role="group" aria-label="${accessibleName} calendar" ?hidden=${!this.open} @click=${(e: Event) => this.handleCalendarClick(e)}>
             <case ${this.calendarView}>
               <when value="years">
-                <div class="calendar-header">
-                  <button class="nav-button" type="button" data-nav="prev-years" aria-label="Previous years">
+                <div class="calendar-header" part="calendar-header">
+                  <button class="nav-button" part="nav-button nav-button-prev" type="button" data-nav="prev-years" aria-label="Previous years">
                     <svg viewBox="0 0 24 24" width="20" height="20">
                       <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
                     </svg>
                   </button>
-                  <div class="calendar-title">
-                    <span class="month-label">${this.yearRangeStart} — ${this.yearRangeStart + 11}</span>
+                  <div class="calendar-title" part="calendar-title">
+                    <span class="month-label" part="month-label">${this.yearRangeStart} — ${this.yearRangeStart + 11}</span>
                   </div>
-                  <button class="nav-button" type="button" data-nav="next-years" aria-label="Next years">
+                  <button class="nav-button" part="nav-button nav-button-next" type="button" data-nav="next-years" aria-label="Next years">
                     <svg viewBox="0 0 24 24" width="20" height="20">
                       <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
                     </svg>
                   </button>
                 </div>
-                <div class="year-grid">
+                <div class="year-grid" part="year-grid">
                   ${this.getYearsGrid()}
                 </div>
               </when>
               <default>
-                <div class="calendar-header">
-                  <button class="nav-button" type="button" data-nav="prev-month" aria-label="Previous month">
+                <div class="calendar-header" part="calendar-header">
+                  <button class="nav-button" part="nav-button nav-button-prev" type="button" data-nav="prev-month" aria-label="Previous month">
                     <svg viewBox="0 0 24 24" width="20" height="20">
                       <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
                     </svg>
                   </button>
 
-                  <div class="calendar-title">
-                    <span class="month-label">${this.monthNames[this.viewDate.getMonth()]} </span><button class="year-button" type="button" data-nav="show-years">${this.viewDate.getFullYear()}</button>
+                  <div class="calendar-title" part="calendar-title">
+                    <span class="month-label" part="month-label">${this.monthNames[this.viewDate.getMonth()]} </span><button class="year-button" part="year-button" type="button" data-nav="show-years">${this.viewDate.getFullYear()}</button>
                   </div>
 
-                  <button class="nav-button" type="button" data-nav="next-month" aria-label="Next month">
+                  <button class="nav-button" part="nav-button nav-button-next" type="button" data-nav="next-month" aria-label="Next month">
                     <svg viewBox="0 0 24 24" width="20" height="20">
                       <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
                     </svg>
                   </button>
                 </div>
 
-                <div class="calendar-weekdays">
+                <div class="calendar-weekdays" part="weekdays">
                   ${this.getDayHeaders()}
                 </div>
 
-                <div class="calendar-days" role="grid" aria-label="Calendar days" @keydown=${(e: KeyboardEvent) => this.handleKeydown(e)}>
+                <div class="calendar-days" part="days" role="grid" aria-label="Calendar days" @keydown=${(e: KeyboardEvent) => this.handleKeydown(e)}>
                   ${this.getDaysGrid()}
                 </div>
               </default>
             </case>
 
-            <div class="calendar-footer">
+            <div class="calendar-footer" part="calendar-footer">
               <snice-button
                 class="today-button"
+                part="today-button"
+                exportparts="base: today-button-base, label: today-button-label, icon: today-button-icon, spinner: today-button-spinner, icon-start: today-button-icon-start, icon-end: today-button-icon-end, base-loading: today-button-base-loading, base-disabled: today-button-base-disabled"
                 variant="default"
                 size="small"
                 data-nav="today"
@@ -525,7 +527,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     for (let i = 0; i < this.firstDayOfWeek; i++) {
       days.push(days.shift()!);
     }
-    return days.map(day => html`<div class="weekday">${day}</div>`);
+    return days.map(day => html`<div class="weekday" part="weekday">${day}</div>`);
   }
 
   private getYearsGrid() {
@@ -538,7 +540,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       if (year === currentYear) classes.push('year-cell--current');
       if (year === selectedYear) classes.push('year-cell--selected');
       years.push(html`
-        <button class="${classes.join(' ')}" type="button" data-year="${year}">${year}</button>
+        <button class="${classes.join(' ')}" part="year-cell${classes.includes('year-cell--current') ? ' year-cell-current' : ''}${classes.includes('year-cell--selected') ? ' year-cell-selected' : ''}" type="button" data-year="${year}">${year}</button>
       `);
     }
     return years;
@@ -587,7 +589,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
     // Empty cells for days before month starts
     for (let i = 0; i < startingDayOfWeek; i++) {
-      days.push(html`<div class="day day--empty" role="gridcell" aria-hidden="true"></div>`);
+      days.push(html`<div class="day day--empty" part="day day-empty" role="gridcell" aria-hidden="true"></div>`);
     }
 
     const focused = this.getFocusedCalendarDate();
@@ -613,6 +615,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       days.push(html`
         <button
           class="${classes.join(' ')}"
+          part="day${classes.includes('day--today') ? ' day-today' : ''}${classes.includes('day--selected') ? ' day-selected' : ''}${classes.includes('day--disabled') ? ' day-disabled' : ''}"
           type="button"
           role="gridcell"
           data-date="${dateStr}"

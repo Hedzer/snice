@@ -113,6 +113,20 @@ Direct pair children take precedence over `setItems()`, `addItem()`, `removeItem
 | `view-value` | View-mode value. |
 | `view-desc` | View-mode description. |
 | `empty` | View-mode empty state. |
+| `header` | Header row holding the title and copy button. |
+| `fields` | Key/value/description field column of an edit row. |
+| `pair` | Key + value input pair of an edit row. |
+| `delete-icon` | Glyph inside `delete-button`. |
+| `copy-icon` | Glyph inside `copy-button`. |
+| `view-body` | View-mode value + description column. |
+
+State tokens are added alongside the base token on the same element, so they can
+be targeted with `::part(copy-icon copy-icon-copied)`.
+
+| Part | Added to | Description |
+|---|---|---|
+| `copy-icon-copied` | `copy-icon` | Present while the copied checkmark is shown. |
+| `copy-icon-idle` | `copy-icon` | Present while the copy glyph is shown. |
 
 ## Basic Usage
 

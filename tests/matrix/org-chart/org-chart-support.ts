@@ -27,6 +27,7 @@
  * that makes it a tree rather than a pile of divs.
  */
 import { createComponent, removeComponent, wait } from '../../components/test-utils';
+import { exactPartIn } from '../part-exact';
 import '../../../packages/components/src/org-chart/snice-org-chart';
 import type {
   OrgChartNode, OrgChartDirection,
@@ -222,7 +223,7 @@ export interface RenderedNode {
 
 /** The chart's rendered tree, as a nested description. */
 export function readTree(el: any): RenderedNode[] {
-  const tree = sr(el).querySelector('[part="tree"]');
+  const tree = exactPartIn(sr(el), 'tree');
   if (!tree) return [];
   return readWrappers(tree);
 }
@@ -301,7 +302,7 @@ export function chartProblems(el: any, c: ChartCombo): string[] {
   const base = root.querySelector('[part="base"]');
   if (!base) { say('no part="base" container'); return problems; }
 
-  const tree = root.querySelector('[part="tree"]');
+  const tree = exactPartIn(root, 'tree');
 
   // ── No data ───────────────────────────────────────────────────────────────
   if (!c.fixture.data) {

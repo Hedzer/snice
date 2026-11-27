@@ -102,7 +102,28 @@ Only the newly selected radio emits. The old member is silently unchecked. Direc
 
 Slot: `suffix`.
 
-CSS parts: `input`, `radio`, `dot`, `spinner`, `content`, `label`, `description`.
+## CSS Parts
+
+- `base` - Wrapper label around the whole control.
+- `base-block` - Added to `base` for the block variant.
+- `base-disabled` - Added to `base` while interaction is disabled.
+- `base-loading` - Added to `base` while loading.
+- `input` - Hidden native radio input.
+- `input-checked` - Added to `input` while checked.
+- `radio` - Radio circle.
+- `radio-invalid` - Added to `radio` while invalid.
+- `radio-loading` - Added to `radio` while loading.
+- `radio-keyboard-focus` - Added to `radio` during keyboard navigation.
+- `dot` - Selected indicator.
+- `spinner` - Loading spinner.
+- `content` - Block-variant content wrapper.
+- `label` - Label text.
+- `label-required` - Added to `label` while required.
+- `description` - Block-variant supporting text.
+- `base-checked` - Added to `base` while checked
+- `radio-checked` - Added to `radio` while checked
+- `dot-checked` - Added to `dot` while checked
+- `ripple` - Hidden Material 3 state-layer ripple helper (`data-platform-only="material"`)
 
 ## Accessibility
 

@@ -37,7 +37,7 @@ export class SniceCellJson extends HTMLElement implements SniceCellElement {
     if (jsonValue === null || jsonValue === undefined) {
       return html/*html*/`
         <div class="cell-content cell-content--json" part="content">
-          <span class="json-empty">null</span>
+          <span class="json-empty" part="empty">null</span>
         </div>
       `;
     }
@@ -53,7 +53,7 @@ export class SniceCellJson extends HTMLElement implements SniceCellElement {
     return html/*html*/`
       <div class="cell-content cell-content--json" part="content">
         ${unsafeHTML(toggleHTML)}
-        <div class="json-viewer ${this.collapsed ? 'json-viewer--collapsed' : 'json-viewer--expanded'}">
+        <div class="json-viewer ${this.collapsed ? 'json-viewer--collapsed' : 'json-viewer--expanded'}" part="viewer${this.collapsed ? ' viewer-collapsed' : ' viewer-expanded'}">
           ${unsafeHTML(jsonHTML)}
         </div>
       </div>

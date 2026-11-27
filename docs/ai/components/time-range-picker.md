@@ -36,6 +36,18 @@ interface TimeRange { start: string; end: string; }
 - `base` - The outer wrapper container
 - `header` - The header with label and selected value display
 - `slots` - The time slots container
+- `label` - "Time" label in the header
+- `value` - Selected-range summary in the header
+- `value-empty` - Added to `value` while nothing is selected
+- `slot` - A single time slot
+- `slot-selected` - Added to `slot` while the slot is selected
+- `slot-disabled` - Added to `slot` while the slot is disabled
+- `slot-dragging` - Added to `slot` while it is inside the active drag range
+- `slot-hour-start` - Added to `slot` on an hour boundary
+- `slot-range-start` - Added to `slot` on the first slot of a selected range
+- `slot-range-end` - Added to `slot` on the last slot of a selected range
+- `slot-time` - Time text inside a slot
+- `slot-separator` - Separator rule inside a slot
 
 ## Basic Usage
 

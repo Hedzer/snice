@@ -44,8 +44,22 @@ Style internal elements from outside the shadow DOM using `::part()`.
 |------|---------|-------------|
 | `base` | `<div>` | The outer content wrapper |
 | `nav` | `<nav>` | The navigation element |
+| `group` | `<div>` | A group wrapper (grouped and hierarchical variants) |
+| `group-label` | `<div>` | The group heading text |
+| `submenu` | `<ul>` | The nested list of child links (hierarchical variant) |
+| `item` | `<div>` or `<li>` | A navigation item wrapper |
 | `link` | `<a>` | An individual navigation link |
 | `icon` | `<img>` or `<span>` | Nav item icon element |
+| `label` | `<span>` | The nav link label text |
+
+State tokens are added alongside the base token, so they are matched with
+`::part(link link-active)`.
+
+| Token | Description |
+|-------|-------------|
+| `item-active` | Added to `item` while its route is active |
+| `group-active` | Added to `group` while it contains the active route |
+| `link-active` | Added to `link` while its route is active |
 
 ```css
 snice-nav::part(nav) {

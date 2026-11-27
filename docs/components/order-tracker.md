@@ -37,10 +37,29 @@ Style internal elements from outside the shadow DOM using `::part()`.
 |------|---------|-------------|
 | `base` | `<div>` | The outer tracker container |
 | `info` | `<div>` | Tracking info section (carrier, tracking number) |
+| `info-item` | `<div>` | One carrier or tracking row |
+| `info-label` | `<span>` | The info row label |
+| `info-value` | `<span>` | The info row value |
 | `steps` | `<div>` | The steps container |
 | `step` | `<div>` | An individual step |
 | `step-indicator` | `<div>` | Step number or check icon |
+| `step-icon` | `<svg>` | The check icon shown on a completed step |
 | `step-content` | `<div>` | Step label, timestamp, and description |
+| `step-label` | `<span>` | The step label |
+| `step-timestamp` | `<span>` | The step timestamp |
+| `step-description` | `<span>` | The step description |
+| `step-connector` | `<div>` | The line drawn between steps |
+
+State tokens are added alongside the base token, so they are matched with
+`::part(step step-completed)`.
+
+| Token | Description |
+|-------|-------------|
+| `steps-horizontal` | Added to `steps` while `variant` is `horizontal` |
+| `steps-vertical` | Added to `steps` while `variant` is `vertical` |
+| `step-pending` | Added to `step` while the step is pending |
+| `step-active` | Added to `step` while the step is active |
+| `step-completed` | Added to `step` while the step is completed |
 
 ## Basic Usage
 

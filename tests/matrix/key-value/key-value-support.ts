@@ -85,6 +85,9 @@ export const DOCUMENTED_PARTS = [
   'base', 'title', 'copy-button', 'rows', 'row',
   'key-input', 'value-input', 'description-input', 'delete-button', 'error',
   'view-row', 'view-key', 'view-value', 'view-desc', 'empty',
+  'header', 'fields', 'pair', 'delete-icon', 'copy-icon', 'view-body',
+  // State tokens, added beside the base token on the same element.
+  'copy-icon-copied', 'copy-icon-idle',
 ];
 
 // ── The documented data model ───────────────────────────────────────────────

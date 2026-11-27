@@ -62,12 +62,125 @@ interface CartItem {
 |------|-------------|
 | `base` | The outer cart container |
 | `header` | Cart header with title and count |
+| `title` | Cart heading text |
+| `count` | Item-count text in the header |
 | `items` | The items list |
 | `item` | Individual line item |
+| `item-image` | Line item thumbnail image |
+| `item-image-placeholder` | Placeholder shown when the item has no image |
+| `item-image-icon` | The `<svg>` glyph inside the image placeholder |
+| `item-body` | Line item content column |
+| `item-header` | Line item top row (details + remove button) |
+| `item-details` | Name/variant/price block |
+| `item-name` | Line item name |
+| `item-variant` | Line item variant text |
+| `item-price` | Per-unit price text |
+| `item-actions` | Quantity + item-total row |
+| `item-total` | Line total text |
+| `remove-button` | The `<snice-button>` that removes a line item |
+| `quantity` | The `<snice-step-input>` quantity control |
 | `coupon` | Coupon input area |
+| `coupon-input` | The coupon `<snice-input>` |
+| `apply-button` | The coupon Apply `<snice-button>` |
 | `summary` | Order summary section |
+| `summary-row` | A summary line |
+| `summary-row-total` | Added to `summary-row` on the total line |
+| `summary-label` | Summary line label |
+| `summary-value` | Summary line value |
+| `summary-value-discount` | Added to `summary-value` on the discount line |
+| `divider` | The `<snice-divider>` above the total |
 | `checkout` | Checkout button area |
+| `checkout-button` | The checkout `<snice-button>` |
 | `empty` | Empty cart message |
+
+### Forwarded from the coupon `<snice-input>`
+
+| Part | Description |
+|------|-------------|
+| `coupon-input-base` | Exported `base` — Outer wrapper |
+| `coupon-input-wrapper` | Exported `wrapper` — Outer wrapper element |
+| `coupon-input-label` | Exported `label` — Label element |
+| `coupon-input-container` | Exported `container` — Input container |
+| `coupon-input-input` | Exported `input` — Native input element |
+| `coupon-input-prefix-icon` | Exported `prefix-icon` — Prefix icon container |
+| `coupon-input-suffix-icon` | Exported `suffix-icon` — Suffix icon container |
+| `coupon-input-clear` | Exported `clear` — Clear button |
+| `coupon-input-clear-icon` | Exported `clear-icon` — Glyph inside the clear button |
+| `coupon-input-spinner` | Exported `spinner` — Loading spinner |
+| `coupon-input-password-toggle` | Exported `password-toggle` — Password visibility toggle |
+| `coupon-input-password-icon` | Exported `password-icon` — Glyph inside the password toggle |
+| `coupon-input-helper-text` | Exported `helper-text` — Helper text element |
+| `coupon-input-error-text` | Exported `error-text` — Error text element |
+| `coupon-input-label-required` | Exported `label-required` — `label` while required |
+| `coupon-input-input-invalid` | Exported `input-invalid` — `input` while invalid |
+| `coupon-input-input-loading` | Exported `input-loading` — `input` while loading |
+| `coupon-input-input-clearable` | Exported `input-clearable` — `input` while clearable |
+| `coupon-input-clear-with-suffix` | Exported `clear-with-suffix` — `clear` when a suffix adornment shares the row |
+| `coupon-input-password-icon-hidden` | Exported `password-icon-hidden` — `password-icon` while the password is masked |
+| `coupon-input-password-icon-visible` | Exported `password-icon-visible` — `password-icon` while the password is revealed |
+
+### Forwarded from the quantity `<snice-step-input>`
+
+| Part | Description |
+|------|-------------|
+| `quantity-base` | Exported `base` — Outer container |
+| `quantity-base-invalid` | Exported `base-invalid` — `base` while the value fails validation |
+| `quantity-decrement-button` | Exported `decrement-button` — Minus button |
+| `quantity-increment-button` | Exported `increment-button` — Plus button |
+| `quantity-button` | Exported `button` — Either stepper button |
+| `quantity-icon` | Exported `icon` — Either stepper button glyph |
+| `quantity-decrement-icon` | Exported `decrement-icon` — `icon` for the minus glyph |
+| `quantity-increment-icon` | Exported `increment-icon` — `icon` for the plus glyph |
+| `quantity-input` | Exported `input` — Number input field |
+
+### Forwarded from the `<snice-divider>`
+
+| Part | Description |
+|------|-------------|
+| `divider-base` | Exported `base` — Outer divider container |
+| `divider-line` | Exported `line` — The divider line(s) |
+| `divider-line-before` | Exported `line-before` — `line` rendered before the text label |
+| `divider-line-after` | Exported `line-after` — `line` rendered after the text label |
+| `divider-text` | Exported `text` — Optional text label |
+
+### Forwarded from the remove `<snice-button>`
+
+| Part | Description |
+|------|-------------|
+| `remove-button-base` | Exported `base` — The button element |
+| `remove-button-spinner` | Exported `spinner` — Loading spinner |
+| `remove-button-label` | Exported `label` — Button label text |
+| `remove-button-icon` | Exported `icon` — Icon container |
+| `remove-button-icon-start` | Exported `icon-start` — `icon` before the label |
+| `remove-button-icon-end` | Exported `icon-end` — `icon` after the label |
+| `remove-button-base-loading` | Exported `base-loading` — `base` while loading |
+| `remove-button-base-disabled` | Exported `base-disabled` — `base` while disabled |
+
+### Forwarded from the apply `<snice-button>`
+
+| Part | Description |
+|------|-------------|
+| `apply-button-base` | Exported `base` — The button element |
+| `apply-button-spinner` | Exported `spinner` — Loading spinner |
+| `apply-button-label` | Exported `label` — Button label text |
+| `apply-button-icon` | Exported `icon` — Icon container |
+| `apply-button-icon-start` | Exported `icon-start` — `icon` before the label |
+| `apply-button-icon-end` | Exported `icon-end` — `icon` after the label |
+| `apply-button-base-loading` | Exported `base-loading` — `base` while loading |
+| `apply-button-base-disabled` | Exported `base-disabled` — `base` while disabled |
+
+### Forwarded from the checkout `<snice-button>`
+
+| Part | Description |
+|------|-------------|
+| `checkout-button-base` | Exported `base` — The button element |
+| `checkout-button-spinner` | Exported `spinner` — Loading spinner |
+| `checkout-button-label` | Exported `label` — Button label text |
+| `checkout-button-icon` | Exported `icon` — Icon container |
+| `checkout-button-icon-start` | Exported `icon-start` — `icon` before the label |
+| `checkout-button-icon-end` | Exported `icon-end` — `icon` after the label |
+| `checkout-button-base-loading` | Exported `base-loading` — `base` while loading |
+| `checkout-button-base-disabled` | Exported `base-disabled` — `base` while disabled |
 
 ## Basic Usage
 

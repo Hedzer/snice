@@ -177,16 +177,23 @@ export function checkPartsTotal(el: HTMLElement, parts_: WorkOrderPart[], proble
 }
 
 const DOCUMENTED_PARTS = new Set([
-  'base', 'header', 'title', 'wo-number', 'date', 'due-date', 'priority', 'status',
-  'customer', 'customer-name', 'customer-address', 'customer-contact',
-  'asset', 'asset-id', 'asset-name',
-  'description', 'description-label', 'description-content',
-  'tasks', 'task', 'task-checkbox', 'task-description', 'task-assignee',
-  'parts', 'parts-table', 'parts-row', 'part-name', 'part-number', 'part-qty', 'part-cost',
-  'parts-total', 'labor', 'labor-hours', 'labor-rate', 'labor-total',
-  'costs', 'grand-total', 'notes', 'notes-label', 'notes-content',
-  'signature', 'signature-line', 'signature-date', 'sign-button',
-  'qr-container', 'footer',
+  'asset', 'asset-field', 'asset-fields', 'asset-id', 'asset-label', 'asset-last-service',
+  'asset-location', 'asset-name', 'asset-serial', 'base', 'cost-label', 'cost-row',
+  'cost-row-grand', 'costs', 'costs-table', 'customer', 'customer-address', 'customer-contact',
+  'customer-email', 'customer-field', 'customer-fields', 'customer-label', 'customer-name', 'date',
+  'date-item', 'date-label', 'dates', 'description', 'description-content', 'description-label',
+  'due-date', 'footer', 'grand-total', 'header', 'header-left', 'header-right', 'labor',
+  'labor-field', 'labor-fields', 'labor-hours', 'labor-label', 'labor-rate', 'labor-total',
+  'notes', 'notes-content', 'notes-label', 'part-cost', 'part-name', 'part-number', 'part-qty',
+  'part-total', 'parts', 'parts-body', 'parts-head', 'parts-header-cell', 'parts-header-row',
+  'parts-row', 'parts-table', 'parts-total', 'parts-total-label', 'parts-total-value', 'priority',
+  'priority-high', 'priority-low', 'priority-medium', 'priority-urgent', 'qr-container',
+  'qr-container-footer', 'qr-container-header', 'qr-container-top-right', 'section-title',
+  'sign-button', 'signature', 'signature-date', 'signature-field', 'signature-label',
+  'signature-line', 'signature-lines', 'status', 'status-cancelled', 'status-completed',
+  'status-in-progress', 'status-open', 'task', 'task-assignee', 'task-check-icon', 'task-checkbox',
+  'task-checkbox-checked', 'task-completed', 'task-content', 'task-description', 'task-hours',
+  'task-list', 'task-meta', 'tasks', 'title', 'wo-number',
 ]);
 
 export function checkNoUndocumentedParts(el: HTMLElement, problems: Problems): void {

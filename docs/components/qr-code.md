@@ -56,6 +56,12 @@ A QR code generator with customizable styling, dot patterns, center overlays, an
 | Part | Description |
 |------|-------------|
 | `base` | The container div holding the generated canvas or SVG |
+| `canvas` | The generated `<canvas>` in `canvas` render mode, tagged after generation |
+| `svg` | The generated `<svg>` in `svg` render mode, tagged after generation |
+| `center-image` | Centre logo `<image>` overlay drawn in `svg` render mode |
+| `center-text` | Centre text `<text>` node drawn in `svg` render mode |
+| `center-text-outline` | Added to `center-text` on the stroked outline copy |
+| `center-text-fill` | Added to `center-text` on the filled copy |
 
 ```css
 snice-qr-code::part(base) {

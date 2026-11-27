@@ -15,6 +15,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 import { getWipComponents } from '../shared/wip-components.js';
+import { extractPartTokens } from '../shared/part-tokens.js';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const componentsRoot = path.join(projectRoot, 'packages', 'components', 'src');
@@ -142,14 +143,47 @@ function methodParameters(member, source) {
   }));
 }
 
-function collectMarkupMetadata(sourceText) {
+/** The sibling `.ts` file a relative import specifier names, or undefined. */
+function resolveSiblingModule(fromPath, specifier) {
+  const directory = path.dirname(fromPath);
+  const base = path.resolve(directory, specifier);
+  if (path.dirname(base) !== directory) return undefined;
+  for (const candidate of [base, `${base}.ts`]) {
+    if (candidate.endsWith('.ts') && !candidate.endsWith('.d.ts') && fs.existsSync(candidate)) return candidate;
+  }
+  return undefined;
+}
+
+/**
+ * Helper modules a component file imports from its own directory that build
+ * part-carrying markup on its behalf (`table/table-toolbar.ts` sets
+ * `part="toolbar"` inside `snice-table`). Modules defining their own element
+ * are skipped — their parts are reported on that element instead. The scope is
+ * the component directory, matching tests/parts-docs-alignment.test.ts, so a
+ * shared helper is never charged to every component that imports it.
+ */
+function siblingTemplateSources(sourcePath, sourceText) {
+  const texts = [];
+  const seen = new Set();
+  for (const match of sourceText.matchAll(/\bfrom\s*['"](\.[^'"]*)['"]/g)) {
+    const resolved = resolveSiblingModule(sourcePath, match[1]);
+    if (!resolved || resolved === sourcePath || seen.has(resolved)) continue;
+    seen.add(resolved);
+    const text = fs.readFileSync(resolved, 'utf8');
+    if (/@element\s*\(/.test(text)) continue;
+    texts.push(text);
+  }
+  return texts;
+}
+
+function collectMarkupMetadata(sourceText, sourcePath) {
   const slots = new Set();
-  const parts = new Set();
   for (const match of sourceText.matchAll(/<slot(?:\s[^>]*?\bname\s*=\s*["']([^"']+)["'])?[^>]*>/g)) {
     slots.add(match[1] || '');
   }
-  for (const match of sourceText.matchAll(/\bpart\s*=\s*["']([^"']+)["']/g)) {
-    for (const part of match[1].trim().split(/\s+/)) if (part) parts.add(part);
+  const parts = extractPartTokens(sourceText);
+  for (const text of siblingTemplateSources(sourcePath, sourceText)) {
+    for (const part of extractPartTokens(text)) parts.add(part);
   }
   return {
     slots: [...slots].sort().map(name => ({ name })),
@@ -328,7 +362,7 @@ function parseComponentFile(sourcePath) {
       }
     }
 
-    const markup = collectMarkupMetadata(text);
+    const markup = collectMarkupMetadata(text, sourcePath);
     declarations.push({
       kind: 'class',
       name: className,

@@ -251,21 +251,21 @@ export class SniceCropper extends HTMLElement implements SniceCropperElement {
     return html`
       <div class="cropper" part="base">
         <div class="image-container" part="image-container">
-          <img src="${this.src}" alt="Image to crop" @load=${() => this.initCropArea()} />
+          <img part="image" src="${this.src}" alt="Image to crop" @load=${() => this.initCropArea()} />
         </div>
         <div class="crop-area" part="crop-area"
              role="region"
              aria-label="Crop region. Use arrow keys to move; hold shift for larger steps."
              tabindex="0"
              @mousedown=${this.onCropAreaMouseDown}>
-          <span class="handle handle-nw" data-handle="nw" @mousedown=${this.onCropAreaMouseDown}></span>
-          <span class="handle handle-ne" data-handle="ne" @mousedown=${this.onCropAreaMouseDown}></span>
-          <span class="handle handle-sw" data-handle="sw" @mousedown=${this.onCropAreaMouseDown}></span>
-          <span class="handle handle-se" data-handle="se" @mousedown=${this.onCropAreaMouseDown}></span>
-          <span class="handle handle-n" data-handle="n" @mousedown=${this.onCropAreaMouseDown}></span>
-          <span class="handle handle-s" data-handle="s" @mousedown=${this.onCropAreaMouseDown}></span>
-          <span class="handle handle-w" data-handle="w" @mousedown=${this.onCropAreaMouseDown}></span>
-          <span class="handle handle-e" data-handle="e" @mousedown=${this.onCropAreaMouseDown}></span>
+          <span part="handle handle-nw" class="handle handle-nw" data-handle="nw" @mousedown=${this.onCropAreaMouseDown}></span>
+          <span part="handle handle-ne" class="handle handle-ne" data-handle="ne" @mousedown=${this.onCropAreaMouseDown}></span>
+          <span part="handle handle-sw" class="handle handle-sw" data-handle="sw" @mousedown=${this.onCropAreaMouseDown}></span>
+          <span part="handle handle-se" class="handle handle-se" data-handle="se" @mousedown=${this.onCropAreaMouseDown}></span>
+          <span part="handle handle-n" class="handle handle-n" data-handle="n" @mousedown=${this.onCropAreaMouseDown}></span>
+          <span part="handle handle-s" class="handle handle-s" data-handle="s" @mousedown=${this.onCropAreaMouseDown}></span>
+          <span part="handle handle-w" class="handle handle-w" data-handle="w" @mousedown=${this.onCropAreaMouseDown}></span>
+          <span part="handle handle-e" class="handle handle-e" data-handle="e" @mousedown=${this.onCropAreaMouseDown}></span>
         </div>
       </div>
     `;

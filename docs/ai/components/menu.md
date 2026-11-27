@@ -51,22 +51,35 @@ selected: boolean = false;
 
 ## CSS Parts (snice-menu)
 
+- `base` - Menu root wrapper
 - `trigger` - Trigger wrapper
 - `image-left` - Left image container
 - `image-right` - Right image container
 - `panel` - Dropdown panel
 - `content` - Panel content wrapper
 
+State tokens:
+
+- `trigger-open` - Added to `trigger` while the menu is open
+- `panel-open` - Added to `panel` while the menu is open
+
 ## CSS Parts (snice-menu-item)
 
 - `item` - Item container
+- `base` - Same element as `item`, the item's root wrapper
 - `icon` - Icon wrapper
 - `label` - Label wrapper
 - `shortcut` - Shortcut wrapper
 
+State tokens:
+
+- `item-selected` - Added to `item` while the item is selected
+- `item-disabled` - Added to `item` while the item is disabled
+
 ## CSS Parts (snice-menu-divider)
 
 - `divider` - Separator line
+- `base` - Same element as `divider`, the divider's root wrapper
 
 ## CSS Custom Properties
 

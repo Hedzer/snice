@@ -29,8 +29,24 @@ thickness: number = 4;                               // Circular stroke width
 
 ## CSS Parts
 
-Linear: `base`, `bar`, `label`
-Circular: `base`, `circle`, `circle-bg`, `circle-bar`, `label`
+Linear variant:
+
+- `base` - Outer progress container with `role="progressbar"`
+- `base-with-label` - Added to `base` when `show-label` is set
+- `base-indeterminate` - Added to `base` while indeterminate
+- `bar` - The progress bar fill
+- `bar-indeterminate` - Added to `bar` while indeterminate
+- `label` - Percentage or custom label text
+
+Circular variant:
+
+- `base` - Outer progress container with `role="progressbar"`
+- `base-indeterminate` - Added to `base` while indeterminate
+- `circle` - The SVG element
+- `circle-bg` - Background circle stroke
+- `circle-bar` - Foreground progress arc
+- `circle-bar-indeterminate` - Added to `circle-bar` while indeterminate
+- `label` - Percentage or custom label text
 
 ## CSS Custom Properties
 

@@ -25,6 +25,7 @@ Displays colors with a swatch and formatted label. Supports hex, RGB, and HSL fo
 
 | Part | Description |
 |------|-------------|
+| `base` | The root wrapper (same element as `container`) |
 | `container` | The outer container |
 | `swatch` | The color swatch element |
 | `label` | The color label text |

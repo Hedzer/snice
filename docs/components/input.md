@@ -88,6 +88,7 @@ Text input field with validation, icons, and form association.
 
 | Part | Description |
 |------|-------------|
+| `base` | The outer wrapper element (the same node as `wrapper`) |
 | `wrapper` | The outer wrapper element |
 | `label` | The label element |
 | `container` | The input container (holds input + icons) |
@@ -95,10 +96,28 @@ Text input field with validation, icons, and form association.
 | `prefix-icon` | The prefix icon container |
 | `suffix-icon` | The suffix icon container |
 | `clear` | The clear button |
+| `clear-icon` | The glyph inside the clear button |
 | `spinner` | The loading spinner |
 | `password-toggle` | The password visibility toggle |
+| `password-icon` | The glyph inside the password toggle |
 | `helper-text` | The helper text element |
 | `error-text` | The error text element |
+
+State tokens are added alongside the base token on the same element, so they can
+be targeted with `::part(input input-invalid)`.
+
+| Part | Added to | Description |
+|------|----------|-------------|
+| `label-required` | `label` | Present while `required` is set |
+| `input-invalid` | `input` | Present while the control is invalid |
+| `input-loading` | `input` | Present while `loading` is set |
+| `input-clearable` | `input` | Present while `clearable` is set |
+| `clear-with-suffix` | `clear` | Present when a suffix adornment shares the row |
+| `password-icon-hidden` | `password-icon` | The glyph shown while the password is masked |
+| `password-icon-visible` | `password-icon` | The glyph shown while the password is revealed |
+| `container-disabled` | Added to `container` while disabled |
+| `container-invalid` | Added to `container` while invalid |
+| `input-disabled` | Added to `input` while disabled |
 
 ## Basic Usage
 

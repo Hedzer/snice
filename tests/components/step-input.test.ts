@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, trackRenders, wait } from './test-utils';
+import { hasPart } from '../matrix/part-exact';
 import '../../packages/components/src/step-input/snice-step-input';
 import type { SniceStepInputElement } from '../../packages/components/src/step-input/snice-step-input.types';
 
@@ -265,6 +266,23 @@ describe('snice-step-input', () => {
       expect(el.value).toBe(0);
     });
   });
+  describe('validity parts', () => {
+    it('should add base-invalid to the base part while a custom validity is set', async () => {
+      el = await createComponent<SniceStepInputElement>('snice-step-input');
+      await wait(50);
+
+      const base = queryShadow(el as HTMLElement, '[part]')!;
+      expect(hasPart(base, 'base'), 'the root lost its base part').toBe(true);
+      expect(hasPart(base, 'base-invalid'), 'a valid control claimed base-invalid').toBe(false);
+
+      (el as unknown as { setCustomValidity(message: string): void }).setCustomValidity('Nope');
+      await wait(50);
+
+      expect(hasPart(base, 'base'), 'base-invalid replaced the base token').toBe(true);
+      expect(hasPart(base, 'base-invalid'), 'an invalid control exposed no base-invalid').toBe(true);
+    });
+  });
+
   describe('stylesheet contracts', () => {
     const cssPath = resolve(process.cwd(), 'packages/components/src/step-input/snice-step-input.css');
 

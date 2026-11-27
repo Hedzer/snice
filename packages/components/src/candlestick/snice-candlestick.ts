@@ -393,23 +393,23 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     let parts = '';
 
     // Horizontal line
-    parts += `<line class="candlestick__crosshair-h" x1="${area.x}" y1="${this.mouseY}" x2="${area.x + area.width}" y2="${this.mouseY}" />`;
+    parts += `<line class="candlestick__crosshair-h" part="crosshair-line crosshair-line-horizontal" x1="${area.x}" y1="${this.mouseY}" x2="${area.x + area.width}" y2="${this.mouseY}" />`;
 
     // Vertical line
-    parts += `<line class="candlestick__crosshair-v" x1="${snapX}" y1="${area.y}" x2="${snapX}" y2="${totalChartBottom}" />`;
+    parts += `<line class="candlestick__crosshair-v" part="crosshair-line crosshair-line-vertical" x1="${snapX}" y1="${area.y}" x2="${snapX}" y2="${totalChartBottom}" />`;
 
     // Price label
     const priceLabel = this.formatPrice(price);
     const labelX = this.svgWidth - PADDING.right + 4;
-    parts += `<rect class="candlestick__crosshair-label-bg" x="${labelX}" y="${this.mouseY - 9}" width="${PADDING.right - 8}" height="18" rx="2" />`;
-    parts += `<text class="candlestick__crosshair-label" x="${labelX + 4}" y="${this.mouseY + 4}">${priceLabel}</text>`;
+    parts += `<rect class="candlestick__crosshair-label-bg" part="crosshair-label-background" x="${labelX}" y="${this.mouseY - 9}" width="${PADDING.right - 8}" height="18" rx="2" />`;
+    parts += `<text class="candlestick__crosshair-label" part="crosshair-label" x="${labelX + 4}" y="${this.mouseY + 4}">${priceLabel}</text>`;
 
     // Date label
     if (candle) {
       const dateLabel = this.formatDate(candle.date);
       const dateLabelY = totalChartBottom + 4;
-      parts += `<rect class="candlestick__crosshair-label-bg" x="${snapX - 36}" y="${dateLabelY}" width="72" height="18" rx="2" />`;
-      parts += `<text class="candlestick__crosshair-label" x="${snapX}" y="${dateLabelY + 13}" text-anchor="middle">${dateLabel}</text>`;
+      parts += `<rect class="candlestick__crosshair-label-bg" part="crosshair-label-background" x="${snapX - 36}" y="${dateLabelY}" width="72" height="18" rx="2" />`;
+      parts += `<text class="candlestick__crosshair-label" part="crosshair-label" x="${snapX}" y="${dateLabelY + 13}" text-anchor="middle">${dateLabel}</text>`;
     }
 
     group.innerHTML = parts;
@@ -442,14 +442,14 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     tooltip.classList.add('candlestick__tooltip--visible');
 
     let rows = '';
-    rows += `<div class="candlestick__tooltip-row"><span class="candlestick__tooltip-label">Date</span><span class="candlestick__tooltip-value">${this.formatDate(tooltipCandle.date)}</span></div>`;
-    rows += `<div class="candlestick__tooltip-row"><span class="candlestick__tooltip-label">Open</span><span class="candlestick__tooltip-value">${this.formatPrice(tooltipCandle.open)}</span></div>`;
-    rows += `<div class="candlestick__tooltip-row"><span class="candlestick__tooltip-label">High</span><span class="candlestick__tooltip-value">${this.formatPrice(tooltipCandle.high)}</span></div>`;
-    rows += `<div class="candlestick__tooltip-row"><span class="candlestick__tooltip-label">Low</span><span class="candlestick__tooltip-value">${this.formatPrice(tooltipCandle.low)}</span></div>`;
+    rows += `<div class="candlestick__tooltip-row" part="tooltip-row"><span class="candlestick__tooltip-label" part="tooltip-label">Date</span><span class="candlestick__tooltip-value" part="tooltip-value">${this.formatDate(tooltipCandle.date)}</span></div>`;
+    rows += `<div class="candlestick__tooltip-row" part="tooltip-row"><span class="candlestick__tooltip-label" part="tooltip-label">Open</span><span class="candlestick__tooltip-value" part="tooltip-value">${this.formatPrice(tooltipCandle.open)}</span></div>`;
+    rows += `<div class="candlestick__tooltip-row" part="tooltip-row"><span class="candlestick__tooltip-label" part="tooltip-label">High</span><span class="candlestick__tooltip-value" part="tooltip-value">${this.formatPrice(tooltipCandle.high)}</span></div>`;
+    rows += `<div class="candlestick__tooltip-row" part="tooltip-row"><span class="candlestick__tooltip-label" part="tooltip-label">Low</span><span class="candlestick__tooltip-value" part="tooltip-value">${this.formatPrice(tooltipCandle.low)}</span></div>`;
     const closeClass = isBullish ? 'candlestick__tooltip-value--bullish' : 'candlestick__tooltip-value--bearish';
-    rows += `<div class="candlestick__tooltip-row"><span class="candlestick__tooltip-label">Close</span><span class="candlestick__tooltip-value ${closeClass}">${this.formatPrice(tooltipCandle.close)}</span></div>`;
+    rows += `<div class="candlestick__tooltip-row" part="tooltip-row"><span class="candlestick__tooltip-label" part="tooltip-label">Close</span><span class="candlestick__tooltip-value ${closeClass}" part="tooltip-value ${isBullish ? 'tooltip-value-bullish' : 'tooltip-value-bearish'}">${this.formatPrice(tooltipCandle.close)}</span></div>`;
     if (showVolumeInTooltip) {
-      rows += `<div class="candlestick__tooltip-row"><span class="candlestick__tooltip-label">Volume</span><span class="candlestick__tooltip-value">${tooltipCandle.volume?.toLocaleString() || '0'}</span></div>`;
+      rows += `<div class="candlestick__tooltip-row" part="tooltip-row"><span class="candlestick__tooltip-label" part="tooltip-label">Volume</span><span class="candlestick__tooltip-value" part="tooltip-value">${tooltipCandle.volume?.toLocaleString() || '0'}</span></div>`;
     }
 
     tooltip.innerHTML = rows;
@@ -466,7 +466,7 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     for (let i = 0; i <= ticks; i++) {
       const price = min + step * i;
       const y = this.priceToY(price);
-      lines += `<line class="candlestick__grid-line" x1="${area.x}" y1="${y}" x2="${area.x + area.width}" y2="${y}" />`;
+      lines += `<line class="candlestick__grid-line" part="grid-line" x1="${area.x}" y1="${y}" x2="${area.x + area.width}" y2="${y}" />`;
     }
 
     return lines;
@@ -482,7 +482,7 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     for (let i = 0; i <= ticks; i++) {
       const price = min + step * i;
       const y = this.priceToY(price);
-      labels += `<text class="candlestick__axis-label candlestick__axis-label--y" x="${labelX}" y="${y}">${this.formatPrice(price)}</text>`;
+      labels += `<text class="candlestick__axis-label candlestick__axis-label--y" part="axis-label axis-label-y" x="${labelX}" y="${y}">${this.formatPrice(price)}</text>`;
     }
 
     return labels;
@@ -499,7 +499,7 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
 
     for (let i = 0; i < visible.length; i += step) {
       const x = this.indexToX(i);
-      labels += `<text class="candlestick__axis-label candlestick__axis-label--x" x="${x}" y="${labelY}">${this.formatDate(visible[i].date)}</text>`;
+      labels += `<text class="candlestick__axis-label candlestick__axis-label--x" part="axis-label axis-label-x" x="${x}" y="${labelY}">${this.formatDate(visible[i].date)}</text>`;
     }
 
     return labels;
@@ -535,10 +535,10 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
       const bodyAnimClass = shouldAnimate ? ' candlestick__body--animated' : '';
 
       // Wick (high to low)
-      parts += `<line class="candlestick__wick${wickAnimClass}" x1="${x}" y1="${highY}" x2="${x}" y2="${lowY}" stroke="${color}" style="${animDelay}" />`;
+      parts += `<line class="candlestick__wick${wickAnimClass}" part="wick ${isBullish ? 'wick-bullish' : 'wick-bearish'}" x1="${x}" y1="${highY}" x2="${x}" y2="${lowY}" stroke="${color}" style="${animDelay}" />`;
 
       // Body (open to close)
-      parts += `<rect class="candlestick__body${bodyAnimClass}" x="${x - halfCw}" y="${bodyTop}" width="${cw}" height="${bodyHeight}" fill="${color}" stroke="${color}" stroke-width="1" rx="1" style="${animDelay}" data-candle-index="${i}" />`;
+      parts += `<rect class="candlestick__body${bodyAnimClass}" part="candle ${isBullish ? 'candle-bullish' : 'candle-bearish'}" x="${x - halfCw}" y="${bodyTop}" width="${cw}" height="${bodyHeight}" fill="${color}" stroke="${color}" stroke-width="1" rx="1" style="${animDelay}" data-candle-index="${i}" />`;
     }
 
     return parts;
@@ -572,7 +572,7 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
       const animDelay = shouldAnimate ? `animation-delay: ${i * 8}ms;` : '';
       const animClass = shouldAnimate ? ' candlestick__volume--animated' : '';
 
-      parts += `<rect class="candlestick__volume${animClass}" x="${x - halfCw}" y="${barY}" width="${cw}" height="${barHeight}" fill="${color}" style="${animDelay}" />`;
+      parts += `<rect class="candlestick__volume${animClass}" part="volume-bar ${isBullish ? 'volume-bar-bullish' : 'volume-bar-bearish'}" x="${x - halfCw}" y="${barY}" width="${cw}" height="${barHeight}" fill="${color}" style="${animDelay}" />`;
     }
 
     return parts;
@@ -598,8 +598,8 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
            @wheel=${this.handleWheel}>
         <svg class="candlestick__svg" part="canvas" viewBox="0 0 ${this.svgWidth} ${this.svgHeight}" preserveAspectRatio="none" role="img" aria-label="Candlestick chart with ${this.data.length} data points">
           <title>Candlestick chart with ${this.data.length} OHLC data points</title>
-          <g class="candlestick__chart-content"></g>
-          <g class="candlestick__crosshair-group"></g>
+          <g class="candlestick__chart-content" part="chart-content"></g>
+          <g class="candlestick__crosshair-group" part="crosshair"></g>
         </svg>
         <div class="candlestick__tooltip" part="tooltip"></div>
       </div>

@@ -318,7 +318,7 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
     return html/*html*/`
       <button
         class="${itemClasses}"
-        part="item"
+        part="item${globalIndex === this.activeIndex ? ' item-active' : ''}${command.disabled ? ' item-disabled' : ''}"
         role="option"
         id="${this.optionId(globalIndex)}"
         @click="${() => this.handleItemClick(command)}"
@@ -383,9 +383,9 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
     const categories = Array.from(grouped.keys());
 
     return html/*html*/`
-      <div class="${paletteClasses}">
+      <div class="${paletteClasses}" part="base${this.open ? ' base-open' : ''}">
         <if ${this.open}>
-          <div class="command-palette__backdrop" @click="${(e: MouseEvent) => this.handleBackdropClick(e)}"></div>
+          <div class="command-palette__backdrop" part="backdrop" @click="${(e: MouseEvent) => this.handleBackdropClick(e)}"></div>
 
           <div class="command-palette__container" part="container"
                role="dialog" aria-modal="true" aria-label="Command palette">

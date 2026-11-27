@@ -64,6 +64,16 @@ interface ToastOptions {
 - `base` - Outer toast div (has type modifier class)
 - `icon` - Icon span wrapper
 - `content` - Message text span
+- `close-button` - Dismiss button (present when `closable`)
+
+## CSS Parts (snice-toast-container)
+
+- `base` - Wrapper that stacks the toasts
+- `toast` - Each `<snice-toast>` host inside the wrapper
+- `toast-base` - Exported `base` of each toast
+- `toast-icon` - Exported `icon` of each toast
+- `toast-content` - Exported `content` of each toast
+- `toast-close-button` - Exported `close-button` of each toast
 
 ## Basic Usage
 

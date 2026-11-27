@@ -48,8 +48,13 @@ the next owner render compares against the control's current property.
 | Part | Description |
 |------|-------------|
 | `base` | The control container |
+| `base-disabled` | Added to `base` while the control is `disabled` |
 | `indicator` | The sliding selection indicator |
 | `segment` | Each segment button |
+| `segment-selected` | Added to `segment` while that option is selected |
+| `segment-disabled` | Added to `segment` while that option is disabled |
+| `icon` | Option icon image inside a segment |
+| `label` | Option label text inside a segment |
 
 ## Basic Usage
 

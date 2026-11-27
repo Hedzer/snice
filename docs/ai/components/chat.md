@@ -78,6 +78,47 @@ React, edit, and delete self-apply to the local `messages` model AND emit the ev
 - `input-area` - Input area wrapper
 - `input-container` - Input + buttons container
 - `input` - Textarea input field
+- `message-content` - Content column inside a message row
+- `message-header` - Author/timestamp header row inside a message
+- `avatar-image` - Avatar `<img>` when the message carries an avatar URL
+- `empty` - Wrapper around the empty state
+- `empty-state` - The internal `<snice-empty-state>`
+- `edit` - Inline editor wrapper (shown while editing)
+- `edit-actions` - Save/cancel row in the inline editor
+- `delete-confirm-text` - Prompt text in the delete confirmation
+- `delete-confirm-actions` - Button row in the delete confirmation
+- `action-button` - A hover action button
+- `react-action` - Added to `action-button` on the react button
+- `edit-action` - Added to `action-button` on the edit button
+- `delete-action` - Added to `action-button` on the delete button
+- `action-emoji` - Emoji glyph inside the react button
+- `attachment-image` - Image attachment `<img>`
+- `attachment-file` - File attachment row
+- `attachment-icon` - File attachment icon wrapper
+- `attachment-icon-glyph` - The `<svg>` inside the file attachment icon
+- `attachment-info` - File attachment name/size column
+- `attachment-name` - File attachment name
+- `attachment-size` - File attachment size
+- `reaction-emoji` - Emoji inside a reaction chip
+- `reaction-count` - Count inside a reaction chip
+- `typing-indicators` - Typing indicator container
+- `typing-dots` - Animated dot group in the typing indicator
+- `typing-dot` - One animated dot in the typing indicator
+- `input-buttons` - Attach/send button group
+- `input-button` - An input area button
+- `attach-button` - Added to `input-button` on the attach-file button
+- `send-button` - Added to `input-button` on the send button
+
+Forwarded from internal Snice elements via `exportparts`:
+
+- `message-text-base` - Exported `base` of the internal `<snice-markdown>` message body
+- `empty-state-base` - Exported `base` of the internal `<snice-empty-state>`
+- `empty-state-container` - Exported `container` of the internal `<snice-empty-state>`
+- `empty-state-icon` - Exported `icon` of the internal `<snice-empty-state>`
+- `empty-state-title` - Exported `title` of the internal `<snice-empty-state>`
+- `empty-state-description` - Exported `description` of the internal `<snice-empty-state>`
+- `empty-state-action` - Exported `action` of the internal `<snice-empty-state>`
+- `empty-state-extra` - Exported `extra` of the internal `<snice-empty-state>`
 
 Per-author color is injected inline as `--snice-chat-author-color`; `::part(author)` reads it.
 

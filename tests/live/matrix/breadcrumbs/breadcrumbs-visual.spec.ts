@@ -354,19 +354,19 @@ test.describe('breadcrumbs visual matrix: the collapse affordance', () => {
   });
 });
 
-test.describe('breadcrumbs visual matrix: findings', () => {
+test.describe('breadcrumbs visual matrix: separator exposure', () => {
   /**
-   * FINDING VISUAL-MATRIX-breadcrumbs-1.
+   * Was FINDING VISUAL-MATRIX-breadcrumbs-1, now a regression guard.
    *
    * The docs list `separator` as the CSS part for "Separator characters between
    * items". In a collapsed trail one painted separator — the one that follows
-   * the ellipsis button — carries no `part` attribute at all. A customer who
-   * styles `::part(separator)` (recolours it, changes its spacing, hides it)
-   * gets that one glyph left behind in the default style, in the one state
-   * where the trail is most crowded.
+   * the ellipsis button — used to carry no `part` attribute at all, so a
+   * customer styling `::part(separator)` (recolouring it, changing its spacing,
+   * hiding it) got that one glyph left behind in the default style, in the one
+   * state where the trail is most crowded.
    *
-   * The assertion is NOT weakened: every painted separator is expected to be
-   * addressable. The known gap is pinned so a fix trips this test.
+   * The separator now carries the part, so the assertion is the whole claim:
+   * EVERY painted separator is addressable. It fails if the gap ever returns.
    */
   test('every painted separator is addressable as ::part(separator)', async () => {
     await page.evaluate(() => (window as any).matrix.mount({
@@ -378,14 +378,15 @@ test.describe('breadcrumbs visual matrix: findings', () => {
         .filter(s => s.getBoundingClientRect().width > 0);
       return {
         painted: painted.length,
-        exposed: painted.filter(s => (s.getAttribute('part') ?? '').includes('separator')).length,
+        exposed: painted.filter(s =>
+          (s.getAttribute('part') ?? '').trim().split(/\s+/).includes('separator')).length,
       };
     });
     expect(counts.painted, 'the collapsed trail painted no separators').toBeGreaterThan(0);
     expect(counts.exposed,
-      `VISUAL-MATRIX-breadcrumbs-1 no longer reproduces: all ${counts.painted} painted`
-      + ' separators now carry part="separator" — delete this finding')
-      .toBe(counts.painted - 1);
+      `${counts.painted - counts.exposed} of ${counts.painted} painted separators carry no`
+      + ' part="separator" — ::part(separator) would leave them in the default style')
+      .toBe(counts.painted);
   });
 });
 

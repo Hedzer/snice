@@ -68,8 +68,48 @@ icon: string = '';        // Icon URL
 
 ## CSS Parts
 
-- `label`, `trigger`, `value`, `input`, `arrow`, `spinner`
-- `dropdown`, `search`, `search-input`, `options`, `option`, `helper-text`, `error-text`
+- `base` - Outer wrapper
+- `label` - Label text
+- `label-required` - Added to `label` while `required` is set
+- `controls` - Editable-mode input row
+- `input` - Editable-mode text input
+- `input-disabled` / `input-open` / `input-invalid` - Added to `input` in the matching state
+- `trigger` - Trigger button
+- `trigger-disabled` / `trigger-loading` / `trigger-open` / `trigger-invalid` - Added to `trigger` in the matching state
+- `value` - Displayed value container
+- `placeholder` - Placeholder text
+- `value-single` - Single-selection value wrapper
+- `value-label` - Selected option label in single selection
+- `value-icon` - Selected option icon in single selection
+- `tags` - Multi-selection tag row
+- `tag` - One selected-value tag
+- `tag-icon` - Icon inside a tag
+- `tag-remove` - Remove button inside a tag
+- `icons` - Trigger icon cluster
+- `clear-button` - Clear-selection button
+- `arrow` - Dropdown arrow wrapper
+- `icon` - Any inline SVG icon
+- `arrow-icon` - Added to `icon` on the dropdown arrow
+- `clear-icon` - Added to `icon` on the clear glyph
+- `spinner` - Loading spinner
+- `dropdown` - Dropdown container
+- `search` - Search wrapper
+- `search-input` - Search text input
+- `options` - Options list container
+- `option` - Individual option item
+- `option-selected` / `option-disabled` - Added to `option` in the matching state
+- `option-check` - Multi-select check slot in an option
+- `option-check-mark` - Check glyph inside `option-check`
+- `option-icon` - Option icon
+- `option-label` - Option label text
+- `loading-indicator` - Remote-search loading row
+- `loading-spinner` - Added to `spinner` on the remote-search spinner
+- `loading-text` - Remote-search loading text
+- `empty` - Empty-state container
+- `empty-text` - Empty-state message
+- `helper-text` - Helper description below the control
+- `error-text` - Error description below the control
+- `dropdown-open` - Added to `dropdown` while open
 
 ## Basic Usage
 

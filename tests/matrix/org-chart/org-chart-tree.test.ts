@@ -8,6 +8,7 @@
  * children — plus the tree/treeitem/group ARIA that makes it navigable.
  */
 import { describe, it, expect, afterEach } from 'vitest';
+import { exactPartIn } from '../part-exact';
 import {
   FIXTURES, FIXTURE, DIRECTIONS, combo, mountChart, chartProblems, readTree,
   removeComponent, type ChartCombo,
@@ -126,9 +127,10 @@ describe('org-chart matrix: the properties are live', () => {
     chart = await mountChart(c);
     expect(chartProblems(chart, c)).toEqual([]);
     // The oracle already compared the text; this pins the reason it matters.
-    expect(chart.shadowRoot.querySelector('[part="tree"]').querySelector('b'),
+    const tree = exactPartIn(chart.shadowRoot, 'tree')!;
+    expect(tree.querySelector('b'),
       'a name containing <b> was parsed as markup').toBeNull();
-    expect(chart.shadowRoot.querySelector('[part="tree"]').querySelector('script'),
+    expect(tree.querySelector('script'),
       'a name containing <script> was parsed as markup').toBeNull();
   });
 });

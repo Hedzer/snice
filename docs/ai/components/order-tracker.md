@@ -19,10 +19,26 @@ variant: 'horizontal'|'vertical' = 'horizontal';
 
 - `base` - Outer tracker container
 - `info` - Tracking info section (carrier, tracking number)
+- `info-item` - One carrier/tracking row
+- `info-label` - Info row label
+- `info-value` - Info row value
 - `steps` - Steps container
 - `step` - Individual step
 - `step-indicator` - Step number/check icon
+- `step-icon` - Check `<svg>` shown on a completed step
 - `step-content` - Step label, timestamp, description
+- `step-label` - Step label
+- `step-timestamp` - Step timestamp
+- `step-description` - Step description
+- `step-connector` - Line drawn between steps
+
+State tokens:
+
+- `steps-horizontal` - Added to `steps` while `variant` is `horizontal`
+- `steps-vertical` - Added to `steps` while `variant` is `vertical`
+- `step-pending` - Added to `step` while the step is pending
+- `step-active` - Added to `step` while the step is active
+- `step-completed` - Added to `step` while the step is completed
 
 ## Basic Usage
 

@@ -201,11 +201,16 @@ export function checkJson(el: any, combo: MoneyCombo, problems: Problems): void 
 
 /** No shadow node claims a part the docs never named. */
 const DOCUMENTED_PARTS = new Set([
-  'base', 'header', 'logo', 'title', 'status', 'expiry', 'expiry-date', 'meta', 'parties',
-  'party', 'party-label', 'party-name', 'party-detail', 'table', 'table-header', 'table-row',
-  'table-cell', 'item-toggle', 'summary', 'subtotal', 'discount-row', 'tax-row', 'total',
-  'notes', 'notes-label', 'notes-content', 'terms', 'actions', 'accept-button',
-  'decline-button', 'footer', 'qr-container', 'qr', 'comparison', 'option', 'option-button',
+  'base', 'header', 'header-left', 'header-right', 'logo', 'title', 'meta', 'status', 'expiry',
+  'expiry-date', 'qr-container', 'qr', 'parties', 'party', 'party-label', 'party-name',
+  'party-detail', 'table', 'table-inner', 'table-header', 'table-header-cell', 'table-row',
+  'table-cell', 'badge', 'optional-tag', 'item-toggle', 'summary', 'summary-inner',
+  'summary-label', 'summary-value', 'subtotal', 'discount-row', 'tax-row', 'total', 'notes',
+  'notes-label', 'notes-content', 'terms', 'terms-label', 'terms-content', 'actions',
+  'accept-button', 'decline-button', 'comparison', 'option', 'option-title', 'option-total',
+  'option-button', 'footer', 'status-draft', 'status-sent', 'status-accepted',
+  'status-declined', 'status-expired', 'table-row-optional', 'table-row-included',
+  'item-toggle-active'
 ]);
 
 export function checkNoUndocumentedParts(el: HTMLElement, problems: Problems): void {

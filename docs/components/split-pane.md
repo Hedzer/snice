@@ -54,6 +54,7 @@ A resizable split layout with a draggable divider. Supports horizontal (left/rig
 |------|-------------|
 | `primary` | The primary pane container |
 | `divider` | The draggable divider bar |
+| `divider-disabled` | Added to `divider` while the split pane is disabled |
 | `handle` | The visual handle inside the divider |
 | `secondary` | The secondary pane container |
 

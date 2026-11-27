@@ -87,13 +87,51 @@ All component events bubble and cross the shadow boundary. Direct `value`/`defau
 
 | Part | Description |
 |------|-------------|
-| `input` | Text input. |
-| `calendar-toggle` | Calendar button. |
-| `clear` | Clear button. |
-| `spinner` | Loading spinner. |
-| `calendar` | Calendar popup. |
-| `helper-text` | Helper text. |
-| `error-text` | Error text. |
+| `base` | Root wrapper around the whole control |
+| `label` | Field label above the input |
+| `label-required` | Added to `label` when `required` is set |
+| `input-container` | Wrapper holding the input, its buttons and the calendar popup |
+| `input` | Text input |
+| `input-invalid` | Added to `input` while the value is invalid |
+| `input-clearable` | Added to `input` when `clearable` is set |
+| `input-loading` | Added to `input` while `loading` is set |
+| `calendar-toggle` | Calendar button |
+| `clear` | Clear button |
+| `clear-visible` | Added to `clear` while the clear button is shown |
+| `spinner` | Loading spinner |
+| `calendar` | Calendar popup |
+| `calendar-open` | Added to `calendar` while the popup is open |
+| `calendar-header` | Header row of the calendar (navigation plus title) |
+| `nav-button` | Any month/year navigation button |
+| `nav-button-prev` | Added to `nav-button` on the previous month/years button |
+| `nav-button-next` | Added to `nav-button` on the next month/years button |
+| `calendar-title` | Title block between the navigation buttons |
+| `month-label` | Month name, or year range in the year view |
+| `year-button` | Year button in the title that opens the year grid |
+| `year-grid` | Grid of selectable years |
+| `year-cell` | A single year button in the year grid |
+| `year-cell-current` | Added to `year-cell` for the current year |
+| `year-cell-selected` | Added to `year-cell` for the year in view |
+| `weekdays` | Weekday header row |
+| `weekday` | A single weekday header cell |
+| `days` | Day grid |
+| `day` | A single day cell |
+| `day-today` | Added to `day` for today's date |
+| `day-selected` | Added to `day` for the selected date |
+| `day-disabled` | Added to `day` when the date is outside `min`/`max` |
+| `day-empty` | Added to `day` on the blank cells before the first of the month |
+| `calendar-footer` | Footer holding the Today button |
+| `today-button` | The Today button |
+| `today-button-base` | Exported `base` of the internal Today button |
+| `today-button-label` | Exported `label` of the internal Today button |
+| `today-button-icon` | Exported `icon` of the internal Today button |
+| `today-button-spinner` | Exported `spinner` of the internal Today button |
+| `today-button-icon-start` | Exported `icon-start` of the internal Today button (icon before the label) |
+| `today-button-icon-end` | Exported `icon-end` of the internal Today button (icon after the label) |
+| `today-button-base-loading` | Exported `base-loading` of the internal Today button (button while loading) |
+| `today-button-base-disabled` | Exported `base-disabled` of the internal Today button (button while disabled) |
+| `helper-text` | Helper text |
+| `error-text` | Error text |
 
 ## Basic Usage
 

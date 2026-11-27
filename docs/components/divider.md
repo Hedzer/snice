@@ -41,6 +41,8 @@ Separator line with optional text label.
 |------|-------------|
 | `base` | Outer divider container |
 | `line` | The divider line(s) |
+| `line-before` | Added to the `line` rendered before the text label |
+| `line-after` | Added to the `line` rendered after the text label |
 | `text` | Optional text label |
 
 ```css

@@ -55,10 +55,24 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `button` | `<button>` | All navigation buttons (shared part) |
 | `first-button` | `<button>` | The first page button |
 | `prev-button` | `<button>` | The previous page button |
-| `pages` | `<div>` | The page numbers container |
-| `ellipsis` | `<span>` | The ellipsis indicators |
 | `next-button` | `<button>` | The next page button |
 | `last-button` | `<button>` | The last page button |
+| `icon` | `<svg>` | All navigation button icons (shared part) |
+| `first-icon` | `<svg>` | The first page icon |
+| `prev-icon` | `<svg>` | The previous page icon |
+| `next-icon` | `<svg>` | The next page icon |
+| `last-icon` | `<svg>` | The last page icon |
+| `pages` | `<div>` | The page numbers container |
+| `page` | `<button>` | A page number button |
+| `ellipsis` | `<span>` | The ellipsis indicators |
+
+State tokens are added alongside the base token, so they are matched with
+`::part(page page-current)`.
+
+| Token | Description |
+|-------|-------------|
+| `button-disabled` | Added to `button` while that navigation button is disabled |
+| `page-current` | Added to `page` on the current page |
 
 ```css
 snice-pagination::part(button) {

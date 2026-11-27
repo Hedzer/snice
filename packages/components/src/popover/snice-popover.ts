@@ -56,13 +56,13 @@ export class SnicePopover extends HTMLElement implements SnicePopoverElement {
     ].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <div class="popover">
+      <div class="popover" part="base">
         <div class="popover__trigger" part="trigger" tabindex="0" role="button"
              aria-haspopup="dialog"
              aria-expanded="${this.open ? 'true' : 'false'}">
           <slot name="trigger"></slot>
         </div>
-        <div class="${panelClasses}" part="panel" role="dialog" popover="manual">
+        <div class="${panelClasses}" part="panel${this.open ? ' panel-open' : ''}" role="dialog" popover="manual">
           <div class="popover__content" part="content">
             <slot></slot>
           </div>

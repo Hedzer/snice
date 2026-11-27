@@ -27,11 +27,18 @@ An animated loading indicator with configurable size, color, and optional label.
 | Part | Description |
 |------|-------------|
 | `base` | The outer spinner container |
-| `circle` | SVG spinner circle (arc variant) |
+| `circle` | SVG spinner element (arc variant) |
+| `track` | Background circle inside the arc SVG |
+| `fill` | Animated arc circle inside the arc SVG |
 | `dots` | Dot container (dots variant) |
+| `dot` | Individual dot (dots and orbit variants) |
+| `orbit-dot` | Added to `dot` for the orbit variant's dots |
 | `pulse` | Pulse element (pulse variant) |
 | `orbit` | Orbit container (orbit variant) |
+| `ring` | Rotating ring inside the orbit container |
+| `ring-a` / `ring-b` / `ring-c` | Added to `ring` for the first, second, and third orbit ring |
 | `bars` | Bar container (bars variant) |
+| `bar` | Individual bar (bars variant) |
 | `label` | The label text element |
 
 ## Basic Usage

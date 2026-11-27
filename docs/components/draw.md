@@ -79,6 +79,7 @@ interface DrawStroke {
 |------|-------------|
 | `base` | Outer draw container |
 | `canvas` | Drawing canvas element |
+| `canvas-disabled` | Added to `canvas` while `disabled` is set |
 
 ```css
 snice-draw::part(base) {

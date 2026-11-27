@@ -115,7 +115,8 @@
         /** Drop files onto the documented drop zone, as a real pointer drop. */
         async drop(specs) {
           const el = document.getElementById('subject');
-          const area = el.shadowRoot.querySelector('[part="upload-area"]');
+          const area = [...el.shadowRoot.querySelectorAll('[part]')]
+            .find(node => (node.getAttribute('part') ?? '').split(/\s+/).includes('upload-area'));
           const transfer = new DataTransfer();
           for (const spec of specs) transfer.items.add(makeFile(spec));
           area.dispatchEvent(new DragEvent('drop', {

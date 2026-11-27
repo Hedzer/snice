@@ -46,6 +46,19 @@ interface StatItem {
 |------|-------------|
 | `base` | The grid container element |
 | `stat` | Individual stat card element |
+| `icon` | Stat icon wrapper (rendered when the stat has an `icon`) |
+| `content` | Label/value/trend column inside a stat |
+| `label` | Stat label text |
+| `value` | Stat value text |
+| `trend` | Trend row (rendered when the stat has a `trend` or `trendValue`) |
+| `trend-up` | Added to `trend` when the trend is up |
+| `trend-down` | Added to `trend` when the trend is down |
+| `trend-neutral` | Added to `trend` when the trend is neutral |
+| `trend-icon` | Trend direction arrow |
+| `trend-icon-up` | Added to `trend-icon` for the up arrow |
+| `trend-icon-down` | Added to `trend-icon` for the down arrow |
+| `trend-icon-neutral` | Added to `trend-icon` for the neutral dash |
+| `trend-value` | Trend value text |
 
 ## Basic Usage
 

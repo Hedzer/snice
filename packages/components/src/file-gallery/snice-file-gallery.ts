@@ -18,6 +18,9 @@ const BADGE_POSITIONS: readonly FileGalleryBadgePosition[] = [
   'bottom-right'
 ];
 
+/** Badge placement part tokens, index-aligned with `BADGE_POSITIONS`. */
+const BADGE_POSITION_PARTS = [' badge-top-left', ' badge-top-right', ' badge-bottom-left', ' badge-bottom-right'];
+
 function normalizeBadgePosition(position: unknown): FileGalleryBadgePosition {
   return BADGE_POSITIONS.includes(position as FileGalleryBadgePosition)
     ? position as FileGalleryBadgePosition
@@ -136,25 +139,26 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
   private renderGalleryHeader() {
     return html`
       <if ${this.galleryFiles.length > 0}>
-        <div class="gallery-title">
+        <div class="gallery-title" part="title">
           ${this.galleryFiles.length} file${this.galleryFiles.length !== 1 ? 's' : ''}
         </div>
-        <div class="gallery-actions">
+        <div class="gallery-actions" part="actions">
           <button
             class="gallery-action-button"
+            part="button action-button view-button"
             data-action="toggle-view"
             title="Toggle view"
             @click=${this.handleViewToggle}
           >
             <if ${this.view === 'grid'}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <svg part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <rect x="3" y="3" width="7" height="7" stroke-width="2"/>
                 <rect x="14" y="3" width="7" height="7" stroke-width="2"/>
                 <rect x="3" y="14" width="7" height="7" stroke-width="2"/>
                 <rect x="14" y="14" width="7" height="7" stroke-width="2"/>
               </svg>
               <else>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <line x1="8" y1="6" x2="21" y2="6" stroke-width="2" stroke-linecap="round"/>
                   <line x1="8" y1="12" x2="21" y2="12" stroke-width="2" stroke-linecap="round"/>
                   <line x1="8" y1="18" x2="21" y2="18" stroke-width="2" stroke-linecap="round"/>
@@ -168,11 +172,12 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
           <if ${this.allowDelete}>
             <button
               class="gallery-action-button"
+              part="button action-button clear-button"
               data-action="clear-all"
               title="Clear all"
               @click=${this.handleClearAll}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <svg part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <polyline points="3 6 5 6 21 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -193,18 +198,20 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
     return html`
       <div
         class="gallery-item gallery-item--${file.uploadStatus}"
+        part="item${({ pending: ' item-pending', uploading: ' item-uploading', paused: ' item-paused', completed: ' item-completed', error: ' item-error' })[file.uploadStatus] || ''}"
         data-file-id=${file.id}
       >
-        <div class="gallery-item-preview">
+        <div class="gallery-item-preview" part="item-preview">
           <if ${isImage && Boolean(file.preview)}>
             <img
               src=${file.preview}
               alt=${file.file.name}
               class="gallery-item-image"
+              part="image"
             />
             <else>
-              <div class="gallery-item-placeholder">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <div class="gallery-item-placeholder" part="placeholder">
+                <svg part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   <polyline points="13 2 13 9 20 9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -213,32 +220,33 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
           </if>
 
           <if ${Boolean(file.badge)}>
-            <div class="gallery-item-badge gallery-item-badge--${badgePosition}">
+            <div class="gallery-item-badge gallery-item-badge--${badgePosition}" part="badge${BADGE_POSITION_PARTS[BADGE_POSITIONS.indexOf(badgePosition)] ?? ''}">
               <if ${typeof file.badge === 'string'}>
-                <span class="gallery-item-badge-text">${file.badge}</span>
+                <span class="gallery-item-badge-text" part="badge-text">${file.badge}</span>
                 <else>${file.badge}</else>
               </if>
             </div>
           </if>
 
           <if ${this.showProgress && file.uploadStatus === 'uploading'}>
-            <div class="gallery-item-progress">
+            <div class="gallery-item-progress" part="progress">
               <div
                 class="gallery-item-progress-bar"
+                part="progress-bar"
                 style:width=${`${file.uploadProgress}%`}
               ></div>
             </div>
           </if>
 
           <if ${file.uploadStatus === 'completed'}>
-            <div class="gallery-item-status gallery-item-status--success">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <div class="gallery-item-status gallery-item-status--success" part="status status-success">
+              <svg part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <polyline points="20 6 9 17 4 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
             <else-if ${file.uploadStatus === 'error'}>
-              <div class="gallery-item-status gallery-item-status--error">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <div class="gallery-item-status gallery-item-status--error" part="status status-error">
+                <svg part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <circle cx="12" cy="12" r="10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   <line x1="12" y1="8" x2="12" y2="12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -248,30 +256,31 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
           </if>
         </div>
 
-        <div class="gallery-item-info">
-          <div class="gallery-item-name" title=${file.file.name}>
+        <div class="gallery-item-info" part="item-info">
+          <div class="gallery-item-name" part="item-name" title=${file.file.name}>
             ${file.file.name}
           </div>
-          <div class="gallery-item-meta">
-            <span class="gallery-item-size">${this.formatFileSize(file.file.size)}</span>
+          <div class="gallery-item-meta" part="item-meta">
+            <span class="gallery-item-size" part="item-size">${this.formatFileSize(file.file.size)}</span>
             <if ${file.uploadStatus === 'uploading' && this.showProgress}>
-              <span class="gallery-item-progress-text">${file.uploadProgress}%</span>
+              <span class="gallery-item-progress-text" part="progress-text">${file.uploadProgress}%</span>
             </if>
             <if ${file.uploadStatus === 'error' && Boolean(file.error)}>
-              <span class="gallery-item-error" title=${file.error}>Upload failed</span>
+              <span class="gallery-item-error" part="error-text" title=${file.error}>Upload failed</span>
             </if>
           </div>
         </div>
 
-        <div class="gallery-item-actions">
+        <div class="gallery-item-actions" part="item-actions">
           <if ${canPause}>
             <button
               class="gallery-item-action"
+              part="button item-action item-action-pause"
               data-action="pause"
               title="Pause upload"
               @click=${() => this.pauseUpload(file.id)}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <svg part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <rect x="6" y="4" width="4" height="16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <rect x="14" y="4" width="4" height="16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -280,11 +289,12 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
           <if ${canResume}>
             <button
               class="gallery-item-action"
+              part="button item-action item-action-resume"
               data-action="resume"
               title="Resume upload"
               @click=${() => this.resumeUpload(file.id)}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <svg part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <polygon points="5 3 19 12 5 21 5 3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
@@ -292,11 +302,12 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
           <if ${canRetry}>
             <button
               class="gallery-item-action"
+              part="button item-action item-action-retry"
               data-action="retry"
               title="Retry upload"
               @click=${() => this.retryUpload(file.id)}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <svg part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <polyline points="23 4 23 10 17 10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -305,11 +316,12 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
           <if ${this.allowDelete}>
             <button
               class="gallery-item-action gallery-item-action--delete"
+              part="button item-action item-action-delete"
               data-action="delete"
               title="Remove file"
               @click=${() => this.removeFile(file.id)}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <svg part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -326,20 +338,21 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
     return html`
       <div
         class="gallery-item gallery-item--add-button"
+        part="item add-button${!canAdd ? ' add-button-disabled' : ''}"
         class:gallery-item--disabled=${!canAdd}
         title=${canAdd ? 'Add files' : 'Maximum files reached'}
         @click=${canAdd ? this.handleDropZoneClick : null}
       >
-        <div class="gallery-item-preview">
-          <div class="gallery-item-placeholder gallery-item-add-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <div class="gallery-item-preview" part="item-preview">
+          <div class="gallery-item-placeholder gallery-item-add-icon" part="placeholder add-icon">
+            <svg part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <line x1="12" y1="5" x2="12" y2="19" stroke-width="2" stroke-linecap="round"/>
               <line x1="5" y1="12" x2="19" y2="12" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </div>
         </div>
-        <div class="gallery-item-info">
-          <div class="gallery-item-name">Add files</div>
+        <div class="gallery-item-info" part="item-info">
+          <div class="gallery-item-name" part="item-name">Add files</div>
         </div>
       </div>
     `;
@@ -349,19 +362,20 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
     return html`
       <div
         class="gallery-item gallery-item--add-button"
+        part="item custom-action"
         title=${action.text}
         @click=${() => this.handleCustomActionClick(action.id)}
       >
-        <div class="gallery-item-preview">
-          <div class="gallery-item-placeholder gallery-item-add-icon">
+        <div class="gallery-item-preview" part="item-preview">
+          <div class="gallery-item-placeholder gallery-item-add-icon" part="placeholder add-icon">
             <if ${typeof action.icon === 'string'}>
-              <span class="gallery-item-action-icon-text">${action.icon}</span>
+              <span class="gallery-item-action-icon-text" part="action-icon">${action.icon}</span>
               <else>${action.icon}</else>
             </if>
           </div>
         </div>
-        <div class="gallery-item-info">
-          <div class="gallery-item-name">${action.text}</div>
+        <div class="gallery-item-info" part="item-info">
+          <div class="gallery-item-name" part="item-name">${action.text}</div>
         </div>
       </div>
     `;
@@ -373,6 +387,7 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
         <input
           type="file"
           class="file-input"
+          part="input"
           accept=${this.accept}
           ?multiple=${this.multiple}
           ?disabled=${this.disabled}
@@ -385,33 +400,33 @@ export class SniceFileGallery extends HTMLElement implements SniceFileGalleryEle
             class:drop-zone--disabled=${this.disabled}
             class:drop-zone--drag-over=${this.isDragOver}
             class:drop-zone--has-files=${this.galleryFiles.length > 0}
-            part="dropzone"
+            part="dropzone${this.disabled ? ' dropzone-disabled' : ''}${this.isDragOver ? ' dropzone-drag-over' : ''}${this.galleryFiles.length > 0 ? ' dropzone-has-files' : ''}"
             @click=${this.handleDropZoneClick}
             @dragenter=${this.handleDragEnter}
             @dragleave=${this.handleDragLeave}
             @dragover=${this.handleDragOver}
             @drop=${this.handleDrop}
           >
-            <div class="drop-zone-content">
-              <svg class="drop-zone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <div class="drop-zone-content" part="dropzone-content">
+              <svg part="icon dropzone-icon" class="drop-zone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <div class="drop-zone-text">
-                <span class="drop-zone-primary">Click to upload</span>
-                <span class="drop-zone-secondary">or drag and drop</span>
+              <div class="drop-zone-text" part="dropzone-text">
+                <span class="drop-zone-primary" part="dropzone-primary">Click to upload</span>
+                <span class="drop-zone-secondary" part="dropzone-secondary">or drag and drop</span>
               </div>
               <if ${this.accept}>
-                <div class="drop-zone-hint">Accepted: ${this.formatAcceptTypes()}</div>
+                <div class="drop-zone-hint" part="dropzone-hint">Accepted: ${this.formatAcceptTypes()}</div>
               </if>
               <if ${this.maxSize >= 0}>
-                <div class="drop-zone-hint">Max size: ${this.formatFileSize(this.maxSize)}</div>
+                <div class="drop-zone-hint" part="dropzone-hint">Max size: ${this.formatFileSize(this.maxSize)}</div>
               </if>
             </div>
           </div>
         </if>
 
         <if ${this.showHeader}>
-          <div class="gallery-header">${this.renderGalleryHeader()}</div>
+          <div class="gallery-header" part="header">${this.renderGalleryHeader()}</div>
         </if>
 
         <div class="gallery gallery--${this.view}" part="gallery">

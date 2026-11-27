@@ -38,6 +38,8 @@ badge would overlay.
 
 - `base` - Outer wrapper element
 - `badge` - The badge indicator element
+- `badge-dot` - Added to `badge` when `dot` is set
+- `badge-pulse` - Added to `badge` when `pulse` is set
 
 ## Basic Usage
 

@@ -39,12 +39,27 @@ container?: string | Element;        // attr: container — center inside this e
 
 ## CSS Parts
 
+- `base` - Dialog root container (holds the backdrop and the panel)
 - `backdrop` - Backdrop overlay
 - `panel` - Modal panel container
 - `header` - Header section
 - `close` - Close button
 - `body` - Body content section
 - `footer` - Footer section
+
+State tokens:
+
+- `base-open` - Added to `base` while the modal is open
+- `base-container` - Added to `base` while the modal is container-scoped
+- `panel-small` - Added to `panel` when `size` is `small`
+- `panel-medium` - Added to `panel` when `size` is `medium`
+- `panel-large` - Added to `panel` when `size` is `large`
+- `panel-fullscreen` - Added to `panel` when `size` is `fullscreen`
+- `header-empty` - Added to `header` when the header has no content and no close button
+- `footer-empty` - Added to `footer` when the footer has no content
+- `backdrop-open` - Added to `backdrop` while open
+- `panel-open` - Added to `panel` while open
+- `grabber` - Hidden iOS/Material sheet drag grabber handle (`data-platform-only="ios,material"`)
 
 ## Basic Usage
 

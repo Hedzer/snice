@@ -64,6 +64,23 @@ interface KanbanCard {
 - `base` - Outer kanban board container div
 - `column-header` - Column header with title and card count
 - `column-cards` - Card list area within a column
+- `column` - A column container
+- `column-title` - Column title text
+- `column-count` - Column card-count badge
+- `empty` - "No cards" placeholder inside an empty column
+- `card` - A card
+- `card-title` - Card title
+- `card-description` - Card description
+- `card-meta` - Card meta row (assignee + labels)
+- `card-assignee` - Card assignee row
+- `card-labels` - Card label list
+- `card-label` - A single card label
+- `card-label-icon` - Icon wrapper inside a card label
+
+State tokens:
+
+- `column-collapsed` - Added to `column` while the column is collapsed
+- `card-grabbed` - Added to `card` while the card is keyboard-grabbed
 
 ## Basic Usage
 

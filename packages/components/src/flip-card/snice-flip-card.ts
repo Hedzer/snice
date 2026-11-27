@@ -56,7 +56,7 @@ export class SniceFlipCard extends HTMLElement implements SniceFlipCardElement {
   template() {
     const tabindex = this.clickToFlip ? '0' : '-1';
     return html`
-      <div part="base" class="flip-card"
+      <div part="base${this.flipped ? ' base-flipped' : ''}" class="flip-card"
            tabindex="${tabindex}"
            role="button"
            aria-pressed="${this.flipped ? 'true' : 'false'}"

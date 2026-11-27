@@ -39,12 +39,38 @@ interface GanttTask {
 
 ## CSS Parts
 
-- `base` - Outer Gantt container div
-- `header` - Top header bar with zoom controls
-- `controls` - Zoom toggle button group
-- `body` - Main content area (task list + timeline)
-- `task-list` - Left sidebar with task names
-- `timeline` - Right scrollable timeline area
+- `base` - Root gantt container
+- `header` - Header bar
+- `controls` - Zoom toggle group
+- `button` - A zoom button
+- `zoom-button` - A zoom button (same element as `button`)
+- `zoom-button-day` - The day `zoom-button`
+- `zoom-button-week` - The week `zoom-button`
+- `zoom-button-month` - The month `zoom-button`
+- `body` - Body row holding the task list and timeline
+- `task-list` - Task name column
+- `task-list-header` - Task column heading
+- `group-header` - Group heading row in the task column
+- `task-name` - A task name row
+- `timeline` - Timeline column
+- `timeline-header` - Timeline header row
+- `cell` - A timeline header cell
+- `timeline-cell` - A timeline header cell (same element as `cell`)
+- `timeline-rows` - Timeline body area holding the bars
+- `bar` - A task bar
+- `bar-progress` - Progress fill inside a bar
+- `bar-label` - Task label inside a bar
+- `handle` - A bar resize handle
+- `handle-start` - The start-edge `handle`
+- `handle-end` - The end-edge `handle`
+- `dependency-arrow` - SVG holding a dependency arrow
+- `dependency-path` - The dependency arrow path
+- `today-line` - Today marker line
+
+State tokens:
+
+- `zoom-button-active` - Added to `zoom-button` while that zoom level is selected
+- `timeline-cell-today` - Added to `timeline-cell` for the cell containing today
 
 ## Basic Usage
 

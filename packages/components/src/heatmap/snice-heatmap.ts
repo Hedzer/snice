@@ -150,20 +150,21 @@ export class SniceHeatmap extends HTMLElement implements SniceHeatmapElement {
     const monthLabels = this.getMonthLabels(cells);
 
     const gridStyle = `grid-template-columns: repeat(${totalWeeks}, var(--cell-size))`;
+    const cellLevelParts = [' cell-level-0', ' cell-level-1', ' cell-level-2', ' cell-level-3', ' cell-level-4'];
 
     return html/*html*/`
       <div class="heatmap" part="base" role="img" aria-label="Activity heatmap">
         <div class="heatmap__grid-area" part="grid-area">
           <if ${this.showLabels}>
-            <div class="heatmap__day-labels">
+            <div class="heatmap__day-labels" part="day-labels">
               ${DAY_LABELS.map((label, i) =>
-                html`<span class="heatmap__day-label">${i % 2 === 1 ? label : ''}</span>`
+                html`<span class="heatmap__day-label" part="day-label">${i % 2 === 1 ? label : ''}</span>`
               )}
             </div>
           </if>
-          <div class="heatmap__grid-wrapper">
+          <div class="heatmap__grid-wrapper" part="grid-wrapper">
             <if ${this.showLabels}>
-              <div class="heatmap__month-labels" style="${gridStyle}">
+              <div class="heatmap__month-labels" part="month-labels" style="${gridStyle}">
                 ${this.renderMonthLabels(monthLabels, totalWeeks)}
               </div>
             </if>
@@ -171,6 +172,7 @@ export class SniceHeatmap extends HTMLElement implements SniceHeatmapElement {
               ${cells.map(cell =>
                 html`<button
                   class="heatmap__cell heatmap__cell--level-${cell.level}"
+                  part="cell${cellLevelParts[cell.level] ?? ''}"
                   aria-label="${cell.value} contribution${cell.value !== 1 ? 's' : ''} on ${cell.date}"
                   @click=${() => this.handleCellClick(cell)}
                   @mouseenter=${(e: MouseEvent) => this.handleCellMouseEnter(e, cell)}
@@ -195,16 +197,16 @@ export class SniceHeatmap extends HTMLElement implements SniceHeatmapElement {
 
     for (const { label, column } of labels) {
       if (column > currentCol) {
-        spans.push(html`<span class="heatmap__month-label" style="grid-column: ${currentCol} / ${column}"></span>`);
+        spans.push(html`<span class="heatmap__month-label" part="month-label" style="grid-column: ${currentCol} / ${column}"></span>`);
       }
       const nextLabel = labels.find(l => l.column > column);
       const endCol = nextLabel ? nextLabel.column : totalWeeks + 1;
-      spans.push(html`<span class="heatmap__month-label" style="grid-column: ${column} / ${endCol}">${label}</span>`);
+      spans.push(html`<span class="heatmap__month-label" part="month-label" style="grid-column: ${column} / ${endCol}">${label}</span>`);
       currentCol = endCol;
     }
 
     if (currentCol <= totalWeeks) {
-      spans.push(html`<span class="heatmap__month-label" style="grid-column: ${currentCol} / ${totalWeeks + 1}"></span>`);
+      spans.push(html`<span class="heatmap__month-label" part="month-label" style="grid-column: ${currentCol} / ${totalWeeks + 1}"></span>`);
     }
 
     return spans;

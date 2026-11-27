@@ -5,7 +5,7 @@ export class SniceMenuDivider extends HTMLElement {
   @render()
   render() {
     return html/*html*/`
-      <div class="menu-divider" part="divider" role="separator"></div>
+      <div class="menu-divider" part="base divider" role="separator"></div>
     `;
   }
 

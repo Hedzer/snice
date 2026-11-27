@@ -7,6 +7,7 @@
 // Sunday May 31 2026. Week row 0 spans May 31 – Jun 6, row 1 Jun 7 – 13.
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
+import { partTokens } from '../matrix/part-exact';
 import '../../packages/components/src/calendar/snice-calendar';
 import type { SniceCalendarElement, CalendarEvent } from '../../packages/components/src/calendar/snice-calendar.types';
 
@@ -31,6 +32,14 @@ describe('snice-calendar event stripes', () => {
     return eventId === undefined
       ? all
       : all.filter(b => b.getAttribute('data-event-id') === String(eventId));
+  }
+
+  /**
+   * The bar's part tokens minus the `event-bar-*` state tokens: the role token
+   * plus whatever `className` the event asked for, in order.
+   */
+  function roleAndCustomParts(bar: Element): string[] {
+    return partTokens(bar).filter(token => !token.startsWith('event-bar-'));
   }
 
   it('renders a single-day event as a one-column bar with no continuation', async () => {
@@ -226,9 +235,12 @@ describe('snice-calendar event stripes', () => {
       expect(bar.classList.contains('urgent')).toBe(true);
       // Exposed as an extra part name so consumers can style specific events
       // from outside: snice-calendar::part(urgent) { ... }
-      expect(bar.getAttribute('part')).toBe('event-bar urgent');
+      // The `event-bar-*` state tokens (continues-left/-right, compact) are
+      // filtered out, so the assertion stays exact about the role token and the
+      // custom one whatever state the segment is in.
+      expect(roleAndCustomParts(bar)).toEqual(['event-bar', 'urgent']);
     }
-    expect(bars(cal, 'solo')[0].getAttribute('part')).toBe('event-bar');
+    expect(roleAndCustomParts(bars(cal, 'solo')[0])).toEqual(['event-bar']);
   });
 
   it('renders an optional avatar as <snice-avatar> on every segment of the bar', async () => {

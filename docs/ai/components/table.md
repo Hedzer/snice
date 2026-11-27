@@ -125,10 +125,99 @@ type CellStyle={backgroundColor?:string;color?:string;fontWeight?:'normal'|'bold
 
 ## CSS Parts
 
-- `<snice-table>`: `body`, `superheader`, `controls`, `toolbar`, `pagination`, `loading-overlay` (refetch spinner while `loading` with rows present), `row` (each native body row), `cell` (each native body cell — the inert filler that pads a body shorter than its host, virtualized or not, is neither and exposes no part), `filter-button` (column filter trigger), `sort-indicator` (sort direction); `<snice-row>`: `container`, `checkbox-cell`, `cell`; cells: `content`; actions: `action-button`; JSON: `toggle`; tag: `tag`; link/email/phone/location: `link`
-- `column-fit` (default `scroll`) = the fitting policy. `scroll`: `minWidth` wins, `.table-frame` scrolls horizontally when the columns no longer fit. `squish`: the FRAME wins — `minWidth` relaxes to a 24px floor, every visible column shares the frame width, cell content AND header labels ellipsise (typed cells too: squish relaxes their 100px floor via `--snice-table-cell-min-width`, without which they clip mid-glyph), `.table-frame` gets `overflow-x:hidden`, and the rightmost column edge sits on the frame's inner edge at any width. Squish resize is allowed and REBALANCES: the dragged column keeps its width (capped so the rest can still sit on the floor) and the others scale to fill what is left. Declared widths are honoured while an unsized column can absorb the difference; when the authored widths alone overflow, every column is scaled by the same factor. Reactive — assigning `columnFit` re-fits the painted columns. Use squish for a table inside a card/tile/split pane; use scroll for a wide dataset (pinned columns only pay off when something scrolls).
+- `base` - Root wrapper inside the shadow root
+- `frame` - Scroll frame around the native table
+- `table` - The native `<table>` element
+- `superheader` - Wrapper for the `header` slot in native-table mode
+- `controls` - Legacy search/selector controls row
+- `toolbar` - Toolbar installed by `setToolbar()`
+- `header-row` - Column header row
+- `header-cell` - Column header cell (data and tool columns)
+- `sort-header` - Label + indicator row inside a sortable native header cell
+- `cell-label` - Column label inside `sort-header`
+- `sort-indicator` - Sort glyph group inside a sortable native header cell
+- `sort-indicator-active` - Added to `sort-indicator` while that column is part of the current sort
+- `sort-order` - Rank number shown on a column in a multi-column sort
+- `pin-indicator` - Pin glyph on a pinned column's header
+- `drag-handle-cell` / `detail-toggle-cell` / `selection-cell` - Tool-column cells (header and body)
+- `drag-handle` - Added to `drag-handle-cell` on the body cell that is the reorder grip
+- `detail-toggle` - Master-detail expand/collapse button
+- `detail-toggle-expanded` - Added to `detail-toggle` while its row is expanded
+- `detail-toggle-icon` - Default chevron inside `detail-toggle`
+- `column-group-row` - Column-group header row
+- `column-group-cell` - Column-group header cell (grouped and ungrouped spans)
+- `filter-row` / `filter-cell` - Header-filter row and its cells
+- `resize-handle` - Column resize grip
+- `row` - Each native body row
+- `cell` - Each native body cell (the inert height filler is neither and exposes no part)
+- `list-cell` - Full-width cell of a `list`-mode row
+- `tree-label` - Label beside a tree-data toggle
+- `group-header-row` / `group-header-cell` / `group-header-label` / `group-header-count` - Grouping header row
+- `group-aggregate-row` / `aggregate-cell` / `aggregate-label` - Aggregate (subtotal/total) row
+- `message-row` / `message-cell` - Full-width row carrying the empty/loading/error state
+- `loading-state` / `loading-label` - Zero-row loading message
+- `loading-overlay` - Refetch spinner overlay shown while `loading` with rows present
+- `loading-spinner-base` / `loading-spinner-base-indeterminate` / `loading-spinner-circle` / `loading-spinner-circle-bg` / `loading-spinner-circle-bar` / `loading-spinner-circle-bar-indeterminate` - Exported parts of the `snice-progress` ring both loading affordances draw
+- `loading-spinner-bar` / `loading-spinner-bar-indeterminate` / `loading-spinner-base-with-label` / `loading-spinner-label` - Remaining exported parts of that `snice-progress`; it is built `variant="circular"`, so these only appear if the element is reconfigured
+- `error-message` - Failed remote load message
+- `empty-state-base` / `empty-state-container` / `empty-state-icon` / `empty-state-title` / `empty-state-description` / `empty-state-action` / `empty-state-extra` - Exported parts of the default `snice-empty-state` (absent when the `empty-state` slot is filled)
+- `pagination` - Pagination wrapper
+- `pagination-info` - "Showing x-y of z" text
+- `pagination-controls` - Page-button row
+- `pagination-button` - Any page button
+- `pagination-first` / `pagination-prev` / `pagination-next` / `pagination-last` / `pagination-page` - Added to `pagination-button` for that button
+- `pagination-button-active` - Added to `pagination-button` on the current page
+- `pagination-size` / `pagination-size-label` / `pagination-size-select` - Rows-per-page control
+- `checkbox-base` / `checkbox-input` / `checkbox-checkbox` / `checkbox-spinner` / `checkbox-label` / `checkbox-icon` / `checkbox-icon-check` / `checkbox-icon-indeterminate` / `checkbox-base-disabled` / `checkbox-base-loading` / `checkbox-checkbox-invalid` / `checkbox-checkbox-indeterminate` / `checkbox-checkbox-loading` / `checkbox-label-required` - Exported parts of the selection checkboxes (row, select-all, group)
+- `filter-input-base` / `filter-input-wrapper` / `filter-input-label` / `filter-input-container` / `filter-input-input` / `filter-input-prefix-icon` / `filter-input-suffix-icon` / `filter-input-clear` / `filter-input-clear-icon` / `filter-input-spinner` / `filter-input-password-toggle` / `filter-input-password-icon` / `filter-input-helper-text` / `filter-input-error-text` / `filter-input-label-required` / `filter-input-input-invalid` / `filter-input-input-loading` / `filter-input-input-clearable` / `filter-input-clear-with-suffix` / `filter-input-password-icon-hidden` / `filter-input-password-icon-visible` - Exported parts of every `snice-input` the table owns: the legacy search / quick-filter row, the header-filter inputs, the toolbar search box, and the filter panel's value field
+- `select-base` / `select-label` / `select-label-required` / `select-controls` / `select-input` / `select-input-disabled` / `select-input-open` / `select-input-invalid` / `select-trigger` / `select-trigger-disabled` / `select-trigger-loading` / `select-trigger-open` / `select-trigger-invalid` / `select-value` / `select-placeholder` / `select-value-single` / `select-value-label` / `select-value-icon` / `select-tags` / `select-tag` / `select-tag-icon` / `select-tag-remove` / `select-icons` / `select-clear-button` / `select-arrow` / `select-icon` / `select-arrow-icon` / `select-clear-icon` / `select-spinner` / `select-dropdown` / `select-search` / `select-search-input` / `select-options` / `select-option` / `select-option-selected` / `select-option-disabled` / `select-option-check` / `select-option-check-mark` / `select-option-icon` / `select-option-label` / `select-loading-indicator` / `select-loading-spinner` / `select-loading-text` / `select-empty` / `select-empty-text` / `select-helper-text` / `select-error-text` - Exported parts of every `snice-select` the table owns: the page-size picker, the legacy filter select, and the toolbar's sort and filter panel selects
+- Column fit (`column-fit`, default `scroll`) = the fitting policy. `scroll`: `minWidth` wins, `.table-frame` scrolls horizontally when the columns no longer fit. `squish`: the FRAME wins — `minWidth` relaxes to a 24px floor, every visible column shares the frame width, cell content AND header labels ellipsise (typed cells too: squish relaxes their 100px floor via `--snice-table-cell-min-width`, without which they clip mid-glyph), `.table-frame` gets `overflow-x:hidden`, and the rightmost column edge sits on the frame's inner edge at any width. Squish resize is allowed and REBALANCES: the dragged column keeps its width (capped so the rest can still sit on the floor) and the others scale to fill what is left. Declared widths are honoured while an unsized column can absorb the difference; when the authored widths alone overflow, every column is scaled by the same factor. Reactive — assigning `columnFit` re-fits the painted columns. Use squish for a table inside a card/tile/split pane; use scroll for a wide dataset (pinned columns only pay off when something scrolls).
 - Column width: a column that declares no `width` SHARES the frame — grown or shrunk on every render and frame resize, floored at `minWidth` (default 50), after which the frame scrolls instead of collapsing. A declared `width`, a drag-resize, and an auto-size are authored widths and are never refitted. Pinned cells carry `pinned-cell` + `pinned-cell--left|right`; the inner-most column per side adds `pinned-cell--edge` (2px divider + shadow) and its header a `.pin-indicator` pin glyph, so pinning reads even when nothing scrolls.
 - Height fill: the filler only consumes space the frame ALREADY has. A content-driven host (`:host{height:100%}` against an auto/max-content parent — stretched grid/flex item, plain block) would make the filler an input to its own resize trigger, so the table applies it, verifies the frame kept its height, and hands back any self-caused growth (partial filler, or none). Size the host (explicit height / flex or grid track / sized ancestor) to get a full-height grid.
+
+## CSS Parts (snice-header)
+
+- `base` / `container` - Standalone header wrapper
+- `cells` - Header cells container
+- `checkbox-cell` - Select-all cell
+- `checkbox` - Select-all checkbox input
+- `cell` - Header cell
+- `cell-sortable` - Added to `cell` when the column is sortable
+- `cell-sorted` - Added to `cell` while the column is the current sort
+- `cell-label` - Header label text
+- `sort-indicator` - Sort direction glyph
+- `sort-indicator-neutral` / `sort-indicator-ascending` / `sort-indicator-descending` - Added to `sort-indicator` for the current direction
+- `filter-button` - Column filter trigger
+
+## CSS Parts (snice-row)
+
+- `base` / `container` - Standalone row wrapper
+- `cells` - Cells container
+- `checkbox-cell` - Row selection cell
+- `checkbox` - Row selection checkbox input
+- `cell` - Row data cell
+
+## CSS Parts (snice-cell and snice-cell-*)
+
+- `content` - Inner content wrapper on every cell element
+- `action-button` - Each action button (`snice-cell-actions`)
+- `actions` - Action button row (`snice-cell-actions`)
+- `toggle` - JSON expand/collapse button (`snice-cell-json`)
+- `viewer` - JSON viewer (`snice-cell-json`)
+- `viewer-collapsed` / `viewer-expanded` - Added to `viewer` in that state
+- `empty` - Empty JSON placeholder (`snice-cell-json`)
+- `tag` - One rendered tag badge (`snice-cell-tag`)
+- `tags` - Tag row (`snice-cell-tag`)
+- `link` - Rendered anchor (`snice-cell-link`, `-email`, `-phone`, `-location`)
+- `text` - Text beside an adornment (`snice-cell-link`, `-location`, `-color`)
+- `icon` - Leading glyph (`snice-cell-email`, `-phone`, `-location`, `-image` placeholder)
+- `external-icon` - External-link glyph (`snice-cell-link`)
+- `image` - Rendered image (`snice-cell-image`)
+- `placeholder` - Image placeholder box (`snice-cell-image`)
+- `swatch` - Colour swatch (`snice-cell-color`)
+- `dot` - Status dot (`snice-cell-status`)
+- `status` - Status label (`snice-cell-status`)
+- `trend` - Trend arrow (`snice-cell-percentage`)
 
 ## CSS Custom Properties
 

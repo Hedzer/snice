@@ -21,6 +21,7 @@
  */
 import { describe, it, afterEach, expect } from 'vitest';
 import { cross, expectClean, removeComponent } from '../matrix-kit';
+import { partTokens } from '../part-exact';
 import {
   DEFAULTS, PINNED, Problems, captureEvents, click, day, eventBars, isoDay, dayCells,
   mountCalendar, monthWindow, part, parts, text, wait, SETTLE, type Vector,
@@ -272,8 +273,15 @@ describe('calendar matrix: event stripes', () => {
           // "title repeats" — every segment carries the event's title.
           problems.check(text(bar).includes(source.title as string),
             `bar ${i} of ${eventId} does not repeat the title`);
-          // `part="event-bar"`, plus any className the event asked for.
-          problems.equal(bar.getAttribute('part'), 'event-bar', `bar ${i} of ${eventId} part`);
+          // `part="event-bar"`, plus any className the event asked for. The
+          // `event-bar-*` state tokens (continues-left/-right, compact) are
+          // filtered out, so this stays an EXACT statement about the role and
+          // custom tokens no matter which states a segment happens to be in.
+          problems.equal(
+            partTokens(bar).filter(token => !token.startsWith('event-bar-')),
+            ['event-bar'],
+            `bar ${i} of ${eventId} part`,
+          );
         });
 
         const wantDays: string[] = [];
@@ -299,7 +307,11 @@ describe('calendar matrix: event stripes', () => {
     const problems = new Problems();
     const bar = barsFor(el, 'x')[0];
 
-    problems.equal(bar?.getAttribute('part'), 'event-bar urgent flagged', 'bar part list');
+    problems.equal(
+      partTokens(bar).filter(token => !token.startsWith('event-bar-')),
+      ['event-bar', 'urgent', 'flagged'],
+      'bar part list',
+    );
     problems.check(bar?.classList.contains('urgent') && bar?.classList.contains('flagged'),
       'className did not reach the bar class list');
     problems.equal(parts(el, 'urgent').length, 1, 'elements exposing ::part(urgent)');

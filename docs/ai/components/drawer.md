@@ -56,9 +56,14 @@ contained: boolean = false;                    // Position relative to parent
 - `base` - Drawer panel container
 - `header` - Header section
 - `title` - Title wrapper (h2)
+- `button` - Close button (same element as `close`)
 - `close` - Close button
 - `body` - Body content section
 - `footer` - Footer section
+- `footer-empty` - Added to `footer` when no footer content is slotted
+- `backdrop-open` - Added to `backdrop` while open
+- `base-open` - Added to `base` while open
+- `grabber` - Hidden iOS/Material sheet drag grabber handle (`data-platform-only="ios,material"`)
 
 ## Basic Usage
 

@@ -88,8 +88,61 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | Part | Element | Description |
 |------|---------|-------------|
 | `base` | `<div>` | Outer player container |
+| `info` | `<div>` | Artwork and track information row |
+| `artwork` | `<div>` | Artwork frame |
+| `artwork-image` | `<img>` | Artwork image |
+| `artwork-placeholder` | `<div>` | Placeholder shown when a track has no artwork |
+| `track-info` | `<div>` | Track text block |
+| `track-title` | `<div>` or `<a>` | Track title |
+| `track-title-link` | `<a>` | Added to `track-title` when the title links out |
+| `track-artist` | `<div>` or `<a>` | Track artist |
+| `track-artist-link` | `<a>` | Added to `track-artist` when the artist links out |
+| `track-album` | `<div>` | Track album |
 | `controls` | `<div>` | Playback controls, progress bar, and volume section |
+| `control-buttons` | `<div>` | Transport button row |
+| `button` | `<button>` | Shared token on every control button |
+| `shuffle-button` | `<button>` | Shuffle toggle |
+| `prev-button` | `<button>` | Previous track button |
+| `play-button` | `<button>` | Play/pause button |
+| `next-button` | `<button>` | Next track button |
+| `repeat-button` | `<button>` | Repeat toggle |
+| `volume-button` | `<button>` | Volume button |
+| `icon` | `<svg>` | Shared token on every transport and volume icon |
+| `shuffle-icon` | `<svg>` | The shuffle button icon |
+| `prev-icon` | `<svg>` | The previous track button icon |
+| `play-icon` | `<svg>` | The play/pause button icon |
+| `next-icon` | `<svg>` | The next track button icon |
+| `repeat-icon` | `<svg>` | The repeat button icon |
+| `volume-icon` | `<svg>` | The volume button icon |
+| `progress` | `<div>` | Progress row holding times, scrubber, and volume |
+| `time` | `<span>` | Shared token on both time labels |
+| `current-time` | `<span>` | Elapsed time label |
+| `duration-time` | `<span>` | Duration label |
+| `progress-track` | `<div>` | The seek track |
+| `progress-fill` | `<div>` | The played portion of the seek track |
+| `volume` | `<div>` | Volume control group |
+| `volume-panel` | `<div>` | Volume slider popout |
+| `volume-slider` | `<input>` | Volume range input |
 | `playlist` | `<div>` | Playlist section with track listing |
+| `playlist-header` | `<div>` | Playlist heading |
+| `playlist-items` | `<div>` | Playlist list container |
+| `playlist-item` | `<div>` | One playlist row |
+| `playlist-item-number` | `<div>` | Row index |
+| `playlist-item-artwork` | `<img>` | Row artwork |
+| `playlist-item-info` | `<div>` | Row text block |
+| `playlist-item-title` | `<div>` | Row title |
+| `playlist-item-artist` | `<div>` | Row artist |
+| `playlist-item-duration` | `<div>` | Row duration |
+
+State tokens are added alongside the base token, so they are matched with
+`::part(playlist-item playlist-item-active)`.
+
+| Token | Description |
+|-------|-------------|
+| `base-compact` | Added to `base` in compact mode |
+| `button-active` | Added to `button` on the shuffle and repeat toggles while engaged |
+| `button-playing` | Added to `button` on the play button while playing |
+| `playlist-item-active` | Added to `playlist-item` on the current track |
 
 ```css
 snice-music-player::part(base) {

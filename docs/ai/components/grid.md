@@ -56,6 +56,7 @@ Set on child elements:
 ## CSS Parts
 
 - `base` - The inner container element
+- `drop-placeholder` - Drop target indicator shown while dragging
 
 ## Types
 

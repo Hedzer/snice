@@ -20,17 +20,17 @@ export class SniceLayoutCentered extends HTMLElement implements Layout {
   @render()
   render() {
     return html/*html*/`
-      <div class="layout">
-        <div class="stack">
-          <div class="brand${this.hasBrand ? '' : ' brand--empty'}">
+      <div class="layout" part="base">
+        <div class="stack" part="stack">
+          <div class="brand${this.hasBrand ? '' : ' brand--empty'}" part="brand${this.hasBrand ? '' : ' brand-empty'}">
             <slot name="brand"></slot>
           </div>
 
-          <div class="container">
+          <div class="container" part="container">
             <slot name="page"></slot>
           </div>
 
-          <div class="footer${this.hasFooter ? '' : ' footer--empty'}">
+          <div class="footer${this.hasFooter ? '' : ' footer--empty'}" part="footer${this.hasFooter ? '' : ' footer-empty'}">
             <slot name="footer"></slot>
           </div>
         </div>

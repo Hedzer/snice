@@ -45,7 +45,32 @@ Style internal elements from outside the shadow DOM using `::part()`.
 
 | Part | Element | Description |
 |------|---------|-------------|
-| `base` | `<div>` | The outer container |
+| `base` | `<div>` | Outer container |
+| `empty` | `<div>` | Message shown when no roles or permissions are configured |
+| `table` | `<table>` | The permission grid |
+| `table-header` | `<thead>` | Grid header section |
+| `table-body` | `<tbody>` | Grid body section |
+| `table-row` | `<tr>` | Any header or role row |
+| `table-cell` | `<th>/<td>` | Any header or body cell |
+| `header-cell` | `<th>` | Added to `table-cell` on header cells |
+| `role-header-cell` | `<th>` | Added to `header-cell` on the leading Role column header |
+| `permission-header-cell` | `<th>` | Added to `header-cell` on a permission column header |
+| `permission-header` | `<div>` | Permission header content wrapper |
+| `permission-name` | `<span>` | Permission name text |
+| `permission-description` | `<span>` | Permission description text |
+| `role-cell` | `<td>` | Added to `table-cell` on the leading role cell of a row |
+| `role-name` | `<div>` | Role name text |
+| `role-description` | `<div>` | Role description text |
+| `permission-cell` | `<td>` | Added to `table-cell` on a role/permission intersection cell |
+| `indicator` | `<span>` | Read-only grant indicator |
+| `indicator-granted` | `<span>` | Added to `indicator` when the permission is granted |
+| `indicator-denied` | `<span>` | Added to `indicator` when the permission is not granted |
+| `icon` | `<svg>` | Read-only indicator glyph |
+| `check-icon` | `<svg>` | Added to `icon` on the granted check mark |
+| `dash-icon` | `<svg>` | Added to `icon` on the not-granted dash |
+| `input` | `<input>` | Editable grant checkbox |
+| `checkbox` | `<input>` | Added to `input` on the grant checkbox |
+| `checkbox-checked` | `<input>` | Added to `checkbox` while the permission is granted |
 
 ## Basic Usage
 

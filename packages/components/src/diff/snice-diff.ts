@@ -59,15 +59,17 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
     return html/*html*/`
       <div part="base" class="diff-container">
         <div part="header" class="diff-header">
-          <span class="diff-stat-add">+${this.additions}</span>
-          <span class="diff-stat-del">-${this.deletions}</span>
+          <span part="stat stat-additions" class="diff-stat-add">+${this.additions}</span>
+          <span part="stat stat-deletions" class="diff-stat-del">-${this.deletions}</span>
           <if ${this.showModeToggle}>
-            <div class="diff-mode-toggle">
+            <div part="controls" class="diff-mode-toggle">
               <button
+                part="button mode-button mode-button-unified${!isSplit ? ' mode-button-active' : ''}"
                 class="diff-mode-btn ${!isSplit ? 'active' : ''}"
                 @click=${() => this.setMode('unified')}
               >Unified</button>
               <button
+                part="button mode-button mode-button-split${isSplit ? ' mode-button-active' : ''}"
                 class="diff-mode-btn ${isSplit ? 'active' : ''}"
                 @click=${() => this.setMode('split')}
               >Split</button>
@@ -96,8 +98,8 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
       if (hunk.collapsed) {
         const count = hunk.lines.length;
         rows.push(html/*html*/`
-          <tr>
-            <td colspan="4" class="diff-hunk-separator" @click=${() => this.toggleHunk(hunkIdx)}>
+          <tr part="row row-hunk">
+            <td part="cell hunk-separator" colspan="4" class="diff-hunk-separator" @click=${() => this.toggleHunk(hunkIdx)}>
               ... ${count} unchanged lines (click to expand)
             </td>
           </tr>
@@ -117,23 +119,23 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
         const content = unsafeHTML(this.escapeHtml(line.content));
 
         const gutterCells = showLineNums
-          ? html`<td class="diff-gutter">${oldNum}</td><td class="diff-gutter">${newNum}</td>`
+          ? html`<td part="cell gutter" class="diff-gutter">${oldNum}</td><td part="cell gutter" class="diff-gutter">${newNum}</td>`
           : '';
         const markerCell = showMarkers
-          ? html`<td class="${markerClass}">${marker}</td>`
+          ? html`<td part="cell marker" class="${markerClass}">${marker}</td>`
           : '';
 
         rows.push(html/*html*/`
-          <tr class="${lineClass}">
+          <tr class="${lineClass}" part="row${({ added: ' row-added', removed: ' row-removed', unchanged: ' row-unchanged' })[line.type] || ''}">
             ${gutterCells}
             ${markerCell}
-            <td class="diff-code">${content}</td>
+            <td part="cell code" class="diff-code">${content}</td>
           </tr>
         `);
       }
     }
 
-    return html/*html*/`<table class="diff-table">${rows}</table>`;
+    return html/*html*/`<table part="table" class="diff-table">${rows}</table>`;
   }
 
   private renderSplitView(showLineNums: boolean) {
@@ -150,15 +152,15 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
       if (hunk.collapsed) {
         const count = hunk.lines.length;
         leftRows.push(html/*html*/`
-          <tr>
-            <td colspan="3" class="diff-hunk-separator" @click=${() => this.toggleHunk(hunkIdx)}>
+          <tr part="row row-hunk">
+            <td part="cell hunk-separator" colspan="3" class="diff-hunk-separator" @click=${() => this.toggleHunk(hunkIdx)}>
               ... ${count} unchanged lines (click to expand)
             </td>
           </tr>
         `);
         rightRows.push(html/*html*/`
-          <tr>
-            <td colspan="3" class="diff-hunk-separator" @click=${() => this.toggleHunk(hunkIdx)}>
+          <tr part="row row-hunk">
+            <td part="cell hunk-separator" colspan="3" class="diff-hunk-separator" @click=${() => this.toggleHunk(hunkIdx)}>
               ... ${count} unchanged lines (click to expand)
             </td>
           </tr>
@@ -177,9 +179,9 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
       const leftMarker = old ? (old.type === 'removed' ? '-' : ' ') : ' ';
       const leftMarkerClass = old?.type === 'removed' ? 'diff-gutter--marker diff-gutter--marker-del' : 'diff-gutter--marker';
 
-      const leftGutter = showLineNums ? html`<td class="diff-gutter">${leftNum}</td>` : '';
-      const leftMarkerCell = showMarkers ? html`<td class="${leftMarkerClass}">${leftMarker}</td>` : '';
-      leftRows.push(html`<tr class="${leftClass}">${leftGutter}${leftMarkerCell}<td class="diff-code">${leftContent}</td></tr>`);
+      const leftGutter = showLineNums ? html`<td part="cell gutter" class="diff-gutter">${leftNum}</td>` : '';
+      const leftMarkerCell = showMarkers ? html`<td part="cell marker" class="${leftMarkerClass}">${leftMarker}</td>` : '';
+      leftRows.push(html`<tr class="${leftClass}" part="row${(old && ({ added: ' row-added', removed: ' row-removed', unchanged: ' row-unchanged' })[old.type]) || ''}">${leftGutter}${leftMarkerCell}<td part="cell code" class="diff-code">${leftContent}</td></tr>`);
 
       // Right pane (new)
       const rightClass = nw ? `diff-line diff-line--${nw.type === 'added' ? 'added' : 'unchanged'}` : 'diff-line';
@@ -188,19 +190,19 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
       const rightMarker = nw ? (nw.type === 'added' ? '+' : ' ') : ' ';
       const rightMarkerClass = nw?.type === 'added' ? 'diff-gutter--marker diff-gutter--marker-add' : 'diff-gutter--marker';
 
-      const rightGutter = showLineNums ? html`<td class="diff-gutter">${rightNum}</td>` : '';
-      const rightMarkerCell = showMarkers ? html`<td class="${rightMarkerClass}">${rightMarker}</td>` : '';
-      rightRows.push(html`<tr class="${rightClass}">${rightGutter}${rightMarkerCell}<td class="diff-code">${rightContent}</td></tr>`);
+      const rightGutter = showLineNums ? html`<td part="cell gutter" class="diff-gutter">${rightNum}</td>` : '';
+      const rightMarkerCell = showMarkers ? html`<td part="cell marker" class="${rightMarkerClass}">${rightMarker}</td>` : '';
+      rightRows.push(html`<tr class="${rightClass}" part="row${(nw && ({ added: ' row-added', removed: ' row-removed', unchanged: ' row-unchanged' })[nw.type]) || ''}">${rightGutter}${rightMarkerCell}<td part="cell code" class="diff-code">${rightContent}</td></tr>`);
       }
     }
 
     return html/*html*/`
-      <div class="diff-split">
-        <div class="diff-split-pane">
-          <table class="diff-table">${leftRows}</table>
+      <div part="split" class="diff-split">
+        <div part="pane pane-old" class="diff-split-pane">
+          <table part="table" class="diff-table">${leftRows}</table>
         </div>
-        <div class="diff-split-pane">
-          <table class="diff-table">${rightRows}</table>
+        <div part="pane pane-new" class="diff-split-pane">
+          <table part="table" class="diff-table">${rightRows}</table>
         </div>
       </div>
     `;

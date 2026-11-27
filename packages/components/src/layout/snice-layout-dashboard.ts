@@ -63,46 +63,47 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
     const railEmptyClass = this.hasRail ? '' : ' right-sidebar--empty';
     const breadcrumbsHtml = this.getBreadcrumbsHtml();
     const toolbarHiddenClass = this.hasToolbarContent || breadcrumbsHtml ? '' : ' toolbar--hidden';
+    const layoutParts = (this.stackedViewport ? ' base-railed-stacked' : '') + (this.mobileViewport ? ' base-mobile' : '');
     const layoutClasses = `${this.stackedViewport ? ' layout--railed-stacked' : ''}`
       + `${this.mobileViewport ? ' layout--mobile' : ''}`;
 
     return html/*html*/`
-      <div class="layout${layoutClasses}">
+      <div class="layout${layoutClasses}" part="base${layoutParts}">
         <header class="header" part="header">
-          <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="${expanded}" @click=${this.handleSidebarToggle}>
-            <svg viewBox="0 0 24 24" width="20" height="20">
+          <button class="sidebar-toggle" part="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="${expanded}" @click=${this.handleSidebarToggle}>
+            <svg part="sidebar-toggle-icon" viewBox="0 0 24 24" width="20" height="20">
               <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor"/>
             </svg>
           </button>
-          <div class="header-start">
+          <div class="header-start" part="brand">
             <slot name="brand">
-              <h1>Dashboard</h1>
+              <h1 part="brand-fallback">Dashboard</h1>
             </slot>
           </div>
-          <div class="header-content">
+          <div class="header-content" part="header-content">
             <slot name="header"></slot>
           </div>
         </header>
 
-        <div class="toolbar${toolbarHiddenClass}" part="toolbar">
+        <div class="toolbar${toolbarHiddenClass}" part="toolbar${toolbarHiddenClass ? ' toolbar-hidden' : ''}">
           <slot name="toolbar">${breadcrumbsHtml}</slot>
         </div>
 
-        <div class="body-area">
-          <aside class="sidebar${sidebarCollapsedClass}${sidebarMobileClass}" part="sidebar">
+        <div class="body-area" part="body">
+          <aside class="sidebar${sidebarCollapsedClass}${sidebarMobileClass}" part="sidebar${this.collapsed ? ' sidebar-collapsed' : ''}${this.mobileOpen ? ' sidebar-mobile-open' : ''}">
             <slot name="sidebar">
-              <snice-nav class="sidebar-nav" variant="hierarchical" orientation="vertical"></snice-nav>
+              <snice-nav class="sidebar-nav" part="nav" exportparts="base: nav-base, nav: nav-nav, group: nav-group, group-label: nav-group-label, submenu: nav-submenu, item: nav-item, link: nav-link, icon: nav-icon, label: nav-label, item-active: nav-item-active, group-active: nav-group-active, link-active: nav-link-active" variant="hierarchical" orientation="vertical"></snice-nav>
             </slot>
           </aside>
 
-          <div class="scrim${scrimClass}" part="scrim" @click=${this.handleScrimClick}></div>
+          <div class="scrim${scrimClass}" part="scrim${this.mobileOpen ? ' scrim-visible' : ''}" @click=${this.handleScrimClick}></div>
 
-          <div class="content-area${railedClass}">
+          <div class="content-area${railedClass}" part="content${this.hasRail ? ' content-railed' : ''}">
             <main class="main" part="main">
               <slot name="page"></slot>
             </main>
 
-            <aside class="right-sidebar${railEmptyClass}" part="right-sidebar">
+            <aside class="right-sidebar${railEmptyClass}" part="right-sidebar${this.hasRail ? '' : ' right-sidebar-empty'}">
               <slot name="right-sidebar"></slot>
             </aside>
           </div>
@@ -203,6 +204,8 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
 
     return `
       <snice-breadcrumbs
+        part="breadcrumbs"
+        exportparts="base: breadcrumbs-base, list: breadcrumbs-list, link: breadcrumbs-link, separator: breadcrumbs-separator, ellipsis: breadcrumbs-ellipsis, ellipsis-icon: breadcrumbs-ellipsis-icon, item: breadcrumbs-item, text: breadcrumbs-text, list-collapsed: breadcrumbs-list-collapsed, item-active: breadcrumbs-item-active, item-hidden: breadcrumbs-item-hidden, item-overflow: breadcrumbs-item-overflow, text-current: breadcrumbs-text-current"
         items='${JSON.stringify(breadcrumbs.map(p => ({
           label: p.title,
           href: p.href || '',

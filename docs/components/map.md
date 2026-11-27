@@ -72,6 +72,24 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `tiles` | `<div>` | The tile layer container |
 | `markers` | `<div>` | The markers layer container |
 | `controls` | `<div>` | The zoom controls container |
+| `tile` | `<div>` | A single map tile |
+| `tile-image` | `<img>` | The image inside a tile |
+| `marker` | `<div>` | A marker wrapper |
+| `marker-pin` | `<div>` | A marker's pin box |
+| `marker-icon` | `<img>` / `<span>` / `<svg>` | A marker's icon (image, text, or default pin) |
+| `popup` | `<div>` | An open marker popup |
+| `control` | `<button>` | A zoom control button |
+| `zoom-in` | `<button>` | Added beside `control` on the zoom-in button |
+| `zoom-out` | `<button>` | Added beside `control` on the zoom-out button |
+| `attribution` | `<div>` | The attribution strip |
+| `attribution-link` | `<a>` | The OpenStreetMap link inside the attribution strip |
+
+State tokens are added alongside the base token on the same element, so they can
+be targeted with `::part(marker marker-active)`.
+
+| Part | Added to | Description |
+|------|----------|-------------|
+| `marker-active` | `marker` | Present while that marker's popup is open |
 
 ```css
 snice-map::part(base) {

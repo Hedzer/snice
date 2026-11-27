@@ -29,6 +29,7 @@
  */
 import { expect } from 'vitest';
 import { createComponent, wait } from '../../components/test-utils';
+import { exactPartIn, exactPartsIn } from '../part-exact';
 
 export { wait, createComponent };
 
@@ -143,14 +144,20 @@ export function all<T extends Element = HTMLElement>(el: HTMLElement, selector: 
   return [...shadow(el).querySelectorAll<T>(selector)];
 }
 
-/** The single element exposing a documented CSS part, or null. */
+/**
+ * The single element exposing a documented CSS part, or null.
+ *
+ * Token-exact: happy-dom's `[part~="item"]` also answers with `item-name`,
+ * `item-total` and every other hyphen-prefixed neighbour, so the lookup reads
+ * the attribute and splits it itself (`tests/matrix/part-exact.ts`).
+ */
 export function part<T extends Element = HTMLElement>(el: HTMLElement, name: string): T | null {
-  return shadow(el).querySelector<T>(`[part~="${name}"]`);
+  return exactPartIn<T>(shadow(el), name);
 }
 
 /** Every element exposing a documented CSS part, in document order. */
 export function parts<T extends Element = HTMLElement>(el: HTMLElement, name: string): T[] {
-  return [...shadow(el).querySelectorAll<T>(`[part~="${name}"]`)];
+  return exactPartsIn<T>(shadow(el), name);
 }
 
 /** Collapsed text content — the string a reader would actually see. */

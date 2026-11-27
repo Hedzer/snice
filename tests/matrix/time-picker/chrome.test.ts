@@ -27,6 +27,7 @@ import {
   VARIANTS, SIZES, FORMATS, PARTS, type TimeCombo, type TimePickerVariant,
   type TimePickerSize, type TimePickerFormat,
 } from './time-picker-support';
+import { exactPart } from '../part-exact';
 
 type Decoration = 'bare' | 'label' | 'helper' | 'error';
 
@@ -149,7 +150,7 @@ describe('time-picker matrix: chrome', () => {
       const r = read(el);
       expect(r.dropdownLabel).toBe(`${name} controls`);
       for (const unit of ['hours', 'minutes', 'seconds', 'period'] as const) {
-        expect(el.shadowRoot.querySelector(`[part="${unit}"]`)?.getAttribute('aria-label'),
+        expect(exactPart(el, unit)?.getAttribute('aria-label'),
           `${unit} group`).toBe(`${name} ${unit}`);
       }
       if (c.variant === 'dropdown') {
@@ -219,7 +220,7 @@ describe('time-picker matrix: chrome', () => {
   it('the inline variant keeps its selectors visible and takes no popover', async () => {
     const c = picker({ variant: 'inline', defaultValue: '14:05', step: 5, name: 'when' });
     const el = await mountPicker(c);
-    const dropdown = el.shadowRoot.querySelector('[part="dropdown"]') as HTMLElement;
+    const dropdown = exactPart(el, 'dropdown') as HTMLElement;
 
     expect(dropdown.hasAttribute('hidden'), 'the inline selectors are hidden').toBe(false);
     expect(dropdown.getAttribute('popover'), 'the inline variant kept a popover attribute')
@@ -232,7 +233,7 @@ describe('time-picker matrix: chrome', () => {
   it('the dropdown variant starts closed and is a popover', async () => {
     const c = picker({ variant: 'dropdown', defaultValue: '14:05', step: 5, name: 'when' });
     const el = await mountPicker(c);
-    const dropdown = el.shadowRoot.querySelector('[part="dropdown"]') as HTMLElement;
+    const dropdown = exactPart(el, 'dropdown') as HTMLElement;
     expect(dropdown.hasAttribute('hidden'), 'the dropdown started open').toBe(true);
     expect((dropdown as any).popover, 'the dropdown is not a popover').toBe('manual');
     expect(pickerProblems(el, c)).toEqual([]);

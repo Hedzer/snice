@@ -62,6 +62,19 @@ When `type` is omitted, it is automatically determined: positive values render a
 |------|-------------|
 | `base` | The main waterfall container |
 | `chart` | The chart rendering area |
+| `svg` | Root `<svg>` of the chart |
+| `axis` | Zero-value axis line |
+| `connector` | Connector line between consecutive bars |
+| `bar` | A waterfall bar |
+| `bar-increase` | Added to `bar` for an increase bar |
+| `bar-decrease` | Added to `bar` for a decrease bar |
+| `bar-total` | Added to `bar` for a total bar |
+| `bar-animated` | Added to `bar` while `animated` is set |
+| `label` | Category label text under or beside a bar |
+| `value` | Value text on a bar |
+| `value-increase` | Added to `value` for an increase bar |
+| `value-decrease` | Added to `value` for a decrease bar |
+| `value-total` | Added to `value` for a total bar |
 
 ## Basic Usage
 

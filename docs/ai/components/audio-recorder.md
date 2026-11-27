@@ -52,9 +52,25 @@ interface AudioRecording {
 ## CSS Parts
 
 - `base` - Outer recorder container
-- `controls` - Recording and playback control buttons
+- `status` - Status region (role="status")
+- `state` - State pill inside the status region
+- `state-inactive` - Added to `state` while idle and during playback; `state-recording` and `state-paused` mirror the live state
+- `state-icon` - Dot inside the state pill
+- `state-label` - Text label inside the state pill
+- `timer` - Elapsed/playback time readout
 - `visualizer` - Audio frequency visualizer bar container
+- `bar` - A single visualizer bar
+- `controls` - Recording and playback control buttons
+- `button` - Any control button
+- `button-record` - Added to `button` on the record/resume button
+- `button-pause` - Added to `button` on the pause button
+- `button-play` - Added to `button` on the play button
+- `button-stop` - Added to `button` on the stop button
+- `button-cancel` - Added to `button` on the cancel button
+- `icon` - Glyph inside a control button
 - `progress` - Playback progress bar
+- `fill` - Elapsed portion of the progress bar
+- `error-text` - Error message
 
 ## Basic Usage
 

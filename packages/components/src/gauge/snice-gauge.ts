@@ -61,13 +61,13 @@ export class SniceGauge extends HTMLElement implements SniceGaugeElement {
            aria-valuemin="${this.min}"
            aria-valuemax="${this.max}"
            aria-label="${this.label || `Gauge: ${displayValue}`}">
-        <div class="gauge__chart">
-          <svg class="gauge__svg" viewBox="0 0 120 70">
-            <path class="gauge__track"
+        <div part="chart" class="gauge__chart">
+          <svg part="svg" class="gauge__svg" viewBox="0 0 120 70">
+            <path part="track" class="gauge__track"
                   d="${arcPath}"
                   stroke-width="${this.thickness}"
                   fill="none" />
-            <path class="gauge__fill"
+            <path part="fill" class="gauge__fill"
                   d="${arcPath}"
                   stroke-width="${this.thickness}"
                   fill="none"

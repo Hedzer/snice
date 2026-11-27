@@ -79,6 +79,20 @@ When the `icon` property is omitted, the component maps the `condition` string t
 | `current` | Current conditions section with icon, temperature, and condition text |
 | `details` | Details row showing humidity and wind speed |
 | `forecast` | Multi-day forecast section with day columns |
+| `empty` | Placeholder text shown when no `data` is set |
+| `icon` | Current-condition icon |
+| `current-info` | Temperature and condition text group |
+| `temperature` | Current temperature text |
+| `condition` | Current condition text |
+| `detail-item` | A single detail chip in the details row |
+| `detail-item-humidity` | Added to `detail-item` on the humidity chip |
+| `detail-item-wind` | Added to `detail-item` on the wind chip |
+| `forecast-day` | A single day column in the forecast |
+| `forecast-day-name` | Day label inside a forecast column |
+| `forecast-icon` | Condition icon inside a forecast column |
+| `forecast-temps` | High/low pair inside a forecast column |
+| `forecast-high` | High temperature text |
+| `forecast-low` | Low temperature text |
 
 ## Basic Usage
 

@@ -322,34 +322,36 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
     const hasReplies = !!(comment.replies && comment.replies.length > 0);
 
     return html/*html*/`
-      <div class="comment" data-id="${comment.id}">
-        <div class="comment__avatar">
+      <div class="comment" part="comment" data-id="${comment.id}">
+        <div class="comment__avatar" part="avatar">
           <if ${comment.avatar}>
-            <img src="${comment.avatar}" alt="${comment.author}" />
+            <img part="avatar-image" src="${comment.avatar}" alt="${comment.author}" />
           </if>
           <if ${!comment.avatar}>
             ${this.getInitials(comment.author)}
           </if>
         </div>
-        <div class="comment__body">
-          <div class="comment__header">
-            <span class="comment__author">${comment.author}</span>
-            <span class="comment__time">${this.formatTimestamp(comment.timestamp)}</span>
+        <div class="comment__body" part="comment-body">
+          <div class="comment__header" part="comment-header">
+            <span class="comment__author" part="author">${comment.author}</span>
+            <span class="comment__time" part="timestamp">${this.formatTimestamp(comment.timestamp)}</span>
           </div>
-          <p class="comment__text">${comment.text}</p>
-          <div class="comment__actions">
+          <p class="comment__text" part="text">${comment.text}</p>
+          <div class="comment__actions" part="actions">
             <if ${this.allowLikes}>
               <button class="comment__action ${comment.liked ? 'comment__action--liked' : ''}"
+                      part="action action-like${comment.liked ? ' action-liked' : ''}"
                       @click=${() => this.likeComment(comment.id)}
                       aria-label="${comment.liked ? 'Unlike' : 'Like'}">
-                <span>${comment.liked ? '\u2764' : '\u2661'}</span>
+                <span part="like-icon">${comment.liked ? '\u2764' : '\u2661'}</span>
                 <if ${hasLikes}>
-                  <span class="comment__like-count">${comment.likes}</span>
+                  <span class="comment__like-count" part="like-count">${comment.likes}</span>
                 </if>
               </button>
             </if>
             <if ${canReply}>
               <button class="comment__action"
+                      part="action action-reply"
                       @click=${() => this.startReply(comment.id)}
                       aria-label="Reply">
                 Reply
@@ -357,6 +359,7 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
             </if>
             <if ${isOwn}>
               <button class="comment__action comment__action--delete"
+                      part="action action-delete"
                       @click=${() => this.deleteComment(comment.id)}
                       aria-label="Delete comment">
                 Delete
@@ -365,17 +368,20 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
           </div>
 
           <if ${isReplying}>
-            <div class="comment__reply-input">
+            <div class="comment__reply-input" part="reply-input-area">
               <textarea class="comments__input"
+                        part="input reply-input"
                         placeholder="Write a reply..."
                         rows="1"
                         @input=${this.handleReplyInputChange}
                         @keydown=${(e: KeyboardEvent) => this.handleReplyKeydown(e, comment.id)}></textarea>
               <button class="comments__submit"
+                      part="submit-button reply-submit-button"
                       @click=${() => this.handleReply(comment.id)}>
                 Reply
               </button>
               <button class="comment__cancel"
+                      part="cancel-button"
                       @click=${() => this.cancelReply()}>
                 Cancel
               </button>
@@ -383,7 +389,7 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
           </if>
 
           <if ${hasReplies}>
-            <div class="comment__replies">
+            <div class="comment__replies" part="replies">
               ${(comment.replies || []).map(reply => this.renderComment(reply, depth + 1))}
             </div>
           </if>
@@ -400,11 +406,13 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
       <div class="comments" part="base">
         <div class="comments__input-area" part="input-area">
           <textarea class="comments__input comments__new-input"
+                    part="input"
                     placeholder="Write a comment..."
                     rows="2"
                     @input=${this.handleNewInputChange}
                     @keydown=${this.handleNewKeydown}></textarea>
           <button class="comments__submit"
+                  part="submit-button"
                   @click=${() => this.handleNewComment()}
                   aria-label="Post comment">
             Post
@@ -417,7 +425,7 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
           </div>
         </if>
         <if ${!hasComments}>
-          <div class="comments__empty">No comments yet. Be the first to comment!</div>
+          <div class="comments__empty" part="empty">No comments yet. Be the first to comment!</div>
         </if>
       </div>
     `;

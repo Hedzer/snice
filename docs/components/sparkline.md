@@ -33,7 +33,7 @@ A lightweight inline chart for visualizing trends and patterns in compact spaces
 
 | Part | Description |
 |------|-------------|
-| `container` | Outer container element |
+| `base` / `container` | Outer container element (both tokens are on the same element) |
 | `svg` | The SVG element |
 | `line` | Line path element |
 | `area` | Area fill path element |

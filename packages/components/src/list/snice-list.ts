@@ -202,14 +202,15 @@ export class SniceList extends HTMLElement {
     // Create skeleton elements
     const skeletons = [];
     for (let i = 0; i < this.skeletonCount; i++) {
-      skeletons.push(html`<snice-skeleton height="60px" style="margin: 0.5rem 1rem;"></snice-skeleton>`);
+      skeletons.push(html`<snice-skeleton part="skeleton" exportparts="base: skeleton-base, bone: skeleton-bone" height="60px" style="margin: 0.5rem 1rem;"></snice-skeleton>`);
     }
 
     return html/*html*/`
-      <div class="list" part="container" role="list">
+      <div class="list" part="base container" role="list">
         <if ${this.searchable}>
           <div class="list__search" part="search">
             <input
+              part="input search-input"
               type="text"
               class="list__search-input"
               placeholder="Search..."
@@ -223,8 +224,10 @@ export class SniceList extends HTMLElement {
         </if>
         <if ${this.noResults}>
           <slot name="no-results">
-            <div style="padding: 2rem;">
+            <div part="empty" style="padding: 2rem;">
               <snice-empty-state 
+                part="empty-state"
+                exportparts="base: empty-state-base, container: empty-state-container, icon: empty-state-icon, title: empty-state-title, description: empty-state-description, action: empty-state-action, extra: empty-state-extra"
                 icon="🔍" 
                 title="No results found" 
                 description="Try searching for something else"

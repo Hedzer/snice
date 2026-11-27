@@ -49,9 +49,19 @@ Style internal elements from outside the shadow DOM using `::part()`.
 
 | Part | Element | Description |
 |------|---------|-------------|
+| `base` | `<div>` | The strip root container |
 | `icon` | `<div>` | The icon container |
 | `content` | `<div>` | The message content area |
 | `dismiss` | `<button>` | The dismiss button |
+| `dismiss-icon` | `<svg>` | The cross icon inside the dismiss button |
+
+State tokens are added alongside the base token, so they are matched with
+`::part(base base-hidden)`.
+
+| Token | Description |
+|-------|-------------|
+| `base-hidden` | Added to `base` while the strip is hidden |
+| `icon-default` | Added to `icon` while the built-in variant icon is shown |
 
 ```css
 snice-message-strip::part(content) {

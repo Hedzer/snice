@@ -22,14 +22,14 @@ export class SniceListItem extends HTMLElement {
     if (this.disabled) classes.push('list-item--disabled');
 
     return html/*html*/`
-      <div class="${classes.join(' ')}" role="listitem" aria-disabled="${this.disabled ? 'true' : 'false'}">
+      <div class="${classes.join(' ')}" part="base${this.selected ? ' base-selected' : ''}${this.disabled ? ' base-disabled' : ''}" role="listitem" aria-disabled="${this.disabled ? 'true' : 'false'}">
         <slot name="before"></slot>
-        <div class="list-item__content">
+        <div class="list-item__content" part="content">
           <if ${this.heading}>
-            <div class="list-item__heading">${this.heading}</div>
+            <div class="list-item__heading" part="heading">${this.heading}</div>
           </if>
           <if ${this.description}>
-            <div class="list-item__description">${this.description}</div>
+            <div class="list-item__description" part="description">${this.description}</div>
           </if>
           <slot></slot>
         </div>

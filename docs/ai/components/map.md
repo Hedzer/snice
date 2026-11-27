@@ -49,6 +49,21 @@ interface MapMarker {
 - `tiles` - Tile layer container
 - `markers` - Markers layer container
 - `controls` - Zoom controls container
+- `tile` - A single map tile
+- `tile-image` - The `<img>` inside a tile
+- `marker` - A marker wrapper
+- `marker-pin` - A marker's pin box
+- `marker-icon` - A marker's icon (image, text, or default pin)
+- `popup` - An open marker popup
+- `control` - A zoom control button
+- `zoom-in` - Added to the zoom-in `control`
+- `zoom-out` - Added to the zoom-out `control`
+- `attribution` - The attribution strip
+- `attribution-link` - The OpenStreetMap link inside `attribution`
+
+State tokens:
+
+- `marker-active` - Added to `marker` while its popup is open
 
 ## Basic Usage
 

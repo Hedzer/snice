@@ -27,6 +27,7 @@
  */
 import { expect } from 'vitest';
 import { createComponent, wait } from '../../components/test-utils';
+import { exactPart, exactParts } from '../part-exact';
 import '../../../packages/components/src/segmented-control/snice-segmented-control';
 import type {
   SniceSegmentedControlElement,
@@ -168,11 +169,11 @@ export async function mount(combo: Combo): Promise<SniceSegmentedControlElement>
 }
 
 export function segments(el: SniceSegmentedControlElement): HTMLButtonElement[] {
-  return [...el.shadowRoot!.querySelectorAll('[part="segment"]')] as HTMLButtonElement[];
+  return exactParts<HTMLButtonElement>(el, 'segment');
 }
 
 export function base(el: SniceSegmentedControlElement): HTMLElement | null {
-  return el.shadowRoot!.querySelector('[part="base"]');
+  return exactPart(el, 'base');
 }
 
 export function segmentLabel(button: HTMLElement): string {

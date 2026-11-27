@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
+import { exactPart, exactParts } from '../matrix/part-exact';
 import '../../packages/components/src/estimate/snice-estimate';
 import type { SniceEstimateElement, EstimateItem, EstimateParty } from '../../packages/components/src/estimate/snice-estimate.types';
 
@@ -156,7 +157,7 @@ describe('snice-estimate', () => {
       expect(table).toBeTruthy();
       const header = queryShadow(est, '[part="table-header"]');
       expect(header).toBeTruthy();
-      const rows = queryShadowAll(est, '[part="table-row"]');
+      const rows = exactParts(est as HTMLElement, 'table-row');
       expect(rows.length).toBe(3);
     });
 
@@ -206,7 +207,7 @@ describe('snice-estimate', () => {
       est = await createComponent<SniceEstimateElement>('snice-estimate');
       est.items = [{ description: 'Optional', quantity: 1, unitPrice: 100, optional: true }];
       await wait(10);
-      const toggle = queryShadow(est, '[part="item-toggle"]');
+      const toggle = exactPart(est as HTMLElement, 'item-toggle');
       expect(toggle).toBeTruthy();
     });
   });
@@ -569,7 +570,7 @@ describe('snice-estimate', () => {
       ];
 
       for (const part of requiredParts) {
-        const el = queryShadow(est, `[part="${part}"]`);
+        const el = exactPart(est as HTMLElement, part);
         expect(el, `Part "${part}" should exist`).toBeTruthy();
       }
     });

@@ -51,6 +51,7 @@ Provides contextual information when users hover, click, or focus an element. Su
 | Part | Description |
 |------|-------------|
 | `trigger` | Wrapper around the slot/trigger content |
+| `base` | Added to `trigger`; the root part sits on the trigger wrapper, not on the popup |
 | `tooltip` | The tooltip popup element |
 | `content` | The text content inside the tooltip |
 | `arrow` | The arrow/caret element pointing to the trigger |

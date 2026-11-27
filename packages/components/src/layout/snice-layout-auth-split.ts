@@ -21,9 +21,9 @@ export class SniceLayoutAuthSplit extends HTMLElement implements Layout {
   @render()
   render() {
     return html/*html*/`
-      <div class="layout">
+      <div class="layout" part="base">
         <section class="form-side" part="form">
-          <div class="form-inner">
+          <div class="form-inner" part="form-inner">
             <div class="brand" part="brand">
               <slot name="brand"></slot>
             </div>

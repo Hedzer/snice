@@ -48,6 +48,11 @@ Displays a quote or review card with author information, avatar, role/company at
 | `quote` | The quote text element |
 | `author` | The author info container (avatar, name, role) |
 | `stars` | The star rating element |
+| `quotation-mark` | The decorative opening quote mark |
+| `avatar` | The author avatar image (rendered when `avatar` is set) |
+| `author-details` | Wrapper around the author name and role |
+| `author-name` | The author name text |
+| `author-role` | The role/company line (rendered when `role` or `company` is set) |
 
 ## Basic Usage
 

@@ -137,7 +137,7 @@ async function visualProblems(combo: Combo): Promise<string[]> {
     const container = partOf('container');
     const field = partOf('input') as HTMLInputElement | null;
     if (!container) { say('no [part="container"]'); return problems; }
-    if (!field) { say('no [part="input"]'); return problems; }
+    if (!field) { say('no [part~="input"]'); return problems; }
     const containerBox = rect(container);
     const fieldBox = rect(field);
     if (fieldBox.width <= 0 || fieldBox.height <= 0) {
@@ -150,10 +150,10 @@ async function visualProblems(combo: Combo): Promise<string[]> {
 
     // ── Label above, support text below ─────────────────────────────────────
     const label = partOf('label');
-    if (!label) say('a labelled control paints no [part="label"]');
+    if (!label) say('a labelled control paints no [part~="label"]');
     else {
       const box = rect(label);
-      if (box.height <= 0) say('[part="label"] has no box');
+      if (box.height <= 0) say('[part~="label"] has no box');
       if (box.bottom > fieldBox.top + EPS) {
         say(`the label (bottom ${box.bottom.toFixed(1)}) sits on the field`
           + ` (top ${fieldBox.top.toFixed(1)})`);

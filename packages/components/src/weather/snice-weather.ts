@@ -34,7 +34,7 @@ export class SniceWeather extends HTMLElement implements SniceWeatherElement {
   @render()
   template() {
     if (!this.data) {
-      return html`<div class="weather"><span>No weather data</span></div>`;
+      return html`<div part="base" class="weather"><span part="empty">No weather data</span></div>`;
     }
 
     const icon = this.data.icon || this.getDefaultIcon(this.data.condition);
@@ -42,10 +42,10 @@ export class SniceWeather extends HTMLElement implements SniceWeatherElement {
     const details = html`
       <div part="details" class="details">
         ${this.data.humidity != null ? html`
-          <span class="detail-item">\uD83D\uDCA7 ${this.data.humidity}%</span>
+          <span part="detail-item detail-item-humidity" class="detail-item">\uD83D\uDCA7 ${this.data.humidity}%</span>
         ` : html``}
         ${this.data.wind != null ? html`
-          <span class="detail-item">\uD83C\uDF2C\uFE0F ${this.data.wind} km/h</span>
+          <span part="detail-item detail-item-wind" class="detail-item">\uD83C\uDF2C\uFE0F ${this.data.wind} km/h</span>
         ` : html``}
       </div>
     `;
@@ -54,12 +54,12 @@ export class SniceWeather extends HTMLElement implements SniceWeatherElement {
       ? html`
         <div part="forecast" class="forecast">
           ${this.data.forecast.map(day => html`
-            <div class="forecast-day">
-              <span class="forecast-day-name">${day.day}</span>
-              <span class="forecast-icon">${day.icon || this.getDefaultIcon(day.condition)}</span>
-              <div class="forecast-temps">
-                <span class="forecast-high">${this.formatTemp(day.high)}</span>
-                <span class="forecast-low">${this.formatTemp(day.low)}</span>
+            <div part="forecast-day" class="forecast-day">
+              <span part="forecast-day-name" class="forecast-day-name">${day.day}</span>
+              <span part="forecast-icon" class="forecast-icon">${day.icon || this.getDefaultIcon(day.condition)}</span>
+              <div part="forecast-temps" class="forecast-temps">
+                <span part="forecast-high" class="forecast-high">${this.formatTemp(day.high)}</span>
+                <span part="forecast-low" class="forecast-low">${this.formatTemp(day.low)}</span>
               </div>
             </div>
           `)}
@@ -70,10 +70,10 @@ export class SniceWeather extends HTMLElement implements SniceWeatherElement {
     return html`
       <div part="base" class="weather">
         <div part="current" class="current">
-          <span class="icon">${icon}</span>
-          <div>
-            <div class="temp">${this.formatTemp(this.data.temp)}</div>
-            <div class="condition">${this.data.condition}</div>
+          <span part="icon" class="icon">${icon}</span>
+          <div part="current-info">
+            <div part="temperature" class="temp">${this.formatTemp(this.data.temp)}</div>
+            <div part="condition" class="condition">${this.data.condition}</div>
           </div>
         </div>
         ${details}

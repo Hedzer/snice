@@ -23,18 +23,18 @@ export class SniceLayoutCard extends HTMLElement implements Layout {
   @render()
   render() {
     return html/*html*/`
-      <div class="layout">
-        <header class="header${this.hasHeader ? '' : ' header--empty'}">
+      <div class="layout" part="base">
+        <header class="header${this.hasHeader ? '' : ' header--empty'}" part="header${this.hasHeader ? '' : ' header-empty'}">
           <slot name="header"></slot>
         </header>
 
-        <main class="main">
-          <div class="grid">
+        <main class="main" part="main">
+          <div class="grid" part="grid">
             <slot name="page"></slot>
           </div>
         </main>
 
-        <footer class="footer${this.hasFooter ? '' : ' footer--empty'}">
+        <footer class="footer${this.hasFooter ? '' : ' footer--empty'}" part="footer${this.hasFooter ? '' : ' footer-empty'}">
           <slot name="footer"></slot>
         </footer>
       </div>

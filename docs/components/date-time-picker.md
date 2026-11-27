@@ -15,7 +15,7 @@
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
-- [CSS parts](#css-parts)
+- [CSS Parts](#css-parts)
 - [Accessibility](#accessibility)
 
 ## Basic usage
@@ -250,9 +250,55 @@ Read-only native form properties:
 
 Reset and browser state restoration do not emit customer change events.
 
-## CSS parts
+## CSS Parts
 
-`base`, `label`, `input`, `toggle`, `panel`, `calendar`, `time`, `clear`, `spinner`, `helper-text`, `error-text`
+| Part | Description |
+|------|-------------|
+| `base` | Root wrapper around the whole control |
+| `label` | Field label above the input |
+| `label-required` | Added to `label` when `required` is set |
+| `input-container` | Wrapper holding the input, its toggle and clear buttons |
+| `input` | Text input |
+| `input-invalid` | Added to `input` while the value is invalid |
+| `input-loading` | Added to `input` while `loading` is set |
+| `toggle` | Button that opens the date and time panel |
+| `clear` | Clear button |
+| `spinner` | Loading spinner |
+| `panel` | Dropdown (or inline) panel holding the calendar and time columns |
+| `panel-inline` | Added to `panel` when `variant="inline"` |
+| `calendar` | Calendar half of the panel |
+| `calendar-header` | Header row of the calendar (navigation plus title) |
+| `nav-button` | Any month/year navigation button |
+| `nav-button-prev` | Added to `nav-button` on the previous month/years button |
+| `nav-button-next` | Added to `nav-button` on the next month/years button |
+| `calendar-title` | Title block between the navigation buttons |
+| `month-label` | Month name, or year range in the year view |
+| `year-button` | Year button in the title that opens the year grid |
+| `year-grid` | Grid of selectable years |
+| `year-cell` | A single year button in the year grid |
+| `year-cell-current` | Added to `year-cell` for the current year |
+| `year-cell-selected` | Added to `year-cell` for the year in view |
+| `weekdays` | Weekday header row |
+| `weekday` | A single weekday header cell |
+| `days` | Day grid |
+| `day` | A single day cell |
+| `day-today` | Added to `day` for today's date |
+| `day-selected` | Added to `day` for the selected date |
+| `day-disabled` | Added to `day` when the date is outside `min`/`max` |
+| `day-empty` | Added to `day` on the blank cells before the first of the month |
+| `calendar-footer` | Footer holding the Today button |
+| `today-button` | The Today button |
+| `time` | Time half of the panel |
+| `time-header` | "Time" heading above the time columns |
+| `time-selectors` | Row of time columns |
+| `time-column` | A single hour/minute/second/period column |
+| `time-column-period` | Added to `time-column` on the AM/PM column |
+| `time-label` | Column heading (Hr, Min, Sec, Period) |
+| `time-list` | Scrolling listbox inside a time column |
+| `time-item` | A single selectable time value |
+| `time-item-selected` | Added to `time-item` for the selected value |
+| `helper-text` | Helper text |
+| `error-text` | Error text |
 
 The dropdown uses the top-layer Popover API when available. It flips and clamps to the viewport, constrains its width and height, and scrolls internally on narrow or short screens. The inline variant keeps the full calendar and time selectors in document flow.
 

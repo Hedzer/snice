@@ -22,7 +22,7 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
   @render()
   render() {
     return html/*html*/`
-      <div class="toast-wrapper"></div>
+      <div part="base" class="toast-wrapper"></div>
     `;
   }
 
@@ -126,6 +126,8 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
     // Create toast element
     const toast = document.createElement('snice-toast') as any;
     toast.setAttribute('toast-id', id);
+    toast.setAttribute('part', 'toast');
+    toast.setAttribute('exportparts', 'base: toast-base, icon: toast-icon, content: toast-content, close-button: toast-close-button');
     toast.type = type;
     toast.message = message;
     toast.closable = closable;

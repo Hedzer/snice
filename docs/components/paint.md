@@ -74,8 +74,32 @@ Style internal elements from outside the shadow DOM using `::part()`.
 |------|---------|-------------|
 | `base` | `<div>` | The outer paint container |
 | `toolbar` | `<div>` | The toolbar with controls |
+| `toolbar-label` | `<span>` | A toolbar group label ("Color", "Size") |
+| `separator` | `<div>` | A toolbar separator |
+| `swatches` | `<div>` | The colour swatch row |
+| `swatch` | `<span>` | One preset colour swatch |
+| `swatch-select` | `<input>` | One custom-colour picker |
+| `size-slider` | `<input>` | The brush size range input |
+| `button` | `<button>` | All toolbar buttons (shared part) |
+| `button-icon` | `<svg>` | A toolbar button icon |
+| `eraser-button` | `<button>` | The eraser toggle |
+| `undo-button` | `<button>` | The undo button |
+| `redo-button` | `<button>` | The redo button |
+| `clear-button` | `<button>` | The clear canvas button |
 | `canvas-wrap` | `<div>` | The canvas wrapper element |
 | `canvas` | `<canvas>` | The drawing canvas element |
+
+State tokens are added alongside the base token, so they are matched with
+`::part(swatch swatch-active)`.
+
+| Token | Description |
+|-------|-------------|
+| `canvas-tool-pen` | Added to `canvas` while the pen tool is active |
+| `canvas-tool-eraser` | Added to `canvas` while the eraser tool is active |
+| `swatch-active` | Added to `swatch` on the selected colour |
+| `swatch-select-used` | Added to `swatch-select` once its colour has been picked |
+| `swatch-select-active` | Added to `swatch-select` when its colour is selected |
+| `button-active` | Added to `button` on the eraser toggle while erasing |
 
 ## Basic Usage
 

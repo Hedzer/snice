@@ -80,10 +80,49 @@ The list uses `@request`/`@respond` for controller-driven data flow.
 
 | Part | Element | Description |
 |------|---------|-------------|
+| `base` | `<div>` | The outer list container (the same node as `container`) |
 | `container` | `<div>` | The outer list container |
 | `search` | `<div>` | The search input wrapper |
+| `input` | `<input>` | The search input element |
+| `search-input` | `<input>` | The search input element (the same node as `input`) |
+| `empty` | `<div>` | The wrapper around the default no-results state |
+| `empty-state` | `<snice-empty-state>` | The internal empty state element |
 | `loading` | `<div>` | The loading skeletons wrapper |
+| `skeleton` | `<snice-skeleton>` | A default loading skeleton |
 | `sentinel` | `<div>` | The infinite scroll sentinel element |
+
+The no-results state is a `<snice-empty-state>` and each loading placeholder is a
+`<snice-skeleton>`, so their own parts are forwarded with `empty-state-` and
+`skeleton-` prefixes.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `empty-state-base` | `<div>` | The empty state's outer wrapper (the same node as `empty-state-container`) |
+| `empty-state-container` | `<div>` | The empty state's outer wrapper |
+| `empty-state-icon` | `<div>` | The empty state's icon wrapper |
+| `empty-state-title` | `<h3>` | The empty state's title |
+| `empty-state-description` | `<p>` | The empty state's description |
+| `empty-state-action` | `<div>` | The empty state's action area |
+| `empty-state-extra` | `<div>` | The wrapper around the empty state's default slot |
+| `skeleton-base` | `<div>` | A skeleton's outer container |
+| `skeleton-bone` | `<div>` | A skeleton's placeholder element |
+
+### snice-list-item
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer list item container |
+| `content` | `<div>` | The heading/description/content column |
+| `heading` | `<div>` | The heading text |
+| `description` | `<div>` | The description text |
+
+State tokens are added alongside the base token on the same element, so they can
+be targeted with `::part(base base-selected)`.
+
+| Part | Added to | Description |
+|------|----------|-------------|
+| `base-selected` | `base` | Present while `selected` is set |
+| `base-disabled` | `base` | Present while `disabled` is set |
 
 ## Basic Usage
 

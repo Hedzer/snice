@@ -46,8 +46,59 @@ sleepTimer: number = 0;                              // Sleep timer minutes (att
 ## CSS Parts
 
 - `base` - Outer player container
-- `info` - Artwork and metadata section
+- `info` - Artwork and episode metadata section
+- `artwork` - Episode artwork frame
+- `artwork-image` - Episode artwork image
+- `artwork-placeholder` - Placeholder shown when no artwork is set
+- `icon` - Any icon inside a control or placeholder
+- `artwork-icon` - Added to `icon` on the artwork placeholder glyph
+- `meta` - Show, title, and description column
+- `show` - Show name
+- `title` - Episode title
+- `description` - Episode description
 - `controls` - Playback controls and progress bar
+- `control-buttons` - Row of transport buttons
+- `button` - Every control button
+- `speed-button` - Added to `button` on the playback speed control
+- `speed-button-active` - Added to `speed-button` while the rate is not 1x
+- `skip-back-button` - Added to `button` on the skip-backward control
+- `skip-forward-button` - Added to `button` on the skip-forward control
+- `skip-label` - Seconds label on a skip button
+- `play-button` - Added to `button` on the play/pause control
+- `sleep-button` - Added to `button` on the sleep timer control
+- `sleep-button-active` - Added to `sleep-button` while a sleep timer runs
+- `progress-container` - Times, seek bar, and volume row
+- `time` - A time readout
+- `time-current` - Added to `time` on the elapsed readout
+- `time-remaining` - Added to `time` on the remaining readout
+- `progress` - Seek bar track
+- `progress-bar` - Played portion of the seek bar
+- `volume` - Volume control wrapper
+- `volume-button` - Added to `button` on the volume control
+- `volume-slider-container` - Volume slider popover
+- `volume-slider` - Volume range input
+- `bottom-bar` - Sleep timer bar
+- `sleep` - Sleep timer readout wrapper
+- `sleep-label` - Sleep timer label
+- `sleep-time` - Remaining sleep time
+- `chapters` - Chapter list section
+- `chapters-header` - Chapter list heading
+- `chapter` - Chapter row
+- `chapter-active` - Added to `chapter` for the chapter being played
+- `chapter-time` - Chapter start time
+- `chapter-title` - Chapter title
+- `episodes` - Episode list section
+- `episodes-header` - Episode list heading
+- `episode-list` - Episode rows container
+- `episode` - Episode row
+- `episode-active` - Added to `episode` for the loaded episode
+- `episode-artwork` - Episode row artwork
+- `episode-info` - Episode row text column
+- `episode-title` - Episode row title
+- `episode-date` - Episode publication date
+- `episode-playing-icon` - Animated now-playing indicator
+- `episode-playing-bar` - One equaliser bar inside `episode-playing-icon`
+- `episode-duration` - Episode duration
 
 ## Basic Usage
 

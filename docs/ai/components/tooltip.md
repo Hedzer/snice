@@ -32,6 +32,7 @@ strictPositioning: boolean = false; // attr: strict-positioning
 ## CSS Parts
 
 - `trigger` - Wrapper around the slot/trigger content
+- `base` - Added to `trigger`; the root part sits on the trigger wrapper, not on the popup
 - `tooltip` - The tooltip popup div
 - `content` - Text content inside tooltip
 - `arrow` - Arrow element

@@ -43,6 +43,14 @@ clickable: boolean = false;
 - `icon` - Icon container
 - `content` - Content area (name, address, coordinates)
 - `map` - Embedded map container
+- `name` - Location name line
+- `address` - Formatted address line
+- `coordinates` - Latitude/longitude line
+- `frame` - The map `<iframe>` inside `map`
+
+State tokens:
+
+- `base-clickable` - Added to `base` while `clickable` is set
 
 ## URL Safety
 

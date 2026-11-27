@@ -36,26 +36,117 @@ Style internal elements from outside the shadow DOM using `::part()`.
 |------|---------|-------------|
 | `base` | `<div>` | Outer layout container |
 | `header` | `<header>` | Header element with navigation |
+| `header-content` | `<div>` | Slotted header content column |
 | `brand` | `<div>` | Brand/logo area within header |
+| `nav` | `<snice-nav>` | The internal navigation element |
+| `body` | `<div>` | Row holding sidebar, main and rails |
 | `main` | `<main>` | Main content area |
+| `content` | `<div>` | Content column inside the body |
 | `footer` | `<footer>` | Footer element |
 
 Shell variants add parts for their own regions:
 
 | Part | Shells | Description |
 |------|--------|-------------|
-| `sidebar` | sidebar, dashboard, docs | Navigation column |
+| `sidebar` | sidebar, dashboard, docs, blog | Navigation column |
+| `sidebar-toggle` | sidebar, dashboard, docs | Header button that opens or collapses the sidebar |
+| `sidebar-toggle-icon` | sidebar, dashboard, docs | Glyph inside the sidebar toggle |
 | `scrim` | sidebar, dashboard, docs | Overlay backdrop shown while the sidebar is open on narrow screens |
 | `toolbar` | dashboard | Strip below the header holding breadcrumbs or filters |
+| `breadcrumbs` | dashboard | The internal breadcrumbs element inside the toolbar |
 | `right-sidebar` | dashboard | Secondary rail beside main |
 | `prose` | docs | Measured article column |
 | `toc` | docs | On-this-page rail |
+| `skip-link` | docs | Skip-to-content link |
+| `brand-fallback` | stacked, sidebar, dashboard, docs, blog, landing | Default brand text when nothing is slotted |
+| `container` | blog, landing | Centered width-limited band |
+| `header-container` | blog, landing | The header's centered band |
+| `main-container` | blog | The main region's centered band |
+| `footer-container` | blog, landing | The footer's centered band |
+| `nav-area` | blog, landing | Header navigation region |
+| `article` | blog | Article column |
+| `hero` | landing | Hero band |
+| `cta` | landing | Header call-to-action slot |
+| `stack` | centered | Vertical stack inside the layout |
+| `grid` | card | Card grid inside main |
+| `background` | fullscreen | Background layer |
+| `overlay` | fullscreen | Overlay layer |
+| `controls` | fullscreen | Controls layer |
+| `pane` | master-detail | Either pane |
 | `list` | master-detail | List pane |
 | `detail` | master-detail | Detail pane |
 | `empty` | master-detail | Empty-state shown until a detail is slotted |
+| `back-button` | master-detail | Narrow-viewport back button |
+| `back-icon` | master-detail | Glyph inside the back button |
+| `panel` | split, auth-split | Split panel / decorative brand panel |
+| `panel-left` | split | Added beside `panel` on the left panel |
+| `panel-right` | split | Added beside `panel` on the right panel |
+| `divider` | split | Divider between the two panels |
 | `form` | auth-split | Column holding the sign-in form |
-| `panel` | auth-split | Decorative brand panel |
+| `form-inner` | auth-split | Inner column inside the form column |
 | `page` | auth-split | Form content wrapper |
+
+State tokens are added alongside the base token on the same element, so they can
+be targeted with `::part(sidebar sidebar-collapsed)`.
+
+| Part | Added to | Description |
+|------|----------|-------------|
+| `base-mobile` | `base` | Present at mobile widths (sidebar, dashboard) |
+| `base-railed-stacked` | `base` | Present when the dashboard rail stacks |
+| `header-empty` | `header` | Present while nothing is slotted into the header (card) |
+| `footer-empty` | `footer` | Present while nothing is slotted into the footer |
+| `brand-empty` | `brand` | Present while nothing is slotted into the brand (centered) |
+| `sidebar-empty` | `sidebar` | Present while nothing is slotted into the sidebar (blog) |
+| `sidebar-open` | `sidebar` | Present while the docs sidebar is open |
+| `sidebar-rail` | `sidebar` | Present in rail collapse mode |
+| `sidebar-collapsed` | `sidebar` | Present while the sidebar is collapsed |
+| `sidebar-mobile-open` | `sidebar` | Present while the sidebar is open on mobile |
+| `scrim-visible` | `scrim` | Present while the mobile sidebar is open |
+| `toolbar-hidden` | `toolbar` | Present while the toolbar has nothing to show |
+| `right-sidebar-empty` | `right-sidebar` | Present while no rail content is slotted |
+| `content-railed` | `content` | Present while a right rail is shown |
+| `content-with-sidebar` | `content` | Present while a blog sidebar is slotted |
+| `toc-empty` | `toc` | Present while nothing is slotted into the table of contents |
+| `list-hidden` | `list` | Present while the narrow shell shows the detail pane |
+| `detail-hidden` | `detail` | Present while the narrow shell shows the list pane |
+
+The internal `<snice-nav>` and the dashboard's `<snice-breadcrumbs>` forward
+every one of their own parts with `nav-` and `breadcrumbs-` prefixes.
+
+### Forwarded from the internal nav
+
+| Part | Description |
+|------|-------------|
+| `nav-base` | The nav's outer content wrapper |
+| `nav-nav` | The nav's `<nav>` element |
+| `nav-group` | A nav group wrapper |
+| `nav-group-label` | A nav group heading |
+| `nav-submenu` | A nested list of child links |
+| `nav-item` | A nav item wrapper |
+| `nav-link` | An individual nav link |
+| `nav-icon` | A nav item icon |
+| `nav-label` | A nav link label |
+| `nav-item-active` | Added to `nav-item` while its route is active |
+| `nav-group-active` | Added to `nav-group` while it holds the active route |
+| `nav-link-active` | Added to `nav-link` while its route is active |
+
+### Forwarded from the dashboard breadcrumbs
+
+| Part | Description |
+|------|-------------|
+| `breadcrumbs-base` | The breadcrumbs' `<nav>` container |
+| `breadcrumbs-list` | The breadcrumbs' `<ol>` list |
+| `breadcrumbs-item` | An individual breadcrumb `<li>` |
+| `breadcrumbs-link` | An individual breadcrumb link |
+| `breadcrumbs-text` | Non-link breadcrumb text |
+| `breadcrumbs-separator` | A breadcrumb separator |
+| `breadcrumbs-ellipsis` | The breadcrumbs' collapse ellipsis button |
+| `breadcrumbs-ellipsis-icon` | The icon inside the ellipsis button |
+| `breadcrumbs-list-collapsed` | Added to `breadcrumbs-list` while items are collapsed |
+| `breadcrumbs-item-active` | Added to `breadcrumbs-item` for the active crumb |
+| `breadcrumbs-item-hidden` | Added to `breadcrumbs-item` while the crumb is collapsed out of view |
+| `breadcrumbs-item-overflow` | Added to `breadcrumbs-item` for the ellipsis list item |
+| `breadcrumbs-text-current` | Added to `breadcrumbs-text` on the current-page crumb |
 
 ```css
 snice-layout::part(header) {

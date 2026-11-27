@@ -46,7 +46,11 @@ An interactive star rating input with configurable precision, custom icons, and 
 | Part | Description |
 |------|-------------|
 | `base` | The outer rating container |
+| `base-readonly` | Added to `base` while `readonly` is set |
 | `star` | Individual star/icon element |
+| `star-active` | Added to `star` while that star carries any fill |
+| `star-empty` | Unfilled glyph layer inside a star |
+| `star-full` | Filled glyph layer inside a star, clipped to the value |
 
 ## Basic Usage
 

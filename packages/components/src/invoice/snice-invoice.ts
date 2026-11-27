@@ -179,18 +179,18 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
 
     return html/*html*/`
       <tr part="table-row">
-        <td class="invoice__col-line" part="table-cell">
-          <span class="invoice__item-line-num">${index + 1}</span>
+        <td class="invoice__col-line" part="table-cell table-cell-line">
+          <span class="invoice__item-line-num" part="line-number">${index + 1}</span>
         </td>
-        <td part="table-cell">
+        <td part="table-cell table-cell-description">
           ${item.description}
           <if ${hasItemTax}>
-            <span class="invoice__item-tax">Tax: ${item.tax}%</span>
+            <span class="invoice__item-tax" part="item-tax">Tax: ${item.tax}%</span>
           </if>
         </td>
-        <td class="invoice__col-qty" part="table-cell">${item.quantity}</td>
-        <td class="invoice__col-price" part="table-cell">${this.formatCurrency(item.unitPrice)}</td>
-        <td part="table-cell">${this.formatCurrency(amount)}</td>
+        <td class="invoice__col-qty" part="table-cell table-cell-qty">${item.quantity}</td>
+        <td class="invoice__col-price" part="table-cell table-cell-price">${this.formatCurrency(item.unitPrice)}</td>
+        <td part="table-cell table-cell-amount">${this.formatCurrency(amount)}</td>
       </tr>
     `;
   }
@@ -198,11 +198,13 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
   private renderQr(position: QrPosition): unknown {
     if (!this.showQr) return html``;
 
+    const qrPositionIndex = (['top-right', 'bottom-right', 'bottom-left', 'footer'] as QrPosition[]).indexOf(position);
+
     return html/*html*/`
-      <div class="invoice__qr invoice__qr--${position}" part="qr-container">
+      <div class="invoice__qr invoice__qr--${position}" part="qr-container${[' qr-top-right', ' qr-bottom-right', ' qr-bottom-left', ' qr-footer'][qrPositionIndex] ?? ''}">
         <div part="qr">
           <slot name="qr">
-            <div class="invoice__qr-placeholder">QR</div>
+            <div class="invoice__qr-placeholder" part="qr-placeholder">QR</div>
           </slot>
         </div>
       </div>
@@ -225,36 +227,37 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
     const isQrBottomRight = this.showQr && this.qrPosition === 'bottom-right';
     const isQrBottomLeft = this.showQr && this.qrPosition === 'bottom-left';
     const isQrFooter = this.showQr && this.qrPosition === 'footer';
+    const statusParts = { draft: ' status-draft', sent: ' status-sent', paid: ' status-paid', overdue: ' status-overdue', cancelled: ' status-cancelled' };
 
     return html/*html*/`
       <div class="invoice${isQrBottomRight || isQrBottomLeft ? ' invoice--qr-bottom' : ''}" part="base">
         <div class="invoice__header${isQrTopRight ? ' invoice__header--qr-top-right' : ''}" part="header">
-          <div class="invoice__header-left">
+          <div class="invoice__header-left" part="header-left">
             <slot name="logo">
               <if ${this.from.logo}>
                 <img class="invoice__logo" src="${this.from.logo}" alt="${this.from.name}" part="logo" />
               </if>
             </slot>
             <h2 class="invoice__title" part="title"><slot name="title">Invoice</slot></h2>
-            <span class="invoice__status invoice__status--${this.status}" part="status"><slot name="status">${this.status}</slot></span>
+            <span class="invoice__status invoice__status--${this.status}" part="status${statusParts[this.status] ?? ''}"><slot name="status">${this.status}</slot></span>
           </div>
           <div class="invoice__meta" part="meta">
             <if ${this.invoiceNumber}>
-              <div>
-                <span class="invoice__meta-label">Invoice # </span>
-                <span class="invoice__meta-value">${this.invoiceNumber}</span>
+              <div part="meta-row">
+                <span class="invoice__meta-label" part="meta-label">Invoice # </span>
+                <span class="invoice__meta-value" part="meta-value">${this.invoiceNumber}</span>
               </div>
             </if>
             <if ${this.date}>
-              <div>
-                <span class="invoice__meta-label">Date: </span>
-                <span class="invoice__meta-value">${this.date}</span>
+              <div part="meta-row">
+                <span class="invoice__meta-label" part="meta-label">Date: </span>
+                <span class="invoice__meta-value" part="meta-value">${this.date}</span>
               </div>
             </if>
             <if ${this.dueDate}>
-              <div>
-                <span class="invoice__meta-label">Due Date: </span>
-                <span class="invoice__meta-value">${this.dueDate}</span>
+              <div part="meta-row">
+                <span class="invoice__meta-label" part="meta-label">Due Date: </span>
+                <span class="invoice__meta-value" part="meta-value">${this.dueDate}</span>
               </div>
             </if>
           </div>
@@ -277,17 +280,17 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
         <if ${this.items.length > 0}>
           <table class="invoice__table" part="table">
             <thead part="table-header">
-              <tr>
+              <tr part="table-header-row">
                 <if ${isDetailed}>
-                  <th class="invoice__col-line">#</th>
+                  <th class="invoice__col-line" part="table-header-cell">#</th>
                 </if>
-                <th>Description</th>
-                <th class="invoice__col-qty">Qty</th>
-                <th class="invoice__col-price">Unit Price</th>
-                <th>Amount</th>
+                <th part="table-header-cell">Description</th>
+                <th class="invoice__col-qty" part="table-header-cell">Qty</th>
+                <th class="invoice__col-price" part="table-header-cell">Unit Price</th>
+                <th part="table-header-cell">Amount</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody part="table-body">
               ${this.items.map((item, i) => this.renderItemRow(item, i))}
             </tbody>
           </table>
@@ -296,7 +299,7 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
         <slot name="after-items"></slot>
 
         <div class="invoice__summary" part="summary">
-          <div class="invoice__summary-table">
+          <div class="invoice__summary-table" part="summary-table">
             <div class="invoice__summary-row" part="summary-row">
               <span part="summary-label">Subtotal</span>
               <span part="summary-value">${this.formatCurrency(subtotal)}</span>

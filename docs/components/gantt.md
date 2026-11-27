@@ -58,12 +58,40 @@ Style internal elements from outside the shadow DOM using `::part()`.
 
 | Part | Element | Description |
 |------|---------|-------------|
-| `base` | `<div>` | Outer Gantt container |
-| `header` | `<div>` | Top header bar with zoom controls |
-| `controls` | `<div>` | Zoom toggle button group (Day/Week/Month) |
-| `body` | `<div>` | Main content area containing task list and timeline |
-| `task-list` | `<div>` | Left sidebar with task names and groups |
-| `timeline` | `<div>` | Right scrollable timeline with task bars |
+| `base` | `<div>` | Root gantt container |
+| `header` | `<div>` | Header bar |
+| `controls` | `<div>` | Zoom toggle group |
+| `button` | `<button>` | A zoom button |
+| `zoom-button` | `<button>` | A zoom button (same element as `button`) |
+| `zoom-button-day` | `<button>` | The day `zoom-button` |
+| `zoom-button-week` | `<button>` | The week `zoom-button` |
+| `zoom-button-month` | `<button>` | The month `zoom-button` |
+| `body` | `<div>` | Body row holding the task list and timeline |
+| `task-list` | `<div>` | Task name column |
+| `task-list-header` | `<div>` | Task column heading |
+| `group-header` | `<div>` | Group heading row in the task column |
+| `task-name` | `<div>` | A task name row |
+| `timeline` | `<div>` | Timeline column |
+| `timeline-header` | `<div>` | Timeline header row |
+| `cell` | `<div>` | A timeline header cell |
+| `timeline-cell` | `<div>` | A timeline header cell (same element as `cell`) |
+| `timeline-rows` | `<div>` | Timeline body area holding the bars |
+| `bar` | `<div>` | A task bar |
+| `bar-progress` | `<div>` | Progress fill inside a bar |
+| `bar-label` | `<span>` | Task label inside a bar |
+| `handle` | `<div>` | A bar resize handle |
+| `handle-start` | `<div>` | The start-edge `handle` |
+| `handle-end` | `<div>` | The end-edge `handle` |
+| `dependency-arrow` | `<svg>` | SVG holding a dependency arrow |
+| `dependency-path` | `<path>` | The dependency arrow path |
+| `today-line` | `<div>` | Today marker line |
+
+**State tokens** (added alongside the base token):
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `zoom-button-active` | `<button>` | Added to `zoom-button` while that zoom level is selected |
+| `timeline-cell-today` | `<div>` | Added to `timeline-cell` for the cell containing today |
 
 ```css
 snice-gantt::part(header) {

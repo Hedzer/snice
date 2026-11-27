@@ -50,9 +50,36 @@ Style internal elements from outside the shadow DOM using `::part()`.
 
 | Part | Element | Description |
 |------|---------|-------------|
-| `base` | `<div>` | The outer viewer container |
-| `toolbar` | `<div>` | The navigation and zoom toolbar |
-| `viewport` | `<div>` | The PDF page display area |
+| `base` | `<div>` | Outer viewer container |
+| `toolbar` | `<div>` | Navigation and zoom toolbar |
+| `toolbar-group` | `<div>` | Group of related toolbar controls |
+| `toolbar-separator` | `<div>` | Vertical rule between toolbar groups |
+| `button` | `<button>` | Every toolbar button |
+| `prev-button` | `<button>` | Added to `button` on the previous-page control |
+| `next-button` | `<button>` | Added to `button` on the next-page control |
+| `zoom-out-button` | `<button>` | Added to `button` on the zoom-out control |
+| `zoom-in-button` | `<button>` | Added to `button` on the zoom-in control |
+| `download-button` | `<button>` | Added to `button` on the download control |
+| `print-button` | `<button>` | Added to `button` on the print control |
+| `icon` | `<svg>` | Icon inside a toolbar button or state panel |
+| `input` | `<input>` | The page-number input |
+| `page-input` | `<input>` | Added to `input` on the page-number field |
+| `page-total` | `<span>` | Total page count text |
+| `zoom-info` | `<span>` | Current zoom percentage text |
+| `select` | `<select>` | The fit-mode select |
+| `fit-select` | `<select>` | Added to `select` on the fit-mode dropdown |
+| `viewport` | `<div>` | PDF page display area |
+| `loading` | `<div>` | Loading state panel |
+| `spinner` | `<div>` | Loading spinner |
+| `loading-text` | `<span>` | Loading message text |
+| `error` | `<div>` | Error state panel |
+| `error-icon` | `<div>` | Error icon wrapper |
+| `error-text` | `<span>` | Error message text |
+| `empty` | `<div>` | Empty state panel |
+| `empty-icon` | `<svg>` | Added to `icon` on the empty-state glyph |
+| `empty-text` | `<span>` | Empty state message text |
+| `canvas-wrapper` | `<div>` | Wrapper around the rendered page canvas |
+| `canvas` | `<canvas>` | Canvas the current page renders into |
 
 ## Basic Usage
 

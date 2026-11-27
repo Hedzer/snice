@@ -68,6 +68,17 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `icon` | `<div>` | The icon container |
 | `content` | `<div>` | The content area with name, address, and coordinates |
 | `map` | `<div>` | The embedded map container (visible when `show-map` is set) |
+| `name` | `<div>` | The location name line |
+| `address` | `<div>` | The formatted address line |
+| `coordinates` | `<div>` | The latitude/longitude line |
+| `frame` | `<iframe>` | The embedded map frame inside `map` |
+
+State tokens are added alongside the base token on the same element, so they can
+be targeted with `::part(base base-clickable)`.
+
+| Part | Added to | Description |
+|------|----------|-------------|
+| `base-clickable` | `base` | Present while `clickable` is set |
 
 ```css
 snice-location::part(base) {

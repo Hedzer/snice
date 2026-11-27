@@ -94,6 +94,37 @@ A full-featured video player with custom controls, keyboard shortcuts, picture-i
 | `video` | The native video element |
 | `controls` | Control bar container |
 | `progress` | Progress track element |
+| `base-paused` | Added to `base` while the video is paused |
+| `base-controls-visible` | Added to `base` while the control bar is visible |
+| `poster` | Poster overlay shown before playback |
+| `poster-play` | Play badge inside the poster overlay |
+| `poster-play-icon` | Added to `icon` on the poster play glyph |
+| `loading` | Buffering overlay |
+| `spinner` | Buffering spinner |
+| `center-play` | Centered play overlay shown while paused |
+| `center-play-icon` | Added to `icon` on the centered play glyph |
+| `progress-container` | Hit area wrapping the progress track |
+| `buffered` | Buffered portion of the progress track |
+| `played` | Played portion of the progress track |
+| `controls-row` | Row below the progress track |
+| `controls-left` | Left control group |
+| `controls-right` | Right control group |
+| `button` | Any control-bar button |
+| `play-button` | Added to `button` on the play/pause control |
+| `volume-button` | Added to `button` on the mute control |
+| `rate-button` | Added to `button` on the playback-rate control |
+| `pip-button` | Added to `button` on the picture-in-picture control |
+| `fullscreen-button` | Added to `button` on the fullscreen control |
+| `icon` | Any SVG glyph inside a control |
+| `play-icon` | Added to `icon` on the play glyph |
+| `pause-icon` | Added to `icon` on the pause glyph |
+| `volume-icon` | Added to `icon` on the volume glyph |
+| `pip-icon` | Added to `icon` on the picture-in-picture glyph |
+| `fullscreen-icon` | Added to `icon` on the fullscreen glyph |
+| `volume` | Volume control group |
+| `input` | Any range input in the control bar |
+| `volume-slider` | Added to `input` on the volume slider |
+| `time` | Current time / duration text |
 
 ## Basic Usage
 

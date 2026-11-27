@@ -413,59 +413,59 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
     return html`
       <div class="pdf-container" part="base" tabindex="0">
         <div class="pdf-toolbar" part="toolbar">
-          <div class="pdf-toolbar-group">
-            <button class="pdf-btn pdf-btn-prev" title="Previous page" aria-label="Previous page">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <div class="pdf-toolbar-group" part="toolbar-group">
+            <button class="pdf-btn pdf-btn-prev" part="button prev-button" title="Previous page" aria-label="Previous page">
+              <svg xmlns="http://www.w3.org/2000/svg" part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
-            <input class="pdf-page-input" type="number" min="1" aria-label="Page number" />
-            <span class="pdf-page-total">/ -</span>
-            <button class="pdf-btn pdf-btn-next" title="Next page" aria-label="Next page">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-          </div>
-          <div class="pdf-toolbar-separator"></div>
-          <div class="pdf-toolbar-group">
-            <button class="pdf-btn pdf-btn-zoom-out" title="Zoom out" aria-label="Zoom out">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-            </button>
-            <span class="pdf-zoom-info">100%</span>
-            <button class="pdf-btn pdf-btn-zoom-in" title="Zoom in" aria-label="Zoom in">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            <input class="pdf-page-input" part="input page-input" type="number" min="1" aria-label="Page number" />
+            <span class="pdf-page-total" part="page-total">/ -</span>
+            <button class="pdf-btn pdf-btn-next" part="button next-button" title="Next page" aria-label="Next page">
+              <svg xmlns="http://www.w3.org/2000/svg" part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
           </div>
-          <div class="pdf-toolbar-separator"></div>
-          <select class="pdf-fit-select" aria-label="Fit mode">
+          <div class="pdf-toolbar-separator" part="toolbar-separator"></div>
+          <div class="pdf-toolbar-group" part="toolbar-group">
+            <button class="pdf-btn pdf-btn-zoom-out" part="button zoom-out-button" title="Zoom out" aria-label="Zoom out">
+              <svg xmlns="http://www.w3.org/2000/svg" part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+            <span class="pdf-zoom-info" part="zoom-info">100%</span>
+            <button class="pdf-btn pdf-btn-zoom-in" part="button zoom-in-button" title="Zoom in" aria-label="Zoom in">
+              <svg xmlns="http://www.w3.org/2000/svg" part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+          </div>
+          <div class="pdf-toolbar-separator" part="toolbar-separator"></div>
+          <select class="pdf-fit-select" part="select fit-select" aria-label="Fit mode">
             <option value="width">Fit width</option>
             <option value="height">Fit height</option>
             <option value="page">Fit page</option>
           </select>
           <div class="pdf-toolbar-spacer"></div>
-          <div class="pdf-toolbar-group">
-            <button class="pdf-btn pdf-btn-download" title="Download" aria-label="Download">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <div class="pdf-toolbar-group" part="toolbar-group">
+            <button class="pdf-btn pdf-btn-download" part="button download-button" title="Download" aria-label="Download">
+              <svg xmlns="http://www.w3.org/2000/svg" part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             </button>
-            <button class="pdf-btn pdf-btn-print" title="Print" aria-label="Print">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <button class="pdf-btn pdf-btn-print" part="button print-button" title="Print" aria-label="Print">
+              <svg xmlns="http://www.w3.org/2000/svg" part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
             </button>
           </div>
         </div>
         <div class="pdf-viewport" part="viewport">
-          <div class="pdf-loading">
-            <div class="pdf-loading-spinner"></div>
-            <span>Loading PDF...</span>
+          <div class="pdf-loading" part="loading">
+            <div class="pdf-loading-spinner" part="spinner"></div>
+            <span part="loading-text">Loading PDF...</span>
           </div>
-          <div class="pdf-error">
-            <div class="pdf-error-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          <div class="pdf-error" part="error">
+            <div class="pdf-error-icon" part="error-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" part="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
             </div>
-            <span class="pdf-error-msg"></span>
+            <span class="pdf-error-msg" part="error-text"></span>
           </div>
-          <div class="pdf-empty">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <span>No PDF loaded</span>
+          <div class="pdf-empty" part="empty">
+            <svg xmlns="http://www.w3.org/2000/svg" part="icon empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span part="empty-text">No PDF loaded</span>
           </div>
-          <div class="pdf-canvas-wrapper">
-            <canvas></canvas>
+          <div class="pdf-canvas-wrapper" part="canvas-wrapper">
+            <canvas part="canvas"></canvas>
           </div>
         </div>
       </div>

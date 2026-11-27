@@ -30,7 +30,34 @@ readonly totalPages: number = 0;                     // Total pages in document
 
 - `base` - Outer viewer container
 - `toolbar` - Navigation and zoom toolbar
+- `toolbar-group` - Group of related toolbar controls
+- `toolbar-separator` - Vertical rule between toolbar groups
+- `button` - Every toolbar button
+- `prev-button` - Added to `button` on the previous-page control
+- `next-button` - Added to `button` on the next-page control
+- `zoom-out-button` - Added to `button` on the zoom-out control
+- `zoom-in-button` - Added to `button` on the zoom-in control
+- `download-button` - Added to `button` on the download control
+- `print-button` - Added to `button` on the print control
+- `icon` - Icon inside a toolbar button or state panel
+- `input` - The page-number input
+- `page-input` - Added to `input` on the page-number field
+- `page-total` - Total page count text
+- `zoom-info` - Current zoom percentage text
+- `select` - The fit-mode select
+- `fit-select` - Added to `select` on the fit-mode dropdown
 - `viewport` - PDF page display area
+- `loading` - Loading state panel
+- `spinner` - Loading spinner
+- `loading-text` - Loading message text
+- `error` - Error state panel
+- `error-icon` - Error icon wrapper
+- `error-text` - Error message text
+- `empty` - Empty state panel
+- `empty-icon` - Added to `icon` on the empty-state glyph
+- `empty-text` - Empty state message text
+- `canvas-wrapper` - Wrapper around the rendered page canvas
+- `canvas` - Canvas the current page renders into
 
 ## Basic Usage
 

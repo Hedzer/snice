@@ -52,6 +52,14 @@ active: boolean = false;
 - `link` - Individual breadcrumb `<a>` links
 - `separator` - Separator characters between items
 - `ellipsis` - Collapse ellipsis button
+- `ellipsis-icon` - Icon wrapper inside the ellipsis button
+- `item` - Each `<li>` breadcrumb item
+- `text` - Non-link breadcrumb text
+- `list-collapsed` - Added to `list` while items are collapsed
+- `item-active` - Added to `item` for the active/last crumb
+- `item-hidden` - Added to `item` while the crumb is collapsed out of view
+- `item-overflow` - Added to `item` for the ellipsis list item
+- `text-current` - Added to `text` on the current-page crumb
 
 ## CSS Custom Properties
 

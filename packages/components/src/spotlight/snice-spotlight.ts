@@ -79,7 +79,7 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
              aria-labelledby="snice-spotlight-title" aria-describedby="snice-spotlight-desc">
           <div class="popover-title" part="title" id="snice-spotlight-title"></div>
           <div class="popover-description" part="description" id="snice-spotlight-desc"></div>
-          <div class="popover-footer">
+          <div class="popover-footer" part="footer">
             <span class="step-indicator" part="step-indicator"></span>
             <div class="popover-actions" part="actions"></div>
           </div>
@@ -149,7 +149,7 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
 
       const skipBtn = document.createElement('button');
       skipBtn.className = 'btn btn-skip';
-      skipBtn.setAttribute('part', 'button-skip');
+      skipBtn.setAttribute('part', 'button button-skip');
       skipBtn.textContent = 'Skip';
       skipBtn.addEventListener('click', () => this.skip());
       actionsEl.appendChild(skipBtn);
@@ -157,7 +157,7 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
       if (!isFirst) {
         const backBtn = document.createElement('button');
         backBtn.className = 'btn';
-        backBtn.setAttribute('part', 'button-back');
+        backBtn.setAttribute('part', 'button button-back');
         backBtn.textContent = 'Back';
         backBtn.addEventListener('click', () => this.prev());
         actionsEl.appendChild(backBtn);
@@ -165,7 +165,7 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
 
       const nextBtn = document.createElement('button');
       nextBtn.className = 'btn btn-primary';
-      nextBtn.setAttribute('part', 'button-next');
+      nextBtn.setAttribute('part', 'button button-next');
       nextBtn.textContent = isLast ? 'Done' : 'Next';
       nextBtn.addEventListener('click', () => this.next());
       actionsEl.appendChild(nextBtn);

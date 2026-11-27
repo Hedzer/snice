@@ -53,18 +53,36 @@ transitionDuration: number = 300; // attr: transition-duration
 - `nav` - `<snice-tab>` elements for tab navigation
 - `(default)` - `<snice-tab-panel>` elements for tab content
 
-## CSS Parts
+## CSS Parts (snice-tabs)
 
-- `label` - Text label
-- `close` - Close button on a closable tab
 - `base` - Outermost tabs container
 - `nav-container` - Nav bar wrapper (includes scroll buttons)
 - `nav` - Tab navigation scroll area
+- `nav-track` - Scrolling track holding the nav slot and indicator
 - `indicator` - Active tab indicator bar
 - `scroll-button` - Scroll arrow button (both)
-- `scroll-button-start` - Start scroll button
-- `scroll-button-end` - End scroll button
+- `scroll-button-start` - Added to `scroll-button` for the start arrow
+- `scroll-button-end` - Added to `scroll-button` for the end arrow
+- `icon` - Any icon glyph
+- `scroll-button-icon` - Added to `icon` for a scroll arrow glyph
 - `panels` - Panel content wrapper
+
+## CSS Parts (snice-tab)
+
+- `base` - Tab button root
+- `base-disabled` - Added to `base` while `disabled`
+- `label` - Text label
+- `close` - Close button on a closable tab
+- `icon` - Any icon glyph
+- `close-icon` - Added to `icon` for the X glyph inside the close button
+
+## CSS Parts (snice-tab-panel)
+
+- `base` - Panel root (`role="tabpanel"`)
+- `base-active` - Added to tab `base` while active
+- `base-selected` - Added to tab `base` while selected
+- `pill` - Hidden iOS/macOS sliding glass pill indicator (`data-platform-only="ios,macos"`)
+- `ripple` - Hidden Material 3 tab ripple helper (`data-platform-only="material"`)
 
 ## CSS Custom Properties
 

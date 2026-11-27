@@ -20,7 +20,8 @@ label: string = '';                                  // Custom center text
 
 ## CSS Parts
 
-- `base` - Outer container with role="progressbar"
+- `base` - Outer container with `role="progressbar"`
+- `svg` - The ring SVG canvas
 - `track` - Background circle
 - `fill` - Progress circle
 - `center` - Center text container

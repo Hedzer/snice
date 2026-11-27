@@ -47,6 +47,31 @@ A key performance indicator display component for showing metrics with optional 
 | `trend-icon` | Trend icon (arrow) |
 | `trend-value` | Trend value text |
 | `sparkline` | Sparkline chart container |
+| `base` | The root KPI container (the same node as `container`) |
+| `sparkline-chart` | The internal `<snice-sparkline>` element |
+
+State tokens are added alongside the base token on the same element, so they can
+be targeted with `::part(trend trend-up)`.
+
+| Part | Added to | Description |
+|------|----------|-------------|
+| `trend-up` | `trend` | Present while `sentiment` is `up` |
+| `trend-down` | `trend` | Present while `sentiment` is `down` |
+| `trend-neutral` | `trend` | Present while `sentiment` is `neutral` |
+| `value-colored` | `value` | Present while `color-value` tints the value by sentiment |
+
+The sparkline is itself a `<snice-sparkline>`, so its own parts are forwarded
+with a `sparkline-` prefix.
+
+| Part | Description |
+|------|-------------|
+| `sparkline-base` | The sparkline's outer container (the same node as `sparkline-container`) |
+| `sparkline-container` | The sparkline's outer container |
+| `sparkline-svg` | The sparkline's `<svg>` element |
+| `sparkline-line` | The sparkline's line path |
+| `sparkline-area` | The sparkline's area fill path |
+| `sparkline-dot` | The sparkline's data point circles |
+| `sparkline-bar` | The sparkline's bar rectangles |
 
 ```css
 snice-kpi::part(container) {

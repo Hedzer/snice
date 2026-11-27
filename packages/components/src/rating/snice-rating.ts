@@ -75,19 +75,19 @@ export class SniceRating extends HTMLElement implements SniceRatingElement {
     const stars = Array.from({ length: this.max }, (_, i) => {
       const fill = this.getStarFill(i);
       return html`
-        <span part="star" class="star"
+        <span part="star${fill > 0 ? ' star-active' : ''}" class="star"
               role="radio"
               aria-checked="${fill > 0 ? 'true' : 'false'}"
               aria-label="${`${i + 1} of ${this.max}`}"
               @click=${(e: MouseEvent) => this.handleClick(i, e)}>
-          <span class="star-empty">${renderIcon(this.emptyIcon || this.icon, 'star-glyph')}</span>
-          <span class="star-full" style="clip-path: inset(0 ${100 - fill}% 0 0)">${renderIcon(this.icon, 'star-glyph')}</span>
+          <span part="star-empty" class="star-empty">${renderIcon(this.emptyIcon || this.icon, 'star-glyph')}</span>
+          <span part="star-full" class="star-full" style="clip-path: inset(0 ${100 - fill}% 0 0)">${renderIcon(this.icon, 'star-glyph')}</span>
         </span>
       `;
     });
 
     return html`
-      <div part="base" class="rating"
+      <div part="base${this.readonly ? ' base-readonly' : ''}" class="rating"
            role="radiogroup"
            aria-label="Rating"
            tabindex="${this.readonly ? '-1' : '0'}"

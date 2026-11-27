@@ -44,7 +44,27 @@ Style internal elements from outside the shadow DOM using `::part()`.
 |------|---------|-------------|
 | `base` | `<div>` | The outer graph container |
 | `canvas` | `<svg>` | The SVG element where nodes and edges are rendered |
+| `viewport` | `<g>` | The pan/zoom transform group |
+| `edges` | `<g>` | The group holding every edge |
+| `nodes` | `<g>` | The group holding every node |
+| `edge` | `<path>` | One edge |
+| `edge-label` | `<text>` | One edge label |
+| `node` | `<g>` | One node |
+| `node-circle` | `<circle>` | The node's circle |
+| `node-label` | `<text>` | The node's label |
 | `tooltip` | `<div>` | The hover tooltip showing node label and degree |
+
+State tokens are added alongside the base token, so they are matched with
+`::part(node node-dragging)`.
+
+| Token | Description |
+|-------|-------------|
+| `edge-highlighted` | Added to `edge` when it touches the hovered node |
+| `edge-dimmed` | Added to `edge` when another node is hovered |
+| `edge-label-dimmed` | Added to `edge-label` when another node is hovered |
+| `node-dimmed` | Added to `node` when another, unconnected node is hovered |
+| `node-dragging` | Added to `node` while it is being dragged |
+| `node-label-dimmed` | Added to `node-label` when another node is hovered |
 
 ```css
 snice-network-graph::part(base) {

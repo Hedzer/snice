@@ -157,14 +157,14 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
     const charCountClasses = ['character-count', charCountExceeded ? 'character-count--exceeded' : ''].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <div class="textarea-wrapper">
+      <div class="textarea-wrapper" part="base">
         <if ${this.label}>
-          <label class="${labelClasses}" for="${this.inputId}">
+          <label class="${labelClasses}" part="label${this.required ? ' label-required' : ''}" for="${this.inputId}">
             ${this.label}
           </label>
         </if>
 
-        <div class="textarea-container">
+        <div class="textarea-container" part="container">
           <textarea
             class="${textareaClasses}"
             id="${this.inputId}"
@@ -182,7 +182,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
             minlength=${this.minlength > 0 ? this.minlength : nothing}
             autocomplete="${this.autocomplete || ''}"
             name="${this.name || ''}"
-            part="textarea"
+            part="textarea${displayedInvalid ? ' textarea-invalid' : ''}${this.loading ? ' textarea-loading' : ''}"
             @input=${this.handleInput}
             @change=${this.handleChange}
             @focus=${this.handleFocus}
@@ -195,7 +195,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
         </div>
 
         <if ${showCharCount}>
-          <div class="${charCountClasses}">
+          <div class="${charCountClasses}" part="character-count${charCountExceeded ? ' character-count-exceeded' : ''}">
             ${charCount} / ${this.maxlength}
           </div>
         </if>

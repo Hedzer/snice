@@ -59,13 +59,24 @@ A toggle switch input for boolean selections. Supports on/off labels, form integ
 
 | Part | Description |
 |------|-------------|
+| `base` | The wrapping label element |
+| `base-disabled` | Added to `base` while disabled or loading |
+| `base-loading` | Added to `base` while loading |
 | `input` | Hidden input element |
 | `track` | Switch track |
+| `track-invalid` | Added to `track` while invalid |
+| `track-loading` | Added to `track` while loading |
 | `thumb` | Switch thumb |
 | `spinner` | Loading spinner |
 | `label` | Label text |
+| `label-required` | Added to `label` when `required` |
 | `label-on` | On-state text inside the track (renders when `label-on` is set) |
 | `label-off` | Off-state text inside the track (renders when `label-off` is set) |
+| `base-checked` | Added to `base` while checked |
+| `track-checked` | Added to `track` while checked |
+| `thumb-checked` | Added to `thumb` while checked |
+| `lens` | Hidden iOS/macOS Liquid Glass thumb magnification lens (`data-platform-only="ios,macos"`) |
+| `ripple` | Hidden Material 3 state-layer ripple helper (`data-platform-only="material"`) |
 
 ## Basic Usage
 

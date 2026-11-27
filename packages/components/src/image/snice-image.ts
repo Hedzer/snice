@@ -85,10 +85,10 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
 
     if (!this.src) {
       return html/*html*/`
-        <div class="${containerClasses}" part="container">
-          <div class="${imageClasses} image--placeholder" part="placeholder" style="${inlineStyles}">
+        <div class="${containerClasses}" part="base container">
+          <div class="${imageClasses} image--placeholder" part="placeholder placeholder-empty" style="${inlineStyles}">
             <slot name="placeholder">
-              <span class="image__placeholder-icon" aria-hidden="true">${unsafeHTML(PHOTO)}</span>
+              <span class="image__placeholder-icon" part="icon placeholder-icon" aria-hidden="true">${unsafeHTML(PHOTO)}</span>
             </slot>
           </div>
         </div>
@@ -98,14 +98,14 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
     const hasPlaceholder = this.placeholder && !this.imageLoaded;
 
     return html/*html*/`
-      <div class="${containerClasses}" part="container">
+      <div class="${containerClasses}" part="base container">
         <if ${hasPlaceholder}>
           <img
             src="${this.placeholder}"
             alt=""
             aria-hidden="true"
             class="${placeholderClasses}"
-            part="placeholder"
+            part="placeholder${this.imageLoaded ? ' placeholder-hidden' : ''}"
             style="${inlineStyles}"
           />
         </if>
@@ -116,7 +116,7 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
           alt="${imageAlt}"
           loading="${loadingAttr}"
           class="${imageClasses}"
-          part="image"
+          part="image${this.imageLoaded ? ' image-loaded' : ''}"
           style="${inlineStyles}"
           @error="${() => this.handleImageError()}"
           @load="${() => this.handleImageLoad()}"

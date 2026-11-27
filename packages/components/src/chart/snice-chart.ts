@@ -210,12 +210,13 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     requestAnimationFrame(() => this.initAndDrawChart());
 
     return html/*html*/`
-      <div class="chart-container ${animated ? 'animated' : ''} legend-${legendPosition}" part="base">
+      <div class="chart-container ${animated ? 'animated' : ''} legend-${legendPosition}" part="base${animated ? ' base-animated' : ''}">
         ${legendPosition !== 'none' ? this.renderLegend() : ''}
         <div class="chart-canvas" part="canvas">
-          <canvas class="chart-render-canvas" role="img" aria-label="${this.chartSummary()}"></canvas>
+          <canvas class="chart-render-canvas" part="render-canvas" role="img" aria-label="${this.chartSummary()}"></canvas>
         </div>
         <div class="chart-tooltip ${this.tooltipVisible ? 'visible' : ''}"
+             part="tooltip${this.tooltipVisible ? ' tooltip-visible' : ''}"
              style="left: ${this.tooltipX}px; top: ${this.tooltipY}px;">
           ${this.tooltipContent}
         </div>
@@ -229,9 +230,10 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
       <div class="chart-legend legend-${position}" part="legend">
         ${this.datasets.map((dataset, index) => html`
           <div class="legend-item ${this.hiddenDatasets.has(index) ? 'hidden' : ''}"
+               part="legend-item${this.hiddenDatasets.has(index) ? ' legend-item-hidden' : ''}"
                @click=${() => this.handleLegendClick(index)}>
-            <div class="legend-color" style="background: ${this.getDatasetColor(dataset, index)};"></div>
-            <span class="legend-label">${dataset.label}</span>
+            <div class="legend-color" part="legend-color" style="background: ${this.getDatasetColor(dataset, index)};"></div>
+            <span class="legend-label" part="legend-label">${dataset.label}</span>
           </div>
         `)}
       </div>

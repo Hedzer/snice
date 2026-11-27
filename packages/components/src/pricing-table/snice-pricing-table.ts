@@ -148,7 +148,7 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
 
   private renderCheckIcon(): unknown {
     return html/*html*/`
-      <svg class="pricing__feature-icon pricing__feature-icon--included" viewBox="0 0 20 20" fill="currentColor">
+      <svg class="pricing__feature-icon pricing__feature-icon--included" part="feature-icon feature-icon-included" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
       </svg>
     `;
@@ -156,7 +156,7 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
 
   private renderXIcon(): unknown {
     return html/*html*/`
-      <svg class="pricing__feature-icon pricing__feature-icon--excluded" viewBox="0 0 20 20" fill="currentColor">
+      <svg class="pricing__feature-icon pricing__feature-icon--excluded" part="feature-icon feature-icon-excluded" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
       </svg>
     `;
@@ -167,17 +167,17 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
     const included = isBoolean ? feature.included : true;
 
     return html/*html*/`
-      <li class="pricing__feature ${!included ? 'pricing__feature--excluded' : ''}">
+      <li class="pricing__feature ${!included ? 'pricing__feature--excluded' : ''}" part="feature${!included ? ' feature-excluded' : ''}">
         <if ${isBoolean && included}>
           ${this.renderCheckIcon()}
         </if>
         <if ${isBoolean && !included}>
           ${this.renderXIcon()}
         </if>
-        <span>
+        <span part="feature-name">
           ${feature.name}
           <if ${!isBoolean}>
-            <span class="pricing__feature-value"> - ${feature.included}</span>
+            <span class="pricing__feature-value" part="feature-value"> - ${feature.included}</span>
           </if>
         </span>
       </li>
@@ -191,22 +191,22 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
     const ctaClass = `pricing__cta pricing__cta--${plan.ctaVariant || (plan.highlighted ? 'primary' : 'secondary')}`;
 
     return html/*html*/`
-      <div class="pricing__card ${plan.highlighted ? 'pricing__card--highlighted' : ''}" part="card">
+      <div class="pricing__card ${plan.highlighted ? 'pricing__card--highlighted' : ''}" part="card${plan.highlighted ? ' card-highlighted' : ''}">
         <if ${plan.badge}>
-          <span class="pricing__badge">${plan.badge}</span>
+          <span class="pricing__badge" part="badge">${plan.badge}</span>
         </if>
-        <div>
-          <h3 class="pricing__plan-name">${plan.name}</h3>
+        <div part="plan-header">
+          <h3 class="pricing__plan-name" part="plan-name">${plan.name}</h3>
           <if ${plan.description}>
-            <p class="pricing__plan-description">${plan.description}</p>
+            <p class="pricing__plan-description" part="plan-description">${plan.description}</p>
           </if>
         </div>
-        <div class="pricing__price">
-          <span class="pricing__currency">${currency}</span>
-          <span class="pricing__amount">${this.formatPrice(price)}</span>
-          <span class="pricing__period">${period}</span>
+        <div class="pricing__price" part="price">
+          <span class="pricing__currency" part="currency">${currency}</span>
+          <span class="pricing__amount" part="amount">${this.formatPrice(price)}</span>
+          <span class="pricing__period" part="period">${period}</span>
         </div>
-        <ul class="pricing__features">
+        <ul class="pricing__features" part="features">
           ${plan.features.map(f => this.renderFeature(f))}
         </ul>
         <button class="${ctaClass}"
@@ -246,37 +246,37 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
     return html/*html*/`
       <div class="pricing__table-wrapper" part="table-wrapper">
         <table class="pricing__table" part="table">
-          <thead>
-            <tr>
-              <th>Feature</th>
+          <thead part="table-header">
+            <tr part="table-row">
+              <th part="table-cell header-cell">Feature</th>
               ${this.plans.map(plan => html/*html*/`
-                <th class="${plan.highlighted ? 'pricing__table-highlight' : ''}">${plan.name}</th>
+                <th class="${plan.highlighted ? 'pricing__table-highlight' : ''}" part="table-cell header-cell${plan.highlighted ? ' header-cell-highlighted' : ''}">${plan.name}</th>
               `)}
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>Price</td>
+          <tbody part="table-body">
+            <tr part="table-row">
+              <td part="table-cell">Price</td>
               ${this.plans.map(plan => {
                 const price = this.getPrice(plan);
                 const currency = plan.currency || '$';
                 const period = plan.period || '/mo';
                 return html/*html*/`
-                  <td class="${plan.highlighted ? 'pricing__table-highlight' : ''}">
-                    <strong>${currency}${this.formatPrice(price)}</strong>${period}
+                  <td class="${plan.highlighted ? 'pricing__table-highlight' : ''}" part="table-cell${plan.highlighted ? ' table-cell-highlighted' : ''}">
+                    <strong part="amount">${currency}${this.formatPrice(price)}</strong>${period}
                   </td>
                 `;
               })}
             </tr>
             ${featureNames.map(name => html/*html*/`
-              <tr>
-                <td>${name}</td>
+              <tr part="table-row">
+                <td part="table-cell">${name}</td>
                 ${this.plans.map(plan => {
                   const feature = this.getFeatureValue(plan, name);
                   const isIncluded = feature ? (typeof feature.included === 'boolean' ? feature.included : true) : false;
                   const value = feature && typeof feature.included === 'string' ? feature.included : '';
                   return html/*html*/`
-                    <td class="${plan.highlighted ? 'pricing__table-highlight' : ''}">
+                    <td class="${plan.highlighted ? 'pricing__table-highlight' : ''}" part="table-cell${plan.highlighted ? ' table-cell-highlighted' : ''}">
                       <if ${!feature}>
                         ${this.renderXIcon()}
                       </if>
@@ -294,10 +294,10 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
                 })}
               </tr>
             `)}
-            <tr>
-              <td></td>
+            <tr part="table-row">
+              <td part="table-cell"></td>
               ${this.plans.map((plan, i) => html/*html*/`
-                <td class="${plan.highlighted ? 'pricing__table-highlight' : ''}">
+                <td class="${plan.highlighted ? 'pricing__table-highlight' : ''}" part="table-cell${plan.highlighted ? ' table-cell-highlighted' : ''}">
                   <button class="pricing__cta pricing__cta--${plan.ctaVariant || (plan.highlighted ? 'primary' : 'outline')}"
                           @click=${() => this.handleSelect(plan, i)}
                           part="cta">
@@ -322,12 +322,14 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
         <if ${showToggle}>
           <div class="pricing__toggle" part="toggle" role="radiogroup" aria-label="Billing period">
             <button class="pricing__toggle-btn ${!this.annual ? 'pricing__toggle-btn--active' : ''}"
+                    part="toggle-button${!this.annual ? ' toggle-button-active' : ''}"
                     @click=${() => { this.annual = false; }}
                     role="radio"
                     aria-checked="${!this.annual}">
               Monthly
             </button>
             <button class="pricing__toggle-btn ${this.annual ? 'pricing__toggle-btn--active' : ''}"
+                    part="toggle-button${this.annual ? ' toggle-button-active' : ''}"
                     @click=${() => { this.annual = true; }}
                     role="radio"
                     aria-checked="${this.annual}">

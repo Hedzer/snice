@@ -43,22 +43,22 @@ export class SniceTimer extends HTMLElement implements SniceTimerElement {
         <div part="display" class="timer-display">${this.formatTime(this.time)}</div>
         <div part="controls" class="timer-controls">
           <if ${!this.running}>
-            <button class="timer-btn start" @click=${() => this.start()} title="Start">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <button part="button start-button" class="timer-btn start" @click=${() => this.start()} title="Start">
+              <svg part="icon start-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M8 5v14l11-7z"/>
               </svg>
             </button>
           </if>
           <if ${this.running}>
-            <button class="timer-btn pause" @click=${() => this.stop()} title="Pause">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <button part="button pause-button" class="timer-btn pause" @click=${() => this.stop()} title="Pause">
+              <svg part="icon pause-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <rect x="6" y="4" width="4" height="16"></rect>
                 <rect x="14" y="4" width="4" height="16"></rect>
               </svg>
             </button>
           </if>
-          <button class="timer-btn reset" @click=${() => this.reset()} title="Reset">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button part="button reset-button" class="timer-btn reset" @click=${() => this.reset()} title="Reset">
+            <svg part="icon reset-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
               <path d="M3 3v5h5"/>
             </svg>

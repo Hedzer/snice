@@ -49,6 +49,23 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `grid-area` | `<div>` | Grid area containing labels and cells |
 | `grid` | `<div>` | Cell grid container |
 | `tooltip` | `<div>` | Hover tooltip showing date and value |
+| `day-labels` | `<div>` | The weekday label column |
+| `day-label` | `<span>` | A single weekday label |
+| `grid-wrapper` | `<div>` | The wrapper around the month labels and the grid |
+| `month-labels` | `<div>` | The month label row |
+| `month-label` | `<span>` | A single month label |
+| `cell` | `<button>` | A single day cell |
+
+State tokens are added alongside the base token on the same element, so they can
+be targeted with `::part(cell cell-level-4)`.
+
+| Part | Added to | Description |
+|------|----------|-------------|
+| `cell-level-0` | `cell` | Intensity level 0 (no activity) |
+| `cell-level-1` | `cell` | Intensity level 1 |
+| `cell-level-2` | `cell` | Intensity level 2 |
+| `cell-level-3` | `cell` | Intensity level 3 |
+| `cell-level-4` | `cell` | Intensity level 4 (highest) |
 
 ```css
 snice-heatmap::part(base) {

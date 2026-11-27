@@ -24,6 +24,20 @@ weeks: number = 52;                      // Number of weeks to display
 - `grid-area` - Grid area with labels and cells
 - `grid` - Cell grid container
 - `tooltip` - Hover tooltip element
+- `day-labels` - Weekday label column
+- `day-label` - A single weekday label
+- `grid-wrapper` - Wrapper around month labels and the grid
+- `month-labels` - Month label row
+- `month-label` - A single month label
+- `cell` - A single day cell button
+
+State tokens:
+
+- `cell-level-0` - Added to `cell` at intensity level 0 (no activity)
+- `cell-level-1` - Added to `cell` at intensity level 1
+- `cell-level-2` - Added to `cell` at intensity level 2
+- `cell-level-3` - Added to `cell` at intensity level 3
+- `cell-level-4` - Added to `cell` at intensity level 4 (highest)
 
 ## Basic Usage
 

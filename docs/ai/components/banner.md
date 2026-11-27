@@ -35,11 +35,14 @@ duration: number = 0;               // ms until auto-dismiss once open, 0 = off;
 
 ## CSS Parts
 
-- `banner` - Main banner container
+- `base` / `banner` - Main banner container
 - `icon` - Icon wrapper
+- `icon-content` - The built-in variant icon glyph
 - `message` - Message text
+- `content` - Default slot wrapper
 - `action` - Action button
 - `close` - Close/dismiss button
+- `close-icon` - Close button glyph
 
 ## Basic Usage
 

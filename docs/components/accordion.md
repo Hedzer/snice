@@ -182,9 +182,15 @@ Fired when an item is toggled.
 
 ## CSS Parts
 
-### Accordion Item Parts
-
 Style internal elements from outside the shadow DOM using `::part()`.
+
+### Accordion Parts
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The accordion container |
+
+### Accordion Item Parts
 
 | Part | Element | Description |
 |------|---------|-------------|

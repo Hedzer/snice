@@ -33,7 +33,7 @@ export class SniceCellEmail extends HTMLElement implements SniceCellElement {
   render() {
     const emailAddress = this.email || this.value;
     const displayName = this.displayText || emailAddress;
-    const iconHTML = this.showIcon ? '<span class="email-icon">✉</span>' : '';
+    const iconHTML = this.showIcon ? '<span class="email-icon" part="icon">✉</span>' : '';
 
     if (!emailAddress) {
       return html/*html*/`

@@ -1717,7 +1717,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (hasSlottedRows) {
       // Use slotted rows layout
       return html/*html*/`
-        <div class="snice-table snice-table--slotted" @click=${this.handleClick} @keydown=${this.handleKeydown} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
+        <div class="snice-table snice-table--slotted" part="base" @click=${this.handleClick} @keydown=${this.handleKeydown} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
           <div class="table-controls-container"></div>
 <div class="table-header" id="slotted-header"></div>
           <div class="table-body">
@@ -1729,13 +1729,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     } else {
       // Use traditional table layout
       return html/*html*/`
-        <div class="snice-table" @click=${this.handleClick} @keydown=${this.handleKeydown} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
+        <div class="snice-table" part="base" @click=${this.handleClick} @keydown=${this.handleKeydown} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
           <div class="table-controls-container"></div>
-<div class="table-frame">
+<div class="table-frame" part="frame">
             <div class="table-superheader" part="superheader">
               <slot name="header"></slot>
             </div>
-            <table>
+            <table part="table">
               <thead></thead>
               <tbody></tbody>
             </table>
@@ -1771,6 +1771,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.quickFilter) {
       const quickInput = document.createElement('snice-input') as any;
       quickInput.className = 'quick-filter-input';
+      quickInput.setAttribute('exportparts', 'base: filter-input-base, wrapper: filter-input-wrapper, label: filter-input-label, container: filter-input-container, input: filter-input-input, prefix-icon: filter-input-prefix-icon, suffix-icon: filter-input-suffix-icon, clear: filter-input-clear, clear-icon: filter-input-clear-icon, spinner: filter-input-spinner, password-toggle: filter-input-password-toggle, password-icon: filter-input-password-icon, helper-text: filter-input-helper-text, error-text: filter-input-error-text, label-required: filter-input-label-required, input-invalid: filter-input-input-invalid, input-loading: filter-input-input-loading, input-clearable: filter-input-input-clearable, clear-with-suffix: filter-input-clear-with-suffix, password-icon-hidden: filter-input-password-icon-hidden, password-icon-visible: filter-input-password-icon-visible');
       quickInput.type = 'search';
       quickInput.placeholder = 'Quick filter...';
       quickInput.size = 'small';
@@ -1783,6 +1784,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     } else if (this.searchable) {
         const searchInput = document.createElement('snice-input');
         searchInput.className = 'search-input';
+        searchInput.setAttribute('exportparts', 'base: filter-input-base, wrapper: filter-input-wrapper, label: filter-input-label, container: filter-input-container, input: filter-input-input, prefix-icon: filter-input-prefix-icon, suffix-icon: filter-input-suffix-icon, clear: filter-input-clear, clear-icon: filter-input-clear-icon, spinner: filter-input-spinner, password-toggle: filter-input-password-toggle, password-icon: filter-input-password-icon, helper-text: filter-input-helper-text, error-text: filter-input-error-text, label-required: filter-input-label-required, input-invalid: filter-input-input-invalid, input-loading: filter-input-input-loading, input-clearable: filter-input-input-clearable, clear-with-suffix: filter-input-clear-with-suffix, password-icon-hidden: filter-input-password-icon-hidden, password-icon-visible: filter-input-password-icon-visible');
         searchInput.setAttribute('type', 'search');
         searchInput.setAttribute('placeholder', 'Search...');
         searchInput.setAttribute('size', 'small');
@@ -1796,6 +1798,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.filterable) {
         const select = document.createElement('snice-select');
         select.className = 'selector-input';
+        select.setAttribute('exportparts', 'base: select-base, label: select-label, label-required: select-label-required, controls: select-controls, input: select-input, input-disabled: select-input-disabled, input-open: select-input-open, input-invalid: select-input-invalid, trigger: select-trigger, trigger-disabled: select-trigger-disabled, trigger-loading: select-trigger-loading, trigger-open: select-trigger-open, trigger-invalid: select-trigger-invalid, value: select-value, placeholder: select-placeholder, value-single: select-value-single, value-label: select-value-label, value-icon: select-value-icon, tags: select-tags, tag: select-tag, tag-icon: select-tag-icon, tag-remove: select-tag-remove, icons: select-icons, clear-button: select-clear-button, arrow: select-arrow, icon: select-icon, arrow-icon: select-arrow-icon, clear-icon: select-clear-icon, spinner: select-spinner, dropdown: select-dropdown, search: select-search, search-input: select-search-input, options: select-options, option: select-option, option-selected: select-option-selected, option-disabled: select-option-disabled, option-check: select-option-check, option-check-mark: select-option-check-mark, option-icon: select-option-icon, option-label: select-option-label, loading-indicator: select-loading-indicator, loading-spinner: select-loading-spinner, loading-text: select-loading-text, empty: select-empty, empty-text: select-empty-text, helper-text: select-helper-text, error-text: select-error-text');
         select.setAttribute('multiple', '');
         select.setAttribute('searchable', '');
         select.setAttribute('clearable', '');
@@ -2569,7 +2572,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   /** The pin marker a frozen header carries, so pinning reads at any width. */
   private static pinIndicator(side: 'left' | 'right'): string {
-    return `<span class="pin-indicator pin-indicator--${side}" aria-hidden="true">`
+    return `<span class="pin-indicator pin-indicator--${side}" part="pin-indicator" aria-hidden="true">`
       + `<svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor">`
       + `<path d="M9.5 1a1 1 0 0 0-.7 1.7l.3.3-3 3-2.4-.5a1 1 0 0 0-.9 1.7l3 3-3.6 3.6a.6.6 0 0 0 .8.8L6.6 12l3 3a1 1 0 0 0 1.7-.9l-.5-2.4 3-3 .3.3a1 1 0 0 0 1.4-1.4l-5.3-5.3A1 1 0 0 0 9.5 1Z"/>`
       + `</svg></span>`;
@@ -2597,12 +2600,14 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
     const headerRow = document.createElement('tr');
     headerRow.className = 'column-header-row';
+    headerRow.setAttribute('part', 'header-row');
 
     // Tool column headers — must match createRow order
     if (this.rowReorder && this.rowDnD.isEnabled()) {
       const th = document.createElement('th');
       th.setAttribute('scope', 'col');
       th.className = 'drag-handle-cell';
+      th.setAttribute('part', 'header-cell drag-handle-cell');
       headerRow.appendChild(th);
     }
 
@@ -2610,6 +2615,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const th = document.createElement('th');
       th.setAttribute('scope', 'col');
       th.className = 'detail-toggle-cell';
+      th.setAttribute('part', 'header-cell detail-toggle-cell');
       headerRow.appendChild(th);
     }
 
@@ -2617,13 +2623,14 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const selectCell = document.createElement('th');
       selectCell.setAttribute('scope', 'col');
       selectCell.className = 'select-column';
+      selectCell.setAttribute('part', 'header-cell selection-cell');
       if (this.selectionMode === 'multiple') {
         const filteredIndices = this.getSelectableIndices(this.getFilteredData());
         const selectedInFiltered = filteredIndices.filter(i => this.selectedRows.includes(i));
         const allSelected = selectedInFiltered.length === filteredIndices.length && filteredIndices.length > 0;
         const someSelected = selectedInFiltered.length > 0 && selectedInFiltered.length < filteredIndices.length;
         if (customElements.get('snice-checkbox')) {
-          selectCell.innerHTML = `<snice-checkbox class="select-all" size="small" compact ${allSelected ? 'checked' : ''}></snice-checkbox>`;
+          selectCell.innerHTML = `<snice-checkbox class="select-all" exportparts="base: checkbox-base, input: checkbox-input, checkbox: checkbox-checkbox, spinner: checkbox-spinner, label: checkbox-label, icon: checkbox-icon, icon-check: checkbox-icon-check, icon-indeterminate: checkbox-icon-indeterminate, base-disabled: checkbox-base-disabled, base-loading: checkbox-base-loading, checkbox-invalid: checkbox-checkbox-invalid, checkbox-indeterminate: checkbox-checkbox-indeterminate, checkbox-loading: checkbox-checkbox-loading, label-required: checkbox-label-required" size="small" compact ${allSelected ? 'checked' : ''}></snice-checkbox>`;
         } else {
           selectCell.innerHTML = `<input type="checkbox" class="select-all" aria-label="Select all rows" ${allSelected ? 'checked' : ''} />`;
         }
@@ -2646,6 +2653,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const th = document.createElement('th');
       th.setAttribute('data-key', column.key);
       th.setAttribute('scope', 'col');
+      th.setAttribute('part', 'header-cell');
       // Reflect current sort direction for SR users.
       if (this.sortable && column.sortable !== false) {
         const sortState = this.currentSort.find(s => s.column === column.key);
@@ -2694,6 +2702,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       if (this.columnResize && column.resizable !== false) {
         const handle = document.createElement('span');
         handle.className = 'resize-handle';
+        handle.setAttribute('part', 'resize-handle');
         handle.addEventListener('mousedown', (e) => {
           e.stopPropagation();
           this.columnManager.startResize(column.key, e.clientX);
@@ -2746,6 +2755,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (groups.length > 0) {
       const groupRow = document.createElement('tr');
       groupRow.className = 'column-group-row';
+      groupRow.setAttribute('part', 'column-group-row');
       // Tool-column spacers must line up with the equivalent cells in the main
       // header row before the grouped data-column runs.
       const toolColumnClasses = [
@@ -2775,6 +2785,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.headerFilters && !listRows) {
       const filterRow = document.createElement('tr');
       filterRow.className = 'header-filter-row';
+      filterRow.setAttribute('part', 'filter-row');
 
       if (this.rowReorder && this.rowDnD.isEnabled()) {
         const spacer = document.createElement('td');
@@ -2794,7 +2805,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
       visibleColumns.forEach(column => {
         const td = document.createElement('td');
+        td.setAttribute('part', 'filter-cell');
         const input = document.createElement('snice-input') as any;
+        input.setAttribute('exportparts', 'base: filter-input-base, wrapper: filter-input-wrapper, label: filter-input-label, container: filter-input-container, input: filter-input-input, prefix-icon: filter-input-prefix-icon, suffix-icon: filter-input-suffix-icon, clear: filter-input-clear, clear-icon: filter-input-clear-icon, spinner: filter-input-spinner, password-toggle: filter-input-password-toggle, password-icon: filter-input-password-icon, helper-text: filter-input-helper-text, error-text: filter-input-error-text, label-required: filter-input-label-required, input-invalid: filter-input-input-invalid, input-loading: filter-input-input-loading, input-clearable: filter-input-input-clearable, clear-with-suffix: filter-input-clear-with-suffix, password-icon-hidden: filter-input-password-icon-hidden, password-icon-visible: filter-input-password-icon-visible');
         input.size = 'small';
         input.placeholder = `Filter ${column.label}...`;
         input.setAttribute('data-column', column.key);
@@ -2839,16 +2852,16 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       }
 
       if (this.currentSort.length > 1) {
-        orderNumber = `<span class="sort-order">${sortIndex + 1}</span>`;
+        orderNumber = `<span class="sort-order" part="sort-order">${sortIndex + 1}</span>`;
       }
     }
 
     const indicatorClasses = ['sort-indicator', isActive ? 'active' : ''].filter(Boolean).join(' ');
 
     return `
-      <div class="sort-header">
-        <span>${column.label}</span>
-        <div class="${indicatorClasses}">
+      <div class="sort-header" part="sort-header">
+        <span part="cell-label">${column.label}</span>
+        <div class="${indicatorClasses}" part="sort-indicator${isActive ? ' sort-indicator-active' : ''}">
           ${indicator}
           ${orderNumber}
         </div>
@@ -2879,6 +2892,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       return fallback;
     }
     const spinner = document.createElement('snice-progress');
+    spinner.setAttribute('exportparts', 'base: loading-spinner-base, base-with-label: loading-spinner-base-with-label, base-indeterminate: loading-spinner-base-indeterminate, circle: loading-spinner-circle, circle-bg: loading-spinner-circle-bg, circle-bar: loading-spinner-circle-bar, circle-bar-indeterminate: loading-spinner-circle-bar-indeterminate, bar: loading-spinner-bar, bar-indeterminate: loading-spinner-bar-indeterminate, label: loading-spinner-label');
     spinner.setAttribute('variant', 'circular');
     spinner.setAttribute('indeterminate', '');
     spinner.setAttribute('size', size);
@@ -2894,9 +2908,11 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
     const tr = document.createElement('tr');
     tr.className = 'table-message-row';
+    tr.setAttribute('part', 'message-row');
     const td = document.createElement('td');
     td.colSpan = this.columns.length + toolCols;
     td.className = 'no-data';
+    td.setAttribute('part', 'message-cell');
     tr.appendChild(td);
 
     if (this.loading) {
@@ -2907,11 +2923,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       // the state legible — visually and to a screen reader.
       const status = document.createElement('div');
       status.className = 'table-loading-state';
+      status.setAttribute('part', 'loading-state');
       status.setAttribute('role', 'status');
       status.setAttribute('aria-live', 'polite');
       status.appendChild(this.createLoadingSpinner('medium'));
       const label = document.createElement('span');
       label.className = 'table-loading-label';
+      label.setAttribute('part', 'loading-label');
       label.textContent = LOADING_LABEL;
       status.appendChild(label);
       td.appendChild(status);
@@ -2920,6 +2938,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       // the generic "No data" empty state.
       const errorDiv = document.createElement('div');
       errorDiv.className = 'table-error-message';
+      errorDiv.setAttribute('part', 'error-message');
       errorDiv.textContent = `⚠️ ${this.loadError}`;
       td.appendChild(errorDiv);
     } else {
@@ -2928,6 +2947,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         td.appendChild(slotted.cloneNode(true));
       } else if (customElements.get('snice-empty-state')) {
         const empty = document.createElement('snice-empty-state');
+        empty.setAttribute('exportparts', 'base: empty-state-base, container: empty-state-container, icon: empty-state-icon, title: empty-state-title, description: empty-state-description, action: empty-state-action, extra: empty-state-extra');
         empty.setAttribute('size', 'small');
         empty.setAttribute('icon', '📭');
         empty.setAttribute('title', 'No data');
@@ -3573,35 +3593,44 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // Info
     const info = document.createElement('div');
     info.className = 'pagination__info';
+    info.setAttribute('part', 'pagination-info');
     info.textContent = `Showing ${start}\u2013${end} of ${total}`;
     pagination.appendChild(info);
 
     // Controls
     const controls = document.createElement('div');
     controls.className = 'pagination__controls';
+    controls.setAttribute('part', 'pagination-controls');
     controls.innerHTML = `
-      <button class="pagination__btn pagination__first" ${this.currentPage <= 1 ? 'disabled' : ''} data-page="1" aria-label="First page">\u27E8\u27E8</button>
-      <button class="pagination__btn pagination__prev" ${this.currentPage <= 1 ? 'disabled' : ''} data-page="${this.currentPage - 1}" aria-label="Previous page">\u27E8</button>
+      <button class="pagination__btn pagination__first" part="pagination-button pagination-first" ${this.currentPage <= 1 ? 'disabled' : ''} data-page="1" aria-label="First page">\u27E8\u27E8</button>
+      <button class="pagination__btn pagination__prev" part="pagination-button pagination-prev" ${this.currentPage <= 1 ? 'disabled' : ''} data-page="${this.currentPage - 1}" aria-label="Previous page">\u27E8</button>
       ${pageButtons.join('')}
-      <button class="pagination__btn pagination__next" ${this.currentPage >= totalPages ? 'disabled' : ''} data-page="${this.currentPage + 1}" aria-label="Next page">\u27E9</button>
-      <button class="pagination__btn pagination__last" ${this.currentPage >= totalPages ? 'disabled' : ''} data-page="${totalPages}" aria-label="Last page">\u27E9\u27E9</button>
+      <button class="pagination__btn pagination__next" part="pagination-button pagination-next" ${this.currentPage >= totalPages ? 'disabled' : ''} data-page="${this.currentPage + 1}" aria-label="Next page">\u27E9</button>
+      <button class="pagination__btn pagination__last" part="pagination-button pagination-last" ${this.currentPage >= totalPages ? 'disabled' : ''} data-page="${totalPages}" aria-label="Last page">\u27E9\u27E9</button>
     `;
     pagination.appendChild(controls);
 
     // Page size selector — use snice-select
     const sizeContainer = document.createElement('div');
     sizeContainer.className = 'pagination__size';
+    sizeContainer.setAttribute('part', 'pagination-size');
     const sizeLabel = document.createElement('label');
+    sizeLabel.setAttribute('part', 'pagination-size-label');
     sizeLabel.textContent = 'Rows per page:';
     sizeContainer.appendChild(sizeLabel);
 
     const sizeOptions = this.pageSizes.includes(this.pageSize)
       ? this.pageSizes
       : [...this.pageSizes, this.pageSize].sort((a, b) => a - b);
+
     const hasSniceSelect = !!customElements.get('snice-select');
     const sizeSelect = document.createElement(hasSniceSelect ? 'snice-select' : 'select') as any;
-    if (hasSniceSelect) sizeSelect.size = 'small';
+    if (hasSniceSelect) {
+      sizeSelect.size = 'small';
+      sizeSelect.setAttribute('exportparts', 'base: select-base, label: select-label, label-required: select-label-required, controls: select-controls, input: select-input, input-disabled: select-input-disabled, input-open: select-input-open, input-invalid: select-input-invalid, trigger: select-trigger, trigger-disabled: select-trigger-disabled, trigger-loading: select-trigger-loading, trigger-open: select-trigger-open, trigger-invalid: select-trigger-invalid, value: select-value, placeholder: select-placeholder, value-single: select-value-single, value-label: select-value-label, value-icon: select-value-icon, tags: select-tags, tag: select-tag, tag-icon: select-tag-icon, tag-remove: select-tag-remove, icons: select-icons, clear-button: select-clear-button, arrow: select-arrow, icon: select-icon, arrow-icon: select-arrow-icon, clear-icon: select-clear-icon, spinner: select-spinner, dropdown: select-dropdown, search: select-search, search-input: select-search-input, options: select-options, option: select-option, option-selected: select-option-selected, option-disabled: select-option-disabled, option-check: select-option-check, option-check-mark: select-option-check-mark, option-icon: select-option-icon, option-label: select-option-label, loading-indicator: select-loading-indicator, loading-spinner: select-loading-spinner, loading-text: select-loading-text, empty: select-empty, empty-text: select-empty-text, helper-text: select-helper-text, error-text: select-error-text');
+    }
     sizeSelect.className = 'pagination__size-select';
+    sizeSelect.setAttribute('part', 'pagination-size-select');
     for (const s of sizeOptions) {
       const opt = document.createElement(hasSniceSelect ? 'snice-option' : 'option') as any;
       opt.setAttribute('value', String(s));
@@ -3637,7 +3666,8 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   private pageButton(page: number): string {
     const active = page === this.currentPage ? ' pagination__btn--active' : '';
-    return `<button class="pagination__btn pagination__page${active}" data-page="${page}">${page}</button>`;
+    const activePart = page === this.currentPage ? ' pagination-button-active' : '';
+    return `<button class="pagination__btn pagination__page${active}" part="pagination-button pagination-page${activePart}" data-page="${page}">${page}</button>`;
   }
 
   /**
@@ -3957,7 +3987,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   private handleChange = (e: Event) => {
     const target = e.target as HTMLElement;
 
-    // Handle snice-checkbox events (row-select and select-all)
+    // Handle snice-checkbox and native fallback checkbox events (row-select and select-all)
     if (target.matches('snice-checkbox.row-select, input.row-select')) {
       const checkbox = target as any;
       const rowIndex = parseInt(checkbox.getAttribute('data-row-index') || '0');
@@ -5557,6 +5587,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.masterDetail.isEnabled()) {
       const toggleCell = document.createElement('td');
       toggleCell.className = 'detail-toggle-cell';
+      toggleCell.setAttribute('part', 'detail-toggle-cell');
       toggleCell.appendChild(this.masterDetail.createToggleButton(index));
       tr.appendChild(toggleCell);
     }
@@ -5564,9 +5595,10 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.hasSelectionColumn()) {
       const selectCell = document.createElement('td');
       selectCell.className = 'select-column';
+      selectCell.setAttribute('part', 'selection-cell');
       const disabled = !!(this.selectabilityCheck && !this.selectabilityCheck(rowData, index));
       if (customElements.get('snice-checkbox')) {
-        selectCell.innerHTML = `<snice-checkbox class="row-select" size="small" compact ${isSelected ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-row-index="${index}"></snice-checkbox>`;
+        selectCell.innerHTML = `<snice-checkbox class="row-select" exportparts="base: checkbox-base, input: checkbox-input, checkbox: checkbox-checkbox, spinner: checkbox-spinner, label: checkbox-label, icon: checkbox-icon, icon-check: checkbox-icon-check, icon-indeterminate: checkbox-icon-indeterminate, base-disabled: checkbox-base-disabled, base-loading: checkbox-base-loading, checkbox-invalid: checkbox-checkbox-invalid, checkbox-indeterminate: checkbox-checkbox-indeterminate, checkbox-loading: checkbox-checkbox-loading, label-required: checkbox-label-required" size="small" compact ${isSelected ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-row-index="${index}"></snice-checkbox>`;
       } else {
         selectCell.innerHTML = `<input type="checkbox" class="row-select" aria-label="Select row ${index + 1}" ${isSelected ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-row-index="${index}" />`;
       }
@@ -5580,6 +5612,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.list && this.listRenderer) {
       const td = document.createElement('td');
       td.className = 'list-view-cell';
+      td.setAttribute('part', 'list-cell');
       td.colSpan = Math.max(1, columnsToRender.length);
       const rendered = this.listRenderer(rowData, index);
       if (rendered instanceof HTMLElement) td.appendChild(rendered);
@@ -5628,6 +5661,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         td.appendChild(toggle);
         const textSpan = document.createElement('span');
         textSpan.className = 'tree-label';
+        textSpan.setAttribute('part', 'tree-label');
         // The group cell keeps its plain label next to the indent/chevron, but
         // it is still a cell: renderCell owns it outright, and otherwise the
         // documented display pipeline (formatter, then valueFormatter) decides
@@ -5703,6 +5737,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   private createGroupRow(group: GroupRow, totalColSpan: number): HTMLTableRowElement {
     const tr = document.createElement('tr');
     tr.className = 'group-header-row';
+    tr.setAttribute('part', 'group-header-row');
     tr.setAttribute('data-group-key', group.key);
     tr.setAttribute('data-depth', String(group.depth));
     tr.setAttribute('aria-label', `${group.value == null || group.value === '' ? 'Blank' : String(group.value)} group, ${group.count} rows`);
@@ -5710,6 +5745,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     const td = document.createElement('td');
     td.colSpan = totalColSpan;
     td.className = 'group-header-cell';
+    td.setAttribute('part', 'group-header-cell');
 
     // Group selection checkbox (multiple mode only — select-all semantics).
     if (this.selectable && this.selectionMode === 'multiple') {
@@ -5721,6 +5757,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       if (!hasSniceCb) checkbox.type = 'checkbox';
       checkbox.className = 'group-select';
       if (hasSniceCb) {
+        checkbox.setAttribute('exportparts', 'base: checkbox-base, input: checkbox-input, checkbox: checkbox-checkbox, spinner: checkbox-spinner, label: checkbox-label, icon: checkbox-icon, icon-check: checkbox-icon-check, icon-indeterminate: checkbox-icon-indeterminate, base-disabled: checkbox-base-disabled, base-loading: checkbox-base-loading, checkbox-invalid: checkbox-checkbox-invalid, checkbox-indeterminate: checkbox-checkbox-indeterminate, checkbox-loading: checkbox-checkbox-loading, label-required: checkbox-label-required');
         checkbox.setAttribute('size', 'small');
         checkbox.setAttribute('compact', '');
       }
@@ -5740,11 +5777,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
     const label = document.createElement('span');
     label.className = 'group-header-label';
+    label.setAttribute('part', 'group-header-label');
     label.textContent = group.value == null ? '' : String(group.value);
     td.appendChild(label);
 
     const count = document.createElement('span');
     count.className = 'group-header-count';
+    count.setAttribute('part', 'group-header-count');
     count.textContent = String(group.count);
     td.appendChild(count);
 
@@ -5761,6 +5800,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   private createAggregateRow(agg: AggregateRow, _totalColSpan: number): HTMLTableRowElement {
     const tr = document.createElement('tr');
     tr.className = 'group-aggregate-row';
+    tr.setAttribute('part', 'group-aggregate-row');
     tr.setAttribute('data-agg-scope', agg.scope);
     tr.setAttribute('data-depth', String(agg.depth));
     if (agg.groupKey) tr.setAttribute('data-group-key', agg.groupKey);
@@ -5800,12 +5840,14 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const td = document.createElement('td');
       td.setAttribute('data-key', column.key);
       td.className = 'aggregate-cell';
+      td.setAttribute('part', 'aggregate-cell');
 
       const hasAgg = Object.prototype.hasOwnProperty.call(agg.aggregates, column.key);
       if ((!hasAgg && !labelled) || (hasAgg && column.key === inlineLabelKey)) {
         labelled = true;
         const label = document.createElement('span');
         label.className = `aggregate-label${hasAgg ? ' aggregate-label--inline' : ''}`;
+        label.setAttribute('part', 'aggregate-label');
         label.textContent = scopeLabel;
         if (agg.scope === 'group' && agg.depth > 0) {
           label.style.paddingLeft = `${agg.depth * 1.5}rem`;

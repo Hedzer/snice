@@ -14,20 +14,20 @@ export class SniceLayoutFullscreen extends HTMLElement implements Layout {
   @render()
   render() {
     return html/*html*/`
-      <div class="layout">
-        <div class="background">
+      <div class="layout" part="base">
+        <div class="background" part="background">
           <slot name="background"></slot>
         </div>
 
-        <div class="overlay">
+        <div class="overlay" part="overlay">
           <slot name="overlay"></slot>
         </div>
 
-        <div class="content">
+        <div class="content" part="content">
           <slot name="page"></slot>
         </div>
 
-        <div class="controls">
+        <div class="controls" part="controls">
           <slot name="controls"></slot>
         </div>
       </div>

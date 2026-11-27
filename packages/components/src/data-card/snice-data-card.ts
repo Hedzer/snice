@@ -112,17 +112,17 @@ export class SniceDataCard extends HTMLElement implements SniceDataCardElement {
     const groups = this.getGroups();
 
     return html/*html*/`
-      <div class="data-card" part="container">
+      <div class="data-card" part="base container">
         <div class="data-card__header" part="header">
           <slot name="header">
             <span class="data-card__title" part="title"><slot name="title"></slot></span>
           </slot>
           <button
             class="data-card__edit-toggle ${this.editable ? 'data-card__edit-toggle--active' : ''}"
-            part="edit-toggle"
+            part="edit-toggle${this.editable ? ' edit-toggle-active' : ''}"
             @click=${() => this.toggleEditMode()}
             style="display: ${this.fields.some(f => f.editable !== false) ? '' : 'none'}">
-            <span class="data-card__edit-icon" aria-hidden="true">${unsafeHTML(this.editable ? CHECK : PENCIL)}</span>
+            <span class="data-card__edit-icon" part="edit-icon" aria-hidden="true">${unsafeHTML(this.editable ? CHECK : PENCIL)}</span>
             ${this.editable ? 'Done' : 'Edit'}
           </button>
         </div>
@@ -182,8 +182,8 @@ export class SniceDataCard extends HTMLElement implements SniceDataCardElement {
         external = new URL(href, location.href).origin !== location.origin;
       } catch { /* unparsable href: treat as in-app */ }
       const anchor = external
-        ? html/*html*/`<a class="field__value field__value--link" part="field-value" href="${href}" target="_blank" rel="noopener">${field.value}</a>`
-        : html/*html*/`<a class="field__value field__value--link" part="field-value" href="${href}">${field.value}</a>`;
+        ? html/*html*/`<a class="field__value field__value--link" part="field-value field-value-link" href="${href}" target="_blank" rel="noopener">${field.value}</a>`
+        : html/*html*/`<a class="field__value field__value--link" part="field-value field-value-link" href="${href}">${field.value}</a>`;
       return html/*html*/`
         ${anchor}
         <if ${canEdit}>
@@ -195,7 +195,7 @@ export class SniceDataCard extends HTMLElement implements SniceDataCardElement {
     if (type === 'badge') {
       const badgeVariant = field.badgeVariant || 'default';
       return html/*html*/`
-        <span class="field__value field__value--badge field__value--badge-${badgeVariant}" part="field-value">${field.value}</span>
+        <span class="field__value field__value--badge field__value--badge-${badgeVariant}" part="field-value field-value-badge">${field.value}</span>
         <if ${canEdit}>
           <button class="field__save-btn" part="field-edit" @click=${() => this.startEdit(field)} style="background:transparent;color:var(--snice-color-text-tertiary,rgb(115 115 115));border:1px solid var(--snice-color-border,rgb(226 226 226))">✎</button>
         </if>
@@ -204,7 +204,7 @@ export class SniceDataCard extends HTMLElement implements SniceDataCardElement {
 
     if (type === 'date') {
       return html/*html*/`
-        <span class="field__value field__value--date" part="field-value" @click=${() => canEdit && this.startEdit(field)} style="${canEdit ? 'cursor:pointer' : ''}">${field.value}</span>
+        <span class="field__value field__value--date" part="field-value field-value-date" @click=${() => canEdit && this.startEdit(field)} style="${canEdit ? 'cursor:pointer' : ''}">${field.value}</span>
         <if ${canEdit}>
           <button class="field__save-btn" part="field-edit" @click=${() => this.startEdit(field)} style="background:transparent;color:var(--snice-color-text-tertiary,rgb(115 115 115));border:1px solid var(--snice-color-border,rgb(226 226 226))">✎</button>
         </if>
@@ -213,7 +213,7 @@ export class SniceDataCard extends HTMLElement implements SniceDataCardElement {
 
     if (type === 'currency') {
       return html/*html*/`
-        <span class="field__value field__value--currency" part="field-value" @click=${() => canEdit && this.startEdit(field)} style="${canEdit ? 'cursor:pointer' : ''}">${field.value}</span>
+        <span class="field__value field__value--currency" part="field-value field-value-currency" @click=${() => canEdit && this.startEdit(field)} style="${canEdit ? 'cursor:pointer' : ''}">${field.value}</span>
         <if ${canEdit}>
           <button class="field__save-btn" part="field-edit" @click=${() => this.startEdit(field)} style="background:transparent;color:var(--snice-color-text-tertiary,rgb(115 115 115));border:1px solid var(--snice-color-border,rgb(226 226 226))">✎</button>
         </if>

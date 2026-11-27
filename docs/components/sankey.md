@@ -63,7 +63,18 @@ interface SankeyLink {
 |------|-------------|
 | `base` | The outer Sankey container |
 | `chart` | The SVG chart area |
+| `svg` | The generated SVG element |
+| `links` | The group holding every link |
+| `link` | One link group |
+| `link-path` | The stroked path inside a link |
+| `nodes` | The group holding every node |
+| `node` | One node group |
+| `node-rect` | The filled rectangle inside a node |
+| `label` | A node label text element |
+| `value` | A node value text element |
 | `tooltip` | The hover tooltip |
+| `tooltip-label` | The tooltip label line |
+| `tooltip-value` | The tooltip value line |
 
 ## Layout
 

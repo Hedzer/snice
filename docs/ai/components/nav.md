@@ -23,8 +23,19 @@ isTopLevel: boolean = false;  // attr: is-top-level, receive context updates
 
 - `base` - Outer content wrapper
 - `nav` - Navigation element
+- `group` - A group wrapper (grouped and hierarchical variants)
+- `group-label` - Group heading text
+- `submenu` - Nested `<ul>` of child links (hierarchical variant)
+- `item` - A navigation item wrapper
 - `link` - Individual nav link
 - `icon` - Nav item icon (img or span)
+- `label` - Nav link label text
+
+State tokens:
+
+- `item-active` - Added to `item` while its route is active
+- `group-active` - Added to `group` while it contains the active route
+- `link-active` - Added to `link` while its route is active
 
 ## Basic Usage
 

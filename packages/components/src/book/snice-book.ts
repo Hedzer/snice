@@ -108,21 +108,21 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
     let h = '';
 
     // Left label: cover image + title/author text, click resets (closes all)
-    h += `<label for="${resetId}" class="book__page book__page--1">`;
+    h += `<label for="${resetId}" class="book__page book__page--1" part="page page-cover">`;
     if (this.coverImage) {
-      h += `<img src="${this.esc(this.coverImage)}" alt="${this.esc(this.title || '')}">`;
+      h += `<img src="${this.esc(this.coverImage)}" alt="${this.esc(this.title || '')}" part="cover-image">`;
     }
     if (this.title) {
-      h += `<div class="page__content-book-title">${this.esc(this.title)}</div>`;
+      h += `<div class="page__content-book-title" part="title">${this.esc(this.title)}</div>`;
     }
     if (this.author) {
-      h += `<div class="page__content-author">${this.esc(this.author)}</div>`;
+      h += `<div class="page__content-author" part="author">${this.esc(this.author)}</div>`;
     }
     h += `</label>`;
 
     // Right label: last page content, click opens last page
-    h += `<label for="${lastId}" class="book__page book__page--4">`;
-    h += `<div class="page__content" data-slot="last"></div>`;
+    h += `<label for="${lastId}" class="book__page book__page--4" part="page page-last">`;
+    h += `<div class="page__content" data-slot="last" part="content"></div>`;
     h += `</label>`;
 
     // Reset radio (no adjacent flippable label — unchecks everything)
@@ -132,9 +132,9 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
     for (let i = 0; i < n; i++) {
       const radioId = `${this.radioName}_${i + 1}`;
       h += `<input type="radio" name="${this.radioName}" id="${radioId}" data-page="${i}">`;
-      h += `<label class="book__page book__page--2">`;
-      h += `<div class="book__page-front"><div class="page__content" data-slot="front-${i}"></div></div>`;
-      h += `<div class="book__page-back"><div class="page__content" data-slot="back-${i}"></div></div>`;
+      h += `<label class="book__page book__page--2" part="page page-leaf">`;
+      h += `<div class="book__page-front" part="page-front"><div class="page__content" data-slot="front-${i}" part="content"></div></div>`;
+      h += `<div class="book__page-back" part="page-back"><div class="page__content" data-slot="back-${i}" part="content"></div></div>`;
       h += `</label>`;
     }
 

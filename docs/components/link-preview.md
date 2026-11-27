@@ -41,6 +41,16 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `base` | `<div>` | The outer preview card container |
 | `content` | `<div>` | The text content area (title, description, footer) |
 | `title` | `<p>` | The title text element |
+| `media` | `<div>` | The image/placeholder area above the content |
+| `image` | `<img>` | The preview image (rendered when `image` is set) |
+| `placeholder` | `<div>` | The fallback box shown when no `image` is set |
+| `icon` | `<svg>` | The placeholder link glyph |
+| `description` | `<p>` | The description paragraph |
+| `footer` | `<div>` | The footer row holding favicon, site name and domain |
+| `favicon` | `<img>` | The favicon image in the footer |
+| `site-name` | `<span>` | The site name text in the footer |
+| `separator` | `<span>` | The dot between site name and domain |
+| `domain` | `<span>` | The domain text in the footer |
 
 ```css
 snice-link-preview::part(base) {

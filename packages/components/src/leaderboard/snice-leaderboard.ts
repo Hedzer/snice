@@ -83,39 +83,42 @@ export class SniceLeaderboard extends HTMLElement implements SniceLeaderboardEle
     if (change === undefined || change === null) return '';
 
     if (change > 0) {
-      return html`<span class="leaderboard__change leaderboard__change--up">\u25B2 ${change}</span>`;
+      return html`<span class="leaderboard__change leaderboard__change--up" part="change change-up">\u25B2 ${change}</span>`;
     } else if (change < 0) {
-      return html`<span class="leaderboard__change leaderboard__change--down">\u25BC ${Math.abs(change)}</span>`;
+      return html`<span class="leaderboard__change leaderboard__change--down" part="change change-down">\u25BC ${Math.abs(change)}</span>`;
     }
-    return html`<span class="leaderboard__change leaderboard__change--none">\u2014</span>`;
+    return html`<span class="leaderboard__change leaderboard__change--none" part="change change-none">\u2014</span>`;
   }
 
   private renderAvatar(entry: LeaderboardEntry) {
     if (entry.avatar) {
-      return html`<img class="leaderboard__avatar" src="${entry.avatar}" alt="${entry.name}" loading="lazy" />`;
+      return html`<img class="leaderboard__avatar" part="avatar" src="${entry.avatar}" alt="${entry.name}" loading="lazy" />`;
     }
-    return html`<span class="leaderboard__avatar-placeholder">${this.getInitial(entry.name)}</span>`;
+    return html`<span class="leaderboard__avatar-placeholder" part="avatar avatar-placeholder">${this.getInitial(entry.name)}</span>`;
   }
 
   private renderPodiumAvatar(entry: LeaderboardEntry) {
     if (entry.avatar) {
-      return html`<img class="leaderboard__podium-avatar" src="${entry.avatar}" alt="${entry.name}" loading="lazy" />`;
+      return html`<img class="leaderboard__podium-avatar" part="avatar podium-avatar" src="${entry.avatar}" alt="${entry.name}" loading="lazy" />`;
     }
-    return html`<span class="leaderboard__podium-avatar-placeholder">${this.getInitial(entry.name)}</span>`;
+    return html`<span class="leaderboard__podium-avatar-placeholder" part="avatar podium-avatar-placeholder">${this.getInitial(entry.name)}</span>`;
   }
 
   private renderPodium(entries: LeaderboardEntry[]) {
     const podiumEntries = entries.slice(0, 3);
+    const podiumEntryParts = ['', ' podium-entry-1', ' podium-entry-2', ' podium-entry-3'];
+    const podiumRankParts = ['', ' podium-rank-1', ' podium-rank-2', ' podium-rank-3'];
 
     return html`
-      <div class="leaderboard__podium">
+      <div class="leaderboard__podium" part="podium">
         ${podiumEntries.map(entry => html`
           <div class="leaderboard__podium-entry leaderboard__podium-entry--${entry.rank}"
+               part="podium-entry${podiumEntryParts[entry.rank] ?? ''}"
                @click=${() => this.handleEntryClick(entry, entry.rank - 1)}>
             ${this.renderPodiumAvatar(entry)}
-            <span class="leaderboard__podium-rank leaderboard__podium-rank--${entry.rank}">#${entry.rank}</span>
-            <span class="leaderboard__podium-name">${entry.name}</span>
-            <span class="leaderboard__podium-score">${entry.score}</span>
+            <span class="leaderboard__podium-rank leaderboard__podium-rank--${entry.rank}" part="podium-rank${podiumRankParts[entry.rank] ?? ''}">#${entry.rank}</span>
+            <span class="leaderboard__podium-name" part="podium-name">${entry.name}</span>
+            <span class="leaderboard__podium-score" part="podium-score">${entry.score}</span>
           </div>
         `)}
       </div>
@@ -125,16 +128,18 @@ export class SniceLeaderboard extends HTMLElement implements SniceLeaderboardEle
   private renderEntry(entry: LeaderboardEntry, index: number) {
     const highlightedClass = entry.highlighted ? ' leaderboard__entry--highlighted' : '';
     const rankClass = entry.rank <= 3 ? ` leaderboard__rank--${entry.rank}` : '';
+    const rankParts = ['', ' rank-1', ' rank-2', ' rank-3'];
 
     return html`
       <li class="leaderboard__entry${highlightedClass}"
+          part="entry${entry.highlighted ? ' entry-highlighted' : ''}"
           @click=${() => this.handleEntryClick(entry, index)}>
-        <span class="leaderboard__rank${rankClass}">${entry.rank}</span>
+        <span class="leaderboard__rank${rankClass}" part="rank${rankParts[entry.rank] ?? ''}">${entry.rank}</span>
         ${this.renderAvatar(entry)}
-        <div class="leaderboard__info">
-          <span class="leaderboard__name">${entry.name}</span>
+        <div class="leaderboard__info" part="info">
+          <span class="leaderboard__name" part="name">${entry.name}</span>
         </div>
-        <span class="leaderboard__score">${entry.score}</span>
+        <span class="leaderboard__score" part="score">${entry.score}</span>
         ${this.renderChangeIndicator(entry.change)}
       </li>
     `;

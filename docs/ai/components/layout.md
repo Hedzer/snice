@@ -14,14 +14,106 @@ Application layout with header navigation, main content area, and footer.
 
 ## CSS Parts
 
-- `scrim` - Overlay backdrop for the mobile sidebar
-- `prose` - Measured article column (docs shell)
-- `form` - Form column (auth-split shell)
+Shared across the shells that render the region:
+
 - `base` - Outer layout container div
 - `header` - Header element with navigation
+- `header-content` - Slotted header content column
 - `brand` - Brand/logo area within header
+- `nav-area` - Header nav region (blog, landing)
+- `nav` - The internal `<snice-nav>` element
+- `body` - Row holding sidebar, main and rails
 - `main` - Main content area
+- `content` - Content column inside the body
+- `container` - Centered width-limited band (blog, landing)
 - `footer` - Footer element
+- `sidebar` - Navigation column (sidebar, dashboard, docs, blog)
+- `sidebar-toggle` - Header button that opens/collapses the sidebar
+- `sidebar-toggle-icon` - Glyph inside `sidebar-toggle`
+- `scrim` - Overlay backdrop for the mobile sidebar
+- `toolbar` - Strip below the header (dashboard)
+- `breadcrumbs` - The internal `<snice-breadcrumbs>` in the toolbar (dashboard)
+- `right-sidebar` - Secondary rail beside main (dashboard)
+- `prose` - Measured article column (docs shell)
+- `toc` - On-this-page rail (docs shell)
+- `skip-link` - Skip-to-content link (docs shell)
+- `brand-fallback` - Default brand text inside `brand` (stacked, sidebar, dashboard, docs, blog, landing)
+- `article` - Article column (blog shell)
+- `hero` - Hero band (landing shell)
+- `cta` - Header call-to-action slot (landing shell)
+- `stack` - Vertical stack (centered shell)
+- `grid` - Card grid (card shell)
+- `background` - Background layer (fullscreen shell)
+- `overlay` - Overlay layer (fullscreen shell)
+- `controls` - Controls layer (fullscreen shell)
+- `pane` - A master-detail pane
+- `list` - List pane (master-detail shell)
+- `detail` - Detail pane (master-detail shell)
+- `empty` - Empty state until a detail is slotted (master-detail shell)
+- `back-button` - Narrow-viewport back button (master-detail shell)
+- `back-icon` - Glyph inside `back-button`
+- `panel` - Split panel / decorative brand panel (split, auth-split shells)
+- `panel-left` - Added to the left `panel` (split shell)
+- `panel-right` - Added to the right `panel` (split shell)
+- `divider` - Divider between split panels
+- `form` - Form column (auth-split shell)
+- `form-inner` - Inner column inside `form` (auth-split shell)
+- `page` - Form content wrapper (auth-split shell)
+- `header-container` - Added to the header `container` (blog, landing)
+- `main-container` - Added to the main `container` (blog)
+- `footer-container` - Added to the footer `container` (blog, landing)
+
+State tokens:
+
+- `base-mobile` - Added to `base` at mobile widths (sidebar, dashboard)
+- `base-railed-stacked` - Added to `base` when the dashboard rail stacks
+- `header-empty` - Added to `header` while nothing is slotted (card shell)
+- `footer-empty` - Added to `footer` while nothing is slotted
+- `brand-empty` - Added to `brand` while nothing is slotted (centered shell)
+- `sidebar-empty` - Added to `sidebar` while nothing is slotted (blog shell)
+- `sidebar-open` - Added to `sidebar` while open (docs shell)
+- `sidebar-rail` - Added to `sidebar` in rail collapse mode
+- `sidebar-collapsed` - Added to `sidebar` while collapsed
+- `sidebar-mobile-open` - Added to `sidebar` while open on mobile
+- `scrim-visible` - Added to `scrim` while the mobile sidebar is open
+- `toolbar-hidden` - Added to `toolbar` while it has nothing to show
+- `right-sidebar-empty` - Added to `right-sidebar` while no rail is slotted
+- `content-railed` - Added to `content` while a right rail is present
+- `content-with-sidebar` - Added to `content` while a blog sidebar is slotted
+- `toc-empty` - Added to `toc` while nothing is slotted
+- `list-hidden` - Added to `list` while the narrow shell shows the detail
+- `detail-hidden` - Added to `detail` while the narrow shell shows the list
+
+Forwarded from the internal `<snice-nav>` via `exportparts`:
+
+- `nav-base` - Exported `base` of the nav
+- `nav-nav` - Exported `nav` of the nav
+- `nav-group` - Exported `group` of the nav
+- `nav-group-label` - Exported `group-label` of the nav
+- `nav-submenu` - Exported `submenu` of the nav
+- `nav-item` - Exported `item` of the nav
+- `nav-link` - Exported `link` of the nav
+- `nav-icon` - Exported `icon` of the nav
+- `nav-label` - Exported `label` of the nav
+- `nav-item-active` - Exported `item-active` of the nav
+- `nav-group-active` - Exported `group-active` of the nav
+- `nav-link-active` - Exported `link-active` of the nav
+
+Forwarded from the dashboard's `<snice-breadcrumbs>` via `exportparts`:
+
+- `breadcrumbs-base` - Exported `base` of the breadcrumbs
+- `breadcrumbs-list` - Exported `list` of the breadcrumbs
+- `breadcrumbs-item` - Exported `item` of the breadcrumbs
+- `breadcrumbs-link` - Exported `link` of the breadcrumbs
+- `breadcrumbs-text` - Exported `text` of the breadcrumbs
+- `breadcrumbs-separator` - Exported `separator` of the breadcrumbs
+- `breadcrumbs-ellipsis` - Exported `ellipsis` of the breadcrumbs
+- `breadcrumbs-ellipsis-icon` - Exported `ellipsis-icon` of the breadcrumbs
+- `breadcrumbs-list-collapsed` - Exported `list-collapsed` of the breadcrumbs
+- `breadcrumbs-item-active` - Exported `item-active` of the breadcrumbs
+- `breadcrumbs-item-hidden` - Exported `item-hidden` of the breadcrumbs
+- `breadcrumbs-item-overflow` - Exported `item-overflow` of the breadcrumbs
+- `breadcrumbs-text-current` - Exported `text-current` of the breadcrumbs
 
 ## Basic Usage
 

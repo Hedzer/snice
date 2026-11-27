@@ -36,29 +36,29 @@ export class SniceLayoutMasterDetail extends HTMLElement implements Layout {
     const detailClass = showDetail ? '' : ' pane--hidden';
 
     return html/*html*/`
-      <div class="layout">
+      <div class="layout" part="base">
         <header class="header" part="header">
           <if ${this.narrow && this.selected}>
-            <button class="back" type="button" aria-label="Back to list" @click=${this.handleBack}>
-              <svg viewBox="0 0 24 24" width="20" height="20">
+            <button class="back" part="back-button" type="button" aria-label="Back to list" @click=${this.handleBack}>
+              <svg part="back-icon" viewBox="0 0 24 24" width="20" height="20">
                 <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
               </svg>
             </button>
           </if>
-          <div class="header-brand">
+          <div class="header-brand" part="brand">
             <slot name="brand"></slot>
           </div>
-          <div class="header-content">
+          <div class="header-content" part="header-content">
             <slot name="header"></slot>
           </div>
         </header>
 
-        <div class="body-area">
-          <section class="pane list${listClass}" part="list" aria-label="Items">
+        <div class="body-area" part="body">
+          <section class="pane list${listClass}" part="pane list${showList ? '' : ' list-hidden'}" aria-label="Items">
             <slot name="list"></slot>
           </section>
 
-          <section class="pane detail${detailClass}" part="detail" aria-label="Details">
+          <section class="pane detail${detailClass}" part="pane detail${showDetail ? '' : ' detail-hidden'}" aria-label="Details">
             <slot name="detail">
               <div class="detail-empty" part="empty">
                 <slot name="empty">Select an item</slot>

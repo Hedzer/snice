@@ -75,7 +75,31 @@ interface Comment {
 |------|-------------|
 | `base` | Root container element |
 | `input-area` | The new comment input area |
+| `input` | Any comment textarea (new comment and reply) |
+| `submit-button` | Any post/reply submit button |
 | `list` | The comments list container |
+| `empty` | Empty state message shown with no comments |
+| `comment` | A single comment row (also each nested reply) |
+| `avatar` | Comment author avatar container |
+| `avatar-image` | The `<img>` inside the avatar when one is supplied |
+| `comment-body` | Wrapper for a comment's header, text, actions and replies |
+| `comment-header` | Author + timestamp row |
+| `author` | Comment author name |
+| `timestamp` | Comment timestamp text |
+| `text` | Comment body text |
+| `actions` | Row of comment action buttons |
+| `action` | Any comment action button |
+| `action-like` | Added to `action` on the like button |
+| `action-liked` | Added to `action` while the comment is liked |
+| `action-reply` | Added to `action` on the reply button |
+| `action-delete` | Added to `action` on the delete button |
+| `like-icon` | Heart glyph inside the like button |
+| `like-count` | Like count next to the heart glyph |
+| `reply-input-area` | Inline reply composer shown while replying |
+| `reply-input` | Added to `input` on the reply textarea |
+| `reply-submit-button` | Added to `submit-button` on the reply submit button |
+| `cancel-button` | Cancel button in the reply composer |
+| `replies` | Container holding a comment's nested replies |
 
 ```css
 snice-comments::part(base) {

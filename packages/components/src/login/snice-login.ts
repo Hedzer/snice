@@ -73,7 +73,7 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
         <div part="header" class="login__header">
           <h1 part="title" class="login__title">${this.title}</h1>
           <slot name="subtitle">
-            <p class="login__subtitle">Enter your credentials to continue</p>
+            <p part="subtitle" class="login__subtitle">Enter your credentials to continue</p>
           </slot>
         </div>
 
@@ -83,9 +83,10 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
         <form part="form" class="login__form" @submit=${(e: Event) => this.handleSubmit(e)}>
           <slot name="form-top"></slot>
 
-          <div class="login__field">
-            <label class="login__label" for="username">Username</label>
+          <div part="field username-field" class="login__field">
+            <label part="label username-label" class="login__label" for="username">Username</label>
             <input
+              part="input username-input"
               class="login__input"
               type="text"
               name="username"
@@ -99,9 +100,10 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
 
           <slot name="between-fields"></slot>
 
-          <div class="login__field">
-            <label class="login__label" for="password">Password</label>
+          <div part="field password-field" class="login__field">
+            <label part="label password-label" class="login__label" for="password">Password</label>
             <input
+              part="input password-input"
               class="login__input"
               type="password"
               name="password"
@@ -115,16 +117,16 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
           </div>
 
           <if ${this.showRememberMe || this.showForgotPassword}>
-            <div class="login__options">
+            <div part="options" class="login__options">
               <if ${this.showRememberMe}>
-                <label class="login__remember">
-                  <input class="login__checkbox" type="checkbox" name="remember" ?disabled="${this.disabled || this.loading}" />
+                <label part="remember" class="login__remember">
+                  <input part="checkbox" class="login__checkbox" type="checkbox" name="remember" ?disabled="${this.disabled || this.loading}" />
                   Remember me
                 </label>
               </if>
 
               <if ${this.showForgotPassword}>
-                <a href="#" class="login__forgot" @click=${(e: Event) => this.handleForgotPassword(e)}>Forgot password?</a>
+                <a part="forgot-link" href="#" class="login__forgot" @click=${(e: Event) => this.handleForgotPassword(e)}>Forgot password?</a>
               </if>
             </div>
           </if>
@@ -133,7 +135,7 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
 
           <snice-button
             part="submit-button"
-            exportparts="base: submit-button-base, label: submit-button-label, icon: submit-button-icon, spinner: submit-button-spinner"
+            exportparts="base: submit-button-base, spinner: submit-button-spinner, label: submit-button-label, icon: submit-button-icon, icon-start: submit-button-icon-start, icon-end: submit-button-icon-end, base-loading: submit-button-base-loading, base-disabled: submit-button-base-disabled"
             type="submit"
             variant="primary"
             ?disabled=${this.disabled}
@@ -148,7 +150,10 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
         <slot name="after-form"></slot>
 
         <if ${this.alertMessage}>
-          <snice-alert variant="${this.alertVariant}">${this.alertMessage}</snice-alert>
+          <snice-alert
+            part="alert"
+            exportparts="base: alert-base, body: alert-body, icon: alert-icon, icon-content: alert-icon-content, content: alert-content, title: alert-title, description: alert-description, close: alert-close, close-icon: alert-close-icon"
+            variant="${this.alertVariant}">${this.alertMessage}</snice-alert>
         </if>
 
         <div part="footer" class="login__footer">

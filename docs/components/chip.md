@@ -47,6 +47,13 @@ Compact elements for tags, filters, selections, or categorizations. Supports ico
 |------|-------------|
 | `base` | Root container |
 | `icon` | The icon wrapper element |
+| `avatar` | The avatar image element |
+| `label` | The chip label wrapper |
+| `remove-button` | The remove (×) button |
+| `remove-icon` | The `<svg>` inside the remove button |
+| `base-selected` | Added to `base` while `selected` |
+| `base-disabled` | Added to `base` while `disabled` |
+| `ripple` | Hidden Material 3 state-layer ripple helper (`data-platform-only="material"`) |
 
 ## Basic Usage
 

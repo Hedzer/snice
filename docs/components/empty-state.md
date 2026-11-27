@@ -55,11 +55,13 @@ Use the `icon` slot for external CSS-based icon fonts:
 
 | Part | Description |
 |------|-------------|
+| `base` | Outer empty state wrapper (same element as `container`) |
 | `container` | Outer empty state wrapper |
 | `icon` | Icon wrapper |
 | `title` | Title element |
 | `description` | Description paragraph |
 | `action` | Action button or link |
+| `extra` | Wrapper for the default slot content |
 
 ## Basic Usage
 

@@ -9,7 +9,7 @@ test.describe('Snice Order Tracker visual integrity', () => {
     await page.waitForFunction(() => !!customElements.get('snice-order-tracker'));
     await page.waitForFunction(() =>
       (document.querySelector('#ot-many') as any)?.shadowRoot
-        ?.querySelectorAll('[part="step"]').length === 7);
+        ?.querySelectorAll('[part~="step"]').length === 7);
     await page.waitForTimeout(200);
   });
 
@@ -25,10 +25,10 @@ test.describe('Snice Order Tracker visual integrity', () => {
       const problems: string[] = [];
       document.querySelectorAll('snice-order-tracker[variant="horizontal"]').forEach((host, i) => {
         const root = (host as any).shadowRoot as ShadowRoot;
-        const list = root.querySelector('[part="steps"]') as HTMLElement | null;
+        const list = root.querySelector('[part~="steps"]') as HTMLElement | null;
         if (!list) { problems.push(`h[${i}]: no steps container`); return; }
         const lr = list.getBoundingClientRect();
-        const steps = [...root.querySelectorAll('[part="step"]')] as HTMLElement[];
+        const steps = [...root.querySelectorAll('[part~="step"]')] as HTMLElement[];
         if (steps.length === 0) return; // the "Empty (no steps)" tracker
 
         const rects = steps.map(s => s.getBoundingClientRect());
@@ -78,7 +78,7 @@ test.describe('Snice Order Tracker visual integrity', () => {
       const problems: string[] = [];
       document.querySelectorAll('snice-order-tracker[variant="vertical"]').forEach((host, i) => {
         const root = (host as any).shadowRoot as ShadowRoot;
-        const steps = [...root.querySelectorAll('[part="step"]')] as HTMLElement[];
+        const steps = [...root.querySelectorAll('[part~="step"]')] as HTMLElement[];
         if (steps.length === 0) return;
         const rects = steps.map(s => s.getBoundingClientRect());
 

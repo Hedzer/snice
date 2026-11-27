@@ -68,9 +68,12 @@ test.describe('Snice Checkbox full showcase', () => {
           aria: input(checkbox).getAttribute('aria-invalid')
         })),
         parts: checkboxes.every(checkbox =>
+          // `~=` for `checkbox` and `label` because they carry state tokens
+          // (`checkbox-invalid`, `label-required`, …) alongside the role token.
+          // `input` is a single-token part, so an exact match is right there.
           checkbox.shadowRoot!.querySelector('[part="input"]')
-          && checkbox.shadowRoot!.querySelector('[part="checkbox"]')
-          && (!checkbox.getAttribute('label') || checkbox.shadowRoot!.querySelector('[part="label"]'))
+          && checkbox.shadowRoot!.querySelector('[part~="checkbox"]')
+          && (!checkbox.getAttribute('label') || checkbox.shadowRoot!.querySelector('[part~="label"]'))
         ),
         formDemo: Boolean(document.querySelector('#checkbox-showcase-form')),
         eventDemo: Boolean(document.querySelector('#checkbox-showcase-events')),

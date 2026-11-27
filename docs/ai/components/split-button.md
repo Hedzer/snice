@@ -26,12 +26,21 @@ iconPlacement: 'start'|'end' = 'start';  // attr: icon-placement
 
 - `spinner` - Loading spinner
 - `base` - Root container
+- `base-loading` - Added to `base` while `loading` is set
 - `primary` - Primary action button
+- `primary-disabled` - Added to `primary` while disabled or loading
+- `label` - Primary button label
 - `divider` - Divider between buttons
 - `toggle` - Dropdown toggle button
+- `toggle-disabled` - Added to `toggle` while disabled or loading
+- `arrow` - Chevron wrapper inside the toggle
+- `arrow-icon` - Chevron `<svg>` inside `arrow`
 - `menu` - Dropdown menu container
 - `menu-items` - Menu items wrapper
 - `action` - Individual action button
+- `action-disabled` - Added to `action` while that action is disabled
+- `action-icon` - Icon image inside an action
+- `action-label` - Label text inside an action
 
 ## Basic Usage
 

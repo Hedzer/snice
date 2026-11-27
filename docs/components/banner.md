@@ -70,11 +70,14 @@ Use the `icon` slot for external CSS-based icon fonts:
 
 | Part | Element | Description |
 |------|---------|-------------|
-| `banner` | `<div>` | The main banner container |
+| `base` `banner` | `<div>` | The main banner container (both tokens are on the same element) |
 | `icon` | `<span>` | The icon wrapper |
+| `icon-content` | `<span>` | The built-in variant icon glyph |
 | `message` | `<span>` | The message text |
+| `content` | `<div>` | The default slot wrapper |
 | `action` | `<button>` | The action button (when `actionText` is set) |
 | `close` | `<button>` | The close/dismiss button |
+| `close-icon` | `<span>` | The close button glyph |
 
 ```css
 snice-banner::part(banner) {

@@ -102,7 +102,7 @@
 
         /** Click the rendered Skip button — the documented skip path. */
         async skip() {
-          document.querySelector('[data-snice-spotlight-portal] [part="button-skip"]').click();
+          document.querySelector('[data-snice-spotlight-portal] [part~="button-skip"]').click();
           await settle();
         },
 

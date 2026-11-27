@@ -1,0 +1,1120 @@
+{
+  "accordion": [
+    "content",
+    "content-inner",
+    "header",
+    "icon",
+    "title"
+  ],
+  "action-bar": [
+    "base"
+  ],
+  "activity-feed": [
+    "base",
+    "content",
+    "entry",
+    "filters",
+    "group-header",
+    "icon",
+    "list",
+    "timestamp"
+  ],
+  "alert": [
+    "base",
+    "icon"
+  ],
+  "app-tiles": [
+    "base",
+    "icon"
+  ],
+  "approval-flow": [
+    "actions",
+    "avatar",
+    "comment",
+    "connector",
+    "container",
+    "content",
+    "name",
+    "role",
+    "status",
+    "step",
+    "timestamp"
+  ],
+  "audio-recorder": [
+    "base",
+    "controls",
+    "progress",
+    "visualizer"
+  ],
+  "availability": [
+    "base",
+    "grid",
+    "header"
+  ],
+  "avatar": [
+    "base",
+    "fallback",
+    "image"
+  ],
+  "avatar-group": [
+    "avatar",
+    "base",
+    "overflow"
+  ],
+  "badge": [
+    "badge",
+    "base"
+  ],
+  "banner": [
+    "action",
+    "banner",
+    "close",
+    "icon",
+    "message"
+  ],
+  "binpack": [
+    "base"
+  ],
+  "book": [
+    "base",
+    "book"
+  ],
+  "booking": [
+    "base",
+    "calendar",
+    "confirmation",
+    "form",
+    "slots",
+    "stepper"
+  ],
+  "breadcrumbs": [
+    "base",
+    "ellipsis",
+    "link",
+    "list",
+    "separator"
+  ],
+  "button": [
+    "base",
+    "icon",
+    "label",
+    "spinner"
+  ],
+  "calendar": [
+    "base",
+    "event-avatar",
+    "event-bar",
+    "event-popover",
+    "event-tooltip",
+    "grid",
+    "header",
+    "more-chip",
+    "more-dot",
+    "more-item",
+    "more-list",
+    "more-panel-date",
+    "week-number",
+    "week-number-header"
+  ],
+  "camera": [
+    "base",
+    "controls"
+  ],
+  "camera-annotate": [
+    "base",
+    "canvas",
+    "sidebar",
+    "toolbar"
+  ],
+  "candlestick": [
+    "base",
+    "canvas",
+    "tooltip"
+  ],
+  "card": [
+    "base",
+    "body",
+    "footer",
+    "header"
+  ],
+  "carousel": [
+    "button-next",
+    "button-prev",
+    "container",
+    "controls",
+    "indicator",
+    "indicators",
+    "slides-container",
+    "viewport"
+  ],
+  "cart": [
+    "base",
+    "checkout",
+    "coupon",
+    "empty",
+    "header",
+    "item",
+    "items",
+    "summary"
+  ],
+  "chart": [
+    "base",
+    "canvas",
+    "legend"
+  ],
+  "chat": [
+    "actions",
+    "attachment",
+    "author",
+    "avatar",
+    "base",
+    "delete-confirm",
+    "delete-confirm-no",
+    "delete-confirm-yes",
+    "edit-cancel",
+    "edit-input",
+    "edit-save",
+    "edited",
+    "input",
+    "input-area",
+    "input-container",
+    "message",
+    "message-other",
+    "message-own",
+    "message-text",
+    "messages",
+    "reaction",
+    "reaction-active",
+    "reactions",
+    "system-message",
+    "timestamp",
+    "typing-indicator"
+  ],
+  "checkbox": [
+    "checkbox",
+    "input",
+    "label",
+    "spinner"
+  ],
+  "chip": [
+    "base",
+    "icon"
+  ],
+  "code-block": [
+    "code",
+    "container",
+    "content",
+    "copy-button",
+    "filename",
+    "header",
+    "pre"
+  ],
+  "color-display": [
+    "container",
+    "label",
+    "swatch"
+  ],
+  "color-picker": [
+    "base",
+    "error-text",
+    "helper-text",
+    "spinner"
+  ],
+  "command-palette": [
+    "category",
+    "container",
+    "empty",
+    "input",
+    "item",
+    "item-content",
+    "item-description",
+    "item-icon",
+    "item-icon-image",
+    "item-label",
+    "item-shortcut",
+    "results",
+    "search"
+  ],
+  "comments": [
+    "base",
+    "input-area",
+    "list"
+  ],
+  "countdown": [
+    "base",
+    "label",
+    "segment",
+    "separator",
+    "value"
+  ],
+  "cropper": [
+    "base",
+    "crop-area",
+    "image-container"
+  ],
+  "data-card": [
+    "container",
+    "edit-toggle",
+    "field",
+    "field-edit",
+    "field-icon",
+    "field-input",
+    "field-label",
+    "field-save",
+    "field-value",
+    "group",
+    "group-title",
+    "header",
+    "title"
+  ],
+  "date-picker": [
+    "calendar",
+    "calendar-toggle",
+    "clear",
+    "error-text",
+    "helper-text",
+    "input",
+    "spinner"
+  ],
+  "date-range-picker": [
+    "calendar",
+    "calendar-toggle",
+    "clear",
+    "error-text",
+    "helper-text",
+    "input",
+    "spinner"
+  ],
+  "date-time-picker": [
+    "base",
+    "calendar",
+    "clear",
+    "error-text",
+    "helper-text",
+    "input",
+    "label",
+    "panel",
+    "spinner",
+    "time",
+    "toggle"
+  ],
+  "diff": [
+    "base",
+    "content",
+    "header"
+  ],
+  "divider": [
+    "base",
+    "line",
+    "text"
+  ],
+  "doc": [
+    "base",
+    "editor",
+    "icon",
+    "toolbar"
+  ],
+  "draw": [
+    "base",
+    "canvas"
+  ],
+  "drawer": [
+    "backdrop",
+    "base",
+    "body",
+    "close",
+    "footer",
+    "header",
+    "title"
+  ],
+  "empty-state": [
+    "action",
+    "container",
+    "description",
+    "icon",
+    "title"
+  ],
+  "estimate": [
+    "accept-button",
+    "actions",
+    "base",
+    "comparison",
+    "decline-button",
+    "discount-row",
+    "expiry",
+    "expiry-date",
+    "footer",
+    "header",
+    "item-toggle",
+    "logo",
+    "meta",
+    "notes",
+    "notes-content",
+    "notes-label",
+    "option",
+    "option-button",
+    "parties",
+    "party",
+    "party-detail",
+    "party-label",
+    "party-name",
+    "qr",
+    "qr-container",
+    "status",
+    "subtotal",
+    "summary",
+    "table",
+    "table-cell",
+    "table-header",
+    "table-row",
+    "tax-row",
+    "terms",
+    "title",
+    "total"
+  ],
+  "file-gallery": [
+    "base",
+    "dropzone",
+    "gallery"
+  ],
+  "file-upload": [
+    "error-text",
+    "file-item",
+    "helper-text",
+    "input",
+    "upload-area"
+  ],
+  "flip-card": [
+    "back",
+    "base",
+    "front"
+  ],
+  "flow": [
+    "base",
+    "canvas",
+    "minimap",
+    "nodes"
+  ],
+  "form-layout": [
+    "base"
+  ],
+  "funnel": [
+    "base",
+    "chart",
+    "tooltip"
+  ],
+  "gantt": [
+    "base",
+    "body",
+    "controls",
+    "header",
+    "task-list",
+    "timeline"
+  ],
+  "gauge": [
+    "base",
+    "label",
+    "value"
+  ],
+  "grid": [
+    "base"
+  ],
+  "heatmap": [
+    "base",
+    "grid",
+    "grid-area",
+    "tooltip"
+  ],
+  "image": [
+    "container",
+    "image",
+    "placeholder"
+  ],
+  "input": [
+    "clear",
+    "container",
+    "error-text",
+    "helper-text",
+    "input",
+    "label",
+    "password-toggle",
+    "prefix-icon",
+    "spinner",
+    "suffix-icon",
+    "wrapper"
+  ],
+  "invoice": [
+    "base",
+    "discount-row",
+    "footer",
+    "header",
+    "logo",
+    "meta",
+    "notes",
+    "notes-content",
+    "notes-label",
+    "parties",
+    "party",
+    "party-detail",
+    "party-label",
+    "party-name",
+    "qr",
+    "qr-container",
+    "status",
+    "summary",
+    "summary-label",
+    "summary-row",
+    "summary-value",
+    "table",
+    "table-cell",
+    "table-header",
+    "table-row",
+    "tax-row",
+    "title",
+    "total"
+  ],
+  "kanban": [
+    "base",
+    "column-cards",
+    "column-header"
+  ],
+  "key-value": [
+    "base",
+    "copy-button",
+    "delete-button",
+    "description-input",
+    "empty",
+    "error",
+    "key-input",
+    "row",
+    "rows",
+    "title",
+    "value-input",
+    "view-desc",
+    "view-key",
+    "view-row",
+    "view-value"
+  ],
+  "kpi": [
+    "container",
+    "header",
+    "label",
+    "main",
+    "sparkline",
+    "trend",
+    "trend-icon",
+    "trend-value",
+    "value"
+  ],
+  "layout": [
+    "base",
+    "brand",
+    "detail",
+    "empty",
+    "footer",
+    "form",
+    "header",
+    "list",
+    "main",
+    "page",
+    "panel",
+    "prose",
+    "right-sidebar",
+    "scrim",
+    "sidebar",
+    "toc",
+    "toolbar"
+  ],
+  "leaderboard": [
+    "base",
+    "empty",
+    "list",
+    "title"
+  ],
+  "link": [
+    "external-icon",
+    "link"
+  ],
+  "link-preview": [
+    "base",
+    "content",
+    "title"
+  ],
+  "list": [
+    "container",
+    "loading",
+    "search",
+    "sentinel"
+  ],
+  "location": [
+    "base",
+    "content",
+    "icon",
+    "map"
+  ],
+  "login": [
+    "base",
+    "footer",
+    "form",
+    "header",
+    "submit-button",
+    "submit-button-base",
+    "submit-button-icon",
+    "submit-button-label",
+    "submit-button-spinner",
+    "title"
+  ],
+  "map": [
+    "base",
+    "controls",
+    "markers",
+    "tiles"
+  ],
+  "markdown": [
+    "base"
+  ],
+  "masonry": [
+    "base"
+  ],
+  "menu": [
+    "content",
+    "divider",
+    "icon",
+    "image-left",
+    "image-right",
+    "item",
+    "label",
+    "panel",
+    "shortcut",
+    "trigger"
+  ],
+  "message-strip": [
+    "content",
+    "dismiss",
+    "icon"
+  ],
+  "modal": [
+    "backdrop",
+    "body",
+    "close",
+    "footer",
+    "header",
+    "panel"
+  ],
+  "music-player": [
+    "base",
+    "controls",
+    "playlist"
+  ],
+  "nav": [
+    "base",
+    "icon",
+    "link",
+    "nav"
+  ],
+  "network-graph": [
+    "base",
+    "canvas",
+    "tooltip"
+  ],
+  "notification-center": [
+    "icon",
+    "panel",
+    "panel-header",
+    "trigger"
+  ],
+  "order-tracker": [
+    "base",
+    "info",
+    "step",
+    "step-content",
+    "step-indicator",
+    "steps"
+  ],
+  "org-chart": [
+    "base",
+    "node",
+    "tree"
+  ],
+  "pagination": [
+    "base",
+    "button",
+    "ellipsis",
+    "first-button",
+    "last-button",
+    "next-button",
+    "pages",
+    "prev-button"
+  ],
+  "paint": [
+    "base",
+    "canvas",
+    "canvas-wrap",
+    "toolbar"
+  ],
+  "pdf-viewer": [
+    "base",
+    "toolbar",
+    "viewport"
+  ],
+  "permission-matrix": [
+    "base"
+  ],
+  "podcast-player": [
+    "base",
+    "controls",
+    "info"
+  ],
+  "popover": [
+    "content",
+    "panel",
+    "trigger"
+  ],
+  "pricing-table": [
+    "base",
+    "card",
+    "cards",
+    "cta",
+    "table",
+    "table-wrapper",
+    "toggle"
+  ],
+  "product-card": [
+    "badge",
+    "base",
+    "body",
+    "cta",
+    "discount",
+    "favorite-btn",
+    "gallery",
+    "image",
+    "price",
+    "price-current",
+    "price-original",
+    "rating",
+    "stars",
+    "stock",
+    "title",
+    "variant-group",
+    "variant-option",
+    "variants"
+  ],
+  "progress": [
+    "bar",
+    "base",
+    "circle",
+    "circle-bar",
+    "circle-bg",
+    "label"
+  ],
+  "progress-ring": [
+    "base",
+    "center",
+    "fill",
+    "label",
+    "track",
+    "value"
+  ],
+  "qr-code": [
+    "base"
+  ],
+  "qr-reader": [
+    "base",
+    "button-start",
+    "button-stop",
+    "button-switch",
+    "canvas",
+    "controls",
+    "error-text",
+    "result",
+    "video",
+    "viewport"
+  ],
+  "radio": [
+    "content",
+    "description",
+    "dot",
+    "input",
+    "label",
+    "radio",
+    "spinner"
+  ],
+  "range-slider": [
+    "label-max",
+    "label-min",
+    "range",
+    "thumb-high",
+    "thumb-low",
+    "track"
+  ],
+  "rating": [
+    "base",
+    "star"
+  ],
+  "receipt": [
+    "barcode-area",
+    "base",
+    "date",
+    "discount-row",
+    "divider",
+    "footer",
+    "header",
+    "item",
+    "item-name",
+    "item-price",
+    "item-qty",
+    "item-sku",
+    "items",
+    "items-header",
+    "logo",
+    "merchant-address",
+    "merchant-contact",
+    "merchant-name",
+    "meta",
+    "payment",
+    "payment-details",
+    "payment-method",
+    "qr-container",
+    "receipt-number",
+    "subtotal-row",
+    "tax-row",
+    "thank-you",
+    "tip-row",
+    "total-row",
+    "totals"
+  ],
+  "recipe": [
+    "container",
+    "content",
+    "controls",
+    "header",
+    "hero",
+    "ingredients",
+    "meta",
+    "nutrition",
+    "steps"
+  ],
+  "sankey": [
+    "base",
+    "chart",
+    "tooltip"
+  ],
+  "segmented-control": [
+    "base",
+    "indicator",
+    "segment"
+  ],
+  "select": [
+    "arrow",
+    "dropdown",
+    "error-text",
+    "helper-text",
+    "input",
+    "label",
+    "option",
+    "options",
+    "search",
+    "search-input",
+    "spinner",
+    "trigger",
+    "value"
+  ],
+  "skeleton": [
+    "base",
+    "bone"
+  ],
+  "slider": [
+    "error-text",
+    "fill",
+    "helper-text",
+    "spinner",
+    "thumb",
+    "track"
+  ],
+  "sortable": [
+    "base"
+  ],
+  "sparkline": [
+    "area",
+    "bar",
+    "container",
+    "dot",
+    "line",
+    "svg"
+  ],
+  "spinner": [
+    "bars",
+    "base",
+    "circle",
+    "dots",
+    "label",
+    "orbit",
+    "pulse"
+  ],
+  "split-button": [
+    "action",
+    "base",
+    "divider",
+    "menu",
+    "menu-items",
+    "primary",
+    "spinner",
+    "toggle"
+  ],
+  "split-pane": [
+    "divider",
+    "handle",
+    "primary",
+    "secondary"
+  ],
+  "spotlight": [
+    "actions",
+    "backdrop",
+    "base",
+    "button-back",
+    "button-next",
+    "button-skip",
+    "cutout",
+    "description",
+    "popover",
+    "step-indicator",
+    "title"
+  ],
+  "stat-group": [
+    "base",
+    "stat"
+  ],
+  "step-input": [
+    "base",
+    "decrement-button",
+    "increment-button",
+    "input"
+  ],
+  "stepper": [
+    "container",
+    "panel",
+    "panels",
+    "step",
+    "step-connector",
+    "step-content",
+    "step-description",
+    "step-indicator",
+    "step-label"
+  ],
+  "switch": [
+    "input",
+    "label",
+    "label-off",
+    "label-on",
+    "spinner",
+    "thumb",
+    "track"
+  ],
+  "table": [
+    "action-button",
+    "cell",
+    "checkbox-cell",
+    "container",
+    "content",
+    "controls",
+    "filter-button",
+    "link",
+    "loading-overlay",
+    "pagination",
+    "row",
+    "sort-indicator",
+    "superheader",
+    "tag",
+    "toggle",
+    "toolbar"
+  ],
+  "tabs": [
+    "base",
+    "close",
+    "indicator",
+    "label",
+    "nav",
+    "nav-container",
+    "panels",
+    "scroll-button",
+    "scroll-button-end",
+    "scroll-button-start"
+  ],
+  "tag": [
+    "base",
+    "icon",
+    "label"
+  ],
+  "tag-input": [
+    "base",
+    "container",
+    "input",
+    "label",
+    "suggestions",
+    "tag",
+    "tag-text"
+  ],
+  "terminal": [
+    "container",
+    "input",
+    "input-line",
+    "line",
+    "line-content",
+    "output",
+    "prompt",
+    "timestamp"
+  ],
+  "testimonial": [
+    "author",
+    "base",
+    "quote",
+    "stars"
+  ],
+  "textarea": [
+    "error-text",
+    "helper-text",
+    "spinner",
+    "textarea"
+  ],
+  "time-picker": [
+    "base",
+    "clear",
+    "dropdown",
+    "error-text",
+    "helper-text",
+    "hours",
+    "input",
+    "label",
+    "minutes",
+    "period",
+    "seconds",
+    "spinner",
+    "toggle"
+  ],
+  "time-range-picker": [
+    "base",
+    "header",
+    "slots"
+  ],
+  "timeline": [
+    "container",
+    "content",
+    "description",
+    "icon",
+    "item",
+    "marker",
+    "timestamp",
+    "title"
+  ],
+  "timer": [
+    "base",
+    "controls",
+    "display"
+  ],
+  "toast": [
+    "base",
+    "content",
+    "icon"
+  ],
+  "tooltip": [
+    "arrow",
+    "content",
+    "tooltip",
+    "trigger"
+  ],
+  "tree": [
+    "checkbox",
+    "children",
+    "container",
+    "content",
+    "expander",
+    "icon",
+    "icon-image",
+    "icon-text",
+    "label",
+    "loading"
+  ],
+  "treemap": [
+    "base",
+    "breadcrumbs",
+    "chart",
+    "tooltip"
+  ],
+  "user-card": [
+    "actions",
+    "avatar",
+    "base",
+    "contact",
+    "name",
+    "role",
+    "social",
+    "status"
+  ],
+  "video-player": [
+    "base",
+    "controls",
+    "progress",
+    "video"
+  ],
+  "virtual-scroller": [
+    "base"
+  ],
+  "waterfall": [
+    "base",
+    "chart"
+  ],
+  "weather": [
+    "base",
+    "current",
+    "details",
+    "forecast"
+  ],
+  "work-order": [
+    "asset",
+    "asset-id",
+    "asset-name",
+    "base",
+    "costs",
+    "customer",
+    "customer-address",
+    "customer-contact",
+    "customer-name",
+    "date",
+    "description",
+    "description-content",
+    "description-label",
+    "due-date",
+    "footer",
+    "grand-total",
+    "header",
+    "labor",
+    "labor-hours",
+    "labor-rate",
+    "labor-total",
+    "notes",
+    "notes-content",
+    "notes-label",
+    "part-cost",
+    "part-name",
+    "part-number",
+    "part-qty",
+    "parts",
+    "parts-row",
+    "parts-table",
+    "parts-total",
+    "priority",
+    "qr-container",
+    "sign-button",
+    "signature",
+    "signature-date",
+    "signature-line",
+    "status",
+    "task",
+    "task-assignee",
+    "task-checkbox",
+    "task-description",
+    "tasks",
+    "title",
+    "wo-number"
+  ]
+}

@@ -49,17 +49,17 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
     return html/*html*/`
       <div part="base" class="${avatarClasses}" style="${bgStyle}">
         <if ${this.src}>
-          <img part="image" class="${imageClasses}"
+          <img part="image${this.imageError ? ' image-error' : ''}" class="${imageClasses}"
                src="${this.src}"
                alt="${this.alt || this.name}"
                loading="${this.loading}"
                @load=${this.handleImageLoad}
                @error=${this.handleImageError}>
         </if>
-        <div part="fallback" class="${fallbackClasses}">
+        <div part="fallback${!this.src || this.imageError ? ' fallback-visible' : ''}" class="${fallbackClasses}">
           <case ${initials}>
             <when value="">
-              <svg class="avatar-icon" viewBox="0 0 24 24" fill="currentColor">
+              <svg part="icon" class="avatar-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
             </when>

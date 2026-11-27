@@ -47,6 +47,8 @@ dragThrottle: number = 120;                     // ms throttle for drag layout u
 ## CSS Parts
 
 - `base` - The inner container element
+- `drop-placeholder` - Drop target outline shown while dragging
+- `drop-placeholder-visible` - Added to `drop-placeholder` while the placeholder is shown
 
 ## Basic Usage
 

@@ -37,7 +37,10 @@ fallbackBackground: string = '';     // attr: fallback-background — overrides 
 
 - `base` - Outer avatar container
 - `image` - The `<img>` element (when loaded)
+- `image-error` - Added to `image` when the image fails to load
 - `fallback` - Initials or default icon container
+- `fallback-visible` - Added to `fallback` while the fallback is shown
+- `icon` - Default person icon (shown when there are no initials)
 
 ## Basic Usage
 

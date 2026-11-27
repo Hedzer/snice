@@ -46,17 +46,27 @@ interface ApprovalStep {
 
 | Part | Description |
 |------|-------------|
-| `container` | Main flow container |
+| `base` `container` | Main flow container (both tokens are on the same element) |
 | `step` | Individual step node |
+| `step-current` | Added to `step` when it is the current step |
 | `avatar` | Approver avatar circle |
+| `avatar-image` | Approver avatar image |
 | `content` | Name/role/status wrapper |
 | `name` | Approver name text |
 | `role` | Approver role text |
 | `status` | Status badge |
+| `status-icon` | Status glyph inside the badge |
+| `status-label` | Status text inside the badge |
 | `comment` | Comment text |
 | `timestamp` | Timestamp text |
 | `actions` | Approve/reject button row |
+| `button` | Any action button |
+| `button-approve` | Added to `button` on the approve button |
+| `button-reject` | Added to `button` on the reject button |
+| `input` | Comment input |
 | `connector` | Line between steps |
+
+Each `step` also carries a `step-<status>` token — one of `step-pending`, `step-approved`, `step-rejected`, `step-skipped`.
 
 ## Basic Usage
 

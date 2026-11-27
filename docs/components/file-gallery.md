@@ -123,8 +123,68 @@ gallery.addCustomAction(unsafeHTML(trustedSvgMarkup), 'Camera');
 | Part | Description |
 |------|-------------|
 | `base` | Outer gallery container |
+| `input` | Hidden native file input |
 | `dropzone` | Drag-and-drop upload zone |
+| `dropzone-content` | Content wrapper inside the dropzone |
+| `dropzone-icon` | Upload icon in the dropzone |
+| `dropzone-text` | Text block in the dropzone |
+| `dropzone-primary` | Primary dropzone line ("Click to upload") |
+| `dropzone-secondary` | Secondary dropzone line ("or drag and drop") |
+| `dropzone-hint` | Accepted-types / max-size hint line |
+| `header` | Gallery header bar |
+| `title` | File count title in the header |
+| `actions` | Header action button group |
+| `button` | Any button in the gallery |
+| `action-button` | A header action button |
+| `view-button` | The grid/list toggle `action-button` |
+| `clear-button` | The clear-all `action-button` |
 | `gallery` | File thumbnails grid/list area |
+| `item` | A gallery tile (file, add button or custom action) |
+| `item-preview` | Preview area of a tile |
+| `image` | Image preview element |
+| `placeholder` | Placeholder shown when there is no image preview |
+| `icon` | An SVG icon |
+| `badge` | Badge overlay on a file tile |
+| `badge-text` | Text inside a string badge |
+| `progress` | Upload progress track |
+| `progress-bar` | Upload progress fill |
+| `status` | Upload status overlay |
+| `item-info` | Info area of a tile |
+| `item-name` | File name (or tile label) |
+| `item-meta` | Meta row under the file name |
+| `item-size` | Formatted file size |
+| `progress-text` | Upload percentage text |
+| `error-text` | Upload error text |
+| `item-actions` | Per-file action button group |
+| `item-action` | A per-file action button |
+| `item-action-pause` | The pause `item-action` |
+| `item-action-resume` | The resume `item-action` |
+| `item-action-retry` | The retry `item-action` |
+| `item-action-delete` | The delete `item-action` |
+| `add-button` | The add-files tile |
+| `add-icon` | Placeholder icon wrapper of the add/custom-action tile |
+| `custom-action` | A custom-action tile |
+| `action-icon` | Text icon of a custom-action tile |
+
+**State tokens** (added alongside the base token):
+
+| Part | Description |
+|------|-------------|
+| `dropzone-disabled` | Added to `dropzone` while `disabled` is set |
+| `dropzone-drag-over` | Added to `dropzone` while a drag is over it |
+| `dropzone-has-files` | Added to `dropzone` once files are present |
+| `item-pending` | Added to `item` while the file is pending |
+| `item-uploading` | Added to `item` while the file is uploading |
+| `item-paused` | Added to `item` while the upload is paused |
+| `item-completed` | Added to `item` once the upload completed |
+| `item-error` | Added to `item` when the upload failed |
+| `status-success` | Added to `status` for a completed upload |
+| `status-error` | Added to `status` for a failed upload |
+| `add-button-disabled` | Added to `add-button` when the file limit is reached |
+| `badge-top-left` | Added to `badge` when the badge sits top-left |
+| `badge-top-right` | Added to `badge` when the badge sits top-right |
+| `badge-bottom-left` | Added to `badge` when the badge sits bottom-left |
+| `badge-bottom-right` | Added to `badge` when the badge sits bottom-right |
 
 ## Basic Usage
 

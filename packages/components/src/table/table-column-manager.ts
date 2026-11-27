@@ -690,9 +690,9 @@ export class TableColumnManager {
 
     return runs.map(({ group, span }) => {
       if (!group) {
-        return `<th colspan="${span}" class="column-group-header column-group-header--ungrouped" aria-hidden="true"></th>`;
+        return `<th colspan="${span}" part="column-group-cell" class="column-group-header column-group-header--ungrouped" aria-hidden="true"></th>`;
       }
-      return `<th colspan="${span}" class="column-group-header ${group.headerClass || ''}">${group.label}</th>`;
+      return `<th colspan="${span}" part="column-group-cell" class="column-group-header ${group.headerClass || ''}">${group.label}</th>`;
     }).join('');
   }
 

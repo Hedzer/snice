@@ -58,12 +58,25 @@ A two-handle slider for selecting a numeric range, with a highlighted track betw
 
 | Part | Description |
 |------|-------------|
+| `base` | Outer wrapper around the slider and labels |
+| `container` | Slider container |
+| `container-vertical` | Added to `container` in vertical orientation |
 | `track` | The slider track |
+| `track-disabled` | Added to `track` while interaction is disabled |
+| `track-invalid` | Added to `track` while the range is invalid |
 | `range` | The highlighted area between the two thumbs |
-| `thumb-low` | The low-value thumb |
-| `thumb-high` | The high-value thumb |
-| `label-min` | The minimum label text |
-| `label-max` | The maximum label text |
+| `range-dragging` | Added to `range` while a thumb is being dragged |
+| `thumb` | Either draggable thumb |
+| `thumb-low` | Added to `thumb` on the low-value thumb |
+| `thumb-high` | Added to `thumb` on the high-value thumb |
+| `thumb-disabled` | Added to `thumb` while interaction is disabled |
+| `thumb-invalid` | Added to `thumb` while the range is invalid |
+| `thumb-dragging` | Added to `thumb` while that thumb is being dragged |
+| `tooltip` | Value tooltip above a thumb |
+| `labels` | Min/max label row |
+| `label` | Either min or max label text |
+| `label-min` | Added to `label` on the minimum label |
+| `label-max` | Added to `label` on the maximum label |
 
 ## Basic Usage
 

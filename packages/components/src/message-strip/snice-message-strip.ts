@@ -39,9 +39,9 @@ export class SniceMessageStrip extends HTMLElement implements SniceMessageStripE
     ].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <div class="${classes}" role="${this.variant === 'danger' ? 'alert' : 'status'}" aria-live="${this.variant === 'danger' ? 'assertive' : 'polite'}" @animationend=${this.handleAnimationEnd}>
+      <div class="${classes}" part="base${this.isHidden ? ' base-hidden' : ''}" role="${this.variant === 'danger' ? 'alert' : 'status'}" aria-live="${this.variant === 'danger' ? 'assertive' : 'polite'}" @animationend=${this.handleAnimationEnd}>
         <if ${hasIcon}>
-          <div class="${iconClasses}" part="icon">
+          <div class="${iconClasses}" part="icon${showDefaultIcon ? ' icon-default' : ''}">
             <slot name="icon">
               ${renderIcon(iconName, 'message-strip-icon-content')}
             </slot>
@@ -56,7 +56,7 @@ export class SniceMessageStrip extends HTMLElement implements SniceMessageStripE
                   aria-label="Dismiss"
                   part="dismiss"
                   @click=${this.handleDismiss}>
-            <svg viewBox="0 0 24 24" fill="currentColor">
+            <svg viewBox="0 0 24 24" fill="currentColor" part="dismiss-icon">
               <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"/>
             </svg>
           </button>

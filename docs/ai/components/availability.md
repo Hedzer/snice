@@ -33,7 +33,32 @@ interface AvailabilityRange {
 
 - `base` - Main container
 - `header` - Header with title and presets
+- `title` - Header title text
+- `presets` - Preset button row
+- `preset` - A preset button
+- `preset-business` - Added to `preset` on the Business Hours button
+- `preset-weekdays` - Added to `preset` on the Weekdays Only button
+- `preset-clear` - Added to `preset` on the Clear All button
+- `grid-wrapper` - Scroll wrapper around the grid
 - `grid` - Availability grid
+- `row` - A grid row
+- `row-header` - Added to `row` on the day-name header row
+- `corner` - Empty corner cell above the time column
+- `day-header` - A day-name column header
+- `time-label` - A time-column label
+- `time-label-hour` - Added to `time-label` on hour boundaries
+- `time-label-sub-hour` - Added to `time-label` between hour boundaries
+- `cell` - A selectable slot cell
+- `cell-hour-start` - Added to `cell` on hour boundaries
+- `cell-sub-hour` - Added to `cell` between hour boundaries
+- `cell-active` - Added to `cell` while the slot is selected
+- `footer` - Footer with legend and count
+- `legend` - Legend container
+- `legend-item` - A legend entry
+- `legend-swatch` - A legend color swatch
+- `legend-swatch-available` - Added to `legend-swatch` on the available swatch
+- `legend-swatch-unavailable` - Added to `legend-swatch` on the unavailable swatch
+- `count` - Selected-hours summary text
 
 ## Basic Usage
 

@@ -39,6 +39,15 @@ interface TreemapNode {
 - `base` - Main treemap container
 - `chart` - Chart rendering area
 - `tooltip` - Hover tooltip element
+- `svg` - Root `<svg>` of the treemap chart
+- `tile` - A treemap rectangle
+- `tile-border` - Stroke overlay drawn on top of a tile
+- `label` - Tile label text
+- `value` - Tile value text
+- `breadcrumb` - A breadcrumb entry in the drill-down trail
+- `breadcrumb-root` - Added to `breadcrumb` on the root entry
+- `breadcrumb-current` - Added to `breadcrumb` on the current (last) entry
+- `separator` - Separator between breadcrumb entries
 
 ## Basic Usage
 

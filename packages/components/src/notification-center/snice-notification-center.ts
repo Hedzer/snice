@@ -86,27 +86,31 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
 
     const items = this.notifications.map(n => html`
       <li class="notification-item ${n.read ? '' : 'unread'}"
+          part="item${n.read ? '' : ' item-unread'}"
           @click=${() => this.handleItemClick(n)}>
-        <span class="notification-icon notification-icon--${n.type || 'info'}">${renderIcon(n.icon || this.getDefaultIcon(n.type), 'notification-icon-img')}</span>
-        <div class="notification-content">
-          <div class="notification-title">${n.title}</div>
-          <div class="notification-message">${n.message}</div>
-          <div class="notification-time">${n.timestamp}</div>
+        <span class="notification-icon notification-icon--${n.type || 'info'}" part="item-icon">${renderIcon(n.icon || this.getDefaultIcon(n.type), 'notification-icon-img')}</span>
+        <div class="notification-content" part="item-content">
+          <div class="notification-title" part="item-title">${n.title}</div>
+          <div class="notification-message" part="item-message">${n.message}</div>
+          <div class="notification-time" part="item-time">${n.timestamp}</div>
         </div>
         <button class="dismiss-btn"
+                part="dismiss"
                 aria-label="Dismiss"
                 @click=${(e: Event) => this.handleDismiss(e, n.id)}>${renderIcon('x-mark', 'dismiss-icon')}</button>
       </li>
     `);
 
     return html`
-      <button part="trigger" class="bell-button"
+      <button part="trigger${this.open ? ' trigger-open' : ''}" class="bell-button"
               aria-label="Notifications"
               aria-haspopup="dialog"
               aria-expanded="${this.open ? 'true' : 'false'}"
               aria-controls="snice-notif-panel"
               @click=${() => this.togglePanel()}>
-        <snice-badge count=${unread} variant="error" size="small" position="top-right">
+        <snice-badge count=${unread} variant="error" size="small" position="top-right"
+                     part="badge"
+                     exportparts="base: badge-base, badge: badge-badge, badge-dot: badge-badge-dot, badge-pulse: badge-badge-pulse">
           <span class="bell-icon" part="icon">
             <slot name="icon">
               ${renderIcon(this.icon || 'bell', 'bell-icon-img')}
@@ -118,12 +122,14 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
            id="snice-notif-panel" role="dialog" aria-modal="false"
            aria-labelledby="snice-notif-title">
         <div part="panel-header" class="panel-header">
-          <span class="panel-title" id="snice-notif-title">Notifications</span>
-          <button class="mark-all-btn" @click=${() => this.markAllAsRead()}>Mark all read</button>
+          <span class="panel-title" part="panel-title" id="snice-notif-title">Notifications</span>
+          <button class="mark-all-btn" part="mark-all-button" @click=${() => this.markAllAsRead()}>Mark all read</button>
         </div>
         ${this.notifications.length > 0
-          ? html`<ul class="notification-list">${items}</ul>`
-          : html`<snice-empty-state icon="bell" title="No notifications" size="small" style="padding: 2rem 1rem;"></snice-empty-state>`
+          ? html`<ul class="notification-list" part="list">${items}</ul>`
+          : html`<snice-empty-state icon="bell" title="No notifications" size="small" style="padding: 2rem 1rem;"
+                                    part="empty-state"
+                                    exportparts="base: empty-state-base, container: empty-state-container, icon: empty-state-icon, title: empty-state-title, description: empty-state-description, action: empty-state-action, extra: empty-state-extra"></snice-empty-state>`
         }
       </div>
     `;

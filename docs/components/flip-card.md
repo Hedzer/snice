@@ -50,6 +50,7 @@ The flip card component creates a two-sided card with a CSS 3D flip animation. C
 | Part | Description |
 |------|-------------|
 | `base` | The outer flip card container |
+| `base-flipped` | Added to `base` while the card is flipped |
 | `front` | The front face container |
 | `back` | The back face container |
 

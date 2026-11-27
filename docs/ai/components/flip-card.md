@@ -28,6 +28,7 @@ duration: number = 600;                   // Flip animation duration in ms
 ## CSS Parts
 
 - `base` - The outer flip card container
+- `base-flipped` - Added to `base` while the card is flipped
 - `front` - The front face container
 - `back` - The back face container
 

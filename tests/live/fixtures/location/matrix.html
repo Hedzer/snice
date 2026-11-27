@@ -94,7 +94,7 @@
           await settle(!!combo.showMap);
           const sr = el.shadowRoot;
           return {
-            base: !!sr.querySelector('[part="base"]'),
+            base: !!sr.querySelector('[part~="base"]'),
             icon: !!sr.querySelector('[part="icon"]'),
             map: !!sr.querySelector('[part="map"]'),
           };

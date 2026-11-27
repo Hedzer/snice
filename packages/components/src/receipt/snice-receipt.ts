@@ -192,16 +192,16 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
 
     return html/*html*/`
       <div class="receipt__item" part="item">
-        <div class="receipt__item-info">
+        <div class="receipt__item-info" part="item-info">
           <span class="receipt__item-name" part="item-name">${item.name}</span>
           <if ${hasSku}>
             <span class="receipt__item-sku" part="item-sku">${item.sku}</span>
           </if>
           <if ${hasNote}>
-            <span class="receipt__item-note">${item.note}</span>
+            <span class="receipt__item-note" part="item-note">${item.note}</span>
           </if>
           <if ${hasDiscount}>
-            <span class="receipt__item-discount">-${this.formatCurrency(item.discount || 0)}</span>
+            <span class="receipt__item-discount" part="item-discount">-${this.formatCurrency(item.discount || 0)}</span>
           </if>
         </div>
         <if ${showQty}>
@@ -274,27 +274,27 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
         <if ${hasMeta}>
           <div class="receipt__meta" part="meta">
             <if ${this.receiptNumber}>
-              <div class="receipt__meta-item">
-                <span class="receipt__meta-label">Receipt #</span>
-                <span class="receipt__meta-value" part="receipt-number">${this.receiptNumber}</span>
+              <div class="receipt__meta-item" part="meta-item">
+                <span class="receipt__meta-label" part="meta-label">Receipt #</span>
+                <span class="receipt__meta-value" part="meta-value receipt-number">${this.receiptNumber}</span>
               </div>
             </if>
             <if ${this.date}>
-              <div class="receipt__meta-item">
-                <span class="receipt__meta-label">Date</span>
-                <span class="receipt__meta-value" part="date">${this.date}</span>
+              <div class="receipt__meta-item" part="meta-item">
+                <span class="receipt__meta-label" part="meta-label">Date</span>
+                <span class="receipt__meta-value" part="meta-value date">${this.date}</span>
               </div>
             </if>
             <if ${this.cashier}>
-              <div class="receipt__meta-item">
-                <span class="receipt__meta-label">Cashier</span>
-                <span class="receipt__meta-value">${this.cashier}</span>
+              <div class="receipt__meta-item" part="meta-item">
+                <span class="receipt__meta-label" part="meta-label">Cashier</span>
+                <span class="receipt__meta-value" part="meta-value cashier">${this.cashier}</span>
               </div>
             </if>
             <if ${this.terminalId}>
-              <div class="receipt__meta-item">
-                <span class="receipt__meta-label">Terminal</span>
-                <span class="receipt__meta-value">${this.terminalId}</span>
+              <div class="receipt__meta-item" part="meta-item">
+                <span class="receipt__meta-label" part="meta-label">Terminal</span>
+                <span class="receipt__meta-value" part="meta-value terminal">${this.terminalId}</span>
               </div>
             </if>
           </div>
@@ -305,8 +305,8 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
 
         <if ${hasItems}>
           <div class="receipt__items-header" part="items-header">
-            <span>Item</span>
-            <span>Amount</span>
+            <span part="row-label">Item</span>
+            <span part="row-value">Amount</span>
           </div>
           <div class="receipt__items" part="items">
             ${this.items.map(item => this.renderItem(item))}
@@ -317,22 +317,22 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
         <slot name="after-items"></slot>
 
         <div class="receipt__totals" part="totals">
-          <div class="receipt__total-row" part="subtotal-row">
-            <span>Subtotal</span>
-            <span>${this.formatCurrency(computedSubtotal)}</span>
+          <div class="receipt__total-row" part="row subtotal-row">
+            <span part="row-label">Subtotal</span>
+            <span part="row-value">${this.formatCurrency(computedSubtotal)}</span>
           </div>
 
           <if ${hasDiscount}>
-            <div class="receipt__total-row receipt__total-row--discount" part="discount-row">
-              <span>${this.discountLabel}</span>
-              <span>-${this.formatCurrency(this.discount)}</span>
+            <div class="receipt__total-row receipt__total-row--discount" part="row discount-row">
+              <span part="row-label">${this.discountLabel}</span>
+              <span part="row-value">-${this.formatCurrency(this.discount)}</span>
             </div>
           </if>
 
           <if ${hasTax && !hasMultipleTaxes}>
-            <div class="receipt__total-row" part="tax-row">
-              <span>Tax</span>
-              <span>${this.formatCurrency(this.tax)}</span>
+            <div class="receipt__total-row" part="row tax-row">
+              <span part="row-label">Tax</span>
+              <span part="row-value">${this.formatCurrency(this.tax)}</span>
             </div>
           </if>
 
@@ -340,31 +340,31 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
             ${this.taxes.map(t => {
               const label = t.rate ? `${t.label} (${t.rate}%)` : t.label;
               return html/*html*/`
-                <div class="receipt__total-row" part="tax-row">
-                  <span>${label}</span>
-                  <span>${this.formatCurrency(t.amount)}</span>
+                <div class="receipt__total-row" part="row tax-row">
+                  <span part="row-label">${label}</span>
+                  <span part="row-value">${this.formatCurrency(t.amount)}</span>
                 </div>
               `;
             })}
           </if>
 
           <if ${hasTip}>
-            <div class="receipt__total-row" part="tip-row">
-              <span>Tip</span>
-              <span>${this.formatCurrency(this.tip)}</span>
+            <div class="receipt__total-row" part="row tip-row">
+              <span part="row-label">Tip</span>
+              <span part="row-value">${this.formatCurrency(this.tip)}</span>
             </div>
           </if>
 
-          <div class="receipt__total-row receipt__total-row--grand" part="total-row">
-            <span>Total</span>
-            <span>${this.formatCurrency(computedTotal)}</span>
+          <div class="receipt__total-row receipt__total-row--grand" part="row total-row">
+            <span part="row-label">Total</span>
+            <span part="row-value">${this.formatCurrency(computedTotal)}</span>
           </div>
         </div>
 
         <if ${hasPayment}>
           ${this.renderDivider()}
           <div class="receipt__payment" part="payment">
-            <span>Paid with </span>
+            <span part="payment-label">Paid with </span>
             <span class="receipt__payment-method" part="payment-method">${this.paymentMethod}</span>
             <if ${this.paymentDetails}>
               <div class="receipt__payment-details" part="payment-details">${this.paymentDetails}</div>

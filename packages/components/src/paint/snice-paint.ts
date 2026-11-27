@@ -4,6 +4,10 @@ import paintStyles from './snice-paint.css?inline';
 
 const DEFAULT_COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#e2e8f0', '#1e293b'];
 
+// Tool state token added to the canvas's part. Indexing this map with `this.tool`
+// is what keeps it exhaustive: a missing key is a compile error at the use site.
+const CANVAS_TOOL_PARTS = { pen: ' canvas-tool-pen', eraser: ' canvas-tool-eraser' };
+
 @element('snice-paint')
 export class SnicePaint extends HTMLElement implements SnicePaintElement {
   @property({ type: String })
@@ -97,6 +101,8 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
     const ctrls = this.activeControls;
     const hasSlottedToolbar = !!this.querySelector('[slot="toolbar-start"],[slot="colors"],[slot="size"],[slot="tools"],[slot="toolbar-end"]');
     const hasToolbar = ctrls.size > 0 || hasSlottedToolbar;
+    const penActive = this.tool === 'pen';
+    const eraserActive = this.tool === 'eraser';
 
     return html`
       <div class="paint-container" part="base">
@@ -105,11 +111,12 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
             <slot name="toolbar-start"></slot>
             <slot name="colors">
               ${ctrls.has('colors') ? html`
-                <span class="paint-toolbar-label">Color</span>
-                <div class="paint-swatches">
+                <span class="paint-toolbar-label" part="toolbar-label">Color</span>
+                <div class="paint-swatches" part="swatches">
                   ${this.colors.map(c => html`
                     <span
                       class="paint-swatch ${c === this.color && this.tool === 'pen' ? 'active' : ''}"
+                      part="swatch${penActive && c === this.color ? ' swatch-active' : ''}"
                       style="--c:${c}"
                       @click=${() => this.selectColor(c)}
                     ></span>
@@ -122,6 +129,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
                       <input
                         type="color"
                         class="paint-swatch-select ${used ? 'used' : ''} ${active ? 'active' : ''}"
+                        part="swatch-select${used ? ' swatch-select-used' : ''}${active ? ' swatch-select-active' : ''}"
                         .value=${c}
                         @input=${(e: Event) => this.handleCustomColorInput(i, (e.target as HTMLInputElement).value)}
                         @change=${(e: Event) => this.handleCustomColorChange(i, (e.target as HTMLInputElement).value)}
@@ -130,57 +138,59 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
                     `;
                   })}
                 </div>
-                <div class="paint-toolbar-sep"></div>
+                <div class="paint-toolbar-sep" part="separator"></div>
               ` : ''}
             </slot>
             <slot name="size">
               ${ctrls.has('size') ? html`
-                <span class="paint-toolbar-label">Size</span>
+                <span class="paint-toolbar-label" part="toolbar-label">Size</span>
                 <input
                   type="range"
                   class="paint-size-slider"
+                  part="size-slider"
                   min="${this.minStrokeWidth}"
                   max="${this.maxStrokeWidth}"
                   .value="${String(this.strokeWidth)}"
                   @input=${(e: Event) => { this.strokeWidth = +(e.target as HTMLInputElement).value; }}
                   title="Brush size"
                 >
-                <div class="paint-toolbar-sep"></div>
+                <div class="paint-toolbar-sep" part="separator"></div>
               ` : ''}
             </slot>
             ${ctrls.has('eraser') ? html`
               <button
                 class="paint-btn ${this.tool === 'eraser' ? 'active' : ''}"
+                part="button eraser-button${eraserActive ? ' button-active' : ''}"
                 @click=${() => this.toggleEraser()}
                 title="Eraser"
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 14h7M3.5 12l8-8 3 3-8 8H3.5v-3z"/></svg>
+                <svg part="button-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 14h7M3.5 12l8-8 3 3-8 8H3.5v-3z"/></svg>
               </button>
             ` : ''}
             <slot name="tools"></slot>
             ${ctrls.has('eraser') || this.querySelector('[slot="tools"]') ? html`
-              <div class="paint-toolbar-sep"></div>
+              <div class="paint-toolbar-sep" part="separator"></div>
             ` : ''}
             ${ctrls.has('undo') ? html`
-              <button class="paint-btn" @click=${() => this.undo()} title="Undo">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6L1 9l3 3"/><path d="M1 9h10a4 4 0 000-8H8"/></svg>
+              <button class="paint-btn" part="button undo-button" @click=${() => this.undo()} title="Undo">
+                <svg part="button-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6L1 9l3 3"/><path d="M1 9h10a4 4 0 000-8H8"/></svg>
               </button>
             ` : ''}
             ${ctrls.has('redo') ? html`
-              <button class="paint-btn" @click=${() => this.redo()} title="Redo">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6l3 3-3 3"/><path d="M15 9H5a4 4 0 010-8h3"/></svg>
+              <button class="paint-btn" part="button redo-button" @click=${() => this.redo()} title="Redo">
+                <svg part="button-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6l3 3-3 3"/><path d="M15 9H5a4 4 0 010-8h3"/></svg>
               </button>
             ` : ''}
             ${ctrls.has('clear') ? html`
-              <button class="paint-btn danger" @click=${() => this.clear()} title="Clear canvas">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12"/><path d="M5.3 4V2.7h5.4V4"/><path d="M6 7v5M10 7v5"/><path d="M3.3 4l.7 9.3h8l.7-9.3"/></svg>
+              <button class="paint-btn danger" part="button clear-button" @click=${() => this.clear()} title="Clear canvas">
+                <svg part="button-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12"/><path d="M5.3 4V2.7h5.4V4"/><path d="M6 7v5M10 7v5"/><path d="M3.3 4l.7 9.3h8l.7-9.3"/></svg>
               </button>
             ` : ''}
             <slot name="toolbar-end"></slot>
           </div>
         ` : ''}
         <div class="paint-canvas-wrap" part="canvas-wrap">
-          <canvas class="paint-canvas tool-${this.tool}" part="canvas" role="img" aria-label="Paint canvas"></canvas>
+          <canvas class="paint-canvas tool-${this.tool}" part="canvas${CANVAS_TOOL_PARTS[this.tool] ?? ''}" role="img" aria-label="Paint canvas"></canvas>
         </div>
       </div>
     `;

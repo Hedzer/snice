@@ -72,8 +72,58 @@ type PlayerState = 'playing' | 'paused' | 'stopped' | 'loading' | 'error';
 ## CSS Parts
 
 - `base` - Outer player container
+- `info` - Artwork and track information row
+- `artwork` - Artwork frame
+- `artwork-image` - Artwork `<img>`
+- `artwork-placeholder` - Placeholder shown when a track has no artwork
+- `track-info` - Track text block
+- `track-title` - Track title
+- `track-title-link` - Added to `track-title` when the title is a link
+- `track-artist` - Track artist
+- `track-artist-link` - Added to `track-artist` when the artist is a link
+- `track-album` - Track album
 - `controls` - Playback controls and progress bar
+- `control-buttons` - Transport button row
+- `button` - Shared token on every control button
+- `shuffle-button` - Shuffle toggle
+- `prev-button` - Previous track button
+- `play-button` - Play/pause button
+- `next-button` - Next track button
+- `repeat-button` - Repeat toggle
+- `volume-button` - Volume button
+- `icon` - Shared token on every transport/volume `<svg>` icon
+- `shuffle-icon` - Shuffle button icon
+- `prev-icon` - Previous track button icon
+- `play-icon` - Play/pause button icon
+- `next-icon` - Next track button icon
+- `repeat-icon` - Repeat button icon
+- `volume-icon` - Volume button icon
+- `progress` - Progress row (times, scrubber, volume)
+- `time` - Shared token on both time labels
+- `current-time` - Elapsed time label
+- `duration-time` - Duration label
+- `progress-track` - Seek track
+- `progress-fill` - Played portion of the seek track
+- `volume` - Volume control group
+- `volume-panel` - Volume slider popout
+- `volume-slider` - Volume `<input type="range">`
 - `playlist` - Playlist section
+- `playlist-header` - Playlist heading
+- `playlist-items` - Playlist list container
+- `playlist-item` - One playlist row
+- `playlist-item-number` - Row index
+- `playlist-item-artwork` - Row artwork `<img>`
+- `playlist-item-info` - Row text block
+- `playlist-item-title` - Row title
+- `playlist-item-artist` - Row artist
+- `playlist-item-duration` - Row duration
+
+State tokens:
+
+- `base-compact` - Added to `base` in compact mode
+- `button-active` - Added to `button` on the shuffle/repeat toggles while engaged
+- `button-playing` - Added to `button` on the play button while playing
+- `playlist-item-active` - Added to `playlist-item` on the current track
 
 ## Basic Usage
 

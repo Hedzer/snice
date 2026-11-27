@@ -56,7 +56,7 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
       <div part="base" class="badge-wrapper">
         <slot></slot>
         <if ${showBadge}>
-          <span part="badge" class="${badgeClasses}"
+          <span part="badge${this.dot ? ' badge-dot' : ''}${this.pulse ? ' badge-pulse' : ''}" class="${badgeClasses}"
                 aria-label="${this.label || displayContent}"
                 role="status">
             <if ${!this.dot}>${displayContent}</if>

@@ -415,6 +415,7 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
         ${this.filteredColumns.map(column => html/*html*/`
             <div
               class="column ${column.collapsed ? 'column--collapsed' : ''}"
+              part="column${column.collapsed ? ' column-collapsed' : ''}"
               role="listitem"
               aria-label="${column.title} column, ${column.cards.length} cards"
               @dragover=${(e: DragEvent) => this.handleColumnDragOver(e)}
@@ -422,22 +423,23 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
               @dragleave=${(e: DragEvent) => this.handleColumnDragLeave(e)}
               @drop=${(e: DragEvent) => this.handleColumnDrop(column.id, e)}>
               <div class="column__header" part="column-header" style="${column.color ? `border-color: ${column.color}` : ''}">
-                <div class="column__title">
+                <div class="column__title" part="column-title">
                   ${column.title}
                   <if ${this.showCardCount}>
-                    <span class="column__count">${column.cards.length}</span>
+                    <span class="column__count" part="column-count">${column.cards.length}</span>
                   </if>
                 </div>
               </div>
 
               <div class="column__cards ${column.cards.length === 0 ? 'column__cards--empty' : ''}" part="column-cards" role="list" aria-label="${column.title} cards">
                 <if ${column.cards.length === 0}>
-                  <div>No cards</div>
+                  <div part="empty">No cards</div>
                 </if>
 
                 ${column.cards.map(card => html`
                   <div
                     class="card ${this.kbGrabbedCardId === card.id ? 'card--grabbed' : ''}"
+                    part="card${this.kbGrabbedCardId === card.id ? ' card-grabbed' : ''}"
                     draggable="${this.allowDragDrop}"
                     role="button"
                     tabindex="0"
@@ -453,18 +455,18 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
                     @dragleave=${(e: DragEvent) => this.handleCardDragLeave(e)}
                     @keydown=${(e: KeyboardEvent) => this.handleCardKeydown(card, column.id, e)}
                     @click=${() => this.handleCardClick(card)}>
-                    <div class="card__title">${card.title}</div>
+                    <div class="card__title" part="card-title">${card.title}</div>
                     <if ${card.description}>
-                      <div class="card__description">${card.description}</div>
+                      <div class="card__description" part="card-description">${card.description}</div>
                     </if>
-                    <div class="card__meta">
+                    <div class="card__meta" part="card-meta">
                       <if ${card.assignee}>
-                        <div class="card__assignee">
+                        <div class="card__assignee" part="card-assignee">
                           ${renderIcon('user', 'card__assignee-icon')} ${card.assignee}
                         </div>
                       </if>
                       <if ${card.labels && card.labels.length > 0}>
-                        <div class="card__labels">
+                        <div class="card__labels" part="card-labels">
                           ${card.labels?.map(label => {
                             const labelText = this.getLabelText(label);
                             const labelObj = typeof label === 'string' ? null : label;
@@ -474,13 +476,13 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
                             const iconPosition = labelObj?.iconPosition || 'left';
 
                             return html`
-                              <span class="card__label" style="${style}">
+                              <span class="card__label" part="card-label" style="${style}">
                                 <if ${icon && iconPosition === 'left'}>
-                                  <span class="card__label-icon">${renderIcon(icon, 'card__label-icon-glyph')}</span>
+                                  <span class="card__label-icon" part="card-label-icon">${renderIcon(icon, 'card__label-icon-glyph')}</span>
                                 </if>
                                 ${labelText}
                                 <if ${icon && iconPosition === 'right'}>
-                                  <span class="card__label-icon">${renderIcon(icon, 'card__label-icon-glyph')}</span>
+                                  <span class="card__label-icon" part="card-label-icon">${renderIcon(icon, 'card__label-icon-glyph')}</span>
                                 </if>
                               </span>
                             `;

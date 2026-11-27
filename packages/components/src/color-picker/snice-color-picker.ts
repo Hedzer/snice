@@ -154,14 +154,15 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     return html/*html*/`
       <div class="${wrapperClasses}" part="base">
         <if ${this.label}>
-          <label class="${labelClasses}" @click=${() => this.focus()}>
+          <label class="${labelClasses}" part="label${this.required ? ' label-required' : ''}" @click=${() => this.focus()}>
             ${this.label}
           </label>
         </if>
 
-        <div class="picker-container">
+        <div class="picker-container" part="controls">
           <div
             class="${swatchClasses}"
+            part="swatch${interactionDisabled ? ' swatch-disabled' : ''}${displayedInvalid ? ' swatch-invalid' : ''}${this.loading ? ' swatch-loading' : ''}"
             @click=${this.handleSwatchClick}
             tabindex="${interactionDisabled ? -1 : 0}"
             role="button"
@@ -173,16 +174,17 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
             @focus=${this.handleFocus}
             @blur=${this.handleBlur}
           >
-            <div class="swatch-inner" style="background-color: ${this.value}"></div>
+            <div class="swatch-inner" part="swatch-fill" style="background-color: ${this.value}"></div>
             <if ${this.loading}>
               <span class="swatch-spinner" part="spinner"></span>
             </if>
           </div>
 
           <if ${this.showInput}>
-            <div class="color-input-wrapper">
+            <div class="color-input-wrapper" part="input-wrapper">
               <input
                 class="${inputClasses}"
+                part="input${displayedInvalid ? ' input-invalid' : ''}${this.loading ? ' input-loading' : ''}"
                 type="text"
                 .value="${displayValue}"
                 ?disabled="${interactionDisabled}"
@@ -212,7 +214,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
         </div>
 
         <if ${this.showPresets}>
-          <div class="presets">
+          <div class="presets" part="presets">
             ${this.presets.map(preset => this.renderPreset(preset))}
           </div>
         </if>
@@ -246,6 +248,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     return html/*html*/`
       <div
         class="${classes}"
+        part="preset${isSelected ? ' preset-selected' : ''}${this.interactionDisabled ? ' preset-disabled' : ''}"
         style="background-color: ${color}"
         data-color="${color}"
         @click=${() => this.handlePresetClick(color)}

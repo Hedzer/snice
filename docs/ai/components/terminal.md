@@ -77,6 +77,7 @@ Streaming API — feed raw chunks without splitting on newlines; a trailing part
 
 ## CSS Parts
 
+- `base` - Terminal container (same element as `container`)
 - `container` - Terminal container
 - `output` - Output scrollable area
 - `input-line` - Input line wrapper
@@ -85,6 +86,13 @@ Streaming API — feed raw chunks without splitting on newlines; a trailing part
 - `line` - Individual output line
 - `timestamp` - Line timestamp
 - `line-content` - Line text content
+- `line-input` - Added to `line` for an echoed command line
+- `line-output` - Added to `line` for an output line
+- `line-error` - Added to `line` for an error line
+- `line-info` - Added to `line` for an info line
+- `line-success` - Added to `line` for a success line
+- `line-warning` - Added to `line` for a warning line
+- `ansi` - Each span an ANSI colour escape opens inside `line-content`
 
 ## Line Types
 

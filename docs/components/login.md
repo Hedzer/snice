@@ -101,20 +101,58 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `header` | `<div>` | The header section containing the title |
 | `title` | `<h1>` | The title heading element |
 | `form` | `<form>` | The login form element |
+| `subtitle` | `<p>` | The default subtitle paragraph |
+| `field` | `<div>` | A form field wrapper |
+| `username-field` | `<div>` | Added beside `field` on the username row |
+| `password-field` | `<div>` | Added beside `field` on the password row |
+| `label` | `<label>` | A field label |
+| `username-label` | `<label>` | Added beside `label` on the username row |
+| `password-label` | `<label>` | Added beside `label` on the password row |
+| `input` | `<input>` | A field input |
+| `username-input` | `<input>` | Added beside `input` on the username row |
+| `password-input` | `<input>` | Added beside `input` on the password row |
+| `options` | `<div>` | The remember-me / forgot-password row |
+| `remember` | `<label>` | The remember-me label wrapper |
+| `checkbox` | `<input>` | The remember-me checkbox |
+| `forgot-link` | `<a>` | The forgot-password link |
 | `submit-button` | `<snice-button>` | The submit control that sends the credentials |
+| `alert` | `<snice-alert>` | The inline alert banner |
 | `footer` | `<div>` | The footer section below the form |
 
-The submit control is itself a `<snice-button>`, so its own parts are forwarded
-through with a `submit-button-` prefix. Use these when you need the real
-`<button>` inside it — its focus ring, padding and colors live there, not on the
-`<snice-button>` host.
+The inline banner is a `<snice-alert>`, so every one of its own parts is
+forwarded with an `alert-` prefix.
+
+### Forwarded from the inline alert
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `alert-base` | `<div>` | The alert's root container |
+| `alert-body` | `<div>` | The alert's `role="alert"` region wrapping icon and content |
+| `alert-icon` | `<span>` | The alert's icon container |
+| `alert-icon-content` | `<span>` | The alert's built-in variant glyph |
+| `alert-content` | `<div>` | The alert's title and description wrapper |
+| `alert-title` | `<div>` | The alert's title text |
+| `alert-description` | `<div>` | The alert's description text |
+| `alert-close` | `<button>` | The alert's dismiss button |
+| `alert-close-icon` | `<span>` | The alert's dismiss button glyph |
+
+The submit control is itself a `<snice-button>`, so every one of its own parts
+is forwarded through with a `submit-button-` prefix. Use these when you need the
+real `<button>` inside it — its focus ring, padding and colors live there, not on
+the `<snice-button>` host.
+
+### Forwarded from the submit button
 
 | Part | Element | Description |
 |------|---------|-------------|
 | `submit-button-base` | `<button>` | The inner button element |
+| `submit-button-spinner` | `<span>` | The loading spinner |
 | `submit-button-label` | `<span>` | The label wrapper around the action text |
 | `submit-button-icon` | `<span>` | The icon slot wrapper |
-| `submit-button-spinner` | `<span>` | The loading spinner |
+| `submit-button-icon-start` | `<span>` | Added beside `submit-button-icon` when the icon renders before the label |
+| `submit-button-icon-end` | `<span>` | Added beside `submit-button-icon` when the icon renders after the label |
+| `submit-button-base-loading` | `<button>` | Added beside `submit-button-base` while the button is loading |
+| `submit-button-base-disabled` | `<button>` | Added beside `submit-button-base` while the button is disabled |
 
 ```css
 snice-login::part(base) {

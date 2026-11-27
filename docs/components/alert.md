@@ -113,7 +113,14 @@ Use the `icon` slot for external CSS-based icon fonts (Material Symbols, Font Aw
 | Part | Description |
 |------|-------------|
 | `base` | Root container |
+| `body` | Region wrapping the icon and content (`role="alert"`) |
 | `icon` | The icon container |
+| `icon-content` | The built-in variant icon glyph |
+| `content` | Title and description wrapper |
+| `title` | Title text |
+| `description` | Description text (default slot) |
+| `close` | Dismiss button (when `dismissible`) |
+| `close-icon` | Dismiss button glyph |
 
 ## Basic Usage
 

@@ -26,6 +26,8 @@ pill: boolean = false;       // Fully rounded corners
 - `base` - The tag container span
 - `icon` - The icon slot wrapper
 - `label` - The label slot wrapper
+- `remove-button` - The remove button (rendered when `removable`)
+- `remove-icon` - The X icon inside the remove button
 
 ## Basic Usage
 

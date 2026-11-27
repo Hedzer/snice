@@ -21,6 +21,7 @@ interface TimelineItem {
 
 ## CSS Parts
 
+- `base` - Timeline container (same element as `container`)
 - `container` - Timeline container
 - `item` - Individual timeline item
 - `marker` - Item marker circle
@@ -29,6 +30,11 @@ interface TimelineItem {
 - `timestamp` - Timestamp text
 - `title` - Title text
 - `description` - Description text
+- `item-default` - Added to `item` when the item variant is `default`
+- `item-success` - Added to `item` when the item variant is `success`
+- `item-warning` - Added to `item` when the item variant is `warning`
+- `item-error` - Added to `item` when the item variant is `error`
+- `item-info` - Added to `item` when the item variant is `info`
 
 ## Basic Usage
 

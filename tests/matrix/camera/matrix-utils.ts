@@ -28,6 +28,7 @@
  */
 import { expect } from 'vitest';
 import { createComponent, wait } from '../../components/test-utils';
+import { exactPartIn } from '../part-exact';
 import {
   installCaptureStack, restoreCaptureStack, primeVideo, type MediaMock, type CanvasMock,
 } from '../media-mock';
@@ -120,8 +121,12 @@ export function sr(el: SniceCameraElement): ShadowRoot {
   return root;
 }
 
+/**
+ * Token-exact: happy-dom answers `[part~="controls"]` with `custom-controls`
+ * too, so the lookup splits the attribute itself (`tests/matrix/part-exact.ts`).
+ */
 export function partEl(el: SniceCameraElement, name: string): HTMLElement | null {
-  return sr(el).querySelector<HTMLElement>(`[part~="${name}"]`);
+  return exactPartIn<HTMLElement>(sr(el), name);
 }
 
 export function videoEl(el: SniceCameraElement): HTMLVideoElement | null {

@@ -11,8 +11,8 @@ export class SniceLayoutMinimal extends HTMLElement implements Layout {
   @render()
   render() {
     return html/*html*/`
-      <div class="layout">
-        <main class="main">
+      <div class="layout" part="base">
+        <main class="main" part="main">
           <slot name="page"></slot>
         </main>
       </div>

@@ -53,7 +53,55 @@ interface InvoiceItem {
 
 ## CSS Parts
 
-`base`, `header`, `title`, `status`, `logo`, `meta`, `parties`, `party`, `party-label`, `party-name`, `party-detail`, `table`, `table-header`, `table-row`, `table-cell`, `summary`, `summary-row`, `summary-label`, `summary-value`, `discount-row`, `tax-row`, `total`, `notes`, `notes-label`, `notes-content`, `qr`, `qr-container`, `footer`
+- `base` - Root container
+- `header` - Invoice header section
+- `header-left` - Logo/title/status column of the header
+- `title` - Invoice title element
+- `status` - Status badge
+- `logo` - Company logo image
+- `meta` - Metadata container (invoice #, dates)
+- `meta-row` - One metadata line
+- `meta-label` - Metadata label text
+- `meta-value` - Metadata value text
+- `parties` - From/To parties container
+- `party` - Individual party block
+- `party-label` - Party label ("From", "Bill To")
+- `party-name` - Party name
+- `party-detail` - Party details (address, email, phone)
+- `table` - Items table
+- `table-header` - Table head
+- `table-header-row` - Table head row
+- `table-header-cell` - Table head cell
+- `table-body` - Table body
+- `table-row` - Table body rows
+- `table-cell` - Table cells
+- `line-number` - Line number inside the first detailed cell
+- `item-tax` - Per-item tax note
+- `summary` - Summary/totals section
+- `summary-table` - Summary rows container
+- `summary-row` - Summary rows
+- `summary-label` - Summary labels
+- `summary-value` - Summary values
+- `discount-row` - Discount row
+- `tax-row` - Tax row
+- `total` - Total row
+- `notes` - Notes section
+- `notes-label` - Notes heading
+- `notes-content` - Notes content
+- `qr-container` - QR code container
+- `qr` - QR code element
+- `qr-placeholder` - Default QR placeholder box
+- `footer` - Footer area
+
+State tokens:
+
+- `status-draft` / `status-sent` / `status-paid` / `status-overdue` / `status-cancelled` - Added to `status` for the current status
+- `table-cell-line` - Added to the line-number `table-cell`
+- `table-cell-description` - Added to the description `table-cell`
+- `table-cell-qty` - Added to the quantity `table-cell`
+- `table-cell-price` - Added to the unit-price `table-cell`
+- `table-cell-amount` - Added to the line-amount `table-cell`
+- `qr-top-right` / `qr-bottom-right` / `qr-bottom-left` / `qr-footer` - Added to `qr-container` for the current `qr-position`
 
 ## CSS Custom Properties
 

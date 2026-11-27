@@ -72,13 +72,13 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
     const barStyle = this.indeterminate ? '' : `width: ${percentage}%`;
 
     return html/*html*/`
-      <div part="base" class="${progressClass}"
+      <div part="base${this.showLabel ? ' base-with-label' : ''}${this.indeterminate ? ' base-indeterminate' : ''}" class="${progressClass}"
            role="progressbar"
            aria-valuenow="${this.value}"
            aria-valuemin="0"
            aria-valuemax="${this.max}"
            aria-label="${labelText}">
-        <div part="bar" class="progress__bar" style="${barStyle}"></div>
+        <div part="bar${this.indeterminate ? ' bar-indeterminate' : ''}" class="progress__bar" style="${barStyle}"></div>
         <if ${this.showLabel}>
           <span part="label" class="progress__label">${labelText}</span>
         </if>
@@ -103,7 +103,7 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
     const centerY = size / 2;
 
     return html/*html*/`
-      <div part="base" class="progress progress--circular"
+      <div part="base${this.indeterminate ? ' base-indeterminate' : ''}" class="progress progress--circular"
            role="progressbar"
            aria-valuenow="${this.value}"
            aria-valuemin="0"
@@ -118,7 +118,7 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
             r="${radius}"
           />
           <circle
-            part="circle-bar"
+            part="circle-bar${this.indeterminate ? ' circle-bar-indeterminate' : ''}"
             class="progress__circle-bar"
             cx="${centerX}"
             cy="${centerY}"

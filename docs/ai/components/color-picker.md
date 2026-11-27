@@ -57,7 +57,23 @@ readonly labels: NodeList|null;
 ## CSS Parts
 
 - `base` - Root container
-- `spinner` - Loading spinner
+- `label` - Field label above the control
+- `label-required` - Added to `label` when `required` is set
+- `controls` - Row holding the swatch and the text input
+- `swatch` - Clickable colour swatch button
+- `swatch-disabled` - Added to `swatch` while the control is disabled or loading
+- `swatch-invalid` - Added to `swatch` while the value is invalid
+- `swatch-loading` - Added to `swatch` while `loading` is set
+- `swatch-fill` - Inner element painted with the current colour
+- `spinner` - Loading spinner element
+- `input-wrapper` - Wrapper around the text input
+- `input` - Text input showing the formatted colour
+- `input-invalid` - Added to `input` while the value is invalid
+- `input-loading` - Added to `input` while `loading` is set
+- `presets` - Container for the preset swatches
+- `preset` - A single preset swatch
+- `preset-selected` - Added to `preset` when it matches the current value
+- `preset-disabled` - Added to `preset` while the control is disabled or loading
 - `error-text` - Error text element
 - `helper-text` - Helper text element
 

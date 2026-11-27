@@ -29,6 +29,14 @@ running: boolean;           // read-only
 - `base` - The outer timer container
 - `display` - The time display element
 - `controls` - The start/stop/reset button container
+- `button` - Any control button in the controls row
+- `start-button` - Added to `button` on the start control
+- `pause-button` - Added to `button` on the pause control
+- `reset-button` - Added to `button` on the reset control
+- `icon` - The SVG glyph inside a control button
+- `start-icon` - Added to `icon` on the start control
+- `pause-icon` - Added to `icon` on the pause control
+- `reset-icon` - Added to `icon` on the reset control
 
 ## Basic Usage
 

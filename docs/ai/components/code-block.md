@@ -40,6 +40,7 @@ fetchMode: 'native' | 'virtual' | 'event' = 'native';  // attribute: fetch-mode
 
 ## CSS Parts
 
+- `base` - Outer wrapper (same element as `container`)
 - `container` - Outer wrapper
 - `header` - Header bar (filename + copy button)
 - `filename` - Filename display
@@ -47,6 +48,9 @@ fetchMode: 'native' | 'virtual' | 'event' = 'native';  // attribute: fetch-mode
 - `content` - Scrollable code area
 - `pre` - Pre-formatted container
 - `code` - Code element with tokens
+- `line` - One rendered code line (line numbers or line highlighting enabled)
+- `line-highlight` - Added to `line` for a highlighted line
+- `line-number` - Line-number gutter span
 
 ## Basic Usage
 

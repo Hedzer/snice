@@ -193,8 +193,8 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
 
     return html/*html*/`
       <div part="base" class="scroller" tabindex="0" @scroll=${this.handleScroll}>
-        <div class="scroller__spacer" style="height: ${totalHeight}px;"></div>
-        <div class="scroller__viewport" style="transform: translateY(${windowOffset}px);">
+        <div part="spacer" class="scroller__spacer" style="height: ${totalHeight}px;"></div>
+        <div part="viewport" class="scroller__viewport" style="transform: translateY(${windowOffset}px);">
           ${visibleItems.map((item, idx) => {
             const actualIndex = this.visibleStart + idx;
             const itemTop = this.offsetOf(actualIndex) - windowOffset;
@@ -205,6 +205,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
             if (typeof itemContent === 'string') {
               return html/*html*/`
                 <div
+                  part="item"
                   class="scroller__item"
                   style="top: ${itemTop}px; height: ${this.itemHeightOf(item)}px;"
                   data-index="${actualIndex}">
@@ -216,6 +217,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
             // HTMLElement return — render it as an actual child.
             return html/*html*/`
               <div
+                part="item"
                 class="scroller__item"
                 style="top: ${itemTop}px; height: ${this.itemHeightOf(item)}px;"
                 data-index="${actualIndex}">${itemContent as any}</div>

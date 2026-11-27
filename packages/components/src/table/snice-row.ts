@@ -60,11 +60,11 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
   @render()
   render() {
     return html/*html*/`
-      <div class="row-container" part="container" @click=${(e: MouseEvent) => this.handleRowClick(e)} @keydown=${(e: KeyboardEvent) => this.handleKeyDown(e)}>
+      <div class="row-container" part="base container" @click=${(e: MouseEvent) => this.handleRowClick(e)} @keydown=${(e: KeyboardEvent) => this.handleKeyDown(e)}>
         <if ${this.selectable}>
           ${this.renderCheckbox()}
         </if>
-        <div class="cells-container">
+        <div class="cells-container" part="cells">
           <if ${this.columns && this.columns.length}>
             ${this.columns.map((column, columnIndex) => this.renderCell(column, columnIndex))}
           </if>
@@ -219,6 +219,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
         <input
           type="checkbox"
           class="row-checkbox"
+          part="checkbox"
           ?checked=${this.selected}
           ?disabled=${this.selectionDisabled}
           tabindex="-1"

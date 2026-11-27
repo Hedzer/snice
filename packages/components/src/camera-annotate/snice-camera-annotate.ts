@@ -73,16 +73,18 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
   template() {
     return html`
       <div class="ca-layout" part="base">
-        <div class="ca-main">
+        <div class="ca-main" part="main">
           <div class="ca-canvas-area" part="canvas">
             <video
               class="ca-video mirror ${this.mode === 'annotate' ? 'hidden' : ''}"
+              part="video"
               autoplay
               playsinline
               muted>
             </video>
             <canvas
               class="ca-draw-canvas ${this.mode === 'camera' ? 'hidden' : ''}"
+              part="draw-canvas"
               @pointerdown=${this.handlePointerDown}
               @pointermove=${this.handlePointerMove}
               @pointerup=${this.handlePointerUp}>
@@ -90,7 +92,7 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
           </div>
           ${this.renderToolbar()}
         </div>
-        <div class="ca-sidebar ${this.showLabelsPanel ? '' : 'hidden'}" part="sidebar">
+        <div class="ca-sidebar ${this.showLabelsPanel ? '' : 'hidden'}" part="sidebar${this.showLabelsPanel ? '' : ' sidebar-hidden'}">
           ${this.renderSidebar()}
         </div>
       </div>
@@ -102,8 +104,8 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
 
     return html`
       <div class="ca-toolbar" part="toolbar">
-        <button class="ca-btn primary" @click=${inCamera ? this.capture : this.retake}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button class="ca-btn primary" part="button primary-button" @click=${inCamera ? this.capture : this.retake}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon primary-icon">
             ${inCamera
               ? html`<path d="M9 2L7 5H4C2.9 5 2 5.9 2 7V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V7C22 5.9 21.1 5 20 5H17L15 2H9Z"/><circle cx="12" cy="13" r="3"/>`
               : html`<path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>`
@@ -113,34 +115,35 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
         </button>
 
         <if value=${!inCamera}>
-          <div class="ca-separator"></div>
-          <div class="ca-toolbar-group">
-            <button class="ca-btn small" @click=${this.undoStroke} title="Undo">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="ca-separator" part="separator"></div>
+          <div class="ca-toolbar-group" part="control-group">
+            <button class="ca-btn small" part="button undo-button" @click=${this.undoStroke} title="Undo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon undo-icon">
                 <path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
               </svg>
             </button>
-            <button class="ca-btn small danger" @click=${this.clearAnnotations} title="Clear all">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="ca-btn small danger" part="button clear-button" @click=${this.clearAnnotations} title="Clear all">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon clear-icon">
                 <path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
               </svg>
             </button>
           </div>
-          <div class="ca-separator"></div>
-          <label class="ca-toolbar-group" style="font-size:0.75rem;color:var(--ca-text-secondary);">
+          <div class="ca-separator" part="separator"></div>
+          <label class="ca-toolbar-group" part="control-group stroke-width-label" style="font-size:0.75rem;color:var(--ca-text-secondary);">
             Width:
             <input
               type="number"
               class="ca-stroke-width"
+              part="input stroke-width-input"
               min="1"
               max="20"
               .value="${String(this.strokeWidth)}"
               @change=${this.handleStrokeWidthChange}
             />
           </label>
-          <div class="ca-separator"></div>
-          <button class="ca-btn small" @click=${this.handleExportImage} title="Export image">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="ca-separator" part="separator"></div>
+          <button class="ca-btn small" part="button export-button" @click=${this.handleExportImage} title="Export image">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon export-icon">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
             Export
@@ -152,31 +155,33 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
 
   private renderSidebar() {
     return html`
-      <div class="ca-sidebar-header">
-        <span class="ca-sidebar-title">Annotations</span>
-        <div class="ca-toolbar-group">
-          <button class="ca-icon-btn" @click=${this.toggleAllAnnotations} title="Toggle all">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="ca-sidebar-header" part="sidebar-header">
+        <span class="ca-sidebar-title" part="sidebar-title">Annotations</span>
+        <div class="ca-toolbar-group" part="control-group">
+          <button class="ca-icon-btn" part="icon-button toggle-all-button" @click=${this.toggleAllAnnotations} title="Toggle all">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon toggle-all-icon">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
             </svg>
           </button>
         </div>
       </div>
 
-      <div class="ca-color-section">
-        <div class="ca-color-palette">
+      <div class="ca-color-section" part="color-section">
+        <div class="ca-color-palette" part="color-palette">
           ${PRESET_COLORS.map(color => html`
             <div
               class="ca-color-swatch ${this.activeColor === color ? 'active' : ''}"
+              part="color-swatch${this.activeColor === color ? ' color-swatch-active' : ''}"
               style="background-color: ${color}"
               @click=${() => this.selectColor(color)}
               title="${color}">
             </div>
           `)}
         </div>
-        <label class="ca-auto-rotate">
+        <label class="ca-auto-rotate" part="auto-rotate">
           <input
             type="checkbox"
+            part="input auto-rotate-input"
             ?checked=${this.autoRotateColors}
             @change=${this.handleAutoRotateChange}
           />
@@ -184,9 +189,9 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
         </label>
       </div>
 
-      <div class="ca-annotation-list">
+      <div class="ca-annotation-list" part="annotation-list">
         ${this.annotations.length === 0
-          ? html`<div class="ca-empty-state">Draw on the image to create annotations</div>`
+          ? html`<div class="ca-empty-state" part="empty">Draw on the image to create annotations</div>`
           : this.annotations.map(ann => this.renderAnnotationItem(ann))
         }
       </div>
@@ -198,23 +203,26 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
     return html`
       <div
         class="ca-annotation-item ${isHighlighted ? 'highlighted' : ''}"
+        part="annotation-item${isHighlighted ? ' annotation-item-highlighted' : ''}"
         @mouseenter=${() => this.highlightAnnotation(ann.id)}
         @mouseleave=${() => this.unhighlightAnnotation()}>
-        <div class="ca-annotation-color" style="background-color: ${ann.color}"></div>
-        <div class="ca-annotation-label">
+        <div class="ca-annotation-color" part="annotation-color" style="background-color: ${ann.color}"></div>
+        <div class="ca-annotation-label" part="annotation-label">
           <input
             type="text"
+            part="input annotation-label-input"
             placeholder="Add label..."
             .value="${ann.label}"
             @input=${(e: Event) => this.updateAnnotationLabel(ann.id, (e.target as HTMLInputElement).value)}
           />
         </div>
-        <div class="ca-annotation-actions">
+        <div class="ca-annotation-actions" part="annotation-actions">
           <button
             class="ca-icon-btn ${ann.visible ? '' : 'hidden-state'}"
+            part="icon-button visibility-button${ann.visible ? '' : ' visibility-button-off'}"
             @click=${() => this.toggleAnnotationVisibility(ann.id)}
             title="${ann.visible ? 'Hide' : 'Show'}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon visibility-icon">
               ${ann.visible
                 ? html`<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`
                 : html`<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`
@@ -223,9 +231,10 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
           </button>
           <button
             class="ca-icon-btn"
+            part="icon-button delete-button"
             @click=${() => this.deleteAnnotation(ann.id)}
             title="Delete">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon delete-icon">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
