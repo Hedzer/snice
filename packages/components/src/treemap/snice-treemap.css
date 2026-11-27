@@ -3,16 +3,30 @@
 }
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-  contain: layout style paint;
+  contain: layout style;
   width: 100%;
+  box-sizing: border-box;
+  --treemap-tile-transition: opacity var(--snice-transition-fast, 150ms) ease;
 }
 
 .treemap {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
+  box-sizing: border-box;
   overflow: hidden;
+}
+
+.treemap__chart {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
 }
 
 .treemap__svg {
@@ -23,7 +37,7 @@
 
 .treemap__rect {
   cursor: pointer;
-  transition: opacity var(--snice-transition-fast, 150ms) ease;
+  transition: var(--treemap-tile-transition);
 }
 
 .treemap__rect:hover {
@@ -46,14 +60,22 @@
   dominant-baseline: central;
 }
 
+.treemap__label--dark {
+  fill: rgb(15 23 42);
+}
+
 .treemap__value {
-  fill: rgb(255 255 255 / 0.85);
+  fill: rgb(255 255 255 / 0.9);
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-weight: var(--snice-font-weight-medium, 500);
   pointer-events: none;
   text-anchor: middle;
   dominant-baseline: central;
   font-size: 0.75rem;
+}
+
+.treemap__value--dark {
+  fill: rgb(15 23 42 / 0.86);
 }
 
 /* Breadcrumbs */
@@ -126,7 +148,7 @@
               y var(--snice-transition-medium, 250ms) ease,
               width var(--snice-transition-medium, 250ms) ease,
               height var(--snice-transition-medium, 250ms) ease,
-              opacity var(--snice-transition-fast, 150ms) ease;
+              var(--treemap-tile-transition);
 }
 
 @media (prefers-reduced-motion: reduce) {

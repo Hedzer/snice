@@ -5,7 +5,7 @@
 :host {
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-  contain: layout style paint;
+  contain: layout style;
   width: 100%;
 }
 
@@ -49,7 +49,11 @@
 
 .network-graph__edge-label {
   font-size: 0.625rem;
-  fill: var(--snice-color-text-tertiary, rgb(115 115 115));
+  fill: var(--snice-color-text-secondary, rgb(82 82 82));
+  paint-order: stroke;
+  stroke: var(--network-label-halo, var(--snice-color-surface, rgb(255 255 255)));
+  stroke-width: 2.5px;
+  stroke-linejoin: round;
   text-anchor: middle;
   pointer-events: none;
   dominant-baseline: central;
@@ -81,6 +85,10 @@
 .network-graph__node-label {
   font-size: 0.6875rem;
   fill: var(--snice-color-text, rgb(23 23 23));
+  paint-order: stroke;
+  stroke: var(--network-label-halo, var(--snice-color-surface, rgb(255 255 255)));
+  stroke-width: 3px;
+  stroke-linejoin: round;
   text-anchor: middle;
   pointer-events: none;
   dominant-baseline: central;

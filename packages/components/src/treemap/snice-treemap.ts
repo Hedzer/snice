@@ -1,7 +1,7 @@
 import { element, property, dispatch, ready, dispose, watch, query, render, styles, html, css, escapeHtml } from 'snice';
 import cssContent from './snice-treemap.css?inline';
 import type { TreemapNode, TreemapColorScheme, TreemapRect, SniceTreemapElement } from './snice-treemap.types';
-import { getAccentPalette } from '../theme-utils';
+import { getAccentPalette, onThemeChange } from '../theme-utils';
 
 // `default` is resolved at render time from --snice-color-accent-1..8 so
 // it flows with the theme. Named schemes remain static palettes.
@@ -20,6 +20,71 @@ function sumValues(node: TreemapNode): number {
     return node.children.reduce((sum, child) => sum + sumValues(child), 0);
   }
   return Math.max(0, node.value);
+}
+
+function parseColorRgb(color: string): [number, number, number] | null {
+  const s = color.trim();
+  const hex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(s);
+  if (hex) {
+    const h = hex[1].length === 3
+      ? hex[1].split('').map(c => c + c).join('')
+      : hex[1];
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const rgb = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(s);
+  if (rgb) return [Number(rgb[1]), Number(rgb[2]), Number(rgb[3])];
+  const hsl = /^hsla?\(\s*([\d.]+)(?:deg)?[\s,]+([\d.]+)%[\s,]+([\d.]+)%/i.exec(s);
+  if (hsl) {
+    const h = ((Number(hsl[1]) % 360) + 360) % 360;
+    const sat = Number(hsl[2]) / 100;
+    const lig = Number(hsl[3]) / 100;
+    const c = (1 - Math.abs(2 * lig - 1)) * sat;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = lig - c / 2;
+    let r = 0, g = 0, b = 0;
+    if (h < 60) [r, g, b] = [c, x, 0];
+    else if (h < 120) [r, g, b] = [x, c, 0];
+    else if (h < 180) [r, g, b] = [0, c, x];
+    else if (h < 240) [r, g, b] = [0, x, c];
+    else if (h < 300) [r, g, b] = [x, 0, c];
+    else [r, g, b] = [c, 0, x];
+    return [(r + m) * 255, (g + m) * 255, (b + m) * 255];
+  }
+  return null;
+}
+
+function resolveCssColorRgb(color: string, host?: HTMLElement): [number, number, number] | null {
+  let resolved = color.trim();
+  const varMatch = /^var\(\s*(--[a-z0-9-]+)(?:\s*,\s*([^)]+))?\s*\)$/i.exec(resolved);
+  if (varMatch && host && typeof getComputedStyle === 'function') {
+    resolved = getComputedStyle(host).getPropertyValue(varMatch[1]).trim() || varMatch[2]?.trim() || '';
+  }
+  const direct = parseColorRgb(resolved);
+  if (direct) return direct;
+  if (resolved && typeof document !== 'undefined' && document.body && typeof getComputedStyle === 'function') {
+    const probe = document.createElement('span');
+    probe.style.color = resolved;
+    probe.style.display = 'none';
+    document.body.appendChild(probe);
+    const computed = getComputedStyle(probe).color;
+    probe.remove();
+    return parseColorRgb(computed);
+  }
+  return null;
+}
+
+function isLightTileColor(color: string, host?: HTMLElement): boolean {
+  const rgb = resolveCssColorRgb(color, host);
+  if (!rgb) return false;
+  const lin = (c: number) => {
+    const v = c / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  };
+  const lum = 0.2126 * lin(rgb[0]) + 0.7152 * lin(rgb[1]) + 0.0722 * lin(rgb[2]);
+  // Compare actual WCAG 2.x contrast of white (#fff, L=1.0) vs dark ink (rgb(15 23 42), L≈0.0085)
+  const contrastWhite = 1.05 / (lum + 0.05);
+  const contrastDark = (lum + 0.05) / 0.0585;
+  return contrastDark > contrastWhite;
 }
 
 function squarify(
@@ -173,6 +238,10 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
   private width = 600;
   private height = 400;
   private resizeObserver: ResizeObserver | null = null;
+  private themeUnsub: (() => void) | null = null;
+  private platformObserver: MutationObserver | null = null;
+  private colorSchemeMql: MediaQueryList | null = null;
+  private boundColorSchemeChange = () => this.rebuildChart();
   private rects: TreemapRect[] = [];
   private cachedData: TreemapNode = { label: '', value: 0 };
 
@@ -198,6 +267,7 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
   @ready()
   init() {
     this.cachedData = this.data;
+    const observeTarget = this.chartEl || this;
     this.resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const cr = entry.contentRect;
@@ -211,7 +281,19 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
       }
       this.rebuildChart();
     });
-    this.resizeObserver.observe(this);
+    this.resizeObserver.observe(observeTarget);
+    this.themeUnsub = onThemeChange(() => this.rebuildChart());
+    if (typeof MutationObserver !== 'undefined' && document.documentElement) {
+      this.platformObserver = new MutationObserver(() => this.rebuildChart());
+      this.platformObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-platform']
+      });
+    }
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      this.colorSchemeMql = window.matchMedia('(prefers-color-scheme: dark)');
+      this.colorSchemeMql.addEventListener?.('change', this.boundColorSchemeChange);
+    }
     this.rebuildChart();
   }
 
@@ -231,6 +313,12 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
   cleanup() {
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
+    this.themeUnsub?.();
+    this.themeUnsub = null;
+    this.platformObserver?.disconnect();
+    this.platformObserver = null;
+    this.colorSchemeMql?.removeEventListener?.('change', this.boundColorSchemeChange);
+    this.colorSchemeMql = null;
   }
 
   drillDown(node: TreemapNode): void {
@@ -345,6 +433,7 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
 
   private buildRectGroup(rect: TreemapRect, index: number): string {
     const color = rect.node.color || this.getColor(rect.colorIndex);
+    const darkInk = isLightTileColor(color, this);
     const showLabel = this.showLabels && this.canFitLabel(rect);
     const showValue = this.showValues && this.canFitValue(rect);
     const fontSize = this.getLabelFontSize(rect);
@@ -358,11 +447,11 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     parts += `<rect part="tile-border" class="treemap__rect-stroke" x="${rect.x}" y="${rect.y}" width="${rect.width}" height="${rect.height}" />`;
 
     if (showLabel) {
-      parts += `<text part="label" class="treemap__label" x="${cx}" y="${labelY}" style="font-size: ${fontSize}px">${escapeHtml(rect.node.label)}</text>`;
+      parts += `<text part="label" class="treemap__label${darkInk ? ' treemap__label--dark' : ''}" x="${cx}" y="${labelY}" style="font-size: ${fontSize}px">${escapeHtml(rect.node.label)}</text>`;
     }
 
     if (showValue) {
-      parts += `<text part="value" class="treemap__value" x="${cx}" y="${valueY}">${escapeHtml(sumValues(rect.node).toLocaleString())}</text>`;
+      parts += `<text part="value" class="treemap__value${darkInk ? ' treemap__value--dark' : ''}" x="${cx}" y="${valueY}">${escapeHtml(sumValues(rect.node).toLocaleString())}</text>`;
     }
 
     return parts;

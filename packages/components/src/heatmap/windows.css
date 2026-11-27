@@ -1,132 +1,72 @@
-/* Windows 11 Fluent 2 / Azure DevOps activity heatmap skin */
+/* Windows 11 Fluent 2 / Azure DevOps & Power BI Matrix — snice-heatmap
+ * Crisp 8px elevated top-lit Mica card, razor-sharp 1px square cells,
+ * Segoe UI Variable labels, transient 4px Acrylic flyout with 3px top accent bar,
+ * 100ms fast-out motion, and complete WHCM.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --cell-gap: 2px;
+}
 
 [part~="base"] {
   box-sizing: border-box;
-  border-radius: 0.5rem;
-  background: var(--snice-color-surface-container-lowest);
-  border: 1px solid var(--snice-color-border-subtle);
+  padding: 0.75rem 0.875rem;
+  border-radius: 8px;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
   box-shadow: var(--snice-shadow-xs);
-  padding: 0.875rem;
 }
 
 [part~="day-label"],
 [part~="month-label"] {
-  font-size: 0.6875rem;
+  font-family: var(--snice-font-family);
+  font-weight: 400;
   color: var(--snice-color-text-secondary);
 }
 
+/* Razor-sharp 1px square DevOps / Power BI matrix cells */
 [part~="cell"] {
-  border-radius: 2px;
-  transition: outline-color 100ms cubic-bezier(0, 0, 0, 1);
+  border-radius: 1px;
+  transition: outline 100ms cubic-bezier(0, 0, 0, 1);
 }
 
 [part~="cell"]:hover {
   outline: 1.5px solid var(--snice-color-text);
-  outline-offset: 0px;
-  z-index: 2;
-}
-
-[part~="cell"]:active {
-  filter: brightness(0.92);
+  outline-offset: -0.5px;
 }
 
 [part~="cell"]:focus-visible {
-  box-shadow: var(--snice-win-focus-shadow);
   outline: none;
-  z-index: 2;
+  box-shadow: var(--snice-win-focus-shadow);
 }
 
 [part~="cell-level-0"] {
-  background-color: var(--snice-color-surface-container);
-  box-shadow: inset 0 0 0 1px var(--snice-color-border-subtle);
+  background-color: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
 }
 
-/* Monotonic light & dark ramps — green (default) */
-:host [part~="cell-level-1"],
-:host([color-scheme="green"]) [part~="cell-level-1"] {
-  background-color: color-mix(in srgb, var(--snice-color-success) 26%, var(--snice-color-surface-container));
-}
-:host [part~="cell-level-2"],
-:host([color-scheme="green"]) [part~="cell-level-2"] {
-  background-color: color-mix(in srgb, var(--snice-color-success) 50%, var(--snice-color-surface-container));
-}
-:host [part~="cell-level-3"],
-:host([color-scheme="green"]) [part~="cell-level-3"] {
-  background-color: color-mix(in srgb, var(--snice-color-success) 76%, var(--snice-color-surface-container));
-}
-:host [part~="cell-level-4"],
-:host([color-scheme="green"]) [part~="cell-level-4"] {
-  background-color: var(--snice-color-success);
-}
-
-/* Blue scheme */
-:host([color-scheme="blue"]) [part~="cell-level-1"] {
-  background-color: color-mix(in srgb, var(--snice-color-primary) 26%, var(--snice-color-surface-container));
-}
-:host([color-scheme="blue"]) [part~="cell-level-2"] {
-  background-color: color-mix(in srgb, var(--snice-color-primary) 50%, var(--snice-color-surface-container));
-}
-:host([color-scheme="blue"]) [part~="cell-level-3"] {
-  background-color: color-mix(in srgb, var(--snice-color-primary) 76%, var(--snice-color-surface-container));
-}
-:host([color-scheme="blue"]) [part~="cell-level-4"] {
-  background-color: var(--snice-color-primary);
-}
-
-/* Purple scheme */
-:host([color-scheme="purple"]) [part~="cell-level-1"] {
-  background-color: color-mix(in srgb, hsl(271 68% 54%) 26%, var(--snice-color-surface-container));
-}
-:host([color-scheme="purple"]) [part~="cell-level-2"] {
-  background-color: color-mix(in srgb, hsl(271 68% 54%) 50%, var(--snice-color-surface-container));
-}
-:host([color-scheme="purple"]) [part~="cell-level-3"] {
-  background-color: color-mix(in srgb, hsl(271 68% 54%) 76%, var(--snice-color-surface-container));
-}
-:host([color-scheme="purple"]) [part~="cell-level-4"] {
-  background-color: hsl(271 68% 54%);
-}
-
-/* Orange scheme */
-:host([color-scheme="orange"]) [part~="cell-level-1"] {
-  background-color: color-mix(in srgb, var(--snice-color-warning) 26%, var(--snice-color-surface-container));
-}
-:host([color-scheme="orange"]) [part~="cell-level-2"] {
-  background-color: color-mix(in srgb, var(--snice-color-warning) 50%, var(--snice-color-surface-container));
-}
-:host([color-scheme="orange"]) [part~="cell-level-3"] {
-  background-color: color-mix(in srgb, var(--snice-color-warning) 76%, var(--snice-color-surface-container));
-}
-:host([color-scheme="orange"]) [part~="cell-level-4"] {
-  background-color: var(--snice-color-warning);
-}
-
-/* Red scheme */
-:host([color-scheme="red"]) [part~="cell-level-1"] {
-  background-color: color-mix(in srgb, var(--snice-color-danger) 26%, var(--snice-color-surface-container));
-}
-:host([color-scheme="red"]) [part~="cell-level-2"] {
-  background-color: color-mix(in srgb, var(--snice-color-danger) 50%, var(--snice-color-surface-container));
-}
-:host([color-scheme="red"]) [part~="cell-level-3"] {
-  background-color: color-mix(in srgb, var(--snice-color-danger) 76%, var(--snice-color-surface-container));
-}
-:host([color-scheme="red"]) [part~="cell-level-4"] {
-  background-color: var(--snice-color-danger);
-}
-
-/* Transient Acrylic floating tooltip */
+/* Transient 4px Acrylic flyout with iconic 3px top Fluent accent bar */
 [part~="tooltip"] {
-  border-radius: 0.25rem;
+  border-radius: 4px;
   padding: 0.375rem 0.625rem;
-  background: var(--snice-win-acrylic-bg);
-  backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  border: 1px solid var(--snice-color-border);
+  background: color-mix(in srgb, var(--snice-color-surface-container-highest) 92%, transparent);
+  backdrop-filter: var(--snice-win-acrylic-blur);
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  border-top: 3px solid var(--snice-color-primary);
   box-shadow: var(--snice-shadow-md);
   color: var(--snice-color-text);
-  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="tooltip"] {
+    background: var(--snice-color-surface-container-highest);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -139,11 +79,40 @@
   [part~="base"],
   [part~="tooltip"] {
     background: Canvas;
-    border-color: CanvasText;
     color: CanvasText;
+    border-color: CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  [part~="tooltip"] {
+    border-top-color: Highlight;
   }
 
   [part~="cell"] {
     border: 1px solid CanvasText;
+  }
+
+  [part~="cell"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 1px;
+    box-shadow: none;
+  }
+
+  [part~="cell"][part~="cell-level-0"] {
+    background-color: Canvas;
+    border-color: GrayText;
+  }
+
+  [part~="cell"][part~="cell-level-1"],
+  [part~="cell"][part~="cell-level-2"] {
+    background-color: GrayText;
+    border-color: CanvasText;
+  }
+
+  [part~="cell"][part~="cell-level-3"],
+  [part~="cell"][part~="cell-level-4"] {
+    background-color: Highlight;
+    border-color: CanvasText;
   }
 }

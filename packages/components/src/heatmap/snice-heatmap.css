@@ -12,36 +12,34 @@
   --cell-size: 12px;
   --cell-gap: 3px;
 
-  /* Heatmap intensity scales – use HSL primitive scales so each level is a
-   * distinct step on the hue's brightness axis. These auto-invert in dark
-   * mode because the primitives themselves are theme-aware if overridden
-   * by presets, but default primitives are shared. */
-  --heatmap-green-1: hsl(var(--snice-color-green-100, 141 84% 93%));
-  --heatmap-green-2: hsl(var(--snice-color-green-300, 142 77% 73%));
-  --heatmap-green-3: hsl(var(--snice-color-green-500, 142 71% 45%));
-  --heatmap-green-4: hsl(var(--snice-color-green-700, 142 72% 29%));
+  /* Heatmap intensity scales — derived dynamically from --snice-color-surface
+   * (levels 1–3) and --snice-color-text (level 4 peak) so activity ramps
+   * monotonically in BOTH light mode (soft tint -> deep saturated peak) and
+   * dark mode (dim low glow -> luminous bright peak) with zero inversions. */
+  --heatmap-green-1: color-mix(in srgb, hsl(var(--snice-color-green-500, 142 71% 45%)) 28%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-green-2: color-mix(in srgb, hsl(var(--snice-color-green-500, 142 71% 45%)) 54%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-green-3: color-mix(in srgb, hsl(var(--snice-color-green-500, 142 71% 45%)) 84%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-green-4: color-mix(in srgb, hsl(var(--snice-color-green-500, 142 71% 45%)) 74%, var(--snice-color-text, rgb(23 23 23)));
 
-  --heatmap-blue-1: hsl(var(--snice-color-blue-100, 214 95% 93%));
-  --heatmap-blue-2: hsl(var(--snice-color-blue-300, 212 96% 78%));
-  --heatmap-blue-3: hsl(var(--snice-color-blue-500, 217 91% 60%));
-  --heatmap-blue-4: hsl(var(--snice-color-blue-700, 217 77% 48%));
+  --heatmap-blue-1: color-mix(in srgb, hsl(var(--snice-color-blue-500, 217 91% 56%)) 28%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-blue-2: color-mix(in srgb, hsl(var(--snice-color-blue-500, 217 91% 56%)) 54%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-blue-3: color-mix(in srgb, hsl(var(--snice-color-blue-500, 217 91% 56%)) 84%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-blue-4: color-mix(in srgb, hsl(var(--snice-color-blue-500, 217 91% 56%)) 74%, var(--snice-color-text, rgb(23 23 23)));
 
-  /* Purple scheme — a purple ramp, not a re-labelling of the blue one; the
-     literal steps apply until the theme ships purple primitives. */
-  --heatmap-purple-1: hsl(var(--snice-color-purple-100, 270 89% 94%));
-  --heatmap-purple-2: hsl(var(--snice-color-purple-300, 270 80% 76%));
-  --heatmap-purple-3: hsl(var(--snice-color-purple-500, 271 77% 57%));
-  --heatmap-purple-4: hsl(var(--snice-color-purple-700, 273 71% 42%));
+  --heatmap-purple-1: color-mix(in srgb, hsl(var(--snice-color-purple-500, 271 77% 55%)) 28%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-purple-2: color-mix(in srgb, hsl(var(--snice-color-purple-500, 271 77% 55%)) 54%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-purple-3: color-mix(in srgb, hsl(var(--snice-color-purple-500, 271 77% 55%)) 84%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-purple-4: color-mix(in srgb, hsl(var(--snice-color-purple-500, 271 77% 55%)) 74%, var(--snice-color-text, rgb(23 23 23)));
 
-  --heatmap-orange-1: hsl(var(--snice-color-yellow-100, 55 97% 88%));
-  --heatmap-orange-2: hsl(var(--snice-color-yellow-300, 50 98% 64%));
-  --heatmap-orange-3: hsl(var(--snice-color-yellow-500, 45 93% 47%));
-  --heatmap-orange-4: hsl(var(--snice-color-yellow-700, 36 88% 33%));
+  --heatmap-orange-1: color-mix(in srgb, hsl(var(--snice-color-yellow-500, 38 92% 48%)) 28%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-orange-2: color-mix(in srgb, hsl(var(--snice-color-yellow-500, 38 92% 48%)) 54%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-orange-3: color-mix(in srgb, hsl(var(--snice-color-yellow-500, 38 92% 48%)) 84%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-orange-4: color-mix(in srgb, hsl(var(--snice-color-yellow-500, 38 92% 48%)) 74%, var(--snice-color-text, rgb(23 23 23)));
 
-  --heatmap-red-1: hsl(var(--snice-color-red-100, 0 93% 94%));
-  --heatmap-red-2: hsl(var(--snice-color-red-300, 0 94% 82%));
-  --heatmap-red-3: hsl(var(--snice-color-red-500, 0 84% 60%));
-  --heatmap-red-4: hsl(var(--snice-color-red-700, 0 74% 42%));
+  --heatmap-red-1: color-mix(in srgb, hsl(var(--snice-color-red-500, 0 84% 55%)) 28%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-red-2: color-mix(in srgb, hsl(var(--snice-color-red-500, 0 84% 55%)) 54%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-red-3: color-mix(in srgb, hsl(var(--snice-color-red-500, 0 84% 55%)) 84%, var(--snice-color-surface, rgb(255 255 255)));
+  --heatmap-red-4: color-mix(in srgb, hsl(var(--snice-color-red-500, 0 84% 55%)) 74%, var(--snice-color-text, rgb(23 23 23)));
 }
 
 .heatmap {

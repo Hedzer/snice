@@ -1,138 +1,118 @@
-/* macOS 26 Tahoe AppKit / Xcode activity heatmap skin */
+/* macOS 26+ Tahoe AppKit / Xcode Contribution Inspector — snice-heatmap
+ * Sunken 10px AppKit well in both light & dark, crisp 2px rectilinear cells,
+ * SF Mono 10px month/day ticks, and 8px high-legibility Tahoe frosted HUD tooltip.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+  --cell-gap: 2.5px;
+}
 
 [part~="base"] {
   box-sizing: border-box;
-  border-radius: 0.75rem;
-  background: var(--snice-color-background-element);
+  padding: 0.6875rem 0.8125rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, black 5%, var(--snice-color-surface));
   border: 0.5px solid var(--snice-color-border);
-  box-shadow: var(--snice-shadow-xs);
-  padding: 0.75rem;
+  box-shadow:
+    inset 0 1.5px 4px hsl(0 0% 0% / 0.24),
+    inset 0 0 0 0.5px var(--snice-color-border-subtle),
+    0 0.5px 0 hsl(0 0% 100% / 0.08);
 }
 
 [part~="day-label"],
 [part~="month-label"] {
+  font-family: var(--snice-font-family-mono);
   font-size: 0.625rem;
   font-weight: 500;
+  letter-spacing: -0.02em;
   color: var(--snice-color-text-secondary);
 }
 
 [part~="cell"] {
-  border-radius: 2.5px;
-  transition: transform var(--snice-transition-fast, 120ms) var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1)),
-    outline-color var(--snice-transition-fast, 120ms) ease;
+  border-radius: 2px;
+  transition: outline 100ms ease;
 }
 
 [part~="cell"]:hover {
-  outline: 1.5px solid var(--snice-color-text-secondary);
-  outline-offset: 0.5px;
-  z-index: 2;
-}
-
-[part~="cell"]:active {
-  transform: scale(0.94);
+  outline: 1.5px solid var(--snice-color-text);
+  outline-offset: -0.5px;
 }
 
 [part~="cell"]:focus-visible {
-  box-shadow: var(--snice-macos-focus-halo);
   outline: none;
-  z-index: 2;
+  box-shadow: var(--snice-macos-focus-halo);
 }
 
 [part~="cell-level-0"] {
-  background-color: var(--snice-color-surface-container);
-  box-shadow: inset 0 0 0 0.5px var(--snice-color-border-subtle);
+  background-color: color-mix(in srgb, var(--snice-color-text) 11%, transparent);
 }
 
-/* Monotonic light & dark ramps — green (default) */
-:host [part~="cell-level-1"],
-:host([color-scheme="green"]) [part~="cell-level-1"] {
-  background-color: color-mix(in srgb, var(--snice-color-success) 26%, var(--snice-color-surface-container));
-}
-:host [part~="cell-level-2"],
-:host([color-scheme="green"]) [part~="cell-level-2"] {
-  background-color: color-mix(in srgb, var(--snice-color-success) 50%, var(--snice-color-surface-container));
-}
-:host [part~="cell-level-3"],
-:host([color-scheme="green"]) [part~="cell-level-3"] {
-  background-color: color-mix(in srgb, var(--snice-color-success) 76%, var(--snice-color-surface-container));
-}
-:host [part~="cell-level-4"],
-:host([color-scheme="green"]) [part~="cell-level-4"] {
-  background-color: var(--snice-color-success);
-}
-
-/* Blue scheme */
-:host([color-scheme="blue"]) [part~="cell-level-1"] {
-  background-color: color-mix(in srgb, var(--snice-color-primary) 26%, var(--snice-color-surface-container));
-}
-:host([color-scheme="blue"]) [part~="cell-level-2"] {
-  background-color: color-mix(in srgb, var(--snice-color-primary) 50%, var(--snice-color-surface-container));
-}
-:host([color-scheme="blue"]) [part~="cell-level-3"] {
-  background-color: color-mix(in srgb, var(--snice-color-primary) 76%, var(--snice-color-surface-container));
-}
-:host([color-scheme="blue"]) [part~="cell-level-4"] {
-  background-color: var(--snice-color-primary);
-}
-
-/* Purple scheme */
-:host([color-scheme="purple"]) [part~="cell-level-1"] {
-  background-color: color-mix(in srgb, hsl(278 68% 58%) 26%, var(--snice-color-surface-container));
-}
-:host([color-scheme="purple"]) [part~="cell-level-2"] {
-  background-color: color-mix(in srgb, hsl(278 68% 58%) 50%, var(--snice-color-surface-container));
-}
-:host([color-scheme="purple"]) [part~="cell-level-3"] {
-  background-color: color-mix(in srgb, hsl(278 68% 58%) 76%, var(--snice-color-surface-container));
-}
-:host([color-scheme="purple"]) [part~="cell-level-4"] {
-  background-color: hsl(278 68% 58%);
-}
-
-/* Orange scheme */
-:host([color-scheme="orange"]) [part~="cell-level-1"] {
-  background-color: color-mix(in srgb, var(--snice-color-warning) 26%, var(--snice-color-surface-container));
-}
-:host([color-scheme="orange"]) [part~="cell-level-2"] {
-  background-color: color-mix(in srgb, var(--snice-color-warning) 50%, var(--snice-color-surface-container));
-}
-:host([color-scheme="orange"]) [part~="cell-level-3"] {
-  background-color: color-mix(in srgb, var(--snice-color-warning) 76%, var(--snice-color-surface-container));
-}
-:host([color-scheme="orange"]) [part~="cell-level-4"] {
-  background-color: var(--snice-color-warning);
-}
-
-/* Red scheme */
-:host([color-scheme="red"]) [part~="cell-level-1"] {
-  background-color: color-mix(in srgb, var(--snice-color-danger) 26%, var(--snice-color-surface-container));
-}
-:host([color-scheme="red"]) [part~="cell-level-2"] {
-  background-color: color-mix(in srgb, var(--snice-color-danger) 50%, var(--snice-color-surface-container));
-}
-:host([color-scheme="red"]) [part~="cell-level-3"] {
-  background-color: color-mix(in srgb, var(--snice-color-danger) 76%, var(--snice-color-surface-container));
-}
-:host([color-scheme="red"]) [part~="cell-level-4"] {
-  background-color: var(--snice-color-danger);
-}
-
-/* macOS Liquid Glass floating popover */
+/* 8px high-legibility Tahoe frosted HUD tooltip */
 [part~="tooltip"] {
-  border-radius: 0.4375rem;
+  border-radius: 8px;
   padding: 0.3125rem 0.5625rem;
-  background: var(--snice-macos-glass-menu-bg);
+  background: color-mix(in srgb, var(--snice-color-background-elevated) 90%, transparent);
   backdrop-filter: var(--snice-macos-glass-blur);
   -webkit-backdrop-filter: var(--snice-macos-glass-blur);
   border: 0.5px solid var(--snice-macos-glass-border);
   box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-md);
   color: var(--snice-color-text);
+  font-family: var(--snice-font-family-mono);
   font-size: 0.6875rem;
   font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="tooltip"] {
+    background: var(--snice-color-background-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid var(--snice-color-border);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   [part~="cell"] {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="tooltip"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  [part~="cell"] {
+    border: 1px solid CanvasText;
+  }
+
+  [part~="cell"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 1px;
+    box-shadow: none;
+  }
+
+  [part~="cell"][part~="cell-level-0"] {
+    background-color: Canvas;
+    border-color: GrayText;
+  }
+
+  [part~="cell"][part~="cell-level-1"],
+  [part~="cell"][part~="cell-level-2"] {
+    background-color: GrayText;
+    border-color: CanvasText;
+  }
+
+  [part~="cell"][part~="cell-level-3"],
+  [part~="cell"][part~="cell-level-4"] {
+    background-color: Highlight;
+    border-color: CanvasText;
   }
 }

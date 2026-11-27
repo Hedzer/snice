@@ -1,75 +1,30 @@
-/* macOS 26 Tahoe AppKit / NSPathControl & Storage Inspector treemap skin */
-
-:host([hidden]) {
-  display: none;
-}
+/* macOS 26+ Tahoe AppKit / Storage Inspector — snice-treemap
+ * Sunken 10px AppKit well in both light & dark, crisp 3px rectilinear storage tiles,
+ * SF Mono tabular values, 6px AppKit path-control breadcrumbs, and 8px Tahoe HUD tooltip.
+ */
 
 :host {
-  display: flex;
-  flex-direction: column;
-}
-
-[part~="breadcrumbs"] {
-  gap: 0.25rem;
-  padding: 0 0 0.375rem 0;
-  min-height: 1.75rem;
-}
-
-[part~="breadcrumb"] {
-  min-height: 1.375rem;
-  padding: 0.125rem 0.4375rem;
-  border-radius: 0.375rem;
-  color: var(--snice-color-primary);
-  font-size: 0.75rem;
-  font-weight: 500;
-  transition: background-color 140ms var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
-}
-
-[part~="breadcrumb"]:hover {
-  background: var(--snice-color-overlay-hover, color-mix(in srgb, var(--snice-color-text) 6%, transparent));
-}
-
-[part~="breadcrumb"]:active {
-  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
-}
-
-[part~="breadcrumb"]:focus-visible {
-  box-shadow: var(--snice-macos-focus-halo);
-  outline: none;
-}
-
-[part~="breadcrumb-current"] {
-  color: var(--snice-color-text);
-  font-weight: 600;
-}
-
-[part~="breadcrumb-current"]:hover {
-  background: transparent;
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+  --treemap-tile-transition: opacity 120ms ease;
 }
 
 [part~="base"] {
   box-sizing: border-box;
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  border-radius: 0.75rem;
-  background: var(--snice-color-background-element);
+  padding: 0.625rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, black 5%, var(--snice-color-surface));
   border: 0.5px solid var(--snice-color-border);
-  padding: 0.375rem;
+  box-shadow:
+    inset 0 1.5px 4px hsl(0 0% 0% / 0.24),
+    inset 0 0 0 0.5px var(--snice-color-border-subtle),
+    0 0.5px 0 hsl(0 0% 100% / 0.08);
 }
 
-[part~="chart"] {
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-  height: 100%;
-}
-
-[part~="tile"],
-[part~="tile-border"] {
-  rx: 5px;
-  ry: 5px;
+[part~="tile"] {
+  rx: 3px;
+  ry: 3px;
+  transition: opacity 120ms ease;
 }
 
 [part~="tile"]:hover {
@@ -77,39 +32,117 @@
 }
 
 [part~="tile-border"] {
-  stroke: var(--snice-color-background-element);
+  rx: 3px;
+  ry: 3px;
+  stroke: color-mix(in srgb, black 5%, var(--snice-color-surface));
   stroke-width: 2px;
 }
 
-[part~="label"],
-[part~="value"] {
-  font-weight: 500;
-  paint-order: stroke;
-  stroke: hsl(0 0% 0% / 0.36);
-  stroke-width: 2px;
-  stroke-linejoin: round;
+[part~="label"] {
+  font-family: var(--snice-font-family);
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 [part~="value"] {
+  font-family: var(--snice-font-family-mono);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
-/* macOS Liquid Glass floating popover (preserve base opacity toggle) */
+[part~="breadcrumbs"] {
+  gap: 0.25rem;
+  padding: 0 0 0.4375rem 0;
+}
+
+[part~="breadcrumb"] {
+  padding: 0.1875rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--snice-color-primary);
+  transition: background-color 120ms ease;
+}
+
+[part~="breadcrumb"]:hover {
+  background: var(--snice-color-overlay-hover, color-mix(in srgb, var(--snice-color-text) 6%, transparent));
+}
+
+[part~="breadcrumb"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+[part~="breadcrumb-current"] {
+  color: var(--snice-color-text);
+  font-weight: 600;
+}
+
+[part~="breadcrumb-current"]:hover,
+[part~="breadcrumb-current"]:active {
+  background: transparent;
+}
+
+/* 8px high-legibility Tahoe frosted HUD tooltip */
 [part~="tooltip"] {
-  border-radius: 0.4375rem;
-  padding: 0.3125rem 0.5625rem;
-  background: var(--snice-macos-glass-menu-bg);
+  border-radius: 8px;
+  padding: 0.375rem 0.625rem;
+  background: color-mix(in srgb, var(--snice-color-background-elevated) 90%, transparent);
   backdrop-filter: var(--snice-macos-glass-blur);
   -webkit-backdrop-filter: var(--snice-macos-glass-blur);
   border: 0.5px solid var(--snice-macos-glass-border);
   box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-md);
   color: var(--snice-color-text);
+  font-family: var(--snice-font-family-mono);
   font-size: 0.6875rem;
   font-variant-numeric: tabular-nums;
 }
 
+@media (prefers-reduced-transparency: reduce) {
+  [part~="tooltip"] {
+    background: var(--snice-color-background-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid var(--snice-color-border);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  [part~="breadcrumb"] {
+  [part~="tile"],
+  [part~="breadcrumb"],
+  [part~="tooltip"] {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="breadcrumb"],
+  [part~="tooltip"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  [part~="breadcrumb"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  [part~="tile"] {
+    fill: Canvas;
+  }
+
+  [part~="tile-border"] {
+    stroke: CanvasText;
+    stroke-width: 1.5px;
+  }
+
+  [part~="label"],
+  [part~="value"] {
+    fill: CanvasText;
   }
 }

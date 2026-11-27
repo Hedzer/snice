@@ -360,7 +360,7 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
       }
     }
 
-    // Update positions with velocity damping
+    // Update positions with velocity damping and soft viewport bounds
     for (const node of this.simNodes) {
       if (node.fx !== null) {
         node.x = node.fx;
@@ -373,6 +373,14 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
       node.vy *= 0.6;
       node.x += node.vx;
       node.y += node.vy;
+
+      const r = this.getNodeRadius(node);
+      const padX = Math.min(w * 0.25, Math.max(44, r + 28));
+      const padY = Math.min(h * 0.25, Math.max(30, r + 22));
+      if (node.x < padX) { node.x = padX; node.vx *= -0.3; }
+      else if (node.x > w - padX) { node.x = w - padX; node.vx *= -0.3; }
+      if (node.y < padY) { node.y = padY; node.vy *= -0.3; }
+      else if (node.y > h - padY) { node.y = h - padY; node.vy *= -0.3; }
     }
 
     this.simAlpha *= 0.99;
