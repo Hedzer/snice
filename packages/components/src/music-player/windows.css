@@ -1,0 +1,302 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-music-player
+ * 8px Mica-layered card, 4px artwork, 32px/40px crisp Fluent transport controls,
+ * --snice-win-on-accent dark-mode Play ink, 3px left accent pill on active queue
+ * row, WinUI dual-stroke focus, fast-out motion, and WHCM support.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host([compact]) [part~="base"] {
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+/* Artwork */
+:host [part~="artwork"] {
+  border-radius: 4px;
+  border: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container);
+}
+
+:host [part~="artwork-placeholder"] {
+  color: var(--snice-color-text-secondary);
+}
+
+/* Segoe UI Variable Typography */
+:host [part~="track-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+:host([compact]) [part~="track-title"] {
+  font-size: 0.875rem;
+}
+
+:host [part~="track-artist"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="track-album"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Fluent 2 Transport Controls */
+:host [part~="button"] {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  color: var(--snice-color-text);
+  transition:
+    background-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1),
+    border-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1),
+    color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="button"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="button"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="button-active"],
+:host [part~="button-active"]:hover {
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  color: var(--snice-color-primary);
+}
+
+:host [part~="prev-icon"],
+:host [part~="next-icon"] {
+  width: 18px;
+  height: 18px;
+}
+
+:host [part~="shuffle-icon"],
+:host [part~="repeat-icon"],
+:host [part~="volume-icon"] {
+  width: 16px;
+  height: 16px;
+}
+
+/* Fluent Accent Play Circle — --snice-win-on-accent (white light / black dark) */
+:host [part~="play-button"] {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent);
+  border: 1px solid color-mix(in srgb, white 18%, transparent);
+}
+
+:host [part~="play-button"]:hover {
+  background: color-mix(in srgb, white 10%, var(--snice-color-primary));
+}
+
+:host [part~="play-button"]:active {
+  background: color-mix(in srgb, black 10%, var(--snice-color-primary));
+}
+
+:host([compact]) [part~="play-button"] {
+  width: 34px;
+  height: 34px;
+}
+
+:host [part~="play-icon"] {
+  width: 20px;
+  height: 20px;
+}
+
+:host([compact]) [part~="play-icon"] {
+  width: 16px;
+  height: 16px;
+}
+
+:host [part~="button"]:disabled,
+:host [part~="play-button"]:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* Scrubber & Volume */
+:host [part~="time"] {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="progress-track"] {
+  height: 4px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-text) 18%, transparent);
+}
+
+:host [part~="progress-track"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 24%, transparent);
+}
+
+:host [part~="progress-track"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="progress-fill"] {
+  background: var(--snice-color-primary);
+  border-radius: 9999px;
+}
+
+:host [part~="volume-slider"] {
+  accent-color: var(--snice-color-primary);
+  height: 4px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--snice-color-primary) 0%,
+    var(--snice-color-primary) var(--volume-percent, 100%),
+    color-mix(in srgb, var(--snice-color-text) 18%, transparent) var(--volume-percent, 100%),
+    color-mix(in srgb, var(--snice-color-text) 18%, transparent) 100%
+  );
+}
+
+:host [part~="volume-slider"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* WinUI Queue ListView with 3px Accent Selection Pill */
+:host [part~="playlist"] {
+  border-top: 1px solid var(--snice-color-border-subtle);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+:host [part~="playlist-header"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+  margin-bottom: 6px;
+}
+
+:host [part~="playlist-item"] {
+  position: relative;
+  padding: 6px 10px 6px 12px;
+  border-radius: 4px;
+  transition: background-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="playlist-item"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="playlist-item"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="playlist-item"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="playlist-item-active"],
+:host [part~="playlist-item-active"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 5%, transparent);
+}
+
+:host [part~="playlist-item-active"]::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+:host [part~="playlist-item-artwork"] {
+  border-radius: 4px;
+}
+
+:host [part~="playlist-item-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+:host [part~="playlist-item-artist"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="playlist-item-number"],
+:host [part~="playlist-item-duration"] {
+  color: var(--snice-color-text-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"],
+  :host [part~="play-button"],
+  :host [part~="playlist-item"],
+  :host [part~="progress-fill"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="play-button"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+
+  :host [part~="button"]:focus-visible,
+  :host [part~="play-button"]:focus-visible,
+  :host [part~="progress-track"]:focus-visible,
+  :host [part~="volume-slider"]:focus-visible,
+  :host [part~="playlist-item"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  :host [part~="playlist-item-active"]::before,
+  :host [part~="progress-fill"] {
+    background: Highlight;
+  }
+
+  :host [part~="progress-track"] {
+    border: 1px solid CanvasText;
+  }
+}

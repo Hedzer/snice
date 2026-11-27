@@ -1,0 +1,302 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-music-player
+ * Compact desktop Apple Music panel: 12px AppKit window card, 0.5px hairlines,
+ * 28px secondary controls, 38px glossy Play circle with white dark-mode ink,
+ * Liquid Glass compact mini-player bar, and AppKit focus halo.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+/* Compact mini-player: floating macOS Liquid Glass bar */
+:host([compact]) [part~="base"] {
+  border-radius: 12px;
+  padding: 8px 12px;
+  background: var(--snice-macos-glass-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid var(--snice-macos-glass-border);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-md);
+}
+
+/* Artwork */
+:host [part~="artwork"] {
+  border-radius: 8px;
+  background: var(--snice-color-surface-container);
+  box-shadow:
+    var(--snice-shadow-sm),
+    inset 0 0 0 0.5px var(--snice-color-border-subtle);
+}
+
+:host([compact]) [part~="artwork"] {
+  border-radius: 6px;
+}
+
+:host [part~="artwork-placeholder"] {
+  color: var(--snice-color-text-secondary);
+}
+
+/* Compact SF Pro Typography */
+:host [part~="track-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+:host([compact]) [part~="track-title"] {
+  font-size: 0.8125rem;
+}
+
+:host [part~="track-artist"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="track-album"] {
+  font-size: 0.6875rem;
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Compact Desktop Transport Controls */
+:host [part~="button"] {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 6px;
+  color: var(--snice-color-text);
+  transition:
+    background-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out),
+    color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out),
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="button"]:hover {
+  background: var(--snice-color-overlay-hover, color-mix(in srgb, var(--snice-color-text) 7%, transparent));
+}
+
+:host [part~="button"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="button-active"],
+:host [part~="button-active"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+  color: var(--snice-color-primary);
+}
+
+:host [part~="prev-icon"],
+:host [part~="next-icon"] {
+  width: 18px;
+  height: 18px;
+}
+
+:host [part~="shuffle-icon"],
+:host [part~="repeat-icon"],
+:host [part~="volume-icon"] {
+  width: 16px;
+  height: 16px;
+}
+
+/* Top-Lit AppKit Play Circle — explicit white ink in light AND dark mode */
+:host [part~="play-button"] {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 9999px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 16%, var(--snice-color-primary)) 0%,
+    var(--snice-color-primary) 100%
+  );
+  color: hsl(0 0% 100%);
+  box-shadow:
+    0 1px 2px hsl(0 0% 0% / 0.2),
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.35);
+}
+
+:host [part~="play-button"]:hover {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 22%, var(--snice-color-primary)) 0%,
+    color-mix(in srgb, white 6%, var(--snice-color-primary)) 100%
+  );
+}
+
+:host [part~="play-button"]:active {
+  transform: scale(0.95);
+}
+
+:host([compact]) [part~="play-button"] {
+  width: 30px;
+  height: 30px;
+}
+
+:host [part~="play-icon"] {
+  width: 18px;
+  height: 18px;
+}
+
+:host([compact]) [part~="play-icon"] {
+  width: 15px;
+  height: 15px;
+}
+
+:host [part~="button"]:disabled,
+:host [part~="play-button"]:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Scrubber & Volume */
+:host [part~="time"] {
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="progress-track"] {
+  height: 4px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+}
+
+:host [part~="progress-track"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 20%, transparent);
+}
+
+:host [part~="progress-track"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="progress-fill"] {
+  background: var(--snice-color-primary);
+  border-radius: 9999px;
+}
+
+:host [part~="volume-slider"] {
+  accent-color: var(--snice-color-primary);
+  height: 4px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--snice-color-primary) 0%,
+    var(--snice-color-primary) var(--volume-percent, 100%),
+    color-mix(in srgb, var(--snice-color-text) 16%, transparent) var(--volume-percent, 100%),
+    color-mix(in srgb, var(--snice-color-text) 16%, transparent) 100%
+  );
+}
+
+:host [part~="volume-slider"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Compact Desktop Playlist */
+:host [part~="playlist"] {
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+:host [part~="playlist-header"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 6px;
+}
+
+:host [part~="playlist-item"] {
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="playlist-item"]:hover {
+  background: var(--snice-color-overlay-hover, color-mix(in srgb, var(--snice-color-text) 6%, transparent));
+}
+
+:host [part~="playlist-item"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="playlist-item-active"],
+:host [part~="playlist-item-active"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+}
+
+:host [part~="playlist-item-artwork"] {
+  border-radius: 4px;
+}
+
+:host [part~="playlist-item-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+:host [part~="playlist-item-artist"] {
+  font-size: 0.6875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="playlist-item-number"],
+:host [part~="playlist-item-duration"] {
+  font-size: 0.6875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"],
+  :host [part~="play-button"],
+  :host [part~="playlist-item"],
+  :host [part~="progress-fill"] {
+    transition: none;
+  }
+
+  :host [part~="play-button"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="play-button"] {
+    background: Highlight;
+    color: HighlightText;
+    box-shadow: none;
+  }
+
+  :host [part~="progress-track"] {
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="progress-fill"] {
+    background: Highlight;
+  }
+}
