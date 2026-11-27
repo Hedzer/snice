@@ -1,25 +1,413 @@
-/* iOS 26+ Liquid Glass — snice-date-picker */
-[part~="input"] {
-  min-height: 2.75rem;
-  border-radius: 12px;
-  background: var(--snice-color-surface-container-lowest);
-  border: 1px solid var(--snice-color-border-subtle);
+/* snice-date-picker — iOS 26+ Liquid Glass UIDatePicker skin
+ *
+ * Strictly Layer 2 platform CSS (only :host / [part~="..."] selectors).
+ * Inline trigger uses opaque grouped surfaces matching snice-input/ios.css
+ * (never glass on inline fields); floating calendar popover uses thick
+ * iOS 26 Liquid Glass with 22px concentric radius, specular rim, circular
+ * day cells, and explicit white ink on dark-mode system blue fills.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
 }
 
-[part~="calendar"] {
+[part~="label"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 0.375rem;
+}
+
+/* Trigger input — opaque grouped surface (matches snice-input/ios.css) */
+:host [part~="input"] {
+  min-height: 2.75rem;
+  padding: 0.625rem 3rem 0.625rem 0.875rem;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 12px;
+  color: var(--snice-color-text);
+  box-shadow: var(--snice-shadow-xs);
+  transition: border-color 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:host [part~="input"]:hover {
+  border-color: var(--snice-color-border-hover);
+}
+
+:host [part~="input"]:focus-visible {
+  background: var(--snice-color-surface-container-highest);
+  border-color: var(--snice-color-primary);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+/* Clearable right-padding clearance */
+:host [part~="input-clearable"],
+:host([clearable]) [part~="input"] {
+  padding-right: 4.5rem;
+}
+
+/* Sizes */
+:host([size="small"]) [part~="input"] {
+  min-height: 2.125rem;
+  padding: 0.375rem 2.75rem 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 10px;
+}
+
+:host([size="small"]) [part~="input-clearable"],
+:host([size="small"][clearable]) [part~="input"] {
+  padding-right: 4.25rem;
+}
+
+:host([size="large"]) [part~="input"] {
+  min-height: 3.125rem;
+  padding: 0.75rem 3.25rem 0.75rem 1rem;
+  font-size: 1.0625rem;
+  border-radius: 14px;
+}
+
+:host([size="large"]) [part~="input-clearable"],
+:host([size="large"][clearable]) [part~="input"] {
+  padding-right: 4.75rem;
+}
+
+/* Variants */
+:host([variant="filled"]) [part~="input"] {
+  background: hsl(240 6% 48% / 0.12);
+  border-color: transparent;
+  box-shadow: none;
+  border-radius: 12px;
+}
+
+:host([variant="filled"]) [part~="input"]:hover {
+  background: hsl(240 6% 48% / 0.16);
+}
+
+:host([variant="filled"]) [part~="input"]:focus-visible {
+  background: var(--snice-color-surface-container-high);
+  border-color: var(--snice-color-primary);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+:host([variant="underlined"]) [part~="input"] {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--snice-color-border);
+  border-radius: 0;
+  box-shadow: none;
+  padding-left: 0;
+}
+
+:host([variant="underlined"]) [part~="input"]:focus-visible {
+  background: transparent;
+  border-bottom-color: var(--snice-color-primary);
+  box-shadow: 0 1px 0 0 var(--snice-color-primary);
+}
+
+/* Invalid states across variants */
+:host [part~="input-invalid"],
+:host([variant="filled"]) [part~="input-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+:host([variant="underlined"]) [part~="input-invalid"] {
+  border-bottom-color: var(--snice-color-danger);
+}
+
+:host [part~="input-invalid"]:focus-visible,
+:host([variant="filled"]) [part~="input-invalid"]:focus-visible {
+  border-color: var(--snice-color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-danger) 32%, transparent);
+}
+
+:host([variant="underlined"]) [part~="input-invalid"]:focus-visible {
+  border-bottom-color: var(--snice-color-danger);
+  box-shadow: 0 1px 0 0 var(--snice-color-danger);
+}
+
+/* Disabled states across variants */
+:host [part~="input"]:disabled,
+:host([variant="filled"]) [part~="input"]:disabled {
+  opacity: 0.42;
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-secondary);
+  box-shadow: none;
+}
+
+:host([variant="underlined"]) [part~="input"]:disabled {
+  opacity: 0.42;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Adornment buttons & spinner */
+:host [part~="calendar-toggle"],
+:host [part~="clear-visible"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:host [part~="calendar-toggle"],
+:host [part~="clear"] {
+  border-radius: 9999px;
+  color: var(--snice-color-text-secondary);
+  transition: background-color 0.14s ease, color 0.14s ease, transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:host [part~="calendar-toggle"]:hover,
+:host [part~="clear"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  color: var(--snice-color-text);
+}
+
+:host [part~="calendar-toggle"]:active,
+:host [part~="clear"]:active {
+  transform: scale(0.92);
+}
+
+:host [part~="calendar-toggle"]:focus-visible,
+:host [part~="clear"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: 1px;
+}
+
+:host [part~="spinner"] {
+  color: var(--snice-color-text-secondary);
+}
+
+/* Floating Liquid Glass calendar popover */
+:host [part~="calendar"] {
   border-radius: 22px;
-  background: var(--snice-ios-glass-regular-bg);
+  padding: 1rem;
+  min-width: 18.5rem;
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 88%, transparent);
   backdrop-filter: var(--snice-ios-glass-blur);
   -webkit-backdrop-filter: var(--snice-ios-glass-blur);
   border: 1px solid var(--snice-ios-glass-border);
   box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
 }
 
-[part~="day"] {
-  border-radius: 9999px;
+:host([size="small"]) [part~="calendar"] {
+  min-width: 16.5rem;
+  padding: 0.875rem;
 }
 
-[part~="nav-button"],
-[part~="today-button"] {
+:host([size="large"]) [part~="calendar"] {
+  min-width: 20.5rem;
+  padding: 1.125rem;
+}
+
+[part~="calendar-header"] {
+  margin-bottom: 0.75rem;
+}
+
+[part~="month-label"],
+[part~="year-button"] {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+[part~="year-button"] {
+  color: var(--snice-color-primary);
   border-radius: 9999px;
+  padding: 0.1875rem 0.5rem;
+}
+
+[part~="year-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+}
+
+[part~="year-button"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: 1px;
+}
+
+:host [part~="nav-button"] {
+  width: 2.125rem;
+  height: 2.125rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  color: var(--snice-color-primary);
+  transition: background-color 0.14s ease, transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:host [part~="nav-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  color: var(--snice-color-primary);
+}
+
+:host [part~="nav-button"]:active {
+  transform: scale(0.92);
+}
+
+:host [part~="nav-button"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: 1px;
+}
+
+[part~="weekday"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--snice-color-text-tertiary);
+  padding: 0.25rem 0;
+}
+
+[part~="days"] {
+  justify-items: center;
+}
+
+:host [part~="day"] {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  color: var(--snice-color-text);
+  transition: background-color 0.14s ease, color 0.14s ease, transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:host([size="small"]) [part~="day"] {
+  width: 1.875rem;
+  height: 1.875rem;
+  font-size: 0.8125rem;
+}
+
+:host([size="large"]) [part~="day"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1rem;
+}
+
+:host [part~="day"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+}
+
+:host [part~="day"]:active {
+  transform: scale(0.94);
+}
+
+:host [part~="day"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: 1px;
+}
+
+:host [part~="day-today"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+:host [part~="day-selected"],
+:host [part~="day-today"][part~="day-selected"] {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  font-weight: 600;
+}
+
+:host [part~="day-selected"]:hover,
+:host [part~="day-today"][part~="day-selected"]:hover {
+  background: var(--snice-color-primary-hover);
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="day-disabled"],
+:host [part~="day-disabled"]:hover,
+:host [part~="day-disabled"]:active {
+  opacity: 0.35;
+  color: var(--snice-color-text-tertiary);
+  background: transparent;
+  transform: none;
+}
+
+:host [part~="day-empty"],
+:host [part~="day-empty"]:hover,
+:host [part~="day-empty"]:active {
+  background: transparent;
+  transform: none;
+}
+
+/* Year picker cells */
+:host [part~="year-cell"] {
+  min-height: 2.25rem;
+  border-radius: 9999px;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  transition: background-color 0.14s ease, color 0.14s ease, transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:host [part~="year-cell"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+}
+
+:host [part~="year-cell"]:active {
+  transform: scale(0.95);
+}
+
+:host [part~="year-cell"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: 1px;
+}
+
+:host [part~="year-cell-current"] {
+  outline: none;
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+:host [part~="year-cell-selected"] {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  font-weight: 600;
+}
+
+/* Footer & nested Today capsule button */
+[part~="calendar-footer"] {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="today-button-base"] {
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+  border-color: transparent;
+  color: var(--snice-color-primary);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+[part~="today-button-base"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 20%, transparent);
+}
+
+[part~="helper-text"],
+[part~="error-text"] {
+  font-size: 0.75rem;
+  margin-top: 0.375rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="day"]:active,
+  :host [part~="nav-button"]:active,
+  :host [part~="year-cell"]:active,
+  :host [part~="calendar-toggle"]:active,
+  :host [part~="clear"]:active {
+    transform: none;
+  }
 }
