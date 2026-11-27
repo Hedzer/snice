@@ -1,0 +1,13 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-accordion (WinUI Expander) */
+[part~="base"] {
+  border-radius: 4px;
+  background: var(--snice-win-card-bg, var(--snice-color-background-element));
+  border: 1px solid var(--snice-win-stroke-card, var(--snice-color-border-subtle));
+  overflow: hidden;
+}
+
+[part~="header"] {
+  min-height: 2.75rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+}

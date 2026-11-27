@@ -1,0 +1,74 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-button (32px height, 4px radius, 1px top-lit stroke) */
+[part~="base"] {
+  height: 2rem;
+  min-height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  background: var(--snice-win-control-bg);
+  color: var(--snice-color-text);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-win-stroke-bottom);
+  box-shadow: none;
+  transition: background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
+    border-color var(--snice-transition-fast, 100ms) ease;
+}
+
+[part~="base"]::before {
+  display: none;
+}
+
+:host([size="small"]) [part~="base"] {
+  height: 1.625rem;
+  min-height: 1.625rem;
+  font-size: 0.75rem;
+}
+
+:host([size="large"]) [part~="base"] {
+  height: 2.5rem;
+  min-height: 2.5rem;
+  padding: 0 1.125rem;
+}
+
+[part~="base"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  transform: none;
+}
+
+[part~="base"]:active,
+:host([data-win-pressed="true"]) [part~="base"] {
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-win-stroke-top);
+  transform: none;
+}
+
+:host([variant="primary"]) [part~="base"] {
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+  border-color: color-mix(in srgb, white 10%, var(--snice-color-primary))
+    color-mix(in srgb, white 10%, var(--snice-color-primary))
+    color-mix(in srgb, black 28%, var(--snice-color-primary));
+}
+
+:host([variant="primary"]) [part~="base"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 90%, var(--snice-color-surface));
+}
+
+:host([variant="danger"]) [part~="base"] {
+  background: var(--snice-color-danger);
+  color: hsl(0 0% 100%);
+  border-color: color-mix(in srgb, black 24%, var(--snice-color-danger));
+}
+
+:host([variant="text"]) [part~="base"] {
+  background: transparent;
+  border-color: transparent;
+}
+
+[part~="base"]:focus-visible,
+:host([data-win-focus="keyboard"]) [part~="base"] {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}

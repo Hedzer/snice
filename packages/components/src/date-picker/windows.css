@@ -1,0 +1,26 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-date-picker (WinUI CalendarDatePicker) */
+[part~="input"] {
+  min-height: 2rem;
+  border-radius: 4px;
+  background: var(--snice-win-control-fill, var(--snice-color-background-element));
+  border: 1px solid var(--snice-win-stroke-default, var(--snice-color-border));
+  border-bottom-color: var(--snice-win-stroke-strong, var(--snice-color-border-strong));
+}
+
+[part~="calendar"] {
+  border-radius: 8px;
+  background: var(--snice-win-acrylic-bg, var(--snice-color-background-elevated));
+  backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
+  border: 1px solid var(--snice-win-stroke-surface-flyout, var(--snice-color-border));
+  box-shadow: var(--snice-shadow-lg);
+}
+
+[part~="day"] {
+  border-radius: 9999px;
+}
+
+[part~="nav-button"],
+[part~="today-button"] {
+  border-radius: 4px;
+}

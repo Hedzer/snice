@@ -1,0 +1,28 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-chip (Fluent Tag / Pill Token) */
+[part~="base"] {
+  min-height: 1.75rem;
+  padding: 0 0.625rem;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  background: var(--snice-win-control-fill, var(--snice-color-background-element));
+  border: 1px solid var(--snice-win-stroke-default, var(--snice-color-border));
+  box-shadow: var(--snice-win-elevation-control);
+  color: var(--snice-color-text);
+  transition: background-color var(--snice-transition-fast, 100ms) ease;
+}
+
+[part~="base"]:hover {
+  background: var(--snice-win-control-fill-secondary, var(--snice-color-background-hover));
+}
+
+[part~="base-selected"] {
+  background: var(--snice-color-primary-subtle);
+  border-color: var(--snice-color-primary);
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+:host([data-win-focus="keyboard"]) [part~="base"] {
+  box-shadow: var(--snice-win-focus-shadow);
+}

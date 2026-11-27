@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en" data-platform="windows">
+<head>
+  <meta charset="utf-8" />
+  <title>Windows 11 Fluent 2 / WinUI 3 Conformance Fixture</title>
+  <link rel="stylesheet" href="/dist/components/theme/core.css" />
+  <link rel="stylesheet" href="/dist/components/theme/dark.css" />
+  <link rel="stylesheet" href="/dist/components/theme/platforms/windows-scoped.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+      font-family: var(--snice-font-family);
+    }
+    .grid { display: grid; gap: 16px; max-width: 960px; }
+    .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  </style>
+  <style id="brand-css"></style>
+</head>
+<body>
+  <div class="grid">
+    <snice-nav id="win-nav" orientation="vertical"></snice-nav>
+
+    <div class="row">
+      <snice-button id="btn-primary" variant="primary">Save</snice-button>
+      <snice-button id="btn-standard">Cancel</snice-button>
+      <snice-button id="btn-outline" outline>Outline</snice-button>
+    </div>
+
+    <div class="row">
+      <snice-switch id="sw-win" label="Bluetooth" checked></snice-switch>
+      <snice-checkbox id="cb-win" label="Sync settings" checked></snice-checkbox>
+      <snice-radio id="rad-win" name="win-r" label="Mica" checked></snice-radio>
+      <snice-chip id="chip-win" label="Fluent 2" selectable></snice-chip>
+    </div>
+
+    <div class="row">
+      <snice-input id="inp-win" label="Device name" placeholder="DESKTOP-WIN11"></snice-input>
+      <snice-slider id="sld-win" label="Brightness" value="65" min="0" max="100"></snice-slider>
+    </div>
+
+    <snice-tabs id="tabs-win">
+      <snice-tab slot="nav">System</snice-tab>
+      <snice-tab slot="nav">Network</snice-tab>
+      <snice-tab-panel>System settings</snice-tab-panel>
+      <snice-tab-panel>Network settings</snice-tab-panel>
+    </snice-tabs>
+
+    <snice-card id="card-win">
+      <span slot="header">Mica Layered Card</span>
+      <p>Windows 11 Fluent 2 card with 1px top-lit elevation stroke.</p>
+    </snice-card>
+
+    <snice-menu id="menu-win" open>
+      <snice-menu-item>Open</snice-menu-item>
+      <snice-menu-item>Properties</snice-menu-item>
+    </snice-menu>
+
+    <snice-table id="table-win"></snice-table>
+    <snice-kanban id="kanban-win"></snice-kanban>
+    <snice-calendar id="cal-win"></snice-calendar>
+  </div>
+
+  <script type="module">
+    import '/dist/components/button/snice-button.js';
+    import '/dist/components/switch/snice-switch.js';
+    import '/dist/components/checkbox/snice-checkbox.js';
+    import '/dist/components/radio/snice-radio.js';
+    import '/dist/components/chip/snice-chip.js';
+    import '/dist/components/input/snice-input.js';
+    import '/dist/components/slider/snice-slider.js';
+    import '/dist/components/tabs/snice-tabs.js';
+    import '/dist/components/tabs/snice-tab.js';
+    import '/dist/components/tabs/snice-tab-panel.js';
+    import '/dist/components/card/snice-card.js';
+    import '/dist/components/nav/snice-nav.js';
+    import '/dist/components/menu/snice-menu.js';
+    import '/dist/components/menu/snice-menu-item.js';
+    import '/dist/components/table/snice-table.js';
+    import '/dist/components/kanban/snice-kanban.js';
+    import '/dist/components/calendar/snice-calendar.js';
+    import { enableRuntimePlatformBehaviors } from '/dist/components/platform-behaviors/runtime.js';
+
+    const nav = document.getElementById('win-nav');
+    nav.update([
+      { name: 'system', title: 'System', href: '#system' },
+      { name: 'network', title: 'Network', href: '#network' },
+      { name: 'apps', title: 'Apps', href: '#apps' },
+    ], undefined, 'system');
+
+    const table = document.getElementById('table-win');
+    table.columns = [
+      { key: 'service', label: 'Service', type: 'text' },
+      { key: 'status', label: 'Status', type: 'text' },
+    ];
+    table.data = [
+      { service: 'Windows Update', status: 'Running' },
+      { service: 'Bluetooth Support', status: 'Running' },
+    ];
+
+    const kanban = document.getElementById('kanban-win');
+    kanban.columns = [
+      { id: 'todo', title: 'To Do', cards: [{ id: '1', title: 'Fluent 2 Audit' }] },
+      { id: 'done', title: 'Done', cards: [{ id: '2', title: 'Mica Hierarchy' }] },
+    ];
+
+    window.__winHandle = enableRuntimePlatformBehaviors(document);
+    window.__winReady = Promise.all([
+      customElements.whenDefined('snice-button'),
+      customElements.whenDefined('snice-switch'),
+      customElements.whenDefined('snice-slider'),
+      customElements.whenDefined('snice-input'),
+      customElements.whenDefined('snice-nav'),
+      customElements.whenDefined('snice-table'),
+    ]).then(() => new Promise((r) => setTimeout(r, 80)));
+  </script>
+</body>
+</html>

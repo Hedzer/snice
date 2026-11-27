@@ -1,0 +1,60 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-switch (40x20px ToggleSwitch) */
+:host {
+  min-height: 2rem;
+}
+
+[part~="track"] {
+  min-width: 2.5rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid var(--snice-color-text-secondary);
+  box-sizing: border-box;
+  transition:
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
+    border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease);
+}
+
+[part~="track"]:hover {
+  background: var(--snice-color-overlay-hover);
+}
+
+[part~="track-checked"] {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+}
+
+[part~="thumb"] {
+  top: 50%;
+  left: 3px;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+  background: var(--snice-color-text-secondary);
+  box-shadow: none;
+  transform: translateY(-50%);
+  transition:
+    left var(--snice-transition-medium, 160ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    width var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
+    height var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
+    background-color var(--snice-transition-fast, 100ms) ease;
+}
+
+[part~="thumb"]:hover {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+[part~="thumb-checked"] {
+  left: calc(100% - 0.75rem - 3px);
+  background: var(--snice-win-on-accent, hsl(0 0% 100%));
+}
+
+:host([data-win-pressed="true"]) [part~="thumb"] {
+  width: 1.0625rem;
+  height: 0.875rem;
+}
+
+:host([data-win-focus="keyboard"]) [part~="track"] {
+  box-shadow: var(--snice-win-focus-shadow);
+}

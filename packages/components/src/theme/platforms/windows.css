@@ -1,0 +1,212 @@
+/* ==========================================================================
+   Snice Platform Skin — Windows 11 Fluent 2 / WinUI 3
+   Pinned Spec: Microsoft Fluent 2 (https://fluent2.microsoft.design/)
+                Windows 11 WinUI 3 (https://learn.microsoft.com/windows/apps/design/)
+   Verified:    2026-08-20
+   Provenance:  System Segoe UI Variable stack ('Segoe UI Variable Text',
+                'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif).
+                Zero redistributed Microsoft fonts, icons, or source code.
+   Browser limits: OS DWM desktop-wallpaper Mica sampling is compositor-private;
+                accent-tinted layered Mica/Mica Alt surfaces + transient Acrylic
+                backdrop-filter + 1px top-lit elevation strokes + dual-stroke
+                focus visuals + first-class forced-colors provide full parity.
+   ========================================================================== */
+
+:root {
+  /* Typography — Segoe UI Variable desktop ramp */
+  --snice-font-family: 'Segoe UI Variable Text', 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --snice-font-family-display: 'Segoe UI Variable Display', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --snice-font-family-mono: 'Cascadia Code', Consolas, ui-monospace, monospace;
+  --snice-font-size-md: 0.875rem;
+  --snice-font-size-sm: 0.8125rem;
+  --snice-font-size-xs: 0.75rem;
+  --snice-tracking-tight: -0.01em;
+  --snice-tracking-normal: 0;
+
+  /* Windows 11 Accent & Semantic Seeds (full color-mix() brand cascade) */
+  --snice-color-primary: hsl(206 100% 36%);
+  --snice-color-success: hsl(122 77% 28%);
+  --snice-color-warning: hsl(39 98% 31%);
+  --snice-color-danger: hsl(357 74% 43%);
+  --snice-color-neutral: hsl(0 0% 38%);
+  --snice-win-on-accent: hsl(0 0% 100%);
+
+  /* Mica / Mica Alt Layered Surface Hierarchy */
+  --snice-color-surface: color-mix(in srgb, var(--snice-color-primary) 2.5%, hsl(0 0% 95.3%));
+  --snice-color-surface-container-lowest: hsl(0 0% 100%);
+  --snice-color-surface-container-low: color-mix(in srgb, var(--snice-color-primary) 2%, hsl(0 0% 97.5%));
+  --snice-color-surface-container: hsl(0 0% 97.5%);
+  --snice-color-surface-container-high: hsl(0 0% 100% / 0.82);
+  --snice-color-surface-container-highest: hsl(0 0% 99%);
+
+  /* Text & Fluent Elevation Strokes */
+  --snice-color-text: hsl(0 0% 10.6%);
+  --snice-color-text-secondary: hsl(0 0% 36%);
+  --snice-color-text-tertiary: hsl(0 0% 48%);
+  --snice-color-text-inverse: hsl(0 0% 100%);
+  --snice-color-border: hsl(0 0% 0% / 0.08);
+  --snice-color-border-hover: hsl(0 0% 0% / 0.16);
+  --snice-color-border-subtle: hsl(0 0% 0% / 0.06);
+
+  /* 1px Top-Lit Control Elevation Border & Transient Acrylic Tokens */
+  --snice-win-control-bg: hsl(0 0% 100% / 0.72);
+  --snice-win-control-bg-hover: hsl(0 0% 98% / 0.85);
+  --snice-win-control-bg-pressed: hsl(0 0% 96% / 0.55);
+  --snice-win-stroke-top: hsl(0 0% 0% / 0.06);
+  --snice-win-stroke-bottom: hsl(0 0% 0% / 0.16);
+  --snice-win-stroke-input-bottom: hsl(0 0% 0% / 0.45);
+  --snice-win-acrylic-bg: hsl(0 0% 99% / 0.84);
+  --snice-win-acrylic-blur: blur(30px) saturate(140%);
+
+  /* Fluent 2 Corner Geometry: 4px controls, 8px overlays/cards */
+  --snice-border-radius-sm: 2px;
+  --snice-border-radius-md: 4px;
+  --snice-border-radius-lg: 8px;
+  --snice-border-radius-xl: 8px;
+
+  /* Fluent 2 Elevation Shadows */
+  --snice-shadow-xs: 0 1px 2px hsl(0 0% 0% / 0.06);
+  --snice-shadow-sm: 0 2px 4px hsl(0 0% 0% / 0.06), 0 0 2px hsl(0 0% 0% / 0.04);
+  --snice-shadow-md: 0 4px 8px hsl(0 0% 0% / 0.1), 0 0 2px hsl(0 0% 0% / 0.06);
+  --snice-shadow-lg: 0 8px 16px hsl(0 0% 0% / 0.14), 0 0 2px hsl(0 0% 0% / 0.08);
+  --snice-shadow-xl: 0 16px 32px hsl(0 0% 0% / 0.18), 0 0 2px hsl(0 0% 0% / 0.1);
+  --snice-shadow-2xl: 0 24px 48px hsl(0 0% 0% / 0.24), 0 0 2px hsl(0 0% 0% / 0.12);
+
+  /* WinUI 3 Dual-Stroke Focus Visual */
+  --snice-focus-ring-width: 2px;
+  --snice-focus-ring-offset: 1px;
+  --snice-focus-ring-color: var(--snice-color-text);
+  --snice-win-focus-shadow: 0 0 0 1px var(--snice-color-surface-container-lowest), 0 0 0 3px var(--snice-color-text);
+
+  /* Fluent 2 Fast-Out Decelerate Motion (zero rubbery bounce) */
+  --snice-transition-fast: 100ms;
+  --snice-transition-medium: 187ms;
+  --snice-transition-slow: 280ms;
+  --snice-ease-out: cubic-bezier(0, 0, 0, 1);
+  --snice-ease-spring: cubic-bezier(0, 0, 0, 1);
+}
+
+[data-theme="dark"] {
+  --snice-color-primary: hsl(202 100% 69%);
+  --snice-color-success: hsl(116 58% 62%);
+  --snice-color-warning: hsl(47 98% 66%);
+  --snice-color-danger: hsl(357 98% 80%);
+  --snice-color-neutral: hsl(0 0% 66%);
+  --snice-win-on-accent: hsl(0 0% 0%);
+
+  --snice-color-surface: color-mix(in srgb, var(--snice-color-primary) 3%, hsl(0 0% 12.5%));
+  --snice-color-surface-container-lowest: hsl(0 0% 15%);
+  --snice-color-surface-container-low: hsl(0 0% 15.5%);
+  --snice-color-surface-container: hsl(0 0% 17.5%);
+  --snice-color-surface-container-high: hsl(0 0% 19% / 0.9);
+  --snice-color-surface-container-highest: hsl(0 0% 20%);
+
+  --snice-color-text: hsl(0 0% 100%);
+  --snice-color-text-secondary: hsl(0 0% 78%);
+  --snice-color-text-tertiary: hsl(0 0% 62%);
+  --snice-color-text-inverse: hsl(0 0% 10%);
+  --snice-color-border: hsl(0 0% 100% / 0.08);
+  --snice-color-border-hover: hsl(0 0% 100% / 0.16);
+  --snice-color-border-subtle: hsl(0 0% 100% / 0.07);
+
+  --snice-win-control-bg: hsl(0 0% 100% / 0.06);
+  --snice-win-control-bg-hover: hsl(0 0% 100% / 0.09);
+  --snice-win-control-bg-pressed: hsl(0 0% 100% / 0.04);
+  --snice-win-stroke-top: hsl(0 0% 100% / 0.11);
+  --snice-win-stroke-bottom: hsl(0 0% 100% / 0.07);
+  --snice-win-stroke-input-bottom: hsl(0 0% 100% / 0.54);
+  --snice-win-acrylic-bg: hsl(0 0% 17% / 0.84);
+  --snice-win-focus-shadow: 0 0 0 1px hsl(0 0% 0%), 0 0 0 3px hsl(0 0% 100%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]),
+  :root[data-theme="auto"] {
+    --snice-color-primary: hsl(202 100% 69%);
+    --snice-color-success: hsl(116 58% 62%);
+    --snice-color-warning: hsl(47 98% 66%);
+    --snice-color-danger: hsl(357 98% 80%);
+    --snice-color-neutral: hsl(0 0% 66%);
+    --snice-win-on-accent: hsl(0 0% 0%);
+
+    --snice-color-surface: color-mix(in srgb, var(--snice-color-primary) 3%, hsl(0 0% 12.5%));
+    --snice-color-surface-container-lowest: hsl(0 0% 15%);
+    --snice-color-surface-container-low: hsl(0 0% 15.5%);
+    --snice-color-surface-container: hsl(0 0% 17.5%);
+    --snice-color-surface-container-high: hsl(0 0% 19% / 0.9);
+    --snice-color-surface-container-highest: hsl(0 0% 20%);
+
+    --snice-color-text: hsl(0 0% 100%);
+    --snice-color-text-secondary: hsl(0 0% 78%);
+    --snice-color-text-tertiary: hsl(0 0% 62%);
+    --snice-color-text-inverse: hsl(0 0% 10%);
+    --snice-color-border: hsl(0 0% 100% / 0.08);
+    --snice-color-border-hover: hsl(0 0% 100% / 0.16);
+    --snice-color-border-subtle: hsl(0 0% 100% / 0.07);
+
+    --snice-win-control-bg: hsl(0 0% 100% / 0.06);
+    --snice-win-control-bg-hover: hsl(0 0% 100% / 0.09);
+    --snice-win-control-bg-pressed: hsl(0 0% 100% / 0.04);
+    --snice-win-stroke-top: hsl(0 0% 100% / 0.11);
+    --snice-win-stroke-bottom: hsl(0 0% 100% / 0.07);
+    --snice-win-stroke-input-bottom: hsl(0 0% 100% / 0.54);
+    --snice-win-acrylic-bg: hsl(0 0% 17% / 0.84);
+    --snice-win-focus-shadow: 0 0 0 1px hsl(0 0% 0%), 0 0 0 3px hsl(0 0% 100%);
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :root {
+    --snice-win-acrylic-bg: hsl(0 0% 99%);
+    --snice-win-acrylic-blur: none;
+  }
+  [data-theme="dark"] {
+    --snice-win-acrylic-bg: hsl(0 0% 18%);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --snice-win-acrylic-bg: var(--snice-color-surface-container-highest);
+    --snice-win-acrylic-blur: none;
+    --snice-color-surface-container-high: var(--snice-color-surface-container-lowest);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --snice-color-border: var(--snice-color-text);
+    --snice-win-stroke-top: var(--snice-color-text);
+    --snice-win-stroke-bottom: var(--snice-color-text);
+  }
+}
+
+/* First-class Windows High Contrast Mode (WHCM / forced-colors) */
+@media (forced-colors: active) {
+  :root {
+    --snice-win-acrylic-blur: none;
+    --snice-win-acrylic-bg: Canvas;
+    --snice-color-primary: Highlight;
+    --snice-win-on-accent: HighlightText;
+    --snice-color-border: CanvasText;
+    --snice-win-stroke-top: ButtonBorder;
+    --snice-win-stroke-bottom: ButtonBorder;
+    --snice-win-stroke-input-bottom: CanvasText;
+    --snice-win-focus-shadow: 0 0 0 1px Canvas, 0 0 0 3px Highlight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --snice-transition-fast: 0ms;
+    --snice-transition-medium: 0ms;
+    --snice-transition-slow: 0ms;
+  }
+}
+
+[data-motion="reduce"],
+[data-motion="off"] {
+  --snice-transition-fast: 0ms;
+  --snice-transition-medium: 0ms;
+  --snice-transition-slow: 0ms;
+}

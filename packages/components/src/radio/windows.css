@@ -1,0 +1,25 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-radio */
+:host {
+  min-height: 2rem;
+}
+
+[part~="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1px solid var(--snice-color-text-secondary);
+  background: var(--snice-win-control-bg);
+}
+
+[part~="radio-checked"] {
+  border-color: var(--snice-color-primary);
+  background: var(--snice-color-primary);
+}
+
+[part~="dot-checked"] {
+  background: var(--snice-win-on-accent, hsl(0 0% 100%));
+  transform: scale(0.9);
+}
+
+:host([data-win-focus="keyboard"]) [part~="radio"] {
+  box-shadow: var(--snice-win-focus-shadow);
+}

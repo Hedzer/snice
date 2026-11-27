@@ -1,0 +1,39 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-slider (4px Track + Concentric Ring/Dot Thumb) */
+[part~="controls"] {
+  min-height: 2rem;
+}
+
+[part~="track"] {
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--snice-color-text-tertiary);
+}
+
+[part~="fill"] {
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+[part~="thumb"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  border: 4px solid var(--snice-color-surface-container-lowest);
+  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom), var(--snice-shadow-xs);
+  transition: border-width var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease);
+}
+
+[part~="thumb"]:hover {
+  border-width: 3px;
+}
+
+:host([data-win-pressed="true"]) [part~="thumb"],
+[part~="thumb-dragging"] {
+  border-width: 5px;
+}
+
+[part~="thumb"]:focus-visible,
+:host([data-win-focus="keyboard"]) [part~="thumb"] {
+  box-shadow: var(--snice-win-focus-shadow);
+}

@@ -1,0 +1,26 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-kanban (Mica Alt Columns + 8px Layer Cards) */
+[part~="column"] {
+  border-radius: 8px;
+  background: var(--snice-win-mica-alt-bg, var(--snice-color-background-secondary));
+  border: 1px solid var(--snice-win-stroke-card, var(--snice-color-border-subtle));
+  padding: 0.625rem;
+}
+
+[part~="column-count"] {
+  border-radius: 4px;
+  background: var(--snice-win-control-fill, var(--snice-color-background-element));
+  border: 1px solid var(--snice-win-stroke-card, var(--snice-color-border-subtle));
+  color: var(--snice-color-text-secondary);
+  font-size: 0.75rem;
+}
+
+[part~="card"] {
+  border-radius: 6px;
+  background: var(--snice-win-card-bg, var(--snice-color-background-element));
+  border: 1px solid var(--snice-win-stroke-card, var(--snice-color-border-subtle));
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="card-label"] {
+  border-radius: 4px;
+}

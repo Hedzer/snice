@@ -1,0 +1,13 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-command-palette (PowerToys Run / Acrylic Overlay) */
+[part~="container"] {
+  border-radius: 8px;
+  background: var(--snice-win-acrylic-bg, var(--snice-color-background-elevated));
+  backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
+  border: 1px solid var(--snice-win-stroke-surface-flyout, var(--snice-color-border));
+  box-shadow: var(--snice-shadow-xl);
+}
+
+[part~="item"] {
+  border-radius: 4px;
+}

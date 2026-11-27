@@ -1,0 +1,11 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-progress (WinUI 3px ProgressBar) */
+[part~="base"] {
+  height: 3px;
+  border-radius: 9999px;
+  background: var(--snice-color-border-subtle);
+}
+
+[part~="bar"] {
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}

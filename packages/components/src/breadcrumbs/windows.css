@@ -1,0 +1,11 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-breadcrumbs (WinUI BreadcrumbBar) */
+[part~="link"] {
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="link"]:hover {
+  background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-text);
+}

@@ -1,0 +1,12 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-work-order (Fluent Enterprise Record Card) */
+[part~="base"] {
+  border-radius: 8px;
+  background: var(--snice-win-card-bg, var(--snice-color-background-element));
+  border: 1px solid var(--snice-win-stroke-card, var(--snice-color-border-subtle));
+}
+
+[part~="status"],
+[part~="priority"],
+[part~="sign-button"] {
+  border-radius: 4px;
+}

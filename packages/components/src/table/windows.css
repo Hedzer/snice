@@ -1,0 +1,34 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-table (WinUI DataGrid, dense rows, zero cell blur) */
+[part~="frame"],
+[part~="container"] {
+  border-radius: 8px;
+  background: var(--snice-win-card-bg, var(--snice-color-background-element));
+  border: 1px solid var(--snice-win-stroke-card, var(--snice-color-border-subtle));
+  overflow: hidden;
+}
+
+[part~="toolbar"] {
+  background: var(--snice-win-mica-alt-bg, var(--snice-color-background-secondary));
+  border-bottom: 1px solid var(--snice-win-stroke-divider, var(--snice-color-border-subtle));
+  padding: 0.5rem 0.75rem;
+}
+
+[part~="header-cell"] {
+  background: var(--snice-win-mica-alt-bg, var(--snice-color-background-secondary));
+  color: var(--snice-color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--snice-win-stroke-divider, var(--snice-color-border-subtle));
+}
+
+[part~="cell"] {
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--snice-win-stroke-divider, var(--snice-color-border-subtle));
+}
+
+[part~="pagination-button"] {
+  min-height: 1.75rem;
+  border-radius: 4px;
+}
