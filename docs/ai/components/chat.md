@@ -69,6 +69,7 @@ React, edit, and delete self-apply to the local `messages` model AND emit the ev
 - `message` / `message-own` / `message-other` - message row (+ own/other variants)
 - `system-message` - system message row
 - `avatar`, `author`, `timestamp`, `edited`, `message-text` - message internals
+- `message-text-own` / `message-text-other` / `message-text-system` - added to `message-text` by message sender role
 - `attachment` - message attachment
 - `reactions` / `reaction` / `reaction-active` - reactions
 - `actions` - hover action menu (react on any message; edit/delete owner-only)

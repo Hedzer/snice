@@ -138,6 +138,9 @@ for structural changes.
 | `timestamp` | A message timestamp |
 | `edited` | The "(edited)" marker |
 | `message-text` | A message body |
+| `message-text-own` | Added to `message-text` on messages authored by the current user |
+| `message-text-other` | Added to `message-text` on messages authored by someone else |
+| `message-text-system` | Added to `message-text` on system messages |
 | `attachment` | A message attachment |
 | `reactions` | A message's reactions container |
 | `reaction` | A single reaction |

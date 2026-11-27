@@ -566,12 +566,13 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
     return false;
   }
 
-  private renderMessageBody(message: ChatMessage) {
+  private renderMessageBody(message: ChatMessage, isCurrentUser: boolean) {
+    const bodyRolePart = isCurrentUser ? 'message-text-own' : 'message-text-other';
     if (this.shouldRenderMarkdown(message)) {
-      return html/*html*/`<snice-markdown part="message-text" exportparts="base: message-text-base" class="message-text" .content=${message.content}></snice-markdown>`;
+      return html/*html*/`<snice-markdown part="message-text ${bodyRolePart}" exportparts="base: message-text-base" class="message-text" .content=${message.content}></snice-markdown>`;
     }
 
-    return html/*html*/`<div part="message-text" class="message-text">${message.content}</div>`;
+    return html/*html*/`<div part="message-text ${bodyRolePart}" class="message-text">${message.content}</div>`;
   }
 
   private renderMessage(message: ChatMessage) {
@@ -582,7 +583,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
       return html/*html*/`
         <div part="message system-message" class="message system" data-message-id="${message.id}">
           <div class="message-content" part="message-content">
-            <div part="message-text" class="message-text">${message.content}</div>
+            <div part="message-text message-text-system" class="message-text">${message.content}</div>
           </div>
         </div>
       `;
@@ -617,7 +618,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
           </div>
           ${isEditing
             ? this.renderEditor(message)
-            : message.content ? this.renderMessageBody(message) : ''}
+            : message.content ? this.renderMessageBody(message, isCurrentUser) : ''}
           ${message.attachment ? this.renderAttachment(message.attachment) : ''}
           ${hasReactions ? this.renderReactions(message.id, message.reactions) : ''}
           ${isConfirmingDelete ? this.renderDeleteConfirm(message) : ''}
