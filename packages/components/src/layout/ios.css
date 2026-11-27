@@ -1,25 +1,33 @@
 /* iOS 26+ Liquid Glass — snice-layout */
 [part~="header"] {
-  background: var(--snice-ios-glass-regular-bg);
-  backdrop-filter: var(--snice-ios-glass-blur);
-  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
-  box-shadow: var(--snice-ios-glass-rim);
+  background: var(--snice-ios-glass-regular-bg, rgb(255 255 255 / 0.72));
+  backdrop-filter: var(--snice-ios-glass-blur, blur(22px) saturate(190%));
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur, blur(22px) saturate(190%));
+  border-bottom: 0.5px solid var(--snice-color-border-subtle, rgb(0 0 0 / 0.08));
+  box-shadow: var(--snice-ios-glass-rim, inset 0 1px 0 rgb(255 255 255 / 0.45));
 }
 
 [part~="main"] {
-  background: var(--snice-color-surface);
+  background: var(--snice-color-surface, rgb(242 242 247));
 }
 
 [part~="footer"] {
-  background: var(--snice-color-surface-container-low);
-  border-top: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-low, rgb(248 248 250));
+  border-top: 0.5px solid var(--snice-color-border-subtle, rgb(0 0 0 / 0.08));
 }
 
 @media (prefers-reduced-transparency: reduce) {
   [part~="header"] {
-    background: var(--snice-color-surface-container-high);
+    background: var(--snice-color-surface-container-high, rgb(255 255 255));
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="header"],
+  [part~="main"],
+  [part~="footer"] {
+    transition: none;
   }
 }

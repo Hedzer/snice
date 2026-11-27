@@ -12,6 +12,10 @@
    - 8px Fluent Settings block cards with crisp selected border & accent tint
    ========================================================================== */
 
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: inline-flex;
   align-items: center;

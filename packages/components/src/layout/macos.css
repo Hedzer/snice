@@ -1,28 +1,36 @@
 /* macOS 26+ Liquid Glass / AppKit — snice-layout */
 [part~="header"] {
   padding: 0.5rem 1rem;
-  background: var(--snice-macos-glass-bg);
-  backdrop-filter: var(--snice-macos-glass-blur);
-  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
-  border-bottom: 0.5px solid var(--snice-color-border);
-  box-shadow: var(--snice-macos-glass-rim);
+  background: var(--snice-macos-glass-bg, rgb(255 255 255 / 0.72));
+  backdrop-filter: var(--snice-macos-glass-blur, blur(20px) saturate(180%));
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur, blur(20px) saturate(180%));
+  border-bottom: 0.5px solid var(--snice-color-border, rgb(0 0 0 / 0.12));
+  box-shadow: var(--snice-macos-glass-rim, inset 0 1px 0 rgb(255 255 255 / 0.4));
 }
 
 [part~="main"] {
-  background: var(--snice-color-surface);
+  background: var(--snice-color-surface, rgb(245 245 247));
 }
 
 [part~="footer"] {
   padding: 0.625rem 1rem;
-  background: var(--snice-color-surface-container-low);
-  border-top: 0.5px solid var(--snice-color-border);
+  background: var(--snice-color-surface-container-low, rgb(248 248 250));
+  border-top: 0.5px solid var(--snice-color-border, rgb(0 0 0 / 0.12));
   font-size: 0.8125rem;
 }
 
 @media (prefers-reduced-transparency: reduce) {
   [part~="header"] {
-    background: var(--snice-color-background-elevated);
+    background: var(--snice-color-background-elevated, rgb(255 255 255));
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="header"],
+  [part~="main"],
+  [part~="footer"] {
+    transition: none;
   }
 }

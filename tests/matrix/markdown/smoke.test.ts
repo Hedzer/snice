@@ -74,21 +74,14 @@ describe('markdown matrix smoke', () => {
     expect(event.defaultPrevented).toBe(true);
   });
 
-  // MATRIX-markdown-1: the sanitizer's dangerous-tag list contains `input`, so
-  // the documented task-list syntax loses its checkboxes at the documented
-  // `sanitize` default.
-  it.fails('MATRIX-markdown-1: a task list renders checkboxes by default', async () => {
+  // MATRIX-markdown-1 (fixed): task-list checkboxes now survive sanitization
+  // at the documented `sanitize` default.
+  it('MATRIX-markdown-1: a task list renders checkboxes by default', async () => {
     const syntax = find('task list');
     const combo = { source: syntax.source };
     el = await mountMarkdown(combo);
     expectClean(checkSyntax(el, syntax, combo), 'task list');
-  });
-
-  it('MATRIX-markdown-1 reproduces: the checkboxes are stripped, the labels remain', async () => {
-    el = await mountMarkdown({ source: '- [ ] Todo\n- [x] Done' });
-    expect(body(el)!.querySelectorAll('input[type="checkbox"]')).toHaveLength(0);
-    expect(body(el)!.querySelectorAll('li')).toHaveLength(2);
-    expect(body(el)!.textContent).toContain('Todo');
+    expect(body(el)!.querySelectorAll('input[type="checkbox"]')).toHaveLength(2);
   });
 
   // MATRIX-markdown-2: setContent assigns the reactive `content` property AND

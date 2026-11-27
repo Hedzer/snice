@@ -2,7 +2,7 @@
 
 - **Platform ID**: `material`
 - **Pinned Contemporary Spec**: Material Design 3 Expressive (`https://m3.material.io/`)
-- **Verified Date**: `2026-08-20`
+- **Verified Date**: `2026-08-20` (all 134/134 component skins visually verified `2026-11-27`)
 - **Font / Trademark / Asset Provenance**: System/open Roboto font stack (`Roboto, system-ui, sans-serif`) only. Zero proprietary font or icon binary redistribution.
 - **Browser-Imposed Limits**: OS-private Android `WallpaperColors` extraction and system slider haptic ticks are unavailable in browsers; deterministic CSS `color-mix()` tonal container derivation from `--snice-color-primary`, visual stop indicators, spatial vs effects spring curves, and pointer-origin ripple provide full browser-expressible parity.
 
@@ -10,137 +10,137 @@
 
 | Component | Classification | Treatment Layer |
 |---|---|---|
-| `snice-accordion` | `composite` | Layer 1 tokens + colocated `accordion/material.css` |
-| `snice-action-bar` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-activity-feed` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-alert` | `direct-analogue` | Layer 1 tokens + colocated `alert/material.css` |
-| `snice-app-tiles` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-approval-flow` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-audio-recorder` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-availability` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-avatar` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-avatar-group` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-badge` | `direct-analogue` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-banner` | `direct-analogue` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-binpack` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-book` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-booking` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-breadcrumbs` | `composite` | Layer 1 tokens + colocated `breadcrumbs/material.css` |
-| `snice-button` | `direct-analogue` | Layer 1 tokens + colocated `button/material.css` |
-| `snice-calendar` | `non-native-guideline` | Layer 1 tokens + colocated `calendar/material.css` |
-| `snice-camera` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-camera-annotate` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-candlestick` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-card` | `composite` | Layer 1 tokens + colocated `card/material.css` |
-| `snice-carousel` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-cart` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-chart` | `non-native-guideline` | Layer 1 tokens + colocated `chart/material.css` |
-| `snice-chat` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-checkbox` | `direct-analogue` | Layer 1 tokens + colocated `checkbox/material.css` |
-| `snice-chip` | `direct-analogue` | Layer 1 tokens + colocated `chip/material.css` |
-| `snice-code-block` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-color-display` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-color-picker` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-command-palette` | `composite` | Layer 1 tokens + colocated `command-palette/material.css` |
-| `snice-comments` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-countdown` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-cropper` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-data-card` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-date-picker` | `composite` | Layer 1 tokens + colocated `date-picker/material.css` |
-| `snice-date-range-picker` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-date-time-picker` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-diff` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-divider` | `direct-analogue` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-doc` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-draw` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-drawer` | `direct-analogue` | Layer 1 tokens + colocated `drawer/material.css` |
-| `snice-empty-state` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-estimate` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-file-gallery` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-file-upload` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-flip-card` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-flow` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-form-layout` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-funnel` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-gantt` | `non-native-guideline` | Layer 1 tokens + colocated `gantt/material.css` |
-| `snice-gauge` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-grid` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-heatmap` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-image` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-input` | `direct-analogue` | Layer 1 tokens + colocated `input/material.css` |
-| `snice-invoice` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-kanban` | `non-native-guideline` | Layer 1 tokens + colocated `kanban/material.css` |
-| `snice-key-value` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-kpi` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-layout` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-leaderboard` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-link` | `direct-analogue` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-link-preview` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-list` | `direct-analogue` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-location` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-login` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-map` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-markdown` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-masonry` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-menu` | `direct-analogue` | Layer 1 tokens + colocated `menu/material.css` |
-| `snice-message-strip` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-modal` | `direct-analogue` | Layer 1 tokens + colocated `modal/material.css` |
-| `snice-music-player` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-nav` | `direct-analogue` | Layer 1 tokens + colocated `nav/material.css` |
-| `snice-network-graph` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-notification-center` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-order-tracker` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-org-chart` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-pagination` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-paint` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-pdf-viewer` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-permission-matrix` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-podcast-player` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-popover` | `direct-analogue` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-pricing-table` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-product-card` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-progress` | `direct-analogue` | Layer 1 tokens + colocated `progress/material.css` |
-| `snice-progress-ring` | `direct-analogue` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-qr-code` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-qr-reader` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-radio` | `direct-analogue` | Layer 1 tokens + colocated `radio/material.css` |
-| `snice-range-slider` | `direct-analogue` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-rating` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-receipt` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-recipe` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-sankey` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-segmented-control` | `direct-analogue` | Layer 1 tokens + colocated `segmented-control/material.css` |
-| `snice-select` | `direct-analogue` | Layer 1 tokens + colocated `select/material.css` |
-| `snice-skeleton` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-slider` | `direct-analogue` | Layer 1 tokens + colocated `slider/material.css` |
-| `snice-sortable` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-sparkline` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-spinner` | `direct-analogue` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-split-button` | `direct-analogue` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-split-pane` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-spotlight` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-stat-group` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-step-input` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-stepper` | `composite` | Layer 1 tokens + colocated `stepper/material.css` |
-| `snice-switch` | `direct-analogue` | Layer 1 tokens + colocated `switch/material.css` |
-| `snice-table` | `non-native-guideline` | Layer 1 tokens + colocated `table/material.css` |
-| `snice-tabs` | `direct-analogue` | Layer 1 tokens + colocated `tabs/material.css` |
-| `snice-tag` | `direct-analogue` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-tag-input` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-terminal` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-testimonial` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-textarea` | `direct-analogue` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-time-picker` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-time-range-picker` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-timeline` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-timer` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-toast` | `direct-analogue` | Layer 1 tokens + colocated `toast/material.css` |
-| `snice-tooltip` | `direct-analogue` | Layer 1 tokens + colocated `tooltip/material.css` |
-| `snice-tree` | `composite` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-treemap` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-user-card` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-video-player` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-virtual-scroller` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-waterfall` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-weather` | `non-native-guideline` | Layer 1 M3 Expressive tokens (`theme/platforms/material.css`) |
-| `snice-work-order` | `non-native-guideline` | Layer 1 tokens + colocated `work-order/material.css` |
+| `snice-accordion` | `composite` | Layer 1 tokens + colocated `accordion/material.css` (visually verified light & dark) |
+| `snice-action-bar` | `composite` | Layer 1 tokens + colocated `action-bar/material.css` (visually verified light & dark) |
+| `snice-activity-feed` | `non-native-guideline` | Layer 1 tokens + colocated `activity-feed/material.css` (visually verified light & dark) |
+| `snice-alert` | `direct-analogue` | Layer 1 tokens + colocated `alert/material.css` (visually verified light & dark) |
+| `snice-app-tiles` | `non-native-guideline` | Layer 1 tokens + colocated `app-tiles/material.css` (visually verified light & dark) |
+| `snice-approval-flow` | `non-native-guideline` | Layer 1 tokens + colocated `approval-flow/material.css` (visually verified light & dark) |
+| `snice-audio-recorder` | `non-native-guideline` | Layer 1 tokens + colocated `audio-recorder/material.css` (visually verified light & dark) |
+| `snice-availability` | `non-native-guideline` | Layer 1 tokens + colocated `availability/material.css` (visually verified light & dark) |
+| `snice-avatar` | `composite` | Layer 1 tokens + colocated `avatar/material.css` (visually verified light & dark) |
+| `snice-avatar-group` | `composite` | Layer 1 tokens + colocated `avatar-group/material.css` (visually verified light & dark) |
+| `snice-badge` | `direct-analogue` | Layer 1 tokens + colocated `badge/material.css` (visually verified light & dark) |
+| `snice-banner` | `direct-analogue` | Layer 1 tokens + colocated `banner/material.css` (visually verified light & dark) |
+| `snice-binpack` | `non-native-guideline` | Layer 1 tokens + colocated `binpack/material.css` (visually verified light & dark) |
+| `snice-book` | `non-native-guideline` | Layer 1 tokens + colocated `book/material.css` (visually verified light & dark) |
+| `snice-booking` | `non-native-guideline` | Layer 1 tokens + colocated `booking/material.css` (visually verified light & dark) |
+| `snice-breadcrumbs` | `composite` | Layer 1 tokens + colocated `breadcrumbs/material.css` (visually verified light & dark) |
+| `snice-button` | `direct-analogue` | Layer 1 tokens + colocated `button/material.css` (visually verified light & dark) |
+| `snice-calendar` | `non-native-guideline` | Layer 1 tokens + colocated `calendar/material.css` (visually verified light & dark) |
+| `snice-camera` | `non-native-guideline` | Layer 1 tokens + colocated `camera/material.css` (visually verified light & dark) |
+| `snice-camera-annotate` | `non-native-guideline` | Layer 1 tokens + colocated `camera-annotate/material.css` (visually verified light & dark) |
+| `snice-candlestick` | `non-native-guideline` | Layer 1 tokens + colocated `candlestick/material.css` (visually verified light & dark) |
+| `snice-card` | `composite` | Layer 1 tokens + colocated `card/material.css` (visually verified light & dark) |
+| `snice-carousel` | `composite` | Layer 1 tokens + colocated `carousel/material.css` (visually verified light & dark) |
+| `snice-cart` | `non-native-guideline` | Layer 1 tokens + colocated `cart/material.css` (visually verified light & dark) |
+| `snice-chart` | `non-native-guideline` | Layer 1 tokens + colocated `chart/material.css` (visually verified light & dark) |
+| `snice-chat` | `non-native-guideline` | Layer 1 tokens + colocated `chat/material.css` (visually verified light & dark) |
+| `snice-checkbox` | `direct-analogue` | Layer 1 tokens + colocated `checkbox/material.css` (visually verified light & dark) |
+| `snice-chip` | `direct-analogue` | Layer 1 tokens + colocated `chip/material.css` (visually verified light & dark) |
+| `snice-code-block` | `non-native-guideline` | Layer 1 tokens + colocated `code-block/material.css` (visually verified light & dark) |
+| `snice-color-display` | `composite` | Layer 1 tokens + colocated `color-display/material.css` (visually verified light & dark) |
+| `snice-color-picker` | `composite` | Layer 1 tokens + colocated `color-picker/material.css` (visually verified light & dark) |
+| `snice-command-palette` | `composite` | Layer 1 tokens + colocated `command-palette/material.css` (visually verified light & dark) |
+| `snice-comments` | `non-native-guideline` | Layer 1 tokens + colocated `comments/material.css` (visually verified light & dark) |
+| `snice-countdown` | `non-native-guideline` | Layer 1 tokens + colocated `countdown/material.css` (visually verified light & dark) |
+| `snice-cropper` | `non-native-guideline` | Layer 1 tokens + colocated `cropper/material.css` (visually verified light & dark) |
+| `snice-data-card` | `non-native-guideline` | Layer 1 tokens + colocated `data-card/material.css` (visually verified light & dark) |
+| `snice-date-picker` | `composite` | Layer 1 tokens + colocated `date-picker/material.css` (visually verified light & dark) |
+| `snice-date-range-picker` | `composite` | Layer 1 tokens + colocated `date-range-picker/material.css` (visually verified light & dark) |
+| `snice-date-time-picker` | `composite` | Layer 1 tokens + colocated `date-time-picker/material.css` (visually verified light & dark) |
+| `snice-diff` | `non-native-guideline` | Layer 1 tokens + colocated `diff/material.css` (visually verified light & dark) |
+| `snice-divider` | `direct-analogue` | Layer 1 tokens + colocated `divider/material.css` (visually verified light & dark) |
+| `snice-doc` | `non-native-guideline` | Layer 1 tokens + colocated `doc/material.css` (visually verified light & dark) |
+| `snice-draw` | `non-native-guideline` | Layer 1 tokens + colocated `draw/material.css` (visually verified light & dark) |
+| `snice-drawer` | `direct-analogue` | Layer 1 tokens + colocated `drawer/material.css` (visually verified light & dark) |
+| `snice-empty-state` | `composite` | Layer 1 tokens + colocated `empty-state/material.css` (visually verified light & dark) |
+| `snice-estimate` | `non-native-guideline` | Layer 1 tokens + colocated `estimate/material.css` (visually verified light & dark) |
+| `snice-file-gallery` | `non-native-guideline` | Layer 1 tokens + colocated `file-gallery/material.css` (visually verified light & dark) |
+| `snice-file-upload` | `composite` | Layer 1 tokens + colocated `file-upload/material.css` (visually verified light & dark) |
+| `snice-flip-card` | `non-native-guideline` | Layer 1 tokens + colocated `flip-card/material.css` (visually verified light & dark) |
+| `snice-flow` | `non-native-guideline` | Layer 1 tokens + colocated `flow/material.css` (visually verified light & dark) |
+| `snice-form-layout` | `composite` | Layer 1 tokens + colocated `form-layout/material.css` (visually verified light & dark) |
+| `snice-funnel` | `non-native-guideline` | Layer 1 tokens + colocated `funnel/material.css` (visually verified light & dark) |
+| `snice-gantt` | `non-native-guideline` | Layer 1 tokens + colocated `gantt/material.css` (visually verified light & dark) |
+| `snice-gauge` | `non-native-guideline` | Layer 1 tokens + colocated `gauge/material.css` (visually verified light & dark) |
+| `snice-grid` | `non-native-guideline` | Layer 1 tokens + colocated `grid/material.css` (visually verified light & dark) |
+| `snice-heatmap` | `non-native-guideline` | Layer 1 tokens + colocated `heatmap/material.css` (visually verified light & dark) |
+| `snice-image` | `composite` | Layer 1 tokens + colocated `image/material.css` (visually verified light & dark) |
+| `snice-input` | `direct-analogue` | Layer 1 tokens + colocated `input/material.css` (visually verified light & dark) |
+| `snice-invoice` | `non-native-guideline` | Layer 1 tokens + colocated `invoice/material.css` (visually verified light & dark) |
+| `snice-kanban` | `non-native-guideline` | Layer 1 tokens + colocated `kanban/material.css` (visually verified light & dark) |
+| `snice-key-value` | `composite` | Layer 1 tokens + colocated `key-value/material.css` (visually verified light & dark) |
+| `snice-kpi` | `non-native-guideline` | Layer 1 tokens + colocated `kpi/material.css` (visually verified light & dark) |
+| `snice-layout` | `composite` | Layer 1 tokens + colocated `layout/material.css` (visually verified light & dark) |
+| `snice-leaderboard` | `non-native-guideline` | Layer 1 tokens + colocated `leaderboard/material.css` (visually verified light & dark) |
+| `snice-link` | `direct-analogue` | Layer 1 tokens + colocated `link/material.css` (visually verified light & dark) |
+| `snice-link-preview` | `non-native-guideline` | Layer 1 tokens + colocated `link-preview/material.css` (visually verified light & dark) |
+| `snice-list` | `direct-analogue` | Layer 1 tokens + colocated `list/material.css` (visually verified light & dark) |
+| `snice-location` | `non-native-guideline` | Layer 1 tokens + colocated `location/material.css` (visually verified light & dark) |
+| `snice-login` | `composite` | Layer 1 tokens + colocated `login/material.css` (visually verified light & dark) |
+| `snice-map` | `non-native-guideline` | Layer 1 tokens + colocated `map/material.css` (visually verified light & dark) |
+| `snice-markdown` | `non-native-guideline` | Layer 1 tokens + colocated `markdown/material.css` (visually verified light & dark) |
+| `snice-masonry` | `non-native-guideline` | Layer 1 tokens + colocated `masonry/material.css` (visually verified light & dark) |
+| `snice-menu` | `direct-analogue` | Layer 1 tokens + colocated `menu/material.css` (visually verified light & dark) |
+| `snice-message-strip` | `composite` | Layer 1 tokens + colocated `message-strip/material.css` (visually verified light & dark) |
+| `snice-modal` | `direct-analogue` | Layer 1 tokens + colocated `modal/material.css` (visually verified light & dark) |
+| `snice-music-player` | `non-native-guideline` | Layer 1 tokens + colocated `music-player/material.css` (visually verified light & dark) |
+| `snice-nav` | `direct-analogue` | Layer 1 tokens + colocated `nav/material.css` (visually verified light & dark) |
+| `snice-network-graph` | `non-native-guideline` | Layer 1 tokens + colocated `network-graph/material.css` (visually verified light & dark) |
+| `snice-notification-center` | `composite` | Layer 1 tokens + colocated `notification-center/material.css` (visually verified light & dark) |
+| `snice-order-tracker` | `non-native-guideline` | Layer 1 tokens + colocated `order-tracker/material.css` (visually verified light & dark) |
+| `snice-org-chart` | `non-native-guideline` | Layer 1 tokens + colocated `org-chart/material.css` (visually verified light & dark) |
+| `snice-pagination` | `composite` | Layer 1 tokens + colocated `pagination/material.css` (visually verified light & dark) |
+| `snice-paint` | `non-native-guideline` | Layer 1 tokens + colocated `paint/material.css` (visually verified light & dark) |
+| `snice-pdf-viewer` | `non-native-guideline` | Layer 1 tokens + colocated `pdf-viewer/material.css` (visually verified light & dark) |
+| `snice-permission-matrix` | `non-native-guideline` | Layer 1 tokens + colocated `permission-matrix/material.css` (visually verified light & dark) |
+| `snice-podcast-player` | `non-native-guideline` | Layer 1 tokens + colocated `podcast-player/material.css` (visually verified light & dark) |
+| `snice-popover` | `direct-analogue` | Layer 1 tokens + colocated `popover/material.css` (visually verified light & dark) |
+| `snice-pricing-table` | `non-native-guideline` | Layer 1 tokens + colocated `pricing-table/material.css` (visually verified light & dark) |
+| `snice-product-card` | `non-native-guideline` | Layer 1 tokens + colocated `product-card/material.css` (visually verified light & dark) |
+| `snice-progress` | `direct-analogue` | Layer 1 tokens + colocated `progress/material.css` (visually verified light & dark) |
+| `snice-progress-ring` | `direct-analogue` | Layer 1 tokens + colocated `progress-ring/material.css` (visually verified light & dark) |
+| `snice-qr-code` | `non-native-guideline` | Layer 1 tokens + colocated `qr-code/material.css` (visually verified light & dark) |
+| `snice-qr-reader` | `non-native-guideline` | Layer 1 tokens + colocated `qr-reader/material.css` (visually verified light & dark) |
+| `snice-radio` | `direct-analogue` | Layer 1 tokens + colocated `radio/material.css` (visually verified light & dark) |
+| `snice-range-slider` | `direct-analogue` | Layer 1 tokens + colocated `range-slider/material.css` (visually verified light & dark) |
+| `snice-rating` | `composite` | Layer 1 tokens + colocated `rating/material.css` (visually verified light & dark) |
+| `snice-receipt` | `non-native-guideline` | Layer 1 tokens + colocated `receipt/material.css` (visually verified light & dark) |
+| `snice-recipe` | `non-native-guideline` | Layer 1 tokens + colocated `recipe/material.css` (visually verified light & dark) |
+| `snice-sankey` | `non-native-guideline` | Layer 1 tokens + colocated `sankey/material.css` (visually verified light & dark) |
+| `snice-segmented-control` | `direct-analogue` | Layer 1 tokens + colocated `segmented-control/material.css` (visually verified light & dark) |
+| `snice-select` | `direct-analogue` | Layer 1 tokens + colocated `select/material.css` (visually verified light & dark) |
+| `snice-skeleton` | `composite` | Layer 1 tokens + colocated `skeleton/material.css` (visually verified light & dark) |
+| `snice-slider` | `direct-analogue` | Layer 1 tokens + colocated `slider/material.css` (visually verified light & dark) |
+| `snice-sortable` | `non-native-guideline` | Layer 1 tokens + colocated `sortable/material.css` (visually verified light & dark) |
+| `snice-sparkline` | `non-native-guideline` | Layer 1 tokens + colocated `sparkline/material.css` (visually verified light & dark) |
+| `snice-spinner` | `direct-analogue` | Layer 1 tokens + colocated `spinner/material.css` (visually verified light & dark) |
+| `snice-split-button` | `direct-analogue` | Layer 1 tokens + colocated `split-button/material.css` (visually verified light & dark) |
+| `snice-split-pane` | `composite` | Layer 1 tokens + colocated `split-pane/material.css` (visually verified light & dark) |
+| `snice-spotlight` | `composite` | Layer 1 tokens + colocated `spotlight/material.css` (visually verified light & dark) |
+| `snice-stat-group` | `non-native-guideline` | Layer 1 tokens + colocated `stat-group/material.css` (visually verified light & dark) |
+| `snice-step-input` | `composite` | Layer 1 tokens + colocated `step-input/material.css` (visually verified light & dark) |
+| `snice-stepper` | `composite` | Layer 1 tokens + colocated `stepper/material.css` (visually verified light & dark) |
+| `snice-switch` | `direct-analogue` | Layer 1 tokens + colocated `switch/material.css` (visually verified light & dark) |
+| `snice-table` | `non-native-guideline` | Layer 1 tokens + colocated `table/material.css` (visually verified light & dark) |
+| `snice-tabs` | `direct-analogue` | Layer 1 tokens + colocated `tabs/material.css` (visually verified light & dark) |
+| `snice-tag` | `direct-analogue` | Layer 1 tokens + colocated `tag/material.css` (visually verified light & dark) |
+| `snice-tag-input` | `composite` | Layer 1 tokens + colocated `tag-input/material.css` (visually verified light & dark) |
+| `snice-terminal` | `non-native-guideline` | Layer 1 tokens + colocated `terminal/material.css` (visually verified light & dark) |
+| `snice-testimonial` | `non-native-guideline` | Layer 1 tokens + colocated `testimonial/material.css` (visually verified light & dark) |
+| `snice-textarea` | `direct-analogue` | Layer 1 tokens + colocated `textarea/material.css` (visually verified light & dark) |
+| `snice-time-picker` | `composite` | Layer 1 tokens + colocated `time-picker/material.css` (visually verified light & dark) |
+| `snice-time-range-picker` | `composite` | Layer 1 tokens + colocated `time-range-picker/material.css` (visually verified light & dark) |
+| `snice-timeline` | `non-native-guideline` | Layer 1 tokens + colocated `timeline/material.css` (visually verified light & dark) |
+| `snice-timer` | `non-native-guideline` | Layer 1 tokens + colocated `timer/material.css` (visually verified light & dark) |
+| `snice-toast` | `direct-analogue` | Layer 1 tokens + colocated `toast/material.css` (visually verified light & dark) |
+| `snice-tooltip` | `direct-analogue` | Layer 1 tokens + colocated `tooltip/material.css` (visually verified light & dark) |
+| `snice-tree` | `composite` | Layer 1 tokens + colocated `tree/material.css` (visually verified light & dark) |
+| `snice-treemap` | `non-native-guideline` | Layer 1 tokens + colocated `treemap/material.css` (visually verified light & dark) |
+| `snice-user-card` | `non-native-guideline` | Layer 1 tokens + colocated `user-card/material.css` (visually verified light & dark) |
+| `snice-video-player` | `non-native-guideline` | Layer 1 tokens + colocated `video-player/material.css` (visually verified light & dark) |
+| `snice-virtual-scroller` | `non-native-guideline` | Layer 1 tokens + colocated `virtual-scroller/material.css` (visually verified light & dark) |
+| `snice-waterfall` | `non-native-guideline` | Layer 1 tokens + colocated `waterfall/material.css` (visually verified light & dark) |
+| `snice-weather` | `non-native-guideline` | Layer 1 tokens + colocated `weather/material.css` (visually verified light & dark) |
+| `snice-work-order` | `non-native-guideline` | Layer 1 tokens + colocated `work-order/material.css` (visually verified light & dark) |

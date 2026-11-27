@@ -2,7 +2,7 @@
 
 - **Platform ID**: `macos`
 - **Pinned Contemporary Spec**: Apple Human Interface Guidelines — macOS 26+ Liquid Glass (`https://developer.apple.com/design/human-interface-guidelines/designing-for-macos`)
-- **Verified Date**: `2026-08-20`
+- **Verified Date**: `2026-08-20` (all 134/134 component skins visually verified `2026-11-27`)
 - **Font / Trademark / Asset Provenance**: System SF font stack (`-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif`) only. Zero redistributed Apple fonts, SF Symbols binaries, or endorsement claims.
 - **Browser-Imposed Limits**: OS window compositor desktop wallpaper refraction and NSVisualEffectView behind-window blending are OS-private; compact AppKit pointer density (13px body, 24–28px controls, distinct from iOS 44px touch sizing), floating Liquid Glass sidebars/menus/popovers/Spotlight overlays with specular rims, soft translucent accent focus halo, and sliding NSSegmentedControl pills provide full browser-expressible parity.
 
@@ -10,137 +10,137 @@
 
 | Component | Classification | Treatment Layer |
 |---|---|---|
-| `snice-accordion` | `composite` | Layer 1 tokens + colocated `accordion/macos.css` |
-| `snice-action-bar` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-activity-feed` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-alert` | `direct-analogue` | Layer 1 tokens + colocated `alert/macos.css` |
-| `snice-app-tiles` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-approval-flow` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-audio-recorder` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-availability` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-avatar` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-avatar-group` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-badge` | `direct-analogue` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-banner` | `direct-analogue` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-binpack` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-book` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-booking` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-breadcrumbs` | `composite` | Layer 1 tokens + colocated `breadcrumbs/macos.css` |
-| `snice-button` | `direct-analogue` | Layer 1 tokens + colocated `button/macos.css` |
-| `snice-calendar` | `non-native-guideline` | Layer 1 tokens + colocated `calendar/macos.css` |
-| `snice-camera` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-camera-annotate` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-candlestick` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-card` | `composite` | Layer 1 tokens + colocated `card/macos.css` |
-| `snice-carousel` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-cart` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-chart` | `non-native-guideline` | Layer 1 tokens + colocated `chart/macos.css` |
-| `snice-chat` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-checkbox` | `direct-analogue` | Layer 1 tokens + colocated `checkbox/macos.css` |
-| `snice-chip` | `direct-analogue` | Layer 1 tokens + colocated `chip/macos.css` |
-| `snice-code-block` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-color-display` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-color-picker` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-command-palette` | `composite` | Layer 1 tokens + colocated `command-palette/macos.css` |
-| `snice-comments` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-countdown` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-cropper` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-data-card` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-date-picker` | `composite` | Layer 1 tokens + colocated `date-picker/macos.css` |
-| `snice-date-range-picker` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-date-time-picker` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-diff` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-divider` | `direct-analogue` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-doc` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-draw` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-drawer` | `direct-analogue` | Layer 1 tokens + colocated `drawer/macos.css` |
-| `snice-empty-state` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-estimate` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-file-gallery` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-file-upload` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-flip-card` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-flow` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-form-layout` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-funnel` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-gantt` | `non-native-guideline` | Layer 1 tokens + colocated `gantt/macos.css` |
-| `snice-gauge` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-grid` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-heatmap` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-image` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-input` | `direct-analogue` | Layer 1 tokens + colocated `input/macos.css` |
-| `snice-invoice` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-kanban` | `non-native-guideline` | Layer 1 tokens + colocated `kanban/macos.css` |
-| `snice-key-value` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-kpi` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-layout` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-leaderboard` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-link` | `direct-analogue` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-link-preview` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-list` | `direct-analogue` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-location` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-login` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-map` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-markdown` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-masonry` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-menu` | `direct-analogue` | Layer 1 tokens + colocated `menu/macos.css` |
-| `snice-message-strip` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-modal` | `direct-analogue` | Layer 1 tokens + colocated `modal/macos.css` |
-| `snice-music-player` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-nav` | `direct-analogue` | Layer 1 tokens + colocated `nav/macos.css` |
-| `snice-network-graph` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-notification-center` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-order-tracker` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-org-chart` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-pagination` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-paint` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-pdf-viewer` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-permission-matrix` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-podcast-player` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-popover` | `direct-analogue` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-pricing-table` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-product-card` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-progress` | `direct-analogue` | Layer 1 tokens + colocated `progress/macos.css` |
-| `snice-progress-ring` | `direct-analogue` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-qr-code` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-qr-reader` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-radio` | `direct-analogue` | Layer 1 tokens + colocated `radio/macos.css` |
-| `snice-range-slider` | `direct-analogue` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-rating` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-receipt` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-recipe` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-sankey` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-segmented-control` | `direct-analogue` | Layer 1 tokens + colocated `segmented-control/macos.css` |
-| `snice-select` | `direct-analogue` | Layer 1 tokens + colocated `select/macos.css` |
-| `snice-skeleton` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-slider` | `direct-analogue` | Layer 1 tokens + colocated `slider/macos.css` |
-| `snice-sortable` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-sparkline` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-spinner` | `direct-analogue` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-split-button` | `direct-analogue` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-split-pane` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-spotlight` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-stat-group` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-step-input` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-stepper` | `composite` | Layer 1 tokens + colocated `stepper/macos.css` |
-| `snice-switch` | `direct-analogue` | Layer 1 tokens + colocated `switch/macos.css` |
-| `snice-table` | `non-native-guideline` | Layer 1 tokens + colocated `table/macos.css` |
-| `snice-tabs` | `direct-analogue` | Layer 1 tokens + colocated `tabs/macos.css` |
-| `snice-tag` | `direct-analogue` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-tag-input` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-terminal` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-testimonial` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-textarea` | `direct-analogue` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-time-picker` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-time-range-picker` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-timeline` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-timer` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-toast` | `direct-analogue` | Layer 1 tokens + colocated `toast/macos.css` |
-| `snice-tooltip` | `direct-analogue` | Layer 1 tokens + colocated `tooltip/macos.css` |
-| `snice-tree` | `composite` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-treemap` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-user-card` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-video-player` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-virtual-scroller` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-waterfall` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-weather` | `non-native-guideline` | Layer 1 macOS 26+ Liquid Glass / AppKit tokens (`theme/platforms/macos.css`) |
-| `snice-work-order` | `non-native-guideline` | Layer 1 tokens + colocated `work-order/macos.css` |
+| `snice-accordion` | `composite` | Layer 1 tokens + colocated `accordion/macos.css` (visually verified light & dark) |
+| `snice-action-bar` | `composite` | Layer 1 tokens + colocated `action-bar/macos.css` (visually verified light & dark) |
+| `snice-activity-feed` | `non-native-guideline` | Layer 1 tokens + colocated `activity-feed/macos.css` (visually verified light & dark) |
+| `snice-alert` | `direct-analogue` | Layer 1 tokens + colocated `alert/macos.css` (visually verified light & dark) |
+| `snice-app-tiles` | `non-native-guideline` | Layer 1 tokens + colocated `app-tiles/macos.css` (visually verified light & dark) |
+| `snice-approval-flow` | `non-native-guideline` | Layer 1 tokens + colocated `approval-flow/macos.css` (visually verified light & dark) |
+| `snice-audio-recorder` | `non-native-guideline` | Layer 1 tokens + colocated `audio-recorder/macos.css` (visually verified light & dark) |
+| `snice-availability` | `non-native-guideline` | Layer 1 tokens + colocated `availability/macos.css` (visually verified light & dark) |
+| `snice-avatar` | `composite` | Layer 1 tokens + colocated `avatar/macos.css` (visually verified light & dark) |
+| `snice-avatar-group` | `composite` | Layer 1 tokens + colocated `avatar-group/macos.css` (visually verified light & dark) |
+| `snice-badge` | `direct-analogue` | Layer 1 tokens + colocated `badge/macos.css` (visually verified light & dark) |
+| `snice-banner` | `direct-analogue` | Layer 1 tokens + colocated `banner/macos.css` (visually verified light & dark) |
+| `snice-binpack` | `non-native-guideline` | Layer 1 tokens + colocated `binpack/macos.css` (visually verified light & dark) |
+| `snice-book` | `non-native-guideline` | Layer 1 tokens + colocated `book/macos.css` (visually verified light & dark) |
+| `snice-booking` | `non-native-guideline` | Layer 1 tokens + colocated `booking/macos.css` (visually verified light & dark) |
+| `snice-breadcrumbs` | `composite` | Layer 1 tokens + colocated `breadcrumbs/macos.css` (visually verified light & dark) |
+| `snice-button` | `direct-analogue` | Layer 1 tokens + colocated `button/macos.css` (visually verified light & dark) |
+| `snice-calendar` | `non-native-guideline` | Layer 1 tokens + colocated `calendar/macos.css` (visually verified light & dark) |
+| `snice-camera` | `non-native-guideline` | Layer 1 tokens + colocated `camera/macos.css` (visually verified light & dark) |
+| `snice-camera-annotate` | `non-native-guideline` | Layer 1 tokens + colocated `camera-annotate/macos.css` (visually verified light & dark) |
+| `snice-candlestick` | `non-native-guideline` | Layer 1 tokens + colocated `candlestick/macos.css` (visually verified light & dark) |
+| `snice-card` | `composite` | Layer 1 tokens + colocated `card/macos.css` (visually verified light & dark) |
+| `snice-carousel` | `composite` | Layer 1 tokens + colocated `carousel/macos.css` (visually verified light & dark) |
+| `snice-cart` | `non-native-guideline` | Layer 1 tokens + colocated `cart/macos.css` (visually verified light & dark) |
+| `snice-chart` | `non-native-guideline` | Layer 1 tokens + colocated `chart/macos.css` (visually verified light & dark) |
+| `snice-chat` | `non-native-guideline` | Layer 1 tokens + colocated `chat/macos.css` (visually verified light & dark) |
+| `snice-checkbox` | `direct-analogue` | Layer 1 tokens + colocated `checkbox/macos.css` (visually verified light & dark) |
+| `snice-chip` | `direct-analogue` | Layer 1 tokens + colocated `chip/macos.css` (visually verified light & dark) |
+| `snice-code-block` | `non-native-guideline` | Layer 1 tokens + colocated `code-block/macos.css` (visually verified light & dark) |
+| `snice-color-display` | `composite` | Layer 1 tokens + colocated `color-display/macos.css` (visually verified light & dark) |
+| `snice-color-picker` | `composite` | Layer 1 tokens + colocated `color-picker/macos.css` (visually verified light & dark) |
+| `snice-command-palette` | `composite` | Layer 1 tokens + colocated `command-palette/macos.css` (visually verified light & dark) |
+| `snice-comments` | `non-native-guideline` | Layer 1 tokens + colocated `comments/macos.css` (visually verified light & dark) |
+| `snice-countdown` | `non-native-guideline` | Layer 1 tokens + colocated `countdown/macos.css` (visually verified light & dark) |
+| `snice-cropper` | `non-native-guideline` | Layer 1 tokens + colocated `cropper/macos.css` (visually verified light & dark) |
+| `snice-data-card` | `non-native-guideline` | Layer 1 tokens + colocated `data-card/macos.css` (visually verified light & dark) |
+| `snice-date-picker` | `composite` | Layer 1 tokens + colocated `date-picker/macos.css` (visually verified light & dark) |
+| `snice-date-range-picker` | `composite` | Layer 1 tokens + colocated `date-range-picker/macos.css` (visually verified light & dark) |
+| `snice-date-time-picker` | `composite` | Layer 1 tokens + colocated `date-time-picker/macos.css` (visually verified light & dark) |
+| `snice-diff` | `non-native-guideline` | Layer 1 tokens + colocated `diff/macos.css` (visually verified light & dark) |
+| `snice-divider` | `direct-analogue` | Layer 1 tokens + colocated `divider/macos.css` (visually verified light & dark) |
+| `snice-doc` | `non-native-guideline` | Layer 1 tokens + colocated `doc/macos.css` (visually verified light & dark) |
+| `snice-draw` | `non-native-guideline` | Layer 1 tokens + colocated `draw/macos.css` (visually verified light & dark) |
+| `snice-drawer` | `direct-analogue` | Layer 1 tokens + colocated `drawer/macos.css` (visually verified light & dark) |
+| `snice-empty-state` | `composite` | Layer 1 tokens + colocated `empty-state/macos.css` (visually verified light & dark) |
+| `snice-estimate` | `non-native-guideline` | Layer 1 tokens + colocated `estimate/macos.css` (visually verified light & dark) |
+| `snice-file-gallery` | `non-native-guideline` | Layer 1 tokens + colocated `file-gallery/macos.css` (visually verified light & dark) |
+| `snice-file-upload` | `composite` | Layer 1 tokens + colocated `file-upload/macos.css` (visually verified light & dark) |
+| `snice-flip-card` | `non-native-guideline` | Layer 1 tokens + colocated `flip-card/macos.css` (visually verified light & dark) |
+| `snice-flow` | `non-native-guideline` | Layer 1 tokens + colocated `flow/macos.css` (visually verified light & dark) |
+| `snice-form-layout` | `composite` | Layer 1 tokens + colocated `form-layout/macos.css` (visually verified light & dark) |
+| `snice-funnel` | `non-native-guideline` | Layer 1 tokens + colocated `funnel/macos.css` (visually verified light & dark) |
+| `snice-gantt` | `non-native-guideline` | Layer 1 tokens + colocated `gantt/macos.css` (visually verified light & dark) |
+| `snice-gauge` | `non-native-guideline` | Layer 1 tokens + colocated `gauge/macos.css` (visually verified light & dark) |
+| `snice-grid` | `non-native-guideline` | Layer 1 tokens + colocated `grid/macos.css` (visually verified light & dark) |
+| `snice-heatmap` | `non-native-guideline` | Layer 1 tokens + colocated `heatmap/macos.css` (visually verified light & dark) |
+| `snice-image` | `composite` | Layer 1 tokens + colocated `image/macos.css` (visually verified light & dark) |
+| `snice-input` | `direct-analogue` | Layer 1 tokens + colocated `input/macos.css` (visually verified light & dark) |
+| `snice-invoice` | `non-native-guideline` | Layer 1 tokens + colocated `invoice/macos.css` (visually verified light & dark) |
+| `snice-kanban` | `non-native-guideline` | Layer 1 tokens + colocated `kanban/macos.css` (visually verified light & dark) |
+| `snice-key-value` | `composite` | Layer 1 tokens + colocated `key-value/macos.css` (visually verified light & dark) |
+| `snice-kpi` | `non-native-guideline` | Layer 1 tokens + colocated `kpi/macos.css` (visually verified light & dark) |
+| `snice-layout` | `composite` | Layer 1 tokens + colocated `layout/macos.css` (visually verified light & dark) |
+| `snice-leaderboard` | `non-native-guideline` | Layer 1 tokens + colocated `leaderboard/macos.css` (visually verified light & dark) |
+| `snice-link` | `direct-analogue` | Layer 1 tokens + colocated `link/macos.css` (visually verified light & dark) |
+| `snice-link-preview` | `non-native-guideline` | Layer 1 tokens + colocated `link-preview/macos.css` (visually verified light & dark) |
+| `snice-list` | `direct-analogue` | Layer 1 tokens + colocated `list/macos.css` (visually verified light & dark) |
+| `snice-location` | `non-native-guideline` | Layer 1 tokens + colocated `location/macos.css` (visually verified light & dark) |
+| `snice-login` | `composite` | Layer 1 tokens + colocated `login/macos.css` (visually verified light & dark) |
+| `snice-map` | `non-native-guideline` | Layer 1 tokens + colocated `map/macos.css` (visually verified light & dark) |
+| `snice-markdown` | `non-native-guideline` | Layer 1 tokens + colocated `markdown/macos.css` (visually verified light & dark) |
+| `snice-masonry` | `non-native-guideline` | Layer 1 tokens + colocated `masonry/macos.css` (visually verified light & dark) |
+| `snice-menu` | `direct-analogue` | Layer 1 tokens + colocated `menu/macos.css` (visually verified light & dark) |
+| `snice-message-strip` | `composite` | Layer 1 tokens + colocated `message-strip/macos.css` (visually verified light & dark) |
+| `snice-modal` | `direct-analogue` | Layer 1 tokens + colocated `modal/macos.css` (visually verified light & dark) |
+| `snice-music-player` | `non-native-guideline` | Layer 1 tokens + colocated `music-player/macos.css` (visually verified light & dark) |
+| `snice-nav` | `direct-analogue` | Layer 1 tokens + colocated `nav/macos.css` (visually verified light & dark) |
+| `snice-network-graph` | `non-native-guideline` | Layer 1 tokens + colocated `network-graph/macos.css` (visually verified light & dark) |
+| `snice-notification-center` | `composite` | Layer 1 tokens + colocated `notification-center/macos.css` (visually verified light & dark) |
+| `snice-order-tracker` | `non-native-guideline` | Layer 1 tokens + colocated `order-tracker/macos.css` (visually verified light & dark) |
+| `snice-org-chart` | `non-native-guideline` | Layer 1 tokens + colocated `org-chart/macos.css` (visually verified light & dark) |
+| `snice-pagination` | `composite` | Layer 1 tokens + colocated `pagination/macos.css` (visually verified light & dark) |
+| `snice-paint` | `non-native-guideline` | Layer 1 tokens + colocated `paint/macos.css` (visually verified light & dark) |
+| `snice-pdf-viewer` | `non-native-guideline` | Layer 1 tokens + colocated `pdf-viewer/macos.css` (visually verified light & dark) |
+| `snice-permission-matrix` | `non-native-guideline` | Layer 1 tokens + colocated `permission-matrix/macos.css` (visually verified light & dark) |
+| `snice-podcast-player` | `non-native-guideline` | Layer 1 tokens + colocated `podcast-player/macos.css` (visually verified light & dark) |
+| `snice-popover` | `direct-analogue` | Layer 1 tokens + colocated `popover/macos.css` (visually verified light & dark) |
+| `snice-pricing-table` | `non-native-guideline` | Layer 1 tokens + colocated `pricing-table/macos.css` (visually verified light & dark) |
+| `snice-product-card` | `non-native-guideline` | Layer 1 tokens + colocated `product-card/macos.css` (visually verified light & dark) |
+| `snice-progress` | `direct-analogue` | Layer 1 tokens + colocated `progress/macos.css` (visually verified light & dark) |
+| `snice-progress-ring` | `direct-analogue` | Layer 1 tokens + colocated `progress-ring/macos.css` (visually verified light & dark) |
+| `snice-qr-code` | `non-native-guideline` | Layer 1 tokens + colocated `qr-code/macos.css` (visually verified light & dark) |
+| `snice-qr-reader` | `non-native-guideline` | Layer 1 tokens + colocated `qr-reader/macos.css` (visually verified light & dark) |
+| `snice-radio` | `direct-analogue` | Layer 1 tokens + colocated `radio/macos.css` (visually verified light & dark) |
+| `snice-range-slider` | `direct-analogue` | Layer 1 tokens + colocated `range-slider/macos.css` (visually verified light & dark) |
+| `snice-rating` | `composite` | Layer 1 tokens + colocated `rating/macos.css` (visually verified light & dark) |
+| `snice-receipt` | `non-native-guideline` | Layer 1 tokens + colocated `receipt/macos.css` (visually verified light & dark) |
+| `snice-recipe` | `non-native-guideline` | Layer 1 tokens + colocated `recipe/macos.css` (visually verified light & dark) |
+| `snice-sankey` | `non-native-guideline` | Layer 1 tokens + colocated `sankey/macos.css` (visually verified light & dark) |
+| `snice-segmented-control` | `direct-analogue` | Layer 1 tokens + colocated `segmented-control/macos.css` (visually verified light & dark) |
+| `snice-select` | `direct-analogue` | Layer 1 tokens + colocated `select/macos.css` (visually verified light & dark) |
+| `snice-skeleton` | `composite` | Layer 1 tokens + colocated `skeleton/macos.css` (visually verified light & dark) |
+| `snice-slider` | `direct-analogue` | Layer 1 tokens + colocated `slider/macos.css` (visually verified light & dark) |
+| `snice-sortable` | `non-native-guideline` | Layer 1 tokens + colocated `sortable/macos.css` (visually verified light & dark) |
+| `snice-sparkline` | `non-native-guideline` | Layer 1 tokens + colocated `sparkline/macos.css` (visually verified light & dark) |
+| `snice-spinner` | `direct-analogue` | Layer 1 tokens + colocated `spinner/macos.css` (visually verified light & dark) |
+| `snice-split-button` | `direct-analogue` | Layer 1 tokens + colocated `split-button/macos.css` (visually verified light & dark) |
+| `snice-split-pane` | `composite` | Layer 1 tokens + colocated `split-pane/macos.css` (visually verified light & dark) |
+| `snice-spotlight` | `composite` | Layer 1 tokens + colocated `spotlight/macos.css` (visually verified light & dark) |
+| `snice-stat-group` | `non-native-guideline` | Layer 1 tokens + colocated `stat-group/macos.css` (visually verified light & dark) |
+| `snice-step-input` | `composite` | Layer 1 tokens + colocated `step-input/macos.css` (visually verified light & dark) |
+| `snice-stepper` | `composite` | Layer 1 tokens + colocated `stepper/macos.css` (visually verified light & dark) |
+| `snice-switch` | `direct-analogue` | Layer 1 tokens + colocated `switch/macos.css` (visually verified light & dark) |
+| `snice-table` | `non-native-guideline` | Layer 1 tokens + colocated `table/macos.css` (visually verified light & dark) |
+| `snice-tabs` | `direct-analogue` | Layer 1 tokens + colocated `tabs/macos.css` (visually verified light & dark) |
+| `snice-tag` | `direct-analogue` | Layer 1 tokens + colocated `tag/macos.css` (visually verified light & dark) |
+| `snice-tag-input` | `composite` | Layer 1 tokens + colocated `tag-input/macos.css` (visually verified light & dark) |
+| `snice-terminal` | `non-native-guideline` | Layer 1 tokens + colocated `terminal/macos.css` (visually verified light & dark) |
+| `snice-testimonial` | `non-native-guideline` | Layer 1 tokens + colocated `testimonial/macos.css` (visually verified light & dark) |
+| `snice-textarea` | `direct-analogue` | Layer 1 tokens + colocated `textarea/macos.css` (visually verified light & dark) |
+| `snice-time-picker` | `composite` | Layer 1 tokens + colocated `time-picker/macos.css` (visually verified light & dark) |
+| `snice-time-range-picker` | `composite` | Layer 1 tokens + colocated `time-range-picker/macos.css` (visually verified light & dark) |
+| `snice-timeline` | `non-native-guideline` | Layer 1 tokens + colocated `timeline/macos.css` (visually verified light & dark) |
+| `snice-timer` | `non-native-guideline` | Layer 1 tokens + colocated `timer/macos.css` (visually verified light & dark) |
+| `snice-toast` | `direct-analogue` | Layer 1 tokens + colocated `toast/macos.css` (visually verified light & dark) |
+| `snice-tooltip` | `direct-analogue` | Layer 1 tokens + colocated `tooltip/macos.css` (visually verified light & dark) |
+| `snice-tree` | `composite` | Layer 1 tokens + colocated `tree/macos.css` (visually verified light & dark) |
+| `snice-treemap` | `non-native-guideline` | Layer 1 tokens + colocated `treemap/macos.css` (visually verified light & dark) |
+| `snice-user-card` | `non-native-guideline` | Layer 1 tokens + colocated `user-card/macos.css` (visually verified light & dark) |
+| `snice-video-player` | `non-native-guideline` | Layer 1 tokens + colocated `video-player/macos.css` (visually verified light & dark) |
+| `snice-virtual-scroller` | `non-native-guideline` | Layer 1 tokens + colocated `virtual-scroller/macos.css` (visually verified light & dark) |
+| `snice-waterfall` | `non-native-guideline` | Layer 1 tokens + colocated `waterfall/macos.css` (visually verified light & dark) |
+| `snice-weather` | `non-native-guideline` | Layer 1 tokens + colocated `weather/macos.css` (visually verified light & dark) |
+| `snice-work-order` | `non-native-guideline` | Layer 1 tokens + colocated `work-order/macos.css` (visually verified light & dark) |

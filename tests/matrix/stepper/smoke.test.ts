@@ -17,7 +17,7 @@
 import { describe, it, afterEach } from 'vitest';
 import {
   SAMPLE, SETTLE,
-  classesOf, clickStep, combo, expect, expectStepperMatches, ladder, makeStepper,
+  classesOf, clickStep, combo, exactPartIn, expect, expectStepperMatches, ladder, makeStepper,
   panelsOf, recordChanges, stepsOf, teardown, textOf, wait,
 } from './stepper-support';
 
@@ -35,7 +35,7 @@ describe('stepper matrix smoke', () => {
     const c = combo({ steps: ladder(4), currentStep: 2 });
     const el = await makeStepper(c);
     expectStepperMatches(el, c);
-    expect(stepsOf(el).map(row => textOf(row.querySelector('[part="step-indicator"]'))))
+    expect(stepsOf(el).map(row => textOf(exactPartIn(row, 'step-indicator'))))
       .toEqual(['✓', '✓', '3', '4']);
   });
 

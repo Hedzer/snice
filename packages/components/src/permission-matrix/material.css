@@ -39,7 +39,7 @@
   width: 1.125rem;
   height: 1.125rem;
   border-radius: 0.1875rem;
-  border: 2px solid var(--snice-m3-outline, var(--snice-color-border-hover));
+  border: 2px solid var(--snice-color-border, var(--snice-color-border-hover));
   background: transparent;
   transition: background-color 160ms cubic-bezier(0.2, 0, 0, 1), border-color 160ms cubic-bezier(0.2, 0, 0, 1);
 }

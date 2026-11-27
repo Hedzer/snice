@@ -2,7 +2,7 @@
 
 - **Platform ID**: `ios`
 - **Pinned Contemporary Spec**: Apple Human Interface Guidelines — iOS 26+ Liquid Glass (`https://developer.apple.com/design/human-interface-guidelines/materials`)
-- **Verified Date**: `2026-08-20`
+- **Verified Date**: `2026-08-20` (all 134/134 component skins visually verified `2026-11-27`)
 - **Font / Trademark / Asset Provenance**: System SF stack (`-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif`) only. Zero redistributed Apple proprietary fonts, SF Symbols binaries, or claims of Apple endorsement.
 - **Browser-Imposed Limits**: OS-private CoreHaptics (`UIImpactFeedbackGenerator`) and compositor behind-window refraction shaders are unavailable in browsers; visual Liquid Glass press/drag magnification, specular rim highlights, `backdrop-filter` vibrancy, spring physics, and opaque/reduced-transparency fallbacks provide full browser-expressible parity.
 - **GPU / Compositing Discipline**: `backdrop-filter` is applied strictly to floating chrome, navigation bars, glass capsule buttons/tabs, menus, sheets, popovers, and tooltips — NEVER to scrolling content lists, opaque grouped cards, or table cells.
@@ -11,137 +11,137 @@
 
 | Component | Classification | Treatment Layer |
 |---|---|---|
-| `snice-accordion` | `composite` | Layer 1 tokens + colocated `accordion/ios.css` |
-| `snice-action-bar` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-activity-feed` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-alert` | `direct-analogue` | Layer 1 tokens + colocated `alert/ios.css` |
-| `snice-app-tiles` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-approval-flow` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-audio-recorder` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-availability` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-avatar` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-avatar-group` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-badge` | `direct-analogue` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-banner` | `direct-analogue` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-binpack` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-book` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-booking` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-breadcrumbs` | `composite` | Layer 1 tokens + colocated `breadcrumbs/ios.css` |
-| `snice-button` | `direct-analogue` | Layer 1 tokens + colocated `button/ios.css` |
-| `snice-calendar` | `non-native-guideline` | Layer 1 tokens + colocated `calendar/ios.css` |
-| `snice-camera` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-camera-annotate` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-candlestick` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-card` | `composite` | Layer 1 tokens + colocated `card/ios.css` |
-| `snice-carousel` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-cart` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-chart` | `non-native-guideline` | Layer 1 tokens + colocated `chart/ios.css` |
-| `snice-chat` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-checkbox` | `direct-analogue` | Layer 1 tokens + colocated `checkbox/ios.css` |
-| `snice-chip` | `direct-analogue` | Layer 1 tokens + colocated `chip/ios.css` |
-| `snice-code-block` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-color-display` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-color-picker` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-command-palette` | `composite` | Layer 1 tokens + colocated `command-palette/ios.css` |
-| `snice-comments` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-countdown` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-cropper` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-data-card` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-date-picker` | `composite` | Layer 1 tokens + colocated `date-picker/ios.css` |
-| `snice-date-range-picker` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-date-time-picker` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-diff` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-divider` | `direct-analogue` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-doc` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-draw` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-drawer` | `direct-analogue` | Layer 1 tokens + colocated `drawer/ios.css` |
-| `snice-empty-state` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-estimate` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-file-gallery` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-file-upload` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-flip-card` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-flow` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-form-layout` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-funnel` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-gantt` | `non-native-guideline` | Layer 1 tokens + colocated `gantt/ios.css` |
-| `snice-gauge` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-grid` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-heatmap` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-image` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-input` | `direct-analogue` | Layer 1 tokens + colocated `input/ios.css` |
-| `snice-invoice` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-kanban` | `non-native-guideline` | Layer 1 tokens + colocated `kanban/ios.css` |
-| `snice-key-value` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-kpi` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-layout` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-leaderboard` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-link` | `direct-analogue` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-link-preview` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-list` | `direct-analogue` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-location` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-login` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-map` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-markdown` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-masonry` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-menu` | `direct-analogue` | Layer 1 tokens + colocated `menu/ios.css` |
-| `snice-message-strip` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-modal` | `direct-analogue` | Layer 1 tokens + colocated `modal/ios.css` |
-| `snice-music-player` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-nav` | `direct-analogue` | Layer 1 tokens + colocated `nav/ios.css` |
-| `snice-network-graph` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-notification-center` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-order-tracker` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-org-chart` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-pagination` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-paint` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-pdf-viewer` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-permission-matrix` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-podcast-player` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-popover` | `direct-analogue` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-pricing-table` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-product-card` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-progress` | `direct-analogue` | Layer 1 tokens + colocated `progress/ios.css` |
-| `snice-progress-ring` | `direct-analogue` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-qr-code` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-qr-reader` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-radio` | `direct-analogue` | Layer 1 tokens + colocated `radio/ios.css` |
-| `snice-range-slider` | `direct-analogue` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-rating` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-receipt` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-recipe` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-sankey` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-segmented-control` | `direct-analogue` | Layer 1 tokens + colocated `segmented-control/ios.css` |
-| `snice-select` | `direct-analogue` | Layer 1 tokens + colocated `select/ios.css` |
-| `snice-skeleton` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-slider` | `direct-analogue` | Layer 1 tokens + colocated `slider/ios.css` |
-| `snice-sortable` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-sparkline` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-spinner` | `direct-analogue` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-split-button` | `direct-analogue` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-split-pane` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-spotlight` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-stat-group` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-step-input` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-stepper` | `composite` | Layer 1 tokens + colocated `stepper/ios.css` |
-| `snice-switch` | `direct-analogue` | Layer 1 tokens + colocated `switch/ios.css` |
-| `snice-table` | `non-native-guideline` | Layer 1 tokens + colocated `table/ios.css` |
-| `snice-tabs` | `direct-analogue` | Layer 1 tokens + colocated `tabs/ios.css` |
-| `snice-tag` | `direct-analogue` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-tag-input` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-terminal` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-testimonial` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-textarea` | `direct-analogue` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-time-picker` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-time-range-picker` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-timeline` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-timer` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-toast` | `direct-analogue` | Layer 1 tokens + colocated `toast/ios.css` |
-| `snice-tooltip` | `direct-analogue` | Layer 1 tokens + colocated `tooltip/ios.css` |
-| `snice-tree` | `composite` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-treemap` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-user-card` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-video-player` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-virtual-scroller` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-waterfall` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-weather` | `non-native-guideline` | Layer 1 iOS 26+ tokens (`theme/platforms/ios.css`) |
-| `snice-work-order` | `non-native-guideline` | Layer 1 tokens + colocated `work-order/ios.css` |
+| `snice-accordion` | `composite` | Layer 1 tokens + colocated `accordion/ios.css` (visually verified light & dark) |
+| `snice-action-bar` | `composite` | Layer 1 tokens + colocated `action-bar/ios.css` (visually verified light & dark) |
+| `snice-activity-feed` | `non-native-guideline` | Layer 1 tokens + colocated `activity-feed/ios.css` (visually verified light & dark) |
+| `snice-alert` | `direct-analogue` | Layer 1 tokens + colocated `alert/ios.css` (visually verified light & dark) |
+| `snice-app-tiles` | `non-native-guideline` | Layer 1 tokens + colocated `app-tiles/ios.css` (visually verified light & dark) |
+| `snice-approval-flow` | `non-native-guideline` | Layer 1 tokens + colocated `approval-flow/ios.css` (visually verified light & dark) |
+| `snice-audio-recorder` | `non-native-guideline` | Layer 1 tokens + colocated `audio-recorder/ios.css` (visually verified light & dark) |
+| `snice-availability` | `non-native-guideline` | Layer 1 tokens + colocated `availability/ios.css` (visually verified light & dark) |
+| `snice-avatar` | `composite` | Layer 1 tokens + colocated `avatar/ios.css` (visually verified light & dark) |
+| `snice-avatar-group` | `composite` | Layer 1 tokens + colocated `avatar-group/ios.css` (visually verified light & dark) |
+| `snice-badge` | `direct-analogue` | Layer 1 tokens + colocated `badge/ios.css` (visually verified light & dark) |
+| `snice-banner` | `direct-analogue` | Layer 1 tokens + colocated `banner/ios.css` (visually verified light & dark) |
+| `snice-binpack` | `non-native-guideline` | Layer 1 tokens + colocated `binpack/ios.css` (visually verified light & dark) |
+| `snice-book` | `non-native-guideline` | Layer 1 tokens + colocated `book/ios.css` (visually verified light & dark) |
+| `snice-booking` | `non-native-guideline` | Layer 1 tokens + colocated `booking/ios.css` (visually verified light & dark) |
+| `snice-breadcrumbs` | `composite` | Layer 1 tokens + colocated `breadcrumbs/ios.css` (visually verified light & dark) |
+| `snice-button` | `direct-analogue` | Layer 1 tokens + colocated `button/ios.css` (visually verified light & dark) |
+| `snice-calendar` | `non-native-guideline` | Layer 1 tokens + colocated `calendar/ios.css` (visually verified light & dark) |
+| `snice-camera` | `non-native-guideline` | Layer 1 tokens + colocated `camera/ios.css` (visually verified light & dark) |
+| `snice-camera-annotate` | `non-native-guideline` | Layer 1 tokens + colocated `camera-annotate/ios.css` (visually verified light & dark) |
+| `snice-candlestick` | `non-native-guideline` | Layer 1 tokens + colocated `candlestick/ios.css` (visually verified light & dark) |
+| `snice-card` | `composite` | Layer 1 tokens + colocated `card/ios.css` (visually verified light & dark) |
+| `snice-carousel` | `composite` | Layer 1 tokens + colocated `carousel/ios.css` (visually verified light & dark) |
+| `snice-cart` | `non-native-guideline` | Layer 1 tokens + colocated `cart/ios.css` (visually verified light & dark) |
+| `snice-chart` | `non-native-guideline` | Layer 1 tokens + colocated `chart/ios.css` (visually verified light & dark) |
+| `snice-chat` | `non-native-guideline` | Layer 1 tokens + colocated `chat/ios.css` (visually verified light & dark) |
+| `snice-checkbox` | `direct-analogue` | Layer 1 tokens + colocated `checkbox/ios.css` (visually verified light & dark) |
+| `snice-chip` | `direct-analogue` | Layer 1 tokens + colocated `chip/ios.css` (visually verified light & dark) |
+| `snice-code-block` | `non-native-guideline` | Layer 1 tokens + colocated `code-block/ios.css` (visually verified light & dark) |
+| `snice-color-display` | `composite` | Layer 1 tokens + colocated `color-display/ios.css` (visually verified light & dark) |
+| `snice-color-picker` | `composite` | Layer 1 tokens + colocated `color-picker/ios.css` (visually verified light & dark) |
+| `snice-command-palette` | `composite` | Layer 1 tokens + colocated `command-palette/ios.css` (visually verified light & dark) |
+| `snice-comments` | `non-native-guideline` | Layer 1 tokens + colocated `comments/ios.css` (visually verified light & dark) |
+| `snice-countdown` | `non-native-guideline` | Layer 1 tokens + colocated `countdown/ios.css` (visually verified light & dark) |
+| `snice-cropper` | `non-native-guideline` | Layer 1 tokens + colocated `cropper/ios.css` (visually verified light & dark) |
+| `snice-data-card` | `non-native-guideline` | Layer 1 tokens + colocated `data-card/ios.css` (visually verified light & dark) |
+| `snice-date-picker` | `composite` | Layer 1 tokens + colocated `date-picker/ios.css` (visually verified light & dark) |
+| `snice-date-range-picker` | `composite` | Layer 1 tokens + colocated `date-range-picker/ios.css` (visually verified light & dark) |
+| `snice-date-time-picker` | `composite` | Layer 1 tokens + colocated `date-time-picker/ios.css` (visually verified light & dark) |
+| `snice-diff` | `non-native-guideline` | Layer 1 tokens + colocated `diff/ios.css` (visually verified light & dark) |
+| `snice-divider` | `direct-analogue` | Layer 1 tokens + colocated `divider/ios.css` (visually verified light & dark) |
+| `snice-doc` | `non-native-guideline` | Layer 1 tokens + colocated `doc/ios.css` (visually verified light & dark) |
+| `snice-draw` | `non-native-guideline` | Layer 1 tokens + colocated `draw/ios.css` (visually verified light & dark) |
+| `snice-drawer` | `direct-analogue` | Layer 1 tokens + colocated `drawer/ios.css` (visually verified light & dark) |
+| `snice-empty-state` | `composite` | Layer 1 tokens + colocated `empty-state/ios.css` (visually verified light & dark) |
+| `snice-estimate` | `non-native-guideline` | Layer 1 tokens + colocated `estimate/ios.css` (visually verified light & dark) |
+| `snice-file-gallery` | `non-native-guideline` | Layer 1 tokens + colocated `file-gallery/ios.css` (visually verified light & dark) |
+| `snice-file-upload` | `composite` | Layer 1 tokens + colocated `file-upload/ios.css` (visually verified light & dark) |
+| `snice-flip-card` | `non-native-guideline` | Layer 1 tokens + colocated `flip-card/ios.css` (visually verified light & dark) |
+| `snice-flow` | `non-native-guideline` | Layer 1 tokens + colocated `flow/ios.css` (visually verified light & dark) |
+| `snice-form-layout` | `composite` | Layer 1 tokens + colocated `form-layout/ios.css` (visually verified light & dark) |
+| `snice-funnel` | `non-native-guideline` | Layer 1 tokens + colocated `funnel/ios.css` (visually verified light & dark) |
+| `snice-gantt` | `non-native-guideline` | Layer 1 tokens + colocated `gantt/ios.css` (visually verified light & dark) |
+| `snice-gauge` | `non-native-guideline` | Layer 1 tokens + colocated `gauge/ios.css` (visually verified light & dark) |
+| `snice-grid` | `non-native-guideline` | Layer 1 tokens + colocated `grid/ios.css` (visually verified light & dark) |
+| `snice-heatmap` | `non-native-guideline` | Layer 1 tokens + colocated `heatmap/ios.css` (visually verified light & dark) |
+| `snice-image` | `composite` | Layer 1 tokens + colocated `image/ios.css` (visually verified light & dark) |
+| `snice-input` | `direct-analogue` | Layer 1 tokens + colocated `input/ios.css` (visually verified light & dark) |
+| `snice-invoice` | `non-native-guideline` | Layer 1 tokens + colocated `invoice/ios.css` (visually verified light & dark) |
+| `snice-kanban` | `non-native-guideline` | Layer 1 tokens + colocated `kanban/ios.css` (visually verified light & dark) |
+| `snice-key-value` | `composite` | Layer 1 tokens + colocated `key-value/ios.css` (visually verified light & dark) |
+| `snice-kpi` | `non-native-guideline` | Layer 1 tokens + colocated `kpi/ios.css` (visually verified light & dark) |
+| `snice-layout` | `composite` | Layer 1 tokens + colocated `layout/ios.css` (visually verified light & dark) |
+| `snice-leaderboard` | `non-native-guideline` | Layer 1 tokens + colocated `leaderboard/ios.css` (visually verified light & dark) |
+| `snice-link` | `direct-analogue` | Layer 1 tokens + colocated `link/ios.css` (visually verified light & dark) |
+| `snice-link-preview` | `non-native-guideline` | Layer 1 tokens + colocated `link-preview/ios.css` (visually verified light & dark) |
+| `snice-list` | `direct-analogue` | Layer 1 tokens + colocated `list/ios.css` (visually verified light & dark) |
+| `snice-location` | `non-native-guideline` | Layer 1 tokens + colocated `location/ios.css` (visually verified light & dark) |
+| `snice-login` | `composite` | Layer 1 tokens + colocated `login/ios.css` (visually verified light & dark) |
+| `snice-map` | `non-native-guideline` | Layer 1 tokens + colocated `map/ios.css` (visually verified light & dark) |
+| `snice-markdown` | `non-native-guideline` | Layer 1 tokens + colocated `markdown/ios.css` (visually verified light & dark) |
+| `snice-masonry` | `non-native-guideline` | Layer 1 tokens + colocated `masonry/ios.css` (visually verified light & dark) |
+| `snice-menu` | `direct-analogue` | Layer 1 tokens + colocated `menu/ios.css` (visually verified light & dark) |
+| `snice-message-strip` | `composite` | Layer 1 tokens + colocated `message-strip/ios.css` (visually verified light & dark) |
+| `snice-modal` | `direct-analogue` | Layer 1 tokens + colocated `modal/ios.css` (visually verified light & dark) |
+| `snice-music-player` | `non-native-guideline` | Layer 1 tokens + colocated `music-player/ios.css` (visually verified light & dark) |
+| `snice-nav` | `direct-analogue` | Layer 1 tokens + colocated `nav/ios.css` (visually verified light & dark) |
+| `snice-network-graph` | `non-native-guideline` | Layer 1 tokens + colocated `network-graph/ios.css` (visually verified light & dark) |
+| `snice-notification-center` | `composite` | Layer 1 tokens + colocated `notification-center/ios.css` (visually verified light & dark) |
+| `snice-order-tracker` | `non-native-guideline` | Layer 1 tokens + colocated `order-tracker/ios.css` (visually verified light & dark) |
+| `snice-org-chart` | `non-native-guideline` | Layer 1 tokens + colocated `org-chart/ios.css` (visually verified light & dark) |
+| `snice-pagination` | `composite` | Layer 1 tokens + colocated `pagination/ios.css` (visually verified light & dark) |
+| `snice-paint` | `non-native-guideline` | Layer 1 tokens + colocated `paint/ios.css` (visually verified light & dark) |
+| `snice-pdf-viewer` | `non-native-guideline` | Layer 1 tokens + colocated `pdf-viewer/ios.css` (visually verified light & dark) |
+| `snice-permission-matrix` | `non-native-guideline` | Layer 1 tokens + colocated `permission-matrix/ios.css` (visually verified light & dark) |
+| `snice-podcast-player` | `non-native-guideline` | Layer 1 tokens + colocated `podcast-player/ios.css` (visually verified light & dark) |
+| `snice-popover` | `direct-analogue` | Layer 1 tokens + colocated `popover/ios.css` (visually verified light & dark) |
+| `snice-pricing-table` | `non-native-guideline` | Layer 1 tokens + colocated `pricing-table/ios.css` (visually verified light & dark) |
+| `snice-product-card` | `non-native-guideline` | Layer 1 tokens + colocated `product-card/ios.css` (visually verified light & dark) |
+| `snice-progress` | `direct-analogue` | Layer 1 tokens + colocated `progress/ios.css` (visually verified light & dark) |
+| `snice-progress-ring` | `direct-analogue` | Layer 1 tokens + colocated `progress-ring/ios.css` (visually verified light & dark) |
+| `snice-qr-code` | `non-native-guideline` | Layer 1 tokens + colocated `qr-code/ios.css` (visually verified light & dark) |
+| `snice-qr-reader` | `non-native-guideline` | Layer 1 tokens + colocated `qr-reader/ios.css` (visually verified light & dark) |
+| `snice-radio` | `direct-analogue` | Layer 1 tokens + colocated `radio/ios.css` (visually verified light & dark) |
+| `snice-range-slider` | `direct-analogue` | Layer 1 tokens + colocated `range-slider/ios.css` (visually verified light & dark) |
+| `snice-rating` | `composite` | Layer 1 tokens + colocated `rating/ios.css` (visually verified light & dark) |
+| `snice-receipt` | `non-native-guideline` | Layer 1 tokens + colocated `receipt/ios.css` (visually verified light & dark) |
+| `snice-recipe` | `non-native-guideline` | Layer 1 tokens + colocated `recipe/ios.css` (visually verified light & dark) |
+| `snice-sankey` | `non-native-guideline` | Layer 1 tokens + colocated `sankey/ios.css` (visually verified light & dark) |
+| `snice-segmented-control` | `direct-analogue` | Layer 1 tokens + colocated `segmented-control/ios.css` (visually verified light & dark) |
+| `snice-select` | `direct-analogue` | Layer 1 tokens + colocated `select/ios.css` (visually verified light & dark) |
+| `snice-skeleton` | `composite` | Layer 1 tokens + colocated `skeleton/ios.css` (visually verified light & dark) |
+| `snice-slider` | `direct-analogue` | Layer 1 tokens + colocated `slider/ios.css` (visually verified light & dark) |
+| `snice-sortable` | `non-native-guideline` | Layer 1 tokens + colocated `sortable/ios.css` (visually verified light & dark) |
+| `snice-sparkline` | `non-native-guideline` | Layer 1 tokens + colocated `sparkline/ios.css` (visually verified light & dark) |
+| `snice-spinner` | `direct-analogue` | Layer 1 tokens + colocated `spinner/ios.css` (visually verified light & dark) |
+| `snice-split-button` | `direct-analogue` | Layer 1 tokens + colocated `split-button/ios.css` (visually verified light & dark) |
+| `snice-split-pane` | `composite` | Layer 1 tokens + colocated `split-pane/ios.css` (visually verified light & dark) |
+| `snice-spotlight` | `composite` | Layer 1 tokens + colocated `spotlight/ios.css` (visually verified light & dark) |
+| `snice-stat-group` | `non-native-guideline` | Layer 1 tokens + colocated `stat-group/ios.css` (visually verified light & dark) |
+| `snice-step-input` | `composite` | Layer 1 tokens + colocated `step-input/ios.css` (visually verified light & dark) |
+| `snice-stepper` | `composite` | Layer 1 tokens + colocated `stepper/ios.css` (visually verified light & dark) |
+| `snice-switch` | `direct-analogue` | Layer 1 tokens + colocated `switch/ios.css` (visually verified light & dark) |
+| `snice-table` | `non-native-guideline` | Layer 1 tokens + colocated `table/ios.css` (visually verified light & dark) |
+| `snice-tabs` | `direct-analogue` | Layer 1 tokens + colocated `tabs/ios.css` (visually verified light & dark) |
+| `snice-tag` | `direct-analogue` | Layer 1 tokens + colocated `tag/ios.css` (visually verified light & dark) |
+| `snice-tag-input` | `composite` | Layer 1 tokens + colocated `tag-input/ios.css` (visually verified light & dark) |
+| `snice-terminal` | `non-native-guideline` | Layer 1 tokens + colocated `terminal/ios.css` (visually verified light & dark) |
+| `snice-testimonial` | `non-native-guideline` | Layer 1 tokens + colocated `testimonial/ios.css` (visually verified light & dark) |
+| `snice-textarea` | `direct-analogue` | Layer 1 tokens + colocated `textarea/ios.css` (visually verified light & dark) |
+| `snice-time-picker` | `composite` | Layer 1 tokens + colocated `time-picker/ios.css` (visually verified light & dark) |
+| `snice-time-range-picker` | `composite` | Layer 1 tokens + colocated `time-range-picker/ios.css` (visually verified light & dark) |
+| `snice-timeline` | `non-native-guideline` | Layer 1 tokens + colocated `timeline/ios.css` (visually verified light & dark) |
+| `snice-timer` | `non-native-guideline` | Layer 1 tokens + colocated `timer/ios.css` (visually verified light & dark) |
+| `snice-toast` | `direct-analogue` | Layer 1 tokens + colocated `toast/ios.css` (visually verified light & dark) |
+| `snice-tooltip` | `direct-analogue` | Layer 1 tokens + colocated `tooltip/ios.css` (visually verified light & dark) |
+| `snice-tree` | `composite` | Layer 1 tokens + colocated `tree/ios.css` (visually verified light & dark) |
+| `snice-treemap` | `non-native-guideline` | Layer 1 tokens + colocated `treemap/ios.css` (visually verified light & dark) |
+| `snice-user-card` | `non-native-guideline` | Layer 1 tokens + colocated `user-card/ios.css` (visually verified light & dark) |
+| `snice-video-player` | `non-native-guideline` | Layer 1 tokens + colocated `video-player/ios.css` (visually verified light & dark) |
+| `snice-virtual-scroller` | `non-native-guideline` | Layer 1 tokens + colocated `virtual-scroller/ios.css` (visually verified light & dark) |
+| `snice-waterfall` | `non-native-guideline` | Layer 1 tokens + colocated `waterfall/ios.css` (visually verified light & dark) |
+| `snice-weather` | `non-native-guideline` | Layer 1 tokens + colocated `weather/ios.css` (visually verified light & dark) |
+| `snice-work-order` | `non-native-guideline` | Layer 1 tokens + colocated `work-order/ios.css` (visually verified light & dark) |

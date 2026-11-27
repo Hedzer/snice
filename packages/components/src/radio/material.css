@@ -5,6 +5,10 @@
    tonal selection cards with on-primary-container ink, and M3 38% disabled.
    ========================================================================== */
 
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: inline-flex;
   align-items: center;

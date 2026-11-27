@@ -15,8 +15,8 @@
   background: var(--draw-bg, var(--snice-color-surface-container-lowest));
   box-shadow: var(--snice-shadow-sm);
   transition:
-    border-color var(--snice-transition-fast, 150ms) var(--snice-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
-    box-shadow var(--snice-transition-fast, 150ms) var(--snice-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+    border-color var(--snice-transition-fast, 150ms) var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1)),
+    box-shadow var(--snice-transition-fast, 150ms) var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
 }
 
 :host [part~="base"]:focus-within {

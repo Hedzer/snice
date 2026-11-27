@@ -29,7 +29,7 @@
   min-height: 2rem;
   padding: 0 0.875rem;
   border-radius: 9999px;
-  border: 1px solid var(--snice-m3-outline, var(--snice-color-border));
+  border: 1px solid var(--snice-color-border, var(--snice-color-border));
   background: transparent;
   color: var(--snice-color-text);
   font-size: 0.75rem;
@@ -123,7 +123,7 @@
 
 [part~="legend-swatch-unavailable"] {
   background: var(--snice-color-surface-container-low);
-  border-color: var(--snice-m3-outline, var(--snice-color-border));
+  border-color: var(--snice-color-border, var(--snice-color-border));
 }
 
 [part~="count"] {

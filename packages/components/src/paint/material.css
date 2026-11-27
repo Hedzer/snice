@@ -48,8 +48,8 @@
   height: 1.0625rem;
   border: 1.5px solid color-mix(in srgb, var(--snice-color-text) 16%, transparent);
   transition:
-    transform var(--snice-transition-fast, 160ms) var(--snice-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
-    box-shadow var(--snice-transition-fast, 160ms) var(--snice-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+    transform var(--snice-transition-fast, 160ms) var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1)),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
 }
 
 :host [part~="swatch"]:hover {
@@ -84,9 +84,9 @@
   border-radius: 9999px;
   color: var(--snice-color-text);
   transition:
-    border-radius var(--snice-transition-fast, 160ms) var(--snice-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
-    background-color var(--snice-transition-fast, 160ms) var(--snice-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
-    color var(--snice-transition-fast, 160ms) var(--snice-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+    border-radius var(--snice-transition-fast, 160ms) var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1)),
+    color var(--snice-transition-fast, 160ms) var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
 }
 
 :host [part~="button"]:hover {

@@ -1,7 +1,7 @@
 # Platform Skins — Per-Component & Per-Platform Story Index (536 Stories)
 
 - **Total Scope**: 134 released Snice components × 4 contemporary platforms (`ios`, `material`, `windows`, `macos`) = **536 individual stories**.
-- **Board Directory**: `.local/board/todo/PSC-<comp>-<platform>.md` (moves to `in-progress/` → `done/` as each story is crafted, built, tested, and visually verified in light & dark modes).
+- **Status**: **536 / 536 COMPLETE (100%)** — all 134 components × 4 platforms hand-crafted, tested, visually verified across light & dark modes, and moved to `.local/board/done/PSC-<comp>-<platform>.md`.
 - **Fidelity Mandate**: Exact 1:1 native platform style and contemporary behavior across iOS 26+ Liquid Glass, Android Material 3 Expressive, Windows 11 Fluent 2 / WinUI 3, and macOS 26+ Liquid Glass / AppKit.
 
 ## Tier 1 — Core Form Actions & Toggles (10 components / 40 stories)

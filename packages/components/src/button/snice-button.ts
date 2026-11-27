@@ -149,7 +149,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
         <span class="button-sheen" part="sheen" data-platform-only="ios,macos" aria-hidden="true" hidden></span>
         <span class="spinner" part="spinner"></span>
         <if ${this.iconPlacement !== 'end'}>
-          <span class="icon-slot" part="icon icon-start" ?hidden="${!showIconStart}">
+          <span class="icon-slot" part="${showIconStart ? 'icon icon-start' : ''}" ?hidden="${!showIconStart}">
             <slot name="icon">
               <if ${this.icon}>
                 ${renderIcon(this.icon, 'icon')}
@@ -161,7 +161,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
           <slot></slot>
         </span>
         <if ${this.iconPlacement === 'end'}>
-          <span class="icon-slot" part="icon icon-end" ?hidden="${!showIconEnd}">
+          <span class="icon-slot" part="${showIconEnd ? 'icon icon-end' : ''}" ?hidden="${!showIconEnd}">
             <slot name="icon">
               <if ${this.icon}>
                 ${renderIcon(this.icon, 'icon')}

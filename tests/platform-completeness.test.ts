@@ -105,7 +105,8 @@ describe('Platform Skins completeness & static conformance gate (PS-08)', () => 
       expect(existsSync(scopedPath), `Missing scoped CSS: ${scopedPath}`).toBe(true);
       const css = readFileSync(scopedPath, 'utf8');
       expect(css.length).toBeGreaterThan(500);
-      expect(css).not.toMatch(/(?:^|[,}\s]):root\b/);
+      // Zero bare `:root{` or `:root,` leaks (scoped `:root[data-platform=...]:not([data-theme])` inside dark media is intentional)
+      expect(css).not.toMatch(/(?:^|[},;])\s*:root\s*[{,]/);
       expect(css).not.toContain(':host-context(');
       expect(css).toMatch(new RegExp(`\\[data-platform=["']?${platform}["']?\\]`));
     }

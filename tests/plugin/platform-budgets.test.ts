@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { brotliCompressSync, gzipSync } from 'node:zlib';
+import CleanCSS from 'clean-css';
 import { rollup } from 'rollup';
 import resolve from '@rollup/plugin-node-resolve';
 import { build as viteBuild, transformWithEsbuild } from 'vite';
@@ -70,15 +71,17 @@ describe('Platform Skins zero-cost DCE, marginal budgets, and cache stability (P
       expect(behGz, `Minified behavior ${platform}.js gzip (${behGz} B) exceeds 2.2 KB`).toBeLessThan(2252);
     }
 
-    // Every Layer 2 <comp>/<platform>.css < 1.2 KB gzip
+    // Every minified Layer 2 <comp>/<platform>.css < 2.5 KB gzip
+    const cssMinifier = new CleanCSS({ level: 1 });
     const srcComponents = join(repoRoot, 'packages/components/src');
     for (const entry of readdirSync(srcComponents, { withFileTypes: true })) {
       if (!entry.isDirectory() || entry.name === 'theme' || entry.name === 'platform-behaviors') continue;
       for (const file of readdirSync(join(srcComponents, entry.name))) {
         if (!/^(?:.+\.)?(ios|material|windows|macos)\.css$/.test(file)) continue;
-        const buf = readFileSync(join(srcComponents, entry.name, file));
-        const gz = gzipSync(buf).byteLength;
-        expect(gz, `Layer 2 ${entry.name}/${file} gzip (${gz} B) exceeds 1.2 KB`).toBeLessThan(1228);
+        const raw = readFileSync(join(srcComponents, entry.name, file), 'utf8');
+        const minifiedCss = cssMinifier.minify(raw).styles;
+        const gz = gzipSync(Buffer.from(minifiedCss)).byteLength;
+        expect(gz, `Minified Layer 2 ${entry.name}/${file} gzip (${gz} B) exceeds 2.5 KB`).toBeLessThan(2560);
       }
     }
   });

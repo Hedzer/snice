@@ -1,5 +1,9 @@
 /* Android Material 3 Expressive treemap & tonal breadcrumb skin */
 
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: flex;
   flex-direction: column;

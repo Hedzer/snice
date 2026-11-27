@@ -61,7 +61,7 @@
 
 :host [part~="page-cover"]:active,
 :host [part~="page-last"]:active {
-  background-color: color-mix(in srgb, var(--snice-color-text) var(--snice-m3-state-pressed, 10%), var(--snice-color-surface-container-high));
+  background-color: color-mix(in srgb, var(--snice-color-text) var(--snice-m3-state-press, 10%), var(--snice-color-surface-container-high));
 }
 
 :host [part~="cover-image"] {

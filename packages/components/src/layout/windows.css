@@ -1,16 +1,24 @@
 /* Windows 11 Fluent 2 / WinUI 3 — snice-layout */
 [part~="header"] {
   min-height: 3rem;
-  background: var(--snice-color-surface);
-  border-bottom: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface, rgb(243 243 243));
+  border-bottom: 1px solid var(--snice-color-border-subtle, rgb(0 0 0 / 0.08));
   box-shadow: none;
 }
 
 [part~="main"] {
-  background: var(--snice-color-surface-container-low);
+  background: var(--snice-color-surface-container-low, rgb(249 249 249));
 }
 
 [part~="footer"] {
-  background: var(--snice-color-surface);
-  border-top: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface, rgb(243 243 243));
+  border-top: 1px solid var(--snice-color-border-subtle, rgb(0 0 0 / 0.08));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="header"],
+  [part~="main"],
+  [part~="footer"] {
+    transition: none;
+  }
 }

@@ -1,5 +1,9 @@
 /* Windows 11 Fluent 2 / Power BI & WinUI 3 BreadcrumbBar treemap skin */
 
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: flex;
   flex-direction: column;

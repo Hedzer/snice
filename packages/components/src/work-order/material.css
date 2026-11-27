@@ -4,7 +4,7 @@
   --wo-bg: var(--snice-color-surface-container-low);
   --wo-bg-element: var(--snice-color-surface-container);
   --wo-border: var(--snice-color-border-subtle);
-  --wo-signature-line-color: var(--snice-m3-outline, var(--snice-color-border));
+  --wo-signature-line-color: var(--snice-color-border, var(--snice-color-border));
   --wo-task-checkbox-size: 1.25rem;
 }
 
@@ -95,7 +95,7 @@
 
 [part~="task-checkbox"] {
   border-radius: 0.1875rem;
-  border: 2px solid var(--snice-m3-outline, var(--snice-color-border-hover));
+  border: 2px solid var(--snice-color-border, var(--snice-color-border-hover));
   background: transparent;
   transition: background-color 160ms cubic-bezier(0.2, 0, 0, 1), border-color 160ms cubic-bezier(0.2, 0, 0, 1);
 }

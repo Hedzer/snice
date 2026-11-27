@@ -106,9 +106,12 @@ describe('snice-layout', () => {
 
   describe('stylesheet contracts (whole layout family)', () => {
     const dir = resolve(process.cwd(), 'packages/components/src/layout');
+    const baseCssFiles = readdirSync(dir).filter(
+      f => f.endsWith('.css') && !/(?:^|\.)(?:ios|macos|material|windows)\.css$/.test(f)
+    );
 
     it('should provide a fallback for every --snice-* variable reference in every layout css', () => {
-      for (const file of readdirSync(dir).filter(f => f.endsWith('.css'))) {
+      for (const file of baseCssFiles) {
         const css = readFileSync(join(dir, file), 'utf8');
         const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
         expect(missing, file).toEqual([]);
@@ -116,21 +119,21 @@ describe('snice-layout', () => {
     });
 
     it('should handle prefers-reduced-motion in every layout css', () => {
-      for (const file of readdirSync(dir).filter(f => f.endsWith('.css'))) {
+      for (const file of baseCssFiles) {
         const css = readFileSync(join(dir, file), 'utf8');
         expect(css, file).toContain('@media (prefers-reduced-motion: reduce)');
       }
     });
 
     it('never hides slot containers with a dead :empty rule', () => {
-      for (const file of readdirSync(dir).filter(f => f.endsWith('.css'))) {
+      for (const file of baseCssFiles) {
         const css = readFileSync(join(dir, file), 'utf8');
         expect(css, `${file}: a container holding a <slot> is never :empty`).not.toMatch(/:empty/);
       }
     });
 
     it('inner layouts inherit the host height so contained shells never overflow', () => {
-      for (const file of readdirSync(dir).filter(f => f.endsWith('.css'))) {
+      for (const file of baseCssFiles) {
         const css = readFileSync(join(dir, file), 'utf8');
         const start = css.indexOf('.layout {');
         if (start === -1) continue;

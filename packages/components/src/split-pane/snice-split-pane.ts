@@ -107,8 +107,8 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
     this.isDragging = true;
     this.classList.add('dragging');
     this.setAttribute('data-dragging', '');
-    this.dividerElement.classList.add('divider--dragging');
-    this.dividerElement.part.add('divider-dragging');
+    this.dividerElement?.classList.add('divider--dragging');
+    this.dividerElement?.part?.add('divider-dragging');
     this.startPosition = this.direction === 'horizontal' ? clientX : clientY;
     this.startSize = this.primarySize;
   }
@@ -140,8 +140,8 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
     this.isDragging = false;
     this.classList.remove('dragging');
     this.removeAttribute('data-dragging');
-    this.dividerElement.classList.remove('divider--dragging');
-    this.dividerElement.part.remove('divider-dragging');
+    this.dividerElement?.classList.remove('divider--dragging');
+    this.dividerElement?.part?.remove('divider-dragging');
   }
 
   private handleMouseMove = (e: MouseEvent) => {

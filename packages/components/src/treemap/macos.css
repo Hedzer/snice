@@ -1,5 +1,9 @@
 /* macOS 26 Tahoe AppKit / NSPathControl & Storage Inspector treemap skin */
 
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: flex;
   flex-direction: column;

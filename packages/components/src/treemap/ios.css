@@ -1,5 +1,9 @@
 /* iOS 26+ Liquid Glass / Storage & Market Map treemap skin */
 
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: flex;
   flex-direction: column;

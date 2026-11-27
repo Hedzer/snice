@@ -25,7 +25,7 @@
 }
 
 :host [part~="base"]:active {
-  background: color-mix(in srgb, var(--snice-color-text) var(--snice-m3-state-pressed, 10%), var(--snice-color-surface-container-low));
+  background: color-mix(in srgb, var(--snice-color-text) var(--snice-m3-state-press, 10%), var(--snice-color-surface-container-low));
   border-radius: 12px;
 }
 
