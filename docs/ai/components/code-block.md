@@ -45,6 +45,7 @@ fetchMode: 'native' | 'virtual' | 'event' = 'native';  // attribute: fetch-mode
 - `header` - Header bar (filename + copy button)
 - `filename` - Filename display
 - `copy-button` - Copy button
+- `copy-button-copied` - Added to `copy-button` while in the copied confirmation state
 - `content` - Scrollable code area
 - `pre` - Pre-formatted container
 - `code` - Code element with tokens

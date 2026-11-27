@@ -77,6 +77,7 @@ Display code with syntax highlighting, line numbers, and copy functionality. Use
 | `header` | The header bar with filename and copy button |
 | `filename` | The filename display |
 | `copy-button` | The copy-to-clipboard button |
+| `copy-button-copied` | Added to `copy-button` while showing the copied confirmation state |
 | `content` | The scrollable code content area |
 | `pre` | The pre-formatted code container |
 | `code` | The code element containing highlighted tokens |

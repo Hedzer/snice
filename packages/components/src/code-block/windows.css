@@ -1,0 +1,190 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-code-block
+ * WinUI 3 Gallery Code Sample Card: crisp 8px layered card on Mica, 1px card
+ * border, Cascadia Code monospace, 28px 4px-radius top-lit WinUI Copy button,
+ * dual-stroke focus, zero-bounce fast-out motion, --snice-win-on-accent ink,
+ * and WHCM support.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --_cb-bg: var(--snice-color-surface-container-lowest);
+  --_cb-header-bg: var(--snice-color-surface-container-low);
+}
+
+:host([theme="dark"]) {
+  --_cb-bg: #282c34;
+  --_cb-header-bg: #21252b;
+}
+
+:host([theme="light"]) {
+  --_cb-bg: #fafafa;
+  --_cb-header-bg: #eaeaeb;
+}
+
+/* Fluent 2 8px Layered Card */
+:host [part~="base"] {
+  border-radius: 8px;
+  border: 1px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-xs);
+  background: var(--code-block-bg, var(--_cb-bg));
+}
+
+:host([theme="dark"]) [part~="base"] {
+  border-color: hsl(0 0% 100% / 0.12);
+}
+
+:host([theme="light"]) [part~="base"] {
+  border-color: hsl(0 0% 0% / 0.1);
+}
+
+:host [part~="header"] {
+  min-height: 2.5rem;
+  padding: 0.375rem 0.75rem 0.375rem 1rem;
+  background: var(--code-block-header-bg, var(--_cb-header-bg));
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  font-family: var(--snice-font-family);
+}
+
+:host([theme="dark"]) [part~="header"] {
+  border-bottom-color: hsl(0 0% 100% / 0.1);
+}
+
+:host([theme="light"]) [part~="header"] {
+  border-bottom-color: hsl(0 0% 0% / 0.08);
+}
+
+:host [part~="filename"] {
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--_cb-header-text);
+}
+
+/* WinUI 3 Compact 28px Top-Lit Standard Button */
+:host [part~="copy-button"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.75rem;
+  padding: 0 0.75rem;
+  border-radius: 4px;
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--snice-win-control-bg);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  transition:
+    background-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1),
+    border-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="copy-button"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+}
+
+:host [part~="copy-button"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  border-bottom-color: var(--snice-win-stroke-top);
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="copy-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* Deterministic Forced Theme WinUI Buttons */
+:host([theme="dark"]) [part~="copy-button"] {
+  background: hsl(0 0% 100% / 0.06);
+  border-color: hsl(0 0% 100% / 0.11);
+  border-bottom-color: hsl(0 0% 100% / 0.07);
+  color: hsl(0 0% 100%);
+}
+
+:host([theme="dark"]) [part~="copy-button"]:hover {
+  background: hsl(0 0% 100% / 0.1);
+}
+
+:host([theme="light"]) [part~="copy-button"] {
+  background: hsl(0 0% 100% / 0.72);
+  border-color: hsl(0 0% 0% / 0.08);
+  border-bottom-color: hsl(0 0% 0% / 0.16);
+  color: hsl(0 0% 10.6%);
+}
+
+:host([theme="light"]) [part~="copy-button"]:hover {
+  background: hsl(0 0% 97%);
+}
+
+/* Copied Confirmation — --snice-win-on-accent (white light / black dark) */
+:host [part~="copy-button-copied"],
+:host([theme="dark"]) [part~="copy-button-copied"],
+:host([theme="light"]) [part~="copy-button-copied"] {
+  background: var(--snice-color-success);
+  border-color: var(--snice-color-success);
+  color: var(--snice-win-on-accent);
+}
+
+:host [part~="pre"] {
+  padding: 0.875rem 1rem;
+}
+
+:host [part~="code"] {
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+:host [part~="line-number"] {
+  font-variant-numeric: tabular-nums;
+  width: 2.75rem;
+}
+
+:host [part~="line-highlight"] {
+  border-left: 3px solid var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding-left: calc(1rem - 3px);
+  padding-right: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="copy-button"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="header"] {
+    border-bottom: 1px solid CanvasText;
+  }
+
+  :host [part~="copy-button"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="copy-button-copied"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+  }
+
+  :host [part~="copy-button"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}

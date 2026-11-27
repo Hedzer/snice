@@ -292,11 +292,19 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
       await navigator.clipboard.writeText(this.code);
       this.copied = true;
       this.dispatchCopyEvent();
-      if (this.copyBtn) this.copyBtn.textContent = 'Copied!';
+      if (this.copyBtn) {
+        this.copyBtn.textContent = 'Copied!';
+        this.copyBtn.classList.add('code-block__copy--copied');
+        this.copyBtn.setAttribute('part', 'copy-button copy-button-copied');
+      }
 
       setTimeout(() => {
         this.copied = false;
-        if (this.copyBtn) this.copyBtn.textContent = 'Copy';
+        if (this.copyBtn) {
+          this.copyBtn.textContent = 'Copy';
+          this.copyBtn.classList.remove('code-block__copy--copied');
+          this.copyBtn.setAttribute('part', 'copy-button');
+        }
       }, 2000);
     } catch (err) {
       console.error('Failed to copy code:', err);

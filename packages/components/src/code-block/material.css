@@ -1,0 +1,184 @@
+/* Android Material 3 Expressive — snice-code-block
+ * M3 Tonal Code Card: 16px rounded container with 5-step primary-tinted tonal
+ * separation (surface-container-low body / surface-container-high header, zero
+ * glass blur), Roboto Mono typography, expressive pill Copy button morphing to
+ * 8px on press, and dark-mode T80-on-ink compliance.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --_cb-bg: var(--snice-color-surface-container-low);
+  --_cb-header-bg: var(--snice-color-surface-container-high);
+}
+
+:host([theme="dark"]) {
+  --_cb-bg: #282c34;
+  --_cb-header-bg: #21252b;
+}
+
+:host([theme="light"]) {
+  --_cb-bg: #fafafa;
+  --_cb-header-bg: #eaeaeb;
+}
+
+/* M3 16px Tonal Card */
+:host [part~="base"] {
+  border-radius: 16px;
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: none;
+  background: var(--code-block-bg, var(--_cb-bg));
+}
+
+:host([theme="dark"]) [part~="base"] {
+  border-color: hsl(0 0% 100% / 0.12);
+}
+
+:host([theme="light"]) [part~="base"] {
+  border-color: hsl(0 0% 0% / 0.1);
+}
+
+:host [part~="header"] {
+  min-height: 3rem;
+  padding: 0.5rem 1rem;
+  background: var(--code-block-header-bg, var(--_cb-header-bg));
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  font-family: var(--snice-font-family);
+}
+
+:host([theme="dark"]) [part~="header"] {
+  border-bottom-color: hsl(0 0% 100% / 0.1);
+}
+
+:host([theme="light"]) [part~="header"] {
+  border-bottom-color: hsl(0 0% 0% / 0.08);
+}
+
+:host [part~="filename"] {
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--_cb-header-text);
+}
+
+/* M3 Expressive Tonal Pill Copy Button (9999px -> 8px Press Morph) */
+:host [part~="copy-button"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: 0 1rem;
+  border-radius: 9999px;
+  border: none;
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition:
+    border-radius var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.42, 1.4, 0.24, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="copy-button"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) 8%, var(--snice-m3-secondary-container));
+}
+
+:host [part~="copy-button"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) 10%, var(--snice-m3-secondary-container));
+}
+
+:host [part~="copy-button"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="copy-button"]:disabled {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  border-radius: 9999px;
+  cursor: not-allowed;
+}
+
+/* Deterministic Forced Theme Tonal Pills */
+:host([theme="dark"]) [part~="copy-button"] {
+  background: hsl(265 18% 26%);
+  color: hsl(265 80% 90%);
+}
+
+:host([theme="dark"]) [part~="copy-button"]:hover {
+  background: hsl(265 18% 32%);
+}
+
+:host([theme="light"]) [part~="copy-button"] {
+  background: hsl(265 30% 90%);
+  color: hsl(265 45% 20%);
+}
+
+:host([theme="light"]) [part~="copy-button"]:hover {
+  background: hsl(265 30% 85%);
+}
+
+/* Copied Confirmation — M3 Dark-Mode T80 Pastel + Dark Inverse Ink */
+:host [part~="copy-button-copied"],
+:host([theme="dark"]) [part~="copy-button-copied"],
+:host([theme="light"]) [part~="copy-button-copied"] {
+  background: var(--snice-color-success);
+  color: var(--snice-color-text-inverse);
+  border-radius: 9999px;
+}
+
+:host [part~="pre"] {
+  padding: 1rem;
+}
+
+:host [part~="code"] {
+  font-family: var(--snice-font-family-mono);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+:host [part~="line-number"] {
+  font-variant-numeric: tabular-nums;
+}
+
+:host [part~="line-highlight"] {
+  border-left: 3px solid var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding-left: calc(1rem - 3px);
+  padding-right: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="copy-button"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    background: Canvas;
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="header"] {
+    border-bottom: 1px solid CanvasText;
+  }
+
+  :host [part~="copy-button"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="copy-button-copied"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+  }
+}
