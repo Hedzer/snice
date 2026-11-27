@@ -1,0 +1,73 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-flip-card
+ * WinUI 3 Interactive Card: crisp 8px Fluent geometry, 1px top-lit elevation
+ * borders, layered Mica face defaults, WinUI 3 dual-stroke keyboard focus,
+ * and zero-bounce fast-out decelerate 3D flips.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  border-radius: var(--snice-border-radius-lg, 8px);
+}
+
+:host(:focus-visible),
+:host [part~="base"]:focus-visible {
+  outline: none;
+  border-radius: var(--snice-border-radius-lg, 8px);
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* Preserve 3D space — NEVER set overflow: hidden, z-index, or transform on base */
+:host [part~="base"] {
+  transition-timing-function: var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
+}
+
+:host [part~="front"],
+:host [part~="back"] {
+  box-sizing: border-box;
+  border-radius: var(--snice-border-radius-lg, 8px);
+  overflow: hidden;
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  box-shadow: var(--snice-shadow-sm);
+  transition:
+    border-color 100ms cubic-bezier(0, 0, 0, 1),
+    box-shadow 100ms cubic-bezier(0, 0, 0, 1),
+    filter 100ms cubic-bezier(0, 0, 0, 1),
+    visibility var(--flip-duration, 600ms) cubic-bezier(0, 0, 0, 1);
+}
+
+:host([click-to-flip]):hover [part~="front"],
+:host([click-to-flip]):hover [part~="back"] {
+  border-color: var(--snice-color-border-hover);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host([click-to-flip]):active [part~="front"],
+:host([click-to-flip]):active [part~="back"] {
+  box-shadow: var(--snice-shadow-xs);
+  filter: brightness(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="base"],
+  :host [part~="front"],
+  :host [part~="back"] {
+    transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="front"],
+  :host [part~="back"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host(:focus-visible),
+  :host [part~="base"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,75 @@
+/* macOS 26 Tahoe Liquid Glass / AppKit — snice-flip-card
+ * AppKit Interactive Flip Tile: compact desktop 12px concentric card faces,
+ * opaque elevated AppKit surfaces with 0.5px hairline borders, crisp desktop
+ * 3D flip deceleration, subtle host press scale, and AppKit focus halo.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  border-radius: var(--snice-border-radius-lg, 12px);
+  transition: transform var(--snice-transition-fast, 140ms) ease-out;
+}
+
+:host([click-to-flip]):active {
+  transform: scale(0.985);
+}
+
+:host(:focus-visible),
+:host [part~="base"]:focus-visible {
+  outline: none;
+  border-radius: var(--snice-border-radius-lg, 12px);
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Preserve 3D space — NEVER set overflow: hidden, z-index, or transform on base */
+:host [part~="base"] {
+  transition-timing-function: var(--snice-ease-out, cubic-bezier(0.22, 0.8, 0.2, 1));
+}
+
+:host [part~="front"],
+:host [part~="back"] {
+  box-sizing: border-box;
+  border-radius: var(--snice-border-radius-lg, 12px);
+  overflow: hidden;
+  background: var(--snice-color-background-elevated);
+  color: var(--snice-color-text);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-sm);
+  transition:
+    box-shadow var(--snice-transition-fast, 140ms) ease-out,
+    border-color var(--snice-transition-fast, 140ms) ease-out,
+    visibility var(--flip-duration, 600ms) ease-in-out;
+}
+
+:host([click-to-flip]):hover [part~="front"],
+:host([click-to-flip]):hover [part~="back"] {
+  border-color: var(--snice-color-border-hover);
+  box-shadow: var(--snice-shadow-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  :host [part~="base"],
+  :host [part~="front"],
+  :host [part~="back"] {
+    transition-duration: 0.01ms;
+  }
+
+  :host([click-to-flip]):active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="front"],
+  :host [part~="back"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host(:focus-visible),
+  :host [part~="base"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}

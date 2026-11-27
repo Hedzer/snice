@@ -1,0 +1,76 @@
+/* Material 3 Expressive — snice-flip-card
+ * M3 Interactive Elevated Flip Card: 16px rounded card faces, primary-tinted
+ * surface-container-low defaults, expressive 12px press corner morph, spatial
+ * spring 3D flip timing, and 3px M3 primary focus indicator.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  border-radius: var(--snice-border-radius-lg, 16px);
+}
+
+:host(:focus-visible),
+:host [part~="base"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+  border-radius: var(--snice-border-radius-lg, 16px);
+}
+
+/* Preserve 3D space — NEVER set overflow: hidden, z-index, or transform on base */
+:host [part~="base"] {
+  transition-timing-function: var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1));
+}
+
+:host [part~="front"],
+:host [part~="back"] {
+  box-sizing: border-box;
+  border-radius: var(--snice-border-radius-lg, 16px);
+  overflow: hidden;
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-sm);
+  transition:
+    border-radius var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    border-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    visibility var(--flip-duration, 600ms) ease-in-out;
+}
+
+:host([click-to-flip]):hover [part~="front"],
+:host([click-to-flip]):hover [part~="back"] {
+  border-color: var(--snice-color-border-hover);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host([click-to-flip]):active [part~="front"],
+:host([click-to-flip]):active [part~="back"] {
+  border-radius: 12px;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="base"],
+  :host [part~="front"],
+  :host [part~="back"] {
+    transition-duration: 0.01ms;
+  }
+
+  :host([click-to-flip]):active [part~="front"],
+  :host([click-to-flip]):active [part~="back"] {
+    border-radius: var(--snice-border-radius-lg, 16px);
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="front"],
+  :host [part~="back"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host(:focus-visible),
+  :host [part~="base"]:focus-visible {
+    outline: 2px solid Highlight;
+  }
+}

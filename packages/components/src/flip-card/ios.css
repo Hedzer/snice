@@ -1,0 +1,73 @@
+/* iOS 26+ Liquid Glass — snice-flip-card
+ * Apple Wallet / Widget Flip Card: concentric 20px card faces, opaque grouped
+ * surfaces with 0.5px hairline borders, ambient elevation, spring host press
+ * scale (never touching 3D base/face transforms), and Apple sheet flip easing.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  border-radius: 20px;
+  transition: transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+}
+
+:host([click-to-flip]):active {
+  transform: scale(0.97);
+}
+
+:host(:focus-visible),
+:host [part~="base"]:focus-visible {
+  outline: none;
+  border-radius: 20px;
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color);
+}
+
+/* Preserve 3D space — NEVER set overflow: hidden, z-index, or transform on base */
+:host [part~="base"] {
+  transition-timing-function: var(--snice-ios-spring-sheet, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+:host [part~="front"],
+:host [part~="back"] {
+  box-sizing: border-box;
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-md);
+  transition:
+    box-shadow var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease-out),
+    visibility var(--flip-duration, 600ms) ease-in-out;
+}
+
+:host([click-to-flip]):hover [part~="front"],
+:host([click-to-flip]):hover [part~="back"] {
+  box-shadow: var(--snice-shadow-lg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  :host [part~="base"],
+  :host [part~="front"],
+  :host [part~="back"] {
+    transition-duration: 0.01ms;
+  }
+
+  :host([click-to-flip]):active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="front"],
+  :host [part~="back"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host(:focus-visible),
+  :host [part~="base"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}
