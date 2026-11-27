@@ -1,20 +1,127 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-gantt (Fluent Enterprise Timeline) */
+/* Windows 11 Fluent 2 / WinUI 3 Gantt chart skin */
+
 [part~="base"] {
-  border-radius: 8px;
-  background: var(--snice-color-surface-container-lowest);
-  border: 1px solid var(--snice-color-border-subtle);
-  overflow: hidden;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--snice-shadow-xs);
 }
 
 [part~="header"] {
   background: var(--snice-color-surface-container);
-  border-bottom: 1px solid var(--snice-color-border-subtle);
+  border-bottom: 1px solid var(--snice-color-border);
 }
 
+/* WinUI segmented toggle buttons */
 [part~="zoom-button"] {
-  border-radius: 4px;
+  min-height: 1.75rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--snice-win-stroke-top, var(--snice-color-border));
+  border-bottom-color: var(--snice-win-stroke-bottom, var(--snice-color-border-hover));
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text);
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1), border-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="zoom-button-day"] {
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+
+[part~="zoom-button-week"] {
+  border-radius: 0;
+  border-left: none;
+}
+
+[part~="zoom-button-month"] {
+  border-radius: 0 0.25rem 0.25rem 0;
+  border-left: none;
+}
+
+[part~="zoom-button"]:hover {
+  background: var(--snice-color-surface-container);
+}
+
+[part~="zoom-button-active"] {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+  color: var(--snice-win-on-accent, var(--snice-color-text-inverse));
+  font-weight: 600;
+}
+
+[part~="zoom-button-active"]:hover {
+  background: var(--snice-color-primary-hover);
+  border-color: var(--snice-color-primary-hover);
+}
+
+[part~="zoom-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* Sidebar & timeline */
+[part~="task-list"] {
+  background: var(--snice-color-surface-container-high);
+  border-right: 1px solid var(--snice-color-border);
+}
+
+[part~="task-list-header"],
+[part~="timeline-header"] {
+  box-sizing: border-box;
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border);
+  height: 2.25rem;
+}
+
+[part~="task-name"],
+[part~="group-header"] {
+  border-bottom-color: var(--snice-color-border);
+}
+
+[part~="timeline-cell"] {
+  border-right-color: var(--snice-color-border);
 }
 
 [part~="bar"] {
-  border-radius: 4px;
+  border-radius: 0.25rem;
+}
+
+[part~="bar-progress"] {
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+
+[part~="bar-label"] {
+  color: hsl(0 0% 100%);
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="zoom-button"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="zoom-button"],
+  [part~="bar"] {
+    border-color: ButtonText;
+  }
+
+  [part~="zoom-button-active"],
+  [part~="bar"] {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  [part~="bar-label"] {
+    color: HighlightText;
+  }
+
+  [part~="zoom-button"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    box-shadow: none;
+  }
 }

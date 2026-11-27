@@ -1,9 +1,10 @@
-/* Material 3 Expressive — snice-gantt */
+/* Material 3 Expressive Gantt chart skin */
+
 [part~="base"] {
-  border-radius: 16px;
   background: var(--snice-color-surface-container-low);
   border: 1px solid var(--snice-color-border-subtle);
-  overflow: hidden;
+  border-radius: 1rem;
+  box-shadow: var(--snice-shadow-xs);
 }
 
 [part~="header"] {
@@ -11,10 +12,95 @@
   border-bottom: 1px solid var(--snice-color-border-subtle);
 }
 
+/* M3 pill segmented button group */
 [part~="zoom-button"] {
-  border-radius: 9999px;
+  min-height: 2rem;
+  padding: 0 0.875rem;
+  border: 1px solid var(--snice-m3-outline, var(--snice-color-border));
+  background: transparent;
+  color: var(--snice-color-text);
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: background-color 160ms cubic-bezier(0.2, 0, 0, 1), color 160ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+[part~="zoom-button-day"] {
+  border-radius: 9999px 0 0 9999px;
+}
+
+[part~="zoom-button-week"] {
+  border-radius: 0;
+  border-left: none;
+}
+
+[part~="zoom-button-month"] {
+  border-radius: 0 9999px 9999px 0;
+  border-left: none;
+}
+
+[part~="zoom-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+}
+
+[part~="zoom-button-active"] {
+  background: var(--snice-m3-secondary-container, var(--snice-color-surface-container-high));
+  color: var(--snice-m3-on-secondary-container, var(--snice-color-text));
+  font-weight: 600;
+}
+
+[part~="zoom-button"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: -2px;
+}
+
+/* Sidebar & timeline */
+[part~="task-list"] {
+  background: var(--snice-color-surface-container-low);
+  border-right: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="task-list-header"],
+[part~="timeline-header"] {
+  box-sizing: border-box;
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  height: 2.25rem;
+}
+
+[part~="group-header"] {
+  background: var(--snice-m3-secondary-container, var(--snice-color-surface-container));
+  color: var(--snice-m3-on-secondary-container, var(--snice-color-primary));
+  border-bottom-color: var(--snice-color-border-subtle);
+}
+
+[part~="task-name"] {
+  border-bottom-color: var(--snice-color-border-subtle);
+}
+
+[part~="timeline-cell"] {
+  border-right-color: var(--snice-color-border-subtle);
+}
+
+[part~="timeline-cell-today"] {
+  background: var(--snice-m3-secondary-container, var(--snice-color-surface-container-high));
+  color: var(--snice-m3-on-secondary-container, var(--snice-color-primary));
 }
 
 [part~="bar"] {
-  border-radius: 9999px;
+  border-radius: 0.5rem;
+}
+
+[part~="bar-progress"] {
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+[part~="bar-label"] {
+  color: hsl(0 0% 100%);
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="zoom-button"] {
+    transition: none;
+  }
 }
