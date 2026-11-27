@@ -1,0 +1,125 @@
+/* macOS 26+ Tahoe / AppKit — snice-org-chart
+ * Compact desktop Freeform / AppKit organizational hierarchy canvas.
+ * 12px opaque window canvas, 10px concentric person cards, 0.5px hairlines,
+ * 13px SF Pro names / 11px captions, 32px avatars, AppKit bevel collapse toggles.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+[part~="base"] {
+  background: var(--snice-color-surface);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+[part~="node"] {
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  gap: 0.625rem;
+  box-shadow: var(--snice-shadow-xs);
+  transition: border-color 140ms var(--snice-ease-out),
+              box-shadow 140ms var(--snice-ease-out),
+              filter 140ms var(--snice-ease-out);
+}
+
+[part~="node"]:hover {
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+[part~="node"]:active {
+  filter: brightness(0.97);
+}
+
+[part~="node"]:focus-visible,
+[part~="toggle"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+[part~="node-compact"] {
+  border-radius: 8px;
+  padding: 0.25rem 0.625rem;
+}
+
+[part~="avatar"],
+[part~="avatar-placeholder"] {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.75rem;
+}
+
+[part~="avatar-compact"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.6875rem;
+}
+
+[part~="avatar-placeholder"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, var(--snice-color-surface-container));
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+[part~="node-name"] {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--snice-color-text);
+}
+
+[part~="node-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.6875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+/* Crisp 1px branch hairlines */
+[part~="children"]::before,
+[part~="branch"]::before,
+[part~="branch"]::after {
+  background: var(--snice-color-border);
+}
+
+/* Compact 20px AppKit bevel collapse toggle */
+[part~="toggle"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  bottom: -0.625rem;
+  border-radius: 9999px;
+  background: var(--snice-macos-control-bg);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-macos-control-shadow);
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="toggle"]:hover {
+  border-color: var(--snice-color-border-hover);
+  color: var(--snice-color-text);
+}
+
+[part~="toggle-collapsed"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 88%, white),
+    var(--snice-color-primary)
+  );
+  border-color: transparent;
+  color: hsl(0 0% 100%);
+}
+
+[part~="toggle-collapsed"]:hover {
+  border-color: transparent;
+  color: hsl(0 0% 100%);
+  filter: brightness(1.06);
+}
+
+[part~="toggle-icon"] {
+  color: inherit;
+}

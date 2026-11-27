@@ -1,0 +1,117 @@
+/* iOS 26+ Liquid Glass / Apple HIG — snice-org-chart
+ * Contacts directory / Freeform hierarchical canvas.
+ * 20px opaque grouped canvas, 16px elevated person cards (zero blur), hairline connectors,
+ * 24px circular expand/collapse pills with explicit white dark-safe collapsed state.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+[part~="base"] {
+  background: var(--snice-color-surface);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 20px;
+  padding: 1.75rem;
+}
+
+[part~="node"] {
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 16px;
+  padding: 0.75rem 1rem;
+  gap: 0.75rem;
+  box-shadow: var(--snice-shadow-sm);
+  transition: transform var(--snice-transition-fast) var(--snice-ease-spring),
+              box-shadow var(--snice-transition-fast) var(--snice-ease-out),
+              border-color var(--snice-transition-fast) var(--snice-ease-out);
+}
+
+[part~="node"]:hover {
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-shadow-md);
+}
+
+[part~="node"]:active {
+  transform: scale(0.97);
+}
+
+[part~="node"]:focus-visible,
+[part~="toggle"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+[part~="node-compact"] {
+  border-radius: 12px;
+  padding: 0.4375rem 0.75rem;
+}
+
+[part~="avatar-placeholder"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, var(--snice-color-surface-container-low));
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+[part~="node-name"] {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--snice-color-text);
+}
+
+[part~="node-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+/* Hairline tree connectors */
+[part~="children"]::before,
+[part~="branch"]::before,
+[part~="branch"]::after {
+  background: var(--snice-color-border);
+}
+
+/* 24px circular expand/collapse toggle pill */
+[part~="toggle"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  bottom: -0.75rem;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-xs);
+  color: var(--snice-color-primary);
+  transition: background-color var(--snice-transition-fast) var(--snice-ease-out),
+              border-color var(--snice-transition-fast) var(--snice-ease-out);
+}
+
+:host([direction="left-right"]) [part~="toggle"] {
+  bottom: auto;
+  left: auto;
+  right: -0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+[part~="toggle"]:hover {
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-primary);
+}
+
+[part~="toggle-collapsed"] {
+  background: var(--snice-color-primary);
+  border-color: transparent;
+  color: hsl(0 0% 100%);
+}
+
+[part~="toggle-collapsed"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 88%, white);
+  border-color: transparent;
+}
+
+[part~="toggle-icon"] {
+  color: inherit;
+}
