@@ -1,0 +1,129 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-spinner (Trackless WinUI 3 Indeterminate ProgressRing) */
+:host {
+  font-family: var(--snice-font-family);
+  --spinner-size: 2rem;
+  --spinner-stroke: 3px;
+  --spinner-color: var(--snice-color-primary);
+}
+
+:host([size="small"]) {
+  --spinner-size: 1.25rem;
+  --spinner-stroke: 2.5px;
+}
+
+:host([size="medium"]) {
+  --spinner-size: 2rem;
+  --spinner-stroke: 3px;
+}
+
+:host([size="large"]) {
+  --spinner-size: 3rem;
+  --spinner-stroke: 3.5px;
+}
+
+:host([size="xl"]) {
+  --spinner-size: 4rem;
+  --spinner-stroke: 4px;
+}
+
+:host([color="primary"]),
+:host([color="info"]) {
+  --spinner-color: var(--snice-color-primary);
+}
+
+:host([color="success"]) {
+  --spinner-color: var(--snice-color-success);
+}
+
+:host([color="warning"]) {
+  --spinner-color: var(--snice-color-warning);
+}
+
+:host([color="error"]) {
+  --spinner-color: var(--snice-color-danger);
+}
+
+[part~="circle"] {
+  animation-duration: 1.4s;
+  animation-timing-function: linear;
+}
+
+/* Iconic trackless WinUI 3 indeterminate ProgressRing */
+[part~="track"] {
+  stroke: transparent;
+  opacity: 0;
+}
+
+[part~="fill"] {
+  stroke: var(--spinner-color);
+  stroke-width: var(--spinner-stroke);
+  stroke-linecap: round;
+  animation-duration: 1.4s;
+  animation-timing-function: cubic-bezier(0.33, 0, 0.67, 1);
+}
+
+[part~="dot"] {
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="pulse"] {
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="bar"] {
+  border-radius: 2px;
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="ring-a"] {
+  border: 1px solid var(--snice-color-border);
+}
+
+[part~="orbit-dot"] {
+  box-shadow: none;
+}
+
+[part~="label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--snice-color-text-secondary);
+}
+
+:host([size="small"]) [part~="label"] {
+  font-size: 0.6875rem;
+}
+
+:host([size="large"]) [part~="label"] {
+  font-size: 0.8125rem;
+}
+
+:host([size="xl"]) [part~="label"] {
+  font-size: 0.875rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="circle"],
+  [part~="fill"],
+  [part~="dot"],
+  [part~="pulse"],
+  [part~="bar"],
+  [part~="ring"] {
+    animation: none;
+  }
+
+  [part~="fill"] {
+    stroke-dasharray: 0.65 0.35;
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="fill"] {
+    stroke: Highlight;
+  }
+
+  [part~="label"] {
+    color: CanvasText;
+  }
+}
