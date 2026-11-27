@@ -1,13 +1,27 @@
-/* macOS 26+ Liquid Glass / AppKit — snice-accordion (NSDisclosureGroup) */
+/* macOS 26+ Liquid Glass / AppKit — snice-accordion (System Settings Disclosure Box) */
+:host {
+  --accordion-border-radius: 10px;
+  --accordion-border-color: var(--snice-color-border-subtle);
+  --accordion-header-bg: var(--snice-color-background-element);
+  --accordion-content-bg: var(--snice-color-background-element);
+  --accordion-header-bg-hover: color-mix(in srgb, var(--snice-color-text) 4%, var(--snice-color-background-element));
+  --accordion-header-bg-active: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-background-element));
+  --accordion-header-color: var(--snice-color-text);
+  --accordion-content-color: var(--snice-color-text-secondary);
+  --accordion-animation-duration: 220ms;
+}
+
 [part~="base"] {
   border-radius: 10px;
-  background: var(--snice-color-background-element);
   border: 0.5px solid var(--snice-color-border);
+  background: var(--snice-color-background-element);
   overflow: hidden;
 }
 
-[part~="header"] {
-  min-height: 2rem;
-  font-size: 0.8125rem;
-  font-weight: 500;
+:host([variant="elevated"]) [part~="base"] {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+  gap: 0.5rem;
 }

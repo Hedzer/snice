@@ -1,0 +1,73 @@
+/* Material 3 Expressive — snice-accordion-item (56dp Tonal Header + Tonal Step-Up) */
+[part~="header"] {
+  min-height: 3.5rem;
+  padding: 0.875rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  color: var(--snice-color-text);
+  background: var(--accordion-header-bg, var(--snice-color-surface-container-low));
+  transition: background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+:host([open]) [part~="header"] {
+  background: var(--snice-color-surface-container);
+  font-weight: 600;
+}
+
+[part~="header"]:hover {
+  background: var(--accordion-header-bg-hover, color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-low)));
+}
+
+:host([open]) [part~="header"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container));
+}
+
+[part~="header"]:active {
+  background: var(--accordion-header-bg-active, color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface-container-low)));
+}
+
+[part~="header"]:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="icon"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--snice-color-text-secondary);
+  transition:
+    transform var(--accordion-animation-duration, 280ms) var(--snice-m3-spring-spatial, cubic-bezier(0.34, 1.38, 0.32, 1)),
+    color var(--snice-transition-fast, 150ms) ease;
+}
+
+:host([open]) [part~="icon"] {
+  color: var(--snice-color-primary);
+}
+
+[part~="content"] {
+  background: var(--accordion-content-bg, var(--snice-color-surface-container-low));
+  color: var(--snice-color-text-secondary);
+  transition: max-height var(--accordion-animation-duration, 280ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="content-inner"] {
+  padding: 0.875rem 1.25rem 1.125rem;
+  border-top: 1px solid var(--snice-color-border-subtle);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--snice-color-text-secondary);
+}
+
+:host([disabled]) {
+  opacity: 1;
+}
+
+:host([disabled]) [part~="header"] {
+  background: color-mix(in srgb, var(--snice-color-text) 4%, var(--snice-color-surface));
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+:host([disabled]) [part~="icon"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}

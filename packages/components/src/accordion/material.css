@@ -1,11 +1,27 @@
-/* Material 3 Expressive — snice-accordion */
+/* Material 3 Expressive — snice-accordion (Tonal Expansion Panels) */
+:host {
+  --accordion-border-radius: 16px;
+  --accordion-border-color: var(--snice-color-border-subtle);
+  --accordion-header-bg: var(--snice-color-surface-container-low);
+  --accordion-content-bg: var(--snice-color-surface-container-low);
+  --accordion-header-bg-hover: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-low));
+  --accordion-header-bg-active: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface-container-low));
+  --accordion-header-color: var(--snice-color-text);
+  --accordion-content-color: var(--snice-color-text-secondary);
+  --accordion-animation-duration: 280ms;
+}
+
 [part~="base"] {
   border-radius: 16px;
-  background: var(--snice-color-surface-container-low);
   border: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-low);
   overflow: hidden;
 }
 
-[part~="header"] {
-  min-height: 3rem;
+:host([variant="elevated"]) [part~="base"] {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+  gap: 0.75rem;
 }

@@ -1,13 +1,27 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-accordion (WinUI Expander) */
+/* Windows 11 Fluent 2 / WinUI 3 — snice-accordion (WinUI 3 Expander Group) */
+:host {
+  --accordion-border-radius: 4px;
+  --accordion-border-color: var(--snice-color-border);
+  --accordion-header-bg: var(--snice-color-surface-container-lowest);
+  --accordion-content-bg: var(--snice-color-surface-container-low);
+  --accordion-header-bg-hover: var(--snice-win-control-bg-hover);
+  --accordion-header-bg-active: var(--snice-win-control-bg-pressed);
+  --accordion-header-color: var(--snice-color-text);
+  --accordion-content-color: var(--snice-color-text-secondary);
+  --accordion-animation-duration: 187ms;
+}
+
 [part~="base"] {
   border-radius: 4px;
+  border: 1px solid var(--snice-color-border);
   background: var(--snice-color-surface-container-lowest);
-  border: 1px solid var(--snice-color-border-subtle);
   overflow: hidden;
 }
 
-[part~="header"] {
-  min-height: 2.75rem;
-  font-size: 0.875rem;
-  font-weight: 400;
+:host([variant="elevated"]) [part~="base"] {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+  gap: 4px;
 }

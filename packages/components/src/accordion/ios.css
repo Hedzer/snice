@@ -1,13 +1,27 @@
-/* iOS 26+ Liquid Glass — snice-accordion (iOS Grouped Inset Disclosure) */
+/* iOS 26+ Liquid Glass — snice-accordion (Inset Grouped Disclosure List) */
+:host {
+  --accordion-border-radius: 18px;
+  --accordion-border-color: var(--snice-color-border-subtle);
+  --accordion-header-bg: var(--snice-color-surface-container-high);
+  --accordion-content-bg: var(--snice-color-surface-container-high);
+  --accordion-header-bg-hover: color-mix(in srgb, var(--snice-color-text) 4%, var(--snice-color-surface-container-high));
+  --accordion-header-bg-active: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-high));
+  --accordion-header-color: var(--snice-color-text);
+  --accordion-content-color: var(--snice-color-text-secondary);
+  --accordion-animation-duration: 320ms;
+}
+
 [part~="base"] {
   border-radius: 18px;
-  background: var(--snice-color-surface-container-high);
   border: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-high);
   overflow: hidden;
 }
 
-[part~="header"] {
-  min-height: 2.75rem;
-  font-weight: 600;
-  letter-spacing: -0.012em;
+:host([variant="elevated"]) [part~="base"] {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+  gap: 0.75rem;
 }

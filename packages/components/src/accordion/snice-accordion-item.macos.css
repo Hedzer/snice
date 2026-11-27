@@ -1,0 +1,67 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-accordion-item (Compact 34px Desktop Row) */
+[part~="header"] {
+  min-height: 2.125rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--snice-color-text);
+  background: var(--accordion-header-bg, var(--snice-color-background-element));
+  transition: background-color var(--snice-transition-fast, 140ms) ease;
+}
+
+:host([open]) [part~="header"] {
+  font-weight: 600;
+}
+
+[part~="header"]:hover {
+  background: var(--accordion-header-bg-hover, color-mix(in srgb, var(--snice-color-text) 4%, var(--snice-color-background-element)));
+}
+
+[part~="header"]:active {
+  background: var(--accordion-header-bg-active, color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-background-element)));
+}
+
+[part~="header"]:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2.5px var(--snice-focus-ring-color);
+}
+
+[part~="icon"] {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--snice-color-text-tertiary);
+  transition:
+    transform var(--accordion-animation-duration, 220ms) var(--snice-ease-out, cubic-bezier(0.22, 0.8, 0.2, 1)),
+    color var(--snice-transition-fast, 140ms) ease;
+}
+
+:host([open]) [part~="icon"] {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="content"] {
+  background: var(--accordion-content-bg, var(--snice-color-background-element));
+  color: var(--snice-color-text-secondary);
+  transition: max-height var(--accordion-animation-duration, 220ms) var(--snice-ease-out, cubic-bezier(0.22, 0.8, 0.2, 1));
+}
+
+[part~="content-inner"] {
+  padding: 0.625rem 0.875rem 0.75rem;
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--snice-color-text-secondary);
+}
+
+:host([disabled]) {
+  opacity: 1;
+}
+
+:host([disabled]) [part~="header"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+:host([disabled]) [part~="icon"] {
+  color: color-mix(in srgb, var(--snice-color-text) 28%, transparent);
+}
