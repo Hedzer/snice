@@ -1,10 +1,103 @@
-/* Material 3 Expressive — snice-progress */
+/* Android Material 3 Expressive — snice-progress (M3 Linear with Stop Indicator + Rounded-Cap Circular) */
+:host {
+  font-family: var(--snice-font-family);
+  --progress-height: 0.25rem;
+  --progress-radius: 9999px;
+  --progress-bg: var(--snice-m3-secondary-container);
+  --progress-track-opacity: 1;
+}
+
+:host([size="small"]) {
+  --progress-height: 0.25rem;
+}
+
+:host([size="large"]) {
+  --progress-height: 0.5rem;
+}
+
 [part~="base"] {
   border-radius: 9999px;
-  background: var(--snice-m3-secondary-container);
+  background: var(--progress-bg);
+}
+
+/* Signature M3 Expressive 4px trailing stop-indicator dot on unlabeled determinate linear bars */
+[part~="base"]::after {
+  content: '';
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--progress-color, var(--snice-color-primary));
+  pointer-events: none;
+}
+
+:host([variant="circular"]) [part~="base"]::after,
+:host([indeterminate]) [part~="base"]::after,
+:host([show-label]) [part~="base"]::after {
+  content: none;
+  display: none;
+}
+
+[part~="base-with-label"] {
+  min-height: 1.375rem;
+}
+
+:host([variant="circular"]) [part~="base"] {
+  background: transparent;
+  border-radius: 0;
 }
 
 [part~="bar"] {
   border-radius: 9999px;
-  background: var(--snice-color-primary);
+  background: var(--progress-color, var(--snice-color-primary));
+  transition: width 300ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="bar-indeterminate"] {
+  border-radius: 9999px;
+}
+
+[part~="circle-bg"] {
+  stroke: var(--snice-m3-secondary-container);
+  opacity: 1;
+}
+
+[part~="circle-bar"] {
+  stroke: var(--progress-color, var(--snice-color-primary));
+  stroke-linecap: round;
+  transition: stroke-dashoffset 300ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-m3-on-primary, var(--snice-color-text-inverse));
+}
+
+:host([color="success"]) [part~="label"],
+:host([color="warning"]) [part~="label"],
+:host([color="error"]) [part~="label"] {
+  color: var(--snice-color-text-inverse);
+}
+
+:host([color="info"]) [part~="label"] {
+  color: hsl(0 0% 100%);
+}
+
+:host([variant="circular"]) [part~="label"] {
+  color: var(--snice-color-text);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="bar"],
+  [part~="circle-bar"] {
+    transition-duration: 0.01ms;
+  }
 }

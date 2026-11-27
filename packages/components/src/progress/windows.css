@@ -1,11 +1,104 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-progress (WinUI 3px ProgressBar) */
+/* Windows 11 Fluent 2 / WinUI 3 — snice-progress (3px WinUI ProgressBar + Circular ProgressRing) */
+:host {
+  font-family: var(--snice-font-family);
+  --progress-height: 3px;
+  --progress-radius: 9999px;
+  --progress-bg: var(--snice-color-border-hover);
+  --progress-track-opacity: 1;
+}
+
+:host([size="small"]) {
+  --progress-height: 2px;
+}
+
+:host([size="large"]) {
+  --progress-height: 5px;
+}
+
 [part~="base"] {
-  height: 3px;
   border-radius: 9999px;
-  background: var(--snice-color-border-subtle);
+  background: var(--progress-bg);
+}
+
+[part~="base-with-label"] {
+  min-height: 1.25rem;
+}
+
+:host([variant="circular"]) [part~="base"] {
+  background: transparent;
+  border-radius: 0;
 }
 
 [part~="bar"] {
   border-radius: 9999px;
-  background: var(--snice-color-primary);
+  background: var(--progress-color, var(--snice-color-primary));
+  transition: width 187ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="bar-indeterminate"] {
+  border-radius: 9999px;
+}
+
+[part~="circle-bg"] {
+  stroke: var(--snice-color-border-hover);
+  opacity: 1;
+}
+
+[part~="circle-bar"] {
+  stroke: var(--progress-color, var(--snice-color-primary));
+  stroke-linecap: round;
+  transition: stroke-dashoffset 187ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+}
+
+:host([color="info"]) [part~="label"] {
+  color: hsl(0 0% 100%);
+}
+
+:host([variant="circular"]) [part~="label"] {
+  color: var(--snice-color-text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="bar"],
+  [part~="circle-bar"] {
+    transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    border: 1px solid CanvasText;
+  }
+
+  :host([variant="circular"]) [part~="base"] {
+    background: transparent;
+    border: none;
+  }
+
+  [part~="bar"] {
+    background: Highlight;
+  }
+
+  [part~="circle-bg"] {
+    stroke: CanvasText;
+  }
+
+  [part~="circle-bar"] {
+    stroke: Highlight;
+  }
+
+  [part~="label"] {
+    color: CanvasText;
+  }
 }

@@ -1,11 +1,86 @@
-/* macOS 26+ Liquid Glass / AppKit — snice-progress (NSProgressIndicator) */
+/* macOS 26 Tahoe Liquid Glass / AppKit — snice-progress (NSProgressIndicator Linear + Circular) */
+:host {
+  font-family: var(--snice-font-family);
+  --progress-height: 6px;
+  --progress-radius: 9999px;
+  --progress-bg: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  --progress-track-opacity: 1;
+}
+
+:host([size="small"]) {
+  --progress-height: 4px;
+}
+
+:host([size="large"]) {
+  --progress-height: 8px;
+}
+
 [part~="base"] {
-  height: 6px;
   border-radius: 9999px;
-  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+  background: var(--progress-bg);
+  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.14);
+}
+
+[part~="base-with-label"] {
+  min-height: 1.25rem;
+}
+
+:host([variant="circular"]) [part~="base"] {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 [part~="bar"] {
   border-radius: 9999px;
-  background: var(--snice-color-primary);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 14%, var(--progress-color, var(--snice-color-primary))) 0%,
+    var(--progress-color, var(--snice-color-primary)) 100%
+  );
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.28);
+  transition: width 220ms var(--snice-ease-out);
+}
+
+[part~="bar-indeterminate"] {
+  border-radius: 9999px;
+}
+
+[part~="circle-bg"] {
+  stroke: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+  opacity: 1;
+}
+
+[part~="circle-bar"] {
+  stroke: var(--progress-color, var(--snice-color-primary));
+  stroke-linecap: round;
+  transition: stroke-dashoffset 220ms var(--snice-ease-out);
+}
+
+[part~="label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: hsl(0 0% 100%);
+  text-shadow: 0 1px 1.5px hsl(0 0% 0% / 0.35);
+}
+
+:host([color="warning"]) [part~="label"] {
+  color: hsl(26 42% 10%);
+  text-shadow: none;
+}
+
+:host([variant="circular"]) [part~="label"] {
+  color: var(--snice-color-text);
+  text-shadow: none;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="bar"],
+  [part~="circle-bar"] {
+    transition-duration: 0.01ms;
+  }
 }

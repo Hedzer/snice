@@ -1,10 +1,80 @@
-/* iOS 26+ Liquid Glass — snice-progress */
+/* iOS 26+ Liquid Glass — snice-progress (UIProgressView Linear Capsule + Circular Progress) */
+:host {
+  font-family: var(--snice-font-family);
+  --progress-height: 0.25rem;
+  --progress-radius: 9999px;
+  --progress-bg: hsl(240 5% 50% / 0.22);
+  --progress-track-opacity: 1;
+}
+
+:host([size="small"]) {
+  --progress-height: 0.1875rem;
+}
+
+:host([size="large"]) {
+  --progress-height: 0.375rem;
+}
+
 [part~="base"] {
   border-radius: 9999px;
-  background: hsl(240 5% 50% / 0.18);
+  background: var(--progress-bg);
+}
+
+[part~="base-with-label"] {
+  min-height: 1.375rem;
+}
+
+:host([variant="circular"]) [part~="base"] {
+  background: transparent;
+  border-radius: 0;
 }
 
 [part~="bar"] {
   border-radius: 9999px;
-  background: var(--snice-color-primary);
+  background: var(--progress-color, var(--snice-color-primary));
+  transition: width 320ms var(--snice-ease-out);
+}
+
+[part~="bar-indeterminate"] {
+  border-radius: 9999px;
+}
+
+[part~="circle-bg"] {
+  stroke: hsl(240 5% 50% / 0.28);
+  opacity: 1;
+}
+
+[part~="circle-bar"] {
+  stroke: var(--progress-color, var(--snice-color-primary));
+  stroke-linecap: round;
+  transition: stroke-dashoffset 320ms var(--snice-ease-out);
+}
+
+[part~="label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: hsl(0 0% 100%);
+  text-shadow: 0 1px 2px hsl(0 0% 0% / 0.35);
+}
+
+:host([color="warning"]) [part~="label"] {
+  color: hsl(24 40% 10%);
+  text-shadow: none;
+}
+
+:host([variant="circular"]) [part~="label"] {
+  color: var(--snice-color-text);
+  text-shadow: none;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="bar"],
+  [part~="circle-bar"] {
+    transition-duration: 0.01ms;
+  }
 }
