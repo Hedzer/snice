@@ -1,0 +1,98 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-location
+ * Fluent Maps / Calendar Control Row: crisp 8px corners, 1px top-lit Fluent
+ * strokes, 4px accent-tinted pin tile, Segoe UI Variable & Cascadia Code
+ * tabular coordinates, 100ms fast-out control fills, and dual-stroke focus.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  box-sizing: border-box;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--snice-border-radius-lg, 8px);
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+}
+
+:host [part~="base-clickable"] {
+  min-height: 2.5rem;
+  background: var(--snice-win-control-bg);
+  transition:
+    background-color 100ms cubic-bezier(0, 0, 0, 1),
+    border-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="base-clickable"]:hover {
+  opacity: 1;
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-color-border-hover);
+}
+
+:host [part~="base-clickable"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="base-clickable"]:focus-visible {
+  outline: none;
+  border-radius: var(--snice-border-radius-lg, 8px);
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="icon"] {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-top: 0;
+  border-radius: var(--snice-border-radius-md, 4px);
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  color: var(--snice-color-primary);
+  font-size: 0.9375rem;
+}
+
+:host [part~="name"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+  line-height: 1.35;
+}
+
+:host [part~="address"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+  line-height: 1.4;
+}
+
+:host [part~="coordinates"] {
+  font-family: var(--snice-font-family-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+  color: var(--snice-color-primary);
+}
+
+:host [part~="map"] {
+  border-radius: 4px;
+  border: 1px solid var(--snice-color-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="base-clickable"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="base-clickable"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}
