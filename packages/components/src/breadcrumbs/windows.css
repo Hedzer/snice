@@ -1,11 +1,89 @@
 /* Windows 11 Fluent 2 / WinUI 3 — snice-breadcrumbs (WinUI BreadcrumbBar) */
+:host {
+  --breadcrumb-font-size: 0.875rem;
+  --breadcrumb-spacing: 0.1875rem;
+  --breadcrumb-color: var(--snice-color-text-secondary);
+  --breadcrumb-hover-color: var(--snice-color-text);
+  --breadcrumb-active-color: var(--snice-color-text);
+  --breadcrumb-separator-color: var(--snice-color-text-tertiary);
+}
+
+:host([size="small"]) {
+  --breadcrumb-font-size: 0.75rem;
+  --breadcrumb-spacing: 0.125rem;
+}
+
+:host([size="large"]) {
+  --breadcrumb-font-size: 1.0625rem;
+  --breadcrumb-spacing: 0.25rem;
+}
+
 [part~="link"] {
+  margin: 0;
+  padding: 0.1875rem 0.5rem;
   border-radius: 4px;
-  padding: 0.25rem 0.5rem;
   color: var(--snice-color-text-secondary);
+  font-weight: 400;
+  text-decoration: none;
+  transition:
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
 }
 
 [part~="link"]:hover {
   background: var(--snice-color-overlay-hover);
   color: var(--snice-color-text);
+  text-decoration: none;
+}
+
+[part~="link"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="link"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+[part~="text"],
+[part~="text-current"] {
+  margin: 0;
+  padding: 0.1875rem 0.5rem;
+}
+
+[part~="text-current"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="ellipsis"] {
+  margin: 0;
+  min-width: 1.75rem;
+  min-height: 1.625rem;
+  justify-content: center;
+  padding: 0.1875rem 0.375rem;
+  border-radius: 4px;
+  color: var(--snice-color-text-secondary);
+  background: color-mix(in srgb, var(--snice-color-text) 4%, transparent);
+  transition: background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
+}
+
+[part~="ellipsis"]:hover {
+  background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-text);
+}
+
+[part~="ellipsis"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+[part~="ellipsis"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+[part~="separator"] {
+  color: var(--snice-color-text-tertiary);
+  font-size: 0.85em;
 }

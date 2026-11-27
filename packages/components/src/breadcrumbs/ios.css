@@ -1,12 +1,95 @@
-/* iOS 26+ Liquid Glass — snice-breadcrumbs */
+/* iOS 26+ Liquid Glass — snice-breadcrumbs (Files Path Trail) */
+:host {
+  --breadcrumb-font-size: 0.9375rem;
+  --breadcrumb-spacing: 0.25rem;
+  --breadcrumb-color: var(--snice-color-primary);
+  --breadcrumb-hover-color: var(--snice-color-primary);
+  --breadcrumb-active-color: var(--snice-color-text);
+  --breadcrumb-separator-color: var(--snice-color-text-tertiary);
+}
+
+:host([size="small"]) {
+  --breadcrumb-font-size: 0.8125rem;
+  --breadcrumb-spacing: 0.1875rem;
+}
+
+:host([size="large"]) {
+  --breadcrumb-font-size: 1.0625rem;
+  --breadcrumb-spacing: 0.3125rem;
+}
+
 [part~="link"] {
+  margin: 0;
+  padding: 0.1875rem 0.5625rem;
   border-radius: 9999px;
-  padding: 0.25rem 0.625rem;
   color: var(--snice-color-primary);
   font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition:
+    background-color var(--snice-transition-fast, 180ms) ease,
+    color var(--snice-transition-fast, 180ms) ease,
+    opacity var(--snice-transition-fast, 180ms) ease,
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, ease);
+}
+
+[part~="link"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  color: var(--snice-color-primary);
+  text-decoration: none;
+}
+
+[part~="link"]:active {
+  opacity: 0.68;
+  transform: scale(0.96);
+}
+
+[part~="link"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="text"],
+[part~="text-current"] {
+  margin: 0;
+  padding: 0.1875rem 0.375rem;
 }
 
 [part~="text-current"] {
   font-weight: 600;
+  letter-spacing: -0.012em;
   color: var(--snice-color-text);
+}
+
+[part~="ellipsis"] {
+  margin: 0;
+  min-width: 1.875rem;
+  min-height: 1.625rem;
+  justify-content: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  background: var(--snice-ios-glass-clear-bg);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-primary);
+  transition:
+    background-color var(--snice-transition-fast, 180ms) ease,
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, ease);
+}
+
+[part~="ellipsis"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+}
+
+[part~="ellipsis"]:active {
+  transform: scale(0.94);
+}
+
+[part~="ellipsis"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="separator"] {
+  color: var(--snice-color-text-tertiary);
+  opacity: 0.72;
 }

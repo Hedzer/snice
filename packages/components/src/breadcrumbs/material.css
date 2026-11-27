@@ -1,6 +1,89 @@
-/* Material 3 Expressive — snice-breadcrumbs */
+/* Material 3 Expressive — snice-breadcrumbs (Tonal Pill Path Trail) */
+:host {
+  --breadcrumb-font-size: 0.875rem;
+  --breadcrumb-spacing: 0.1875rem;
+  --breadcrumb-color: var(--snice-color-primary);
+  --breadcrumb-hover-color: var(--snice-color-primary);
+  --breadcrumb-active-color: var(--snice-color-text);
+  --breadcrumb-separator-color: var(--snice-color-text-tertiary);
+}
+
+:host([size="small"]) {
+  --breadcrumb-font-size: 0.75rem;
+  --breadcrumb-spacing: 0.125rem;
+}
+
+:host([size="large"]) {
+  --breadcrumb-font-size: 1rem;
+  --breadcrumb-spacing: 0.25rem;
+}
+
 [part~="link"] {
+  margin: 0;
+  padding: 0.1875rem 0.625rem;
   border-radius: 9999px;
-  padding: 0.25rem 0.75rem;
   color: var(--snice-color-primary);
+  font-weight: 500;
+  letter-spacing: 0.008em;
+  text-decoration: none;
+  transition:
+    background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    border-radius var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    color var(--snice-transition-fast, 150ms) ease;
+}
+
+[part~="link"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+  color: var(--snice-color-primary);
+  text-decoration: none;
+}
+
+[part~="link"]:active {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+[part~="link"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="text"],
+[part~="text-current"] {
+  margin: 0;
+  padding: 0.1875rem 0.5rem;
+}
+
+[part~="text-current"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="ellipsis"] {
+  margin: 0;
+  padding: 0.1875rem 0.5625rem;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text-secondary);
+  transition:
+    background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    border-radius var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+[part~="ellipsis"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-high));
+  color: var(--snice-color-text);
+}
+
+[part~="ellipsis"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+[part~="ellipsis"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="separator"] {
+  color: var(--snice-color-text-tertiary);
 }
