@@ -1,0 +1,218 @@
+/* Android Material 3 Expressive — snice-audio-recorder
+ * Pixel Recorder deck: 24px tonal container, 8px tonal status chip, 12px tonal
+ * waveform well, 48dp circular-to-squircle press-morphing Record FAB, exact
+ * M3 12%/38% disabled states, and dark-mode T80-on-ink compliance.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 24px;
+  padding: 12px 16px;
+  gap: 12px;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+/* Tonal Status Chip */
+:host [part~="state"] {
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+:host [part~="state-inactive"] {
+  background: var(--snice-color-surface-container-highest);
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="state-recording"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 16%, var(--snice-color-surface-container));
+  color: var(--snice-color-danger);
+}
+
+:host [part~="state-paused"] {
+  background: color-mix(in srgb, var(--snice-color-warning) 18%, var(--snice-color-surface-container));
+  color: var(--snice-color-warning);
+}
+
+/* Timer */
+:host [part~="timer"] {
+  font-size: 1rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+/* Tonal Waveform & Playback Well */
+:host [part~="visualizer"],
+:host [part~="progress"] {
+  height: 36px;
+  border-radius: 12px;
+  background: var(--snice-color-surface-container-low);
+  padding: 4px 8px;
+  box-sizing: border-box;
+}
+
+:host [part~="progress"] {
+  padding: 0;
+}
+
+:host [part~="progress"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="bar"] {
+  min-width: 2px;
+  max-width: 3px;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+:host [part~="fill"] {
+  background: var(--snice-m3-primary-container);
+  opacity: 0.85;
+}
+
+/* Expressive Press-Morphing Controls */
+:host [part~="controls"] {
+  gap: 8px;
+}
+
+:host [part~="button"] {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  transition:
+    border-radius var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.42, 1.4, 0.24, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="button"]:hover {
+  transform: none;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="button"]:active {
+  transform: none;
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="button-record"] {
+  width: 48px;
+  height: 48px;
+  background: var(--snice-color-danger);
+  color: var(--snice-color-text-inverse);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="button-record"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text-inverse) 8%, var(--snice-color-danger));
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="button-record"]:active {
+  border-radius: var(--snice-m3-shape-morph-selected, 12px);
+}
+
+:host [part~="button-play"] {
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary, var(--snice-color-text-inverse));
+}
+
+:host [part~="button-play"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-primary, white) 8%, var(--snice-color-primary));
+}
+
+:host [part~="button-pause"] {
+  background: var(--snice-color-warning);
+  color: var(--snice-color-text-inverse);
+}
+
+:host [part~="button-stop"] {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+}
+
+:host [part~="button-cancel"] {
+  background: transparent;
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text);
+  box-shadow: none;
+}
+
+:host [part~="button-cancel"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  box-shadow: none;
+}
+
+/* Exact Material 3 disabled spec: opacity 1, 12% surface / 38% ink */
+:host [part~="button"]:disabled {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  border-color: transparent;
+  border-radius: 9999px;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+:host [part~="icon"] {
+  width: 22px;
+  height: 22px;
+}
+
+/* Adaptive Error Callout */
+:host [part~="error-text"] {
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--snice-color-danger) 16%, var(--snice-color-surface-container));
+  border: 1px solid var(--snice-color-danger);
+  color: var(--snice-color-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"],
+  :host [part~="bar"],
+  :host [part~="fill"],
+  :host [part~="state-icon"] {
+    transition: none;
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="visualizer"],
+  :host [part~="progress"],
+  :host [part~="state"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="button-record"],
+  :host [part~="button-play"] {
+    background: Highlight;
+    color: HighlightText;
+    box-shadow: none;
+  }
+
+  :host [part~="button"]:disabled {
+    color: GrayText;
+    border: 1px solid GrayText;
+  }
+
+  :host [part~="bar"] {
+    background: Highlight;
+  }
+}

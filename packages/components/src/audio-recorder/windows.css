@@ -1,0 +1,217 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-audio-recorder
+ * Sound Recorder bar: 8px Mica deck, 4px status badge & waveform well, 36px
+ * circular Fluent red record button, 32px 4px-radius secondary controls,
+ * --snice-win-on-accent dark-mode ink, dual-stroke focus, zero bounce, WHCM.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 8px;
+  padding: 8px 12px;
+  gap: 10px;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+/* Fluent Status Badge */
+:host [part~="state"] {
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+:host [part~="state-inactive"] {
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="state-recording"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 14%, transparent);
+  color: var(--snice-color-danger);
+}
+
+:host [part~="state-paused"] {
+  background: color-mix(in srgb, var(--snice-color-warning) 16%, transparent);
+  color: var(--snice-color-warning);
+}
+
+/* Segoe UI Variable Timer */
+:host [part~="timer"] {
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+/* Waveform & Playback Well */
+:host [part~="visualizer"],
+:host [part~="progress"] {
+  height: 32px;
+  border-radius: 4px;
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
+  padding: 4px 6px;
+  box-sizing: border-box;
+}
+
+:host [part~="progress"] {
+  padding: 0;
+}
+
+:host [part~="progress"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="bar"] {
+  min-width: 2px;
+  max-width: 3px;
+  border-radius: 2px;
+  background: var(--snice-color-primary);
+}
+
+:host [part~="fill"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 22%, transparent);
+  opacity: 1;
+}
+
+/* Fluent 2 Controls — strictly zero bounce */
+:host [part~="controls"] {
+  gap: 6px;
+}
+
+:host [part~="button"] {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  transition:
+    background-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1),
+    border-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1),
+    filter var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="button"]:hover {
+  transform: none;
+  filter: brightness(1.06);
+}
+
+:host [part~="button"]:active {
+  transform: none;
+  filter: brightness(0.94);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="button-record"] {
+  width: 36px;
+  height: 36px;
+  box-sizing: border-box;
+  border-radius: 9999px;
+  background: var(--snice-color-danger);
+  color: var(--snice-win-on-accent);
+  border: 2px solid var(--snice-color-surface-container-lowest);
+  box-shadow: 0 0 0 1px var(--snice-color-border-hover);
+}
+
+:host [part~="button-play"] {
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent);
+}
+
+:host [part~="button-pause"] {
+  background: var(--snice-color-warning);
+  color: var(--snice-win-on-accent);
+}
+
+:host [part~="button-stop"],
+:host [part~="button-cancel"] {
+  background: var(--snice-win-control-bg);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+}
+
+:host [part~="button-stop"]:hover,
+:host [part~="button-cancel"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  filter: none;
+}
+
+:host [part~="button-stop"]:active,
+:host [part~="button-cancel"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  border-bottom-color: var(--snice-win-stroke-top);
+  filter: none;
+}
+
+:host [part~="button"]:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  filter: none;
+}
+
+:host [part~="icon"] {
+  width: 18px;
+  height: 18px;
+}
+
+/* Adaptive Error Banner */
+:host [part~="error-text"] {
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--snice-color-danger) 14%, var(--snice-color-surface-container-lowest));
+  border: 1px solid var(--snice-color-danger);
+  color: var(--snice-color-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"],
+  :host [part~="bar"],
+  :host [part~="fill"],
+  :host [part~="state-icon"] {
+    transition: none;
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="visualizer"],
+  :host [part~="progress"],
+  :host [part~="state"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="button-record"],
+  :host [part~="button-play"] {
+    background: Highlight;
+    color: HighlightText;
+    box-shadow: none;
+  }
+
+  :host [part~="button-stop"],
+  :host [part~="button-cancel"] {
+    background: Canvas;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="button"]:focus-visible,
+  :host [part~="progress"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  :host [part~="bar"] {
+    background: Highlight;
+  }
+}

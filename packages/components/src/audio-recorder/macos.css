@@ -1,0 +1,221 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-audio-recorder
+ * Compact desktop Voice Memos toolbar: 12px AppKit container, 0.5px hairlines,
+ * 28px waveform well with crimson bars, 32px crimson dual-ring record button,
+ * AppKit focus halo, and explicit white dark-mode button icons.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 12px;
+  padding: 8px 12px;
+  gap: 10px;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+/* Compact Status Capsule */
+:host [part~="state"] {
+  border-radius: 9999px;
+  padding: 2.5px 8px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+:host [part~="state-inactive"] {
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="state-recording"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 15%, transparent);
+  color: var(--snice-color-danger);
+}
+
+:host [part~="state-paused"] {
+  background: color-mix(in srgb, var(--snice-color-warning) 18%, transparent);
+  color: var(--snice-color-warning);
+}
+
+/* Compact SF Pro Timer */
+:host [part~="timer"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  min-width: 3.25rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+/* Compact Waveform & Playback Well */
+:host [part~="visualizer"],
+:host [part~="progress"] {
+  height: 28px;
+  border-radius: 6px;
+  background: var(--snice-color-surface-container);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  padding: 3px 6px;
+  box-sizing: border-box;
+}
+
+:host [part~="progress"] {
+  padding: 0;
+}
+
+:host [part~="progress"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="bar"] {
+  min-width: 2px;
+  max-width: 2.5px;
+  border-radius: 9999px;
+  background: var(--snice-color-danger);
+}
+
+:host [part~="fill"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 24%, transparent);
+  opacity: 1;
+}
+
+/* Compact Desktop Controls */
+:host [part~="controls"] {
+  gap: 6px;
+}
+
+:host [part~="button"] {
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  transition:
+    background-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out),
+    filter var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out),
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="button"]:hover {
+  transform: none;
+  filter: brightness(1.06);
+}
+
+:host [part~="button"]:active {
+  transform: scale(0.95);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="button-record"] {
+  width: 32px;
+  height: 32px;
+  box-sizing: border-box;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 14%, var(--snice-color-danger)) 0%,
+    var(--snice-color-danger) 100%
+  );
+  color: hsl(0 0% 100%);
+  border: 2px solid var(--snice-color-background-element);
+  box-shadow: 0 0 0 1.5px var(--snice-color-danger);
+}
+
+:host [part~="button-play"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 16%, var(--snice-color-primary)) 0%,
+    var(--snice-color-primary) 100%
+  );
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="button-pause"] {
+  background: var(--snice-color-warning);
+  color: hsl(0 0% 10%);
+}
+
+:host [part~="button-stop"] {
+  background: var(--snice-color-neutral);
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="button-cancel"] {
+  border-radius: 6px;
+  background: var(--snice-macos-control-bg);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-macos-control-shadow);
+  color: var(--snice-color-text);
+}
+
+:host [part~="button-cancel"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 6%, var(--snice-macos-control-bg));
+  filter: none;
+}
+
+:host [part~="button"]:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  filter: none;
+  transform: none;
+}
+
+:host [part~="icon"] {
+  width: 16px;
+  height: 16px;
+}
+
+/* Adaptive Error Banner */
+:host [part~="error-text"] {
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--snice-color-danger) 14%, var(--snice-color-background-element));
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-danger) 40%, transparent);
+  color: var(--snice-color-danger);
+  font-size: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"],
+  :host [part~="bar"],
+  :host [part~="fill"],
+  :host [part~="state-icon"] {
+    transition: none;
+    animation: none;
+  }
+
+  :host [part~="button"]:active {
+    transform: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :host [part~="base"],
+  :host [part~="visualizer"],
+  :host [part~="progress"] {
+    border-width: 1px;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="visualizer"],
+  :host [part~="progress"],
+  :host [part~="state"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="button-record"],
+  :host [part~="button-play"] {
+    background: Highlight;
+    color: HighlightText;
+    box-shadow: none;
+  }
+
+  :host [part~="bar"] {
+    background: Highlight;
+  }
+}
