@@ -62,14 +62,14 @@
 
   /* Liquid Glass Materials — Regular Glass (navigation, menus, sheets, popovers)
      vs Clear Glass (controls floating over rich media / active glass lens). */
-  --snice-ios-glass-regular-bg: hsl(0 0% 100% / 0.72);
+  --snice-ios-glass-regular-bg: linear-gradient(180deg, hsl(0 0% 100% / 0.82) 0%, hsl(220 18% 97% / 0.62) 100%);
   --snice-ios-glass-clear-bg: hsl(0 0% 100% / 0.36);
   --snice-ios-glass-tinted-bg: color-mix(in srgb, var(--snice-color-primary) 16%, hsl(0 0% 100% / 0.68));
-  --snice-ios-glass-blur: blur(24px) saturate(190%);
+  --snice-ios-glass-blur: blur(22px) saturate(185%);
   --snice-ios-glass-clear-blur: blur(14px) saturate(175%);
-  --snice-ios-glass-border: hsl(0 0% 100% / 0.72);
-  --snice-ios-glass-rim: inset 0 1px 0 0 hsl(0 0% 100% / 0.85), inset 0 -0.5px 0 0 hsl(0 0% 0% / 0.08), 0 0 0 0.5px hsl(0 0% 0% / 0.06);
-  --snice-ios-glass-shadow: 0 10px 32px -8px hsl(0 0% 0% / 0.16), 0 2px 8px -2px hsl(0 0% 0% / 0.08);
+  --snice-ios-glass-border: hsl(0 0% 0% / 0.08);
+  --snice-ios-glass-rim: inset 0 1px 0.5px hsl(0 0% 100% / 0.95), inset 0 -0.5px 0.5px hsl(220 20% 20% / 0.08), inset 0 0 0 0.75px hsl(0 0% 100% / 0.58);
+  --snice-ios-glass-shadow: 0 2px 8px -2px hsl(0 0% 0% / 0.09), 0 0.5px 1.5px hsl(0 0% 0% / 0.06);
 
   /* Ambient iOS Shadows */
   --snice-shadow-xs: 0 1px 2px hsl(0 0% 0% / 0.05);
@@ -115,12 +115,12 @@
   --snice-color-border-hover: hsl(240 6% 60% / 0.46);
   --snice-color-border-subtle: hsl(240 6% 45% / 0.22);
 
-  --snice-ios-glass-regular-bg: hsl(240 6% 16% / 0.68);
-  --snice-ios-glass-clear-bg: hsl(240 6% 24% / 0.36);
-  --snice-ios-glass-tinted-bg: color-mix(in srgb, var(--snice-color-primary) 24%, hsl(240 6% 16% / 0.68));
-  --snice-ios-glass-border: hsl(0 0% 100% / 0.22);
-  --snice-ios-glass-rim: inset 0 1px 0 0 hsl(0 0% 100% / 0.26), inset 0 -0.5px 0 0 hsl(0 0% 0% / 0.4), 0 0 0 0.5px hsl(0 0% 100% / 0.1);
-  --snice-ios-glass-shadow: 0 14px 40px -8px hsl(0 0% 0% / 0.65), 0 2px 10px -2px hsl(0 0% 0% / 0.4);
+  --snice-ios-glass-regular-bg: linear-gradient(180deg, hsl(0 0% 100% / 0.16) 0%, hsl(0 0% 100% / 0.09) 100%);
+  --snice-ios-glass-clear-bg: hsl(0 0% 100% / 0.1);
+  --snice-ios-glass-tinted-bg: color-mix(in srgb, var(--snice-color-primary) 24%, hsl(0 0% 100% / 0.08));
+  --snice-ios-glass-border: hsl(0 0% 100% / 0.16);
+  --snice-ios-glass-rim: inset 0 1px 0.5px hsl(0 0% 100% / 0.34), inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.45), inset 0 0 0 0.5px hsl(0 0% 100% / 0.08);
+  --snice-ios-glass-shadow: 0 4px 16px -4px hsl(0 0% 0% / 0.55), 0 1px 3px hsl(0 0% 0% / 0.35);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -147,12 +147,12 @@
     --snice-color-border-hover: hsl(240 6% 60% / 0.46);
     --snice-color-border-subtle: hsl(240 6% 45% / 0.22);
 
-    --snice-ios-glass-regular-bg: hsl(240 6% 16% / 0.68);
-    --snice-ios-glass-clear-bg: hsl(240 6% 24% / 0.36);
-    --snice-ios-glass-tinted-bg: color-mix(in srgb, var(--snice-color-primary) 24%, hsl(240 6% 16% / 0.68));
-    --snice-ios-glass-border: hsl(0 0% 100% / 0.22);
-    --snice-ios-glass-rim: inset 0 1px 0 0 hsl(0 0% 100% / 0.26), inset 0 -0.5px 0 0 hsl(0 0% 0% / 0.4), 0 0 0 0.5px hsl(0 0% 100% / 0.1);
-    --snice-ios-glass-shadow: 0 14px 40px -8px hsl(0 0% 0% / 0.65), 0 2px 10px -2px hsl(0 0% 0% / 0.4);
+    --snice-ios-glass-regular-bg: linear-gradient(180deg, hsl(0 0% 100% / 0.16) 0%, hsl(0 0% 100% / 0.09) 100%);
+    --snice-ios-glass-clear-bg: hsl(0 0% 100% / 0.1);
+    --snice-ios-glass-tinted-bg: color-mix(in srgb, var(--snice-color-primary) 24%, hsl(0 0% 100% / 0.08));
+    --snice-ios-glass-border: hsl(0 0% 100% / 0.16);
+    --snice-ios-glass-rim: inset 0 1px 0.5px hsl(0 0% 100% / 0.34), inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.45), inset 0 0 0 0.5px hsl(0 0% 100% / 0.08);
+    --snice-ios-glass-shadow: 0 4px 16px -4px hsl(0 0% 0% / 0.55), 0 1px 3px hsl(0 0% 0% / 0.35);
   }
 }
 

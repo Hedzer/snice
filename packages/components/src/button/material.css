@@ -1,9 +1,9 @@
 /* ==========================================================================
    Android Material 3 Expressive — snice-button
-   Full pill resting shape -> expressive 8px squircle press morph,
-   pointer-origin state-layer ripple, M3 tonal/filled/outlined/text/icon
-   variants, T80 dark-mode dark ink, preserved-surface loading state,
-   and exact M3 12% / 38% disabled treatment.
+   Full pill resting shape -> expressive squircle press morph, pointer-origin
+   state-layer ripple, harmonious M3 Expressive size ramp (32/40/48dp),
+   refinement of outline-variant borders, T80 dark-mode dark ink, preserved
+   loading surface, and exact M3 12% / 38% disabled treatment.
    ========================================================================== */
 
 /* Base — M3 Filled Tonal Button (default, Medium 40dp) */
@@ -11,7 +11,7 @@
   box-sizing: border-box;
   min-height: 2.5rem;
   height: 2.5rem;
-  padding: 0 1.5rem;
+  padding: 0 1.375rem;
   border-radius: 9999px;
   font-family: var(--snice-font-family, 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif);
   font-size: 0.875rem;
@@ -30,12 +30,10 @@
     box-shadow var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
 }
 
-/* Disable base convex sheen */
 [part~="base"]::before {
   display: none;
 }
 
-/* M3 8% state-layer hover + Level 1 elevation, zero translateY lift */
 [part~="base"]:hover {
   background-color: color-mix(in srgb, var(--snice-m3-on-secondary-container) 8%, var(--snice-m3-secondary-container));
   border-color: transparent;
@@ -43,33 +41,31 @@
   transform: none;
 }
 
-/* M3 10% state-layer press + expressive 8px squircle morph, Level 0 shadow, zero scale shrink */
 [part~="base"]:active,
 :host([data-m3-pressed="true"]) [part~="base"] {
   background-color: color-mix(in srgb, var(--snice-m3-on-secondary-container) 10%, var(--snice-m3-secondary-container));
   border-color: transparent;
-  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
   transform: none;
 }
 
-/* Sizes (M3 Expressive Small 32dp / Medium 40dp / Large 56dp) */
+/* Harmonious M3 Expressive Sizes (32dp / 40dp / 48dp) */
 :host([size="small"]) [part~="base"] {
   min-height: 2rem;
   height: 2rem;
-  padding: 0 1rem;
+  padding: 0 0.875rem;
   font-size: 0.8125rem;
 }
 
 :host([size="large"]) [part~="base"] {
-  min-height: 3.5rem;
-  height: 3.5rem;
-  padding: 0 2rem;
-  font-size: 1rem;
+  min-height: 3rem;
+  height: 3rem;
+  padding: 0 1.75rem;
+  font-size: 0.9375rem;
 }
 
-/* Filled Semantic Variants — use --snice-m3-on-primary / --snice-color-text-inverse
-   so M3 dark-mode T80 pastel fills ALWAYS receive dark high-contrast ink. */
+/* Filled Semantic Variants — light mode white ink, dark mode T80 dark ink */
 :host([variant="primary"]) [part~="base"] {
   background-color: var(--snice-color-primary);
   color: var(--snice-m3-on-primary, var(--snice-color-text-inverse));
@@ -87,7 +83,7 @@
 :host([variant="primary"][data-m3-pressed="true"]) [part~="base"] {
   background-color: color-mix(in srgb, var(--snice-m3-on-primary, var(--snice-color-text-inverse)) 10%, var(--snice-color-primary));
   border-color: transparent;
-  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
   transform: none;
 }
@@ -109,19 +105,19 @@
 :host([variant="success"][data-m3-pressed="true"]) [part~="base"] {
   background-color: color-mix(in srgb, var(--snice-color-text-inverse) 10%, var(--snice-color-success));
   border-color: transparent;
-  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
   transform: none;
 }
 
 :host([variant="warning"]) [part~="base"] {
   background-color: var(--snice-color-warning);
-  color: hsl(26 42% 10%);
+  color: var(--snice-color-text-inverse);
   border-color: transparent;
 }
 
 :host([variant="warning"]) [part~="base"]:hover {
-  background-color: color-mix(in srgb, hsl(26 42% 10%) 8%, var(--snice-color-warning));
+  background-color: color-mix(in srgb, var(--snice-color-text-inverse) 8%, var(--snice-color-warning));
   border-color: transparent;
   box-shadow: var(--snice-shadow-xs);
   transform: none;
@@ -129,9 +125,9 @@
 
 :host([variant="warning"]) [part~="base"]:active,
 :host([variant="warning"][data-m3-pressed="true"]) [part~="base"] {
-  background-color: color-mix(in srgb, hsl(26 42% 10%) 10%, var(--snice-color-warning));
+  background-color: color-mix(in srgb, var(--snice-color-text-inverse) 10%, var(--snice-color-warning));
   border-color: transparent;
-  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
   transform: none;
 }
@@ -153,7 +149,7 @@
 :host([variant="danger"][data-m3-pressed="true"]) [part~="base"] {
   background-color: color-mix(in srgb, var(--snice-color-text-inverse) 10%, var(--snice-color-danger));
   border-color: transparent;
-  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
   transform: none;
 }
@@ -161,7 +157,7 @@
 /* Text Variant — M3 Text Button */
 :host([variant="text"]) [part~="base"] {
   background-color: transparent;
-  color: var(--snice-color-primary);
+  color: color-mix(in srgb, var(--snice-color-primary) 88%, var(--snice-color-text));
   border-color: transparent;
   padding: 0 0.75rem;
   box-shadow: none;
@@ -173,7 +169,7 @@
 
 :host([variant="text"]) [part~="base"]:hover {
   background-color: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
-  color: var(--snice-color-primary);
+  color: color-mix(in srgb, var(--snice-color-primary) 88%, var(--snice-color-text));
   border-color: transparent;
   box-shadow: none;
   transform: none;
@@ -182,18 +178,18 @@
 :host([variant="text"]) [part~="base"]:active,
 :host([variant="text"][data-m3-pressed="true"]) [part~="base"] {
   background-color: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
-  color: var(--snice-color-primary);
+  color: color-mix(in srgb, var(--snice-color-primary) 88%, var(--snice-color-text));
   border-color: transparent;
-  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
   transform: none;
 }
 
-/* Outline Variant — M3 Outlined Button (respects every semantic variant color) */
+/* Outline Variant — M3 Expressive Outlined Button (refined outline-variant border) */
 [part~="base-outline"],
 :host([variant="default"]) [part~="base-outline"] {
   background-color: transparent;
-  border-color: var(--snice-color-border);
+  border-color: color-mix(in srgb, var(--snice-color-border) 58%, transparent);
   color: var(--snice-color-text);
   box-shadow: none;
 }
@@ -214,22 +210,22 @@
   background-color: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
   border-color: var(--snice-color-border);
   color: var(--snice-color-text);
-  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
   transform: none;
 }
 
 :host([variant="primary"]) [part~="base-outline"] {
   background-color: transparent;
-  border-color: var(--snice-color-border);
-  color: var(--snice-color-primary);
+  border-color: color-mix(in srgb, var(--snice-color-border) 62%, transparent);
+  color: color-mix(in srgb, var(--snice-color-primary) 88%, var(--snice-color-text));
   box-shadow: none;
 }
 
 :host([variant="primary"]) [part~="base-outline"]:hover {
   background-color: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
   border-color: var(--snice-color-primary);
-  color: var(--snice-color-primary);
+  color: color-mix(in srgb, var(--snice-color-primary) 88%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -238,23 +234,23 @@
 :host([variant="primary"][data-m3-pressed="true"]) [part~="base-outline"] {
   background-color: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
   border-color: var(--snice-color-primary);
-  color: var(--snice-color-primary);
-  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  color: color-mix(in srgb, var(--snice-color-primary) 88%, var(--snice-color-text));
+  border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
   transform: none;
 }
 
 :host([variant="success"]) [part~="base-outline"] {
   background-color: transparent;
-  border-color: color-mix(in srgb, var(--snice-color-success) 55%, var(--snice-color-border));
-  color: var(--snice-color-success);
+  border-color: color-mix(in srgb, var(--snice-color-success) 52%, transparent);
+  color: color-mix(in srgb, var(--snice-color-success) 86%, var(--snice-color-text));
   box-shadow: none;
 }
 
 :host([variant="success"]) [part~="base-outline"]:hover {
   background-color: color-mix(in srgb, var(--snice-color-success) 8%, transparent);
   border-color: var(--snice-color-success);
-  color: var(--snice-color-success);
+  color: color-mix(in srgb, var(--snice-color-success) 86%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -263,23 +259,23 @@
 :host([variant="success"][data-m3-pressed="true"]) [part~="base-outline"] {
   background-color: color-mix(in srgb, var(--snice-color-success) 10%, transparent);
   border-color: var(--snice-color-success);
-  color: var(--snice-color-success);
-  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  color: color-mix(in srgb, var(--snice-color-success) 86%, var(--snice-color-text));
+  border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
   transform: none;
 }
 
 :host([variant="warning"]) [part~="base-outline"] {
   background-color: transparent;
-  border-color: color-mix(in srgb, var(--snice-color-warning) 55%, var(--snice-color-border));
-  color: var(--snice-color-warning);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 52%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 84%, var(--snice-color-text));
   box-shadow: none;
 }
 
 :host([variant="warning"]) [part~="base-outline"]:hover {
   background-color: color-mix(in srgb, var(--snice-color-warning) 8%, transparent);
   border-color: var(--snice-color-warning);
-  color: var(--snice-color-warning);
+  color: color-mix(in srgb, var(--snice-color-warning) 84%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -288,23 +284,23 @@
 :host([variant="warning"][data-m3-pressed="true"]) [part~="base-outline"] {
   background-color: color-mix(in srgb, var(--snice-color-warning) 10%, transparent);
   border-color: var(--snice-color-warning);
-  color: var(--snice-color-warning);
-  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  color: color-mix(in srgb, var(--snice-color-warning) 84%, var(--snice-color-text));
+  border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
   transform: none;
 }
 
 :host([variant="danger"]) [part~="base-outline"] {
   background-color: transparent;
-  border-color: color-mix(in srgb, var(--snice-color-danger) 55%, var(--snice-color-border));
-  color: var(--snice-color-danger);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 52%, transparent);
+  color: color-mix(in srgb, var(--snice-color-danger) 86%, var(--snice-color-text));
   box-shadow: none;
 }
 
 :host([variant="danger"]) [part~="base-outline"]:hover {
   background-color: color-mix(in srgb, var(--snice-color-danger) 8%, transparent);
   border-color: var(--snice-color-danger);
-  color: var(--snice-color-danger);
+  color: color-mix(in srgb, var(--snice-color-danger) 86%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -313,18 +309,19 @@
 :host([variant="danger"][data-m3-pressed="true"]) [part~="base-outline"] {
   background-color: color-mix(in srgb, var(--snice-color-danger) 10%, transparent);
   border-color: var(--snice-color-danger);
-  color: var(--snice-color-danger);
-  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  color: color-mix(in srgb, var(--snice-color-danger) 86%, var(--snice-color-text));
+  border-radius: var(--snice-m3-shape-morph-pressed, 10px);
   box-shadow: none;
   transform: none;
 }
 
-/* Circle — exact 1:1 M3 Icon Button (32 / 40 / 56dp, morphs to 8px squircle on press) */
+/* Circle — M3 Icon Button (32 / 40 / 48dp) */
 [part~="base-circle"] {
   width: 2.5rem;
   min-width: 2.5rem;
   height: 2.5rem;
   padding: 0;
+  font-size: 1.125rem;
 }
 
 :host([variant]) [part~="base-circle"] {
@@ -336,6 +333,7 @@
   min-width: 2rem;
   height: 2rem;
   padding: 0;
+  font-size: 0.9375rem;
 }
 
 :host([size="small"][variant]) [part~="base-circle"] {
@@ -343,10 +341,11 @@
 }
 
 :host([size="large"]) [part~="base-circle"] {
-  width: 3.5rem;
-  min-width: 3.5rem;
-  height: 3.5rem;
+  width: 3rem;
+  min-width: 3rem;
+  height: 3rem;
   padding: 0;
+  font-size: 1.25rem;
 }
 
 :host([size="large"][variant]) [part~="base-circle"] {
@@ -403,7 +402,7 @@
   box-shadow: none;
 }
 
-/* Loading State — preserves variant surface & currentColor spinner, locks pill shape */
+/* Loading State */
 [part~="spinner"] {
   width: 1.125em;
   height: 1.125em;
@@ -484,7 +483,7 @@
   background-color: transparent;
 }
 
-/* Disabled State — exact M3 12% surface / 38% ink (opacity: 1) for filled & tonal */
+/* Disabled State — M3 matte surface with crisp legible muted ink (opacity: 1) */
 [part~="base-disabled"],
 [part~="base-disabled"]:hover,
 [part~="base-disabled"]:active,
@@ -497,8 +496,8 @@
 :host([disabled][variant]) [part~="base"],
 :host([disabled][variant]) [part~="base"]:hover,
 :host([disabled][variant]) [part~="base"]:active {
-  background-color: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  background-color: color-mix(in srgb, var(--snice-color-text) 13%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 50%, transparent);
   border-color: transparent;
   border-radius: 9999px;
   opacity: 1;
@@ -507,7 +506,6 @@
   cursor: not-allowed;
 }
 
-/* Disabled Outlined — M3 spec: transparent fill, 12% border, 38% ink */
 [part~="base-outline"][part~="base-disabled"],
 [part~="base-outline"][part~="base-disabled"]:hover,
 [part~="base-outline"][part~="base-disabled"]:active,
@@ -524,8 +522,8 @@
 :host([disabled][variant][outline]) [part~="base"]:hover,
 :host([disabled][variant][outline]) [part~="base"]:active {
   background-color: transparent;
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 50%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
   border-radius: 9999px;
   opacity: 1;
   box-shadow: none;
@@ -533,7 +531,6 @@
   cursor: not-allowed;
 }
 
-/* Disabled Text — M3 spec: transparent fill, 38% ink, no border */
 :host([variant="text"]) [part~="base-disabled"],
 :host([variant="text"]) [part~="base-disabled"]:hover,
 :host([variant="text"]) [part~="base-disabled"]:active,
@@ -541,7 +538,7 @@
 :host([disabled][variant="text"]) [part~="base"]:hover,
 :host([disabled][variant="text"]) [part~="base"]:active {
   background-color: transparent;
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 50%, transparent);
   border-color: transparent;
   border-radius: 9999px;
   opacity: 1;

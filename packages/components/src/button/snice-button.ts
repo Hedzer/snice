@@ -12,15 +12,28 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   @state()
   private formDisabled = false;
 
+  @state()
+  private hasSlottedIcon = false;
+
   private platformBehaviorCleanup?: () => void;
+  private iconSlotObserver?: MutationObserver;
 
   @ready()
   private initPlatformBehavior() {
+    this.syncIconSlot();
+    this.shadowRoot?.addEventListener('slotchange', this.handleIconSlotChange);
+    if (typeof MutationObserver !== 'undefined') {
+      this.iconSlotObserver = new MutationObserver(() => this.syncIconSlot());
+      this.iconSlotObserver.observe(this, { childList: true });
+    }
     this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
   }
 
   @dispose()
   private cleanupPlatformBehavior() {
+    this.shadowRoot?.removeEventListener('slotchange', this.handleIconSlotChange);
+    this.iconSlotObserver?.disconnect();
+    this.iconSlotObserver = undefined;
     this.platformBehaviorCleanup?.();
     this.platformBehaviorCleanup = undefined;
   }
@@ -78,8 +91,18 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   private iconSlotChild?: Element;
 
   private get hasIconSlot() {
-    return !!this.iconSlotChild;
+    return this.hasSlottedIcon || !!this.iconSlotChild;
   }
+
+  private syncIconSlot() {
+    const slot = this.shadowRoot?.querySelector('slot[name="icon"]') as HTMLSlotElement | null;
+    const assigned = slot?.assignedElements?.({ flatten: true }).length ?? 0;
+    this.hasSlottedIcon = assigned > 0 || !!this.querySelector('[slot="icon"]');
+  }
+
+  private handleIconSlotChange = () => {
+    this.syncIconSlot();
+  };
 
   private get effectiveDisabled() {
     return this.disabled || this.formDisabled;
@@ -125,8 +148,8 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
         <span class="button-ripple" part="ripple" data-platform-only="material" aria-hidden="true" hidden></span>
         <span class="button-sheen" part="sheen" data-platform-only="ios,macos" aria-hidden="true" hidden></span>
         <span class="spinner" part="spinner"></span>
-        <if ${showIconStart}>
-          <span class="icon-slot" part="icon icon-start">
+        <if ${this.iconPlacement !== 'end'}>
+          <span class="icon-slot" part="icon icon-start" ?hidden="${!showIconStart}">
             <slot name="icon">
               <if ${this.icon}>
                 ${renderIcon(this.icon, 'icon')}
@@ -137,8 +160,8 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
         <span class="label" part="label">
           <slot></slot>
         </span>
-        <if ${showIconEnd}>
-          <span class="icon-slot" part="icon icon-end">
+        <if ${this.iconPlacement === 'end'}>
+          <span class="icon-slot" part="icon icon-end" ?hidden="${!showIconEnd}">
             <slot name="icon">
               <if ${this.icon}>
                 ${renderIcon(this.icon, 'icon')}

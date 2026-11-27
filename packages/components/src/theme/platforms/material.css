@@ -21,10 +21,10 @@
 
   /* M3 Expressive Semantic Seeds — overriding --snice-color-primary regenerates
      the entire 5-step tonal surface container ladder & state layers via color-mix(). */
-  --snice-color-primary: hsl(265 44% 48%);
-  --snice-color-success: hsl(146 58% 34%);
-  --snice-color-warning: hsl(34 88% 42%);
-  --snice-color-danger: hsl(3 66% 44%);
+  --snice-color-primary: hsl(256 34% 48%);
+  --snice-color-success: hsl(142 56% 27%);
+  --snice-color-warning: hsl(28 90% 34%);
+  --snice-color-danger: hsl(3 71% 41%);
   --snice-color-neutral: hsl(264 6% 46%);
 
   --snice-m3-on-primary: hsl(0 0% 100%);
@@ -91,10 +91,10 @@
 }
 
 [data-theme="dark"] {
-  --snice-color-primary: hsl(259 100% 87%);
-  --snice-color-success: hsl(142 62% 68%);
-  --snice-color-warning: hsl(38 96% 68%);
-  --snice-color-danger: hsl(5 88% 82%);
+  --snice-color-primary: hsl(258 100% 87%);
+  --snice-color-success: hsl(138 48% 70%);
+  --snice-color-warning: hsl(35 87% 70%);
+  --snice-color-danger: hsl(3 70% 83%);
   --snice-color-neutral: hsl(264 8% 64%);
 
   --snice-m3-on-primary: hsl(265 58% 22%);
@@ -123,10 +123,10 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]),
   :root[data-theme="auto"] {
-    --snice-color-primary: hsl(259 100% 87%);
-    --snice-color-success: hsl(142 62% 68%);
-    --snice-color-warning: hsl(38 96% 68%);
-    --snice-color-danger: hsl(5 88% 82%);
+    --snice-color-primary: hsl(258 100% 87%);
+    --snice-color-success: hsl(138 48% 70%);
+    --snice-color-warning: hsl(35 87% 70%);
+    --snice-color-danger: hsl(3 70% 83%);
     --snice-color-neutral: hsl(264 8% 64%);
 
     --snice-m3-on-primary: hsl(265 58% 22%);

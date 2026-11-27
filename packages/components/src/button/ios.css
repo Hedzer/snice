@@ -1,11 +1,12 @@
 /* ==========================================================================
    iOS 26+ Liquid Glass — snice-button
-   1:1 Apple HIG UIButton (.glass, .prominentGlass, .tinted, .plain, circle)
-   Every variant, size, shape, hover/active/focus, loading, and disabled
-   state with WCAG AA contrast in both light and dark modes.
+   Apple HIG UIButton (.glass, .glassProminent, .tinted, .plain, circle)
+   True translucent glass capsules with razor-thin optical specular rims,
+   refraction blur, neutral contact shadows (zero neon glow halos), and
+   44pt touch geometry in both light and dark modes.
    ========================================================================== */
 
-/* Base — iOS 26 Liquid Glass capsule control (44pt standard touch target) */
+/* Base — iOS 26 .glass capsule (44pt standard touch target) */
 [part~="base"] {
   box-sizing: border-box;
   min-height: 2.75rem;
@@ -13,17 +14,17 @@
   padding: 0 1.25rem;
   border-radius: 9999px;
   font-family: var(--snice-font-family);
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.0625rem;
+  font-weight: 500;
   line-height: 1;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
   overflow: hidden;
-  background: var(--snice-ios-glass-regular-bg, hsl(0 0% 100% / 0.72));
-  backdrop-filter: var(--snice-ios-glass-blur, blur(24px) saturate(190%));
-  -webkit-backdrop-filter: var(--snice-ios-glass-blur, blur(24px) saturate(190%));
-  border: 1px solid var(--snice-ios-glass-border, hsl(0 0% 100% / 0.72));
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur, blur(22px) saturate(185%));
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur, blur(22px) saturate(185%));
+  border: 0.5px solid var(--snice-ios-glass-border);
   color: var(--snice-color-text);
-  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-sm);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
   transition:
     transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
     background-color var(--snice-transition-fast, 180ms) ease,
@@ -33,34 +34,34 @@
     opacity var(--snice-transition-fast, 180ms) ease;
 }
 
-/* Suppress base Snice ::before convex gradient; iOS uses Liquid Glass rim + [part~="sheen"] */
 [part~="base"]::before {
   display: none;
 }
 
 [part~="base"]:hover {
-  background: var(--snice-ios-glass-regular-bg, hsl(0 0% 100% / 0.72));
-  border-color: var(--snice-ios-glass-border, hsl(0 0% 100% / 0.72));
+  background: var(--snice-ios-glass-regular-bg);
+  border-color: var(--snice-ios-glass-border);
   transform: none;
   filter: brightness(1.04);
-  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-md);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-sm);
 }
 
 [part~="base"]:active {
-  background: var(--snice-ios-glass-regular-bg, hsl(0 0% 100% / 0.72));
-  border-color: var(--snice-ios-glass-border, hsl(0 0% 100% / 0.72));
+  background: var(--snice-ios-glass-regular-bg);
+  border-color: var(--snice-ios-glass-border);
   transform: scale(0.96);
-  filter: brightness(0.94);
+  filter: brightness(0.95);
   box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-xs);
 }
 
-/* Sizes — 34px / 44px / 50px touch targets */
+/* Sizes — iOS 26 Small (34pt) / Medium (44pt) / Large (50pt) */
 :host([size="small"]) [part~="base"] {
   min-height: 2.125rem;
   height: 2.125rem;
   padding: 0 0.875rem;
   font-size: 0.875rem;
-  letter-spacing: -0.01em;
+  font-weight: 500;
+  letter-spacing: -0.012em;
 }
 
 :host([size="large"]) [part~="base"] {
@@ -68,156 +69,172 @@
   height: 3.125rem;
   padding: 0 1.5rem;
   font-size: 1.0625rem;
-  letter-spacing: -0.018em;
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
-/* Prominent Liquid Glass Semantic Variants
-   iOS dark mode sets --snice-color-text-inverse to black, so saturated fills
-   explicitly declare white ink (deep brown ink on amber warning). */
+/* Prominent Liquid Glass (.glassProminent) — translucent tinted glass with
+   crisp internal specular rim and subtle neutral contact shadow (no neon glow). */
 :host([variant="primary"]) [part~="base"] {
-  background: var(--snice-color-primary);
-  border-color: color-mix(in srgb, white 26%, var(--snice-color-primary));
+  background: color-mix(in srgb, var(--snice-color-primary) 90%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   box-shadow:
-    inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
-    inset 0 -0.5px 0 hsl(0 0% 0% / 0.14),
-    0 6px 18px -6px color-mix(in srgb, var(--snice-color-primary) 55%, transparent);
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.34),
+    inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.22),
+    inset 0 0 0 0.5px hsl(0 0% 100% / 0.14),
+    0 1px 4px hsl(0 0% 0% / 0.16),
+    0 0.5px 1px hsl(0 0% 0% / 0.1);
 }
 
 :host([variant="primary"]) [part~="base"]:hover {
-  background: var(--snice-color-primary);
-  border-color: color-mix(in srgb, white 32%, var(--snice-color-primary));
+  background: color-mix(in srgb, var(--snice-color-primary) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   transform: none;
   filter: brightness(1.04);
   box-shadow:
-    inset 0 1px 0.5px hsl(0 0% 100% / 0.42),
-    inset 0 -0.5px 0 hsl(0 0% 0% / 0.14),
-    0 8px 22px -6px color-mix(in srgb, var(--snice-color-primary) 62%, transparent);
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.4),
+    inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.22),
+    inset 0 0 0 0.5px hsl(0 0% 100% / 0.18),
+    0 2px 6px hsl(0 0% 0% / 0.18),
+    0 0.5px 1.5px hsl(0 0% 0% / 0.12);
 }
 
 :host([variant="primary"]) [part~="base"]:active {
-  background: var(--snice-color-primary);
-  border-color: color-mix(in srgb, white 22%, var(--snice-color-primary));
+  background: color-mix(in srgb, var(--snice-color-primary) 96%, black);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   transform: scale(0.96);
   filter: brightness(0.94);
   box-shadow:
-    inset 0 1px 0.5px hsl(0 0% 100% / 0.28),
-    inset 0 -0.5px 0 hsl(0 0% 0% / 0.16),
-    0 3px 10px -4px color-mix(in srgb, var(--snice-color-primary) 45%, transparent);
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.24),
+    inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.24),
+    0 1px 2px hsl(0 0% 0% / 0.14);
 }
 
 :host([variant="success"]) [part~="base"] {
-  background: var(--snice-color-success);
-  border-color: color-mix(in srgb, white 26%, var(--snice-color-success));
+  background: color-mix(in srgb, var(--snice-color-success) 90%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-success) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   box-shadow:
-    inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
-    inset 0 -0.5px 0 hsl(0 0% 0% / 0.14),
-    0 6px 18px -6px color-mix(in srgb, var(--snice-color-success) 50%, transparent);
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.34),
+    inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.22),
+    inset 0 0 0 0.5px hsl(0 0% 100% / 0.14),
+    0 1px 4px hsl(0 0% 0% / 0.16),
+    0 0.5px 1px hsl(0 0% 0% / 0.1);
 }
 
 :host([variant="success"]) [part~="base"]:hover {
-  background: var(--snice-color-success);
-  border-color: color-mix(in srgb, white 32%, var(--snice-color-success));
+  background: color-mix(in srgb, var(--snice-color-success) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-success) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   transform: none;
   filter: brightness(1.04);
   box-shadow:
-    inset 0 1px 0.5px hsl(0 0% 100% / 0.42),
-    inset 0 -0.5px 0 hsl(0 0% 0% / 0.14),
-    0 8px 22px -6px color-mix(in srgb, var(--snice-color-success) 58%, transparent);
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.4),
+    inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.22),
+    inset 0 0 0 0.5px hsl(0 0% 100% / 0.18),
+    0 2px 6px hsl(0 0% 0% / 0.18),
+    0 0.5px 1.5px hsl(0 0% 0% / 0.12);
 }
 
 :host([variant="success"]) [part~="base"]:active {
-  background: var(--snice-color-success);
-  border-color: color-mix(in srgb, white 22%, var(--snice-color-success));
+  background: color-mix(in srgb, var(--snice-color-success) 96%, black);
+  border-color: color-mix(in srgb, var(--snice-color-success) 72%, hsl(0 0% 0% / 0.35));
   color: hsl(0 0% 100%);
   transform: scale(0.96);
   filter: brightness(0.94);
   box-shadow:
-    inset 0 1px 0.5px hsl(0 0% 100% / 0.28),
-    inset 0 -0.5px 0 hsl(0 0% 0% / 0.16),
-    0 3px 10px -4px color-mix(in srgb, var(--snice-color-success) 42%, transparent);
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.24),
+    inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.24),
+    0 1px 2px hsl(0 0% 0% / 0.14);
 }
 
 :host([variant="warning"]) [part~="base"] {
-  background: var(--snice-color-warning);
-  border-color: color-mix(in srgb, white 30%, var(--snice-color-warning));
-  color: hsl(24 40% 10%);
+  background: color-mix(in srgb, var(--snice-color-warning) 90%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 72%, hsl(0 0% 0% / 0.32));
+  color: hsl(28 45% 11%);
   box-shadow:
     inset 0 1px 0.5px hsl(0 0% 100% / 0.4),
-    inset 0 -0.5px 0 hsl(0 0% 0% / 0.14),
-    0 6px 18px -6px color-mix(in srgb, var(--snice-color-warning) 50%, transparent);
+    inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.2),
+    inset 0 0 0 0.5px hsl(0 0% 100% / 0.18),
+    0 1px 4px hsl(0 0% 0% / 0.14),
+    0 0.5px 1px hsl(0 0% 0% / 0.08);
 }
 
 :host([variant="warning"]) [part~="base"]:hover {
-  background: var(--snice-color-warning);
-  border-color: color-mix(in srgb, white 36%, var(--snice-color-warning));
-  color: hsl(24 40% 10%);
+  background: color-mix(in srgb, var(--snice-color-warning) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 72%, hsl(0 0% 0% / 0.32));
+  color: hsl(28 45% 11%);
   transform: none;
   filter: brightness(1.04);
   box-shadow:
-    inset 0 1px 0.5px hsl(0 0% 100% / 0.46),
-    inset 0 -0.5px 0 hsl(0 0% 0% / 0.14),
-    0 8px 22px -6px color-mix(in srgb, var(--snice-color-warning) 58%, transparent);
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.45),
+    inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.2),
+    inset 0 0 0 0.5px hsl(0 0% 100% / 0.22),
+    0 2px 6px hsl(0 0% 0% / 0.16),
+    0 0.5px 1.5px hsl(0 0% 0% / 0.1);
 }
 
 :host([variant="warning"]) [part~="base"]:active {
-  background: var(--snice-color-warning);
-  border-color: color-mix(in srgb, white 24%, var(--snice-color-warning));
-  color: hsl(24 40% 10%);
-  transform: scale(0.96);
-  filter: brightness(0.94);
-  box-shadow:
-    inset 0 1px 0.5px hsl(0 0% 100% / 0.3),
-    inset 0 -0.5px 0 hsl(0 0% 0% / 0.16),
-    0 3px 10px -4px color-mix(in srgb, var(--snice-color-warning) 42%, transparent);
-}
-
-:host([variant="danger"]) [part~="base"] {
-  background: var(--snice-color-danger);
-  border-color: color-mix(in srgb, white 24%, var(--snice-color-danger));
-  color: hsl(0 0% 100%);
-  box-shadow:
-    inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
-    inset 0 -0.5px 0 hsl(0 0% 0% / 0.14),
-    0 6px 18px -6px color-mix(in srgb, var(--snice-color-danger) 50%, transparent);
-}
-
-:host([variant="danger"]) [part~="base"]:hover {
-  background: var(--snice-color-danger);
-  border-color: color-mix(in srgb, white 30%, var(--snice-color-danger));
-  color: hsl(0 0% 100%);
-  transform: none;
-  filter: brightness(1.04);
-  box-shadow:
-    inset 0 1px 0.5px hsl(0 0% 100% / 0.42),
-    inset 0 -0.5px 0 hsl(0 0% 0% / 0.14),
-    0 8px 22px -6px color-mix(in srgb, var(--snice-color-danger) 58%, transparent);
-}
-
-:host([variant="danger"]) [part~="base"]:active {
-  background: var(--snice-color-danger);
-  border-color: color-mix(in srgb, white 20%, var(--snice-color-danger));
-  color: hsl(0 0% 100%);
+  background: color-mix(in srgb, var(--snice-color-warning) 96%, black);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 72%, hsl(0 0% 0% / 0.32));
+  color: hsl(28 45% 11%);
   transform: scale(0.96);
   filter: brightness(0.94);
   box-shadow:
     inset 0 1px 0.5px hsl(0 0% 100% / 0.28),
-    inset 0 -0.5px 0 hsl(0 0% 0% / 0.16),
-    0 3px 10px -4px color-mix(in srgb, var(--snice-color-danger) 42%, transparent);
+    inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.22),
+    0 1px 2px hsl(0 0% 0% / 0.12);
 }
 
-/* Plain (Text) — borderless iOS action button */
+:host([variant="danger"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 90%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 72%, hsl(0 0% 0% / 0.35));
+  color: hsl(0 0% 100%);
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.34),
+    inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.22),
+    inset 0 0 0 0.5px hsl(0 0% 100% / 0.14),
+    0 1px 4px hsl(0 0% 0% / 0.16),
+    0 0.5px 1px hsl(0 0% 0% / 0.1);
+}
+
+:host([variant="danger"]) [part~="base"]:hover {
+  background: color-mix(in srgb, var(--snice-color-danger) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 72%, hsl(0 0% 0% / 0.35));
+  color: hsl(0 0% 100%);
+  transform: none;
+  filter: brightness(1.04);
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.4),
+    inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.22),
+    inset 0 0 0 0.5px hsl(0 0% 100% / 0.18),
+    0 2px 6px hsl(0 0% 0% / 0.18),
+    0 0.5px 1.5px hsl(0 0% 0% / 0.12);
+}
+
+:host([variant="danger"]) [part~="base"]:active {
+  background: color-mix(in srgb, var(--snice-color-danger) 96%, black);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 72%, hsl(0 0% 0% / 0.35));
+  color: hsl(0 0% 100%);
+  transform: scale(0.96);
+  filter: brightness(0.94);
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.24),
+    inset 0 -0.5px 0.5px hsl(0 0% 0% / 0.24),
+    0 1px 2px hsl(0 0% 0% / 0.14);
+}
+
+/* Plain (Text) — borderless iOS action with >= 4.5:1 AA contrast in light & dark */
 :host([variant="text"]) [part~="base"] {
   background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border-color: transparent;
   box-shadow: none;
-  color: var(--snice-color-primary);
+  color: color-mix(in srgb, var(--snice-color-primary) 80%, var(--snice-color-text));
   padding: 0 0.75rem;
 }
 
@@ -232,7 +249,7 @@
 :host([variant="text"]) [part~="base"]:hover {
   background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
   border-color: transparent;
-  color: var(--snice-color-primary);
+  color: color-mix(in srgb, var(--snice-color-primary) 80%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
   filter: none;
@@ -241,141 +258,141 @@
 :host([variant="text"]) [part~="base"]:active {
   background: color-mix(in srgb, var(--snice-color-primary) 18%, transparent);
   border-color: transparent;
-  color: var(--snice-color-primary);
+  color: color-mix(in srgb, var(--snice-color-primary) 80%, var(--snice-color-text));
   box-shadow: none;
   transform: scale(0.96);
   filter: none;
 }
 
-/* Outline — iOS Tinted Liquid Glass
-   Mixing semantic hue toward --snice-color-text darkens ink in light mode
-   and lightens ink in dark mode so every tinted label exceeds 4.5:1 AA. */
+/* Outline — iOS .tinted Liquid Glass
+   Mixing 72-76% semantic color with --snice-color-text deepens ink in light mode
+   (black text) and brightens ink to luminous glass tint in dark mode (white text). */
 [part~="base-outline"] {
-  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-ios-glass-clear-bg));
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
   border-color: var(--snice-color-border-hover);
   color: var(--snice-color-text);
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.3);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.26);
 }
 
 [part~="base-outline"]:hover {
-  background: color-mix(in srgb, var(--snice-color-text) 14%, var(--snice-ios-glass-clear-bg));
+  background: color-mix(in srgb, var(--snice-color-text) 13%, transparent);
   border-color: var(--snice-color-border-hover);
   color: var(--snice-color-text);
   transform: none;
   filter: none;
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.36);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.32);
 }
 
 [part~="base-outline"]:active {
-  background: color-mix(in srgb, var(--snice-color-text) 20%, var(--snice-ios-glass-clear-bg));
+  background: color-mix(in srgb, var(--snice-color-text) 18%, transparent);
   border-color: var(--snice-color-border-hover);
   color: var(--snice-color-text);
   transform: scale(0.96);
-  filter: brightness(0.94);
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.24);
+  filter: none;
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.2);
 }
 
 :host([variant="primary"]) [part~="base-outline"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 38%, transparent);
-  color: color-mix(in srgb, var(--snice-color-primary) 72%, var(--snice-color-text));
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.3);
+  background: color-mix(in srgb, var(--snice-color-primary) 15%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 42%, transparent);
+  color: color-mix(in srgb, var(--snice-color-primary) 76%, var(--snice-color-text));
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.28);
 }
 
 :host([variant="primary"]) [part~="base-outline"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 20%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 48%, transparent);
-  color: color-mix(in srgb, var(--snice-color-primary) 72%, var(--snice-color-text));
+  background: color-mix(in srgb, var(--snice-color-primary) 22%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 52%, transparent);
+  color: color-mix(in srgb, var(--snice-color-primary) 76%, var(--snice-color-text));
   transform: none;
   filter: none;
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.36);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.34);
 }
 
 :host([variant="primary"]) [part~="base-outline"]:active {
-  background: color-mix(in srgb, var(--snice-color-primary) 26%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 54%, transparent);
-  color: color-mix(in srgb, var(--snice-color-primary) 72%, var(--snice-color-text));
+  background: color-mix(in srgb, var(--snice-color-primary) 28%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 58%, transparent);
+  color: color-mix(in srgb, var(--snice-color-primary) 76%, var(--snice-color-text));
   transform: scale(0.96);
-  filter: brightness(0.94);
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.24);
+  filter: none;
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.2);
 }
 
 :host([variant="success"]) [part~="base-outline"] {
-  background: color-mix(in srgb, var(--snice-color-success) 14%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-success) 38%, transparent);
-  color: color-mix(in srgb, var(--snice-color-success) 55%, var(--snice-color-text));
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.3);
+  background: color-mix(in srgb, var(--snice-color-success) 15%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-success) 42%, transparent);
+  color: color-mix(in srgb, var(--snice-color-success) 64%, var(--snice-color-text));
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.28);
 }
 
 :host([variant="success"]) [part~="base-outline"]:hover {
-  background: color-mix(in srgb, var(--snice-color-success) 20%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-success) 48%, transparent);
-  color: color-mix(in srgb, var(--snice-color-success) 55%, var(--snice-color-text));
+  background: color-mix(in srgb, var(--snice-color-success) 22%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-success) 52%, transparent);
+  color: color-mix(in srgb, var(--snice-color-success) 64%, var(--snice-color-text));
   transform: none;
   filter: none;
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.36);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.34);
 }
 
 :host([variant="success"]) [part~="base-outline"]:active {
-  background: color-mix(in srgb, var(--snice-color-success) 26%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-success) 54%, transparent);
-  color: color-mix(in srgb, var(--snice-color-success) 55%, var(--snice-color-text));
+  background: color-mix(in srgb, var(--snice-color-success) 28%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-success) 58%, transparent);
+  color: color-mix(in srgb, var(--snice-color-success) 64%, var(--snice-color-text));
   transform: scale(0.96);
-  filter: brightness(0.94);
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.24);
+  filter: none;
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.2);
 }
 
 :host([variant="warning"]) [part~="base-outline"] {
   background: color-mix(in srgb, var(--snice-color-warning) 16%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-warning) 42%, transparent);
-  color: color-mix(in srgb, var(--snice-color-warning) 55%, var(--snice-color-text));
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.3);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 44%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 58%, var(--snice-color-text));
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.28);
 }
 
 :host([variant="warning"]) [part~="base-outline"]:hover {
-  background: color-mix(in srgb, var(--snice-color-warning) 20%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-warning) 50%, transparent);
-  color: color-mix(in srgb, var(--snice-color-warning) 55%, var(--snice-color-text));
+  background: color-mix(in srgb, var(--snice-color-warning) 22%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 52%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 58%, var(--snice-color-text));
   transform: none;
   filter: none;
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.36);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.34);
 }
 
 :host([variant="warning"]) [part~="base-outline"]:active {
-  background: color-mix(in srgb, var(--snice-color-warning) 26%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-warning) 56%, transparent);
-  color: color-mix(in srgb, var(--snice-color-warning) 55%, var(--snice-color-text));
+  background: color-mix(in srgb, var(--snice-color-warning) 28%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 58%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 58%, var(--snice-color-text));
   transform: scale(0.96);
-  filter: brightness(0.94);
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.24);
+  filter: none;
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.2);
 }
 
 :host([variant="danger"]) [part~="base-outline"] {
-  background: color-mix(in srgb, var(--snice-color-danger) 14%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-danger) 38%, transparent);
-  color: color-mix(in srgb, var(--snice-color-danger) 68%, var(--snice-color-text));
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.3);
+  background: color-mix(in srgb, var(--snice-color-danger) 15%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 42%, transparent);
+  color: color-mix(in srgb, var(--snice-color-danger) 74%, var(--snice-color-text));
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.28);
 }
 
 :host([variant="danger"]) [part~="base-outline"]:hover {
-  background: color-mix(in srgb, var(--snice-color-danger) 20%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-danger) 48%, transparent);
-  color: color-mix(in srgb, var(--snice-color-danger) 68%, var(--snice-color-text));
+  background: color-mix(in srgb, var(--snice-color-danger) 22%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 52%, transparent);
+  color: color-mix(in srgb, var(--snice-color-danger) 74%, var(--snice-color-text));
   transform: none;
   filter: none;
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.36);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.34);
 }
 
 :host([variant="danger"]) [part~="base-outline"]:active {
-  background: color-mix(in srgb, var(--snice-color-danger) 26%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-danger) 54%, transparent);
-  color: color-mix(in srgb, var(--snice-color-danger) 68%, var(--snice-color-text));
+  background: color-mix(in srgb, var(--snice-color-danger) 28%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 58%, transparent);
+  color: color-mix(in srgb, var(--snice-color-danger) 74%, var(--snice-color-text));
   transform: scale(0.96);
-  filter: brightness(0.94);
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.24);
+  filter: none;
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.2);
 }
 
-/* Shape Modifiers — Capsule pill & exact 1:1 circular toolbar glass icon button */
+/* Shape Modifiers — Capsule pill & exact 1:1 circular glass icon button */
 [part~="base-pill"] {
   border-radius: 9999px;
 }
@@ -387,6 +404,7 @@
   height: 2.75rem;
   padding: 0;
   border-radius: 50%;
+  font-size: 1.25rem;
 }
 
 :host([size="small"]) [part~="base-circle"],
@@ -395,6 +413,7 @@
   min-width: 2.125rem;
   height: 2.125rem;
   padding: 0;
+  font-size: 1rem;
 }
 
 :host([size="large"]) [part~="base-circle"],
@@ -403,16 +422,22 @@
   min-width: 3.125rem;
   height: 3.125rem;
   padding: 0;
+  font-size: 1.375rem;
 }
 
-/* Specular Liquid Glass sheen overlay (hidden on text/outline/disabled) */
+/* Specular Liquid Glass catchlight (subtle optical curve — never milky wash) */
 [part~="sheen"] {
   display: block;
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  background: linear-gradient(180deg, hsl(0 0% 100% / 0.24) 0%, hsl(0 0% 100% / 0.04) 44%, transparent 52%);
+  background: linear-gradient(
+    180deg,
+    hsl(0 0% 100% / 0.16) 0%,
+    hsl(0 0% 100% / 0.03) 34%,
+    transparent 48%
+  );
 }
 
 :host([variant="text"]) [part~="sheen"],
@@ -421,7 +446,7 @@
   display: none;
 }
 
-/* Focus-Visible (keyboard) — clean primary focus ring layered with glass rim */
+/* Focus-Visible (keyboard) */
 [part~="base"]:focus-visible,
 :host([variant]) [part~="base"]:focus-visible,
 :host([variant]) [part~="base"]:focus-visible:hover,
@@ -440,21 +465,56 @@
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color);
 }
 
-/* Disabled part baseline (handles form-disabled fieldsets & legacy part state) */
+/* Disabled — iOS quaternarySystemFill neutral glass + tertiaryLabel ink
+   (opacity: 1 so light & dark disabled labels stay cleanly readable) */
 [part~="base-disabled"],
 [part~="base-disabled"]:hover,
 [part~="base-disabled"]:active,
 :host([variant]) [part~="base-disabled"],
 :host([variant]) [part~="base-disabled"]:hover,
-:host([variant]) [part~="base-disabled"]:active {
-  opacity: 0.38;
+:host([variant]) [part~="base-disabled"]:active,
+:host([disabled]) [part~="base"],
+:host([disabled]) [part~="base"]:hover,
+:host([disabled]) [part~="base"]:active,
+:host([disabled][variant]) [part~="base"],
+:host([disabled][variant]) [part~="base"]:hover,
+:host([disabled][variant]) [part~="base"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 52%, transparent);
+  opacity: 1;
   cursor: not-allowed;
   transform: none;
   filter: none;
   box-shadow: none;
 }
 
-/* Loading state — preserves variant fill & spinner legibility (never 0.38 washout) */
+:host([disabled][outline]) [part~="base-outline"],
+:host([disabled][outline]) [part~="base-outline"]:hover,
+:host([disabled][outline]) [part~="base-outline"]:active,
+:host([disabled][variant][outline]) [part~="base-outline"],
+:host([disabled][variant][outline]) [part~="base-outline"]:hover,
+:host([disabled][variant][outline]) [part~="base-outline"]:active {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 52%, transparent);
+  opacity: 1;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+  box-shadow: none;
+}
+
+:host([disabled][variant="text"]) [part~="base"],
+:host([disabled][variant="text"]) [part~="base"]:hover,
+:host([disabled][variant="text"]) [part~="base"]:active {
+  background: transparent;
+  border-color: transparent;
+  color: color-mix(in srgb, var(--snice-color-text) 52%, transparent);
+  opacity: 1;
+}
+
+/* Loading state — preserves variant glass fill & crisp spinner */
 [part~="base-loading"],
 [part~="base-loading"]:hover,
 [part~="base-loading"]:active,
@@ -470,7 +530,7 @@
 :host([loading][variant][outline]) [part~="base-outline"],
 :host([loading][variant][outline]) [part~="base-outline"]:hover,
 :host([loading][variant][outline]) [part~="base-outline"]:active {
-  opacity: 0.85;
+  opacity: 0.88;
   cursor: wait;
   transform: none;
   filter: none;
@@ -481,62 +541,6 @@
   background: transparent;
 }
 
-/* Explicit Disabled host state — uniform 0.38 mute across all variants/outlines/text */
-:host([disabled]) [part~="base"],
-:host([disabled]) [part~="base"]:hover,
-:host([disabled]) [part~="base"]:active,
-:host([disabled][variant]) [part~="base"],
-:host([disabled][variant]) [part~="base"]:hover,
-:host([disabled][variant]) [part~="base"]:active,
-:host([disabled][outline]) [part~="base-outline"],
-:host([disabled][outline]) [part~="base-outline"]:hover,
-:host([disabled][outline]) [part~="base-outline"]:active,
-:host([disabled][variant][outline]) [part~="base-outline"],
-:host([disabled][variant][outline]) [part~="base-outline"]:hover,
-:host([disabled][variant][outline]) [part~="base-outline"]:active {
-  opacity: 0.38;
-  cursor: not-allowed;
-  transform: none;
-  filter: none;
-  box-shadow: none;
-}
-
-:host([disabled][variant="text"]) [part~="base"]:hover,
-:host([disabled][variant="text"]) [part~="base"]:active {
-  background: transparent;
-}
-
-:host([disabled][outline]) [part~="base-outline"]:hover,
-:host([disabled][outline]) [part~="base-outline"]:active {
-  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-ios-glass-clear-bg));
-  border-color: var(--snice-color-border-hover);
-}
-
-:host([disabled][variant="primary"][outline]) [part~="base-outline"]:hover,
-:host([disabled][variant="primary"][outline]) [part~="base-outline"]:active {
-  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 38%, transparent);
-}
-
-:host([disabled][variant="success"][outline]) [part~="base-outline"]:hover,
-:host([disabled][variant="success"][outline]) [part~="base-outline"]:active {
-  background: color-mix(in srgb, var(--snice-color-success) 14%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-success) 38%, transparent);
-}
-
-:host([disabled][variant="warning"][outline]) [part~="base-outline"]:hover,
-:host([disabled][variant="warning"][outline]) [part~="base-outline"]:active {
-  background: color-mix(in srgb, var(--snice-color-warning) 16%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-warning) 42%, transparent);
-}
-
-:host([disabled][variant="danger"][outline]) [part~="base-outline"]:hover,
-:host([disabled][variant="danger"][outline]) [part~="base-outline"]:active {
-  background: color-mix(in srgb, var(--snice-color-danger) 14%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-danger) 38%, transparent);
-}
-
-/* Reduced Motion — suppress tactile spring compression */
 @media (prefers-reduced-motion: reduce) {
   [part~="base"]:active,
   :host([variant]) [part~="base"]:active,

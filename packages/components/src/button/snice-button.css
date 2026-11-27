@@ -373,6 +373,7 @@
   line-height: 1;
 }
 
+.icon-slot[hidden],
 .icon-slot:empty {
   display: none;
 }

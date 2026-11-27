@@ -23,11 +23,11 @@
   --snice-tracking-tight: -0.01em;
   --snice-tracking-normal: 0;
 
-  /* Windows 11 Accent & Semantic Seeds (full color-mix() brand cascade) */
-  --snice-color-primary: hsl(206 100% 36%);
-  --snice-color-success: hsl(122 77% 28%);
-  --snice-color-warning: hsl(39 98% 31%);
-  --snice-color-danger: hsl(357 74% 43%);
+  /* Windows 11 Accent & Semantic Seeds (WinUI 3 Light Theme values) */
+  --snice-color-primary: hsl(209 100% 36%);
+  --snice-color-success: hsl(120 78% 27%);
+  --snice-color-warning: hsl(35 100% 31%);
+  --snice-color-danger: hsl(5 75% 44%);
   --snice-color-neutral: hsl(0 0% 38%);
   --snice-win-on-accent: hsl(0 0% 100%);
 
@@ -49,11 +49,11 @@
   --snice-color-border-subtle: hsl(0 0% 0% / 0.06);
 
   /* 1px Top-Lit Control Elevation Border & Transient Acrylic Tokens */
-  --snice-win-control-bg: hsl(0 0% 100% / 0.72);
-  --snice-win-control-bg-hover: hsl(0 0% 98% / 0.85);
-  --snice-win-control-bg-pressed: hsl(0 0% 96% / 0.55);
-  --snice-win-stroke-top: hsl(0 0% 0% / 0.06);
-  --snice-win-stroke-bottom: hsl(0 0% 0% / 0.16);
+  --snice-win-control-bg: hsl(0 0% 100% / 0.86);
+  --snice-win-control-bg-hover: hsl(0 0% 97.5% / 0.92);
+  --snice-win-control-bg-pressed: hsl(0 0% 96% / 0.65);
+  --snice-win-stroke-top: hsl(0 0% 0% / 0.08);
+  --snice-win-stroke-bottom: hsl(0 0% 0% / 0.2);
   --snice-win-stroke-input-bottom: hsl(0 0% 0% / 0.45);
   --snice-win-acrylic-bg: hsl(0 0% 99% / 0.84);
   --snice-win-acrylic-blur: blur(30px) saturate(140%);
@@ -87,10 +87,10 @@
 }
 
 [data-theme="dark"] {
-  --snice-color-primary: hsl(202 100% 69%);
-  --snice-color-success: hsl(116 58% 62%);
-  --snice-color-warning: hsl(47 98% 66%);
-  --snice-color-danger: hsl(357 98% 80%);
+  --snice-color-primary: hsl(200 100% 65%);
+  --snice-color-success: hsl(113 46% 58%);
+  --snice-color-warning: hsl(42 88% 64%);
+  --snice-color-danger: hsl(356 82% 74%);
   --snice-color-neutral: hsl(0 0% 66%);
   --snice-win-on-accent: hsl(0 0% 0%);
 
@@ -122,10 +122,10 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]),
   :root[data-theme="auto"] {
-    --snice-color-primary: hsl(202 100% 69%);
-    --snice-color-success: hsl(116 58% 62%);
-    --snice-color-warning: hsl(47 98% 66%);
-    --snice-color-danger: hsl(357 98% 80%);
+    --snice-color-primary: hsl(200 100% 65%);
+    --snice-color-success: hsl(113 46% 58%);
+    --snice-color-warning: hsl(42 88% 64%);
+    --snice-color-danger: hsl(356 82% 74%);
     --snice-color-neutral: hsl(0 0% 66%);
     --snice-win-on-accent: hsl(0 0% 0%);
 

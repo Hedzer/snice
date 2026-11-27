@@ -418,6 +418,24 @@ describe('snice-button', () => {
       const btnEl = queryShadow(button as HTMLElement, '.button');
       expect(btnEl?.classList.contains('button--icon-end')).toBe(true);
     });
+
+    it('should reveal slotted icon when appended after initial render', async () => {
+      button = await createComponent<SniceButtonElement>('snice-button');
+      await wait(10);
+
+      let iconSlot = queryShadow(button as HTMLElement, '.icon-slot') as HTMLElement;
+      expect(iconSlot?.hidden).toBe(true);
+
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('slot', 'icon');
+      button.appendChild(svg);
+      await wait(20);
+
+      const btnEl = queryShadow(button as HTMLElement, '.button');
+      iconSlot = queryShadow(button as HTMLElement, '.icon-slot') as HTMLElement;
+      expect(btnEl?.classList.contains('button--has-icon')).toBe(true);
+      expect(iconSlot?.hidden).toBe(false);
+    });
   });
 
   describe('click events', () => {

@@ -190,11 +190,11 @@
   transform: none;
 }
 
-/* Text (WinUI 3 SubtleButtonStyle) */
+/* Text (WinUI 3 SubtleButtonStyle — AA+ ink in light & dark) */
 :host([variant="text"]) [part~="base"] {
   background: transparent;
   border-color: transparent;
-  color: var(--snice-color-primary);
+  color: color-mix(in srgb, var(--snice-color-primary) 86%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -202,7 +202,7 @@
 :host([variant="text"]) [part~="base"]:hover {
   background: var(--snice-win-control-bg-hover);
   border-color: transparent;
-  color: var(--snice-color-primary);
+  color: color-mix(in srgb, var(--snice-color-primary) 86%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -211,12 +211,12 @@
 :host([variant="text"][data-win-pressed="true"]) [part~="base"] {
   background: var(--snice-win-control-bg-pressed);
   border-color: transparent;
-  color: color-mix(in srgb, var(--snice-color-primary) 75%, transparent);
+  color: color-mix(in srgb, var(--snice-color-primary) 75%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
 
-/* Outline — crisp 1px Fluent variant border */
+/* Outline — crisp 1px Fluent variant border with AA+ ink in light & dark */
 [part~="base-outline"] {
   background: transparent;
   border-color: var(--snice-color-border-hover);
@@ -244,8 +244,8 @@
 
 :host([variant="primary"]) [part~="base-outline"] {
   background: transparent;
-  border-color: var(--snice-color-primary);
-  color: var(--snice-color-primary);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 75%, var(--snice-color-border-hover));
+  color: color-mix(in srgb, var(--snice-color-primary) 86%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -253,7 +253,7 @@
 :host([variant="primary"]) [part~="base-outline"]:hover {
   background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
   border-color: var(--snice-color-primary);
-  color: var(--snice-color-primary);
+  color: color-mix(in srgb, var(--snice-color-primary) 86%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -262,15 +262,15 @@
 :host([variant="primary"][data-win-pressed="true"]) [part~="base-outline"] {
   background: color-mix(in srgb, var(--snice-color-primary) 18%, transparent);
   border-color: color-mix(in srgb, var(--snice-color-primary) 80%, transparent);
-  color: color-mix(in srgb, var(--snice-color-primary) 80%, transparent);
+  color: color-mix(in srgb, var(--snice-color-primary) 86%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
 
 :host([variant="success"]) [part~="base-outline"] {
   background: transparent;
-  border-color: var(--snice-color-success);
-  color: var(--snice-color-success);
+  border-color: color-mix(in srgb, var(--snice-color-success) 75%, var(--snice-color-border-hover));
+  color: color-mix(in srgb, var(--snice-color-success) 84%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -278,7 +278,7 @@
 :host([variant="success"]) [part~="base-outline"]:hover {
   background: color-mix(in srgb, var(--snice-color-success) 10%, transparent);
   border-color: var(--snice-color-success);
-  color: var(--snice-color-success);
+  color: color-mix(in srgb, var(--snice-color-success) 84%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -287,15 +287,15 @@
 :host([variant="success"][data-win-pressed="true"]) [part~="base-outline"] {
   background: color-mix(in srgb, var(--snice-color-success) 18%, transparent);
   border-color: color-mix(in srgb, var(--snice-color-success) 80%, transparent);
-  color: color-mix(in srgb, var(--snice-color-success) 80%, transparent);
+  color: color-mix(in srgb, var(--snice-color-success) 84%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
 
 :host([variant="warning"]) [part~="base-outline"] {
   background: transparent;
-  border-color: var(--snice-color-warning);
-  color: var(--snice-color-warning);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 75%, var(--snice-color-border-hover));
+  color: color-mix(in srgb, var(--snice-color-warning) 84%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -303,7 +303,7 @@
 :host([variant="warning"]) [part~="base-outline"]:hover {
   background: color-mix(in srgb, var(--snice-color-warning) 10%, transparent);
   border-color: var(--snice-color-warning);
-  color: var(--snice-color-warning);
+  color: color-mix(in srgb, var(--snice-color-warning) 84%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -312,15 +312,15 @@
 :host([variant="warning"][data-win-pressed="true"]) [part~="base-outline"] {
   background: color-mix(in srgb, var(--snice-color-warning) 18%, transparent);
   border-color: color-mix(in srgb, var(--snice-color-warning) 80%, transparent);
-  color: color-mix(in srgb, var(--snice-color-warning) 80%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 84%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
 
 :host([variant="danger"]) [part~="base-outline"] {
   background: transparent;
-  border-color: var(--snice-color-danger);
-  color: var(--snice-color-danger);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 75%, var(--snice-color-border-hover));
+  color: color-mix(in srgb, var(--snice-color-danger) 84%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -328,7 +328,7 @@
 :host([variant="danger"]) [part~="base-outline"]:hover {
   background: color-mix(in srgb, var(--snice-color-danger) 10%, transparent);
   border-color: var(--snice-color-danger);
-  color: var(--snice-color-danger);
+  color: color-mix(in srgb, var(--snice-color-danger) 84%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -337,7 +337,7 @@
 :host([variant="danger"][data-win-pressed="true"]) [part~="base-outline"] {
   background: color-mix(in srgb, var(--snice-color-danger) 18%, transparent);
   border-color: color-mix(in srgb, var(--snice-color-danger) 80%, transparent);
-  color: color-mix(in srgb, var(--snice-color-danger) 80%, transparent);
+  color: color-mix(in srgb, var(--snice-color-danger) 84%, var(--snice-color-text));
   box-shadow: none;
   transform: none;
 }
@@ -354,6 +354,7 @@
   min-height: 2rem;
   padding: 0;
   border-radius: 50%;
+  font-size: 1rem;
 }
 
 :host([size="small"]) [part~="base-circle"] {
@@ -362,6 +363,7 @@
   height: 1.625rem;
   min-height: 1.625rem;
   padding: 0;
+  font-size: 0.875rem;
 }
 
 :host([size="large"]) [part~="base-circle"] {
@@ -370,9 +372,10 @@
   height: 2.5rem;
   min-height: 2.5rem;
   padding: 0;
+  font-size: 1.125rem;
 }
 
-/* Disabled — flat muted surface; outline keeps transparent fill; text stays borderless */
+/* Disabled — clearly visible WinUI 3 disabled surface & legible muted ink (opacity: 1) */
 [part~="base-disabled"],
 [part~="base-disabled"]:hover,
 [part~="base-disabled"]:active,
@@ -385,10 +388,10 @@
 :host([disabled][variant]) [part~="base"],
 :host([disabled][variant]) [part~="base"]:hover,
 :host([disabled][variant]) [part~="base"]:active {
-  background: var(--snice-win-control-bg-pressed);
-  color: var(--snice-color-text-tertiary);
-  border-color: var(--snice-color-border-subtle);
-  opacity: 0.72;
+  background: color-mix(in srgb, var(--snice-color-text) 7%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 50%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+  opacity: 1;
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
@@ -407,9 +410,9 @@
 :host([disabled][variant][outline]) [part~="base"]:hover,
 :host([disabled][variant][outline]) [part~="base"]:active {
   background: transparent;
-  color: var(--snice-color-text-tertiary);
-  border-color: var(--snice-color-border-subtle);
-  opacity: 0.72;
+  color: color-mix(in srgb, var(--snice-color-text) 50%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
+  opacity: 1;
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
@@ -422,9 +425,9 @@
 :host([disabled][variant="text"]) [part~="base"]:hover,
 :host([disabled][variant="text"]) [part~="base"]:active {
   background: transparent;
-  color: var(--snice-color-text-tertiary);
+  color: color-mix(in srgb, var(--snice-color-text) 50%, transparent);
   border-color: transparent;
-  opacity: 0.72;
+  opacity: 1;
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
