@@ -1,0 +1,138 @@
+/* macOS 26 Tahoe AppKit / Xcode activity heatmap skin */
+
+[part~="base"] {
+  box-sizing: border-box;
+  border-radius: 0.75rem;
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-xs);
+  padding: 0.75rem;
+}
+
+[part~="day-label"],
+[part~="month-label"] {
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="cell"] {
+  border-radius: 2.5px;
+  transition: transform var(--snice-transition-fast, 120ms) var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1)),
+    outline-color var(--snice-transition-fast, 120ms) ease;
+}
+
+[part~="cell"]:hover {
+  outline: 1.5px solid var(--snice-color-text-secondary);
+  outline-offset: 0.5px;
+  z-index: 2;
+}
+
+[part~="cell"]:active {
+  transform: scale(0.94);
+}
+
+[part~="cell"]:focus-visible {
+  box-shadow: var(--snice-macos-focus-halo);
+  outline: none;
+  z-index: 2;
+}
+
+[part~="cell-level-0"] {
+  background-color: var(--snice-color-surface-container);
+  box-shadow: inset 0 0 0 0.5px var(--snice-color-border-subtle);
+}
+
+/* Monotonic light & dark ramps — green (default) */
+:host [part~="cell-level-1"],
+:host([color-scheme="green"]) [part~="cell-level-1"] {
+  background-color: color-mix(in srgb, var(--snice-color-success) 26%, var(--snice-color-surface-container));
+}
+:host [part~="cell-level-2"],
+:host([color-scheme="green"]) [part~="cell-level-2"] {
+  background-color: color-mix(in srgb, var(--snice-color-success) 50%, var(--snice-color-surface-container));
+}
+:host [part~="cell-level-3"],
+:host([color-scheme="green"]) [part~="cell-level-3"] {
+  background-color: color-mix(in srgb, var(--snice-color-success) 76%, var(--snice-color-surface-container));
+}
+:host [part~="cell-level-4"],
+:host([color-scheme="green"]) [part~="cell-level-4"] {
+  background-color: var(--snice-color-success);
+}
+
+/* Blue scheme */
+:host([color-scheme="blue"]) [part~="cell-level-1"] {
+  background-color: color-mix(in srgb, var(--snice-color-primary) 26%, var(--snice-color-surface-container));
+}
+:host([color-scheme="blue"]) [part~="cell-level-2"] {
+  background-color: color-mix(in srgb, var(--snice-color-primary) 50%, var(--snice-color-surface-container));
+}
+:host([color-scheme="blue"]) [part~="cell-level-3"] {
+  background-color: color-mix(in srgb, var(--snice-color-primary) 76%, var(--snice-color-surface-container));
+}
+:host([color-scheme="blue"]) [part~="cell-level-4"] {
+  background-color: var(--snice-color-primary);
+}
+
+/* Purple scheme */
+:host([color-scheme="purple"]) [part~="cell-level-1"] {
+  background-color: color-mix(in srgb, hsl(278 68% 58%) 26%, var(--snice-color-surface-container));
+}
+:host([color-scheme="purple"]) [part~="cell-level-2"] {
+  background-color: color-mix(in srgb, hsl(278 68% 58%) 50%, var(--snice-color-surface-container));
+}
+:host([color-scheme="purple"]) [part~="cell-level-3"] {
+  background-color: color-mix(in srgb, hsl(278 68% 58%) 76%, var(--snice-color-surface-container));
+}
+:host([color-scheme="purple"]) [part~="cell-level-4"] {
+  background-color: hsl(278 68% 58%);
+}
+
+/* Orange scheme */
+:host([color-scheme="orange"]) [part~="cell-level-1"] {
+  background-color: color-mix(in srgb, var(--snice-color-warning) 26%, var(--snice-color-surface-container));
+}
+:host([color-scheme="orange"]) [part~="cell-level-2"] {
+  background-color: color-mix(in srgb, var(--snice-color-warning) 50%, var(--snice-color-surface-container));
+}
+:host([color-scheme="orange"]) [part~="cell-level-3"] {
+  background-color: color-mix(in srgb, var(--snice-color-warning) 76%, var(--snice-color-surface-container));
+}
+:host([color-scheme="orange"]) [part~="cell-level-4"] {
+  background-color: var(--snice-color-warning);
+}
+
+/* Red scheme */
+:host([color-scheme="red"]) [part~="cell-level-1"] {
+  background-color: color-mix(in srgb, var(--snice-color-danger) 26%, var(--snice-color-surface-container));
+}
+:host([color-scheme="red"]) [part~="cell-level-2"] {
+  background-color: color-mix(in srgb, var(--snice-color-danger) 50%, var(--snice-color-surface-container));
+}
+:host([color-scheme="red"]) [part~="cell-level-3"] {
+  background-color: color-mix(in srgb, var(--snice-color-danger) 76%, var(--snice-color-surface-container));
+}
+:host([color-scheme="red"]) [part~="cell-level-4"] {
+  background-color: var(--snice-color-danger);
+}
+
+/* macOS Liquid Glass floating popover */
+[part~="tooltip"] {
+  border-radius: 0.4375rem;
+  padding: 0.3125rem 0.5625rem;
+  background: var(--snice-macos-glass-menu-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid var(--snice-macos-glass-border);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-md);
+  color: var(--snice-color-text);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="cell"] {
+    transition: none;
+  }
+}

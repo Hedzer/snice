@@ -201,7 +201,8 @@ export class SniceHeatmap extends HTMLElement implements SniceHeatmapElement {
       }
       const nextLabel = labels.find(l => l.column > column);
       const endCol = nextLabel ? nextLabel.column : totalWeeks + 1;
-      spans.push(html`<span class="heatmap__month-label" part="month-label" style="grid-column: ${column} / ${endCol}">${label}</span>`);
+      const showText = (endCol - column) >= 2;
+      spans.push(html`<span class="heatmap__month-label" part="month-label" style="grid-column: ${column} / ${endCol}">${showText ? label : ''}</span>`);
       currentCol = endCol;
     }
 
