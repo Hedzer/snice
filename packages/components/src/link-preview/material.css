@@ -1,0 +1,150 @@
+/* Material 3 Expressive — snice-link-preview
+ * Google Messages / Chrome Rich URL Card: primary-tinted surface-container-low
+ * body, secondary-container tonal placeholder well, 16px/12px/20px expressive
+ * corners with press morph, M3 8%/10% state layers, and Roboto typography.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: var(--snice-border-radius-lg, 16px);
+  box-shadow: var(--snice-shadow-xs);
+  transition:
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    border-radius var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="base"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) var(--snice-m3-state-hover, 8%), var(--snice-color-surface-container-low));
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="base"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) var(--snice-m3-state-pressed, 10%), var(--snice-color-surface-container-low));
+  border-radius: 12px;
+}
+
+:host [part~="base"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+:host [part~="media"] {
+  background: var(--snice-color-surface-container-highest);
+}
+
+:host [part~="placeholder"] {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+}
+
+:host [part~="content"] {
+  padding: 0.875rem 1rem;
+  gap: 0.25rem;
+}
+
+:host [part~="title"],
+:host([size="medium"]) [part~="title"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.005em;
+  color: var(--snice-color-text);
+}
+
+:host [part~="description"],
+:host([size="medium"]) [part~="description"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  line-height: 1.43;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="favicon"] {
+  border-radius: 4px;
+}
+
+:host [part~="site-name"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--snice-color-primary);
+}
+
+:host [part~="domain"],
+:host [part~="separator"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+}
+
+/* Size: small */
+:host([size="small"]) [part~="base"] {
+  border-radius: 12px;
+}
+
+:host([size="small"]) [part~="base"]:active {
+  border-radius: 8px;
+}
+
+:host([size="small"]) [part~="content"] {
+  padding: 0.625rem 0.75rem;
+}
+
+:host([size="small"]) [part~="title"] {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+:host([size="small"]) [part~="description"] {
+  font-size: 0.75rem;
+}
+
+:host([size="small"]) [part~="site-name"],
+:host([size="small"]) [part~="domain"],
+:host([size="small"]) [part~="separator"] {
+  font-size: 0.75rem;
+}
+
+/* Size: large */
+:host([size="large"]) [part~="base"] {
+  border-radius: 20px;
+}
+
+:host([size="large"]) [part~="content"] {
+  padding: 1rem 1.25rem;
+}
+
+:host([size="large"]) [part~="title"] {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="base"] {
+    transition: none;
+  }
+
+  :host [part~="base"]:active {
+    border-radius: var(--snice-border-radius-lg, 16px);
+  }
+
+  :host([size="small"]) [part~="base"]:active {
+    border-radius: 12px;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="base"]:focus-visible {
+    outline: 2px solid Highlight;
+  }
+}

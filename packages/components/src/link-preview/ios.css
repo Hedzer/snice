@@ -1,0 +1,150 @@
+/* iOS 26+ Liquid Glass — snice-link-preview
+ * Apple LPLinkView (Messages / Notes / Safari): opaque grouped card surface,
+ * concentric 18px/14px/20px corners, 0.5px hairline rim & media divider,
+ * distinct placeholder media well, SF Pro typography, and spring press scale.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 18px;
+  box-shadow: var(--snice-shadow-sm);
+  transition:
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
+    box-shadow var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease-out),
+    border-color var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="base"]:hover {
+  border-color: var(--snice-color-border);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="base"]:active {
+  transform: scale(0.985);
+}
+
+:host [part~="base"]:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color),
+    var(--snice-shadow-sm);
+}
+
+:host [part~="media"] {
+  background: var(--snice-color-surface-container);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host([variant="horizontal"]) [part~="media"] {
+  border-bottom: none;
+  border-right: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="placeholder"] {
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="content"] {
+  padding: 0.875rem 1rem;
+  gap: 0.25rem;
+}
+
+:host [part~="title"],
+:host([size="medium"]) [part~="title"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.3;
+  color: var(--snice-color-text);
+}
+
+:host [part~="description"],
+:host([size="medium"]) [part~="description"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="favicon"] {
+  border-radius: 4px;
+}
+
+:host [part~="site-name"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="domain"],
+:host [part~="separator"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Size: small */
+:host([size="small"]) [part~="base"] {
+  border-radius: 14px;
+}
+
+:host([size="small"]) [part~="content"] {
+  padding: 0.625rem 0.75rem;
+}
+
+:host([size="small"]) [part~="title"] {
+  font-size: 0.875rem;
+  letter-spacing: -0.014em;
+  line-height: 1.3;
+}
+
+:host([size="small"]) [part~="description"] {
+  font-size: 0.75rem;
+}
+
+:host([size="small"]) [part~="site-name"],
+:host([size="small"]) [part~="domain"],
+:host([size="small"]) [part~="separator"] {
+  font-size: 0.75rem;
+}
+
+/* Size: large */
+:host([size="large"]) [part~="base"] {
+  border-radius: 20px;
+}
+
+:host([size="large"]) [part~="content"] {
+  padding: 1rem 1.25rem;
+}
+
+:host([size="large"]) [part~="title"] {
+  font-size: 1.125rem;
+  letter-spacing: -0.022em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="base"] {
+    transition: none;
+  }
+
+  :host [part~="base"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="base"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}
