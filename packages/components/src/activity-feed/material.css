@@ -1,0 +1,168 @@
+/* Android Material 3 Expressive — snice-activity-feed
+   Native counterpart: M3 Activity History + 8px Filter Chips (secondary-container) + 40dp primary-container medallions. */
+
+:host {
+  font-family: var(--snice-font-family);
+  --feed-bg: var(--snice-color-surface);
+  --feed-border: var(--snice-color-border-subtle);
+  --feed-bg-element: var(--snice-color-surface-container-low);
+}
+
+:host [part~="filters"] {
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="filter"] {
+  min-height: 2rem;
+  padding: 0 0.875rem;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects),
+    border-radius 180ms var(--snice-m3-spring-spatial-fast);
+}
+
+:host [part~="filter"]:hover {
+  background: var(--snice-color-overlay-hover);
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-text);
+}
+
+:host [part~="filter"]:active {
+  border-radius: var(--snice-m3-shape-morph-selected, 12px);
+}
+
+:host [part~="filter"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+:host [part~="filter-active"] {
+  background: var(--snice-m3-secondary-container);
+  border-color: transparent;
+  color: var(--snice-m3-on-secondary-container);
+  font-weight: 500;
+}
+
+:host [part~="filter-active"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) 8%, var(--snice-m3-secondary-container));
+  border-color: transparent;
+  color: var(--snice-m3-on-secondary-container);
+  box-shadow: var(--snice-shadow-xs);
+  opacity: 1;
+}
+
+:host [part~="group-header"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--snice-color-primary);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  padding: 0.5rem 0;
+}
+
+:host [part~="entry"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+/* 40dp M3 tonal primary-container medallion + dead-center 2px rail */
+:host [part~="icon"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: var(--snice-m3-primary-container);
+  border: none;
+  color: var(--snice-m3-on-primary-container);
+}
+
+:host [part~="entry"]::before {
+  left: calc(1.25rem - 1px);
+  top: 3rem;
+  width: 2px;
+  background: var(--snice-color-border-subtle);
+}
+
+:host [part~="content"] {
+  border-radius: 12px;
+  padding: 0.375rem 0.75rem;
+}
+
+:host [part~="content"]:hover {
+  background: var(--snice-color-surface-container-low);
+}
+
+:host [part~="actor"] {
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+:host [part~="avatar"] {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+}
+
+:host [part~="target"] {
+  font-weight: 500;
+  color: var(--snice-color-primary);
+}
+
+:host [part~="badge"] {
+  border-radius: 8px;
+  padding: 0.125rem 0.5rem;
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+:host [part~="load-more-button"] {
+  min-height: 2.5rem;
+  padding: 0 1.5rem;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-primary);
+  font-weight: 500;
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects),
+    border-radius 180ms var(--snice-m3-spring-spatial-fast);
+}
+
+:host [part~="load-more-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-primary);
+}
+
+:host [part~="load-more-button"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+:host [part~="load-more-button"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+:host [part~="empty"] {
+  font-style: normal;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (forced-colors: active) {
+  :host [part~="filter-active"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+  }
+
+  :host [part~="entry"]::before {
+    background: CanvasText;
+  }
+}

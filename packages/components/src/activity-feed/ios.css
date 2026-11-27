@@ -1,0 +1,182 @@
+/* iOS 26+ Liquid Glass — snice-activity-feed
+   Native counterpart: iOS 26 Grouped Activity Timeline & Capsule Filter Strip (opaque entries, 1.5px hairline rail). */
+
+:host {
+  font-family: var(--snice-font-family);
+  --feed-bg: var(--snice-color-surface-container-high);
+  --feed-border: var(--snice-color-border-subtle);
+  --feed-bg-element: var(--snice-color-surface-container-low);
+}
+
+:host [part~="filters"] {
+  gap: 0.5rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="filter"] {
+  min-height: 2rem;
+  padding: 0 0.875rem;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-low);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.008em;
+  transition:
+    background-color var(--snice-transition-fast, 160ms) var(--snice-ease-out),
+    color var(--snice-transition-fast, 160ms) var(--snice-ease-out),
+    transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring);
+}
+
+:host [part~="filter"]:hover {
+  background: var(--snice-color-surface-container);
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-text);
+}
+
+:host [part~="filter"]:active {
+  transform: scale(0.95);
+}
+
+:host [part~="filter"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Explicit white ink on saturated iOS blue — never --snice-color-text-inverse (black in dark mode!) */
+:host [part~="filter-active"] {
+  background: var(--snice-color-primary);
+  border-color: transparent;
+  color: hsl(0 0% 100%);
+  font-weight: 600;
+}
+
+:host [part~="filter-active"]:hover {
+  background: var(--snice-color-primary);
+  border-color: transparent;
+  color: hsl(0 0% 100%);
+  filter: brightness(1.06);
+  opacity: 1;
+}
+
+:host [part~="group-header"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--snice-color-text-secondary);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  padding: 0.5rem 0 0.375rem;
+}
+
+:host [part~="entry"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+/* Keep 2.25rem icon + dead-center 1.5px hairline rail */
+:host [part~="icon"] {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-xs);
+  color: var(--snice-color-primary);
+}
+
+:host [part~="entry"]::before {
+  left: calc(1.125rem - 0.75px);
+  width: 1.5px;
+  background: var(--snice-color-border-subtle);
+}
+
+:host [part~="content"] {
+  border-radius: 12px;
+  padding: 0.375rem 0.625rem;
+}
+
+:host [part~="content"]:hover {
+  background: var(--snice-color-surface-container-low);
+}
+
+:host [part~="description"] {
+  font-size: 0.9375rem;
+  line-height: 1.42;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text);
+}
+
+:host [part~="actor"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+:host [part~="target"] {
+  font-weight: 600;
+  color: var(--snice-color-primary);
+}
+
+:host [part~="badge"] {
+  border-radius: 9999px;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  color: var(--snice-color-primary);
+}
+
+:host [part~="timestamp"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-tertiary);
+}
+
+:host [part~="load-more-button"] {
+  min-height: 2.75rem;
+  padding: 0 1.5rem;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-low);
+  border: 0.5px solid var(--snice-color-border);
+  color: var(--snice-color-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring), background-color 140ms ease;
+}
+
+:host [part~="load-more-button"]:hover {
+  background: var(--snice-color-surface-container);
+  border-color: var(--snice-color-border-hover);
+  color: var(--snice-color-primary);
+}
+
+:host [part~="load-more-button"]:active {
+  transform: scale(0.95);
+}
+
+:host [part~="load-more-button"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="empty"] {
+  font-style: normal;
+  font-size: 0.9375rem;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (forced-colors: active) {
+  :host [part~="filter-active"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+  }
+
+  :host [part~="entry"]::before {
+    background: CanvasText;
+  }
+}

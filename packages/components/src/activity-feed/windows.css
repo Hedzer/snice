@@ -1,0 +1,174 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-activity-feed
+   Native counterpart: WinUI 3 Activity Log (4px top-lit ToggleButton filters, 32px icons on 1px rail, --snice-win-on-accent). */
+
+:host {
+  font-family: var(--snice-font-family);
+  --feed-bg: var(--snice-color-surface-container-lowest);
+  --feed-border: var(--snice-color-border-subtle);
+  --feed-bg-element: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="filters"] {
+  gap: 0.375rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="filter"] {
+  min-height: 1.75rem;
+  padding: 0 0.75rem;
+  border-radius: 4px;
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  color: var(--snice-color-text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="filter"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  color: var(--snice-color-text);
+}
+
+:host [part~="filter"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="filter"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* Black ink on bright #60CDFF dark accent via --snice-win-on-accent */
+:host [part~="filter-active"] {
+  background: var(--snice-color-primary);
+  border-color: transparent;
+  color: var(--snice-win-on-accent);
+}
+
+:host [part~="filter-active"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 90%, var(--snice-win-on-accent));
+  border-color: transparent;
+  color: var(--snice-win-on-accent);
+  opacity: 1;
+}
+
+:host [part~="group-header"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="entry"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+  border-radius: 4px;
+}
+
+/* 32px WinUI circular icon + exact dead-center 1px rail */
+:host [part~="icon"] {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-primary);
+}
+
+:host [part~="entry"]::before {
+  left: calc(1rem - 0.5px);
+  top: 2.5rem;
+  width: 1px;
+  background: var(--snice-color-border);
+}
+
+:host [part~="content"] {
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+}
+
+:host [part~="content"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="description"] {
+  font-size: 0.875rem;
+  line-height: 1.43;
+  color: var(--snice-color-text);
+}
+
+:host [part~="actor"] {
+  font-weight: 600;
+}
+
+:host [part~="target"] {
+  font-weight: 600;
+  color: var(--snice-color-primary);
+}
+
+:host [part~="badge"] {
+  border-radius: 4px;
+  padding: 0.0625rem 0.375rem;
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+:host [part~="timestamp"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-tertiary);
+}
+
+:host [part~="load-more-button"] {
+  min-height: 2rem;
+  padding: 0 1rem;
+  border-radius: 4px;
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  color: var(--snice-color-text);
+  font-size: 0.875rem;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="load-more-button"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  color: var(--snice-color-text);
+}
+
+:host [part~="load-more-button"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="load-more-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="empty"] {
+  font-style: normal;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (forced-colors: active) {
+  :host [part~="filter-active"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+
+  :host [part~="entry"]::before {
+    background: CanvasText;
+  }
+}
