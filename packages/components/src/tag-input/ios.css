@@ -1,0 +1,161 @@
+/* iOS 26+ Liquid Glass — snice-tag-input (Grouped Token Field + Glass Suggestions Popover) */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+[part~="base"] {
+  gap: 0.375rem;
+}
+
+[part~="label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text-secondary);
+  padding-left: 0.25rem;
+}
+
+[part~="container"] {
+  box-sizing: border-box;
+  min-height: 2.75rem;
+  padding: 0.375rem 0.625rem;
+  gap: 0.375rem;
+  border-radius: 12px;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border);
+  box-shadow: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+[part~="container"]:focus-within {
+  border-color: var(--snice-color-primary);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="container-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+[part~="container-invalid"]:focus-within {
+  border-color: var(--snice-color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-danger) 35%, transparent);
+}
+
+[part~="container-disabled"] {
+  opacity: 0.45;
+  background: var(--snice-color-surface-container);
+  border-color: var(--snice-color-border-subtle);
+  box-shadow: none;
+}
+
+[part~="tag"] {
+  padding: 0.1875rem 0.4375rem 0.1875rem 0.625rem;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-primary) 15%, var(--snice-color-surface-container-high));
+  color: var(--snice-color-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.006em;
+}
+
+[part~="tag-remove"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+  color: var(--snice-color-primary);
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms var(--snice-ease-spring);
+}
+
+[part~="tag-remove"]:hover {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+[part~="tag-remove"]:active {
+  transform: scale(0.92);
+}
+
+[part~="tag-remove"]:focus-visible {
+  outline: 2px solid var(--snice-focus-ring-color);
+  outline-offset: 1px;
+}
+
+[part~="input"] {
+  font-family: var(--snice-font-family);
+  font-size: 1rem;
+  line-height: 1.35;
+  min-height: 1.75rem;
+  color: var(--snice-color-text);
+  padding: 0.125rem 0.125rem;
+}
+
+[part~="input"]::placeholder {
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Floating Liquid Glass Suggestions Popover */
+[part~="suggestions"] {
+  margin-top: 6px;
+  padding: 0.375rem;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 88%, transparent);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+}
+
+[part~="suggestion"] {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--snice-color-text);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+[part~="suggestion"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  color: var(--snice-color-text);
+}
+
+[part~="suggestion-highlighted"],
+[part~="suggestion-highlighted"]:hover {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  font-weight: 500;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="suggestions"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="container"],
+  [part~="tag-remove"],
+  [part~="suggestion"] {
+    transition-duration: 0s;
+  }
+
+  [part~="tag-remove"]:active {
+    transform: none;
+  }
+}
