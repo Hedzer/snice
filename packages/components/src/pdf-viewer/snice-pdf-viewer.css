@@ -89,6 +89,8 @@
 .pdf-page-input {
   width: 3rem;
   text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
   padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-2xs, 0.25rem);
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-md, 0.25rem);
@@ -96,6 +98,12 @@
   font-family: inherit;
   background: var(--snice-color-surface, rgb(255 255 255));
   color: var(--snice-color-text, rgb(23 23 23));
+}
+
+.pdf-page-input::-webkit-outer-spin-button,
+.pdf-page-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .pdf-page-input:focus-visible {
