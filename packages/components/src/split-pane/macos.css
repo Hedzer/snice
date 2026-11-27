@@ -1,0 +1,98 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-split-pane (AppKit NSSplitView Thin Hairline) */
+[part~="divider"] {
+  box-sizing: border-box;
+  background: var(--snice-color-border);
+  overflow: visible;
+  z-index: 1;
+  transition: background-color var(--snice-transition-fast, 140ms) ease;
+}
+
+:host([direction="horizontal"]) [part~="divider"] {
+  width: 1px;
+  height: 100%;
+}
+
+:host([direction="vertical"]) [part~="divider"] {
+  width: 100%;
+  height: 1px;
+}
+
+/* Invisible expanded desktop pointer grab target */
+:host([direction="horizontal"]) [part~="divider"]::before {
+  content: "";
+  position: absolute;
+  inset: 0 -4px;
+}
+
+:host([direction="vertical"]) [part~="divider"]::before {
+  content: "";
+  position: absolute;
+  inset: -4px 0;
+}
+
+:host([direction="horizontal"]) [part~="divider"]:hover,
+:host([direction="vertical"]) [part~="divider"]:hover {
+  background: var(--snice-color-border-hover);
+}
+
+:host([data-dragging]) [part~="divider"],
+:host([direction="horizontal"]) [part~="divider"][part~="divider-dragging"],
+:host([direction="vertical"]) [part~="divider"][part~="divider-dragging"] {
+  background: var(--snice-color-primary);
+}
+
+[part~="divider"]:focus-visible {
+  outline: none;
+  background: var(--snice-color-primary);
+  box-shadow: var(--snice-macos-focus-halo);
+  z-index: 2;
+}
+
+/* Whisper-subtle hover/drag pill (base CSS handles opacity 0 -> 1 on divider hover) */
+[part~="handle"] {
+  border-radius: 9999px;
+  background: var(--snice-color-text-tertiary);
+  transition:
+    opacity var(--snice-transition-fast, 140ms) ease,
+    background-color var(--snice-transition-fast, 140ms) ease;
+}
+
+:host([direction="horizontal"]) [part~="handle"] {
+  width: 3px;
+  height: 24px;
+}
+
+:host([direction="vertical"]) [part~="handle"] {
+  width: 24px;
+  height: 3px;
+}
+
+:host([data-dragging]) [part~="handle"] {
+  opacity: 1;
+  background: var(--snice-color-primary);
+}
+
+:host([disabled][direction="horizontal"]) [part~="divider"],
+:host([disabled][direction="horizontal"]) [part~="divider"][part~="divider-disabled"],
+:host([disabled][direction="horizontal"]) [part~="divider"][part~="divider-disabled"]:hover {
+  width: 1px;
+  background: var(--snice-color-border-subtle);
+  cursor: default;
+}
+
+:host([disabled][direction="vertical"]) [part~="divider"],
+:host([disabled][direction="vertical"]) [part~="divider"][part~="divider-disabled"],
+:host([disabled][direction="vertical"]) [part~="divider"][part~="divider-disabled"]:hover {
+  height: 1px;
+  background: var(--snice-color-border-subtle);
+  cursor: default;
+}
+
+:host([disabled]) [part~="divider"]::before {
+  pointer-events: none;
+}
+
+:host([disabled]) [part~="handle"] {
+  opacity: 0;
+  pointer-events: none;
+}

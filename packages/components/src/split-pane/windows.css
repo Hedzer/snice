@@ -1,0 +1,116 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-split-pane (WinUI 3 GridSplitter) */
+[part~="divider"] {
+  box-sizing: border-box;
+  background: var(--snice-color-surface);
+  transition:
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
+}
+
+:host([direction="horizontal"]) [part~="divider"] {
+  width: 6px;
+  height: 100%;
+  border-inline: 1px solid var(--snice-color-border-subtle);
+}
+
+:host([direction="vertical"]) [part~="divider"] {
+  width: 100%;
+  height: 6px;
+  border-block: 1px solid var(--snice-color-border-subtle);
+}
+
+:host([direction="horizontal"]) [part~="divider"]:hover,
+:host([direction="vertical"]) [part~="divider"]:hover {
+  background: var(--snice-color-overlay-hover);
+  border-color: var(--snice-color-border);
+}
+
+:host([data-dragging]) [part~="divider"],
+:host([direction="horizontal"]) [part~="divider"][part~="divider-dragging"],
+:host([direction="vertical"]) [part~="divider"][part~="divider-dragging"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 16%, var(--snice-color-surface));
+  border-color: color-mix(in srgb, var(--snice-color-primary) 36%, var(--snice-color-border));
+}
+
+[part~="divider"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+  z-index: 2;
+}
+
+[part~="handle"] {
+  opacity: 1;
+  border-radius: 9999px;
+  background: var(--snice-color-text-tertiary);
+  transition:
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    width var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    height var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
+}
+
+:host([direction="horizontal"]) [part~="handle"] {
+  width: 2px;
+  height: 24px;
+}
+
+:host([direction="vertical"]) [part~="handle"] {
+  width: 24px;
+  height: 2px;
+}
+
+:host([direction="horizontal"]) [part~="handle"]:hover,
+:host([direction="vertical"]) [part~="handle"]:hover {
+  background: var(--snice-color-primary);
+}
+
+:host([data-dragging][direction="horizontal"]) [part~="handle"] {
+  width: 3px;
+  background: var(--snice-color-primary);
+}
+
+:host([data-dragging][direction="vertical"]) [part~="handle"] {
+  height: 3px;
+  background: var(--snice-color-primary);
+}
+
+:host([disabled][direction="horizontal"]) [part~="divider"],
+:host([disabled][direction="horizontal"]) [part~="divider"][part~="divider-disabled"],
+:host([disabled][direction="horizontal"]) [part~="divider"][part~="divider-disabled"]:hover {
+  width: 1px;
+  background: var(--snice-color-border-subtle);
+  border-inline: none;
+  cursor: default;
+}
+
+:host([disabled][direction="vertical"]) [part~="divider"],
+:host([disabled][direction="vertical"]) [part~="divider"][part~="divider-disabled"],
+:host([disabled][direction="vertical"]) [part~="divider"][part~="divider-disabled"]:hover {
+  height: 1px;
+  background: var(--snice-color-border-subtle);
+  border-block: none;
+  cursor: default;
+}
+
+:host([disabled]) [part~="handle"],
+:host([disabled][direction="horizontal"]) [part~="handle"]:hover,
+:host([disabled][direction="vertical"]) [part~="handle"]:hover {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (forced-colors: active) {
+  [part~="divider"] {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
+  [part~="handle"] {
+    background: Highlight;
+  }
+
+  [part~="divider"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 1px;
+    box-shadow: none;
+  }
+}

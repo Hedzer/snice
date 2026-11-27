@@ -34,6 +34,7 @@ disabled: boolean = false;
 - `primary` - Primary pane container
 - `divider` - Draggable divider bar
 - `divider-disabled` - Added to `divider` while the split pane is disabled
+- `divider-dragging` - Added to `divider` while the divider is actively being dragged
 - `handle` - Visual handle inside divider
 - `secondary` - Secondary pane container
 

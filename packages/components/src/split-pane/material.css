@@ -1,0 +1,101 @@
+/* Android Material 3 Expressive — snice-split-pane (M3 Pane Drag Handle) */
+[part~="divider"] {
+  box-sizing: border-box;
+  background: var(--snice-color-surface-container-low);
+  box-shadow: none;
+  transition: background-color 150ms var(--snice-m3-spring-effects, ease);
+}
+
+:host([direction="horizontal"]) [part~="divider"] {
+  width: 16px;
+  height: 100%;
+}
+
+:host([direction="vertical"]) [part~="divider"] {
+  width: 100%;
+  height: 16px;
+}
+
+:host([direction="horizontal"]) [part~="divider"]:hover,
+:host([direction="vertical"]) [part~="divider"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-low));
+}
+
+:host([data-dragging]) [part~="divider"],
+:host([direction="horizontal"]) [part~="divider"][part~="divider-dragging"],
+:host([direction="vertical"]) [part~="divider"][part~="divider-dragging"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, var(--snice-color-surface-container-low));
+}
+
+[part~="divider"]:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 3px var(--snice-focus-ring-color);
+  z-index: 2;
+}
+
+[part~="handle"] {
+  opacity: 1;
+  border-radius: 9999px;
+  background: var(--snice-color-text-secondary);
+  transition:
+    width 220ms var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    height 220ms var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    background-color 150ms var(--snice-m3-spring-effects, ease);
+}
+
+:host([direction="horizontal"]) [part~="handle"] {
+  width: 4px;
+  height: 48px;
+}
+
+:host([direction="vertical"]) [part~="handle"] {
+  width: 48px;
+  height: 4px;
+}
+
+:host([direction="horizontal"]) [part~="handle"]:hover {
+  width: 6px;
+  background: var(--snice-color-text);
+}
+
+:host([direction="vertical"]) [part~="handle"]:hover {
+  height: 6px;
+  background: var(--snice-color-text);
+}
+
+:host([data-dragging][direction="horizontal"]) [part~="handle"] {
+  width: 10px;
+  height: 52px;
+  background: var(--snice-color-primary);
+}
+
+:host([data-dragging][direction="vertical"]) [part~="handle"] {
+  width: 52px;
+  height: 10px;
+  background: var(--snice-color-primary);
+}
+
+:host([disabled][direction="horizontal"]) [part~="divider"],
+:host([disabled][direction="horizontal"]) [part~="divider"][part~="divider-disabled"],
+:host([disabled][direction="horizontal"]) [part~="divider"][part~="divider-disabled"]:hover {
+  width: 1px;
+  opacity: 1;
+  background: var(--snice-color-border-subtle);
+  cursor: default;
+}
+
+:host([disabled][direction="vertical"]) [part~="divider"],
+:host([disabled][direction="vertical"]) [part~="divider"][part~="divider-disabled"],
+:host([disabled][direction="vertical"]) [part~="divider"][part~="divider-disabled"]:hover {
+  height: 1px;
+  opacity: 1;
+  background: var(--snice-color-border-subtle);
+  cursor: default;
+}
+
+:host([disabled]) [part~="handle"],
+:host([disabled][direction="horizontal"]) [part~="handle"]:hover,
+:host([disabled][direction="vertical"]) [part~="handle"]:hover {
+  opacity: 0;
+  pointer-events: none;
+}

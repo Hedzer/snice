@@ -106,7 +106,9 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
   private beginDrag(clientX: number, clientY: number) {
     this.isDragging = true;
     this.classList.add('dragging');
+    this.setAttribute('data-dragging', '');
     this.dividerElement.classList.add('divider--dragging');
+    this.dividerElement.part.add('divider-dragging');
     this.startPosition = this.direction === 'horizontal' ? clientX : clientY;
     this.startSize = this.primarySize;
   }
@@ -137,7 +139,9 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
   private endDrag() {
     this.isDragging = false;
     this.classList.remove('dragging');
+    this.removeAttribute('data-dragging');
     this.dividerElement.classList.remove('divider--dragging');
+    this.dividerElement.part.remove('divider-dragging');
   }
 
   private handleMouseMove = (e: MouseEvent) => {
@@ -199,8 +203,8 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
       </div>
 
       <div
-        part="divider${this.disabled ? ' divider-disabled' : ''}"
-        class="divider ${this.disabled ? 'divider--disabled' : ''}"
+        part="divider${this.disabled ? ' divider-disabled' : ''}${this.isDragging ? ' divider-dragging' : ''}"
+        class="divider ${this.disabled ? 'divider--disabled' : ''}${this.isDragging ? ' divider--dragging' : ''}"
         role="separator"
         aria-orientation="${this.direction === 'horizontal' ? 'vertical' : 'horizontal'}"
         aria-valuenow="${Math.round(this.primarySize)}"

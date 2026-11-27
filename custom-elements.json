@@ -44410,6 +44410,9 @@
               "name": "divider-disabled"
             },
             {
+              "name": "divider-dragging"
+            },
+            {
               "name": "handle"
             },
             {
@@ -45511,6 +45514,18 @@
               "name": "step-connector"
             },
             {
+              "name": "step-connector-active"
+            },
+            {
+              "name": "step-connector-completed"
+            },
+            {
+              "name": "step-connector-error"
+            },
+            {
+              "name": "step-connector-pending"
+            },
+            {
               "name": "step-content"
             },
             {
@@ -45523,7 +45538,31 @@
               "name": "step-indicator"
             },
             {
+              "name": "step-indicator-active"
+            },
+            {
+              "name": "step-indicator-completed"
+            },
+            {
+              "name": "step-indicator-error"
+            },
+            {
+              "name": "step-indicator-pending"
+            },
+            {
               "name": "step-label"
+            },
+            {
+              "name": "step-label-active"
+            },
+            {
+              "name": "step-label-completed"
+            },
+            {
+              "name": "step-label-error"
+            },
+            {
+              "name": "step-label-pending"
             },
             {
               "name": "step-pending"
@@ -54492,6 +54531,16 @@
                   "optional": false
                 }
               ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "syncInitialActive",
+              "parameters": [],
               "return": {
                 "type": {
                   "text": "unknown"
