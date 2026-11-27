@@ -39,6 +39,8 @@ variant: 'stepper'|'inline' = 'stepper';
 - `step-active` - Added to `step` for the current step
 - `step-completed` - Added to `step` for a completed step
 - `step-number` - Step number/checkmark badge
+- `step-number-active` - Added to `step-number` for the current step
+- `step-number-completed` - Added to `step-number` for a completed step
 - `month-header` - Month navigation row
 - `month-nav` - A month navigation button
 - `month-nav-prev` - Added to `month-nav` on the previous-month button

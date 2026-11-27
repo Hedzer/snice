@@ -60,6 +60,8 @@ A multi-step appointment booking widget with date selection, time slot picking, 
 | `step-active` | `<div>` | Added to `step` for the current step |
 | `step-completed` | `<div>` | Added to `step` for a completed step |
 | `step-number` | `<span>` | Step number/checkmark badge |
+| `step-number-active` | `<span>` | Added to `step-number` for the current step |
+| `step-number-completed` | `<span>` | Added to `step-number` for a completed step |
 | `month-header` | `<div>` | Month navigation row |
 | `month-nav` | `<button>` | A month navigation button |
 | `month-nav-prev` | `<button>` | Added to `month-nav` on the previous-month button |

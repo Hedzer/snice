@@ -134,7 +134,12 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
 
       const numEl = document.createElement('span');
       numEl.className = 'booking__step-number';
-      numEl.setAttribute('part', 'step-number');
+      numEl.setAttribute(
+        'part',
+        step.num === this.currentStep
+          ? 'step-number step-number-active'
+          : step.num < this.currentStep ? 'step-number step-number-completed' : 'step-number',
+      );
       numEl.textContent = step.num < this.currentStep ? '\u2713' : String(step.num);
 
       stepEl.appendChild(numEl);

@@ -4921,6 +4921,12 @@
               "name": "step-number"
             },
             {
+              "name": "step-number-active"
+            },
+            {
+              "name": "step-number-completed"
+            },
+            {
               "name": "stepper"
             },
             {
