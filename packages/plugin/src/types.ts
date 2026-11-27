@@ -111,6 +111,8 @@ export interface SnicePluginOptions {
   target?: string | false;
   /** Emit build tier size report, cache-hash diff, and optional budgets (default false). */
   report?: boolean | ((report: SniceBuildReport) => void) | SniceReportOptions;
+  /** Dev-server HMR for `@element` classes in Vite serve mode (default true in dev serve; 0 bytes in production). */
+  hmr?: boolean;
   /** Optional snice-table cell/feature stripping: explicit allowlist, 'auto' conservative static detection, or false to disable. */
   table?: SniceTableOption;
 }
@@ -133,6 +135,7 @@ export function validateOptions(options: unknown): SnicePluginOptions {
   assertBooleanOrUndefined(opts.precompileTemplates, 'precompileTemplates');
   assertBooleanOrUndefined(opts.minifyCss, 'minifyCss');
   assertBooleanOrUndefined(opts.pruneTheme, 'pruneTheme');
+  assertBooleanOrUndefined(opts.hmr, 'hmr');
   if (opts.dev !== undefined && typeof opts.dev !== 'boolean' && opts.dev !== 'preserve') {
     throw new TypeError(`snice plugin: "dev" must be a boolean or "preserve", received ${typeof opts.dev}.`);
   }

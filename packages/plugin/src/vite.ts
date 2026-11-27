@@ -1,5 +1,7 @@
 import { createSniceCorePlugin, type SniceRuntimeEnv } from './core';
 import { createSniceManualChunks } from './chunking';
+import { HMR_RUNTIME_CODE, HMR_SPECIFIER, HMR_VIRTUAL_ID, transformHmr } from './hmr';
+import { composeSourceMaps } from './sourcemap';
 import { validateOptions, type SnicePluginOptions } from './types';
 
 export type {
@@ -27,6 +29,8 @@ export function snice(options?: SnicePluginOptions): Record<string, any> {
     isLib: false,
     isDev: validated.dev === true,
   };
+  let isServeMode = false;
+  const hmrEnabled = validated.hmr !== false;
 
   const base = createSniceCorePlugin(validated, env);
 
@@ -36,6 +40,7 @@ export function snice(options?: SnicePluginOptions): Record<string, any> {
     enforce: 'pre' as const,
 
     config(userConfig: Record<string, any>, configEnv: { command?: string; mode?: string }) {
+      isServeMode = configEnv?.command === 'serve' && configEnv?.mode !== 'test';
       const isServeOrDev =
         configEnv?.command === 'serve' ||
         configEnv?.mode === 'test' ||
@@ -64,6 +69,7 @@ export function snice(options?: SnicePluginOptions): Record<string, any> {
     },
 
     configResolved(resolvedConfig: Record<string, any>) {
+      isServeMode = resolvedConfig?.command === 'serve' && resolvedConfig?.mode !== 'test';
       const isServeOrDev =
         resolvedConfig?.command === 'serve' ||
         resolvedConfig?.mode === 'test' ||
@@ -73,6 +79,37 @@ export function snice(options?: SnicePluginOptions): Record<string, any> {
       if (typeof resolvedConfig?.root === 'string') {
         env.projectRoot = resolvedConfig.root;
       }
+    },
+
+    resolveId(id: string, importer?: string) {
+      if (isServeMode && hmrEnabled && (id === HMR_SPECIFIER || id === HMR_VIRTUAL_ID)) {
+        return HMR_VIRTUAL_ID;
+      }
+      return base.resolveId.call(this, id, importer);
+    },
+
+    load(id: string) {
+      if (isServeMode && hmrEnabled && id === HMR_VIRTUAL_ID) {
+        return HMR_RUNTIME_CODE;
+      }
+      return base.load.call(this, id);
+    },
+
+    transform(code: string, id: string) {
+      const baseRes = base.transform.call(this, code, id);
+      if (!isServeMode || !hmrEnabled) return baseRes;
+      if (id === HMR_VIRTUAL_ID || id.startsWith('\0')) return baseRes;
+      const cleanId = id.split('?')[0];
+      if (!/\.(?:[cm]?[jt]sx?)$/.test(cleanId) || cleanId.includes('/node_modules/')) {
+        return baseRes;
+      }
+      const nextCode = baseRes ? baseRes.code : code;
+      const hmrRes = transformHmr(nextCode, cleanId);
+      if (!hmrRes) return baseRes;
+      return {
+        code: hmrRes.code,
+        map: composeSourceMaps(baseRes?.map ?? null, hmrRes.map) ?? hmrRes.map,
+      };
     },
   };
 }
