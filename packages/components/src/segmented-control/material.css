@@ -1,19 +1,97 @@
 /* Material 3 Expressive — snice-segmented-control (Connected Segmented Pill Group) */
 [part~="base"] {
+  padding: 3px;
+  gap: 2px;
   border-radius: 9999px;
   background: var(--snice-color-surface-container-low);
   border: 1px solid var(--snice-color-border);
-  padding: 0.125rem;
 }
 
 [part~="indicator"] {
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
   border-radius: 9999px;
   background: var(--snice-m3-secondary-container);
   box-shadow: none;
+  transition:
+    transform var(--snice-transition-medium, 280ms) var(--snice-m3-spring-spatial, cubic-bezier(0.34, 1.38, 0.32, 1)),
+    width var(--snice-transition-medium, 240ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
 }
 
 [part~="segment"] {
-  min-height: 2.5rem;
   border-radius: 9999px;
   font-weight: 500;
+  letter-spacing: 0.008em;
+  color: var(--snice-color-text-secondary);
+  transition:
+    color var(--snice-transition-fast, 160ms) ease,
+    background-color var(--snice-transition-fast, 160ms) ease,
+    border-radius var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, ease);
+}
+
+[part~="segment"],
+:host([size="medium"]) [part~="segment"] {
+  min-height: 2.5rem;
+  padding: 0.375rem 1.25rem;
+  font-size: 0.875rem;
+}
+
+:host([size="small"]) [part~="segment"] {
+  min-height: 2rem;
+  padding: 0.25rem 0.875rem;
+  font-size: 0.8125rem;
+}
+
+:host([size="large"]) [part~="segment"] {
+  min-height: 3rem;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+}
+
+[part~="segment"]:hover {
+  color: var(--snice-color-text);
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+[part~="segment"]:active {
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+[part~="segment"][part~="segment-selected"] {
+  color: var(--snice-m3-on-secondary-container);
+  font-weight: 600;
+  background: transparent;
+}
+
+[part~="segment"][part~="segment-selected"]:hover {
+  color: var(--snice-m3-on-secondary-container);
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) 8%, transparent);
+}
+
+[part~="segment"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="segment"][part~="segment-disabled"] {
+  opacity: 1;
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  background: transparent;
+  pointer-events: none;
+}
+
+:host([disabled]) [part~="base"] {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 4%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
+}
+
+:host([disabled]) [part~="indicator"] {
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+}
+
+:host([disabled]) [part~="segment"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
 }
