@@ -1,0 +1,125 @@
+/* Android Material 3 Expressive — snice-spotlight (Rich Tooltip / Feature Discovery Coachmark) */
+[part~="cutout"] {
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 9999px hsl(0 0% 0% / 0.46),
+    0 0 0 2px var(--snice-color-primary);
+  transition:
+    top 280ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    left 280ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    width 280ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    height 280ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="popover"] {
+  box-sizing: border-box;
+  border-radius: 20px;
+  padding: 1.25rem;
+  min-width: 17rem;
+  max-width: 21rem;
+  background: var(--snice-color-surface-container-high);
+  border: none;
+  box-shadow: var(--snice-shadow-lg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+}
+
+[part~="title"] {
+  font-family: var(--snice-font-family);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--snice-color-text);
+  margin-bottom: 0.25rem;
+}
+
+[part~="description"] {
+  font-size: 0.875rem;
+  line-height: 1.43;
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 0.875rem;
+}
+
+[part~="footer"] {
+  padding-top: 0.25rem;
+  gap: 0.75rem;
+}
+
+[part~="step-indicator"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="actions"] {
+  gap: 0.5rem;
+}
+
+[part~="button"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: 0 1rem;
+  border-radius: 9999px;
+  border: none;
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.006em;
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects, ease),
+    border-radius 150ms var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    box-shadow 150ms ease;
+}
+
+[part~="button"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+[part~="button"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+[part~="button-back"] {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container, var(--snice-color-text));
+}
+
+[part~="button-back"]:hover {
+  background: var(--snice-m3-secondary-container);
+  filter: brightness(0.96);
+}
+
+[part~="button-next"] {
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary, var(--snice-color-text-inverse));
+}
+
+[part~="button-next"]:hover {
+  background: var(--snice-color-primary);
+  box-shadow: var(--snice-shadow-xs);
+  filter: brightness(1.04);
+  opacity: 1;
+}
+
+[part~="button-skip"] {
+  background: transparent;
+  color: var(--snice-color-primary);
+  padding: 0 0.75rem;
+}
+
+[part~="button-skip"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+  color: var(--snice-color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="cutout"],
+  [part~="button"] {
+    transition-duration: 0.01ms;
+  }
+}

@@ -18,10 +18,12 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
    * to escape ancestor transforms/filters/contain that break position:fixed.
    */
   private portal: HTMLDivElement | null = null;
+  private portalSkinStyle: HTMLStyleElement | null = null;
   private cutoutEl: HTMLElement | null = null;
   private popoverEl: HTMLElement | null = null;
   private scrollHandler: (() => void) | null = null;
   private resizeHandler: (() => void) | null = null;
+  private contextObserver: MutationObserver | null = null;
 
   @dispatch('spotlight-start', { bubbles: true, composed: true })
   private emitStart() { return undefined; }
@@ -87,15 +89,22 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
       </div>
     `;
 
+    const skinStyle = document.createElement('style');
+    skinStyle.setAttribute('data-snice-spotlight-skin', '');
+    portal.appendChild(skinStyle);
+
     // Wire up event handlers
     const backdrop = portal.querySelector('.backdrop') as HTMLElement;
     backdrop?.addEventListener('click', () => this.skip());
 
     this.portal = portal;
+    this.portalSkinStyle = skinStyle;
     this.cutoutEl = portal.querySelector('.cutout');
     this.popoverEl = portal.querySelector('.popover');
 
     document.body.appendChild(portal);
+    this.observePortalContext();
+    this.syncPortalPlatformStyles();
 
     // Listen for scroll and resize to reposition
     this.scrollHandler = () => this.updatePosition();
@@ -106,6 +115,8 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
 
   /** Remove portal from document.body and clean up listeners. */
   private removePortal() {
+    this.contextObserver?.disconnect();
+    this.contextObserver = null;
     if (this.scrollHandler) {
       window.removeEventListener('scroll', this.scrollHandler, true);
       this.scrollHandler = null;
@@ -117,9 +128,136 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
     if (this.portal) {
       this.portal.remove();
       this.portal = null;
+      this.portalSkinStyle = null;
       this.cutoutEl = null;
       this.popoverEl = null;
     }
+  }
+
+  private observePortalContext() {
+    this.contextObserver?.disconnect();
+    this.contextObserver = null;
+    if (typeof MutationObserver === 'undefined') return;
+    const observer = new MutationObserver(() => this.syncPortalPlatformStyles());
+    let cur: Element | null = this;
+    while (cur) {
+      observer.observe(cur, { attributes: true, attributeFilter: ['data-platform', 'data-theme'] });
+      cur = cur.parentElement;
+    }
+    this.contextObserver = observer;
+  }
+
+  private rewriteScopedRuleForPortal(rule: CSSRule, platform: string): string {
+    if (typeof CSSMediaRule !== 'undefined' && rule instanceof CSSMediaRule) {
+      const inner: string[] = [];
+      for (const child of Array.from(rule.cssRules)) {
+        const rewritten = this.rewriteScopedRuleForPortal(child, platform);
+        if (rewritten) inner.push(rewritten);
+      }
+      return inner.length ? `@media ${rule.conditionText} {\n${inner.join('\n')}\n}` : '';
+    }
+    if (typeof CSSStyleRule === 'undefined' || !(rule instanceof CSSStyleRule)) return '';
+    const selectorText = rule.selectorText || '';
+    if (!selectorText.includes('snice-spotlight')) return '';
+    const platformRe = new RegExp(`data-platform\\s*=\\s*["']?${platform}["']?(?=[\\]\\s])`);
+    const outSelectors = new Set<string>();
+    for (const rawSel of selectorText.split(',')) {
+      const sel = rawSel.trim();
+      if (!sel.includes('snice-spotlight') || !platformRe.test(sel)) continue;
+      const partIdx = sel.indexOf('::part(');
+      if (partIdx !== -1) {
+        const closeIdx = sel.indexOf(')', partIdx + 7);
+        if (closeIdx === -1) continue;
+        const partTokens = sel.slice(partIdx + 7, closeIdx).trim().split(/\s+/).filter(Boolean);
+        const attrChain = partTokens.map(t => `[part~="${t}"]`).join('');
+        const suffix = sel.slice(closeIdx + 1);
+        outSelectors.add(`[data-snice-spotlight-portal] ${attrChain}${suffix}`);
+      } else {
+        outSelectors.add('[data-snice-spotlight-portal]');
+      }
+    }
+    if (!outSelectors.size || !rule.style.cssText) return '';
+    return `${Array.from(outSelectors).join(', ')} { ${rule.style.cssText} }`;
+  }
+
+  private rewriteAdoptedRuleForPortal(rule: CSSRule): string {
+    if (typeof CSSMediaRule !== 'undefined' && rule instanceof CSSMediaRule) {
+      const inner: string[] = [];
+      for (const child of Array.from(rule.cssRules)) {
+        const rewritten = this.rewriteAdoptedRuleForPortal(child);
+        if (rewritten) inner.push(rewritten);
+      }
+      return inner.length ? `@media ${rule.conditionText} {\n${inner.join('\n')}\n}` : '';
+    }
+    if (typeof CSSStyleRule === 'undefined' || !(rule instanceof CSSStyleRule)) return '';
+    const selectorText = rule.selectorText || '';
+    if (!selectorText.includes('[part~=')) return '';
+    const outSelectors = selectorText
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(s => s.replace(/^:host(?:\([^)]*\))?\s*/, '').trim())
+      .filter(Boolean)
+      .map(s => `[data-snice-spotlight-portal] ${s}`);
+    if (!outSelectors.length || !rule.style.cssText) return '';
+    return `${outSelectors.join(', ')} { ${rule.style.cssText} }`;
+  }
+
+  private syncPortalPlatformStyles() {
+    if (!this.portal || !this.portalSkinStyle) return;
+
+    const platformHost = this.closest('[data-platform]');
+    const platform = platformHost?.getAttribute('data-platform') || '';
+    if (platform) {
+      this.portal.setAttribute('data-platform', platform);
+    } else {
+      this.portal.removeAttribute('data-platform');
+    }
+
+    const themeHost = this.closest('[data-theme]');
+    const scopedTheme = themeHost && themeHost !== document.documentElement
+      ? themeHost.getAttribute('data-theme')
+      : null;
+    if (scopedTheme) {
+      this.portal.setAttribute('data-theme', scopedTheme);
+    } else {
+      this.portal.removeAttribute('data-theme');
+    }
+
+    const chunks: string[] = [];
+
+    if (platform) {
+      for (const sheet of Array.from(document.styleSheets)) {
+        let rules: CSSRuleList;
+        try {
+          rules = sheet.cssRules;
+        } catch {
+          continue;
+        }
+        for (const rule of Array.from(rules)) {
+          const rewritten = this.rewriteScopedRuleForPortal(rule, platform);
+          if (rewritten) chunks.push(rewritten);
+        }
+      }
+    }
+
+    const adopted = this.shadowRoot?.adoptedStyleSheets;
+    if (adopted?.length) {
+      for (const sheet of adopted) {
+        let rules: CSSRuleList;
+        try {
+          rules = sheet.cssRules;
+        } catch {
+          continue;
+        }
+        for (const rule of Array.from(rules)) {
+          const rewritten = this.rewriteAdoptedRuleForPortal(rule);
+          if (rewritten) chunks.push(rewritten);
+        }
+      }
+    }
+
+    this.portalSkinStyle.textContent = chunks.join('\n');
   }
 
   /** Update the portal HTML to reflect current step state. */

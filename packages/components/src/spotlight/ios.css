@@ -1,0 +1,135 @@
+/* iOS 26+ Liquid Glass — snice-spotlight (TipKit Liquid Glass Coachmark) */
+[part~="cutout"] {
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 9999px hsl(0 0% 0% / 0.42),
+    0 0 0 2px color-mix(in srgb, var(--snice-color-primary) 55%, hsl(0 0% 100% / 0.6));
+  transition:
+    top 300ms var(--snice-ease-out, cubic-bezier(0.32, 0.72, 0, 1)),
+    left 300ms var(--snice-ease-out, cubic-bezier(0.32, 0.72, 0, 1)),
+    width 300ms var(--snice-ease-out, cubic-bezier(0.32, 0.72, 0, 1)),
+    height 300ms var(--snice-ease-out, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+[part~="popover"] {
+  box-sizing: border-box;
+  border-radius: 20px;
+  padding: 1rem 1.125rem;
+  min-width: 16.5rem;
+  max-width: 21.5rem;
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 88%, transparent);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+}
+
+[part~="title"] {
+  font-family: var(--snice-font-family-display, var(--snice-font-family));
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--snice-color-text);
+  margin-bottom: 0.25rem;
+}
+
+[part~="description"] {
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+[part~="footer"] {
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+  gap: 0.75rem;
+}
+
+[part~="step-indicator"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="actions"] {
+  gap: 0.5rem;
+}
+
+[part~="button"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.125rem;
+  padding: 0 0.875rem;
+  border-radius: 9999px;
+  border: none;
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition:
+    transform 160ms var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+[part~="button"]:active {
+  transform: scale(0.95);
+}
+
+[part~="button"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="button-back"] {
+  background: hsl(240 5% 50% / 0.14);
+  color: var(--snice-color-text);
+}
+
+[part~="button-back"]:hover {
+  background: hsl(240 5% 50% / 0.22);
+}
+
+[part~="button-next"] {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+[part~="button-next"]:hover {
+  background: var(--snice-color-primary);
+  filter: brightness(1.06);
+  opacity: 1;
+}
+
+[part~="button-skip"] {
+  background: transparent;
+  color: var(--snice-color-text-secondary);
+  font-weight: 500;
+  padding: 0 0.5rem;
+}
+
+[part~="button-skip"]:hover {
+  background: transparent;
+  color: var(--snice-color-text);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="popover"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="cutout"],
+  [part~="button"] {
+    transition-duration: 0.01ms;
+  }
+}
