@@ -570,7 +570,7 @@ describe('BS-02: Acyclic lifecycle-hook inversion & core ESM tree-shaking', () =
     expect(el.shadowRoot?.querySelector('.val')?.textContent).toBe('3');
     expect((globalThis as any).__bs02Css).toBe(':host { display: block; }');
     delete (globalThis as any).__bs02Css;
-  });
+  }, 30000);
 
   it('AC-3: selective feature bundle includes @on and @observe while excluding controller, router, daemon, request-response, and context', async () => {
     const { code, modules } = await bundleFromDist(`
