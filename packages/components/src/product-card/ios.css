@@ -1,0 +1,304 @@
+/* iOS 26+ Liquid Glass / Apple HIG — snice-product-card
+ * Apple Store / App Store merchandising card.
+ * Opaque 20px grouped card body (zero blur on card content), Clear Liquid Glass floating media chrome
+ * (favorite, gallery nav, quick-view capsule, out-of-stock pill), 44px capsule CTA, spring tap scale.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+  --pc-bg: var(--snice-color-surface-container-high);
+  --pc-bg-element: var(--snice-color-surface-container);
+  --pc-border: var(--snice-color-border-subtle);
+  --pc-text: var(--snice-color-text);
+  --pc-text-secondary: var(--snice-color-text-secondary);
+  --pc-text-tertiary: var(--snice-color-text-tertiary);
+  --pc-primary: var(--snice-color-primary);
+  --pc-success: var(--snice-color-success);
+  --pc-danger: var(--snice-color-danger);
+  --pc-radius: 20px;
+  --pc-cta-radius: 9999px;
+  --product-card-star-color: var(--snice-color-warning);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Opaque 20px grouped card surface */
+[part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 20px;
+  box-shadow: var(--snice-shadow-sm);
+  transition: box-shadow var(--snice-transition-medium) var(--snice-ease-out);
+}
+
+[part~="base"]:hover {
+  transform: none;
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host([variant="featured"]) [part~="base"] {
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host([variant="featured"]) [part~="base"]:hover {
+  transform: none;
+  box-shadow: var(--snice-shadow-lg);
+}
+
+:host([variant="minimal"]) [part~="base"] {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+:host([variant="minimal"]) [part~="base"]:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+:host([variant="compact"]) [part~="base"] {
+  border-radius: 16px;
+}
+
+/* Concentric gallery corners per variant */
+[part~="gallery"] {
+  border-radius: 20px 20px 0 0;
+  background: var(--snice-color-surface-container);
+}
+
+:host([variant="horizontal"]) [part~="gallery"] {
+  border-radius: 20px 0 0 20px;
+}
+
+:host([variant="compact"]) [part~="gallery"] {
+  border-radius: 12px;
+}
+
+:host([variant="minimal"]) [part~="gallery"] {
+  border-radius: 20px;
+}
+
+/* Out-of-stock frosted dark scrim pill (fixes dark-mode black-on-black trap) */
+:host([in-stock="false"]) [part~="gallery"]::after {
+  background: hsl(0 0% 0% / 0.72);
+  backdrop-filter: var(--snice-ios-glass-clear-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-clear-blur);
+  color: hsl(0 0% 100%);
+  border: 0.5px solid hsl(0 0% 100% / 0.25);
+  border-radius: 9999px;
+  padding: 0.1875rem 0.625rem;
+}
+
+/* Clear Liquid Glass floating media controls */
+[part~="favorite-btn"],
+[part~="gallery-nav"],
+[part~="quick-view-label"] {
+  background: var(--snice-ios-glass-clear-bg);
+  backdrop-filter: var(--snice-ios-glass-clear-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-clear-blur);
+  border: 0.5px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-sm);
+  color: var(--snice-color-text);
+}
+
+[part~="favorite-btn"],
+[part~="gallery-nav"] {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  transition: transform var(--snice-transition-fast) var(--snice-ease-spring),
+              opacity var(--snice-transition-fast) var(--snice-ease-out),
+              background-color var(--snice-transition-fast) var(--snice-ease-out);
+}
+
+[part~="favorite-btn"]:hover,
+[part~="gallery-nav"]:hover {
+  background: var(--snice-ios-glass-regular-bg);
+}
+
+[part~="favorite-btn"]:active {
+  transform: scale(0.92);
+}
+
+:host([variant="compact"]) [part~="favorite-btn"] {
+  width: 1.375rem;
+  height: 1.375rem;
+  top: auto;
+  bottom: 0.125rem;
+  right: 0.125rem;
+}
+
+[part~="quick-view-label"] {
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+}
+
+/* Capsule badge with explicit white ink in light & dark modes */
+[part~="badge"] {
+  border-radius: 9999px;
+  padding: 0.1875rem 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: hsl(0 0% 100%);
+}
+
+:host([badge-variant="sale"]) [part~="badge"] {
+  background: var(--snice-color-danger);
+  color: hsl(0 0% 100%);
+}
+
+:host([badge-variant="new"]) [part~="badge"] {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+:host([badge-variant="featured"]) [part~="badge"] {
+  color: hsl(0 0% 100%);
+}
+
+:host([variant="compact"]) [part~="badge"] {
+  top: 0.125rem;
+  left: 0.125rem;
+  font-size: 0.5625rem;
+  padding: 0 0.3125rem;
+}
+
+/* Typography & Tabular Numerals */
+[part~="title"] {
+  font-family: var(--snice-font-family-display);
+  letter-spacing: -0.024em;
+  color: var(--snice-color-text);
+}
+
+[part~="price-current"],
+[part~="price-original"],
+[part~="discount"],
+[part~="review-count"] {
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="price-current"] {
+  letter-spacing: -0.02em;
+  color: var(--snice-color-text);
+}
+
+[part~="price-current-sale"] {
+  color: var(--snice-color-danger);
+}
+
+[part~="discount"] {
+  border-radius: 9999px;
+  padding: 0.125rem 0.5rem;
+  background: color-mix(in srgb, var(--snice-color-success) 15%, transparent);
+  color: var(--snice-color-success);
+}
+
+/* Variant chips & color swatches (keep background untouched so color-swatch inline styles pass through in Mode B) */
+[part~="variant-option"] {
+  min-height: 2.125rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 10px;
+  border: 0.5px solid var(--snice-color-border);
+  color: var(--snice-color-text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: transform var(--snice-transition-fast) var(--snice-ease-spring),
+              border-color var(--snice-transition-fast) var(--snice-ease-out);
+}
+
+[part~="variant-option"]:active {
+  transform: scale(0.95);
+}
+
+[part~="variant-option-selected"] {
+  border-color: var(--snice-color-primary);
+  color: var(--snice-color-primary);
+  font-weight: 600;
+  box-shadow: 0 0 0 1px var(--snice-color-primary);
+}
+
+[part~="variant-option-color"] {
+  width: 1.75rem;
+  height: 1.75rem;
+  min-height: 0;
+  padding: 0;
+  border-radius: 9999px;
+  border: 0.5px solid var(--snice-color-border);
+}
+
+[part~="variant-option-color"][part~="variant-option-selected"] {
+  box-shadow: 0 0 0 2px var(--snice-color-surface-container-high), 0 0 0 4px var(--snice-color-primary);
+}
+
+/* 44px capsule Add-to-Cart CTA with explicit white ink in dark mode */
+[part~="cta"] {
+  min-height: 2.75rem;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  transition: transform var(--snice-transition-fast) var(--snice-ease-spring),
+              filter var(--snice-transition-fast) var(--snice-ease-out);
+}
+
+[part~="cta"]:hover {
+  opacity: 1;
+  transform: none;
+  filter: brightness(1.06);
+}
+
+[part~="cta"]:active {
+  opacity: 1;
+  transform: scale(0.96);
+}
+
+:host([variant="grid"]) [part~="cta"] {
+  min-height: 2.375rem;
+  font-size: 0.875rem;
+}
+
+:host([variant="minimal"]) [part~="cta"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  color: var(--snice-color-primary);
+  border: none;
+}
+
+:host([variant="minimal"]) [part~="cta"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 18%, transparent);
+  color: var(--snice-color-primary);
+  filter: none;
+}
+
+[part~="cta"]:disabled {
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-tertiary);
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
+[part~="cta-loading"] {
+  opacity: 1;
+}
+
+[part~="spinner"] {
+  border-color: hsl(0 0% 100% / 0.3);
+  border-top-color: hsl(0 0% 100%);
+}
+
+[part~="cta"]:focus-visible,
+[part~="favorite-btn"]:focus-visible,
+[part~="gallery-nav"]:focus-visible,
+[part~="variant-option"]:focus-visible {
+  outline: var(--snice-focus-ring-width) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+[part~="skeleton-line"] {
+  border-radius: 12px;
+}

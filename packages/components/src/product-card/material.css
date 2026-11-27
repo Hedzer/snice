@@ -1,0 +1,282 @@
+/* Android Material 3 Expressive — snice-product-card
+ * Tonal surface-container-low card (16px; 24px featured), M3 tonal media buttons (zero blur),
+ * M3 Filter Chip variant selectors, 48dp pill CTA with 8px press morph, T80 dark-mode on-primary ink.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+  --pc-bg: var(--snice-color-surface-container-low);
+  --pc-bg-element: var(--snice-color-surface-container);
+  --pc-border: var(--snice-color-border-subtle);
+  --pc-text: var(--snice-color-text);
+  --pc-text-secondary: var(--snice-color-text-secondary);
+  --pc-text-tertiary: var(--snice-color-text-tertiary);
+  --pc-primary: var(--snice-color-primary);
+  --pc-success: var(--snice-color-success);
+  --pc-danger: var(--snice-color-danger);
+  --pc-radius: 16px;
+  --pc-cta-radius: 9999px;
+  --product-card-star-color: var(--snice-color-warning);
+  --snice-color-primary-subtle: var(--snice-m3-secondary-container);
+}
+
+/* Tonal surface-container-low card */
+[part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 16px;
+  box-shadow: var(--snice-shadow-xs);
+  transition: box-shadow 150ms var(--snice-m3-spring-effects);
+}
+
+[part~="base"]:hover {
+  transform: none;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host([variant="featured"]) [part~="base"] {
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 24px;
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host([variant="featured"]) [part~="base"]:hover {
+  transform: none;
+  box-shadow: var(--snice-shadow-lg);
+}
+
+:host([variant="minimal"]) [part~="base"] {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+:host([variant="minimal"]) [part~="base"]:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Concentric gallery corners */
+[part~="gallery"] {
+  border-radius: 16px 16px 0 0;
+  background: var(--snice-color-surface-container);
+}
+
+:host([variant="featured"]) [part~="gallery"] {
+  border-radius: 24px 24px 0 0;
+}
+
+:host([variant="horizontal"]) [part~="gallery"] {
+  border-radius: 16px 0 0 16px;
+}
+
+:host([variant="compact"]) [part~="gallery"] {
+  border-radius: 12px;
+}
+
+:host([variant="minimal"]) [part~="gallery"] {
+  border-radius: 16px;
+}
+
+/* High-contrast M3 tonal out-of-stock pill */
+:host([in-stock="false"]) [part~="gallery"]::after {
+  background: var(--snice-color-surface-container-highest);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 9999px;
+  padding: 0.1875rem 0.625rem;
+}
+
+/* Tonal floating media controls (ZERO blur in Material 3) */
+[part~="favorite-btn"],
+[part~="gallery-nav"],
+[part~="quick-view-label"] {
+  background: var(--snice-color-surface-container-highest);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-sm);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+[part~="favorite-btn"],
+[part~="gallery-nav"] {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+}
+
+:host([variant="compact"]) [part~="favorite-btn"] {
+  width: 1.375rem;
+  height: 1.375rem;
+  top: auto;
+  bottom: 0.125rem;
+  right: 0.125rem;
+}
+
+[part~="quick-view-label"] {
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+/* M3 Label Small badges with dark-mode-safe T80 ink */
+[part~="badge"] {
+  border-radius: 9999px;
+  padding: 0.1875rem 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: var(--snice-color-danger);
+  color: var(--snice-color-text-inverse);
+}
+
+:host([badge-variant="sale"]) [part~="badge"] {
+  background: var(--snice-color-danger);
+  color: var(--snice-color-text-inverse);
+}
+
+:host([badge-variant="new"]) [part~="badge"] {
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
+}
+
+:host([badge-variant="featured"]) [part~="badge"] {
+  background: var(--snice-m3-primary-container);
+  color: var(--snice-m3-on-primary-container);
+}
+
+:host([variant="compact"]) [part~="badge"] {
+  top: 0.125rem;
+  left: 0.125rem;
+  font-size: 0.5625rem;
+  padding: 0 0.3125rem;
+}
+
+/* Typography & tabular numerals */
+[part~="title"] {
+  font-family: var(--snice-font-family-display);
+  color: var(--snice-color-text);
+}
+
+[part~="price-current"],
+[part~="price-original"],
+[part~="discount"],
+[part~="review-count"] {
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="price-current"] {
+  color: var(--snice-color-text);
+}
+
+[part~="price-current-sale"] {
+  color: var(--snice-color-danger);
+}
+
+[part~="discount"] {
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--snice-color-success) 16%, transparent);
+  color: var(--snice-color-success);
+}
+
+/* M3 Filter Chip variant selectors (keep background untouched so color swatches preserve inline fill in Mode B) */
+[part~="variant-option"] {
+  min-height: 2rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: border-radius 180ms var(--snice-m3-spring-spatial-fast),
+              border-color 150ms var(--snice-m3-spring-effects);
+}
+
+[part~="variant-option-selected"] {
+  color: var(--snice-m3-on-secondary-container);
+  border-color: transparent;
+  box-shadow: none;
+  font-weight: 500;
+}
+
+[part~="variant-option-color"] {
+  width: 1.75rem;
+  height: 1.75rem;
+  min-height: 0;
+  padding: 0;
+  border-radius: 9999px;
+}
+
+[part~="variant-option-color"][part~="variant-option-selected"] {
+  box-shadow: 0 0 0 2px var(--snice-color-surface-container-low), 0 0 0 4px var(--snice-color-primary);
+}
+
+/* 48dp M3 Filled Pill CTA with expressive 8px press corner morph */
+[part~="cta"] {
+  min-height: 3rem;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: border-radius 180ms var(--snice-m3-spring-spatial-fast),
+              background-color 150ms var(--snice-m3-spring-effects),
+              box-shadow 150ms var(--snice-m3-spring-effects);
+}
+
+[part~="cta"]:hover {
+  opacity: 1;
+  transform: none;
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 8%, var(--snice-color-primary));
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="cta"]:active {
+  opacity: 1;
+  transform: none;
+  border-radius: var(--snice-m3-shape-morph-pressed);
+}
+
+:host([variant="grid"]) [part~="cta"] {
+  min-height: 2.375rem;
+}
+
+:host([variant="minimal"]) [part~="cta"] {
+  background: transparent;
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-primary);
+}
+
+:host([variant="minimal"]) [part~="cta"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+  color: var(--snice-color-primary);
+  box-shadow: none;
+}
+
+/* Exact M3 12% surface / 38% ink disabled state */
+[part~="cta"]:disabled {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+[part~="spinner"] {
+  border-color: color-mix(in srgb, var(--snice-m3-on-primary) 28%, transparent);
+  border-top-color: var(--snice-m3-on-primary);
+}
+
+[part~="cta"]:focus-visible,
+[part~="favorite-btn"]:focus-visible,
+[part~="gallery-nav"]:focus-visible,
+[part~="variant-option"]:focus-visible {
+  outline: var(--snice-focus-ring-width) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+[part~="skeleton-line"] {
+  border-radius: 12px;
+}
