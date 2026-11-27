@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from '@babel/parser';
 import MagicString from 'magic-string';
+import { parseModuleAst } from './parser';
 
 type AstNode = Record<string, any>;
 
@@ -949,18 +950,7 @@ export function transformCssModule(
 
   let ast: AstNode;
   try {
-    ast = parse(code, {
-      sourceType: 'module',
-      plugins: [
-        'typescript',
-        'jsx',
-        ['decorators', { decoratorsBeforeExport: true }],
-        'classProperties',
-        'classPrivateProperties',
-        'classPrivateMethods',
-        'importAttributes',
-      ],
-    });
+    ast = parseModuleAst(code, options.id);
   } catch {
     return null;
   }
@@ -1187,7 +1177,11 @@ export function transformCssModule(
   if (!changed) return null;
   return {
     code: s.toString(),
-    map: s.generateMap({ hires: true }),
+    map: s.generateMap({
+      source: options.id,
+      includeContent: true,
+      hires: 'boundary',
+    }),
   };
 }
 
@@ -1199,7 +1193,8 @@ export function transformCssModule(
  */
 export function stripChunkCssFallbacks(
   code: string,
-  allowlist: ReadonlySet<string>
+  allowlist: ReadonlySet<string>,
+  sourceFileName?: string
 ): { code: string; map: any } | null {
   if (allowlist.size === 0 || !code.includes('var(--snice-')) return null;
 
@@ -1207,7 +1202,7 @@ export function stripChunkCssFallbacks(
   try {
     ast = parse(code, {
       sourceType: 'module',
-      plugins: ['importAttributes'],
+      plugins: ['importAttributes', 'explicitResourceManagement'],
     });
   } catch {
     return null;
@@ -1280,7 +1275,11 @@ export function stripChunkCssFallbacks(
   if (!changed) return null;
   return {
     code: s.toString(),
-    map: s.generateMap({ hires: true }),
+    map: s.generateMap({
+      source: sourceFileName,
+      includeContent: true,
+      hires: 'boundary',
+    }),
   };
 }
 

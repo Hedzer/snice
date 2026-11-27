@@ -1,6 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
-import { parse } from '@babel/parser';
+import { parseModuleAst } from './parser';
 import type { SniceTableOption, SniceTableOptions } from './types';
 
 export const VIRTUAL_TABLE_ID = '\0snice:table-modular';
@@ -468,18 +468,9 @@ export function analyzeTableUsage(sources: ReadonlyArray<{ id: string; code: str
     }
 
     // Scan JS/TS AST for columns assignments, bindings, JSX props, and feature calls
-    const isTs = /\.[cm]?tsx?$/.test(cleanId);
-    const isJsx = /\.[cm]?[jt]sx$/.test(cleanId);
     let ast: AstNode;
     try {
-      ast = parse(code, {
-        sourceType: 'module',
-        plugins: [
-          'decorators',
-          ...(isTs ? (['typescript'] as const) : []),
-          ...(isJsx ? (['jsx'] as const) : []),
-        ],
-      }) as AstNode;
+      ast = parseModuleAst(code, cleanId);
     } catch {
       return {
         safe: false,

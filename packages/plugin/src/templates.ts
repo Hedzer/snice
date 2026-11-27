@@ -1,5 +1,5 @@
-import { parse } from '@babel/parser';
 import MagicString from 'magic-string';
+import { parseModuleAst } from './parser';
 
 type AstNode = Record<string, any>;
 
@@ -870,19 +870,10 @@ export function transformTemplates(
   if (!code.includes('`') || !code.includes('snice')) return null;
 
   const cleanId = opts.id.split('?')[0];
-  const isTs = /\.[cm]?tsx?$/.test(cleanId);
-  const isTsx = /\.[cm]?tsx$/.test(cleanId) || cleanId.endsWith('.jsx');
 
   let ast: AstNode;
   try {
-    ast = parse(code, {
-      sourceType: 'module',
-      plugins: [
-        'decorators',
-        ...(isTs ? (['typescript'] as const) : []),
-        ...(isTsx ? (['jsx'] as const) : []),
-      ],
-    }) as AstNode;
+    ast = parseModuleAst(code, cleanId);
   } catch {
     return null;
   }

@@ -1,87 +1,96 @@
-/**
- * Lightweight, comment- and string-safe replacement of bare `__SNICE_DEV__`
- * identifiers for pure Rollup builds (where Vite's `define` is not active).
- */
-
-function isIdentChar(code: number): boolean {
-  return (
-    (code >= 48 && code <= 57) || // 0-9
-    (code >= 65 && code <= 90) || // A-Z
-    (code >= 97 && code <= 122) || // a-z
-    code === 95 || // _
-    code === 36 // $
-  );
-}
+import MagicString from 'magic-string';
+import { parseModuleAst, type AstNode } from './parser';
 
 const TARGET = '__SNICE_DEV__';
 
-export function replaceSniceDevIdentifier(code: string, isDev: boolean): string | null {
+export interface DevDefineResult {
+  code: string;
+  map: ReturnType<MagicString['generateMap']>;
+}
+
+function isNode(v: unknown): v is AstNode {
+  return typeof v === 'object' && v !== null && typeof (v as any).type === 'string';
+}
+
+/**
+ * AST-accurate, sourcemap-preserving replacement of bare `__SNICE_DEV__`
+ * identifiers for pure Rollup builds (immune to regex literals, division,
+ * nested template literals, comments, strings, property keys, and member access).
+ */
+export function replaceSniceDevIdentifier(
+  code: string,
+  isDev: boolean,
+  id?: string
+): DevDefineResult | null {
   if (!code.includes(TARGET)) return null;
 
-  const replacement = isDev ? 'true' : 'false';
-  const len = code.length;
-  let out = '';
-  let lastEmit = 0;
-  let changed = false;
-  let i = 0;
-
-  while (i < len) {
-    const ch = code.charCodeAt(i);
-
-    // Single-line comment
-    if (ch === 47 && i + 1 < len && code.charCodeAt(i + 1) === 47) {
-      i += 2;
-      while (i < len && code.charCodeAt(i) !== 10 && code.charCodeAt(i) !== 13) i++;
-      continue;
-    }
-
-    // Block comment
-    if (ch === 47 && i + 1 < len && code.charCodeAt(i + 1) === 42) {
-      i += 2;
-      while (i + 1 < len && !(code.charCodeAt(i) === 42 && code.charCodeAt(i + 1) === 47)) i++;
-      i += 2;
-      continue;
-    }
-
-    // Quoted strings (' or ")
-    if (ch === 39 || ch === 34) {
-      const quote = ch;
-      i++;
-      while (i < len) {
-        const c = code.charCodeAt(i);
-        if (c === 92) {
-          i += 2;
-          continue;
-        }
-        if (c === quote) {
-          i++;
-          break;
-        }
-        i++;
-      }
-      continue;
-    }
-
-    // Check bare `__SNICE_DEV__` match
-    if (
-      ch === 95 && // '_'
-      code.startsWith(TARGET, i)
-    ) {
-      const before = i > 0 ? code.charCodeAt(i - 1) : 0;
-      const after = i + TARGET.length < len ? code.charCodeAt(i + TARGET.length) : 0;
-      // Skip if part of a larger identifier or property access (`.__SNICE_DEV__`)
-      if (!isIdentChar(before) && before !== 46 && !isIdentChar(after)) {
-        out += code.slice(lastEmit, i) + replacement;
-        i += TARGET.length;
-        lastEmit = i;
-        changed = true;
-        continue;
-      }
-    }
-
-    i++;
+  let ast: AstNode;
+  try {
+    ast = parseModuleAst(code, id ?? 'module.js');
+  } catch {
+    return null;
   }
 
+  const replacement = isDev ? 'true' : 'false';
+  const s = new MagicString(code);
+  let changed = false;
+
+  const walk = (node: AstNode | null | undefined, parent: AstNode | null, key: string | null) => {
+    if (!isNode(node)) return;
+
+    if (node.type === 'Identifier' && node.name === TARGET) {
+      const isNonValueRef =
+        (parent?.type === 'MemberExpression' && key === 'property' && !parent.computed) ||
+        (parent?.type === 'OptionalMemberExpression' && key === 'property' && !parent.computed) ||
+        (parent?.type === 'ObjectProperty' && key === 'key' && !parent.computed && !parent.shorthand) ||
+        (parent?.type === 'ClassProperty' && key === 'key' && !parent.computed) ||
+        (parent?.type === 'ClassMethod' && key === 'key' && !parent.computed) ||
+        (parent?.type === 'ObjectMethod' && key === 'key' && !parent.computed) ||
+        (parent?.type === 'VariableDeclarator' && key === 'id') ||
+        (parent?.type === 'FunctionDeclaration' && key === 'id') ||
+        (parent?.type === 'ClassDeclaration' && key === 'id') ||
+        (parent?.type === 'ImportSpecifier' && (key === 'imported' || key === 'local')) ||
+        (parent?.type === 'ExportSpecifier' && key === 'exported') ||
+        parent?.type === 'LabeledStatement';
+
+      if (!isNonValueRef) {
+        if (parent?.type === 'ObjectProperty' && parent.shorthand && key === 'value') {
+          // `{ __SNICE_DEV__ }` -> `{ __SNICE_DEV__: false }`
+          s.overwrite(node.start, node.end, `${TARGET}: ${replacement}`);
+        } else if (parent?.type === 'ObjectProperty' && parent.shorthand && key === 'key') {
+          return;
+        } else {
+          s.overwrite(node.start, node.end, replacement);
+        }
+        changed = true;
+      }
+      return;
+    }
+
+    for (const k of Object.keys(node)) {
+      if (k === 'type' || k === 'start' || k === 'end' || k === 'loc' || k === 'leadingComments' || k === 'trailingComments' || k === 'innerComments') {
+        continue;
+      }
+      const val = node[k];
+      if (Array.isArray(val)) {
+        for (const item of val) {
+          if (isNode(item)) walk(item, node, k);
+        }
+      } else if (isNode(val)) {
+        walk(val, node, k);
+      }
+    }
+  };
+
+  walk(ast.program, null, null);
   if (!changed) return null;
-  return out + code.slice(lastEmit);
+
+  return {
+    code: s.toString(),
+    map: s.generateMap({
+      source: id,
+      includeContent: true,
+      hires: 'boundary',
+    }),
+  };
 }

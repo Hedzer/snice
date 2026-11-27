@@ -3,7 +3,7 @@
  * AST and `MagicString`. Used by `snice/rollup` when compiling `.ts`/`.tsx`
  * directly without Vite's esbuild pass.
  */
-import type MagicString from 'magic-string';
+import MagicString from 'magic-string';
 
 type AstNode = Record<string, any>;
 
@@ -24,6 +24,44 @@ function removeRange(s: MagicString, start: number, end: number): void {
 function findNextChar(code: string, from: number, ch: string, limit: number): number {
   for (let i = from; i < limit; i++) {
     if (code[i] === ch) return i;
+  }
+  return -1;
+}
+
+function findKeywordSkippingComments(
+  code: string,
+  from: number,
+  limit: number,
+  keyword: string
+): number {
+  let i = from;
+  while (i < limit) {
+    const ch = code.charCodeAt(i);
+    if (ch === 32 || ch === 9 || ch === 10 || ch === 13 || ch === 12) {
+      i++;
+      continue;
+    }
+    if (ch === 47 && i + 1 < limit) {
+      const next = code.charCodeAt(i + 1);
+      if (next === 47) {
+        i += 2;
+        while (i < limit && code.charCodeAt(i) !== 10 && code.charCodeAt(i) !== 13) i++;
+        continue;
+      }
+      if (next === 42) {
+        i += 2;
+        while (i + 1 < limit && !(code.charCodeAt(i) === 42 && code.charCodeAt(i + 1) === 47)) i++;
+        i += 2;
+        continue;
+      }
+    }
+    if (code.startsWith(keyword, i)) {
+      const after = i + keyword.length;
+      if (after >= limit || !/[A-Za-z0-9_$]/.test(code[after])) {
+        return i;
+      }
+    }
+    i++;
   }
   return -1;
 }
@@ -323,6 +361,47 @@ export function stripTypeScriptSyntax(
         return;
       }
 
+      case 'ClassAccessorProperty': {
+        if (node.declare || node.abstract) {
+          markRemove(node.start, node.end);
+          return;
+        }
+        // Lower undecorated ES `accessor prop: T = init;` into an ES2022 private backing field
+        // plus getter/setter so Rollup and ES2022 runtimes execute it natively.
+        const isStatic = Boolean(node.static);
+        const staticPrefix = isStatic ? 'static ' : '';
+        let propName: string;
+        let getterKey: string;
+        if (node.computed) {
+          propName = `__acc_${node.start}`;
+          const keyMs = new MagicString(code);
+          stripTypeScriptSyntax(node.key, code, keyMs);
+          getterKey = `[${keyMs.slice(node.key.start, node.key.end)}]`;
+        } else if (node.key?.type === 'Identifier') {
+          propName = node.key.name;
+          getterKey = propName;
+        } else if (node.key?.type === 'StringLiteral') {
+          propName = `__acc_${node.start}`;
+          getterKey = JSON.stringify(node.key.value);
+        } else {
+          propName = `__acc_${node.start}`;
+          getterKey = code.slice(node.key.start, node.key.end);
+        }
+        const backing = `#__snice_acc_${propName}`;
+        let initCode = 'undefined';
+        if (node.value) {
+          const valMs = new MagicString(code);
+          stripTypeScriptSyntax(node.value, code, valMs);
+          initCode = valMs.slice(node.value.start, node.value.end);
+        }
+        markOverwrite(
+          node.start,
+          node.end,
+          `${staticPrefix}${backing} = ${initCode}; ${staticPrefix}get ${getterKey}() { return this.${backing}; } ${staticPrefix}set ${getterKey}(__v) { this.${backing} = __v; }`
+        );
+        return;
+      }
+
       case 'ClassMethod': {
         if (node.abstract) {
           markRemove(node.start, node.end);
@@ -421,15 +500,15 @@ export function stripTypeScriptSyntax(
         break;
 
       case 'TSAsExpression': {
-        const asIdx = code.lastIndexOf('as', node.typeAnnotation.start);
-        markRemove(asIdx >= node.expression.end ? asIdx : node.expression.end, node.end);
+        const asIdx = findKeywordSkippingComments(code, node.expression.end, node.typeAnnotation.start, 'as');
+        markRemove(asIdx >= 0 ? asIdx : node.expression.end, node.end);
         visit(node.expression);
         return;
       }
 
       case 'TSSatisfiesExpression': {
-        const satIdx = code.lastIndexOf('satisfies', node.typeAnnotation.start);
-        markRemove(satIdx >= node.expression.end ? satIdx : node.expression.end, node.end);
+        const satIdx = findKeywordSkippingComments(code, node.expression.end, node.typeAnnotation.start, 'satisfies');
+        markRemove(satIdx >= 0 ? satIdx : node.expression.end, node.end);
         visit(node.expression);
         return;
       }

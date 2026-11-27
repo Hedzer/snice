@@ -247,9 +247,10 @@ export function createSniceCorePlugin(
       // Pass D: In pure Rollup, fold bare `__SNICE_DEV__` identifiers unless `dev: 'preserve'`
       // (library builds keep `__SNICE_DEV__` intact for downstream app bundlers).
       if (!runtimeEnv.isVite && options.dev !== 'preserve') {
-        const replaced = replaceSniceDevIdentifier(currentCode, runtimeEnv.isDev);
-        if (replaced !== null) {
-          currentCode = replaced;
+        const devRes = replaceSniceDevIdentifier(currentCode, runtimeEnv.isDev, cleanId);
+        if (devRes !== null) {
+          currentCode = devRes.code;
+          currentMap = composeSourceMaps(currentMap, devRes.map);
           changed = true;
         }
       }
@@ -258,12 +259,12 @@ export function createSniceCorePlugin(
       return { code: currentCode, map: currentMap ?? { mappings: '' } };
     },
 
-    renderChunk(code: string) {
+    renderChunk(code: string, chunk?: { fileName?: string }) {
       // Pass C2: Order-independent decoded-JS-string var(--snice-*, fallback) stripping.
       // Runs after ALL modules (including theme.css in any import order) are loaded.
       const allowlist = resolveEffectiveFallbackAllowlist();
       if (!allowlist) return null;
-      return stripChunkCssFallbacks(code, allowlist);
+      return stripChunkCssFallbacks(code, allowlist, chunk?.fileName);
     },
 
     outputOptions(opts: Record<string, any>) {

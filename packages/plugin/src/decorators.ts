@@ -1,5 +1,5 @@
-import { parse } from '@babel/parser';
 import MagicString from 'magic-string';
+import { parseModuleAst } from './parser';
 import { TC39_SPECIFIER } from './tc39-fallback-runtime';
 import { stripTypeScriptSyntax } from './ts-strip';
 
@@ -368,15 +368,7 @@ export function transformDecorators(
 
   let ast: AstNode;
   try {
-    ast = parse(code, {
-      sourceType: 'module',
-      allowReturnOutsideFunction: false,
-      plugins: [
-        'decorators',
-        ...(isTs ? (['typescript'] as const) : []),
-        ...(isTsx ? (['jsx'] as const) : []),
-      ],
-    }) as AstNode;
+    ast = parseModuleAst(code, cleanId);
   } catch (err: any) {
     const line = err?.loc?.line ?? 1;
     const col = err?.loc?.column ?? 0;
