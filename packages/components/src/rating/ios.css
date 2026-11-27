@@ -1,0 +1,62 @@
+/* snice-rating — iOS 26+ Apple App Store star rating skin
+ *
+ * Strictly Layer 2 platform CSS (only :host / [part~="..."] selectors).
+ * Preserves zero padding/border on [part~="star"] so inline half-star
+ * clip-path geometry remains pixel-accurate.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  gap: 0.3125rem;
+  --rating-color: var(--snice-color-warning);
+  --rating-color-empty: color-mix(in srgb, var(--snice-color-text) 20%, transparent);
+  --rating-size: 1.625rem;
+}
+
+:host([size="small"]) {
+  --rating-size: 1.0625rem;
+  gap: 0.1875rem;
+}
+
+:host([size="large"]) {
+  --rating-size: 2.25rem;
+  gap: 0.5rem;
+}
+
+[part~="base"] {
+  border-radius: 0.5rem;
+}
+
+[part~="base"]:focus-visible,
+:host(:focus-visible) {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: 4px;
+  border-radius: 0.5rem;
+}
+
+[part~="star"] {
+  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[part~="star"]:hover {
+  transform: scale(1.12);
+}
+
+[part~="star"]:active {
+  transform: scale(0.92);
+}
+
+:host([readonly]) [part~="star"],
+:host([readonly]) [part~="star"]:hover,
+:host([readonly]) [part~="star"]:active {
+  cursor: default;
+  transform: none;
+}
+
+[part~="star-empty"] {
+  color: var(--rating-color-empty);
+}
+
+[part~="star-full"] {
+  color: var(--rating-color);
+}
