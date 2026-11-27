@@ -1,0 +1,343 @@
+/* Android Material 3 Expressive — snice-camera-annotate
+ * Pixel Markup Editor: 16px primary-tinted tonal containers (zero glass blur),
+ * expressive pill-to-8px press-morphing toolbar actions, 4px outlined stroke-
+ * width field, secondary-container highlighted rows, M3 12%/38% disabled
+ * states, and dark-mode T80-on-ink compliance.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --ca-bg: var(--snice-color-surface-container-low);
+  --ca-bg-element: var(--snice-color-surface-container-high);
+  --ca-text: var(--snice-color-text);
+  --ca-text-secondary: var(--snice-color-text-secondary);
+  --ca-text-tertiary: var(--snice-color-text-tertiary);
+  --ca-border: var(--snice-color-border-subtle);
+  --ca-primary: var(--snice-color-primary);
+  --ca-danger: var(--snice-color-danger);
+}
+
+:host [part~="base"] {
+  gap: 14px;
+}
+
+:host [part~="main"] {
+  gap: 12px;
+}
+
+:host [part~="canvas"] {
+  border-radius: 16px;
+  background: rgb(0 0 0);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+/* Tonal Tool Dock (Zero Glass Blur) */
+:host [part~="toolbar"] {
+  padding: 8px 12px;
+  gap: 8px;
+  border-radius: 16px;
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="separator"] {
+  width: 1px;
+  height: 22px;
+  background: var(--snice-color-border-subtle);
+}
+
+:host [part~="control-group"] {
+  gap: 6px;
+}
+
+/* Expressive Pill Buttons Morphing to 8px on Press */
+:host [part~="button"] {
+  min-height: 36px;
+  padding: 0 14px;
+  gap: 6px;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text);
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    border-radius var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.42, 1.4, 0.24, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    border-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-high));
+}
+
+:host [part~="button"]:active {
+  transform: none;
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface-container-high));
+}
+
+:host [part~="button"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* M3 12% Container / 38% Ink Disabled State (opacity: 1) */
+:host [part~="button"]:disabled {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  border-color: transparent;
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  border-radius: 9999px;
+  cursor: not-allowed;
+}
+
+/* Primary Filled Pill — M3 Dark-Mode T80 Pastel + Dark Plum On-Primary */
+:host [part~="primary-button"] {
+  min-height: 40px;
+  padding: 0 20px;
+  background: var(--snice-color-primary);
+  border: none;
+  color: var(--snice-m3-on-primary);
+  font-weight: 500;
+}
+
+:host [part~="primary-button"]:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 8%, var(--snice-color-primary));
+  color: var(--snice-m3-on-primary);
+}
+
+:host [part~="primary-button"]:active {
+  transform: none;
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 10%, var(--snice-color-primary));
+}
+
+:host [part~="primary-button"]:disabled {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  border-radius: 9999px;
+}
+
+:host [part~="undo-button"],
+:host [part~="clear-button"] {
+  min-width: 36px;
+  padding: 0 10px;
+}
+
+:host [part~="clear-button"] {
+  color: var(--snice-color-danger);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 40%, transparent);
+}
+
+:host [part~="clear-button"]:hover {
+  background: var(--snice-color-danger);
+  border-color: var(--snice-color-danger);
+  color: var(--snice-color-text-inverse);
+}
+
+:host [part~="stroke-width-label"] {
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+}
+
+/* M3 4px Outlined Field Geometry */
+:host [part~="stroke-width-input"] {
+  height: 36px;
+  width: 56px;
+  padding: 0 8px;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+:host [part~="stroke-width-input"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: -1px;
+  border-color: var(--snice-color-primary);
+}
+
+/* Tonal Inspector Sidebar */
+:host [part~="sidebar"] {
+  border-radius: 16px;
+  padding: 14px;
+  gap: 10px;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="sidebar-header"] {
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="sidebar-title"] {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--snice-color-text);
+}
+
+:host [part~="color-section"] {
+  gap: 8px;
+}
+
+:host [part~="color-palette"] {
+  gap: 6px;
+}
+
+:host [part~="color-swatch"] {
+  width: 24px;
+  height: 24px;
+  border: 1px solid hsl(0 0% 0% / 0.14);
+  transition:
+    transform var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.42, 1.4, 0.24, 1)),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="color-swatch"]:hover {
+  transform: scale(1.12);
+}
+
+:host [part~="color-swatch"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="color-swatch-active"] {
+  border-color: transparent;
+  box-shadow:
+    0 0 0 2px var(--snice-color-surface-container-low),
+    0 0 0 4px var(--snice-color-primary);
+}
+
+:host [part~="auto-rotate"] {
+  gap: 8px;
+  font-size: 13px;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="auto-rotate-input"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--snice-color-primary);
+}
+
+:host [part~="auto-rotate-input"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="annotation-list"] {
+  gap: 4px;
+}
+
+:host [part~="annotation-item"] {
+  min-height: 44px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="annotation-item"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  border-color: transparent;
+}
+
+:host [part~="annotation-item-highlighted"] {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  border-color: transparent;
+}
+
+:host [part~="annotation-label-input"] {
+  font-size: 14px;
+  color: inherit;
+}
+
+:host [part~="annotation-label-input"]:focus-visible {
+  border-bottom: 2px solid var(--snice-color-primary);
+}
+
+:host [part~="icon-button"] {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  color: var(--snice-color-text-secondary);
+  transition:
+    border-radius var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.42, 1.4, 0.24, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="icon-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  color: var(--snice-color-text);
+}
+
+:host [part~="icon-button"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+}
+
+:host [part~="icon-button"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="visibility-button-off"] {
+  opacity: 0.38;
+}
+
+:host [part~="delete-button"]:hover {
+  color: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 12%, transparent);
+}
+
+:host [part~="empty"] {
+  font-size: 13px;
+  color: var(--snice-color-text-tertiary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"],
+  :host [part~="icon-button"],
+  :host [part~="color-swatch"],
+  :host [part~="annotation-item"] {
+    transition: none;
+  }
+
+  :host [part~="color-swatch"]:hover {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="toolbar"],
+  :host [part~="sidebar"],
+  :host [part~="canvas"] {
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="button"],
+  :host [part~="icon-button"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="primary-button"],
+  :host [part~="annotation-item-highlighted"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+  }
+}

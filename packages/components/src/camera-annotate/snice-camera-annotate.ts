@@ -105,12 +105,10 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
     return html`
       <div class="ca-toolbar" part="toolbar">
         <button class="ca-btn primary" part="button primary-button" @click=${inCamera ? this.capture : this.retake}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon primary-icon">
-            ${inCamera
-              ? html`<path d="M9 2L7 5H4C2.9 5 2 5.9 2 7V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V7C22 5.9 21.1 5 20 5H17L15 2H9Z"/><circle cx="12" cy="13" r="3"/>`
-              : html`<path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>`
-            }
-          </svg>
+          ${inCamera
+            ? html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon primary-icon"><path d="M9 2L7 5H4C2.9 5 2 5.9 2 7V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V7C22 5.9 21.1 5 20 5H17L15 2H9Z"/><circle cx="12" cy="13" r="3"/></svg>`
+            : html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon primary-icon"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`
+          }
           ${inCamera ? 'Capture' : 'Retake'}
         </button>
 
@@ -222,12 +220,10 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
             part="icon-button visibility-button${ann.visible ? '' : ' visibility-button-off'}"
             @click=${() => this.toggleAnnotationVisibility(ann.id)}
             title="${ann.visible ? 'Hide' : 'Show'}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon visibility-icon">
-              ${ann.visible
-                ? html`<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`
-                : html`<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`
-              }
-            </svg>
+            ${ann.visible
+              ? html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon visibility-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+              : html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" part="icon visibility-icon"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+            }
           </button>
           <button
             class="ca-icon-btn"
