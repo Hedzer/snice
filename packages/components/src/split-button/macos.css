@@ -1,0 +1,338 @@
+/* macOS 26 Tahoe Liquid Glass / AppKit — snice-split-button (Compact Split Push Button + Glass NSMenu) */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+[part~="primary"],
+[part~="toggle"] {
+  box-sizing: border-box;
+  height: 1.75rem;
+  min-height: 1.75rem;
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.008em;
+  background: var(--snice-macos-control-bg);
+  border: 0.5px solid var(--snice-color-border);
+  color: var(--snice-color-text);
+  box-shadow: var(--snice-macos-control-shadow);
+  transition:
+    filter 140ms ease,
+    transform 120ms ease,
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+[part~="primary"] {
+  padding: 0 0.75rem;
+  border-radius: 6px 0 0 6px;
+  border-right: none;
+}
+
+[part~="toggle"] {
+  padding: 0 0.4375rem;
+  min-width: 1.625rem;
+  border-radius: 0 6px 6px 0;
+  border-left: none;
+}
+
+[part~="divider"] {
+  width: 1px;
+  background: var(--snice-color-border);
+  opacity: 1;
+}
+
+/* Sizes */
+:host([size="small"]) [part~="primary"],
+:host([size="small"]) [part~="toggle"] {
+  height: 1.375rem;
+  min-height: 1.375rem;
+  font-size: 0.75rem;
+}
+
+:host([size="small"]) [part~="primary"] {
+  padding: 0 0.5625rem;
+  border-radius: 5px 0 0 5px;
+}
+
+:host([size="small"]) [part~="toggle"] {
+  padding: 0 0.3125rem;
+  min-width: 1.375rem;
+  border-radius: 0 5px 5px 0;
+}
+
+:host([size="large"]) [part~="primary"],
+:host([size="large"]) [part~="toggle"] {
+  height: 2.125rem;
+  min-height: 2.125rem;
+  font-size: 0.875rem;
+}
+
+:host([size="large"]) [part~="primary"] {
+  padding: 0 1rem;
+  border-radius: 8px 0 0 8px;
+}
+
+:host([size="large"]) [part~="toggle"] {
+  padding: 0 0.5625rem;
+  min-width: 2rem;
+  border-radius: 0 8px 8px 0;
+}
+
+:host([pill]) [part~="primary"] {
+  border-radius: 9999px 0 0 9999px;
+}
+
+:host([pill]) [part~="toggle"] {
+  border-radius: 0 9999px 9999px 0;
+}
+
+/* Hover & Active */
+[part~="primary"]:hover,
+[part~="toggle"]:hover {
+  background: var(--snice-macos-control-bg);
+  filter: brightness(1.04);
+}
+
+[part~="primary"]:active,
+[part~="toggle"]:active {
+  transform: scale(0.98);
+  filter: brightness(0.94);
+}
+
+/* Variant: primary */
+:host([variant="primary"]) [part~="primary"],
+:host([variant="primary"]) [part~="toggle"] {
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 80%, black);
+  color: hsl(0 0% 100%);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.32), 0 0.5px 1.5px hsl(0 0% 0% / 0.22);
+}
+
+:host([variant="primary"]) [part~="primary"]:hover,
+:host([variant="primary"]) [part~="toggle"]:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, white 16%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
+  filter: brightness(1.04);
+}
+
+:host([variant="primary"]) [part~="divider"] {
+  background: hsl(0 0% 100% / 0.28);
+}
+
+/* Variant: success */
+:host([variant="success"]) [part~="primary"],
+:host([variant="success"]) [part~="toggle"] {
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-success)) 0%, var(--snice-color-success) 100%);
+  border-color: color-mix(in srgb, var(--snice-color-success) 80%, black);
+  color: hsl(0 0% 100%);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.32), 0 0.5px 1.5px hsl(0 0% 0% / 0.22);
+}
+
+:host([variant="success"]) [part~="primary"]:hover,
+:host([variant="success"]) [part~="toggle"]:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, white 16%, var(--snice-color-success)) 0%, var(--snice-color-success) 100%);
+  filter: brightness(1.04);
+}
+
+:host([variant="success"]) [part~="divider"] {
+  background: hsl(0 0% 100% / 0.28);
+}
+
+/* Variant: warning */
+:host([variant="warning"]) [part~="primary"],
+:host([variant="warning"]) [part~="toggle"] {
+  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-warning)) 0%, var(--snice-color-warning) 100%);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 78%, black);
+  color: hsl(26 42% 10%);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.36), 0 0.5px 1.5px hsl(0 0% 0% / 0.18);
+}
+
+:host([variant="warning"]) [part~="primary"]:hover,
+:host([variant="warning"]) [part~="toggle"]:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, white 18%, var(--snice-color-warning)) 0%, var(--snice-color-warning) 100%);
+  filter: brightness(1.04);
+}
+
+:host([variant="warning"]) [part~="divider"] {
+  background: hsl(26 42% 10% / 0.22);
+}
+
+/* Variant: danger */
+:host([variant="danger"]) [part~="primary"],
+:host([variant="danger"]) [part~="toggle"] {
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-danger)) 0%, var(--snice-color-danger) 100%);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 80%, black);
+  color: hsl(0 0% 100%);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.32), 0 0.5px 1.5px hsl(0 0% 0% / 0.22);
+}
+
+:host([variant="danger"]) [part~="primary"]:hover,
+:host([variant="danger"]) [part~="toggle"]:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, white 16%, var(--snice-color-danger)) 0%, var(--snice-color-danger) 100%);
+  filter: brightness(1.04);
+}
+
+:host([variant="danger"]) [part~="divider"] {
+  background: hsl(0 0% 100% / 0.28);
+}
+
+/* Outline modifier */
+:host([outline]) [part~="primary"],
+:host([outline]) [part~="toggle"],
+:host([outline][variant="default"]) [part~="primary"],
+:host([outline][variant="default"]) [part~="toggle"] {
+  background: transparent;
+  border-width: 0.5px;
+  border-color: var(--snice-color-border-hover);
+  color: var(--snice-color-text);
+  box-shadow: none;
+}
+
+:host([outline][variant="primary"]) [part~="primary"],
+:host([outline][variant="primary"]) [part~="toggle"] {
+  background: transparent;
+  border-width: 0.5px;
+  border-color: color-mix(in srgb, var(--snice-color-primary) 55%, transparent);
+  color: var(--snice-color-primary);
+  box-shadow: none;
+}
+
+:host([outline][variant="primary"]) [part~="divider"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 42%, transparent);
+}
+
+:host([outline][variant="success"]) [part~="primary"],
+:host([outline][variant="success"]) [part~="toggle"] {
+  background: transparent;
+  border-width: 0.5px;
+  border-color: color-mix(in srgb, var(--snice-color-success) 55%, transparent);
+  color: var(--snice-color-success);
+  box-shadow: none;
+}
+
+:host([outline][variant="success"]) [part~="divider"] {
+  background: color-mix(in srgb, var(--snice-color-success) 42%, transparent);
+}
+
+:host([outline][variant="warning"]) [part~="primary"],
+:host([outline][variant="warning"]) [part~="toggle"] {
+  background: transparent;
+  border-width: 0.5px;
+  border-color: color-mix(in srgb, var(--snice-color-warning) 58%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 86%, var(--snice-color-text));
+  box-shadow: none;
+}
+
+:host([outline][variant="warning"]) [part~="divider"] {
+  background: color-mix(in srgb, var(--snice-color-warning) 44%, transparent);
+}
+
+:host([outline][variant="danger"]) [part~="primary"],
+:host([outline][variant="danger"]) [part~="toggle"] {
+  background: transparent;
+  border-width: 0.5px;
+  border-color: color-mix(in srgb, var(--snice-color-danger) 55%, transparent);
+  color: var(--snice-color-danger);
+  box-shadow: none;
+}
+
+:host([outline][variant="danger"]) [part~="divider"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 42%, transparent);
+}
+
+/* Focus */
+[part~="primary"]:focus-visible,
+[part~="toggle"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+  z-index: 1;
+}
+
+/* Disabled & Loading */
+[part~="primary-disabled"],
+[part~="toggle-disabled"],
+[part~="primary-disabled"]:hover,
+[part~="toggle-disabled"]:hover,
+[part~="primary-disabled"]:active,
+[part~="toggle-disabled"]:active,
+:host([disabled][variant="primary"]) [part~="primary"],
+:host([disabled][variant="primary"]) [part~="toggle"],
+:host([disabled][variant="success"]) [part~="primary"],
+:host([disabled][variant="success"]) [part~="toggle"],
+:host([disabled][variant="warning"]) [part~="primary"],
+:host([disabled][variant="warning"]) [part~="toggle"],
+:host([disabled][variant="danger"]) [part~="primary"],
+:host([disabled][variant="danger"]) [part~="toggle"] {
+  opacity: 0.42;
+  filter: none;
+  transform: none;
+}
+
+/* Floating Liquid Glass NSMenu */
+[part~="menu"] {
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--snice-color-background-elevated) 90%, transparent);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid var(--snice-macos-glass-border);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-lg);
+}
+
+[part~="menu"]:popover-open {
+  transition: opacity 160ms ease-out, transform 180ms ease-out;
+}
+
+[part~="menu-items"] {
+  padding: 0.25rem;
+}
+
+[part~="action"] {
+  box-sizing: border-box;
+  min-height: 1.5rem;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 5px;
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--snice-color-text);
+  transition: background-color 100ms ease, color 100ms ease;
+}
+
+[part~="action"]:hover {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+[part~="action"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+[part~="action-disabled"],
+[part~="action-disabled"]:hover {
+  opacity: 0.4;
+  background: transparent;
+  color: var(--snice-color-text);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="menu"] {
+    background: var(--snice-color-background-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="primary"],
+  [part~="toggle"],
+  [part~="menu"],
+  [part~="action"] {
+    transition-duration: 0s;
+  }
+
+  [part~="primary"]:active,
+  [part~="toggle"]:active {
+    transform: none;
+  }
+}

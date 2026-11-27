@@ -1,0 +1,365 @@
+/* iOS 26+ Liquid Glass — snice-split-button (Liquid Glass Capsule Split Action + Pull-Down UIMenu) */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+[part~="primary"],
+[part~="toggle"] {
+  box-sizing: border-box;
+  min-height: 2.75rem;
+  font-family: var(--snice-font-family);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  color: var(--snice-color-text);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-sm);
+  transition:
+    transform 240ms var(--snice-ease-spring),
+    filter 160ms ease,
+    background-color 160ms ease,
+    box-shadow 180ms ease;
+}
+
+[part~="primary"] {
+  padding: 0 1.125rem;
+  border-radius: 9999px 0 0 9999px;
+  border-right: none;
+}
+
+[part~="toggle"] {
+  padding: 0 0.875rem;
+  min-width: 2.75rem;
+  border-radius: 0 9999px 9999px 0;
+  border-left: none;
+}
+
+[part~="divider"] {
+  width: 1px;
+  background: var(--snice-color-border);
+  opacity: 1;
+}
+
+/* Sizes */
+:host([size="small"]) [part~="primary"],
+:host([size="small"]) [part~="toggle"] {
+  min-height: 2.125rem;
+  font-size: 0.875rem;
+}
+
+:host([size="small"]) [part~="primary"] {
+  padding: 0 0.875rem;
+}
+
+:host([size="small"]) [part~="toggle"] {
+  padding: 0 0.625rem;
+  min-width: 2.125rem;
+}
+
+:host([size="large"]) [part~="primary"],
+:host([size="large"]) [part~="toggle"] {
+  min-height: 3.125rem;
+  font-size: 1.0625rem;
+}
+
+:host([size="large"]) [part~="primary"] {
+  padding: 0 1.375rem;
+}
+
+:host([size="large"]) [part~="toggle"] {
+  padding: 0 1rem;
+  min-width: 3rem;
+}
+
+/* Hover & Active (Default Liquid Glass) */
+[part~="primary"]:hover,
+[part~="toggle"]:hover {
+  background: var(--snice-ios-glass-regular-bg);
+  filter: brightness(1.05);
+}
+
+[part~="primary"]:active,
+[part~="toggle"]:active {
+  transform: scale(0.96);
+  filter: brightness(0.95);
+}
+
+/* Variant: primary */
+:host([variant="primary"]) [part~="primary"],
+:host([variant="primary"]) [part~="toggle"] {
+  background: var(--snice-color-primary);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: color-mix(in srgb, var(--snice-color-primary) 88%, black);
+  color: hsl(0 0% 100%);
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
+    0 4px 12px color-mix(in srgb, var(--snice-color-primary) 26%, transparent);
+}
+
+:host([variant="primary"]) [part~="primary"]:hover,
+:host([variant="primary"]) [part~="toggle"]:hover {
+  background: var(--snice-color-primary);
+  filter: brightness(1.06);
+}
+
+:host([variant="primary"]) [part~="divider"] {
+  background: hsl(0 0% 100% / 0.3);
+}
+
+/* Variant: success */
+:host([variant="success"]) [part~="primary"],
+:host([variant="success"]) [part~="toggle"] {
+  background: var(--snice-color-success);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: color-mix(in srgb, var(--snice-color-success) 88%, black);
+  color: hsl(0 0% 100%);
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
+    0 4px 12px color-mix(in srgb, var(--snice-color-success) 24%, transparent);
+}
+
+:host([variant="success"]) [part~="primary"]:hover,
+:host([variant="success"]) [part~="toggle"]:hover {
+  background: var(--snice-color-success);
+  filter: brightness(1.06);
+}
+
+:host([variant="success"]) [part~="divider"] {
+  background: hsl(0 0% 100% / 0.3);
+}
+
+/* Variant: warning */
+:host([variant="warning"]) [part~="primary"],
+:host([variant="warning"]) [part~="toggle"] {
+  background: var(--snice-color-warning);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: color-mix(in srgb, var(--snice-color-warning) 86%, black);
+  color: hsl(24 40% 10%);
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.42),
+    0 4px 12px color-mix(in srgb, var(--snice-color-warning) 24%, transparent);
+}
+
+:host([variant="warning"]) [part~="primary"]:hover,
+:host([variant="warning"]) [part~="toggle"]:hover {
+  background: var(--snice-color-warning);
+  filter: brightness(1.05);
+}
+
+:host([variant="warning"]) [part~="divider"] {
+  background: hsl(24 40% 10% / 0.22);
+}
+
+/* Variant: danger */
+:host([variant="danger"]) [part~="primary"],
+:host([variant="danger"]) [part~="toggle"] {
+  background: var(--snice-color-danger);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: color-mix(in srgb, var(--snice-color-danger) 88%, black);
+  color: hsl(0 0% 100%);
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.34),
+    0 4px 12px color-mix(in srgb, var(--snice-color-danger) 24%, transparent);
+}
+
+:host([variant="danger"]) [part~="primary"]:hover,
+:host([variant="danger"]) [part~="toggle"]:hover {
+  background: var(--snice-color-danger);
+  filter: brightness(1.06);
+}
+
+:host([variant="danger"]) [part~="divider"] {
+  background: hsl(0 0% 100% / 0.3);
+}
+
+/* Outline modifier */
+:host([outline]) [part~="primary"],
+:host([outline]) [part~="toggle"],
+:host([outline][variant="default"]) [part~="primary"],
+:host([outline][variant="default"]) [part~="toggle"] {
+  background: var(--snice-ios-glass-clear-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-color: var(--snice-color-border-hover);
+  color: var(--snice-color-text);
+  box-shadow: none;
+}
+
+:host([outline][variant="primary"]) [part~="primary"],
+:host([outline][variant="primary"]) [part~="toggle"] {
+  background: var(--snice-ios-glass-clear-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 52%, transparent);
+  color: var(--snice-color-primary);
+  box-shadow: none;
+}
+
+:host([outline][variant="primary"]) [part~="divider"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 42%, transparent);
+}
+
+:host([outline][variant="success"]) [part~="primary"],
+:host([outline][variant="success"]) [part~="toggle"] {
+  background: var(--snice-ios-glass-clear-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-color: color-mix(in srgb, var(--snice-color-success) 52%, transparent);
+  color: var(--snice-color-success);
+  box-shadow: none;
+}
+
+:host([outline][variant="success"]) [part~="divider"] {
+  background: color-mix(in srgb, var(--snice-color-success) 42%, transparent);
+}
+
+:host([outline][variant="warning"]) [part~="primary"],
+:host([outline][variant="warning"]) [part~="toggle"] {
+  background: var(--snice-ios-glass-clear-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 56%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 86%, var(--snice-color-text));
+  box-shadow: none;
+}
+
+:host([outline][variant="warning"]) [part~="divider"] {
+  background: color-mix(in srgb, var(--snice-color-warning) 44%, transparent);
+}
+
+:host([outline][variant="danger"]) [part~="primary"],
+:host([outline][variant="danger"]) [part~="toggle"] {
+  background: var(--snice-ios-glass-clear-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 52%, transparent);
+  color: var(--snice-color-danger);
+  box-shadow: none;
+}
+
+:host([outline][variant="danger"]) [part~="divider"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 42%, transparent);
+}
+
+/* Focus */
+[part~="primary"]:focus-visible,
+[part~="toggle"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+  z-index: 1;
+}
+
+/* Disabled & Loading suppression */
+[part~="primary-disabled"],
+[part~="toggle-disabled"],
+[part~="primary-disabled"]:hover,
+[part~="toggle-disabled"]:hover,
+[part~="primary-disabled"]:active,
+[part~="toggle-disabled"]:active,
+:host([disabled][variant="primary"]) [part~="primary"],
+:host([disabled][variant="primary"]) [part~="toggle"],
+:host([disabled][variant="success"]) [part~="primary"],
+:host([disabled][variant="success"]) [part~="toggle"],
+:host([disabled][variant="warning"]) [part~="primary"],
+:host([disabled][variant="warning"]) [part~="toggle"],
+:host([disabled][variant="danger"]) [part~="primary"],
+:host([disabled][variant="danger"]) [part~="toggle"] {
+  opacity: 0.42;
+  filter: none;
+  transform: none;
+}
+
+:host([loading]) [part~="primary"]:hover,
+:host([loading]) [part~="toggle"]:hover,
+:host([loading]) [part~="primary"]:active,
+:host([loading]) [part~="toggle"]:active {
+  filter: none;
+  transform: none;
+}
+
+/* Top-Layer Liquid Glass UIMenu Popover */
+[part~="menu"] {
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 88%, transparent);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+}
+
+[part~="menu"]:popover-open {
+  transform: translateY(0) scale(1);
+  transition:
+    opacity 200ms ease,
+    transform 260ms var(--snice-ease-spring);
+}
+
+[part~="menu-items"] {
+  padding: 0.375rem;
+}
+
+[part~="action"] {
+  box-sizing: border-box;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 10px;
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--snice-color-text);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+[part~="action"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  color: var(--snice-color-text);
+}
+
+[part~="action"]:active {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+[part~="action"]:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--snice-focus-ring-color);
+}
+
+[part~="action-disabled"],
+[part~="action-disabled"]:hover,
+[part~="action-disabled"]:active {
+  opacity: 0.38;
+  background: transparent;
+  color: var(--snice-color-text);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="primary"],
+  [part~="toggle"],
+  [part~="menu"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="primary"],
+  [part~="toggle"],
+  [part~="menu"],
+  [part~="action"] {
+    transition-duration: 0s;
+  }
+
+  [part~="primary"]:active,
+  [part~="toggle"]:active {
+    transform: none;
+  }
+}
