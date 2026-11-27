@@ -90,6 +90,24 @@
   height: 2.25rem;
 }
 
+:host([label-on]) [part~="track"],
+:host([label-off]) [part~="track"] {
+  min-width: 4.375rem;
+  padding-inline: 0.375rem;
+}
+
+:host([size="small"][label-on]) [part~="track"],
+:host([size="small"][label-off]) [part~="track"] {
+  min-width: 2.625rem;
+  padding-inline: 0;
+}
+
+:host([size="large"][label-on]) [part~="track"],
+:host([size="large"][label-off]) [part~="track"] {
+  min-width: 5rem;
+  padding-inline: 0.4375rem;
+}
+
 /* Invalid — propagates danger palette to thumb, spinner, ripple & state labels */
 [part~="track-invalid"] {
   border-color: var(--snice-color-danger);
@@ -291,6 +309,15 @@
 
 :host([loading]) [part~="thumb"] {
   animation: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  left: 4px;
+}
+
+:host([loading]) [part~="thumb-checked"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  left: calc(100% - 1.5rem - 2px);
 }
 
 [part~="spinner"] {
@@ -352,7 +379,7 @@
 :host([disabled]) [part~="track-invalid"],
 :host([disabled]:hover) [part~="track-invalid"] {
   background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 24%, transparent);
   box-shadow: none;
   outline: none;
 }
@@ -361,7 +388,7 @@
 :host([disabled]:hover) [part~="track-checked"],
 :host([disabled]) [part~="track-invalid"][part~="track-checked"],
 :host([disabled]:hover) [part~="track-invalid"][part~="track-checked"] {
-  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  background: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
   border-color: transparent;
   box-shadow: none;
   outline: none;
@@ -369,14 +396,14 @@
 
 :host([disabled]) [part~="thumb"],
 :host([disabled]:hover) [part~="thumb"] {
-  background: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  background: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   color: var(--snice-color-surface);
 }
 
 :host([disabled]) [part~="thumb-checked"],
 :host([disabled]:hover) [part~="thumb-checked"] {
   background: var(--snice-color-surface);
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
 }
 
 :host([disabled]) [part~="ripple"],
@@ -389,16 +416,16 @@
 }
 
 :host([disabled]) [part~="label"] {
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 48%, transparent);
 }
 
 :host([disabled]) [part~="label-required"]::after {
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 48%, transparent);
 }
 
 :host([disabled]) [part~="label-on"],
 :host([disabled]) [part~="label-off"] {
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 48%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

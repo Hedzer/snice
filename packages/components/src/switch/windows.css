@@ -8,6 +8,7 @@
 
 :host {
   min-height: 2rem; /* 32px — WinUI 3 standard control height */
+  align-self: center;
   --_win-thumb: 0.75rem;         /* 12px resting */
   --_win-thumb-hover: 0.875rem;  /* 14px hover */
   --_win-thumb-press: 1.0625rem; /* 17px pressed width */
@@ -17,6 +18,7 @@
 
 :host([size="small"]) {
   min-height: 1.625rem; /* 26px */
+  align-self: center;
   --_win-thumb: 0.625rem;        /* 10px resting */
   --_win-thumb-hover: 0.75rem;   /* 12px hover */
   --_win-thumb-press: 0.875rem;  /* 14px pressed width */
@@ -26,6 +28,7 @@
 
 :host([size="large"]) {
   min-height: 2.5rem; /* 40px */
+  align-self: center;
   --_win-thumb: 0.9375rem;       /* 15px resting */
   --_win-thumb-hover: 1.0625rem; /* 17px hover */
   --_win-thumb-press: 1.3125rem; /* 21px pressed width */
@@ -63,17 +66,20 @@
 /* Widen tracks with ON/OFF state labels so text never collides with knob */
 :host([label-on]) [part~="track"],
 :host([label-off]) [part~="track"] {
-  min-width: 3.5rem;
+  min-width: 3.875rem;
+  padding-inline: 0.375rem;
 }
 
 :host([size="small"][label-on]) [part~="track"],
 :host([size="small"][label-off]) [part~="track"] {
   min-width: 2.125rem;
+  padding-inline: 0;
 }
 
 :host([size="large"][label-on]) [part~="track"],
 :host([size="large"][label-off]) [part~="track"] {
-  min-width: 4rem;
+  min-width: 4.375rem;
+  padding-inline: 0.4375rem;
 }
 
 /* Track Hover & Pressed (Unchecked) */
@@ -182,12 +188,12 @@
 
 /* State labels (ON/OFF inside track) & high-contrast spinner */
 [part~="label-on"] {
-  left: 0.375rem;
+  left: 0.5rem;
   color: var(--snice-win-on-accent, hsl(0 0% 100%));
 }
 
 [part~="label-off"] {
-  right: 0.4375rem;
+  right: 0.5rem;
   color: var(--snice-color-text-secondary);
 }
 
@@ -234,12 +240,12 @@
 
 /* Disabled & Loading Wrapper */
 [part~="base-disabled"] {
-  opacity: 0.55;
+  opacity: 1;
   cursor: not-allowed;
 }
 
 [part~="base-loading"] {
-  opacity: 0.8;
+  opacity: 0.88;
   cursor: wait;
 }
 
@@ -247,7 +253,7 @@
   cursor: wait;
 }
 
-/* Loading — freeze hover/press geometry & neutralize base opacity pulse */
+/* Loading — expand thumb slightly for crisp spinner breathing room & neutralize pulse */
 :host([loading]:hover) [part~="track"] {
   background: var(--snice-win-control-bg);
   border-color: var(--snice-color-text-secondary);
@@ -269,25 +275,25 @@
 
 :host([loading]) [part~="thumb"],
 :host([loading]:hover) [part~="thumb"] {
-  width: var(--_win-thumb);
-  height: var(--_win-thumb);
-  left: var(--_win-thumb-inset);
+  width: var(--_win-thumb-hover);
+  height: var(--_win-thumb-hover);
+  left: var(--_win-thumb-inset-hover);
   background: var(--snice-color-text-secondary);
   animation: none;
 }
 
 :host([loading]) [part~="thumb-checked"],
 :host([loading]:hover) [part~="thumb-checked"] {
-  width: var(--_win-thumb);
-  height: var(--_win-thumb);
-  left: calc(100% - var(--_win-thumb) - var(--_win-thumb-inset));
+  width: var(--_win-thumb-hover);
+  height: var(--_win-thumb-hover);
+  left: calc(100% - var(--_win-thumb-hover) - var(--_win-thumb-inset-hover));
   background: var(--snice-win-on-accent, hsl(0 0% 100%));
   animation: none;
 }
 
-/* Disabled — flat WinUI 3 hollow/muted states, preserves exact per-size thumb geometry */
+/* Disabled — crisp visible WinUI 3 hollow/muted states with opacity: 1 */
 :host([disabled]) [part~="base-disabled"] {
-  opacity: 0.55;
+  opacity: 1;
   cursor: not-allowed;
 }
 
@@ -297,7 +303,7 @@
 :host([disabled]) [part~="track-invalid"],
 :host([disabled]:hover) [part~="track-invalid"] {
   background: transparent;
-  border-color: var(--snice-color-border-hover);
+  border-color: color-mix(in srgb, var(--snice-color-text) 28%, transparent);
   box-shadow: none;
 }
 
@@ -306,7 +312,7 @@
 :host([disabled][data-win-pressed="true"]) [part~="track-checked"],
 :host([disabled]) [part~="track-invalid"][part~="track-checked"],
 :host([disabled]:hover) [part~="track-invalid"][part~="track-checked"] {
-  background: var(--snice-color-text-tertiary);
+  background: color-mix(in srgb, var(--snice-color-text) 26%, transparent);
   border-color: transparent;
   box-shadow: none;
 }
@@ -322,7 +328,7 @@
   width: var(--_win-thumb);
   height: var(--_win-thumb);
   left: var(--_win-thumb-inset);
-  background: var(--snice-color-text-tertiary);
+  background: color-mix(in srgb, var(--snice-color-text) 40%, transparent);
   color: var(--snice-color-surface);
 }
 
@@ -333,11 +339,11 @@
   height: var(--_win-thumb);
   left: calc(100% - var(--_win-thumb) - var(--_win-thumb-inset));
   background: var(--snice-color-surface);
-  color: var(--snice-color-text-tertiary);
+  color: color-mix(in srgb, var(--snice-color-text) 40%, transparent);
 }
 
 :host([disabled]) [part~="label"] {
-  color: var(--snice-color-text-tertiary);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
 }
 
 :host([disabled]) [part~="label-on"] {
@@ -345,7 +351,7 @@
 }
 
 :host([disabled]) [part~="label-off"] {
-  color: var(--snice-color-text-tertiary);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
 }
 
 /* First-class Windows High Contrast Mode (WHCM / forced-colors) */
