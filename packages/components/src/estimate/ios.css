@@ -1,0 +1,193 @@
+/* iOS 26+ Liquid Glass / Apple HIG — snice-estimate
+ * Apple Business / Keynote Proposal grouped sheet (opaque card, zero glass on document content).
+ * 20px grouped card, 0.5px hairlines, 42x26 iOS green spring toggle switches, 44px capsule CTAs,
+ * fixed professional/creative header contrast, explicit white dark-mode ink, tabular numerals.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --estimate-bg: var(--snice-color-surface-container-high);
+  --estimate-bg-element: var(--snice-color-surface-container-low);
+  --estimate-text: var(--snice-color-text);
+  --estimate-text-secondary: var(--snice-color-text-secondary);
+  --estimate-text-tertiary: var(--snice-color-text-tertiary);
+  --estimate-border: var(--snice-color-border-subtle);
+  --estimate-accent: var(--snice-color-primary);
+  --estimate-success: var(--snice-color-success);
+  --estimate-danger: var(--snice-color-danger);
+  --estimate-warning: var(--snice-color-warning);
+  --estimate-radius: 20px;
+  --estimate-shadow: var(--snice-shadow-sm);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fix professional variant contrast (base CSS defaults start color to light surface!) */
+:host([variant="professional"]) {
+  --estimate-pro-header-bg-start: hsl(222 47% 13%);
+  --estimate-pro-header-bg-end: hsl(217 33% 20%);
+  --estimate-pro-header-text: hsl(0 0% 100%);
+  --estimate-pro-meta-text: hsl(215 20% 78%);
+}
+
+/* Fix creative variant dark-mode header ink */
+:host([variant="creative"]) {
+  --estimate-creative-text: hsl(0 0% 100%);
+}
+
+:host([variant="minimal"]) {
+  --estimate-radius: 0;
+  --estimate-shadow: none;
+}
+
+[part~="base"] {
+  border: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host([variant="minimal"]) [part~="base"] {
+  border: none;
+  box-shadow: none;
+}
+
+[part~="header"],
+[part~="parties"],
+[part~="table"],
+[part~="summary"],
+[part~="notes"],
+[part~="terms"],
+[part~="actions"],
+[part~="footer"] {
+  border-color: var(--snice-color-border-subtle);
+}
+
+[part~="title"] {
+  letter-spacing: -0.024em;
+}
+
+[part~="status"] {
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+[part~="optional-tag"] {
+  border-radius: 9999px;
+}
+
+/* Tabular numerals across all estimate figures */
+[part~="meta"],
+[part~="expiry-date"],
+[part~="table-cell"],
+[part~="summary-value"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Option comparison cards */
+[part~="option"] {
+  background: var(--snice-color-surface-container-low);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 16px;
+}
+
+/* Authentic 42x26 iOS UISwitch on optional line items */
+[part~="item-toggle"] {
+  width: 42px;
+  height: 26px;
+  border-radius: 9999px;
+  background: var(--snice-color-border-hover);
+  transition: background-color 220ms var(--snice-ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+[part~="item-toggle"]::after {
+  width: 22px;
+  height: 22px;
+  top: 2px;
+  left: 2px;
+  background: hsl(0 0% 100%);
+  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.25);
+  transition: transform 220ms var(--snice-ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+[part~="item-toggle-active"] {
+  background: var(--snice-color-success);
+}
+
+[part~="item-toggle-active"]::after {
+  transform: translateX(16px);
+}
+
+[part~="item-toggle"]:focus-visible {
+  outline: var(--snice-focus-ring-width) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* 44px iOS capsule actions with explicit white dark-mode ink */
+[part~="accept-button"],
+[part~="decline-button"],
+[part~="option-button"] {
+  min-height: 44px;
+  border-radius: 9999px;
+  padding: 0 22px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition:
+    background-color var(--snice-transition-fast) ease,
+    color var(--snice-transition-fast) ease,
+    transform var(--snice-transition-fast) var(--snice-ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+[part~="accept-button"] {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  border: none;
+}
+
+[part~="accept-button"]:hover {
+  background: var(--snice-color-primary-hover);
+  color: hsl(0 0% 100%);
+}
+
+[part~="decline-button"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 12%, transparent);
+  color: var(--snice-color-danger);
+  border: none;
+}
+
+[part~="decline-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-danger) 20%, transparent);
+  color: var(--snice-color-danger);
+}
+
+[part~="option-button"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  color: var(--snice-color-primary);
+  border: none;
+}
+
+[part~="option-button"]:hover {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+:host([variant="creative"]) [part~="accept-button"],
+:host([variant="creative"]) [part~="option-button"]:hover {
+  color: hsl(0 0% 100%);
+}
+
+[part~="accept-button"]:active,
+[part~="decline-button"]:active,
+[part~="option-button"]:active {
+  transform: scale(0.97);
+}
+
+[part~="accept-button"]:focus-visible,
+[part~="decline-button"]:focus-visible,
+[part~="option-button"]:focus-visible {
+  outline: var(--snice-focus-ring-width) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+@media print {
+  :host {
+    --estimate-radius: 0;
+    --estimate-shadow: none;
+  }
+}

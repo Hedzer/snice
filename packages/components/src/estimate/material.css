@@ -1,0 +1,195 @@
+/* Android Material 3 Expressive — snice-estimate
+ * Google Workspace / M3 Expressive proposal card.
+ * 16px surface-container-low card, 12px surface-container option cards, 44x26 M3 expanding-thumb
+ * switches, 44px pill CTAs with 8px press morph, dark-mode T80 --snice-m3-on-primary ink.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --estimate-bg: var(--snice-color-surface-container-low);
+  --estimate-bg-element: var(--snice-color-surface-container);
+  --estimate-text: var(--snice-color-text);
+  --estimate-text-secondary: var(--snice-color-text-secondary);
+  --estimate-text-tertiary: var(--snice-color-text-tertiary);
+  --estimate-border: var(--snice-color-border-subtle);
+  --estimate-accent: var(--snice-color-primary);
+  --estimate-success: var(--snice-color-success);
+  --estimate-danger: var(--snice-color-danger);
+  --estimate-warning: var(--snice-color-warning);
+  --estimate-radius: 16px;
+  --estimate-shadow: var(--snice-shadow-xs);
+}
+
+/* Fix professional variant contrast */
+:host([variant="professional"]) {
+  --estimate-pro-header-bg-start: hsl(222 47% 13%);
+  --estimate-pro-header-bg-end: hsl(217 33% 20%);
+  --estimate-pro-header-text: hsl(0 0% 100%);
+  --estimate-pro-meta-text: hsl(215 20% 78%);
+}
+
+:host([variant="creative"]) {
+  --estimate-creative-text: hsl(0 0% 100%);
+}
+
+:host([variant="minimal"]) {
+  --estimate-radius: 0;
+  --estimate-shadow: none;
+}
+
+[part~="base"] {
+  border: 1px solid var(--snice-color-border-subtle);
+}
+
+:host([variant="minimal"]) [part~="base"] {
+  border: none;
+  box-shadow: none;
+}
+
+[part~="title"] {
+  letter-spacing: -0.015em;
+}
+
+[part~="status"] {
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+[part~="optional-tag"] {
+  border-radius: 8px;
+}
+
+/* Tabular numerals across all estimate figures */
+[part~="meta"],
+[part~="expiry-date"],
+[part~="table-cell"],
+[part~="summary-value"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tonal 12px option cards */
+[part~="option"] {
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 12px;
+}
+
+/* Authentic 44x26 Material 3 expanding-thumb Switch */
+[part~="item-toggle"] {
+  width: 44px;
+  height: 26px;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-highest);
+  border: 2px solid var(--snice-color-border-hover);
+  box-sizing: border-box;
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects, ease),
+    border-color 150ms var(--snice-m3-spring-effects, ease);
+}
+
+[part~="item-toggle"]::after {
+  width: 14px;
+  height: 14px;
+  top: 4px;
+  left: 4px;
+  background: var(--snice-color-text-secondary);
+  box-shadow: none;
+  transition:
+    transform 200ms var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    width 150ms ease,
+    height 150ms ease,
+    top 150ms ease,
+    left 150ms ease,
+    background-color 150ms ease;
+}
+
+[part~="item-toggle-active"] {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+}
+
+[part~="item-toggle-active"]::after {
+  width: 20px;
+  height: 20px;
+  top: 1px;
+  left: 1px;
+  background: var(--snice-m3-on-primary);
+  transform: translateX(18px);
+}
+
+[part~="item-toggle"]:focus-visible {
+  outline: var(--snice-focus-ring-width) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* 44px M3 pill buttons with expressive 8px press morph */
+[part~="accept-button"],
+[part~="decline-button"],
+[part~="option-button"] {
+  min-height: 44px;
+  border-radius: 9999px;
+  padding: 0 22px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects, ease),
+    color 150ms var(--snice-m3-spring-effects, ease),
+    border-radius 180ms var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1));
+}
+
+[part~="accept-button"] {
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
+  border: none;
+}
+
+[part~="accept-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 92%, var(--snice-m3-on-primary));
+  color: var(--snice-m3-on-primary);
+}
+
+[part~="decline-button"] {
+  background: transparent;
+  color: var(--snice-color-danger);
+  border: 1px solid var(--snice-color-border);
+}
+
+[part~="decline-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-danger) 8%, transparent);
+  border-color: var(--snice-color-danger);
+}
+
+[part~="option-button"] {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  border: none;
+}
+
+[part~="option-button"]:hover {
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
+}
+
+:host([variant="creative"]) [part~="accept-button"] {
+  color: hsl(0 0% 100%);
+}
+
+[part~="accept-button"]:active,
+[part~="decline-button"]:active,
+[part~="option-button"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+[part~="accept-button"]:focus-visible,
+[part~="decline-button"]:focus-visible,
+[part~="option-button"]:focus-visible {
+  outline: var(--snice-focus-ring-width) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+@media print {
+  :host {
+    --estimate-radius: 0;
+    --estimate-shadow: none;
+  }
+}

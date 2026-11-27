@@ -1,0 +1,197 @@
+/* macOS 26+ Tahoe / AppKit — snice-estimate
+ * Compact AppKit proposal & quote document sheet.
+ * 12px opaque card, 0.5px hairlines, 13px SF Pro body, 32x18 NSSwitch toggles,
+ * 28px 6px-radius AppKit bezel & glossy primary buttons, --snice-macos-focus-halo.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --estimate-bg: var(--snice-color-background-element);
+  --estimate-bg-element: var(--snice-color-surface-container-low);
+  --estimate-text: var(--snice-color-text);
+  --estimate-text-secondary: var(--snice-color-text-secondary);
+  --estimate-text-tertiary: var(--snice-color-text-tertiary);
+  --estimate-border: var(--snice-color-border-subtle);
+  --estimate-accent: var(--snice-color-primary);
+  --estimate-success: var(--snice-color-success);
+  --estimate-danger: var(--snice-color-danger);
+  --estimate-warning: var(--snice-color-warning);
+  --estimate-radius: 12px;
+  --estimate-shadow: var(--snice-shadow-sm);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fix professional variant contrast */
+:host([variant="professional"]) {
+  --estimate-pro-header-bg-start: hsl(222 47% 13%);
+  --estimate-pro-header-bg-end: hsl(217 33% 20%);
+  --estimate-pro-header-text: hsl(0 0% 100%);
+  --estimate-pro-meta-text: hsl(215 20% 78%);
+}
+
+:host([variant="creative"]) {
+  --estimate-creative-text: hsl(0 0% 100%);
+}
+
+:host([variant="minimal"]) {
+  --estimate-radius: 0;
+  --estimate-shadow: none;
+}
+
+[part~="base"] {
+  border: 0.5px solid var(--snice-color-border);
+  font-size: 0.8125rem;
+}
+
+:host([variant="minimal"]) [part~="base"] {
+  border: none;
+  box-shadow: none;
+}
+
+[part~="header"],
+[part~="parties"],
+[part~="table"],
+[part~="summary"],
+[part~="notes"],
+[part~="terms"],
+[part~="actions"],
+[part~="footer"] {
+  border-color: var(--snice-color-border-subtle);
+}
+
+[part~="title"] {
+  letter-spacing: -0.015em;
+}
+
+[part~="status"] {
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+[part~="optional-tag"] {
+  border-radius: 4px;
+}
+
+/* Tabular numerals across all estimate figures */
+[part~="meta"],
+[part~="expiry-date"],
+[part~="table-cell"],
+[part~="summary-value"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Compact 10px AppKit option cards */
+[part~="option"] {
+  background: var(--snice-color-surface-container-low);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 10px;
+}
+
+/* Compact 32x18 macOS NSSwitch for optional items */
+[part~="item-toggle"] {
+  width: 32px;
+  height: 18px;
+  border-radius: 9999px;
+  background: var(--snice-color-border-hover);
+  transition: background-color 140ms ease;
+}
+
+[part~="item-toggle"]::after {
+  width: 14px;
+  height: 14px;
+  top: 2px;
+  left: 2px;
+  background: hsl(0 0% 100%);
+  box-shadow: 0 1px 2px hsl(0 0% 0% / 0.25);
+  transition: transform 140ms ease;
+}
+
+[part~="item-toggle-active"] {
+  background: var(--snice-color-primary);
+}
+
+[part~="item-toggle-active"]::after {
+  transform: translateX(14px);
+}
+
+[part~="item-toggle"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Compact 28px AppKit buttons */
+[part~="accept-button"],
+[part~="decline-button"],
+[part~="option-button"] {
+  min-height: 28px;
+  border-radius: 6px;
+  padding: 0 14px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    filter 140ms ease;
+}
+
+[part~="accept-button"] {
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent 55%), var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-primary) 80%, hsl(0 0% 0%));
+  box-shadow: 0 0.5px 1px hsl(0 0% 0% / 0.18), inset 0 0.5px 0 hsl(0 0% 100% / 0.22);
+}
+
+[part~="accept-button"]:hover {
+  filter: brightness(1.06);
+  color: hsl(0 0% 100%);
+}
+
+[part~="decline-button"] {
+  background: var(--snice-macos-control-bg);
+  color: var(--snice-color-danger);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-macos-control-shadow);
+}
+
+[part~="decline-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-danger) 10%, var(--snice-macos-control-bg));
+  border-color: color-mix(in srgb, var(--snice-color-danger) 40%, var(--snice-color-border));
+}
+
+[part~="option-button"] {
+  background: var(--snice-macos-control-bg);
+  color: var(--snice-color-text);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-macos-control-shadow);
+}
+
+[part~="option-button"]:hover {
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent 55%), var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  border-color: var(--snice-color-primary);
+}
+
+:host([variant="creative"]) [part~="accept-button"],
+:host([variant="creative"]) [part~="option-button"]:hover {
+  color: hsl(0 0% 100%);
+}
+
+[part~="accept-button"]:active,
+[part~="decline-button"]:active,
+[part~="option-button"]:active {
+  filter: brightness(0.93);
+}
+
+[part~="accept-button"]:focus-visible,
+[part~="decline-button"]:focus-visible,
+[part~="option-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+@media print {
+  :host {
+    --estimate-radius: 0;
+    --estimate-shadow: none;
+  }
+}

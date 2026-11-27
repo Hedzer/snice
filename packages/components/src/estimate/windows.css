@@ -1,0 +1,222 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-estimate
+ * Microsoft 365 / Dynamics 365 Quote Card.
+ * 8px layered WinUI card, 4px controls & badges, 40x20 WinUI 3 ToggleSwitch, 32px top-lit
+ * Fluent buttons, --snice-win-on-accent dark-mode ink, --snice-win-focus-shadow & full WHCM.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --estimate-bg: var(--snice-color-surface-container-lowest);
+  --estimate-bg-element: var(--snice-color-surface-container-low);
+  --estimate-text: var(--snice-color-text);
+  --estimate-text-secondary: var(--snice-color-text-secondary);
+  --estimate-text-tertiary: var(--snice-color-text-tertiary);
+  --estimate-border: var(--snice-color-border-subtle);
+  --estimate-accent: var(--snice-color-primary);
+  --estimate-success: var(--snice-color-success);
+  --estimate-danger: var(--snice-color-danger);
+  --estimate-warning: var(--snice-color-warning);
+  --estimate-radius: 8px;
+  --estimate-shadow: var(--snice-shadow-xs);
+}
+
+/* Fix professional variant contrast */
+:host([variant="professional"]) {
+  --estimate-pro-header-bg-start: hsl(222 47% 13%);
+  --estimate-pro-header-bg-end: hsl(217 33% 20%);
+  --estimate-pro-header-text: hsl(0 0% 100%);
+  --estimate-pro-meta-text: hsl(215 20% 78%);
+}
+
+:host([variant="creative"]) {
+  --estimate-creative-text: hsl(0 0% 100%);
+}
+
+:host([variant="minimal"]) {
+  --estimate-radius: 0;
+  --estimate-shadow: none;
+}
+
+[part~="base"] {
+  border: 1px solid var(--snice-color-border);
+  font-size: 0.875rem;
+}
+
+:host([variant="minimal"]) [part~="base"] {
+  border: none;
+  box-shadow: none;
+}
+
+[part~="status"] {
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+[part~="optional-tag"] {
+  border-radius: 4px;
+}
+
+/* Tabular numerals across all estimate figures */
+[part~="meta"],
+[part~="expiry-date"],
+[part~="table-cell"],
+[part~="summary-value"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Crisp 8px Fluent option cards */
+[part~="option"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border);
+  border-radius: 8px;
+}
+
+/* Authentic 40x20 WinUI 3 ToggleSwitch */
+[part~="item-toggle"] {
+  width: 40px;
+  height: 20px;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid var(--snice-color-text-secondary);
+  box-sizing: border-box;
+  transition:
+    background-color 100ms cubic-bezier(0, 0, 0, 1),
+    border-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="item-toggle"]::after {
+  width: 12px;
+  height: 12px;
+  top: 3px;
+  left: 3px;
+  background: var(--snice-color-text-secondary);
+  box-shadow: none;
+  transition:
+    transform 100ms cubic-bezier(0, 0, 0, 1),
+    width 100ms cubic-bezier(0, 0, 0, 1),
+    background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="item-toggle"]:hover::after {
+  width: 14px;
+}
+
+[part~="item-toggle-active"] {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+}
+
+[part~="item-toggle-active"]::after {
+  background: var(--snice-win-on-accent);
+  transform: translateX(20px);
+}
+
+[part~="item-toggle-active"]:hover::after {
+  transform: translateX(18px);
+}
+
+[part~="item-toggle"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* Crisp 32px WinUI 3 buttons (fast-out 100ms, zero bounce) */
+[part~="accept-button"],
+[part~="decline-button"],
+[part~="option-button"] {
+  min-height: 32px;
+  border-radius: 4px;
+  padding: 0 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition:
+    background-color 100ms cubic-bezier(0, 0, 0, 1),
+    border-color 100ms cubic-bezier(0, 0, 0, 1),
+    color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="accept-button"] {
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent);
+  border: 1px solid var(--snice-color-primary);
+}
+
+[part~="accept-button"]:hover {
+  background: var(--snice-color-primary-hover);
+  border-color: var(--snice-color-primary-hover);
+  color: var(--snice-win-on-accent);
+}
+
+[part~="decline-button"] {
+  background: var(--snice-win-control-bg);
+  color: var(--snice-color-danger);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+}
+
+[part~="decline-button"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-color-danger);
+}
+
+[part~="option-button"] {
+  background: var(--snice-win-control-bg);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+}
+
+[part~="option-button"]:hover {
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent);
+  border-color: var(--snice-color-primary);
+}
+
+:host([variant="creative"]) [part~="accept-button"] {
+  color: hsl(0 0% 100%);
+}
+
+[part~="accept-button"]:focus-visible,
+[part~="decline-button"]:focus-visible,
+[part~="option-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="accept-button"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+
+  [part~="decline-button"],
+  [part~="option-button"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border-color: ButtonText;
+  }
+
+  [part~="item-toggle"] {
+    border-color: ButtonText;
+  }
+
+  [part~="item-toggle-active"] {
+    background: Highlight;
+    border-color: Highlight;
+  }
+}
+
+@media print {
+  :host {
+    --estimate-radius: 0;
+    --estimate-shadow: none;
+  }
+}
