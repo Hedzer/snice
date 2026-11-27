@@ -988,6 +988,7 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 - [Theming](./docs/theme.md) - Design tokens, surfaces, and dark mode
 - [Platform Skins](./docs/platform-skins.md) - Contemporary OS skins (`ios`, `material`, `windows`, `macos`), build-time 0-byte compilation, and runtime `[data-platform]` scoping
 - [Bundler Plugin](./docs/bundler-plugin.md) - `snice/vite` and `snice/rollup` decorator lowering, template/CSS slimming, and cache-tiered builds
+- [Migrating to v8](./docs/migration-v8.md) - Snice v8 breaking changes and upgrade steps
 - [CLI](./docs/cli.md) - Scaffolding, diagnostics, source validation, and AI setup
 - [Utilities](./docs/utilities.md) - Method decorators, escaping, durations, scroll lock, controller helpers
 - [Testing](./docs/testing.md) - Waiting on `ready` / `rendered`, asserting events, swapping controllers

@@ -1877,6 +1877,7 @@ const docsManifest = [
   ]},
   { group: 'Tooling', docs: [
     { id: 'bundler-plugin', file: 'bundler-plugin.md', title: 'Bundler Plugin' },
+    { id: 'migration-v8', file: 'migration-v8.md', title: 'Migrating to v8' },
     { id: 'cli', file: 'cli.md', title: 'CLI' },
     { id: 'testing', file: 'testing.md', title: 'Testing' },
     { id: 'utilities', file: 'utilities.md', title: 'Utilities' },
