@@ -1,0 +1,112 @@
+/* Android Material 3 Expressive — snice-testimonial
+ * Play Store review & editorial quote card on M3 tonal surface containers.
+ * Overrides all 4 hardcoded-white featured-variant rules with M3 on-primary-container tokens.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+}
+
+/* Default & card variant — tonal surface-container-low 16px Expressive card */
+:host [part~="base"],
+:host([variant="card"]) [part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host [part~="base"]::before {
+  color: var(--snice-color-primary);
+  opacity: 0.07;
+}
+
+/* Minimal variant — 4px M3 primary left accent bar */
+:host([variant="minimal"]) [part~="base"] {
+  background: transparent;
+  color: var(--snice-color-text);
+  border: none;
+  border-left: 4px solid var(--snice-color-primary);
+  border-radius: 0;
+  padding: 0.75rem 0 0.75rem 1.25rem;
+  box-shadow: none;
+}
+
+/* Featured variant — M3 Expressive Filled Tonal primary-container card */
+:host([variant="featured"]) [part~="base"] {
+  background: var(--snice-m3-primary-container);
+  color: var(--snice-m3-on-primary-container);
+  border: none;
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host([variant="featured"]) [part~="base"]::before {
+  color: var(--snice-m3-on-primary-container);
+  opacity: 0.1;
+}
+
+[part~="quotation-mark"] {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--snice-color-primary);
+  margin-bottom: 0.5rem;
+}
+
+:host([variant="featured"]) [part~="quotation-mark"] {
+  color: color-mix(in srgb, var(--snice-m3-on-primary-container) 72%, transparent);
+}
+
+[part~="stars"] {
+  gap: 0.1875rem;
+  margin-bottom: 0.75rem;
+  color: var(--snice-color-warning);
+  font-size: 1rem;
+}
+
+:host([variant="featured"]) [part~="stars"] {
+  color: var(--snice-m3-on-primary-container);
+}
+
+[part~="quote"] {
+  font-size: 1rem;
+  line-height: 1.55;
+  font-style: normal;
+  color: inherit;
+  margin-bottom: 1.125rem;
+}
+
+[part~="author"] {
+  gap: 0.75rem;
+}
+
+[part~="avatar"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+}
+
+[part~="author-details"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+}
+
+[part~="author-name"] {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: inherit;
+}
+
+[part~="author-role"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host([variant="featured"]) [part~="author-role"] {
+  color: color-mix(in srgb, var(--snice-m3-on-primary-container) 78%, transparent);
+}

@@ -1,0 +1,129 @@
+/* iOS 26+ Liquid Glass / Apple HIG — snice-testimonial
+ * App Store customer review & Apple News editorial pull-quote card.
+ * Opaque 20px concentric card with 0.5px hairline border (zero glass blur on content).
+ * Fixes base dark-mode black-ink trap on variant="featured".
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Default & card variant — opaque 20px concentric App Store review card */
+:host [part~="base"],
+:host([variant="card"]) [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="base"]::before {
+  font-family: var(--snice-font-family-display);
+  color: var(--snice-color-primary);
+  opacity: 0.06;
+}
+
+/* Minimal variant — clean editorial Apple News left accent bar */
+:host([variant="minimal"]) [part~="base"] {
+  background: transparent;
+  color: var(--snice-color-text);
+  border: none;
+  border-left: 3px solid var(--snice-color-primary);
+  border-radius: 0;
+  padding: 0.75rem 0 0.75rem 1.125rem;
+  box-shadow: none;
+}
+
+/* Featured variant — saturated iOS accent card with explicit white ink in light & dark modes */
+:host([variant="featured"]) [part~="base"] {
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--snice-color-primary) 92%, white),
+    var(--snice-color-primary)
+  );
+  color: hsl(0 0% 100%);
+  border: none;
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host([variant="featured"]) [part~="base"]::before {
+  color: hsl(0 0% 100%);
+  opacity: 0.14;
+}
+
+[part~="quotation-mark"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--snice-color-primary);
+  opacity: 0.75;
+  margin-bottom: 0.5rem;
+}
+
+:host([variant="featured"]) [part~="quotation-mark"] {
+  color: hsl(0 0% 100% / 0.72);
+  opacity: 1;
+}
+
+[part~="stars"] {
+  gap: 0.1875rem;
+  margin-bottom: 0.75rem;
+  color: var(--snice-color-warning);
+  font-size: 0.9375rem;
+}
+
+:host([variant="featured"]) [part~="stars"] {
+  color: hsl(0 0% 100% / 0.95);
+}
+
+[part~="quote"] {
+  font-size: 1rem;
+  line-height: 1.5;
+  font-style: normal;
+  letter-spacing: -0.01em;
+  color: inherit;
+  margin-bottom: 1.125rem;
+}
+
+[part~="author"] {
+  gap: 0.75rem;
+}
+
+[part~="avatar"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 0.5px var(--snice-color-border-subtle);
+}
+
+:host([variant="featured"]) [part~="avatar"] {
+  box-shadow: 0 0 0 1px hsl(0 0% 100% / 0.28);
+}
+
+[part~="author-details"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+}
+
+[part~="author-name"] {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: inherit;
+}
+
+[part~="author-role"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host([variant="featured"]) [part~="author-role"] {
+  color: hsl(0 0% 100% / 0.82);
+}

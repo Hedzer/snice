@@ -1,0 +1,129 @@
+/* macOS 26+ Tahoe / AppKit — snice-testimonial
+ * Compact desktop Mac App Store review box & AppKit editorial pull-quote.
+ * 12px concentric opaque card, 0.5px hairline border, 13px SF Pro body copy.
+ * Fixes base dark-mode black-ink trap on variant="featured".
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Default & card variant — compact opaque 12px AppKit review card */
+:host [part~="base"],
+:host([variant="card"]) [part~="base"] {
+  background: var(--snice-color-background-element);
+  color: var(--snice-color-text);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 12px;
+  padding: 1.125rem 1.25rem;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host [part~="base"]::before {
+  font-family: var(--snice-font-family-display);
+  font-size: 6.5rem;
+  color: var(--snice-color-primary);
+  opacity: 0.06;
+}
+
+/* Minimal variant — tight desktop AppKit left rail */
+:host([variant="minimal"]) [part~="base"] {
+  background: transparent;
+  color: var(--snice-color-text);
+  border: none;
+  border-left: 2.5px solid var(--snice-color-primary);
+  border-radius: 0;
+  padding: 0.5rem 0 0.5rem 0.875rem;
+  box-shadow: none;
+}
+
+/* Featured variant — top-lit macOS accent card with explicit white ink in dark mode */
+:host([variant="featured"]) [part~="base"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 90%, white),
+    var(--snice-color-primary)
+  );
+  color: hsl(0 0% 100%);
+  border: 0.5px solid hsl(0 0% 100% / 0.16);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host([variant="featured"]) [part~="base"]::before {
+  color: hsl(0 0% 100%);
+  opacity: 0.12;
+}
+
+[part~="quotation-mark"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--snice-color-primary);
+  opacity: 0.75;
+  margin-bottom: 0.375rem;
+}
+
+:host([variant="featured"]) [part~="quotation-mark"] {
+  color: hsl(0 0% 100% / 0.74);
+  opacity: 1;
+}
+
+[part~="stars"] {
+  gap: 0.125rem;
+  margin-bottom: 0.5rem;
+  color: var(--snice-color-warning);
+  font-size: 0.8125rem;
+}
+
+:host([variant="featured"]) [part~="stars"] {
+  color: hsl(0 0% 100% / 0.95);
+}
+
+[part~="quote"] {
+  font-size: 0.8125rem;
+  line-height: 1.48;
+  font-style: normal;
+  color: inherit;
+  margin-bottom: 0.875rem;
+}
+
+[part~="author"] {
+  gap: 0.625rem;
+}
+
+[part~="avatar"] {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 0.5px var(--snice-color-border);
+}
+
+:host([variant="featured"]) [part~="avatar"] {
+  box-shadow: 0 0 0 0.5px hsl(0 0% 100% / 0.3);
+}
+
+[part~="author-details"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+}
+
+[part~="author-name"] {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+
+[part~="author-role"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host([variant="featured"]) [part~="author-role"] {
+  color: hsl(0 0% 100% / 0.82);
+}
