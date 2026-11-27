@@ -1,0 +1,71 @@
+/* Material 3 Expressive permission matrix skin */
+
+[part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 1rem;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="header-cell"] {
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+[part~="role-header-cell"] {
+  background: var(--snice-color-surface-container);
+}
+
+[part~="role-cell"],
+[part~="permission-cell"] {
+  border-bottom-color: var(--snice-color-border-subtle);
+  padding: 0.625rem 1rem;
+}
+
+[part~="role-cell"] {
+  background: var(--snice-color-surface-container-low);
+}
+
+[part~="role-name"] {
+  font-weight: 600;
+}
+
+/* M3 18px 3px checkbox with dark-mode T80-safe checkmark */
+[part~="checkbox"] {
+  box-sizing: border-box;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 0.1875rem;
+  border: 2px solid var(--snice-m3-outline, var(--snice-color-border-hover));
+  background: transparent;
+  transition: background-color 160ms cubic-bezier(0.2, 0, 0, 1), border-color 160ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+[part~="checkbox"]:checked {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+}
+
+[part~="checkbox"]:checked::after {
+  left: 50%;
+  top: 44%;
+  width: 0.25rem;
+  height: 0.5rem;
+  border-color: var(--snice-m3-on-primary, var(--snice-color-text-inverse));
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+[part~="checkbox"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="checkbox"] {
+    transition: none;
+  }
+}

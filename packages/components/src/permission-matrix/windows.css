@@ -1,0 +1,93 @@
+/* Windows 11 Fluent 2 / WinUI 3 permission matrix skin */
+
+[part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="header-cell"] {
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+[part~="role-header-cell"] {
+  background: var(--snice-color-surface-container);
+}
+
+[part~="role-cell"],
+[part~="permission-cell"] {
+  border-bottom-color: var(--snice-color-border);
+  padding: 0.5rem 0.875rem;
+}
+
+[part~="role-cell"] {
+  background: var(--snice-color-surface-container-high);
+}
+
+[part~="role-name"] {
+  font-weight: 600;
+}
+
+/* WinUI 20px 4px checkbox with dark-mode accent-safe checkmark */
+[part~="checkbox"] {
+  box-sizing: border-box;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--snice-color-border-hover);
+  background: var(--snice-color-surface-container-low);
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1), border-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="checkbox"]:checked {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+}
+
+[part~="checkbox"]:checked::after {
+  left: 50%;
+  top: 44%;
+  width: 0.3125rem;
+  height: 0.5625rem;
+  border-color: var(--snice-win-on-accent, var(--snice-color-text-inverse));
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+[part~="checkbox"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="checkbox"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="checkbox"] {
+    border-color: ButtonText;
+  }
+
+  [part~="checkbox"]:checked {
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  [part~="checkbox"]:checked::after {
+    border-color: HighlightText;
+  }
+
+  [part~="checkbox"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
