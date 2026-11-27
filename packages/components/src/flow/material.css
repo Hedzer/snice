@@ -1,0 +1,178 @@
+/* Material 3 Expressive — snice-flow
+ * M3 Node Graph / Workflow Studio: 16px primary-tinted tonal canvas
+ * (surface-container-low), 12px M3 tonal node cards (flush 11px headers, zero
+ * zoom-breaking transform overrides), Roboto labels, and elevated
+ * surface-container-high minimap card (zero glass blur).
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+/* Primary-Tinted Tonal Canvas Stage */
+:host [part~="base"] {
+  box-sizing: border-box;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 16px;
+}
+
+:host [part~="base"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Elevated Tonal Node Cards — NEVER set transform */
+:host [part~="node"] {
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 12px;
+  box-shadow: var(--snice-shadow-xs);
+  transition:
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    border-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="node"]:hover {
+  border-color: var(--snice-color-border);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="node-selected"] {
+  border-color: var(--snice-color-primary);
+  box-shadow:
+    0 0 0 2px var(--snice-color-primary),
+    var(--snice-shadow-sm);
+}
+
+:host [part~="node-dragging"] {
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-shadow-lg);
+}
+
+:host [part~="node-header"] {
+  border-radius: 11px 11px 0 0;
+  padding: 0.4375rem 0.625rem;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  font-family: var(--snice-font-family-display);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+:host [part~="node-type"] {
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: inherit;
+  opacity: 0.78;
+}
+
+:host [part~="node-body"] {
+  padding: 0.375rem 0;
+}
+
+:host [part~="port"] {
+  padding: 0.1875rem 0.625rem;
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="port-dot"] {
+  width: 0.6875rem;
+  height: 0.6875rem;
+  border: 2px solid var(--snice-color-surface-container-lowest);
+  transition:
+    transform var(--snice-transition-fast, 180ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="port-dot"]:hover {
+  transform: scale(1.3);
+}
+
+/* Edges — preserve authored --flow-edge-stroke */
+:host [part~="edge"] {
+  stroke: var(--flow-edge-stroke, var(--snice-color-border));
+  stroke-width: 2px;
+  stroke-linecap: round;
+}
+
+:host [part~="edge"]:hover {
+  stroke: var(--snice-color-primary);
+  stroke-width: 3px;
+}
+
+:host [part~="edge-selected"] {
+  stroke: var(--snice-color-primary);
+  stroke-width: 2.5px;
+}
+
+:host [part~="edge-preview"] {
+  stroke: var(--snice-color-primary);
+  stroke-width: 2px;
+}
+
+:host [part~="edge-label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 500;
+  fill: var(--snice-color-text-secondary);
+}
+
+/* Elevated Tonal Minimap Card (Zero Glass Blur) */
+:host [part~="minimap"] {
+  bottom: 0.75rem;
+  right: 0.75rem;
+  border-radius: 12px;
+  opacity: 0.96;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="minimap-node"] {
+  fill: var(--snice-color-primary);
+  opacity: 0.7;
+}
+
+:host [part~="minimap-edge"] {
+  stroke: var(--snice-color-border);
+  stroke-width: 1.25px;
+}
+
+:host [part~="minimap-viewport"] {
+  fill: var(--snice-color-primary);
+  fill-opacity: 0.14;
+  stroke: var(--snice-color-primary);
+  stroke-width: 1.5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="node"],
+  :host [part~="port-dot"],
+  :host [part~="edge"] {
+    transition: none;
+  }
+
+  :host [part~="edge-animated"] {
+    animation: none;
+  }
+
+  :host [part~="port-dot"]:hover {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="node"],
+  :host [part~="minimap"] {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    box-shadow: none;
+  }
+
+  :host [part~="node-selected"] {
+    border: 2px solid Highlight;
+  }
+}

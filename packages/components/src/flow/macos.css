@@ -1,0 +1,198 @@
+/* macOS 26 Tahoe Liquid Glass / AppKit — snice-flow
+ * Reality Composer Pro / Shortcuts Desktop Node Canvas: 12px opaque desktop
+ * canvas, compact 10px AppKit node cards (11-12px SF Pro, 9.5px flush header
+ * corners, zero zoom-breaking transform overrides), AppKit focus halo, and
+ * floating Liquid Glass minimap HUD.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+/* Opaque Desktop Canvas */
+:host [part~="base"] {
+  box-sizing: border-box;
+  background: var(--snice-color-surface);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 12px;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host [part~="base"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Compact Opaque AppKit Node Cards — NEVER set transform */
+:host [part~="node"] {
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 10px;
+  box-shadow: var(--snice-shadow-sm);
+  transition:
+    box-shadow var(--snice-transition-fast, 140ms) ease-out,
+    border-color var(--snice-transition-fast, 140ms) ease-out;
+}
+
+:host [part~="node"]:hover {
+  border-color: var(--snice-color-border-hover);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="node-selected"] {
+  border-color: var(--snice-color-primary);
+  box-shadow:
+    var(--snice-macos-focus-halo),
+    var(--snice-shadow-sm);
+}
+
+:host [part~="node-dragging"] {
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-shadow-lg);
+}
+
+:host [part~="node-header"] {
+  border-radius: 9.5px 9.5px 0 0;
+  padding: 0.3125rem 0.625rem;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+:host [part~="node-type"] {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  color: inherit;
+  opacity: 0.78;
+}
+
+:host [part~="node-body"] {
+  padding: 0.25rem 0;
+}
+
+:host [part~="port"] {
+  padding: 0.125rem 0.5rem;
+  font-family: var(--snice-font-family);
+  font-size: 0.6875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="port-dot"] {
+  width: 0.5625rem;
+  height: 0.5625rem;
+  border: 1.5px solid var(--snice-color-background-element);
+  transition:
+    transform var(--snice-transition-fast, 140ms) ease-out,
+    background-color var(--snice-transition-fast, 140ms) ease-out;
+}
+
+:host [part~="port-dot"]:hover {
+  transform: scale(1.3);
+}
+
+/* Edges — preserve authored --flow-edge-stroke */
+:host [part~="edge"] {
+  stroke: var(--flow-edge-stroke, var(--snice-color-border-hover));
+  stroke-width: 1.75px;
+  stroke-linecap: round;
+}
+
+:host [part~="edge"]:hover {
+  stroke: var(--snice-color-primary);
+  stroke-width: 2.75px;
+}
+
+:host [part~="edge-selected"] {
+  stroke: var(--snice-color-primary);
+  stroke-width: 2.25px;
+}
+
+:host [part~="edge-preview"] {
+  stroke: var(--snice-color-primary);
+  stroke-width: 1.75px;
+}
+
+:host [part~="edge-label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  fill: var(--snice-color-text-secondary);
+}
+
+/* Floating macOS Liquid Glass Minimap HUD */
+:host [part~="minimap"] {
+  bottom: 0.625rem;
+  right: 0.625rem;
+  border-radius: 10px;
+  opacity: 1;
+  background: var(--snice-macos-glass-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid var(--snice-macos-glass-border);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-md);
+}
+
+:host [part~="minimap-node"] {
+  fill: var(--snice-color-primary);
+  opacity: 0.72;
+}
+
+:host [part~="minimap-edge"] {
+  stroke: var(--snice-color-text-tertiary);
+  stroke-width: 1px;
+}
+
+:host [part~="minimap-viewport"] {
+  fill: var(--snice-color-primary);
+  fill-opacity: 0.14;
+  stroke: var(--snice-color-primary);
+  stroke-width: 1.25px;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="minimap"] {
+    background: var(--snice-color-surface-container);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :host [part~="minimap"] {
+    background: var(--snice-color-surface-container);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="node"],
+  :host [part~="port-dot"],
+  :host [part~="edge"] {
+    transition: none;
+  }
+
+  :host [part~="edge-animated"] {
+    animation: none;
+  }
+
+  :host [part~="port-dot"]:hover {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="node"],
+  :host [part~="minimap"] {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="node-selected"] {
+    border: 2px solid Highlight;
+  }
+}
