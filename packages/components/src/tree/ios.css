@@ -1,0 +1,118 @@
+/* iOS 26+ Liquid Glass — snice-tree
+   Native counterpart: SwiftUI OutlineGroup / inset-grouped UICollectionView list (zero blur on scrolling tree content).
+   Includes exported item-* parts so Mode B (::part via exportparts) matches Mode A 1:1. */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  font-family: var(--snice-font-family);
+  background-color: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 16px;
+  box-shadow: var(--snice-shadow-xs);
+  max-height: inherit;
+  box-sizing: border-box;
+}
+
+/* Concentric 6px inset so 10px inner selected rows align neatly inside 16px container */
+:host [part~="content"] {
+  padding: 0.375rem;
+}
+
+/* Exported snice-tree-item parts (Mode B exportparts parity) */
+:host [part~="item-content"] {
+  min-height: 2.75rem;
+  padding-block: 0.5rem;
+  padding-right: 0.625rem;
+  padding-left: calc(var(--tree-level, 0) * 1rem + 0.5rem);
+  gap: 0.4375rem;
+  border-radius: 10px;
+  box-sizing: border-box;
+  color: var(--snice-color-text);
+  transition:
+    background-color 160ms ease,
+    transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring);
+}
+
+:host [part~="item-content"]:hover {
+  background-color: color-mix(in srgb, var(--snice-color-text) 4.5%, transparent);
+}
+
+:host [part~="item-content"]:active {
+  background-color: color-mix(in srgb, var(--snice-color-text) 9%, transparent);
+  transform: scale(0.99);
+}
+
+:host [part~="item-content"]:focus-visible {
+  outline: 2.5px solid var(--snice-color-primary);
+  outline-offset: -2.5px;
+}
+
+:host [part~="item-content"][part~="item-content-selected"] {
+  background-color: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+:host [part~="item-content"][part~="item-content-selected"]:hover {
+  background-color: color-mix(in srgb, var(--snice-color-primary) 19%, transparent);
+}
+
+:host [part~="item-expander"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--snice-color-primary);
+  transition: transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring);
+}
+
+:host [part~="item-icon"] {
+  color: var(--snice-color-primary);
+}
+
+:host [part~="item-label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  font-weight: inherit;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  color: inherit;
+}
+
+:host [part~="item-children"],
+:host [part~="item-children-expanded"] {
+  transition-timing-function: var(--snice-ease-out);
+}
+
+:host [part~="item-loading"] {
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="item-content"][part~="item-content-disabled"],
+:host [part~="item-content"][part~="item-content-disabled"]:hover,
+:host [part~="item-content"][part~="item-content-disabled"]:active {
+  opacity: 0.4;
+  background-color: transparent;
+  transform: none;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="item-content"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="item-content"][part~="item-content-selected"] {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+}

@@ -1,0 +1,104 @@
+/* iOS 26+ Liquid Glass — snice-tree-item
+   Native counterpart: iOS 26 OutlineGroup row (44pt touch target, concentric 10px highlight, tinted disclosure chevron). */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="content"] {
+  min-height: 2.75rem;
+  padding-block: 0.5rem;
+  padding-right: 0.625rem;
+  padding-left: calc(var(--tree-level, 0) * 1rem + 0.5rem);
+  gap: 0.4375rem;
+  border-radius: 10px;
+  box-sizing: border-box;
+  color: var(--snice-color-text);
+  transition:
+    background-color 160ms ease,
+    transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring);
+}
+
+:host [part~="content"]:hover {
+  background-color: color-mix(in srgb, var(--snice-color-text) 4.5%, transparent);
+}
+
+:host [part~="content"]:active {
+  background-color: color-mix(in srgb, var(--snice-color-text) 9%, transparent);
+  transform: scale(0.99);
+}
+
+:host [part~="content"]:focus-visible {
+  outline: 2.5px solid var(--snice-color-primary);
+  outline-offset: -2.5px;
+}
+
+:host [part~="content"][part~="content-selected"] {
+  background-color: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+}
+
+:host [part~="content"][part~="content-selected"]:hover {
+  background-color: color-mix(in srgb, var(--snice-color-primary) 19%, transparent);
+}
+
+:host [part~="expander"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--snice-color-primary);
+  transition: transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring);
+}
+
+:host [part~="icon"] {
+  color: var(--snice-color-primary);
+}
+
+:host [part~="label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  color: inherit;
+}
+
+:host([selected]) [part~="label"] {
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+:host [part~="children"],
+:host [part~="children-expanded"] {
+  transition-timing-function: var(--snice-ease-out);
+}
+
+:host [part~="loading"] {
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="content"][part~="content-disabled"],
+:host [part~="content"][part~="content-disabled"]:hover,
+:host [part~="content"][part~="content-disabled"]:active {
+  opacity: 0.4;
+  background-color: transparent;
+  transform: none;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="content"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="content"][part~="content-selected"] {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+
+  :host([selected]) [part~="label"],
+  :host([selected]) [part~="icon"],
+  :host([selected]) [part~="expander"] {
+    color: HighlightText;
+  }
+}
