@@ -1,0 +1,58 @@
+/* macOS 26 Tahoe Liquid Glass / AppKit — snice-draw
+ * AppKit / Freeform drawing canvas well: compact 10px desktop corners,
+ * 0.5px hairline border, opaque canvas well, AppKit focus halo, and strictly
+ * untouched canvas geometry for 1:1 pointer-to-ink accuracy.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  box-sizing: border-box;
+  border-radius: var(--draw-border-radius, 10px);
+  border: 0.5px solid var(--snice-color-border);
+  background: var(--draw-bg, var(--snice-color-background-element));
+  box-shadow: var(--snice-shadow-xs);
+  transition:
+    border-color var(--snice-transition-fast, 120ms) ease-out,
+    box-shadow var(--snice-transition-fast, 120ms) ease-out;
+}
+
+:host [part~="base"]:focus-within {
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Preserve exact 1:1 coordinate geometry — zero padding, border, transform, or blur */
+:host [part~="canvas"] {
+  padding: 0;
+  border: none;
+  transform: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+:host [part~="canvas-disabled"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="base"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="base"]:focus-within {
+    outline: 2px solid Highlight;
+    border-color: Highlight;
+    box-shadow: none;
+  }
+}
