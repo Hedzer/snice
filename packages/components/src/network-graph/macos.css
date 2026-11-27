@@ -1,0 +1,73 @@
+/* macOS 26 Tahoe AppKit / Xcode Memory Graph skin */
+
+[part~="base"] {
+  box-sizing: border-box;
+  border-radius: 0.75rem;
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+}
+
+[part~="canvas"]:active {
+  cursor: grabbing;
+}
+
+[part~="edge"] {
+  stroke: var(--snice-color-border-hover);
+  stroke-width: 1px;
+  stroke-opacity: 0.85;
+  transition: stroke 140ms var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1)),
+    stroke-opacity 140ms var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="edge-highlighted"] {
+  stroke: var(--snice-color-primary);
+  stroke-width: 2px;
+  stroke-opacity: 1;
+}
+
+[part~="node"] {
+  transition: opacity 140ms var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="node-circle"] {
+  stroke: var(--snice-color-background-element);
+  stroke-width: 2px;
+}
+
+[part~="node-dragging"] {
+  filter: drop-shadow(0 4px 12px hsl(0 0% 0% / 0.26));
+  cursor: grabbing;
+}
+
+[part~="node-label"] {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  fill: var(--snice-color-text);
+}
+
+[part~="edge-label"] {
+  font-size: 0.625rem;
+  fill: var(--snice-color-text-tertiary);
+}
+
+/* macOS Liquid Glass floating popover (preserve base opacity toggle) */
+[part~="tooltip"] {
+  border-radius: 0.4375rem;
+  padding: 0.3125rem 0.5625rem;
+  background: var(--snice-macos-glass-menu-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid var(--snice-macos-glass-border);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-md);
+  color: var(--snice-color-text);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="edge"],
+  [part~="node"] {
+    transition: none;
+  }
+}

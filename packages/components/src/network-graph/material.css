@@ -1,0 +1,72 @@
+/* Android Material 3 Expressive network graph skin */
+
+[part~="base"] {
+  box-sizing: border-box;
+  border-radius: 1rem;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="canvas"]:active {
+  cursor: grabbing;
+}
+
+[part~="edge"] {
+  stroke: var(--snice-color-border);
+  stroke-linecap: round;
+  stroke-opacity: 0.55;
+  transition: stroke var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    stroke-opacity var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="edge-highlighted"] {
+  stroke: var(--snice-color-primary);
+  stroke-width: 2.25px;
+  stroke-opacity: 1;
+}
+
+[part~="node"] {
+  transition: opacity var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="node-circle"] {
+  stroke: var(--snice-color-surface-container-low);
+  stroke-width: 2.5px;
+}
+
+[part~="node-dragging"] {
+  filter: drop-shadow(0 4px 10px hsl(0 0% 0% / 0.24));
+  cursor: grabbing;
+}
+
+[part~="node-label"] {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  fill: var(--snice-color-text);
+}
+
+[part~="edge-label"] {
+  font-size: 0.625rem;
+  fill: var(--snice-color-text-secondary);
+}
+
+/* M3 Elevated Tooltip (zero blur, preserve base opacity toggle) */
+[part~="tooltip"] {
+  border-radius: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-md);
+  color: var(--snice-color-text);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="edge"],
+  [part~="node"] {
+    transition: none;
+  }
+}

@@ -1,0 +1,86 @@
+/* Windows 11 Fluent 2 / Azure Monitor network graph skin */
+
+[part~="base"] {
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="canvas"]:active {
+  cursor: grabbing;
+}
+
+[part~="edge"] {
+  stroke: var(--snice-color-border-hover);
+  stroke-opacity: 0.8;
+  transition: stroke 100ms cubic-bezier(0, 0, 0, 1),
+    stroke-opacity 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="edge-highlighted"] {
+  stroke: var(--snice-color-primary);
+  stroke-width: 2px;
+  stroke-opacity: 1;
+}
+
+[part~="node"] {
+  transition: opacity 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="node-circle"] {
+  stroke: var(--snice-color-surface-container-lowest);
+  stroke-width: 2px;
+}
+
+[part~="node-dragging"] {
+  filter: drop-shadow(0 4px 8px hsl(0 0% 0% / 0.24));
+  cursor: grabbing;
+}
+
+[part~="node-label"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  fill: var(--snice-color-text);
+}
+
+[part~="edge-label"] {
+  font-size: 0.625rem;
+  fill: var(--snice-color-text-secondary);
+}
+
+/* Transient Acrylic tooltip (preserve base opacity toggle) */
+[part~="tooltip"] {
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.625rem;
+  background: var(--snice-win-acrylic-bg);
+  backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
+  border: 1px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-md);
+  color: var(--snice-color-text);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  transition: opacity 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="edge"],
+  [part~="node"],
+  [part~="tooltip"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="tooltip"] {
+    background: Canvas;
+    border-color: CanvasText;
+    color: CanvasText;
+  }
+
+  [part~="edge-highlighted"] {
+    stroke: Highlight;
+  }
+}
