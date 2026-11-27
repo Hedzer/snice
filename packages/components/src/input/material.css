@@ -41,9 +41,10 @@
 
 /* Base M3 Outlined TextField (default variant, medium 52px height) */
 [part~="input"] {
+  height: 3.25rem;
   min-height: 3.25rem;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+  padding-top: 0;
+  padding-bottom: 0;
   padding-left: 1rem;
   padding-right: 1rem;
   border-radius: 4px;
@@ -77,21 +78,27 @@
 
 /* M3 Touch Heights — Small (40dp) & Large (56dp) */
 :host([size="small"]) [part~="input"] {
+  height: 2.5rem;
   min-height: 2.5rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
   padding-left: 0.75rem;
   padding-right: 0.75rem;
   font-size: 0.875rem;
 }
 
 :host([size="large"]) [part~="input"] {
+  height: 3.5rem;
   min-height: 3.5rem;
-  padding-top: 0.875rem;
-  padding-bottom: 0.875rem;
+  padding-top: 0;
+  padding-bottom: 0;
   padding-left: 1rem;
   padding-right: 1rem;
   font-size: 1.0625rem;
+}
+
+:host([stretch]) [part~="input"] {
+  height: 100%;
 }
 
 /* M3 Filled TextField */
@@ -341,6 +348,11 @@
 
 [part~="spinner"] {
   color: var(--snice-color-primary);
+}
+
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  border-width: 1.75px;
 }
 
 :host([suffix-icon]) [part~="spinner"],

@@ -22,9 +22,10 @@
 
 /* Base opaque grouped iOS field (outlined default) */
 [part~="input"] {
+  height: 2.75rem;
   min-height: 2.75rem;
-  padding-top: 0.625rem;
-  padding-bottom: 0.625rem;
+  padding-top: 0;
+  padding-bottom: 0;
   padding-left: 0.875rem;
   padding-right: 0.875rem;
   border-radius: 12px;
@@ -59,9 +60,10 @@
 
 /* Sizes (medium 44pt / 12px is default above) */
 :host([size="small"]) [part~="input"] {
+  height: 2.125rem;
   min-height: 2.125rem;
-  padding-top: 0.375rem;
-  padding-bottom: 0.375rem;
+  padding-top: 0;
+  padding-bottom: 0;
   padding-left: 0.75rem;
   padding-right: 0.75rem;
   border-radius: 10px;
@@ -69,13 +71,18 @@
 }
 
 :host([size="large"]) [part~="input"] {
+  height: 3.125rem;
   min-height: 3.125rem;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+  padding-top: 0;
+  padding-bottom: 0;
   padding-left: 1rem;
   padding-right: 1rem;
   border-radius: 14px;
   font-size: 1.0625rem;
+}
+
+:host([stretch]) [part~="input"] {
+  height: 100%;
 }
 
 /* Variants: Filled (iOS Secondary System Fill) & Underlined */
@@ -329,6 +336,11 @@
   width: 1rem;
   height: 1rem;
   color: var(--snice-color-primary);
+}
+
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  border-width: 1.75px;
 }
 
 :host([size="small"]) [part~="spinner"] {
