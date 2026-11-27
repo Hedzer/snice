@@ -63,6 +63,10 @@ interface ToastOptions {
 
 - `base` - Outer toast div (has type modifier class)
 - `icon` - Icon span wrapper
+- `icon-info` - Added to `icon` when `type="info"`
+- `icon-success` - Added to `icon` when `type="success"`
+- `icon-warning` - Added to `icon` when `type="warning"`
+- `icon-error` - Added to `icon` when `type="error"`
 - `content` - Message text span
 - `close-button` - Dismiss button (present when `closable`)
 
@@ -72,6 +76,10 @@ interface ToastOptions {
 - `toast` - Each `<snice-toast>` host inside the wrapper
 - `toast-base` - Exported `base` of each toast
 - `toast-icon` - Exported `icon` of each toast
+- `toast-icon-info` - Exported `icon-info` of info toasts
+- `toast-icon-success` - Exported `icon-success` of success toasts
+- `toast-icon-warning` - Exported `icon-warning` of warning toasts
+- `toast-icon-error` - Exported `icon-error` of error toasts
 - `toast-content` - Exported `content` of each toast
 - `toast-close-button` - Exported `close-button` of each toast
 

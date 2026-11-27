@@ -18,6 +18,10 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
 
   private toastIdCounter = 1;
   private toasts: Map<string, HTMLElement> = new Map();
+  private originParent: Element | null = null;
+  private contextObserver: MutationObserver | null = null;
+  private inheritedPlatform = false;
+  private inheritedTheme = false;
 
   @render()
   render() {
@@ -92,10 +96,17 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
 
   @ready()
   init() {
-    // Hoist to document.body so z-index isn't trapped by parent stacking contexts
+    // Hoist to document.body so z-index isn't trapped by parent stacking contexts,
+    // while preserving any scoped data-platform / data-theme ancestor context.
     if (this.parentElement && this.parentElement !== document.body) {
+      if (!this.originParent) {
+        this.originParent = this.parentElement;
+      }
       document.body.appendChild(this);
     }
+
+    this.observeOriginContext();
+    this.syncOriginContext();
 
     // Register as global container if none exists
     if (!(globalThis as any)[TOAST_CONTAINER]) {
@@ -107,6 +118,9 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
 
   @dispose()
   cleanup() {
+    this.contextObserver?.disconnect();
+    this.contextObserver = null;
+
     // Unregister as global container
     if ((globalThis as any)[TOAST_CONTAINER] === this) {
       (globalThis as any)[TOAST_CONTAINER] = null;
@@ -116,7 +130,58 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
     this.toasts.clear();
   }
 
+  private observeOriginContext(): void {
+    this.contextObserver?.disconnect();
+    this.contextObserver = null;
+    if (!this.originParent || typeof MutationObserver === 'undefined') return;
+    const observer = new MutationObserver(() => this.syncOriginContext());
+    let cur: Element | null = this.originParent;
+    while (cur && cur !== document.body && cur !== document.documentElement) {
+      observer.observe(cur, { attributes: true, attributeFilter: ['data-platform', 'data-theme'] });
+      cur = cur.parentElement;
+    }
+    this.contextObserver = observer;
+  }
+
+  private syncOriginContext(): void {
+    if (!this.originParent) return;
+    const platformHost = this.originParent.closest('[data-platform]');
+    const scopedPlatform = platformHost && platformHost !== document.documentElement && platformHost !== document.body
+      ? platformHost.getAttribute('data-platform')
+      : null;
+
+    if (!this.hasAttribute('data-platform') || this.inheritedPlatform) {
+      if (scopedPlatform) {
+        if (this.getAttribute('data-platform') !== scopedPlatform) {
+          this.setAttribute('data-platform', scopedPlatform);
+        }
+        this.inheritedPlatform = true;
+      } else if (this.inheritedPlatform) {
+        this.removeAttribute('data-platform');
+        this.inheritedPlatform = false;
+      }
+    }
+
+    const themeHost = this.originParent.closest('[data-theme]');
+    const scopedTheme = themeHost && themeHost !== document.documentElement && themeHost !== document.body
+      ? themeHost.getAttribute('data-theme')
+      : null;
+
+    if (!this.hasAttribute('data-theme') || this.inheritedTheme) {
+      if (scopedTheme) {
+        if (this.getAttribute('data-theme') !== scopedTheme) {
+          this.setAttribute('data-theme', scopedTheme);
+        }
+        this.inheritedTheme = true;
+      } else if (this.inheritedTheme) {
+        this.removeAttribute('data-theme');
+        this.inheritedTheme = false;
+      }
+    }
+  }
+
   show(message: string, options: ToastOptions = {}): string {
+    this.syncOriginContext();
     const id = options.id || `toast-${this.toastIdCounter++}`;
     const type = options.type || 'info';
     const duration = options.duration !== undefined ? options.duration : 4000;
@@ -127,7 +192,7 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
     const toast = document.createElement('snice-toast') as any;
     toast.setAttribute('toast-id', id);
     toast.setAttribute('part', 'toast');
-    toast.setAttribute('exportparts', 'base: toast-base, icon: toast-icon, content: toast-content, close-button: toast-close-button');
+    toast.setAttribute('exportparts', 'base: toast-base, icon: toast-icon, icon-info: toast-icon-info, icon-success: toast-icon-success, icon-warning: toast-icon-warning, icon-error: toast-icon-error, content: toast-content, close-button: toast-close-button');
     toast.type = type;
     toast.message = message;
     toast.closable = closable;

@@ -18,10 +18,11 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
 
   @render()
   render() {
+    const iconPart = ({ success: 'icon-success', error: 'icon-error', warning: 'icon-warning', info: 'icon-info' } as Record<string, string>)[this.type] || 'icon-info';
     return html/*html*/`
       <div part="base" class="toast toast--${this.type}" role="${this.type === 'error' || this.type === 'warning' ? 'alert' : 'status'}" aria-live="${this.type === 'error' || this.type === 'warning' ? 'assertive' : 'polite'}">
         <if ${this.icon}>
-          <span part="icon" class="toast-icon">
+          <span part="icon ${iconPart}" class="toast-icon">
             <case ${this.type}>
               <when value="success">
                 <svg viewBox="0 0 20 20" fill="currentColor">

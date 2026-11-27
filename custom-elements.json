@@ -58679,6 +58679,18 @@
             },
             {
               "name": "toast-icon"
+            },
+            {
+              "name": "toast-icon-error"
+            },
+            {
+              "name": "toast-icon-info"
+            },
+            {
+              "name": "toast-icon-success"
+            },
+            {
+              "name": "toast-icon-warning"
             }
           ],
           "cssProperties": []
@@ -58804,6 +58816,18 @@
             },
             {
               "name": "icon"
+            },
+            {
+              "name": "icon-error"
+            },
+            {
+              "name": "icon-info"
+            },
+            {
+              "name": "icon-success"
+            },
+            {
+              "name": "icon-warning"
             }
           ],
           "cssProperties": []

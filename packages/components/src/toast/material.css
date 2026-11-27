@@ -1,8 +1,90 @@
-/* Material 3 Expressive — snice-toast (M3 Inverse Surface Snackbar) */
-[part~="toast"],
-[part~="base"] {
-  border-radius: 8px;
+/* Android Material 3 Expressive — snice-toast (4dp M3 Inverse Surface Snackbar) */
+:host {
+  animation-timing-function: var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="base"],
+:host([type="info"]) [part~="base"],
+:host([type="success"]) [part~="base"],
+:host([type="warning"]) [part~="base"],
+:host([type="error"]) [part~="base"] {
+  box-sizing: border-box;
+  border-radius: 4px;
+  min-height: 3rem;
+  min-width: 18rem;
+  max-width: 24rem;
+  padding: 0.75rem 1rem;
+  gap: 0.75rem;
   background: var(--snice-color-text);
   color: var(--snice-color-text-inverse);
+  border: none;
   box-shadow: var(--snice-shadow-md);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.43;
+  letter-spacing: 0.015em;
+}
+
+[part~="icon"] {
+  color: var(--snice-color-text-inverse);
+}
+
+[part~="icon"][part~="icon-info"],
+:host([type="info"]) [part~="icon"] {
+  color: color-mix(in srgb, var(--snice-color-primary) 50%, var(--snice-color-text-inverse));
+}
+
+[part~="icon"][part~="icon-success"],
+:host([type="success"]) [part~="icon"] {
+  color: color-mix(in srgb, var(--snice-color-success) 55%, var(--snice-color-text-inverse));
+}
+
+[part~="icon"][part~="icon-warning"],
+:host([type="warning"]) [part~="icon"] {
+  color: color-mix(in srgb, var(--snice-color-warning) 60%, var(--snice-color-text-inverse));
+}
+
+[part~="icon"][part~="icon-error"],
+:host([type="error"]) [part~="icon"] {
+  color: color-mix(in srgb, var(--snice-color-danger) 60%, var(--snice-color-text-inverse));
+}
+
+[part~="close-button"] {
+  box-sizing: border-box;
+  width: 2rem;
+  height: 2rem;
+  padding: 0.4375rem;
+  border-radius: 9999px;
+  color: var(--snice-color-text-inverse);
+  opacity: 0.85;
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects, ease),
+    border-radius 150ms var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    opacity 150ms ease;
+}
+
+[part~="close-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text-inverse) 12%, transparent);
+  opacity: 1;
+}
+
+[part~="close-button"]:active {
+  background: color-mix(in srgb, var(--snice-color-text-inverse) 18%, transparent);
+  border-radius: 8px;
+}
+
+[part~="close-button"]:focus-visible {
+  outline: 2px solid var(--snice-color-text-inverse);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  [part~="close-button"] {
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+  }
 }

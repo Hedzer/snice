@@ -1,10 +1,101 @@
-/* iOS 26+ Liquid Glass — snice-toast (Floating Notification Capsule) */
-[part~="toast"],
-[part~="base"] {
+/* iOS 26+ Liquid Glass — snice-toast (Floating Liquid Glass Capsule) */
+:host {
+  animation-timing-function: var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+}
+
+[part~="base"],
+:host([type="info"]) [part~="base"],
+:host([type="success"]) [part~="base"],
+:host([type="warning"]) [part~="base"],
+:host([type="error"]) [part~="base"] {
+  box-sizing: border-box;
   border-radius: 9999px;
-  background: var(--snice-ios-glass-regular-bg);
+  min-height: 2.75rem;
+  min-width: 14rem;
+  max-width: 24rem;
+  padding: 0.625rem 1rem;
+  gap: 0.625rem;
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 88%, transparent);
   backdrop-filter: var(--snice-ios-glass-blur);
   -webkit-backdrop-filter: var(--snice-ios-glass-blur);
   border: 1px solid var(--snice-ios-glass-border);
   box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.012em;
+}
+
+[part~="icon"] {
+  width: 1.375rem;
+  height: 1.375rem;
+  color: var(--snice-color-primary);
+}
+
+[part~="icon"][part~="icon-info"],
+:host([type="info"]) [part~="icon"] {
+  color: var(--snice-color-primary);
+}
+
+[part~="icon"][part~="icon-success"],
+:host([type="success"]) [part~="icon"] {
+  color: var(--snice-color-success);
+}
+
+[part~="icon"][part~="icon-warning"],
+:host([type="warning"]) [part~="icon"] {
+  color: var(--snice-color-warning);
+}
+
+[part~="icon"][part~="icon-error"],
+:host([type="error"]) [part~="icon"] {
+  color: var(--snice-color-danger);
+}
+
+[part~="close-button"] {
+  box-sizing: border-box;
+  width: 1.625rem;
+  height: 1.625rem;
+  padding: 0.25rem;
+  border-radius: 9999px;
+  background: hsl(240 5% 50% / 0.14);
+  color: var(--snice-color-text-secondary);
+  opacity: 1;
+  transition: background-color 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+[part~="close-button"]:hover {
+  background: hsl(240 5% 50% / 0.24);
+  color: var(--snice-color-text);
+}
+
+[part~="close-button"]:active {
+  transform: scale(0.9);
+}
+
+[part~="close-button"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="base"],
+  :host([type="info"]) [part~="base"],
+  :host([type="success"]) [part~="base"],
+  :host([type="warning"]) [part~="base"],
+  :host([type="error"]) [part~="base"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  [part~="close-button"] {
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+  }
 }

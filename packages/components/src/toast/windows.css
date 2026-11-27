@@ -1,11 +1,119 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-toast (Acrylic Notification Flyout) */
-[part~="toast"],
-[part~="base"] {
+/* Windows 11 Fluent 2 / WinUI 3 — snice-toast (Transient Acrylic Notification Flyout) */
+:host {
+  animation-duration: 187ms;
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="base"],
+:host([type="info"]) [part~="base"],
+:host([type="success"]) [part~="base"],
+:host([type="warning"]) [part~="base"],
+:host([type="error"]) [part~="base"] {
+  box-sizing: border-box;
   border-radius: 8px;
+  min-height: 3rem;
+  min-width: 18rem;
+  max-width: 22.5rem;
+  padding: 0.75rem 0.75rem 0.75rem 1rem;
+  gap: 0.75rem;
   background: var(--snice-win-acrylic-bg);
-  backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  border: 1px solid var(--snice-color-border);
-  color: var(--snice-color-text);
+  backdrop-filter: var(--snice-win-acrylic-blur);
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur);
+  border: 1px solid var(--snice-color-border-hover);
   box-shadow: var(--snice-shadow-lg);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+[part~="icon"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--snice-color-primary);
+}
+
+[part~="icon"][part~="icon-info"],
+:host([type="info"]) [part~="icon"] {
+  color: var(--snice-color-primary);
+}
+
+[part~="icon"][part~="icon-success"],
+:host([type="success"]) [part~="icon"] {
+  color: var(--snice-color-success);
+}
+
+[part~="icon"][part~="icon-warning"],
+:host([type="warning"]) [part~="icon"] {
+  color: var(--snice-color-warning);
+}
+
+[part~="icon"][part~="icon-error"],
+:host([type="error"]) [part~="icon"] {
+  color: var(--snice-color-danger);
+}
+
+[part~="close-button"] {
+  box-sizing: border-box;
+  width: 2rem;
+  height: 2rem;
+  padding: 0.4375rem;
+  border-radius: 4px;
+  color: var(--snice-color-text-secondary);
+  opacity: 1;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1), color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="close-button"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  color: var(--snice-color-text);
+}
+
+[part~="close-button"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="close-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="base"],
+  :host([type="info"]) [part~="base"],
+  :host([type="success"]) [part~="base"],
+  :host([type="warning"]) [part~="base"],
+  :host([type="error"]) [part~="base"] {
+    background: var(--snice-color-surface-container-highest);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  [part~="close-button"] {
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  :host([type="info"]) [part~="base"],
+  :host([type="success"]) [part~="base"],
+  :host([type="warning"]) [part~="base"],
+  :host([type="error"]) [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+    backdrop-filter: none;
+  }
+
+  [part~="close-button"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
 }

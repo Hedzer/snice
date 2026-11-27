@@ -1,11 +1,110 @@
-/* macOS 26+ Liquid Glass / AppKit — snice-toast (Liquid Glass Notification Banner) */
-[part~="toast"],
-[part~="base"] {
-  border-radius: 14px;
-  background: var(--snice-macos-glass-bg);
+/* macOS 26+ Liquid Glass / AppKit — snice-toast (16px Notification Center Banner) */
+:host {
+  animation-duration: 220ms;
+  animation-timing-function: var(--snice-ease-out, cubic-bezier(0.22, 0.8, 0.2, 1));
+}
+
+[part~="base"],
+:host([type="info"]) [part~="base"],
+:host([type="success"]) [part~="base"],
+:host([type="warning"]) [part~="base"],
+:host([type="error"]) [part~="base"] {
+  box-sizing: border-box;
+  border-radius: 16px;
+  min-width: 17.5rem;
+  max-width: 21.5rem;
+  padding: 0.625rem 0.875rem;
+  gap: 0.625rem;
+  background: color-mix(in srgb, var(--snice-color-background-elevated) 90%, transparent);
   backdrop-filter: var(--snice-macos-glass-blur);
   -webkit-backdrop-filter: var(--snice-macos-glass-blur);
   border: 0.5px solid var(--snice-macos-glass-border);
   box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-lg);
   color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.38;
+  letter-spacing: -0.005em;
+}
+
+[part~="icon"] {
+  box-sizing: border-box;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.1875rem;
+  border-radius: 9999px;
+  color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+}
+
+[part~="icon"][part~="icon-info"],
+:host([type="info"]) [part~="icon"] {
+  color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+}
+
+[part~="icon"][part~="icon-success"],
+:host([type="success"]) [part~="icon"] {
+  color: var(--snice-color-success);
+  background: color-mix(in srgb, var(--snice-color-success) 14%, transparent);
+}
+
+[part~="icon"][part~="icon-warning"],
+:host([type="warning"]) [part~="icon"] {
+  color: var(--snice-color-warning);
+  background: color-mix(in srgb, var(--snice-color-warning) 16%, transparent);
+}
+
+[part~="icon"][part~="icon-error"],
+:host([type="error"]) [part~="icon"] {
+  color: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 14%, transparent);
+}
+
+[part~="close-button"] {
+  box-sizing: border-box;
+  width: 1.375rem;
+  height: 1.375rem;
+  padding: 0.25rem;
+  border-radius: 9999px;
+  background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-text-secondary);
+  opacity: 0.85;
+  transition: background-color 140ms ease, color 140ms ease, opacity 140ms ease, transform 140ms ease;
+}
+
+[part~="close-button"]:hover {
+  background: var(--snice-color-border);
+  color: var(--snice-color-text);
+  opacity: 1;
+}
+
+[part~="close-button"]:active {
+  transform: scale(0.92);
+}
+
+[part~="close-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="base"],
+  :host([type="info"]) [part~="base"],
+  :host([type="success"]) [part~="base"],
+  :host([type="warning"]) [part~="base"],
+  :host([type="error"]) [part~="base"] {
+    background: var(--snice-color-background-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  [part~="close-button"] {
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+  }
 }

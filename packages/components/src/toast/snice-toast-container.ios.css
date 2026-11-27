@@ -1,0 +1,89 @@
+/* iOS 26+ Liquid Glass — snice-toast-container (Mode B Exported Toast Parts + Safe Area) */
+:host {
+  padding:
+    calc(1rem + var(--snice-safe-top, 0px))
+    calc(1rem + var(--snice-safe-right, 0px))
+    calc(1rem + var(--snice-safe-bottom, 0px))
+    calc(1rem + var(--snice-safe-left, 0px));
+}
+
+[part~="base"] {
+  gap: 0.625rem;
+}
+
+[part~="toast-base"] {
+  box-sizing: border-box;
+  border-radius: 9999px;
+  min-height: 2.75rem;
+  min-width: 14rem;
+  max-width: 24rem;
+  padding: 0.625rem 1rem;
+  gap: 0.625rem;
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 88%, transparent);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.012em;
+}
+
+[part~="toast-icon"] {
+  width: 1.375rem;
+  height: 1.375rem;
+  color: var(--snice-color-primary);
+}
+
+[part~="toast-icon-info"] {
+  color: var(--snice-color-primary);
+}
+
+[part~="toast-icon-success"] {
+  color: var(--snice-color-success);
+}
+
+[part~="toast-icon-warning"] {
+  color: var(--snice-color-warning);
+}
+
+[part~="toast-icon-error"] {
+  color: var(--snice-color-danger);
+}
+
+[part~="toast-close-button"] {
+  box-sizing: border-box;
+  width: 1.625rem;
+  height: 1.625rem;
+  padding: 0.25rem;
+  border-radius: 9999px;
+  background: hsl(240 5% 50% / 0.14);
+  color: var(--snice-color-text-secondary);
+  opacity: 1;
+  transition: background-color 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+[part~="toast-close-button"]:hover {
+  background: hsl(240 5% 50% / 0.24);
+  color: var(--snice-color-text);
+}
+
+[part~="toast-close-button"]:active {
+  transform: scale(0.9);
+}
+
+[part~="toast-close-button"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="toast-base"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
