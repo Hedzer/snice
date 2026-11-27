@@ -1,0 +1,56 @@
+/* ==========================================================================
+   macOS 26+ Liquid Glass / AppKit — snice-step-input
+   Compact 28px AppKit NSStepper + field, 6px corners, hairline border & soft
+   accent focus halo.
+   ========================================================================== */
+
+[part~="base"] {
+  border-radius: 6px;
+  background: var(--snice-macos-control-bg);
+  border: 0.5px solid var(--snice-color-border-hover);
+  box-shadow: var(--snice-macos-control-shadow);
+}
+
+[part~="base"]:focus-within {
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+[part~="button"] {
+  width: 1.75rem;
+  height: 1.75rem;
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text);
+  border-color: var(--snice-color-border);
+}
+
+[part~="button"]:hover {
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-primary);
+}
+
+[part~="input"] {
+  height: 1.75rem;
+  font-size: 0.8125rem;
+  color: var(--snice-color-text);
+}
+
+:host([size="small"]) [part~="button"] {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+:host([size="small"]) [part~="input"] {
+  height: 1.375rem;
+  font-size: 0.75rem;
+}
+
+:host([size="large"]) [part~="button"] {
+  width: 2.125rem;
+  height: 2.125rem;
+}
+
+:host([size="large"]) [part~="input"] {
+  height: 2.125rem;
+  font-size: 0.875rem;
+}

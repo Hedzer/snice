@@ -1,0 +1,55 @@
+/* ==========================================================================
+   Android Material 3 Expressive — snice-step-input
+   Full-pill M3 Expressive connected stepper with secondary-container end caps.
+   ========================================================================== */
+
+[part~="base"] {
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="base"]:focus-within {
+  border-color: var(--snice-color-primary);
+  box-shadow: inset 0 0 0 1px var(--snice-color-primary);
+}
+
+[part~="button"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  border: none;
+}
+
+[part~="button"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) 10%, var(--snice-m3-secondary-container));
+  color: var(--snice-m3-on-secondary-container);
+}
+
+[part~="input"] {
+  height: 2.5rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+:host([size="small"]) [part~="button"] {
+  width: 2rem;
+  height: 2rem;
+}
+
+:host([size="small"]) [part~="input"] {
+  height: 2rem;
+  font-size: 0.8125rem;
+}
+
+:host([size="large"]) [part~="button"] {
+  width: 3.25rem;
+  height: 3.25rem;
+}
+
+:host([size="large"]) [part~="input"] {
+  height: 3.25rem;
+  font-size: 1rem;
+}

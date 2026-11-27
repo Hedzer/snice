@@ -1,0 +1,66 @@
+/* ==========================================================================
+   iOS 26+ Liquid Glass — snice-step-input
+   Capsule Liquid Glass UIStepper pill (44pt medium), frosted glass fill,
+   hairline dividers, crisp interactive press tint.
+   ========================================================================== */
+
+[part~="base"] {
+  border-radius: 9999px;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-sm);
+}
+
+[part~="base"]:focus-within {
+  border-color: var(--snice-color-primary);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color), var(--snice-ios-glass-rim);
+}
+
+[part~="button"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: transparent;
+  color: var(--snice-color-text);
+}
+
+[part~="button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 6%, transparent);
+  color: var(--snice-color-primary);
+}
+
+[part~="decrement-button"] {
+  border-right: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="increment-button"] {
+  border-left: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="input"] {
+  height: 2.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+:host([size="small"]) [part~="button"] {
+  width: 2rem;
+  height: 2rem;
+}
+
+:host([size="small"]) [part~="input"] {
+  height: 2rem;
+  font-size: 0.875rem;
+}
+
+:host([size="large"]) [part~="button"] {
+  width: 2.875rem;
+  height: 2.875rem;
+}
+
+:host([size="large"]) [part~="input"] {
+  height: 2.875rem;
+  font-size: 1.0625rem;
+}

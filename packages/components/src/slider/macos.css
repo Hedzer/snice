@@ -1,8 +1,28 @@
-/* macOS 26+ Liquid Glass / AppKit — snice-slider (NSSlider + Glass Lens Thumb) */
+/* ==========================================================================
+   macOS 26+ Liquid Glass / AppKit — snice-slider
+   Compact 4px NSSlider track, crisp 16px pure-white AppKit knob with subtle
+   Liquid Glass press lens, semantic variants, soft focus halo & vertical parity.
+   ========================================================================== */
+
+[part~="label"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="controls"] {
+  min-height: 1.75rem;
+}
+
 [part~="track"] {
   height: 4px;
   border-radius: 9999px;
-  background: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+  background: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
+}
+
+[part~="track-vertical"] {
+  width: 4px;
+  height: 100%;
 }
 
 [part~="fill"] {
@@ -10,16 +30,38 @@
   background: var(--snice-color-primary);
 }
 
+:host([variant="success"]) [part~="fill"] {
+  background: var(--snice-color-success);
+}
+
+:host([variant="warning"]) [part~="fill"] {
+  background: var(--snice-color-warning);
+}
+
+:host([variant="danger"]) [part~="fill"] {
+  background: var(--snice-color-danger);
+}
+
 [part~="thumb"] {
   width: 1rem;
   height: 1rem;
   border-radius: 9999px;
   background: hsl(0 0% 100%);
-  border: 0.5px solid hsl(0 0% 0% / 0.14);
-  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.22);
+  border: 0.5px solid hsl(0 0% 0% / 0.16);
+  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.24);
   transition:
     transform var(--snice-transition-fast, 140ms) var(--snice-ease-spring, ease),
     background-color var(--snice-transition-fast, 140ms) ease;
+}
+
+:host([size="small"]) [part~="thumb"] {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+:host([size="large"]) [part~="thumb"] {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 :host([data-macos-pressed="true"]) [part~="thumb"] {
@@ -30,6 +72,19 @@
   box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-sm);
 }
 
+:host([data-macos-pressed="true"]) [part~="thumb-vertical"] {
+  transform: translate(-50%, 50%) scale(1.22);
+}
+
 :host([data-macos-focus="keyboard"]) [part~="thumb"] {
   box-shadow: var(--snice-macos-focus-halo);
+}
+
+[part~="spinner"] {
+  color: hsl(240 4% 38%);
+}
+
+[part~="value"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text);
 }

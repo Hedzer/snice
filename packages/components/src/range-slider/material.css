@@ -1,0 +1,53 @@
+/* ==========================================================================
+   Android Material 3 Expressive — snice-range-slider
+   M3 Expressive 16dp track, tall 4x36dp vertical pill handles with surface
+   gap halos, and M3 inverse-surface pill tooltips.
+   ========================================================================== */
+
+[part~="track"] {
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--snice-m3-secondary-container);
+}
+
+:host([orientation="vertical"]) [part~="track"] {
+  width: 16px;
+  height: 100%;
+}
+
+[part~="range"] {
+  border-radius: 4px;
+  background: var(--snice-color-primary);
+}
+
+[part~="thumb"] {
+  width: 4px;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  border: none;
+  box-shadow: 0 0 0 5px var(--snice-color-surface);
+}
+
+:host([orientation="vertical"]) [part~="thumb"] {
+  width: 2.25rem;
+  height: 4px;
+}
+
+[part~="thumb"]:hover {
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 5px var(--snice-color-surface);
+}
+
+[part~="tooltip"] {
+  border-radius: 9999px;
+  padding: 0.25rem 0.625rem;
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
+  font-weight: 500;
+}
+
+[part~="labels"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}

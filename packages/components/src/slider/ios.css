@@ -1,12 +1,47 @@
-/* iOS 26+ Liquid Glass — snice-slider */
+/* ==========================================================================
+   iOS 26+ Liquid Glass — snice-slider
+   6px rounded track, iOS 26 elongated Liquid Glass pill thumb (34x22px) with
+   Apple multi-layer drop shadow & translucent drag lens, semantic variants,
+   and full vertical orientation parity.
+   ========================================================================== */
+
+[part~="label"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+}
+
 [part~="controls"] {
-  min-height: 2.75rem;
+  min-height: 2.5rem;
 }
 
 [part~="track"] {
   height: 6px;
   border-radius: 9999px;
-  background: hsl(240 5% 50% / 0.22);
+  background: hsl(240 6% 48% / 0.24);
+}
+
+:host([size="small"]) [part~="track"] {
+  height: 4px;
+}
+
+:host([size="large"]) [part~="track"] {
+  height: 8px;
+}
+
+[part~="track-vertical"] {
+  width: 6px;
+  height: 100%;
+}
+
+:host([size="small"]) [part~="track-vertical"] {
+  width: 4px;
+  height: 100%;
+}
+
+:host([size="large"]) [part~="track-vertical"] {
+  width: 8px;
+  height: 100%;
 }
 
 [part~="fill"] {
@@ -14,19 +49,46 @@
   background: var(--snice-color-primary);
 }
 
+:host([variant="success"]) [part~="fill"] {
+  background: var(--snice-color-success);
+}
+
+:host([variant="warning"]) [part~="fill"] {
+  background: var(--snice-color-warning);
+}
+
+:host([variant="danger"]) [part~="fill"] {
+  background: var(--snice-color-danger);
+}
+
 [part~="thumb"] {
-  width: 2.25rem;
-  height: 1.5rem;
+  width: 2.125rem;
+  height: 1.375rem;
   border-radius: 9999px;
   background: hsl(0 0% 100%);
   border: 0.5px solid hsl(0 0% 0% / 0.08);
   box-shadow:
     0 3px 10px hsl(0 0% 0% / 0.18),
-    0 1px 2px hsl(0 0% 0% / 0.1),
+    0 1px 2px hsl(0 0% 0% / 0.12),
     inset 0 1px 0 hsl(0 0% 100% / 0.9);
   transition:
     transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
     background-color var(--snice-transition-fast, 180ms) ease;
+}
+
+:host([size="small"]) [part~="thumb"] {
+  width: 1.75rem;
+  height: 1.125rem;
+}
+
+:host([size="large"]) [part~="thumb"] {
+  width: 2.5rem;
+  height: 1.625rem;
+}
+
+[part~="thumb-vertical"] {
+  width: 1.375rem;
+  height: 2.125rem;
 }
 
 [part~="lens"] {
@@ -48,10 +110,29 @@
 :host([data-ios-pressed="true"]) [part~="thumb"],
 [part~="thumb-dragging"] {
   background: var(--snice-ios-glass-clear-bg);
-  transform: translate(-50%, -50%) scale(1.22);
+  transform: translate(-50%, -50%) scale(1.18);
+}
+
+:host([data-ios-pressed="true"]) [part~="thumb-vertical"],
+[part~="thumb-vertical"][part~="thumb-dragging"] {
+  transform: translate(-50%, 50%) scale(1.18);
 }
 
 :host([data-ios-pressed="true"]) [part~="lens"] {
   opacity: 1;
   transform: scale(1);
+}
+
+[part~="thumb-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+[part~="spinner"] {
+  color: hsl(240 4% 38%);
+}
+
+[part~="value"] {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
 }

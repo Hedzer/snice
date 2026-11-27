@@ -1,0 +1,71 @@
+/* ==========================================================================
+   Windows 11 Fluent 2 / WinUI 3 — snice-textarea
+   Multiline WinUI 3 TextBox with 4px radius and 2px bottom accent focus bar.
+   ========================================================================== */
+
+[part~="label"] {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--snice-color-text);
+  margin-bottom: 0.25rem;
+}
+
+[part~="textarea"] {
+  padding: 0.4375rem 0.6875rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  background: var(--snice-win-control-bg);
+  color: var(--snice-color-text);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-win-stroke-input-bottom);
+  box-shadow: none;
+}
+
+[part~="textarea"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+[part~="textarea"]:focus-visible {
+  background: var(--snice-color-surface-container-lowest);
+  border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-color-primary);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-primary);
+}
+
+:host([size="small"]) [part~="textarea"] {
+  padding: 0.3125rem 0.5625rem;
+  font-size: 0.75rem;
+}
+
+:host([size="large"]) [part~="textarea"] {
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+}
+
+:host([variant="filled"]) [part~="textarea"] {
+  background: var(--snice-color-surface-container);
+  border-color: transparent transparent var(--snice-win-stroke-input-bottom);
+  border-radius: 4px;
+}
+
+:host([variant="underlined"]) [part~="textarea"] {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--snice-win-stroke-input-bottom);
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+  box-shadow: none;
+}
+
+[part~="textarea-invalid"] {
+  border-bottom-color: var(--snice-color-danger);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-danger);
+}
+
+[part~="textarea"]:disabled {
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-color-border-subtle);
+  color: var(--snice-color-text-tertiary);
+  opacity: 0.65;
+}

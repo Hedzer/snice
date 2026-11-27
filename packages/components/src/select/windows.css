@@ -1,20 +1,76 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-select (ComboBox + Acrylic Flyout) */
-[part~="trigger"] {
+/* ==========================================================================
+   Windows 11 Fluent 2 / WinUI 3 — snice-select
+   32px WinUI 3 ComboBox with 1px top-lit elevation border, preserved chevron
+   clearance, transient Acrylic flyout dropdown, and 4px menu rows.
+   ========================================================================== */
+
+[part~="label"] {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--snice-color-text);
+  margin-bottom: 0.25rem;
+}
+
+[part~="trigger"],
+[part~="input"] {
   min-height: 2rem;
-  height: 2rem;
+  padding: 0.25rem 2.25rem 0.25rem 0.6875rem;
   border-radius: 4px;
   font-size: 0.875rem;
   background: var(--snice-win-control-bg);
+  color: var(--snice-color-text);
   border-width: 1px;
   border-style: solid;
   border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-win-stroke-bottom);
-  padding: 0.25rem 0.6875rem;
+  box-shadow: none;
 }
 
-[part~="trigger"]:focus-visible {
+:host([size="small"]) [part~="trigger"],
+:host([size="small"]) [part~="input"] {
+  min-height: 1.625rem;
+  padding: 0.125rem 1.875rem 0.125rem 0.5625rem;
+  font-size: 0.75rem;
+}
+
+:host([size="large"]) [part~="trigger"],
+:host([size="large"]) [part~="input"] {
+  min-height: 2.5rem;
+  padding: 0.4375rem 2.5rem 0.4375rem 0.875rem;
+  font-size: 0.9375rem;
+}
+
+[part~="trigger"]:hover,
+[part~="input"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+[part~="trigger"]:focus-visible,
+[part~="input"]:focus-visible {
+  outline: none;
   box-shadow: var(--snice-win-focus-shadow);
 }
 
+[part~="trigger-open"],
+[part~="input-open"] {
+  border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-color-primary);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-primary);
+}
+
+[part~="trigger-invalid"],
+[part~="input-invalid"] {
+  border-bottom-color: var(--snice-color-danger);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-danger);
+}
+
+[part~="trigger-disabled"],
+[part~="input-disabled"] {
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-color-border-subtle);
+  color: var(--snice-color-text-tertiary);
+  opacity: 0.65;
+}
+
+/* Acrylic Flyout */
 [part~="dropdown"] {
   border-radius: 8px;
   padding: 0.25rem;
@@ -28,5 +84,10 @@
 [part~="option"] {
   min-height: 2rem;
   border-radius: 4px;
+  padding: 0.3125rem 0.6875rem;
   font-size: 0.875rem;
+}
+
+[part~="option"]:hover {
+  background: var(--snice-win-control-bg-hover);
 }

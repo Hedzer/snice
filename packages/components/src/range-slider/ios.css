@@ -1,0 +1,55 @@
+/* ==========================================================================
+   iOS 26+ Liquid Glass — snice-range-slider
+   Matches iOS 26 slider anatomy: 6px pill track, System Blue active range,
+   white shadowed pill thumbs, and Liquid Glass tooltip pill.
+   ========================================================================== */
+
+[part~="track"] {
+  height: 6px;
+  border-radius: 9999px;
+  background: hsl(240 6% 48% / 0.24);
+}
+
+:host([orientation="vertical"]) [part~="track"] {
+  width: 6px;
+  height: 100%;
+}
+
+[part~="range"] {
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+[part~="thumb"] {
+  width: 1.625rem;
+  height: 1.375rem;
+  border-radius: 9999px;
+  background: hsl(0 0% 100%);
+  border: 0.5px solid hsl(0 0% 0% / 0.08);
+  box-shadow:
+    0 3px 10px hsl(0 0% 0% / 0.18),
+    0 1px 2px hsl(0 0% 0% / 0.12),
+    inset 0 1px 0 hsl(0 0% 100% / 0.9);
+}
+
+:host([orientation="vertical"]) [part~="thumb"] {
+  width: 1.375rem;
+  height: 1.625rem;
+}
+
+[part~="tooltip"] {
+  border-radius: 9999px;
+  padding: 0.25rem 0.625rem;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-sm);
+  font-weight: 600;
+}
+
+[part~="labels"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
