@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import {
   composeObjectManualChunks,
   createSniceManualChunksController,
@@ -21,6 +22,7 @@ import { composeSourceMaps } from './sourcemap';
 import {
   generateModularTableEntry,
   isSniceTableEntrySpecifier,
+  resolveAutoTableStripConfig,
   resolveTableStripConfig,
   VIRTUAL_TABLE_ID,
   type ResolvedTableStripConfig,
@@ -36,6 +38,22 @@ export interface SniceRuntimeEnv {
   isLib: boolean;
   /** Resolved dev flag (updated by Vite configResolved; defaults to options.dev ?? false in Rollup). */
   isDev: boolean;
+  /** Optional project root directory (populated by Vite configResolved). */
+  projectRoot?: string;
+}
+
+function findNearestProjectRoot(importer?: string): string {
+  if (importer) {
+    let dir = dirname(importer.split('?')[0]);
+    for (let i = 0; i < 8; i++) {
+      if (existsSync(join(dir, 'package.json'))) return dir;
+      const parent = dirname(dir);
+      if (parent === dir) break;
+      dir = parent;
+    }
+    return dirname(importer.split('?')[0]);
+  }
+  return process.cwd();
 }
 
 const SINGLE_FILE_FORMATS = new Set(['iife', 'umd']);
@@ -64,6 +82,7 @@ export function createSniceCorePlugin(
   let themeAllowlist: Set<string> | null = null;
   let shippedAllowlistCache: Set<string> | null = null;
   let tableStripConfig: ResolvedTableStripConfig | null = null;
+  let tableAutoEvaluated = false;
   let lastTableImporter: string | undefined;
 
   function recordThemeCss(id: string, cssSource?: string): void {
@@ -118,6 +137,7 @@ export function createSniceCorePlugin(
       themeDetected = false;
       themeAllowlist = null;
       lastTableImporter = undefined;
+      tableAutoEvaluated = false;
       // Validate and normalize options.table eagerly so typos fail fast at buildStart.
       tableStripConfig = resolveTableStripConfig(options.table);
     },
@@ -125,6 +145,11 @@ export function createSniceCorePlugin(
     resolveId(id: string, importer?: string) {
       if (id === TC39_SPECIFIER || id === TC39_VIRTUAL_ID) {
         return TC39_VIRTUAL_ID;
+      }
+      if (options.table === 'auto' && !tableAutoEvaluated && importer !== VIRTUAL_TABLE_ID && isSniceTableEntrySpecifier(id)) {
+        tableAutoEvaluated = true;
+        const rootDir = runtimeEnv.projectRoot ?? findNearestProjectRoot(importer);
+        tableStripConfig = resolveAutoTableStripConfig(rootDir);
       }
       if (tableStripConfig) {
         if (id === VIRTUAL_TABLE_ID) return VIRTUAL_TABLE_ID;

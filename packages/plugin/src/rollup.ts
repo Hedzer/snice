@@ -8,6 +8,7 @@ export type {
   SniceBuildReport,
   SniceChunkReport,
   SniceTableOptions,
+  SniceTableOption,
 } from './types';
 export { createSniceManualChunks, DEFAULT_HEAVY_COMPONENTS } from './chunking';
 

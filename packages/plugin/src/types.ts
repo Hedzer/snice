@@ -29,6 +29,8 @@ export interface SniceTableOptions {
   features?: string[];
 }
 
+export type SniceTableOption = false | 'auto' | SniceTableOptions;
+
 export interface SnicePluginOptions {
   /** Build-time Snice decorator lowering + TC39 2022-03 fallback (BS-06, default true). */
   decorators?: boolean;
@@ -52,8 +54,8 @@ export interface SnicePluginOptions {
   target?: string | false;
   /** Emit build tier size report (default false). */
   report?: boolean | ((report: SniceBuildReport) => void);
-  /** Optional snice-table cell/feature allowlist stripping (BS-11). */
-  table?: SniceTableOptions;
+  /** Optional snice-table cell/feature stripping: explicit allowlist, 'auto' conservative static detection, or false to disable. */
+  table?: SniceTableOption;
 }
 
 function assertBooleanOrUndefined(value: unknown, name: string): void {
@@ -125,9 +127,11 @@ export function validateOptions(options: unknown): SnicePluginOptions {
     throw new TypeError('snice plugin: "report" must be a boolean or a callback function.');
   }
 
-  if (opts.table !== undefined) {
+  if (opts.table !== undefined && opts.table !== false && opts.table !== 'auto') {
     if (typeof opts.table !== 'object' || opts.table === null || Array.isArray(opts.table)) {
-      throw new TypeError('snice plugin: "table" must be an object with optional "cells" and "features" arrays.');
+      throw new TypeError(
+        'snice plugin: "table" must be false, "auto", or an object with optional "cells" and "features" arrays.'
+      );
     }
     const table = opts.table as Record<string, unknown>;
     if (

@@ -8,6 +8,7 @@ import { rollup } from 'rollup';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import sniceVite from '../../packages/plugin/src/vite';
 import sniceRollup from '../../packages/plugin/src/rollup';
+import { analyzeTableUsage } from '../../packages/plugin/src/table-strip';
 import { analyzeProject } from '../../bin/project-analyzer.js';
 
 const ROOT = process.cwd();
@@ -241,4 +242,111 @@ describe('BS-11: Modular snice-table tree-shaking & plugin-guided stripping', ()
     const errors = diagnostics.filter((d: any) => d.severity === 'error');
     expect(errors).toEqual([]);
   });
+
+  it('table: "auto" conservatively strips static columns/features and bails out safely on dynamic definitions or spreads', async () => {
+    // Unit checks for conservative bail-outs
+    expect(
+      analyzeTableUsage([
+        { id: 'src/a.ts', code: `import 'snice/components/table/snice-table'; const t = document.querySelector('snice-table') as any; t.columns = getCols();` },
+      ]).safe
+    ).toBe(false);
+
+    expect(
+      analyzeTableUsage([
+        { id: 'src/b.ts', code: `html\`<snice-table ...props=\${extra}><snice-column type="number"></snice-column></snice-table>\`;` },
+      ]).safe
+    ).toBe(false);
+
+    expect(
+      analyzeTableUsage([
+        { id: 'src/c.ts', code: `html\`<snice-table><snice-column type=\${dynType}></snice-column></snice-table>\`;` },
+      ]).safe
+    ).toBe(false);
+
+    expect(
+      analyzeTableUsage([
+        {
+          id: 'src/d.ts',
+          code: `
+            const cols = [...baseCols, { key: 'a', type: 'text' }];
+            html\`<snice-table .columns=\${cols}></snice-table>\`;
+          `,
+        },
+      ]).safe
+    ).toBe(false);
+
+    // Static auto-detection unit check
+    const staticRes = analyzeTableUsage([
+      {
+        id: 'src/page.ts',
+        code: `
+          const cols = [
+            { key: 'name', label: 'Name' },
+            { key: 'price', label: 'Price', type: 'currency' },
+            { key: 'pct', label: 'Share', type: 'percent' },
+          ];
+          export const tpl = html\`<snice-table .columns=\${cols} virtualize exportable></snice-table>\`;
+        `,
+      },
+    ]);
+    expect(staticRes.safe).toBe(true);
+    expect(staticRes.cells).toEqual(expect.arrayContaining(['text', 'currency', 'percentage']));
+    expect(staticRes.cells).toHaveLength(3);
+    expect(staticRes.features).toEqual(expect.arrayContaining(['virtualizer', 'export']));
+    expect(staticRes.features).toHaveLength(2);
+
+    // Full Vite builds comparing `table: 'auto'` (static) vs `table: 'auto'` (dynamic bail-out) vs `table: false`
+    const dirAutoStatic = makeTempProject({
+      'index.html': `
+        <!doctype html>
+        <html><body>
+          <snice-table searchable>
+            <snice-column type="text" key="name"></snice-column>
+            <snice-column type="number" key="age"></snice-column>
+          </snice-table>
+          <script type="module" src="/src/main.ts"></script>
+        </body></html>
+      `,
+      'src/main.ts': `import 'snice/components/table/snice-table';`,
+    });
+
+    const dirAutoDynamic = makeTempProject({
+      'index.html': `<script type="module" src="/src/main.ts"></script>`,
+      'src/main.ts': `
+        import 'snice/components/table/snice-table';
+        const el = document.querySelector('snice-table') as any;
+        declare function fetchCols(): any[];
+        if (el) el.columns = fetchCols();
+      `,
+    });
+
+    const dirDisabled = makeTempProject({
+      'index.html': `<snice-table><snice-column type="text"></snice-column></snice-table><script type="module" src="/src/main.ts"></script>`,
+      'src/main.ts': `import 'snice/components/table/snice-table';`,
+    });
+
+    await Promise.all([
+      viteBuild({ root: dirAutoStatic, logLevel: 'silent', plugins: [sniceVite({ caching: false, table: 'auto' })] }),
+      viteBuild({ root: dirAutoDynamic, logLevel: 'silent', plugins: [sniceVite({ caching: false, table: 'auto' })] }),
+      viteBuild({ root: dirDisabled, logLevel: 'silent', plugins: [sniceVite({ caching: false, table: false })] }),
+    ]);
+
+    const autoStatic = readDistJs(dirAutoStatic);
+    const autoDynamic = readDistJs(dirAutoDynamic);
+    const disabled = readDistJs(dirDisabled);
+
+    // Static auto-strip includes number + filter, omits rating/sparkline/export/grouping, shrinks sharply
+    expect(autoStatic.code).toContain('snice-cell-number');
+    expect(autoStatic.code).not.toContain('element("snice-cell-rating")');
+    expect(autoStatic.code).not.toContain('text/csv;charset=utf-8');
+    expect(autoStatic.code).not.toContain('group-toggle-chevron');
+    expect(autoStatic.rawBytes).toBeLessThan(disabled.rawBytes * 0.7);
+
+    // Dynamic bail-out safely keeps full snice-table (including rating & export)
+    expect(autoDynamic.code).toContain('snice-cell-rating');
+    expect(autoDynamic.code).toContain('text/csv;charset=utf-8');
+
+    // `table: false` keeps full snice-table
+    expect(disabled.code).toContain('snice-cell-rating');
+  }, 45000);
 });

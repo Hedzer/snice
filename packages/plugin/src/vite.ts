@@ -8,6 +8,7 @@ export type {
   SniceBuildReport,
   SniceChunkReport,
   SniceTableOptions,
+  SniceTableOption,
 } from './types';
 export { createSniceManualChunks, DEFAULT_HEAVY_COMPONENTS } from './chunking';
 
@@ -64,6 +65,9 @@ export function snice(options?: SnicePluginOptions): Record<string, any> {
         resolvedConfig?.mode === 'development';
       env.isDev = typeof validated.dev === 'boolean' ? validated.dev : isServeOrDev;
       env.isLib = Boolean(resolvedConfig?.build?.lib);
+      if (typeof resolvedConfig?.root === 'string') {
+        env.projectRoot = resolvedConfig.root;
+      }
     },
   };
 }
