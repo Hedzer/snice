@@ -1,0 +1,152 @@
+/* macOS 26+ Tahoe / AppKit — snice-order-tracker
+ * Compact AppKit shipment status inspector card.
+ * 12px opaque card, 0.5px hairline border & header divider, 28px milestone circles with
+ * synchronized 1.5px connector geometry, explicit white dark-mode ink, --snice-macos-focus-halo.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --ot-bg: var(--snice-color-background-element);
+  --ot-bg-element: var(--snice-color-surface-container-low);
+  --ot-border: var(--snice-color-border);
+  --ot-text: var(--snice-color-text);
+  --ot-text-secondary: var(--snice-color-text-secondary);
+  --ot-text-tertiary: var(--snice-color-text-tertiary);
+  --ot-primary: var(--snice-color-primary);
+  --ot-success: var(--snice-color-success);
+  -webkit-font-smoothing: antialiased;
+}
+
+[part~="base"] {
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+[part~="info"] {
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="info-label"] {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="info-value"] {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="step"] {
+  border-radius: 8px;
+  transition: background-color 140ms ease;
+}
+
+[part~="step"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Compact 28px desktop indicator circles with lockstep connector geometry below */
+[part~="step-indicator"] {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="step-indicator-pending"] {
+  background: var(--snice-macos-control-bg);
+  border: 1px solid var(--snice-color-border);
+  box-shadow: var(--snice-macos-control-shadow);
+  color: var(--snice-color-text-tertiary);
+}
+
+/* CRITICAL macOS dark-mode fix: explicit white ink + seed-derived halo */
+[part~="step-indicator-active"] {
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent 55%), var(--snice-color-primary);
+  border: 1px solid var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-primary) 24%, transparent);
+}
+
+[part~="step-indicator-completed"] {
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent 55%), var(--snice-color-success);
+  border: 1px solid var(--snice-color-success);
+  color: hsl(0 0% 100%);
+}
+
+[part~="step-icon"] {
+  width: 0.75rem;
+  height: 0.75rem;
+  color: inherit;
+}
+
+/* Synchronized 1.5px connector alignment for 28px (1.75rem) indicator circles */
+[part~="step-connector"] {
+  background: var(--snice-color-border-subtle);
+}
+
+:host:not([variant="vertical"]) [part~="step-connector"] {
+  top: calc(0.875rem - 0.75px);
+  left: calc(50% + 0.875rem);
+  right: calc(-50% + 0.875rem);
+  height: 1.5px;
+}
+
+:host([variant="vertical"]) [part~="step-connector"] {
+  top: 1.75rem;
+  left: calc(0.875rem - 0.75px);
+  right: auto;
+  bottom: 0;
+  height: auto;
+  width: 1.5px;
+}
+
+@media (max-width: 600px) {
+  :host:not([variant="vertical"]) [part~="step-connector"] {
+    top: 1.75rem;
+    left: calc(0.875rem - 0.75px);
+    right: auto;
+    bottom: 0;
+    height: auto;
+    width: 1.5px;
+  }
+}
+
+[part~="step-connector-completed"] {
+  background: var(--snice-color-success);
+}
+
+[part~="step-label"] {
+  font-size: 0.8125rem;
+}
+
+[part~="step-label-active"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="step-label-completed"] {
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+[part~="step-label-pending"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="step-timestamp"],
+[part~="step-description"] {
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+}

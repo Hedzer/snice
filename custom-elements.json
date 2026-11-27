@@ -33490,6 +33490,15 @@
               "name": "step-connector"
             },
             {
+              "name": "step-connector-active"
+            },
+            {
+              "name": "step-connector-completed"
+            },
+            {
+              "name": "step-connector-pending"
+            },
+            {
               "name": "step-content"
             },
             {
@@ -33502,7 +33511,25 @@
               "name": "step-indicator"
             },
             {
+              "name": "step-indicator-active"
+            },
+            {
+              "name": "step-indicator-completed"
+            },
+            {
+              "name": "step-indicator-pending"
+            },
+            {
               "name": "step-label"
+            },
+            {
+              "name": "step-label-active"
+            },
+            {
+              "name": "step-label-completed"
+            },
+            {
+              "name": "step-label-pending"
             },
             {
               "name": "step-pending"

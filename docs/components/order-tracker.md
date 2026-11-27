@@ -60,6 +60,15 @@ State tokens are added alongside the base token, so they are matched with
 | `step-pending` | Added to `step` while the step is pending |
 | `step-active` | Added to `step` while the step is active |
 | `step-completed` | Added to `step` while the step is completed |
+| `step-indicator-pending` | Added to `step-indicator` while the step is pending |
+| `step-indicator-active` | Added to `step-indicator` while the step is active |
+| `step-indicator-completed` | Added to `step-indicator` while the step is completed |
+| `step-label-pending` | Added to `step-label` while the step is pending |
+| `step-label-active` | Added to `step-label` while the step is active |
+| `step-label-completed` | Added to `step-label` while the step is completed |
+| `step-connector-pending` | Added to `step-connector` while the step is pending |
+| `step-connector-active` | Added to `step-connector` while the step is active |
+| `step-connector-completed` | Added to `step-connector` while the step is completed |
 
 ## Basic Usage
 

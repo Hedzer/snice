@@ -98,11 +98,11 @@ export class SniceOrderTracker extends HTMLElement implements SniceOrderTrackerE
                    tabindex="0"
                    @click=${() => this.handleStepClick(step, index)}
                    @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.handleStepClick(step, index); } }}>
-                <div class="tracker__step-indicator" part="step-indicator">
+                <div class="tracker__step-indicator" part="step-indicator ${isCompleted ? 'step-indicator-completed' : isActiveStep ? 'step-indicator-active' : 'step-indicator-pending'}">
                   ${this.renderDefaultIcon(step, index)}
                 </div>
                 <div class="tracker__step-content" part="step-content">
-                  <span class="tracker__step-label" part="step-label">${step.label}</span>
+                  <span class="tracker__step-label" part="step-label ${isCompleted ? 'step-label-completed' : isActiveStep ? 'step-label-active' : 'step-label-pending'}">${step.label}</span>
                   <if ${step.timestamp}>
                     <span class="tracker__step-timestamp" part="step-timestamp">${step.timestamp}</span>
                   </if>
@@ -110,7 +110,7 @@ export class SniceOrderTracker extends HTMLElement implements SniceOrderTrackerE
                     <span class="tracker__step-description" part="step-description">${step.description}</span>
                   </if>
                 </div>
-                <div class="tracker__step-connector" part="step-connector"></div>
+                <div class="tracker__step-connector" part="step-connector ${isCompleted ? 'step-connector-completed' : isActiveStep ? 'step-connector-active' : 'step-connector-pending'}"></div>
               </div>
             `;
           })}

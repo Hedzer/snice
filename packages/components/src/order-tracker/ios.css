@@ -1,0 +1,125 @@
+/* iOS 26+ Liquid Glass / Apple HIG — snice-order-tracker
+ * Apple Wallet Order Tracking card (opaque grouped 20px surface, zero glass on content).
+ * Hairline metadata bar, 32px circular milestone badges with seed-derived active halo,
+ * explicit white dark-mode icon ink, SF Pro tabular timestamps & tracking numbers.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --ot-bg: var(--snice-color-surface-container-high);
+  --ot-bg-element: var(--snice-color-surface-container-low);
+  --ot-border: var(--snice-color-border-subtle);
+  --ot-text: var(--snice-color-text);
+  --ot-text-secondary: var(--snice-color-text-secondary);
+  --ot-text-tertiary: var(--snice-color-text-tertiary);
+  --ot-primary: var(--snice-color-primary);
+  --ot-success: var(--snice-color-success);
+  -webkit-font-smoothing: antialiased;
+}
+
+[part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+[part~="info"] {
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="info-label"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--snice-color-text-tertiary);
+  letter-spacing: 0.04em;
+}
+
+[part~="info-value"] {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="step"] {
+  border-radius: 12px;
+  transition: opacity var(--snice-transition-fast) var(--snice-ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+[part~="step"]:active {
+  opacity: 0.82;
+}
+
+[part~="step"]:focus-visible {
+  outline: var(--snice-focus-ring-width) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+[part~="step-indicator"] {
+  border-radius: 9999px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="step-indicator-pending"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1.5px solid var(--snice-color-border-hover);
+  color: var(--snice-color-text-tertiary);
+}
+
+/* CRITICAL iOS dark-mode fix: explicit white icon ink + seed-derived active halo */
+[part~="step-indicator-active"] {
+  background: var(--snice-color-primary);
+  border: 2px solid var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--snice-color-primary) 24%, transparent);
+}
+
+[part~="step-indicator-completed"] {
+  background: var(--snice-color-success);
+  border: 2px solid var(--snice-color-success);
+  color: hsl(0 0% 100%);
+}
+
+[part~="step-icon"] {
+  color: inherit;
+}
+
+[part~="step-connector"] {
+  background: var(--snice-color-border-subtle);
+  border-radius: 9999px;
+}
+
+[part~="step-connector-completed"] {
+  background: var(--snice-color-success);
+}
+
+[part~="step-label"] {
+  font-size: 0.9375rem;
+  letter-spacing: -0.014em;
+}
+
+[part~="step-label-active"],
+[part~="step-label-completed"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="step-label-pending"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="step-timestamp"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="step-description"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+}

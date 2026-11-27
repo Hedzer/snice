@@ -1,0 +1,140 @@
+/* Android Material 3 Expressive — snice-order-tracker
+ * Google Shopping / M3 Expressive order progress card.
+ * 16px tonal surface-container-low card, 8px surface-container tracking chips, 3px rounded
+ * progress rail, dark-mode T80 --snice-m3-on-primary / --snice-color-text-inverse ink.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --ot-bg: var(--snice-color-surface-container-low);
+  --ot-bg-element: var(--snice-color-surface-container);
+  --ot-border: var(--snice-color-border-subtle);
+  --ot-text: var(--snice-color-text);
+  --ot-text-secondary: var(--snice-color-text-secondary);
+  --ot-text-tertiary: var(--snice-color-text-tertiary);
+  --ot-primary: var(--snice-color-primary);
+  --ot-success: var(--snice-color-success);
+}
+
+[part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+[part~="info"] {
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+/* M3 tonal tracking info chips */
+[part~="info-item"] {
+  background: var(--snice-color-surface-container);
+  border-radius: 8px;
+  padding: 6px 12px;
+  gap: 6px;
+}
+
+[part~="info-label"] {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="info-value"] {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="step"] {
+  border-radius: 12px;
+  transition: background-color 150ms var(--snice-m3-spring-effects, ease);
+}
+
+[part~="step"]:focus-visible {
+  outline: var(--snice-focus-ring-width) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+[part~="step-indicator"] {
+  border-radius: 9999px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="step-indicator-pending"] {
+  background: var(--snice-color-surface-container-highest);
+  border: 2px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text-secondary);
+}
+
+/* CRITICAL M3 dark-mode T80 fix: dark --snice-m3-on-primary ink + seed-derived halo */
+[part~="step-indicator-active"] {
+  background: var(--snice-color-primary);
+  border: 2px solid var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--snice-color-primary) 18%, transparent);
+}
+
+[part~="step-indicator-completed"] {
+  background: var(--snice-color-success);
+  border: 2px solid var(--snice-color-success);
+  color: var(--snice-color-text-inverse);
+}
+
+[part~="step-icon"] {
+  color: inherit;
+}
+
+/* Expressive 3px rounded M3 progress track (centered on 32px circles) */
+[part~="step-connector"] {
+  background: var(--snice-color-surface-container-highest);
+  border-radius: 9999px;
+}
+
+:host:not([variant="vertical"]) [part~="step-connector"] {
+  top: calc(1rem - 1.5px);
+  height: 3px;
+}
+
+:host([variant="vertical"]) [part~="step-connector"] {
+  left: calc(1rem - 1.5px);
+  width: 3px;
+}
+
+@media (max-width: 600px) {
+  :host:not([variant="vertical"]) [part~="step-connector"] {
+    left: calc(1rem - 1.5px);
+    width: 3px;
+  }
+}
+
+[part~="step-connector-completed"] {
+  background: var(--snice-color-success);
+}
+
+[part~="step-label"] {
+  font-size: 0.875rem;
+}
+
+[part~="step-label-active"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="step-label-completed"] {
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+[part~="step-label-pending"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="step-timestamp"] {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
