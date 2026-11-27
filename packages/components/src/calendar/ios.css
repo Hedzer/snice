@@ -1,45 +1,191 @@
-/* iOS 26+ Liquid Glass — snice-calendar */
+/* iOS 26+ Liquid Glass / UIKit calendar skin */
+
 [part~="base"] {
-  border-radius: 20px;
+  border-radius: 1.25rem;
   background: var(--snice-color-surface-container-high);
   border: 0.5px solid var(--snice-color-border-subtle);
   box-shadow: var(--snice-shadow-sm);
-  overflow: hidden;
 }
 
 [part~="header"] {
   padding: 0.875rem 1rem;
+  background: var(--snice-color-surface-container-low);
   border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  border-top-left-radius: 1.25rem;
+  border-top-right-radius: 1.25rem;
 }
 
 [part~="title"] {
+  font-size: 1.0625rem;
   font-weight: 700;
-  letter-spacing: -0.022em;
+  letter-spacing: -0.02em;
 }
 
+/* Capsule nav controls */
 [part~="nav-button"] {
+  min-height: 2rem;
+  padding: 0 0.75rem;
   border-radius: 9999px;
-  background: var(--snice-ios-glass-regular-bg);
-  border: 0.5px solid var(--snice-color-border-subtle);
+  border: none;
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: background-color 180ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[part~="nav-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+}
+
+[part~="nav-button"]:active {
+  transform: scale(0.95);
+}
+
+[part~="nav-button"]:focus-visible {
+  outline: 2px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Month grid: opaque grouped card surface + hairline separators */
+[part~="grid"] {
+  background: var(--snice-color-surface-container-high);
+  border-bottom-left-radius: 1.25rem;
+  border-bottom-right-radius: 1.25rem;
+  overflow: hidden;
+}
+
+[part~="weekday"],
+[part~="week-number-header"] {
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text-tertiary);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="week-number"] {
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-border-subtle);
+  border-width: 0.5px;
+  border-top: none;
+}
+
+[part~="day"] {
+  background: var(--snice-color-surface-container-high);
+  border-color: var(--snice-color-border-subtle);
+  border-right-width: 0.5px;
+  border-bottom-width: 0.5px;
+  transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[part~="day-week-start"] {
+  border-left-width: 0.5px;
+  border-left-color: var(--snice-color-border-subtle);
+}
+
+[part~="day"]:hover {
+  background: var(--snice-color-surface-container-low);
+}
+
+[part~="day-other-month"] {
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="day-today"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 10%, var(--snice-color-surface-container-high));
+  color: var(--snice-color-danger);
+}
+
+[part~="day-today"]:hover {
+  background: color-mix(in srgb, var(--snice-color-danger) 16%, var(--snice-color-surface-container-high));
+}
+
+[part~="day-selected"] {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+[part~="day-selected"]:hover {
+  background: var(--snice-color-primary-hover);
+  color: hsl(0 0% 100%);
+}
+
+[part~="day-disabled"] {
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="day-disabled"]:hover {
+  background: var(--snice-color-surface-container-low);
+}
+
+[part~="day-static"]:hover {
+  background: var(--snice-color-surface-container-high);
+}
+
+[part~="day-static"][part~="day-today"]:hover {
+  background: color-mix(in srgb, var(--snice-color-danger) 10%, var(--snice-color-surface-container-high));
+}
+
+[part~="day-number"] {
+  color: inherit;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Event bars: preserve custom inline background & multi-week continuation corners */
+[part~="event-bar"] {
+  border-radius: 0.3125rem;
+  color: hsl(0 0% 100%);
+  font-weight: 600;
+}
+
+[part~="event-bar-continues-left"] {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+[part~="event-bar-continues-right"] {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+[part~="more-chip"] {
   color: var(--snice-color-primary);
   font-weight: 600;
 }
 
-[part~="day-today"] {
-  color: var(--snice-color-danger);
-  font-weight: 700;
-}
-
-[part~="day-selected"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
-}
-
+/* Floating overlays: iOS Liquid Glass with explicit contrasting text color */
 [part~="event-popover"],
 [part~="event-tooltip"] {
-  border-radius: 18px;
+  border-radius: 1.125rem;
   background: var(--snice-ios-glass-regular-bg);
   backdrop-filter: var(--snice-ios-glass-blur);
   -webkit-backdrop-filter: var(--snice-ios-glass-blur);
   border: 1px solid var(--snice-ios-glass-border);
   box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+  color: var(--snice-color-text);
+}
+
+[part~="more-item"] {
+  border-radius: 0.5rem;
+}
+
+[part~="more-item"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="nav-button"],
+  [part~="day"] {
+    transition: none;
+  }
+
+  [part~="nav-button"]:active {
+    transform: none;
+  }
 }
