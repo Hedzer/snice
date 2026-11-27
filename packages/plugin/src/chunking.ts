@@ -26,17 +26,29 @@ export function normalizeModuleId(id: string): string {
   return id.replace(/\\/g, '/');
 }
 
-function resolveHeavySet(options?: SniceCachingOptions): { isolateHeavy: boolean; heavySet: Set<string> } {
+interface ResolvedCachingConfig {
+  isolateHeavy: boolean;
+  heavySet: Set<string>;
+  vendor: boolean;
+  componentGroupMap: Map<string, string>;
+}
+
+function resolveCachingConfig(options?: SniceCachingOptions): ResolvedCachingConfig {
   const isolateHeavy = options?.isolateHeavy !== false;
-  if (!isolateHeavy) {
-    return { isolateHeavy: false, heavySet: new Set() };
+  const heavySet = isolateHeavy
+    ? new Set([...(options?.replaceDefaults ? [] : DEFAULT_HEAVY_COMPONENTS), ...(options?.isolateComponents ?? [])])
+    : new Set<string>();
+  const vendor = options?.vendor !== false;
+  const componentGroupMap = new Map<string, string>();
+  if (options?.componentGroups) {
+    for (const [groupName, members] of Object.entries(options.componentGroups)) {
+      const normalizedGroup = groupName.startsWith('snice-') ? groupName : `snice-${groupName}`;
+      for (const comp of members) {
+        componentGroupMap.set(comp, normalizedGroup);
+      }
+    }
   }
-  const base = options?.replaceDefaults ? [] : [...DEFAULT_HEAVY_COMPONENTS];
-  const extra = options?.isolateComponents ?? [];
-  return {
-    isolateHeavy: true,
-    heavySet: new Set([...base, ...extra]),
-  };
+  return { isolateHeavy, heavySet, vendor, componentGroupMap };
 }
 
 /**
@@ -84,7 +96,9 @@ function computeStaticReachable(meta: ManualChunkMeta): Set<string> | null {
 export function classifyModuleTier(
   rawId: string,
   isolateHeavy: boolean,
-  heavySet: ReadonlySet<string>
+  heavySet: ReadonlySet<string>,
+  vendor = true,
+  componentGroupMap?: ReadonlyMap<string, string>
 ): string | undefined {
   if (!rawId || rawId.startsWith('\0')) return undefined;
 
@@ -94,10 +108,10 @@ export function classifyModuleTier(
   const query = queryIdx >= 0 ? normalized.slice(queryIdx) : '';
   const isInlineQuery = query.includes('inline');
 
-  // Tier 3: snice-theme (standalone theme.css stylesheet)
+  // Tier 3: snice-theme (standalone theme/*.css stylesheets)
   if (
     !isInlineQuery &&
-    /(?:^|\/)(?:snice\/dist\/components|packages\/components\/src)\/theme\/theme\.css$/.test(cleanPath)
+    /(?:^|\/)(?:snice\/dist\/components|packages\/components\/src)\/theme\/[^/]+\.css$/.test(cleanPath)
   ) {
     return 'snice-theme';
   }
@@ -111,17 +125,24 @@ export function classifyModuleTier(
     return 'snice-runtime';
   }
 
-  // Tier 2: vendor-react (React runtime packages)
+  // Tier 2a: vendor-react (React runtime packages)
   if (/(?:^|\/)node_modules\/(?:react|react-dom|scheduler)\//.test(cleanPath)) {
     return 'vendor-react';
   }
 
-  // Tier 4: snice-components + isolated heavy standalone component families
+  // Tier 4: snice-components, user component groups, and isolated heavy standalone families
+  const hasGroups = Boolean(componentGroupMap && componentGroupMap.size > 0);
+  const sharedCompChunk = hasGroups ? 'snice-shared' : 'snice-components';
+
   const compMatch = /(?:^|\/)(?:snice\/dist\/components|packages\/components\/src)\/([^/]+)\//.exec(cleanPath);
   if (compMatch) {
     const dir = compMatch[1];
     if (dir === 'icons') {
-      return 'snice-components';
+      return sharedCompChunk;
+    }
+    const grouped = componentGroupMap?.get(dir);
+    if (grouped) {
+      return grouped;
     }
     if (isolateHeavy && heavySet.has(dir)) {
       return `snice-${dir}`;
@@ -131,7 +152,17 @@ export function classifyModuleTier(
 
   // Shared top-level component helpers (utils.js, theme-utils.js, transitions.js, etc.)
   if (/(?:^|\/)(?:snice\/dist\/components|packages\/components\/src)\/[^/]+\.(?:js|ts|mjs)$/.test(cleanPath)) {
+    return sharedCompChunk;
+  }
+
+  // Snice React adapters / dist/react stay with snice-components (not generic vendor)
+  if (/(?:^|\/)snice\/(?:adapters\/react|dist\/react)\//.test(cleanPath)) {
     return 'snice-components';
+  }
+
+  // Tier 2b: vendor (statically reachable third-party node_modules packages)
+  if (vendor && /(?:^|\/)node_modules\//.test(cleanPath) && !/(?:^|\/)node_modules\/snice\//.test(cleanPath)) {
+    return 'vendor';
   }
 
   return undefined;
@@ -145,7 +176,7 @@ export interface SniceManualChunksController {
 export function createSniceManualChunksController(
   options?: SniceCachingOptions
 ): SniceManualChunksController {
-  const { isolateHeavy, heavySet } = resolveHeavySet(options);
+  const { isolateHeavy, heavySet, vendor, componentGroupMap } = resolveCachingConfig(options);
   let cachedReachable: Set<string> | null | undefined = undefined;
 
   const manualChunks: SniceManualChunksFn = (id, meta) => {
@@ -155,7 +186,7 @@ export function createSniceManualChunksController(
     if (cachedReachable !== null && !cachedReachable.has(id)) {
       return undefined;
     }
-    return classifyModuleTier(id, isolateHeavy, heavySet);
+    return classifyModuleTier(id, isolateHeavy, heavySet, vendor, componentGroupMap);
   };
 
   return {
@@ -171,7 +202,7 @@ export function createSniceManualChunksController(
  * Snice's deterministic volatility-tiered caching strategy.
  */
 export function createSniceManualChunks(options?: SniceCachingOptions): SniceManualChunksFn {
-  const { isolateHeavy, heavySet } = resolveHeavySet(options);
+  const { isolateHeavy, heavySet, vendor, componentGroupMap } = resolveCachingConfig(options);
   const reachableByMeta = new WeakMap<object, Set<string> | null>();
 
   return (id, meta) => {
@@ -187,7 +218,7 @@ export function createSniceManualChunks(options?: SniceCachingOptions): SniceMan
     if (reachable !== null && !reachable.has(id)) {
       return undefined;
     }
-    return classifyModuleTier(id, isolateHeavy, heavySet);
+    return classifyModuleTier(id, isolateHeavy, heavySet, vendor, componentGroupMap);
   };
 }
 

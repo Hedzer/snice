@@ -9,19 +9,76 @@ export interface SniceCachingOptions {
   isolateComponents?: string[];
   /** Replace default isolated heavy component list instead of merging (default false). */
   replaceDefaults?: boolean;
+  /** Isolate statically reachable third-party node_modules into a `vendor` tier (default true). */
+  vendor?: boolean;
+  /**
+   * Optional named component groups so subsets of Snice components stay in dedicated
+   * cache chunks (e.g. `{ forms: ['input', 'select', 'checkbox'] }` -> `snice-forms-[hash].js`).
+   */
+  componentGroups?: Record<string, string[]>;
 }
 
+export type SniceChunkTier =
+  | 'snice-runtime'
+  | 'vendor-react'
+  | 'vendor'
+  | 'snice-theme'
+  | 'snice-components'
+  | 'snice-heavy'
+  | 'app';
+
 export interface SniceChunkReport {
-  tier: 'snice-runtime' | 'vendor-react' | 'snice-theme' | 'snice-components' | 'snice-heavy' | 'app';
+  tier: SniceChunkTier;
   fileName: string;
   rawBytes: number;
   gzipBytes: number;
+  brotliBytes: number;
+  contentHash: string;
+  cacheStatus?: 'STABLE' | 'CHANGED' | 'NEW';
+}
+
+export interface SniceBudgetRule {
+  raw?: number;
+  gzip?: number;
+  brotli?: number;
+}
+
+export interface SniceBudgetViolation {
+  target: string;
+  metric: 'raw' | 'gzip' | 'brotli';
+  actual: number;
+  limit: number;
+}
+
+export interface SniceCacheDiffSummary {
+  stable: number;
+  changed: number;
+  added: number;
+  removed: string[];
+}
+
+export interface SniceReportOptions {
+  /** Print formatted report to stdout (default true when onReport is omitted). */
+  print?: boolean;
+  /** Path to a previous build manifest JSON to compute STABLE vs CHANGED cache-hash diff. */
+  compareWith?: string;
+  /** Path to write the current build manifest JSON for future comparisons. */
+  writeManifest?: string;
+  /** Size budgets (in bytes) keyed by 'total', tier name, or chunk filename prefix. */
+  budgets?: Record<string, SniceBudgetRule | undefined>;
+  /** Throw a build error when any budget is exceeded (default true). */
+  failOnBudget?: boolean;
+  /** Optional callback receiving the structured build report. */
+  onReport?: (report: SniceBuildReport) => void;
 }
 
 export interface SniceBuildReport {
   chunks: SniceChunkReport[];
   totalRawBytes: number;
   totalGzipBytes: number;
+  totalBrotliBytes: number;
+  cacheDiff?: SniceCacheDiffSummary;
+  budgetViolations?: SniceBudgetViolation[];
 }
 
 export interface SniceTableOptions {
@@ -52,8 +109,8 @@ export interface SnicePluginOptions {
   caching?: boolean | SniceCachingOptions;
   /** Default Vite build.target when user has not set build.target (default 'es2022'; false disables). */
   target?: string | false;
-  /** Emit build tier size report (default false). */
-  report?: boolean | ((report: SniceBuildReport) => void);
+  /** Emit build tier size report, cache-hash diff, and optional budgets (default false). */
+  report?: boolean | ((report: SniceBuildReport) => void) | SniceReportOptions;
   /** Optional snice-table cell/feature stripping: explicit allowlist, 'auto' conservative static detection, or false to disable. */
   table?: SniceTableOption;
 }
@@ -106,12 +163,29 @@ export function validateOptions(options: unknown): SnicePluginOptions {
     const caching = opts.caching as Record<string, unknown>;
     assertBooleanOrUndefined(caching.isolateHeavy, 'caching.isolateHeavy');
     assertBooleanOrUndefined(caching.replaceDefaults, 'caching.replaceDefaults');
+    assertBooleanOrUndefined(caching.vendor, 'caching.vendor');
     if (
       caching.isolateComponents !== undefined &&
       (!Array.isArray(caching.isolateComponents) ||
         !caching.isolateComponents.every((c) => typeof c === 'string'))
     ) {
       throw new TypeError('snice plugin: "caching.isolateComponents" must be an array of strings.');
+    }
+    if (caching.componentGroups !== undefined) {
+      if (
+        typeof caching.componentGroups !== 'object' ||
+        caching.componentGroups === null ||
+        Array.isArray(caching.componentGroups)
+      ) {
+        throw new TypeError('snice plugin: "caching.componentGroups" must be a Record<string, string[]>.');
+      }
+      for (const [group, members] of Object.entries(caching.componentGroups as Record<string, unknown>)) {
+        if (!Array.isArray(members) || !members.every((m) => typeof m === 'string')) {
+          throw new TypeError(
+            `snice plugin: "caching.componentGroups.${group}" must be an array of component names.`
+          );
+        }
+      }
     }
   }
 
@@ -124,7 +198,24 @@ export function validateOptions(options: unknown): SnicePluginOptions {
     typeof opts.report !== 'boolean' &&
     typeof opts.report !== 'function'
   ) {
-    throw new TypeError('snice plugin: "report" must be a boolean or a callback function.');
+    if (typeof opts.report !== 'object' || opts.report === null || Array.isArray(opts.report)) {
+      throw new TypeError('snice plugin: "report" must be a boolean, callback function, or SniceReportOptions object.');
+    }
+    const rep = opts.report as Record<string, unknown>;
+    assertBooleanOrUndefined(rep.print, 'report.print');
+    assertBooleanOrUndefined(rep.failOnBudget, 'report.failOnBudget');
+    if (rep.compareWith !== undefined && typeof rep.compareWith !== 'string') {
+      throw new TypeError('snice plugin: "report.compareWith" must be a file path string.');
+    }
+    if (rep.writeManifest !== undefined && typeof rep.writeManifest !== 'string') {
+      throw new TypeError('snice plugin: "report.writeManifest" must be a file path string.');
+    }
+    if (rep.onReport !== undefined && typeof rep.onReport !== 'function') {
+      throw new TypeError('snice plugin: "report.onReport" must be a function.');
+    }
+    if (rep.budgets !== undefined && (typeof rep.budgets !== 'object' || rep.budgets === null || Array.isArray(rep.budgets))) {
+      throw new TypeError('snice plugin: "report.budgets" must be an object mapping tier/target names to budget rules.');
+    }
   }
 
   if (opts.table !== undefined && opts.table !== false && opts.table !== 'auto') {

@@ -7,6 +7,11 @@ export type {
   SniceCachingOptions,
   SniceBuildReport,
   SniceChunkReport,
+  SniceChunkTier,
+  SniceReportOptions,
+  SniceBudgetRule,
+  SniceBudgetViolation,
+  SniceCacheDiffSummary,
   SniceTableOptions,
   SniceTableOption,
 } from './types';

@@ -359,9 +359,30 @@ export function createSniceCorePlugin(
 
         // 3. Emit build tier report after all CSS/theme mutations have settled
         if (!options.report) return;
-        const report = buildBundleReport(bundle);
+        const reportOpts =
+          typeof options.report === 'object' ? options.report : undefined;
+        const report = buildBundleReport(bundle, reportOpts);
+
         if (typeof options.report === 'function') {
           options.report(report);
+        } else if (reportOpts) {
+          reportOpts.onReport?.(report);
+          if (reportOpts.print ?? !reportOpts.onReport) {
+            console.log(formatBuildReport(report));
+          }
+          if (
+            reportOpts.failOnBudget !== false &&
+            report.budgetViolations &&
+            report.budgetViolations.length > 0
+          ) {
+            const summary = report.budgetViolations
+              .map(
+                (v) =>
+                  `${v.target} (${v.metric}): ${v.actual} B > ${v.limit} B`
+              )
+              .join('; ');
+            throw new Error(`snice plugin: bundle size budget exceeded — ${summary}`);
+          }
         } else {
           console.log(formatBuildReport(report));
         }

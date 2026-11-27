@@ -423,5 +423,152 @@ describe('BS-05: Snice bundler plugin scaffold & deterministic cache-boundary ch
     expect(helper('/proj/node_modules/snice/dist/_core/element.js', { getModuleIds: () => [].values(), getModuleInfo: () => null })).toBe('snice-runtime');
     expect(helper('/proj/node_modules/snice/dist/components/table/snice-table.js', { getModuleIds: () => [].values(), getModuleInfo: () => null })).toBe('snice-table');
     expect(helper('/proj/node_modules/snice/dist/components/button/snice-button.js', { getModuleIds: () => [].values(), getModuleInfo: () => null })).toBe('snice-components');
+    expect(helper('/proj/node_modules/lodash-es/debounce.js', { getModuleIds: () => [].values(), getModuleInfo: () => null })).toBe('vendor');
+
+    const helperNoVendor = createSniceManualChunks({ vendor: false });
+    expect(helperNoVendor('/proj/node_modules/lodash-es/debounce.js', { getModuleIds: () => [].values(), getModuleInfo: () => null })).toBeUndefined();
+  }, 60000);
+
+  it('Phase 2: vendor tier, componentGroups isolation, Brotli sizes, manifest cache-hash diff (STABLE vs CHANGED), and size budgets', async () => {
+    const { default: snice } = await loadVitePlugin();
+    const dir = createFixtureDir('snice-p2-cache-');
+
+    // Create a fake third-party node_modules package to verify the generic `vendor` tier
+    mkdirSync(join(dir, 'node_modules/my-third-party-lib'), { recursive: true });
+    writeFileSync(
+      join(dir, 'node_modules/my-third-party-lib/package.json'),
+      JSON.stringify({ name: 'my-third-party-lib', type: 'module', main: './index.js' })
+    );
+    writeFileSync(
+      join(dir, 'node_modules/my-third-party-lib/index.js'),
+      `export function formatMoney(n) { return '$' + Number(n).toFixed(2); }\n`
+    );
+
+    mkdirSync(join(dir, 'src'), { recursive: true });
+    writeFileSync(
+      join(dir, 'index.html'),
+      `<!doctype html><html><body><script type="module" src="/src/main.js"></script></body></html>`
+    );
+    const writeMain = (label: string, extraImport = '') => {
+      writeFileSync(
+        join(dir, 'src/main.js'),
+        [
+          `import 'snice/components/theme/theme.css';`,
+          `import 'snice/components/input/snice-input';`,
+          `import 'snice/components/button/snice-button';`,
+          extraImport,
+          `import { formatMoney } from 'my-third-party-lib';`,
+          `import { html } from 'snice';`,
+          `console.log(${JSON.stringify(label)}, formatMoney(42), html\`<div>ok</div>\`);`,
+        ].filter(Boolean).join('\n')
+      );
+    };
+
+    const manifestPath = join(dir, 'snice-manifest.json');
+    const caching = { componentGroups: { forms: ['input'] } };
+
+    // Build v1: writes manifest, checks Brotli + vendor + snice-forms group
+    writeMain('v1');
+    let rep1: SniceBuildReport | null = null;
+    await viteBuild({
+      root: dir,
+      logLevel: 'silent',
+      plugins: [
+        snice({
+          caching,
+          report: {
+            print: false,
+            writeManifest: manifestPath,
+            onReport: (r: SniceBuildReport) => { rep1 = r; },
+          },
+        }),
+      ],
+      build: { outDir: 'dist', emptyOutDir: true },
+    });
+
+    expect(existsSync(manifestPath)).toBe(true);
+    expect(rep1).not.toBeNull();
+    expect(rep1!.totalBrotliBytes).toBeGreaterThan(0);
+    expect(rep1!.totalBrotliBytes).toBeLessThan(rep1!.totalRawBytes);
+    expect(rep1!.chunks.some((c) => c.tier === 'vendor')).toBe(true);
+    expect(rep1!.chunks.some((c) => c.fileName.includes('snice-forms-'))).toBe(true);
+
+    // Build v2: edit app copy AND add an ungrouped component (`snice-divider`, which uses
+    // the same core decorators already in snice-runtime)
+    // -> vendor, snice-runtime, snice-theme, AND snice-forms MUST stay STABLE!
+    // -> snice-components and app entry MUST be CHANGED!
+    writeMain('v2-updated', `import 'snice/components/divider/snice-divider';`);
+    let rep2: SniceBuildReport | null = null;
+    await viteBuild({
+      root: dir,
+      logLevel: 'silent',
+      plugins: [
+        snice({
+          caching,
+          report: {
+            print: false,
+            compareWith: manifestPath,
+            budgets: {
+              total: { brotli: 1_000_000 },
+              vendor: { gzip: 100_000 },
+            },
+            onReport: (r: SniceBuildReport) => { rep2 = r; },
+          },
+        }),
+      ],
+      build: { outDir: 'dist', emptyOutDir: true },
+    });
+
+    expect(rep2).not.toBeNull();
+    expect(rep2!.cacheDiff).toBeDefined();
+    expect(rep2!.budgetViolations).toEqual([]);
+
+    const statusByPrefix = (prefix: string) =>
+      rep2!.chunks.find((c) => c.fileName.includes(prefix))?.cacheStatus;
+    expect(statusByPrefix('vendor-')).toBe('STABLE');
+    expect(statusByPrefix('snice-runtime-')).toBe('STABLE');
+    expect(statusByPrefix('snice-theme-')).toBe('STABLE');
+    expect(statusByPrefix('snice-forms-')).toBe('STABLE');
+    expect(statusByPrefix('snice-components-')).toBe('CHANGED');
+    expect(statusByPrefix('index-')).toBe('CHANGED');
+
+    // Budget enforcement: failing budget throws when failOnBudget is true (default)
+    await expect(
+      viteBuild({
+        root: dir,
+        logLevel: 'silent',
+        plugins: [
+          snice({
+            caching,
+            report: {
+              print: false,
+              budgets: { total: { brotli: 10 } },
+            },
+          }),
+        ],
+        build: { outDir: 'dist', emptyOutDir: true },
+      })
+    ).rejects.toThrow(/budget exceeded/i);
+
+    // Non-throwing budget mode records violations in report
+    let repWarn: SniceBuildReport | null = null;
+    await viteBuild({
+      root: dir,
+      logLevel: 'silent',
+      plugins: [
+        snice({
+          caching,
+          report: {
+            print: false,
+            failOnBudget: false,
+            budgets: { vendor: { raw: 1 } },
+            onReport: (r: SniceBuildReport) => { repWarn = r; },
+          },
+        }),
+      ],
+      build: { outDir: 'dist', emptyOutDir: true },
+    });
+    expect(repWarn!.budgetViolations).toHaveLength(1);
+    expect(repWarn!.budgetViolations![0].target).toBe('vendor');
   }, 60000);
 });
