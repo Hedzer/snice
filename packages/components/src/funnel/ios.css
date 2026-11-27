@@ -1,0 +1,84 @@
+/* iOS 26+ Liquid Glass / App Store Connect conversion funnel skin */
+
+[part~="base"] {
+  box-sizing: border-box;
+  border-radius: 1.25rem;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  padding: 1rem;
+}
+
+[part~="stage"] {
+  transition: opacity 180ms var(--snice-ease-spring, cubic-bezier(0.25, 1, 0.5, 1)),
+    filter 180ms var(--snice-ease-spring, cubic-bezier(0.25, 1, 0.5, 1));
+}
+
+[part~="stage"]:hover {
+  opacity: 0.9;
+  filter: brightness(1.05);
+}
+
+[part~="stage"]:active {
+  opacity: 0.78;
+}
+
+[part~="stage"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+
+[part~="stage-shape"] {
+  stroke: var(--snice-color-surface-container-high);
+  stroke-width: 2px;
+  stroke-linejoin: round;
+}
+
+[part~="label"] {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.008em;
+  fill: var(--snice-color-text);
+}
+
+[part~="value"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  fill: var(--snice-color-text-secondary);
+}
+
+[part~="percentage"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  fill: var(--snice-color-primary);
+}
+
+/* Floating Regular Liquid Glass callout */
+[part~="tooltip"] {
+  border-radius: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+  color: var(--snice-color-text);
+}
+
+[part~="tooltip-label"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="tooltip-value"] {
+  color: var(--snice-color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="stage"] {
+    transition: none;
+  }
+}

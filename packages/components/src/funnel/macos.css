@@ -1,0 +1,81 @@
+/* macOS 26 Tahoe AppKit / Numbers desktop conversion funnel skin */
+
+[part~="base"] {
+  box-sizing: border-box;
+  border-radius: 0.75rem;
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  padding: 0.75rem;
+}
+
+[part~="stage"] {
+  transition: opacity 140ms var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="stage"]:hover {
+  opacity: 0.86;
+}
+
+[part~="stage"]:active {
+  opacity: 0.75;
+}
+
+[part~="stage"]:focus-visible {
+  outline: 2.5px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+[part~="stage-shape"] {
+  stroke: var(--snice-color-background-element);
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+}
+
+[part~="label"] {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  fill: var(--snice-color-text);
+}
+
+[part~="value"] {
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  fill: var(--snice-color-text-secondary);
+}
+
+[part~="percentage"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  fill: var(--snice-color-primary);
+}
+
+/* macOS Liquid Glass floating menu tooltip */
+[part~="tooltip"] {
+  border-radius: 0.5rem;
+  padding: 0.375rem 0.625rem;
+  background: var(--snice-macos-glass-menu-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid var(--snice-macos-glass-border);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-md);
+  color: var(--snice-color-text);
+  font-size: 0.6875rem;
+}
+
+[part~="tooltip-label"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="tooltip-value"] {
+  color: var(--snice-color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="stage"] {
+    transition: none;
+  }
+}

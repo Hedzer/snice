@@ -1,0 +1,92 @@
+/* Windows 11 Fluent 2 / Power BI conversion funnel skin */
+
+[part~="base"] {
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
+  padding: 0.875rem;
+}
+
+[part~="stage"] {
+  transition: opacity 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="stage"]:hover {
+  opacity: 0.86;
+}
+
+[part~="stage"]:active {
+  opacity: 0.74;
+}
+
+[part~="stage"]:focus-visible {
+  outline: 2px solid var(--snice-color-text);
+  outline-offset: 2px;
+}
+
+[part~="stage-shape"] {
+  stroke: var(--snice-color-surface-container-lowest);
+  stroke-width: 1.5px;
+  stroke-linejoin: miter;
+}
+
+[part~="label"] {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  fill: var(--snice-color-text);
+}
+
+[part~="value"] {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  fill: var(--snice-color-text-secondary);
+}
+
+[part~="percentage"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  fill: var(--snice-color-primary);
+}
+
+/* Transient Acrylic floating tooltip */
+[part~="tooltip"] {
+  border-radius: 0.25rem;
+  padding: 0.4375rem 0.625rem;
+  background: var(--snice-win-acrylic-bg);
+  backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
+  border: 1px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-md);
+  color: var(--snice-color-text);
+}
+
+[part~="tooltip-label"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="tooltip-value"] {
+  color: var(--snice-color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="stage"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="tooltip"] {
+    background: Canvas;
+    border-color: CanvasText;
+    color: CanvasText;
+  }
+
+  [part~="stage"]:focus-visible {
+    outline-color: Highlight;
+  }
+}

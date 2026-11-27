@@ -167,7 +167,10 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
     // and WebKit, clipping the row to nothing at the chart box edge).
     const labelReserve = this.showLabels && this.showPercentages ? 14 : 0;
     const svgHeight = count * stageHeight + (count - 1) * gap + labelReserve;
-    const maxWidth = svgWidth * 0.85;
+    const hasRightText = this.showLabels || this.showValues || this.showPercentages;
+    const labelGutter = hasRightText ? 92 : 0;
+    const plotWidth = svgWidth - labelGutter;
+    const maxWidth = hasRightText ? plotWidth * 0.92 : svgWidth * 0.85;
     const minWidth = maxWidth * 0.25;
     const labelX = svgWidth - 10;
     const firstValue = data[0].value || 1;
@@ -180,7 +183,7 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
       const topWidth = i === 0 ? maxWidth : minWidth + (maxWidth - minWidth) * (data[i - 1].value / firstValue);
       const bottomWidth = minWidth + (maxWidth - minWidth) * ratio;
       const y = i * (stageHeight + gap);
-      const cx = svgWidth / 2;
+      const cx = plotWidth / 2;
       const topLeft = cx - topWidth / 2;
       const topRight = cx + topWidth / 2;
       const bottomLeft = cx - bottomWidth / 2;
@@ -234,7 +237,7 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
       const leftHeight = i === 0 ? maxHeight : minHeight + (maxHeight - minHeight) * (data[i - 1].value / firstValue);
       const rightHeight = minHeight + (maxHeight - minHeight) * ratio;
       const x = i * (stageWidth + 4);
-      const cy = svgHeight * 0.45;
+      const cy = svgHeight * 0.41;
       const color = escapeHTML(this.getColor(i, stage));
       const delay = this.animation ? ` style="animation-delay:${i * 100}ms"` : '';
 
@@ -245,7 +248,7 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
 
       const path = `M ${x} ${topLeft} L ${x + stageWidth} ${topRight} L ${x + stageWidth} ${bottomRight} L ${x} ${bottomLeft} Z`;
       const textX = x + stageWidth / 2;
-      const textY = svgHeight * 0.45 + maxHeight / 2 + 16;
+      const textY = cy + maxHeight / 2 + 16;
       const ariaLabel = escapeHTML(`${stage.label}: ${stage.value} (${this.getPercentage(i)})`);
 
       svg += `<g class="funnel__stage" part="stage" data-index="${i}" tabindex="0" role="button" aria-label="${ariaLabel}">`;

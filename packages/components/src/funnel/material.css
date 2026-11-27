@@ -1,0 +1,79 @@
+/* Android Material 3 Expressive conversion funnel card skin */
+
+[part~="base"] {
+  box-sizing: border-box;
+  border-radius: 1rem;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  padding: 1rem;
+}
+
+[part~="stage"] {
+  transition: opacity var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="stage"]:hover {
+  opacity: 0.88;
+}
+
+[part~="stage"]:active {
+  opacity: 0.76;
+}
+
+[part~="stage"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+[part~="stage-shape"] {
+  stroke: var(--snice-color-surface-container-low);
+  stroke-width: 2.5px;
+  stroke-linejoin: round;
+}
+
+[part~="label"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.006em;
+  fill: var(--snice-color-text);
+}
+
+[part~="value"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  fill: var(--snice-color-text-secondary);
+}
+
+[part~="percentage"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  fill: var(--snice-color-primary);
+}
+
+/* M3 Rich Tooltip (zero blur) */
+[part~="tooltip"] {
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-md);
+  color: var(--snice-color-text);
+}
+
+[part~="tooltip-label"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="tooltip-value"] {
+  color: var(--snice-color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="stage"] {
+    transition: none;
+  }
+}
