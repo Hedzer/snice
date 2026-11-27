@@ -1,0 +1,203 @@
+/* Android Material 3 Expressive — snice-comments
+   Native counterpart: M3 Outlined Composer + Pill Filled Submit (--snice-m3-on-primary) + Tonal Selected Like Chip. */
+
+:host {
+  font-family: var(--snice-font-family);
+  --comments-bg: var(--snice-color-surface-container-lowest);
+  --comments-border: var(--snice-color-border);
+  --comments-bg-element: var(--snice-color-surface-container-high);
+}
+
+:host [part~="input-area"] {
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+:host [part~="input"] {
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border);
+  font-size: 0.9375rem;
+  color: var(--snice-color-text);
+  transition: border-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects);
+}
+
+:host [part~="input"]:hover {
+  border-color: var(--snice-color-text);
+}
+
+:host [part~="input"]:focus-visible {
+  outline: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: inset 0 0 0 1px var(--snice-color-primary);
+}
+
+:host [part~="reply-input"] {
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+/* Dark plum ink on T80 pastel lavender in dark mode via --snice-m3-on-primary (fixes base hardcoded white!) */
+:host [part~="submit-button"] {
+  min-height: 2.5rem;
+  padding: 0 1.5rem;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition:
+    border-radius 180ms var(--snice-m3-spring-spatial-fast),
+    box-shadow 150ms var(--snice-m3-spring-effects),
+    background-color 150ms var(--snice-m3-spring-effects);
+}
+
+:host [part~="reply-submit-button"] {
+  min-height: 2.25rem;
+  padding: 0 1rem;
+  font-size: 0.8125rem;
+  color: var(--snice-m3-on-primary);
+}
+
+:host [part~="submit-button"]:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 8%, var(--snice-color-primary));
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host [part~="submit-button"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+:host [part~="submit-button"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+/* Exact M3 disabled spec: opacity 1, 12% container, 38% ink */
+:host [part~="submit-button"]:disabled,
+:host [part~="submit-button"]:disabled:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  box-shadow: none;
+  border-radius: 9999px;
+}
+
+:host [part~="cancel-button"] {
+  min-height: 2.25rem;
+  padding: 0 1rem;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-primary);
+  font-weight: 500;
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects),
+    border-radius 180ms var(--snice-m3-spring-spatial-fast);
+}
+
+:host [part~="cancel-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+}
+
+:host [part~="cancel-button"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+:host [part~="cancel-button"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+:host [part~="avatar"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: var(--snice-m3-primary-container);
+  color: var(--snice-m3-on-primary-container);
+  font-weight: 500;
+}
+
+:host [part~="author"] {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+:host [part~="timestamp"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-tertiary);
+}
+
+:host [part~="text"] {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--snice-color-text);
+}
+
+:host [part~="replies"] {
+  border-left: 2px solid var(--snice-color-border-subtle);
+  margin-left: 1.25rem;
+  padding-left: 1rem;
+}
+
+:host [part~="action"] {
+  min-height: 2rem;
+  padding: 0 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects),
+    border-radius 180ms var(--snice-m3-spring-spatial-fast);
+}
+
+:host [part~="action"]:hover {
+  background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-text);
+}
+
+:host [part~="action"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+:host [part~="action"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+:host [part~="action-liked"],
+:host [part~="action-liked"]:hover {
+  background: var(--snice-m3-primary-container);
+  color: var(--snice-m3-on-primary-container);
+  border-radius: 8px;
+}
+
+:host [part~="action-delete"]:hover {
+  color: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 8%, transparent);
+}
+
+:host [part~="empty"] {
+  font-style: normal;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (forced-colors: active) {
+  :host [part~="input"] {
+    border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="submit-button"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+  }
+}

@@ -1,0 +1,200 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-comments
+   Native counterpart: WinUI 3 Feedback Hub / Teams Comment Thread (4px TextBox + bottom accent focus + 32px Accent Post). */
+
+:host {
+  font-family: var(--snice-font-family);
+  --comments-bg: var(--snice-win-control-bg);
+  --comments-border: var(--snice-color-border-subtle);
+  --comments-bg-element: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="input-area"] {
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+:host [part~="input"] {
+  min-height: 2.5rem;
+  padding: 0.4375rem 0.6875rem;
+  border-radius: 4px;
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-input-bottom);
+  font-size: 0.875rem;
+  color: var(--snice-color-text);
+  transition:
+    background-color 100ms cubic-bezier(0, 0, 0, 1),
+    border-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="input"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="input"]:focus-visible {
+  outline: none;
+  background: var(--snice-color-surface-container-lowest);
+  border-color: var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-color-primary);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-primary);
+}
+
+:host [part~="reply-input"] {
+  min-height: 2rem;
+  padding: 0.3125rem 0.625rem;
+  font-size: 0.8125rem;
+}
+
+/* Black ink on bright #60CDFF dark accent via --snice-win-on-accent (fixes base hardcoded white!) */
+:host [part~="submit-button"] {
+  min-height: 2rem;
+  padding: 0 0.875rem;
+  border-radius: 4px;
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent);
+  border: 1px solid hsl(0 0% 100% / 0.08);
+  border-bottom-color: hsl(0 0% 0% / 0.35);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="reply-submit-button"] {
+  min-height: 1.75rem;
+  padding: 0 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--snice-win-on-accent);
+}
+
+:host [part~="submit-button"]:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-primary) 90%, var(--snice-win-on-accent));
+}
+
+:host [part~="submit-button"]:active {
+  background: color-mix(in srgb, var(--snice-color-primary) 82%, var(--snice-win-on-accent));
+}
+
+:host [part~="submit-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="submit-button"]:disabled,
+:host [part~="submit-button"]:disabled:hover {
+  opacity: 0.45;
+  background: var(--snice-color-primary);
+}
+
+:host [part~="cancel-button"] {
+  min-height: 1.75rem;
+  padding: 0 0.75rem;
+  border-radius: 4px;
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  color: var(--snice-color-text);
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="cancel-button"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="cancel-button"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="cancel-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="avatar"] {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+:host [part~="author"] {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+:host [part~="timestamp"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-tertiary);
+}
+
+:host [part~="text"] {
+  font-size: 0.875rem;
+  line-height: 1.43;
+  color: var(--snice-color-text);
+}
+
+:host [part~="replies"] {
+  border-left: 2px solid var(--snice-color-border);
+  margin-left: 1rem;
+  padding-left: 0.75rem;
+}
+
+:host [part~="action"] {
+  min-height: 1.625rem;
+  padding: 0 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1), color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="action"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  color: var(--snice-color-text);
+}
+
+:host [part~="action"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="action"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="action-liked"],
+:host [part~="action-liked"]:hover {
+  color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+}
+
+:host [part~="action-delete"]:hover {
+  color: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 12%, transparent);
+}
+
+:host [part~="empty"] {
+  font-style: normal;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (forced-colors: active) {
+  :host [part~="input"] {
+    background: Field;
+    color: FieldText;
+    border-color: ButtonBorder;
+    border-bottom-color: CanvasText;
+  }
+
+  :host [part~="submit-button"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+}
