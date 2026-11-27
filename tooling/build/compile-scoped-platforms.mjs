@@ -240,11 +240,22 @@ function buildDonutScopedVariants(platform, hostTag, hostQualifier, partSuffix) 
 }
 
 const HOST_AND_PART_PARSE_RE =
-  /^:host(?:\(([^)]*)\))?((?::[a-zA-Z-]+(?:\([^)]*\))?)*)\s+\[part~=["']?([a-zA-Z0-9_-]+)["']?\](.*)$/;
+  /^:host(?:\(([^)]*)\))?((?::[a-zA-Z-]+(?:\([^)]*\))?)*)\s+((?:\[part~=["']?[a-zA-Z0-9_-]+["']?\])+)(.*)$/;
 const PART_ONLY_PARSE_RE =
-  /^\[part~=["']?([a-zA-Z0-9_-]+)["']?\](.*)$/;
+  /^((?:\[part~=["']?[a-zA-Z0-9_-]+["']?\])+)(.*)$/;
 const HOST_ONLY_PARSE_RE =
   /^:host(?:\(([^)]*)\))?(.*)$/;
+const SINGLE_PART_TOKEN_RE = /\[part~=["']?([a-zA-Z0-9_-]+)["']?\]/g;
+
+function extractPartNames(partCluster) {
+  const names = [];
+  let match;
+  SINGLE_PART_TOKEN_RE.lastIndex = 0;
+  while ((match = SINGLE_PART_TOKEN_RE.exec(partCluster)) !== null) {
+    names.push(match[1]);
+  }
+  return names.join(' ');
+}
 
 /**
  * Rewrite Layer 2 component platform CSS (`<comp>/<p>.css`) 1:1 from `:host` / `[part~="..."]`
@@ -259,16 +270,18 @@ export function scopeComponentPlatformCss(compCss, tagName, platform) {
 
       let m = HOST_AND_PART_PARSE_RE.exec(s);
       if (m) {
-        const [, hostCond = '', hostPseudos = '', partName, partTail = ''] = m;
+        const [, hostCond = '', hostPseudos = '', partCluster, partTail = ''] = m;
         const hostQual = `${hostCond}${hostPseudos}`;
-        out.push(...buildDonutScopedVariants(platform, tagName, hostQual, `::part(${partName})${partTail}`));
+        const partNames = extractPartNames(partCluster);
+        out.push(...buildDonutScopedVariants(platform, tagName, hostQual, `::part(${partNames})${partTail}`));
         continue;
       }
 
       m = PART_ONLY_PARSE_RE.exec(s);
       if (m) {
-        const [, partName, partTail = ''] = m;
-        out.push(...buildDonutScopedVariants(platform, tagName, '', `::part(${partName})${partTail}`));
+        const [, partCluster, partTail = ''] = m;
+        const partNames = extractPartNames(partCluster);
+        out.push(...buildDonutScopedVariants(platform, tagName, '', `::part(${partNames})${partTail}`));
         continue;
       }
 
@@ -309,7 +322,14 @@ export function compileScopedPlatformCss(platform, tokenCss, componentEntries = 
   const combined = sections.filter(Boolean).join('\n');
   if (!minify || !combined.trim()) return combined;
 
-  return new CleanCSS({ level: 1 }).minify(combined).styles;
+  // CleanCSS collapses spaces inside functional pseudo-elements like `::part(a b)` -> `::part(ab)`.
+  // Preserve multi-part space separators across CleanCSS minification.
+  const PART_SP = '__SNICE_PART_SP__';
+  const protectedCss = combined.replace(/::part\(([^)]+)\)/g, (_, inner) =>
+    `::part(${inner.trim().replace(/\s+/g, PART_SP)})`
+  );
+  const minified = new CleanCSS({ level: 1 }).minify(protectedCss).styles;
+  return minified.replaceAll(PART_SP, ' ');
 }
 
 /**

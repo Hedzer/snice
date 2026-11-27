@@ -83,6 +83,20 @@ describe('pure-CSS runtime multi-platform scoping compiler (PS-03)', () => {
     expect(scoped).toContain('::part(lens)::after');
     expect(scoped).toContain('@media (prefers-reduced-motion: reduce)');
     expect(scoped).toContain('@keyframes ios-lens-pop');
+
+    // Compound multi-part selectors compile to single space-separated ::part(a b)
+    const multiPartCss = `
+      [part~="base-block"][part~="base-checked"] { border-color: blue; }
+      :host([variant="block"]) [part~="radio-invalid"][part~="radio-checked"]:hover { border-color: red; }
+    `;
+    const scopedMulti = scopeComponentPlatformCss(multiPartCss, 'snice-radio', 'material');
+    expect(scopedMulti).toContain('::part(base-block base-checked)');
+    expect(scopedMulti).not.toContain('::part(base-block)[part~=');
+    expect(scopedMulti).toContain('::part(radio-invalid radio-checked):hover');
+
+    const minifiedMulti = compileScopedPlatformCss('material', '', [{ tagName: 'snice-radio', css: multiPartCss }], { minify: true });
+    expect(minifiedMulti).toContain('::part(base-block base-checked)');
+    expect(minifiedMulti).toContain('::part(radio-invalid radio-checked):hover');
   });
 
   it('produces deterministic, minified output with zero :root or :host-context leakage', () => {

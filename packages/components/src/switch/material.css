@@ -1,15 +1,22 @@
-/* Material 3 Expressive — snice-switch (52x32dp track, 16->24->28dp thumb, 40dp ripple) */
+/* ==========================================================================
+   Android Material 3 Expressive — snice-switch
+   Exact M3 52x32dp track with 2px outline unchecked -> solid primary checked,
+   16dp -> 24dp -> 28dp growing thumb with spatial spring, 40dp circular state
+   layer ripple, and T80/T20 dark-mode on-primary thumb contrast.
+   ========================================================================== */
+
 :host {
-  min-height: 3rem;
+  min-height: 2.5rem;
 }
 
+/* Track — M3 52x32dp */
 [part~="track"] {
   min-width: 3.25rem;
   height: 2rem;
+  box-sizing: border-box;
   border-radius: 9999px;
   background: var(--snice-color-surface-container-highest);
   border: 2px solid var(--snice-color-border);
-  box-sizing: border-box;
   transition:
     background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
     border-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
@@ -20,35 +27,108 @@
   border-color: var(--snice-color-primary);
 }
 
+:host(:hover) [part~="track"] {
+  background: color-mix(in srgb, var(--snice-color-text) 6%, var(--snice-color-surface-container-highest));
+  border-color: var(--snice-color-border-hover);
+}
+
+:host(:hover) [part~="track-checked"] {
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 8%, var(--snice-color-primary));
+  border-color: color-mix(in srgb, var(--snice-m3-on-primary) 8%, var(--snice-color-primary));
+}
+
+/* Sizes */
+:host([size="small"]) [part~="track"] {
+  min-width: 2.625rem;
+  height: 1.625rem;
+}
+
+:host([size="large"]) [part~="track"] {
+  min-width: 3.75rem;
+  height: 2.25rem;
+}
+
+/* Invalid */
+[part~="track-invalid"] {
+  border-color: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 12%, var(--snice-color-surface-container-highest));
+}
+
+[part~="track-invalid"][part~="track-checked"] {
+  background: var(--snice-color-danger);
+  border-color: var(--snice-color-danger);
+}
+
+/* Thumb — M3 16dp unchecked -> 24dp checked -> 28dp pressed */
 [part~="thumb"] {
-  top: 50%;
-  left: 6px;
   width: 1rem;
   height: 1rem;
+  top: 50%;
+  left: 6px;
+  transform: translateY(-50%);
   border-radius: 9999px;
   background: var(--snice-color-border);
   box-shadow: none;
-  transform: translateY(-50%);
   transition:
     left var(--snice-transition-medium, 260ms) var(--snice-m3-spring-spatial, cubic-bezier(0.34, 1.38, 0.32, 1)),
-    width var(--snice-transition-fast, 180ms) var(--snice-m3-spring-spatial-fast, ease),
-    height var(--snice-transition-fast, 180ms) var(--snice-m3-spring-spatial-fast, ease),
-    background-color var(--snice-transition-fast, 150ms) ease;
+    width var(--snice-transition-medium, 240ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.28, 0.28, 1)),
+    height var(--snice-transition-medium, 240ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.28, 0.28, 1)),
+    background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+:host(:hover) [part~="thumb"] {
+  background: var(--snice-color-text-secondary);
 }
 
 [part~="thumb-checked"] {
-  left: calc(100% - 1.5rem - 2px);
   width: 1.5rem;
   height: 1.5rem;
-  background: var(--snice-m3-on-primary, hsl(0 0% 100%));
-  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.2);
+  left: calc(100% - 1.5rem - 2px);
+  background: var(--snice-m3-on-primary);
+}
+
+:host(:hover) [part~="thumb-checked"] {
+  background: var(--snice-m3-on-primary);
 }
 
 :host([data-m3-pressed="true"]) [part~="thumb"] {
   width: 1.75rem;
   height: 1.75rem;
+  left: 0;
 }
 
+:host([data-m3-pressed="true"]) [part~="thumb-checked"] {
+  width: 1.75rem;
+  height: 1.75rem;
+  left: calc(100% - 1.75rem);
+}
+
+/* Small & Large Thumb Geometry */
+:host([size="small"]) [part~="thumb"] {
+  width: 0.75rem;
+  height: 0.75rem;
+  left: 5px;
+}
+
+:host([size="small"]) [part~="thumb-checked"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  left: calc(100% - 1.125rem - 2px);
+}
+
+:host([size="large"]) [part~="thumb"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  left: 7px;
+}
+
+:host([size="large"]) [part~="thumb-checked"] {
+  width: 1.75rem;
+  height: 1.75rem;
+  left: calc(100% - 1.75rem - 2px);
+}
+
+/* 40dp M3 State-Layer Halo around thumb */
 [part~="ripple"] {
   display: block;
   position: absolute;
@@ -58,14 +138,74 @@
   height: 2.5rem;
   border-radius: 9999px;
   pointer-events: none;
-  transform: translate(-50%, -50%) scale(0.6);
+  background: var(--snice-color-text);
   opacity: 0;
-  background: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
-  transition: opacity 150ms var(--snice-m3-spring-effects, ease), transform 220ms var(--snice-m3-spring-spatial-fast, ease);
+  transform: translate(-50%, -50%) scale(0.6);
+  transition:
+    opacity var(--snice-transition-fast, 150ms) ease,
+    transform var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+:host(:hover) [part~="ripple"] {
+  opacity: 0.08;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 :host([data-m3-ripple="active"]) [part~="ripple"],
-:host([data-m3-ripple="static"]) [part~="ripple"] {
-  opacity: 1;
+:host([data-m3-pressed="true"]) [part~="ripple"] {
+  background: var(--snice-color-primary);
+  opacity: 0.14;
   transform: translate(-50%, -50%) scale(1);
+}
+
+/* Spinner & State Labels */
+[part~="spinner"] {
+  color: var(--snice-color-primary);
+}
+
+[part~="label-on"] {
+  color: var(--snice-m3-on-primary);
+}
+
+[part~="label-off"] {
+  color: var(--snice-color-text-secondary);
+}
+
+/* Label */
+[part~="label"] {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.008em;
+  color: var(--snice-color-text);
+}
+
+/* Disabled — M3 12% surface / 38% ink spec */
+[part~="base-disabled"] {
+  opacity: 1;
+}
+
+:host([disabled]) [part~="track"],
+:host([disabled]:hover) [part~="track"] {
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+}
+
+:host([disabled]) [part~="track-checked"],
+:host([disabled]:hover) [part~="track-checked"] {
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  border-color: transparent;
+}
+
+:host([disabled]) [part~="thumb"],
+:host([disabled]:hover) [part~="thumb"] {
+  background: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+:host([disabled]) [part~="thumb-checked"],
+:host([disabled]:hover) [part~="thumb-checked"] {
+  background: var(--snice-color-surface);
+}
+
+:host([disabled]) [part~="label"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
 }

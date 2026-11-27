@@ -1,28 +1,121 @@
-/* iOS 26+ Liquid Glass — snice-checkbox (Circular iOS Selection Indicator) */
+/* ==========================================================================
+   iOS 26+ Liquid Glass — snice-checkbox
+   Iconic circular Apple selection checkmark, translucent glass unchecked ring,
+   filled iOS System Blue circle with specular rim and pure white checkmark
+   (explicit white ink in both light & dark modes).
+   ========================================================================== */
+
 :host {
   min-height: 2.75rem;
+  align-self: center;
+}
+
+:host([size="small"]) {
+  min-height: 2.125rem;
+}
+
+:host([size="large"]) {
+  min-height: 3.125rem;
 }
 
 [part~="checkbox"] {
   width: 1.375rem;
   height: 1.375rem;
-  border-radius: 9999px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: var(--snice-ios-glass-clear-bg);
   border: 1.5px solid var(--snice-color-border-hover);
-  background: var(--snice-color-surface-container-high);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.35);
   transition:
     background-color var(--snice-transition-fast, 180ms) ease,
     border-color var(--snice-transition-fast, 180ms) ease,
-    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, ease);
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
+    box-shadow var(--snice-transition-fast, 180ms) ease;
+}
+
+:host([size="small"]) [part~="checkbox"] {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+:host([size="large"]) [part~="checkbox"] {
+  width: 1.625rem;
+  height: 1.625rem;
+}
+
+:host(:hover) [part~="checkbox"] {
+  border-color: var(--snice-color-primary);
+}
+
+[part~="base"]:active {
+  opacity: 0.9;
 }
 
 [part~="checkbox-checked"],
 [part~="checkbox-indeterminate"] {
   background: var(--snice-color-primary);
   border-color: var(--snice-color-primary);
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.35);
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
+    0 2px 6px -2px color-mix(in srgb, var(--snice-color-primary) 55%, transparent);
 }
 
+:host(:hover) [part~="checkbox-checked"],
+:host(:hover) [part~="checkbox-indeterminate"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 92%, white);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 92%, white);
+}
+
+/* Invalid */
+[part~="checkbox-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+[part~="checkbox-invalid"][part~="checkbox-checked"],
+[part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
+  background: var(--snice-color-danger);
+  border-color: var(--snice-color-danger);
+}
+
+/* Crisp white checkmark in BOTH light & dark modes */
+[part~="icon"] {
+  color: hsl(0 0% 100%);
+}
+
+[part~="spinner"] {
+  color: var(--snice-color-primary);
+}
+
+/* Label */
 [part~="label"] {
+  margin-left: 0.625rem;
   font-size: 1rem;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
+  color: var(--snice-color-text);
+}
+
+:host([size="small"]) [part~="label"] {
+  font-size: 0.875rem;
+}
+
+:host([size="large"]) [part~="label"] {
+  font-size: 1.0625rem;
+}
+
+/* Disabled */
+[part~="base-disabled"] {
+  opacity: 0.4;
+}
+
+:host([disabled]) [part~="checkbox"],
+:host([disabled]:hover) [part~="checkbox"] {
+  background: transparent;
+  border-color: var(--snice-color-border-hover);
+  box-shadow: none;
+}
+
+:host([disabled]) [part~="checkbox-checked"],
+:host([disabled]:hover) [part~="checkbox-checked"] {
+  background: var(--snice-color-neutral);
+  border-color: var(--snice-color-neutral);
 }

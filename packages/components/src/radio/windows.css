@@ -1,25 +1,145 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-radio */
+/* ==========================================================================
+   Windows 11 Fluent 2 / WinUI 3 — snice-radio
+   Iconic WinUI 3 20px RadioButton: 1px border ring unchecked -> solid Accent
+   filled disc with inverted on-accent center dot (8px resting -> 10px hover),
+   dual-stroke keyboard focus, and crisp 8px Fluent Settings block cards.
+   ========================================================================== */
+
 :host {
+  display: inline-flex;
+  align-items: center;
   min-height: 2rem;
+}
+
+:host([variant="block"]) {
+  display: block;
+  min-height: 0;
 }
 
 [part~="radio"] {
   width: 1.25rem;
   height: 1.25rem;
-  border: 1px solid var(--snice-color-text-secondary);
+  box-sizing: border-box;
+  border-radius: 50%;
   background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-color-text-secondary);
+  transition:
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
+    border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease);
 }
 
+:host([size="small"]) [part~="radio"] {
+  width: 1rem;
+  height: 1rem;
+}
+
+:host([size="large"]) [part~="radio"] {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+:host(:hover) [part~="radio"] {
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-color-text);
+}
+
+/* Checked — solid accent disc with inverted center dot (exact WinUI 3!) */
 [part~="radio-checked"] {
-  border-color: var(--snice-color-primary);
   background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+}
+
+:host(:hover) [part~="radio-checked"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 90%, var(--snice-color-surface));
+  border-color: color-mix(in srgb, var(--snice-color-primary) 90%, var(--snice-color-surface));
+}
+
+[part~="dot"] {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--snice-win-on-accent, hsl(0 0% 100%));
+  transition:
+    transform var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
+    width var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
+    height var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease);
 }
 
 [part~="dot-checked"] {
-  background: var(--snice-win-on-accent, hsl(0 0% 100%));
-  transform: scale(0.9);
+  transform: scale(1);
 }
 
+:host(:hover) [part~="dot-checked"] {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+:host([size="small"]) [part~="dot"] {
+  width: 0.375rem;
+  height: 0.375rem;
+}
+
+:host([size="large"]) [part~="dot"] {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+/* Invalid */
+[part~="radio-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+[part~="radio-invalid"][part~="radio-checked"] {
+  background: var(--snice-color-danger);
+  border-color: var(--snice-color-danger);
+}
+
+[part~="spinner"] {
+  color: var(--snice-color-primary);
+}
+
+/* Label */
+[part~="label"] {
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--snice-color-text);
+}
+
+/* Block Card Variant — WinUI 3 Fluent 2 8px Settings Card */
+[part~="base-block"] {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-xs);
+  gap: 0.75rem;
+  transition:
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
+    border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease);
+}
+
+[part~="base-block"][part~="base-checked"] {
+  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 7%, var(--snice-color-surface-container-high));
+}
+
+:host([variant="block"]) [part~="label"] {
+  margin-left: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+[part~="description"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+/* Dual-Stroke Focus & Disabled */
 :host([data-win-focus="keyboard"]) [part~="radio"] {
+  outline: none;
   box-shadow: var(--snice-win-focus-shadow);
+}
+
+[part~="base-disabled"] {
+  opacity: 0.55;
 }

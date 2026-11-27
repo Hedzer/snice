@@ -1,26 +1,89 @@
-/* Material 3 Expressive — snice-radio */
+/* ==========================================================================
+   Android Material 3 Expressive — snice-radio
+   20dp M3 radio ring with 2px stroke, spring-animated 10dp primary dot, 40dp
+   circular state-layer ripple halo, and rounded-16dp tonal block cards.
+   ========================================================================== */
+
 :host {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+}
+
+:host([size="small"]) {
+  min-height: 2rem;
+}
+
+:host([size="large"]) {
   min-height: 3rem;
 }
 
-[part~="radio"] {
-  position: relative;
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid var(--snice-color-text-secondary);
-  background: transparent;
+:host([variant="block"]) {
+  display: block;
+  min-height: 0;
 }
 
-[part~="radio-checked"] {
-  border-color: var(--snice-color-primary);
+[part~="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  box-sizing: border-box;
+  border-radius: 50%;
   background: transparent;
+  border: 2px solid var(--snice-color-text-secondary);
+  transition: border-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+:host([size="small"]) [part~="radio"] {
+  width: 1rem;
+  height: 1rem;
+}
+
+:host([size="large"]) [part~="radio"] {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+:host(:hover) [part~="radio"] {
+  border-color: var(--snice-color-text);
+}
+
+[part~="radio-checked"],
+:host(:hover) [part~="radio-checked"] {
+  border-color: var(--snice-color-primary);
+}
+
+[part~="dot"] {
+  width: 0.625rem;
+  height: 0.625rem;
+  background: var(--snice-color-primary);
+  transition: transform var(--snice-transition-medium, 220ms) var(--snice-m3-spring-spatial, cubic-bezier(0.34, 1.38, 0.32, 1));
+}
+
+:host([size="small"]) [part~="dot"] {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+:host([size="large"]) [part~="dot"] {
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 [part~="dot-checked"] {
-  background: var(--snice-color-primary);
   transform: scale(1);
 }
 
+/* Invalid */
+[part~="radio-invalid"],
+[part~="radio-invalid"][part~="radio-checked"] {
+  border-color: var(--snice-color-danger);
+}
+
+:host([invalid]) [part~="dot"] {
+  background: var(--snice-color-danger);
+}
+
+/* 40dp M3 circular state-layer ripple */
 [part~="ripple"] {
   display: block;
   position: absolute;
@@ -33,11 +96,77 @@
   background: var(--snice-color-primary);
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.5);
-  transition: opacity 180ms ease, transform 220ms var(--snice-m3-spring-spatial-fast, ease);
+  transition:
+    opacity var(--snice-transition-fast, 150ms) ease,
+    transform var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+:host(:hover) [part~="ripple"] {
+  opacity: 0.08;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 :host([data-m3-ripple="active"]) [part~="ripple"],
-:host([data-m3-ripple="static"]) [part~="ripple"] {
+:host([data-m3-pressed="true"]) [part~="ripple"] {
   opacity: 0.14;
   transform: translate(-50%, -50%) scale(1);
+}
+
+[part~="spinner"] {
+  color: var(--snice-color-primary);
+}
+
+/* Label */
+[part~="label"] {
+  margin-left: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.008em;
+  color: var(--snice-color-text);
+}
+
+/* Block Card Variant — M3 rounded-16dp tonal selection card */
+[part~="base-block"] {
+  padding: 0.875rem 1rem;
+  border-radius: 16px;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  gap: 0.875rem;
+  transition:
+    background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    border-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+[part~="base-block"][part~="base-checked"] {
+  background: var(--snice-m3-primary-container);
+  border-color: var(--snice-color-primary);
+}
+
+:host([variant="block"]) [part~="label"] {
+  margin-left: 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+[part~="description"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+}
+
+/* Disabled — M3 38% ink spec */
+[part~="base-disabled"] {
+  opacity: 1;
+}
+
+:host([disabled]) [part~="radio"],
+:host([disabled]:hover) [part~="radio"] {
+  border-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+:host([disabled]) [part~="dot"] {
+  background: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+:host([disabled]) [part~="label"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
 }

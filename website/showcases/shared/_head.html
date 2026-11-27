@@ -379,6 +379,18 @@
         });
       })();
     </script>
+    <script type="module">
+      import('./theme/platforms/platform-behaviors/runtime.js')
+        .then(function(m){m.enableRuntimePlatformBehaviors(document);})
+        .catch(function(){});
+    </script>
+    <style>
+      #comp-sections[data-platform] .comp-split-demo {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family);
+      }
+    </style>
     <div class="comp-search-count" id="comp-search-count"></div>
     <div class="comp-sidebar-links" id="comp-sidebar-links"></div>
   </nav>

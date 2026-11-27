@@ -21,6 +21,18 @@ if (existsSync(distPlatformsDir)) {
     }
   }
 }
+const distBehaviorsDir = join(root, 'dist/components/platform-behaviors');
+const distPlatformsJs = join(root, 'dist/components/platforms.js');
+if (existsSync(distBehaviorsDir) && existsSync(distPlatformsJs)) {
+  mkdirSync(join(out, 'theme/platforms/platform-behaviors'), { recursive: true });
+  cpSync(distPlatformsJs, join(out, 'theme/platforms/platforms.js'));
+  for (const mod of ['runtime.js', 'ios.js', 'material.js', 'windows.js', 'macos.js']) {
+    const src = join(distBehaviorsDir, mod);
+    if (existsSync(src)) {
+      cpSync(src, join(out, 'theme/platforms/platform-behaviors', mod));
+    }
+  }
+}
 
 const cdnDir = join(root, 'dist/cdn');
 const components = existsSync(cdnDir)
@@ -2294,6 +2306,11 @@ ${header('themes')}
           var saved = (param && valid[param]) ? param : (localStorage.getItem('snice-platform') || 'default');
           if (saved !== 'default') selectPlatform(saved);
         })();
+      </script>
+      <script type="module">
+        import('./theme/platforms/platform-behaviors/runtime.js')
+          .then(function(m) { m.enableRuntimePlatformBehaviors(document); })
+          .catch(function() {});
       </script>
     </section>
 

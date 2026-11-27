@@ -1,36 +1,86 @@
-/* macOS 26+ Liquid Glass / AppKit — snice-switch (38x22px compact NSSwitch) */
+/* ==========================================================================
+   macOS 26+ Liquid Glass / AppKit — snice-switch
+   Compact desktop NSSwitch (38x22px), recessed hairline pill track, macOS
+   System Accent Blue active fill (distinct from iOS green), crisp 18px white
+   knob with Liquid Glass press stretch, and 13px AppKit label.
+   ========================================================================== */
+
 :host {
-  min-height: 1.5rem;
+  min-height: 1.75rem;
 }
 
+:host([size="small"]) {
+  min-height: 1.375rem;
+}
+
+:host([size="large"]) {
+  min-height: 2.125rem;
+}
+
+/* Track — compact 38x22px NSSwitch */
 [part~="track"] {
   min-width: 2.375rem;
   height: 1.375rem;
   border-radius: 9999px;
-  background: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
-  border: 0.5px solid var(--snice-color-border-subtle);
-  box-shadow: inset 0 1px 2px hsl(0 0% 0% / 0.12);
-  transition: background-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease);
+  background: hsl(0 0% 50% / 0.24);
+  box-shadow:
+    inset 0 0.5px 1.5px hsl(0 0% 0% / 0.16),
+    inset 0 0 0 0.5px hsl(0 0% 0% / 0.08);
+  transition:
+    background-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease),
+    box-shadow var(--snice-transition-fast, 140ms) ease;
 }
 
 [part~="track-checked"] {
   background: var(--snice-color-primary);
-  border-color: transparent;
-  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.16);
+  box-shadow:
+    inset 0 0.5px 1px hsl(0 0% 0% / 0.14),
+    inset 0 0 0 0.5px color-mix(in srgb, var(--snice-color-primary) 75%, black);
 }
 
+:host(:hover) [part~="track"] {
+  background: hsl(0 0% 50% / 0.3);
+}
+
+:host(:hover) [part~="track-checked"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 92%, white);
+}
+
+/* Sizes */
+:host([size="small"]) [part~="track"] {
+  min-width: 2rem;
+  height: 1.125rem;
+}
+
+:host([size="large"]) [part~="track"] {
+  min-width: 2.75rem;
+  height: 1.625rem;
+}
+
+/* Invalid */
+[part~="track-invalid"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 28%, hsl(0 0% 50% / 0.18));
+  box-shadow: inset 0 0 0 1px var(--snice-color-danger);
+}
+
+[part~="track-invalid"][part~="track-checked"] {
+  background: var(--snice-color-danger);
+}
+
+/* Thumb — crisp 18px AppKit knob */
 [part~="thumb"] {
-  top: 50%;
-  left: 2px;
   width: 1.125rem;
   height: 1.125rem;
+  top: 2px;
+  left: 2px;
   border-radius: 9999px;
   background: hsl(0 0% 100%);
-  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.22), 0 0.5px 1px hsl(0 0% 0% / 0.12);
-  transform: translateY(-50%);
+  box-shadow:
+    0 1px 2.5px hsl(0 0% 0% / 0.24),
+    0 0 0 0.5px hsl(0 0% 0% / 0.08);
   transition:
-    left var(--snice-transition-medium, 220ms) var(--snice-ease-spring, ease),
-    width var(--snice-transition-fast, 140ms) ease,
+    left var(--snice-transition-medium, 200ms) var(--snice-ease-spring, cubic-bezier(0.24, 1.18, 0.36, 1)),
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-spring, cubic-bezier(0.24, 1.18, 0.36, 1)),
     background-color var(--snice-transition-fast, 140ms) ease;
 }
 
@@ -38,14 +88,78 @@
   left: calc(100% - 1.125rem - 2px);
 }
 
-:host([data-macos-pressed="true"]) [part~="thumb"] {
-  width: 1.375rem;
-  background: var(--snice-macos-glass-bg);
-  backdrop-filter: var(--snice-macos-glass-blur);
-  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
-  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-sm);
+:host([size="small"]) [part~="thumb"] {
+  width: 0.875rem;
+  height: 0.875rem;
 }
 
+:host([size="small"]) [part~="thumb-checked"] {
+  left: calc(100% - 0.875rem - 2px);
+}
+
+:host([size="large"]) [part~="thumb"] {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+:host([size="large"]) [part~="thumb-checked"] {
+  left: calc(100% - 1.375rem - 2px);
+}
+
+/* macOS 26 Liquid Glass press lens */
+:host([data-macos-pressed="true"]) [part~="thumb"] {
+  background: hsl(0 0% 100% / 0.86);
+  transform: scaleX(1.14) scaleY(1.04);
+}
+
+[part~="lens"] {
+  display: block;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 35% 30%, hsl(0 0% 100% / 0.85), transparent 65%);
+  transition: opacity var(--snice-transition-fast, 140ms) ease;
+}
+
+:host([data-macos-pressed="true"]) [part~="lens"] {
+  opacity: 1;
+}
+
+/* State labels & spinner */
+[part~="label-on"] {
+  color: hsl(0 0% 100%);
+}
+
+[part~="label-off"] {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="spinner"] {
+  color: var(--snice-color-neutral);
+}
+
+/* Compact 13px AppKit Label */
+[part~="label"] {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--snice-color-text);
+}
+
+:host([size="small"]) [part~="label"] {
+  font-size: 0.75rem;
+}
+
+:host([size="large"]) [part~="label"] {
+  font-size: 0.9375rem;
+}
+
+/* Focus Halo & Disabled */
 :host([data-macos-focus="keyboard"]) [part~="track"] {
   box-shadow: var(--snice-macos-focus-halo);
+}
+
+[part~="base-disabled"] {
+  opacity: 0.44;
 }

@@ -1,24 +1,57 @@
-/* iOS 26+ Liquid Glass — snice-button */
+/* ==========================================================================
+   iOS 26+ Liquid Glass — snice-button
+   Every variant, size, shape (pill/circle), outline, hover/active/focus,
+   loading, and disabled state crafted to Apple iOS 26 HIG.
+   ========================================================================== */
+
+/* Base — iOS 26 Liquid Glass capsule control (44px standard touch target) */
 [part~="base"] {
   min-height: 2.75rem;
+  height: 2.75rem;
   padding: 0 1.25rem;
   border-radius: 9999px;
   font-size: 1rem;
   font-weight: 600;
-  letter-spacing: -0.014em;
+  letter-spacing: -0.015em;
   overflow: hidden;
+  background: var(--snice-ios-glass-regular-bg, hsl(0 0% 100% / 0.72));
+  backdrop-filter: var(--snice-ios-glass-blur, blur(24px) saturate(190%));
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur, blur(24px) saturate(190%));
+  border: 1px solid var(--snice-ios-glass-border, hsl(0 0% 100% / 0.72));
+  color: var(--snice-color-text);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-sm);
   transition:
     transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
     background-color var(--snice-transition-fast, 180ms) ease,
+    border-color var(--snice-transition-fast, 180ms) ease,
     box-shadow var(--snice-transition-fast, 180ms) ease,
+    filter var(--snice-transition-fast, 180ms) ease,
     opacity var(--snice-transition-fast, 180ms) ease;
 }
 
+/* Disable default Snice ::before convex sheen; iOS uses dedicated Liquid Glass rim + [part~="sheen"] */
+[part~="base"]::before {
+  display: none;
+}
+
+[part~="base"]:hover {
+  transform: none;
+  filter: brightness(1.04);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-md);
+}
+
+[part~="base"]:active {
+  transform: scale(0.96);
+  filter: brightness(0.95);
+}
+
+/* Sizes */
 :host([size="small"]) [part~="base"] {
   min-height: 2.125rem;
   height: 2.125rem;
   padding: 0 0.875rem;
   font-size: 0.875rem;
+  letter-spacing: -0.01em;
 }
 
 :host([size="large"]) [part~="base"] {
@@ -26,63 +59,163 @@
   height: 3.125rem;
   padding: 0 1.5rem;
   font-size: 1.0625rem;
+  letter-spacing: -0.018em;
 }
 
-/* Default button — Liquid Glass capsule */
-[part~="base"] {
-  background: var(--snice-ios-glass-regular-bg, hsl(0 0% 100% / 0.72));
-  backdrop-filter: var(--snice-ios-glass-blur, blur(24px) saturate(190%));
-  -webkit-backdrop-filter: var(--snice-ios-glass-blur, blur(24px) saturate(190%));
-  border: 1px solid var(--snice-ios-glass-border, hsl(0 0% 100% / 0.72));
-  color: var(--snice-color-primary, hsl(211 100% 50%));
-  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-sm);
-}
-
+/* Prominent Liquid Glass Semantic Variants */
 :host([variant="primary"]) [part~="base"] {
-  background: var(--snice-color-primary, hsl(211 100% 50%));
-  border-color: color-mix(in srgb, white 22%, var(--snice-color-primary, hsl(211 100% 50%)));
+  background: var(--snice-color-primary);
+  border-color: color-mix(in srgb, white 26%, var(--snice-color-primary));
   color: hsl(0 0% 100%);
   box-shadow:
-    inset 0 1px 0 hsl(0 0% 100% / 0.35),
-    0 4px 14px -4px color-mix(in srgb, var(--snice-color-primary, hsl(211 100% 50%)) 45%, transparent);
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.38),
+    inset 0 -0.5px 0 hsl(0 0% 0% / 0.14),
+    0 6px 18px -6px color-mix(in srgb, var(--snice-color-primary) 55%, transparent);
+}
+
+:host([variant="success"]) [part~="base"] {
+  background: var(--snice-color-success);
+  border-color: color-mix(in srgb, white 26%, var(--snice-color-success));
+  color: hsl(0 0% 100%);
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.38),
+    inset 0 -0.5px 0 hsl(0 0% 0% / 0.14),
+    0 6px 18px -6px color-mix(in srgb, var(--snice-color-success) 50%, transparent);
+}
+
+:host([variant="warning"]) [part~="base"] {
+  background: var(--snice-color-warning);
+  border-color: color-mix(in srgb, white 30%, var(--snice-color-warning));
+  color: hsl(24 40% 10%);
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.42),
+    inset 0 -0.5px 0 hsl(0 0% 0% / 0.14),
+    0 6px 18px -6px color-mix(in srgb, var(--snice-color-warning) 50%, transparent);
 }
 
 :host([variant="danger"]) [part~="base"] {
-  background: var(--snice-color-danger, hsl(3 100% 59%));
-  border-color: color-mix(in srgb, white 20%, var(--snice-color-danger, hsl(3 100% 59%)));
+  background: var(--snice-color-danger);
+  border-color: color-mix(in srgb, white 24%, var(--snice-color-danger));
   color: hsl(0 0% 100%);
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.34),
+    inset 0 -0.5px 0 hsl(0 0% 0% / 0.14),
+    0 6px 18px -6px color-mix(in srgb, var(--snice-color-danger) 50%, transparent);
+}
+
+/* Plain (Text) — borderless iOS action button */
+:host([variant="text"]) [part~="base"] {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--snice-color-primary);
+  padding: 0 0.75rem;
+}
+
+:host([variant="text"]) [part~="base"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  box-shadow: none;
+  filter: none;
+}
+
+:host([variant="text"]) [part~="base"]:active {
+  background: color-mix(in srgb, var(--snice-color-primary) 18%, transparent);
+}
+
+/* Outline — iOS Tinted Liquid Glass (each variant tints in its own semantic color) */
+[part~="base-outline"] {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-ios-glass-clear-bg));
+  border: 1px solid var(--snice-color-border-hover);
+  color: var(--snice-color-text);
   box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.3);
 }
 
-:host([variant="text"]) [part~="base"] {
-  background: transparent;
-  border-color: transparent;
-  box-shadow: none;
-  color: var(--snice-color-primary, hsl(211 100% 50%));
+:host([variant="primary"]) [part~="base-outline"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 38%, transparent);
+  color: var(--snice-color-primary);
 }
 
-[part~="base-outline"] {
-  background: var(--snice-ios-glass-tinted-bg, color-mix(in srgb, var(--snice-color-primary) 14%, transparent));
-  border: 1px solid color-mix(in srgb, var(--snice-color-primary, hsl(211 100% 50%)) 35%, transparent);
-  color: var(--snice-color-primary, hsl(211 100% 50%));
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.45);
+:host([variant="success"]) [part~="base-outline"] {
+  background: color-mix(in srgb, var(--snice-color-success) 14%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-success) 38%, transparent);
+  color: var(--snice-color-success);
 }
 
-[part~="base"]:active {
-  transform: scale(0.965);
+:host([variant="warning"]) [part~="base-outline"] {
+  background: color-mix(in srgb, var(--snice-color-warning) 16%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 42%, transparent);
+  color: var(--snice-color-warning);
 }
 
-[part~="base"]:focus-visible {
-  box-shadow:
-    0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color),
-    var(--snice-shadow-sm);
+:host([variant="danger"]) [part~="base-outline"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 14%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 38%, transparent);
+  color: var(--snice-color-danger);
 }
 
+[part~="base-outline"]:hover {
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.35);
+}
+
+/* Circle — exact 1:1 circular Liquid Glass icon button */
+[part~="base-circle"] {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border-radius: 50%;
+}
+
+:host([size="small"]) [part~="base-circle"] {
+  width: 2.125rem;
+  min-width: 2.125rem;
+  height: 2.125rem;
+  padding: 0;
+}
+
+:host([size="large"]) [part~="base-circle"] {
+  width: 3.125rem;
+  min-width: 3.125rem;
+  height: 3.125rem;
+  padding: 0;
+}
+
+/* Specular Liquid Glass sheen overlay (hidden on text/outline/disabled) */
 [part~="sheen"] {
   display: block;
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  background: linear-gradient(180deg, hsl(0 0% 100% / 0.28) 0%, transparent 48%);
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.24) 0%, hsl(0 0% 100% / 0.04) 44%, transparent 52%);
+}
+
+:host([variant="text"]) [part~="sheen"],
+:host([outline]) [part~="sheen"],
+:host([disabled]) [part~="sheen"] {
+  display: none;
+}
+
+/* Focus & Disabled */
+[part~="base"]:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color),
+    var(--snice-ios-glass-rim);
+}
+
+[part~="base-disabled"],
+[part~="base-disabled"]:hover,
+[part~="base-disabled"]:active,
+:host([disabled]) [part~="base"],
+:host([disabled][variant]) [part~="base"],
+:host([disabled][variant]) [part~="base"]:hover,
+:host([disabled][variant]) [part~="base"]:active {
+  opacity: 0.38;
+  transform: none;
+  filter: none;
+  box-shadow: none;
 }
