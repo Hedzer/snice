@@ -1,0 +1,168 @@
+/* macOS 26 Tahoe Liquid Glass / AppKit — snice-map
+ * Apple Maps for macOS: 12px desktop viewport frame, compact 28px floating
+ * Liquid Glass zoom HUD, Liquid Glass desktop callout popover, compact frosted
+ * attribution chip, and AppKit focus halo.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  box-sizing: border-box;
+  border-radius: var(--snice-border-radius-lg, 12px);
+  border: 0.5px solid var(--snice-color-border);
+  background: var(--snice-color-surface-container);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="base"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Markers — always preserve translate(-50%, -100%) pin anchor */
+:host [part~="marker-active"] {
+  transform: translate(-50%, -100%) scale(1.16);
+  z-index: 15;
+}
+
+/* Compact Desktop Liquid Glass Zoom Stack */
+:host [part~="controls"] {
+  top: 0.625rem;
+  right: 0.625rem;
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--snice-color-background-elevated) 84%, transparent);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid var(--snice-macos-glass-border);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-md);
+}
+
+:host [part~="control"] {
+  width: 1.75rem;
+  height: 1.75rem;
+  background: transparent;
+  border: none;
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition:
+    background-color var(--snice-transition-fast, 140ms) ease-out,
+    transform var(--snice-transition-fast, 140ms) ease-out;
+}
+
+:host [part~="control"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 7%, transparent);
+}
+
+:host [part~="control"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  transform: scale(0.95);
+}
+
+:host [part~="control"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: -2px;
+}
+
+:host [part~="zoom-in"] {
+  border-radius: 8px 8px 0 0;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="zoom-out"] {
+  border-radius: 0 0 8px 8px;
+  border-top: none;
+}
+
+/* Floating Liquid Glass Desktop Callout Popover */
+:host [part~="popup"] {
+  border-radius: 10px;
+  padding: 0.375rem 0.625rem;
+  background: color-mix(in srgb, var(--snice-color-background-elevated) 88%, transparent);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid var(--snice-macos-glass-border);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-lg);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+:host [part~="popup"]::after {
+  display: none;
+}
+
+/* Compact Frosted Attribution Chip */
+:host [part~="attribution"] {
+  bottom: 0.5rem;
+  right: 0.5rem;
+  padding: 0.125rem 0.4375rem;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--snice-color-background-elevated) 86%, transparent);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid var(--snice-macos-glass-border);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.625rem;
+}
+
+:host [part~="attribution-link"] {
+  color: var(--snice-color-primary);
+  font-weight: 500;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="controls"],
+  :host [part~="popup"],
+  :host [part~="attribution"] {
+    background: var(--snice-color-background-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :host [part~="controls"],
+  :host [part~="popup"],
+  :host [part~="attribution"] {
+    background: var(--snice-color-background-elevated);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="control"],
+  :host [part~="marker"] {
+    transition: none;
+  }
+
+  :host [part~="control"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="controls"],
+  :host [part~="popup"],
+  :host [part~="attribution"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="base"]:focus-visible,
+  :host [part~="control"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}

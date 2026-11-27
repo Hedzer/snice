@@ -1,0 +1,161 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-map
+ * Windows 11 Maps: crisp 8px framed viewport with 1px top-lit Fluent stroke,
+ * canonical transient Acrylic floating chrome on 32px stacked zoom toolbar,
+ * 8px Acrylic marker flyout, 4px Acrylic attribution badge, and WinUI focus.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  box-sizing: border-box;
+  border-radius: var(--snice-border-radius-lg, 8px);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  background: var(--snice-color-surface-container);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="base"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* Markers — always preserve translate(-50%, -100%) pin anchor */
+:host [part~="marker-active"] {
+  transform: translate(-50%, -100%) scale(1.16);
+  z-index: 15;
+}
+
+/* Transient Acrylic Stacked 32px Zoom Toolbar */
+:host [part~="controls"] {
+  top: 0.75rem;
+  right: 0.75rem;
+  gap: 0;
+  border-radius: var(--snice-border-radius-md, 4px);
+  overflow: hidden;
+  background: var(--snice-win-acrylic-bg);
+  backdrop-filter: var(--snice-win-acrylic-blur);
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="control"] {
+  width: 2rem;
+  height: 2rem;
+  background: transparent;
+  border: none;
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 1rem;
+  font-weight: 400;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="control"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="control"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="control"]:focus-visible {
+  outline: 2px solid var(--snice-color-text);
+  outline-offset: -3px;
+}
+
+:host [part~="zoom-in"] {
+  border-radius: 4px 4px 0 0;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="zoom-out"] {
+  border-radius: 0 0 4px 4px;
+  border-top: none;
+}
+
+/* Fluent Transient Acrylic Marker Flyout */
+:host [part~="popup"] {
+  border-radius: var(--snice-border-radius-lg, 8px);
+  padding: 0.5rem 0.75rem;
+  background: var(--snice-win-acrylic-bg);
+  backdrop-filter: var(--snice-win-acrylic-blur);
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur);
+  border: 1px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-lg);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+:host [part~="popup"]::after {
+  display: none;
+}
+
+/* Transient Acrylic Attribution Badge */
+:host [part~="attribution"] {
+  bottom: 0.5rem;
+  right: 0.5rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  background: var(--snice-win-acrylic-bg);
+  backdrop-filter: var(--snice-win-acrylic-blur);
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur);
+  border: 1px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.6875rem;
+}
+
+:host [part~="attribution-link"] {
+  color: var(--snice-color-primary);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="controls"],
+  :host [part~="popup"],
+  :host [part~="attribution"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :host [part~="controls"],
+  :host [part~="popup"],
+  :host [part~="attribution"] {
+    background: var(--snice-color-surface-container-high);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="control"],
+  :host [part~="marker"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="controls"],
+  :host [part~="popup"],
+  :host [part~="attribution"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="base"]:focus-visible,
+  :host [part~="control"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}

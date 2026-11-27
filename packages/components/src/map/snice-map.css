@@ -4,14 +4,16 @@
 
 :host {
   display: block;
+  height: 25rem;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   contain: layout style paint;
 }
 
 .map-container {
   position: relative;
+  box-sizing: border-box;
   width: 100%;
-  height: 25rem;
+  height: 100%;
   background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);

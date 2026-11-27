@@ -1,0 +1,175 @@
+/* iOS 26+ Liquid Glass — snice-map
+ * Apple Maps (iOS 26 HIG): 20px concentric map viewport with opaque tile
+ * backing, canonical floating Liquid Glass 44pt stacked zoom capsule, floating
+ * Liquid Glass marker callout pill, frosted attribution pill, and iOS focus.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  box-sizing: border-box;
+  border-radius: 20px;
+  border: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="base"]:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color),
+    var(--snice-shadow-md);
+}
+
+/* Markers — always preserve translate(-50%, -100%) pin anchor */
+:host [part~="marker"]:hover {
+  transform: translate(-50%, -100%) scale(1.15);
+}
+
+:host [part~="marker-active"] {
+  transform: translate(-50%, -100%) scale(1.2);
+  z-index: 15;
+}
+
+/* Floating Liquid Glass 44pt Zoom Capsule */
+:host [part~="controls"] {
+  top: 0.75rem;
+  right: 0.75rem;
+  gap: 0;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 82%, transparent);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+}
+
+:host [part~="control"] {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: transparent;
+  border: none;
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 1.25rem;
+  font-weight: 500;
+  transition:
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
+    background-color var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="control"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+:host [part~="control"]:active {
+  transform: scale(0.92);
+  background: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+}
+
+:host [part~="control"]:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+:host [part~="zoom-in"] {
+  border-radius: 9999px 9999px 0 0;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="zoom-out"] {
+  border-radius: 0 0 9999px 9999px;
+  border-top: none;
+}
+
+/* Floating Liquid Glass Marker Callout */
+:host [part~="popup"] {
+  border-radius: 14px;
+  padding: 0.5rem 0.875rem;
+  margin-bottom: 0.625rem;
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 86%, transparent);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+
+:host [part~="popup"]::after {
+  display: none;
+}
+
+/* Floating Liquid Glass Attribution Pill */
+:host [part~="attribution"] {
+  bottom: 0.625rem;
+  right: 0.625rem;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 84%, transparent);
+  backdrop-filter: var(--snice-ios-glass-clear-blur, var(--snice-ios-glass-blur));
+  -webkit-backdrop-filter: var(--snice-ios-glass-clear-blur, var(--snice-ios-glass-blur));
+  border: 0.5px solid var(--snice-ios-glass-border);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.6875rem;
+}
+
+:host [part~="attribution-link"] {
+  color: var(--snice-color-primary);
+  font-weight: 500;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="controls"],
+  :host [part~="popup"],
+  :host [part~="attribution"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :host [part~="controls"],
+  :host [part~="popup"],
+  :host [part~="attribution"] {
+    background: var(--snice-color-surface-container-high);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="control"],
+  :host [part~="marker"] {
+    transition: none;
+  }
+
+  :host [part~="control"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="controls"],
+  :host [part~="popup"],
+  :host [part~="attribution"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="base"]:focus-visible,
+  :host [part~="control"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}

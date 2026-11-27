@@ -1,0 +1,133 @@
+/* Material 3 Expressive — snice-map
+ * Google Maps (Android M3 Expressive): 16px expressive viewport frame,
+ * stacked tonal Split-FAB zoom controls (16px/6px radii morphing to 8px on
+ * press, zero glass blur), matching tonal callout & arrow, tonal attribution.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  box-sizing: border-box;
+  border-radius: var(--snice-border-radius-lg, 16px);
+  border: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host [part~="base"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+/* Markers — always preserve translate(-50%, -100%) pin anchor */
+:host [part~="marker-active"] {
+  transform: translate(-50%, -100%) scale(1.2);
+  z-index: 15;
+}
+
+/* Expressive Stacked Tonal Split-FAB Zoom Controls */
+:host [part~="controls"] {
+  top: 0.75rem;
+  right: 0.75rem;
+  gap: 0.25rem;
+}
+
+:host [part~="control"] {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text);
+  box-shadow: var(--snice-shadow-md);
+  font-family: var(--snice-font-family);
+  font-size: 1.25rem;
+  font-weight: 500;
+  transition:
+    border-radius var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="zoom-in"] {
+  border-radius: 16px 16px 6px 6px;
+}
+
+:host [part~="zoom-out"] {
+  border-radius: 6px 6px 16px 16px;
+  border-top: 1px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="control"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-high));
+  box-shadow: var(--snice-shadow-lg);
+}
+
+:host [part~="control"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, var(--snice-color-surface-container-high));
+}
+
+:host [part~="control"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+/* Elevated Tonal Callout Popup */
+:host [part~="popup"] {
+  border-radius: 16px;
+  padding: 0.5rem 0.875rem;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-lg);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+:host [part~="popup"]::after {
+  border-top-color: var(--snice-color-surface-container-high);
+}
+
+/* Theme-Aware Tonal Attribution Pill */
+:host [part~="attribution"] {
+  bottom: 0.5rem;
+  right: 0.5rem;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 90%, transparent);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.6875rem;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host [part~="attribution-link"] {
+  color: var(--snice-color-primary);
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="control"],
+  :host [part~="marker"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="control"],
+  :host [part~="popup"],
+  :host [part~="attribution"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="base"]:focus-visible,
+  :host [part~="control"]:focus-visible {
+    outline: 2px solid Highlight;
+  }
+}
