@@ -1,0 +1,115 @@
+/* iOS 26+ Liquid Glass — snice-pagination (Floating Liquid Glass Capsule Pager) */
+:host {
+  --pagination-gap: 4px;
+  --pagination-button-size: 38px;
+  --pagination-button-padding: 10px;
+  --pagination-font-size: 0.9375rem;
+  --pagination-border-radius: 12px;
+}
+
+:host([size="small"]) {
+  --pagination-button-size: 30px;
+  --pagination-button-padding: 8px;
+  --pagination-font-size: 0.8125rem;
+  --pagination-border-radius: 9px;
+}
+
+:host([size="large"]) {
+  --pagination-button-size: 44px;
+  --pagination-button-padding: 14px;
+  --pagination-font-size: 1.0625rem;
+  --pagination-border-radius: 14px;
+}
+
+:host([variant="rounded"]) {
+  --pagination-border-radius: 9999px;
+}
+
+[part~="base"] {
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 0.5px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+}
+
+:host([variant="rounded"]) [part~="base"] {
+  border-radius: 9999px;
+}
+
+:host([variant="text"]) [part~="base"] {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+[part~="button"] {
+  width: var(--pagination-button-size);
+  padding: 0;
+}
+
+[part~="button"],
+[part~="page"] {
+  background: transparent;
+  border: none;
+  color: var(--snice-color-text);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background-color var(--snice-transition-fast, 180ms) ease,
+    color var(--snice-transition-fast, 180ms) ease,
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, ease);
+}
+
+[part~="button"]:hover,
+[part~="page"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  border-color: transparent;
+}
+
+[part~="button"]:active,
+[part~="page"]:active {
+  transform: scale(0.94);
+}
+
+[part~="button"]:focus-visible,
+[part~="page"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="page"][part~="page-current"],
+:host([variant="text"]) [part~="page"][part~="page-current"] {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  font-weight: 600;
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.28), 0 1px 3px hsl(0 0% 0% / 0.16);
+}
+
+[part~="page"][part~="page-current"]:hover,
+:host([variant="text"]) [part~="page"][part~="page-current"]:hover {
+  background: var(--snice-color-primary-hover);
+  color: hsl(0 0% 100%);
+}
+
+[part~="button"][part~="button-disabled"],
+[part~="button"]:disabled,
+[part~="button"][part~="button-disabled"]:hover,
+[part~="button"]:disabled:hover {
+  opacity: 1;
+  background: transparent;
+  color: color-mix(in srgb, var(--snice-color-text) 30%, transparent);
+  transform: none;
+}
+
+[part~="ellipsis"] {
+  color: var(--snice-color-text-tertiary);
+  font-weight: 500;
+}

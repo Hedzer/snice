@@ -1,0 +1,110 @@
+/* Material 3 Expressive — snice-pagination (Tonal Page Controls) */
+:host {
+  --pagination-gap: 6px;
+  --pagination-button-size: 40px;
+  --pagination-button-padding: 12px;
+  --pagination-font-size: 0.875rem;
+  --pagination-border-radius: 12px;
+}
+
+:host([size="small"]) {
+  --pagination-button-size: 32px;
+  --pagination-button-padding: 8px;
+  --pagination-font-size: 0.8125rem;
+  --pagination-border-radius: 8px;
+}
+
+:host([size="large"]) {
+  --pagination-button-size: 48px;
+  --pagination-button-padding: 14px;
+  --pagination-font-size: 1rem;
+  --pagination-border-radius: 16px;
+}
+
+:host([variant="rounded"]) {
+  --pagination-border-radius: 9999px;
+}
+
+[part~="button"] {
+  width: var(--pagination-button-size);
+  padding: 0;
+}
+
+[part~="button"],
+[part~="page"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text);
+  font-weight: 500;
+  letter-spacing: 0.008em;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    border-color var(--snice-transition-fast, 150ms) ease,
+    border-radius var(--snice-transition-fast, 200ms) var(--snice-m3-spring-spatial-fast, ease);
+}
+
+:host([variant="text"]) [part~="button"],
+:host([variant="text"]) [part~="page"] {
+  background: transparent;
+  border-color: transparent;
+}
+
+[part~="button"]:hover,
+[part~="page"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-low));
+  border-color: var(--snice-color-border);
+}
+
+:host([variant="text"]) [part~="button"]:hover,
+:host([variant="text"]) [part~="page"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  border-color: transparent;
+}
+
+[part~="button"]:active,
+[part~="page"]:active {
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, var(--snice-color-surface-container-low));
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+[part~="button"]:focus-visible,
+[part~="page"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="page"][part~="page-current"],
+:host([variant="text"]) [part~="page"][part~="page-current"] {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
+  font-weight: 600;
+}
+
+[part~="page"][part~="page-current"]:hover,
+:host([variant="text"]) [part~="page"][part~="page-current"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 8%, var(--snice-color-primary));
+  border-color: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
+}
+
+[part~="button"][part~="button-disabled"],
+[part~="button"]:disabled,
+[part~="button"][part~="button-disabled"]:hover,
+[part~="button"]:disabled:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+  border-color: transparent;
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+:host([variant="text"]) [part~="button"][part~="button-disabled"],
+:host([variant="text"]) [part~="button"]:disabled {
+  background: transparent;
+}
+
+[part~="ellipsis"] {
+  color: var(--snice-color-text-secondary);
+  font-weight: 500;
+}
