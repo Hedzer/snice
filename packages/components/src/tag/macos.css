@@ -1,0 +1,121 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-tag (Compact AppKit Metadata Label) */
+:host {
+  --tag-height: 1.25rem;
+  --tag-padding: 0 0.4375rem;
+  --tag-font-size: 0.6875rem;
+  --tag-border-radius: 5px;
+  --tag-gap: 0.1875rem;
+}
+
+:host([size="small"]) {
+  --tag-height: 1.0625rem;
+  --tag-padding: 0 0.3125rem;
+  --tag-font-size: 0.625rem;
+  --tag-border-radius: 4px;
+}
+
+:host([size="large"]) {
+  --tag-height: 1.625rem;
+  --tag-padding: 0 0.625rem;
+  --tag-font-size: 0.8125rem;
+  --tag-border-radius: 6px;
+}
+
+:host([pill]) {
+  --tag-border-radius: 9999px;
+}
+
+[part~="base"] {
+  font-family: var(--snice-font-family);
+  font-weight: 500;
+  letter-spacing: -0.006em;
+  border: 0.5px solid var(--snice-color-border);
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+:host([variant="default"]) [part~="base"] {
+  background: var(--snice-color-surface-container);
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-text);
+}
+
+:host([variant="primary"]) [part~="base"],
+:host([variant="info"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 13%, var(--snice-color-background-element));
+  border-color: color-mix(in srgb, var(--snice-color-primary) 26%, transparent);
+  color: var(--snice-color-primary);
+}
+
+:host([variant="success"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-success) 13%, var(--snice-color-background-element));
+  border-color: color-mix(in srgb, var(--snice-color-success) 26%, transparent);
+  color: color-mix(in srgb, var(--snice-color-success) 84%, var(--snice-color-text));
+}
+
+:host([variant="warning"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-warning) 16%, var(--snice-color-background-element));
+  border-color: color-mix(in srgb, var(--snice-color-warning) 30%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 66%, var(--snice-color-text));
+}
+
+:host([variant="danger"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 13%, var(--snice-color-background-element));
+  border-color: color-mix(in srgb, var(--snice-color-danger) 26%, transparent);
+  color: var(--snice-color-danger);
+}
+
+/* Outline variants */
+:host([outline]) [part~="base"],
+:host([outline][variant="default"]) [part~="base"] {
+  background: transparent;
+  border: 0.5px solid var(--snice-color-border-hover);
+  color: var(--snice-color-text);
+}
+
+:host([outline][variant="primary"]) [part~="base"],
+:host([outline][variant="info"]) [part~="base"] {
+  background: transparent;
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-primary) 52%, transparent);
+  color: var(--snice-color-primary);
+}
+
+:host([outline][variant="success"]) [part~="base"] {
+  background: transparent;
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-success) 52%, transparent);
+  color: color-mix(in srgb, var(--snice-color-success) 84%, var(--snice-color-text));
+}
+
+:host([outline][variant="warning"]) [part~="base"] {
+  background: transparent;
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-warning) 56%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 66%, var(--snice-color-text));
+}
+
+:host([outline][variant="danger"]) [part~="base"] {
+  background: transparent;
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-danger) 52%, transparent);
+  color: var(--snice-color-danger);
+}
+
+[part~="remove-button"] {
+  border-radius: 9999px;
+  opacity: 0.72;
+  transition: background-color 120ms ease, opacity 120ms ease, transform 120ms ease;
+}
+
+[part~="remove-button"]:hover {
+  opacity: 1;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+[part~="remove-button"]:active {
+  transform: scale(0.9);
+}
+
+[part~="remove-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
