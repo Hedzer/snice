@@ -1,0 +1,70 @@
+/* macOS 26 Tahoe Liquid Glass / AppKit — snice-skeleton (Desktop .redacted Placeholders) */
+:host {
+  --skeleton-bg: color-mix(in srgb, var(--snice-color-text) 12%, var(--snice-color-surface-container-low));
+  --skeleton-highlight: hsl(0 0% 100% / 0.26);
+  --skeleton-duration: 1.6s;
+}
+
+[part~="bone"] {
+  background: var(--skeleton-bg);
+  border-radius: var(--snice-border-radius-sm, 4px);
+}
+
+:host([variant="text"]) [part~="bone"] {
+  border-radius: var(--snice-border-radius-sm, 4px);
+}
+
+:host([variant="circular"]) [part~="bone"] {
+  border-radius: 50%;
+}
+
+:host([variant="rounded"]) [part~="bone"] {
+  border-radius: 10px;
+}
+
+:host([variant="rectangular"]) [part~="bone"] {
+  border-radius: 0;
+}
+
+[part~="bone"]::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--skeleton-highlight) 50%,
+    transparent 100%
+  );
+  animation-duration: var(--skeleton-duration);
+  animation-timing-function: var(--snice-ease-out, cubic-bezier(0.22, 0.8, 0.2, 1));
+}
+
+:host([animation="pulse"]) [part~="bone"] {
+  animation-duration: 1.7s;
+  animation-timing-function: ease-in-out;
+}
+
+:host([animation="pulse"]) [part~="bone"]::after,
+:host([animation="none"]) [part~="bone"]::after {
+  content: none;
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="bone"] {
+    animation: none;
+  }
+
+  [part~="bone"]::after {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="bone"] {
+    border: 1px solid GrayText;
+  }
+
+  [part~="bone"]::after {
+    display: none;
+  }
+}

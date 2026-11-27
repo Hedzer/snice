@@ -1,0 +1,70 @@
+/* Android Material 3 Expressive — snice-skeleton (M3 Tonal Surface Shimmer Placeholders) */
+:host {
+  --skeleton-bg: color-mix(in srgb, var(--snice-color-primary) 11%, var(--snice-color-surface-container-highest));
+  --skeleton-highlight: color-mix(in srgb, hsl(0 0% 100%) 26%, color-mix(in srgb, var(--snice-color-primary) 12%, transparent));
+  --skeleton-duration: 1.5s;
+}
+
+[part~="bone"] {
+  background: var(--skeleton-bg);
+  border-radius: 8px;
+}
+
+:host([variant="text"]) [part~="bone"] {
+  border-radius: 8px;
+}
+
+:host([variant="circular"]) [part~="bone"] {
+  border-radius: 50%;
+}
+
+:host([variant="rounded"]) [part~="bone"] {
+  border-radius: var(--snice-border-radius-lg, 16px);
+}
+
+:host([variant="rectangular"]) [part~="bone"] {
+  border-radius: 0;
+}
+
+[part~="bone"]::after {
+  background: linear-gradient(
+    100deg,
+    transparent 10%,
+    var(--skeleton-highlight) 50%,
+    transparent 90%
+  );
+  animation-duration: var(--skeleton-duration);
+  animation-timing-function: var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host([animation="pulse"]) [part~="bone"] {
+  animation-duration: 1.6s;
+  animation-timing-function: var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host([animation="pulse"]) [part~="bone"]::after,
+:host([animation="none"]) [part~="bone"]::after {
+  content: none;
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="bone"] {
+    animation: none;
+  }
+
+  [part~="bone"]::after {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="bone"] {
+    border: 1px solid GrayText;
+  }
+
+  [part~="bone"]::after {
+    display: none;
+  }
+}

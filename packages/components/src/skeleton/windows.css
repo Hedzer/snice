@@ -1,0 +1,70 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-skeleton (Fluent 2 Stencil Shimmer Placeholders) */
+:host {
+  --skeleton-bg: color-mix(in srgb, var(--snice-color-text) 14%, var(--snice-color-surface));
+  --skeleton-highlight: hsl(0 0% 100% / 0.28);
+  --skeleton-duration: 1.5s;
+}
+
+[part~="bone"] {
+  background: var(--skeleton-bg);
+  border-radius: var(--snice-border-radius-md, 4px);
+}
+
+:host([variant="text"]) [part~="bone"] {
+  border-radius: var(--snice-border-radius-md, 4px);
+}
+
+:host([variant="circular"]) [part~="bone"] {
+  border-radius: 50%;
+}
+
+:host([variant="rounded"]) [part~="bone"] {
+  border-radius: var(--snice-border-radius-lg, 8px);
+}
+
+:host([variant="rectangular"]) [part~="bone"] {
+  border-radius: 0;
+}
+
+[part~="bone"]::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--skeleton-highlight) 50%,
+    transparent 100%
+  );
+  animation-duration: var(--skeleton-duration);
+  animation-timing-function: cubic-bezier(0.33, 0, 0.67, 1);
+}
+
+:host([animation="pulse"]) [part~="bone"] {
+  animation-duration: 1.5s;
+  animation-timing-function: ease-in-out;
+}
+
+:host([animation="pulse"]) [part~="bone"]::after,
+:host([animation="none"]) [part~="bone"]::after {
+  content: none;
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="bone"] {
+    animation: none;
+  }
+
+  [part~="bone"]::after {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="bone"] {
+    border: 1px solid GrayText;
+  }
+
+  [part~="bone"]::after {
+    display: none;
+  }
+}
