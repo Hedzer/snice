@@ -57,6 +57,7 @@
 [part~="input"] {
   caret-color: var(--snice-color-text);
   border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-win-stroke-input-bottom);
+  text-overflow: ellipsis;
 }
 
 [part~="placeholder"] {
@@ -205,7 +206,7 @@
   cursor: default;
 }
 
-/* Disabled State — flat muted surface, tertiary ink */
+/* Disabled State — opacity: 1 crisp WinUI 3 muted tokens in light & dark */
 [part~="trigger-disabled"],
 [part~="trigger-disabled"]:hover,
 [part~="trigger-disabled"]:active,
@@ -219,22 +220,22 @@
 :host([disabled]) [part~="input"],
 :host([disabled]) [part~="input"]:hover,
 :host([disabled]) [part~="input"]:disabled {
-  background: var(--snice-win-control-bg-pressed);
-  border-color: var(--snice-color-border-subtle);
-  color: var(--snice-color-text-tertiary);
+  background: color-mix(in srgb, var(--snice-color-text) 4%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   box-shadow: none;
-  opacity: 0.65;
+  opacity: 1;
   cursor: not-allowed;
 }
 
 :host([disabled]) [part~="label"],
 :host([disabled]) [part~="placeholder"],
 :host([disabled]) [part~="arrow"] {
-  color: var(--snice-color-text-tertiary);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
 }
 
 [part~="input-disabled"]::placeholder {
-  color: var(--snice-color-text-tertiary);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   opacity: 1;
 }
 
@@ -281,6 +282,11 @@
 
 [part~="spinner"] {
   color: var(--snice-color-primary);
+}
+
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  border-width: 1.5px;
 }
 
 /* Trigger Icons, Clear Button & Chevron */

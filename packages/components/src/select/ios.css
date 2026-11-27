@@ -42,6 +42,7 @@
 
 [part~="input"] {
   caret-color: var(--snice-color-primary);
+  text-overflow: ellipsis;
 }
 
 [part~="input"]::placeholder {
@@ -67,9 +68,9 @@
 :host([size="small"]) [part~="trigger"],
 :host([size="small"]) [part~="input"] {
   min-height: 2.125rem;
-  padding: 0.3125rem 2rem 0.3125rem 0.75rem;
+  padding: 0.3125rem 1.75rem 0.3125rem 0.625rem;
   border-radius: 10px;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
 
 :host([size="large"]) [part~="trigger"],
@@ -181,7 +182,7 @@
   opacity: 0.5;
 }
 
-/* Disabled state — beats readonly and hover */
+/* Disabled state — opacity: 1 crisp muted tokens so dark OLED & light stay visible */
 [part~="trigger-disabled"],
 [part~="trigger"][part~="trigger-disabled"]:hover,
 [part~="trigger"][part~="trigger-disabled"]:active,
@@ -193,16 +194,20 @@
 [part~="input"][part~="input-disabled"]:disabled:hover,
 :host([disabled]) [part~="input"],
 :host([disabled]) [part~="input"]:hover {
-  opacity: 0.42;
-  background: var(--snice-color-surface-container);
-  border-color: var(--snice-color-border-subtle);
-  color: var(--snice-color-text-secondary);
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 6%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   box-shadow: none;
   cursor: not-allowed;
 }
 
-:host([disabled][editable]) [part~="arrow"] {
-  opacity: 0.42;
+:host([disabled]) [part~="label"],
+:host([disabled]) [part~="placeholder"],
+:host([disabled]) [part~="arrow"],
+:host([disabled]) [part~="input"]::placeholder {
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
+  opacity: 1;
 }
 
 /* Loading state — ordered AFTER disabled so trigger stays readable (0.82) rather than 0.42 */
@@ -309,6 +314,11 @@
   height: 0.9375rem;
   margin-right: 0;
   color: var(--snice-color-primary);
+}
+
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  border-width: 1.75px;
 }
 
 /* Multi-select capsule tags */
