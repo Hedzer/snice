@@ -1,42 +1,147 @@
-/* Material 3 Expressive — snice-drawer (Modal Bottom Sheet with 32x4dp Handle / Side Sheet) */
+/* Android Material 3 Expressive — snice-drawer (M3 Navigation Drawer / Side & Bottom Sheet) */
 [part~="backdrop"] {
-  background: hsl(0 0% 0% / 0.4);
+  background: hsl(0 0% 0% / 0.36);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
 
 [part~="base"] {
   background: var(--snice-color-surface-container-low);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-radius: 0 16px 16px 0;
   box-shadow: var(--snice-shadow-md);
-}
-
-:host([position="bottom"]) [part~="base"] {
-  border-top-left-radius: 28px;
-  border-top-right-radius: 28px;
+  transition: transform 300ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
 }
 
 :host([position="left"]) [part~="base"] {
-  border-top-right-radius: 16px;
-  border-bottom-right-radius: 16px;
+  border-radius: 0 16px 16px 0;
 }
 
 :host([position="right"]) [part~="base"] {
-  border-top-left-radius: 16px;
-  border-bottom-left-radius: 16px;
+  border-radius: 16px 0 0 16px;
+}
+
+:host([position="top"]) [part~="base"] {
+  border-radius: 0 0 28px 28px;
+  border-bottom: none;
+}
+
+:host([position="bottom"]) [part~="base"] {
+  border-radius: 28px 28px 0 0;
+  border-top: none;
+}
+
+:host([size="full"]) [part~="base"],
+:host([position="left"][size="full"]) [part~="base"],
+:host([position="right"][size="full"]) [part~="base"],
+:host([position="top"][size="full"]) [part~="base"],
+:host([position="bottom"][size="full"]) [part~="base"] {
+  border-radius: 0;
+}
+
+:host([inline]) [part~="base"],
+:host([inline][position="left"]) [part~="base"],
+:host([inline][position="right"]) [part~="base"],
+:host([inline][position="top"]) [part~="base"],
+:host([inline][position="bottom"]) [part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  border-right: 1px solid var(--snice-color-border-subtle);
+}
+
+:host([inline][position="right"]) [part~="base"] {
+  border-right: none;
+  border-left: 1px solid var(--snice-color-border-subtle);
+}
+
+:host([inline][position="top"]) [part~="base"] {
+  border-right: none;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+:host([inline][position="bottom"]) [part~="base"] {
+  border-right: none;
+  border-top: 1px solid var(--snice-color-border-subtle);
 }
 
 :host([position="bottom"]) [part~="grabber"] {
   display: block;
   width: 2rem;
   height: 4px;
-  margin: 1rem auto 0.5rem;
+  margin: 1.375rem auto 0.5rem;
   border-radius: 9999px;
   background: var(--snice-color-text-tertiary);
-  opacity: 0.5;
+  opacity: 0.4;
   flex-shrink: 0;
 }
 
+:host([inline]) [part~="grabber"] {
+  display: none;
+}
+
 [part~="header"] {
+  padding: 0.75rem 1.5rem 0.5rem;
   border-bottom: none;
-  padding: 0.75rem 1.5rem;
+}
+
+[part~="title"] {
+  font-size: 1.375rem;
+  font-weight: 400;
+  line-height: 1.75rem;
+  color: var(--snice-color-text);
+}
+
+[part~="body"] {
+  padding: 0.75rem 1.5rem 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.43;
+  color: var(--snice-color-text);
+}
+
+[part~="footer"] {
+  padding: 0.75rem 1.5rem 1.5rem;
+  border-top: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="footer"][part~="footer-empty"] {
+  display: none;
+}
+
+[part~="close"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--snice-color-text-secondary);
+  transition:
+    border-radius 150ms var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    background-color 150ms var(--snice-m3-spring-effects, ease),
+    color 150ms var(--snice-m3-spring-effects, ease);
+}
+
+[part~="close"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  color: var(--snice-color-text);
+}
+
+[part~="close"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+[part~="close"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="base"],
+  [part~="close"] {
+    transition-duration: 0.01ms;
+  }
 }

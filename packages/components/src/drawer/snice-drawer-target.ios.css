@@ -1,0 +1,10 @@
+/* iOS 26+ Liquid Glass — snice-drawer-target */
+:host {
+  transition: transform var(--snice-transition-medium, 340ms) var(--snice-ios-spring-sheet, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    transition-duration: 0.01ms;
+  }
+}

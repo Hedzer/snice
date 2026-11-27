@@ -1,0 +1,10 @@
+/* Android Material 3 Expressive — snice-drawer-target */
+:host {
+  transition: transform 300ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    transition-duration: 0.01ms;
+  }
+}

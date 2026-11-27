@@ -1,0 +1,10 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-drawer-target */
+:host {
+  transition: transform var(--snice-transition-medium, 220ms) var(--snice-ease-out, cubic-bezier(0.22, 0.8, 0.2, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    transition-duration: 0.01ms;
+  }
+}

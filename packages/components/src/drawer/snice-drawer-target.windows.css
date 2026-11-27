@@ -1,0 +1,10 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-drawer-target */
+:host {
+  transition: transform 187ms cubic-bezier(0, 0, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    transition-duration: 0.01ms;
+  }
+}
