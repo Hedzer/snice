@@ -1,0 +1,352 @@
+/* iOS 26+ Liquid Glass — snice-file-gallery
+ * Opaque grouped 16px file cards and 20px dashed drop well (zero blur on
+ * content cards), 38px circular Liquid Glass header buttons, hairline dividers,
+ * spring press, and explicit white ink on dark-mode semantic badges/statuses.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+/* Dropzone — opaque grouped surface */
+:host [part~="dropzone"] {
+  border-radius: 20px;
+  border: 1.5px dashed var(--snice-color-border-hover);
+  background: var(--snice-color-surface-container-high);
+  padding: 28px 20px;
+  transition:
+    border-color var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease-out),
+    background-color var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease-out),
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+}
+
+:host [part~="dropzone-has-files"] {
+  padding: 16px 20px;
+}
+
+:host [part~="dropzone"]:hover {
+  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 6%, var(--snice-color-surface-container-high));
+}
+
+:host [part~="dropzone-drag-over"],
+:host [part~="dropzone-drag-over"]:hover {
+  border: 2px solid var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, var(--snice-color-surface-container-high));
+}
+
+:host [part~="dropzone"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="dropzone-disabled"],
+:host [part~="dropzone-disabled"]:hover {
+  opacity: 0.42;
+  cursor: not-allowed;
+  border-color: var(--snice-color-border);
+  background: var(--snice-color-surface-container-low);
+  transform: none;
+}
+
+:host [part~="dropzone-icon"] {
+  color: var(--snice-color-primary);
+  opacity: 0.85;
+}
+
+:host [part~="dropzone-primary"] {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--snice-color-text);
+}
+
+:host [part~="dropzone-secondary"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="dropzone-hint"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Header & Liquid Glass Toolbar Pills */
+:host [part~="header"] {
+  font-family: var(--snice-font-family-display);
+  padding: 4px 0;
+}
+
+:host [part~="title"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--snice-color-text);
+}
+
+:host [part~="actions"] {
+  gap: 8px;
+}
+
+:host [part~="action-button"] {
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 0.5px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-xs);
+  color: var(--snice-color-text);
+  transition:
+    background-color var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease-out),
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+}
+
+:host [part~="action-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 90%, var(--snice-color-primary) 10%);
+  border-color: var(--snice-ios-glass-border);
+}
+
+:host [part~="action-button"]:active {
+  transform: scale(0.95);
+}
+
+:host [part~="action-button"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Gallery Cards — strictly opaque grouped surfaces */
+:host [part~="item"] {
+  border-radius: 16px;
+  border: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-high);
+  box-shadow: var(--snice-shadow-xs);
+  transition:
+    border-color var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease-out),
+    box-shadow var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="item"]:hover {
+  border-color: var(--snice-color-border-hover);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="item-uploading"] {
+  border-color: var(--snice-color-primary);
+}
+
+:host [part~="item-completed"] {
+  border-color: color-mix(in srgb, var(--snice-color-success) 55%, var(--snice-color-border-subtle));
+}
+
+:host [part~="item-error"] {
+  border-color: var(--snice-color-danger);
+}
+
+:host [part~="item-paused"] {
+  border-color: var(--snice-color-warning);
+}
+
+:host([view="list"]) [part~="item"] {
+  border-radius: 14px;
+}
+
+:host [part~="item-preview"] {
+  background: transparent;
+}
+
+:host [part~="placeholder"] {
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text-secondary);
+}
+
+/* Progress Bar */
+:host [part~="progress"] {
+  height: 4px;
+  background: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+}
+
+:host [part~="progress-bar"] {
+  background: var(--snice-color-primary);
+  border-radius: 9999px;
+}
+
+/* Badges & Status Circles — explicit white ink in light AND dark mode */
+:host [part~="badge-text"] {
+  border-radius: 9999px;
+  padding: 3px 8px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host [part~="status-success"] {
+  background: var(--snice-color-success);
+  color: hsl(0 0% 100%);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host [part~="status-error"] {
+  background: var(--snice-color-danger);
+  color: hsl(0 0% 100%);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+/* Item Metadata */
+:host [part~="item-info"] {
+  padding: 10px 12px;
+}
+
+:host [part~="item-name"] {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--snice-color-text);
+}
+
+:host [part~="item-meta"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="progress-text"] {
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+:host [part~="error-text"] {
+  color: var(--snice-color-danger);
+  font-weight: 500;
+}
+
+/* Item Actions */
+:host [part~="item-actions"] {
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+  padding: 6px 10px;
+  gap: 6px;
+}
+
+:host([view="list"]) [part~="item-actions"] {
+  border-top: none;
+  border-left: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host [part~="item-action"] {
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  color: var(--snice-color-text);
+  transition:
+    background-color var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out),
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+}
+
+:host [part~="item-action"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+:host [part~="item-action"]:active {
+  transform: scale(0.95);
+}
+
+:host [part~="item-action"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="item-action-delete"] {
+  color: var(--snice-color-danger);
+}
+
+:host [part~="item-action-delete"]:hover {
+  background: color-mix(in srgb, var(--snice-color-danger) 14%, transparent);
+}
+
+/* Add Tile & Custom Action */
+:host [part~="add-button"],
+:host [part~="custom-action"] {
+  border-radius: 16px;
+  border: 1.5px dashed color-mix(in srgb, var(--snice-color-primary) 45%, var(--snice-color-border));
+  background: var(--snice-color-surface-container-low);
+  box-shadow: none;
+  transition:
+    border-color var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease-out),
+    background-color var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease-out),
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+}
+
+:host [part~="add-button"]:hover,
+:host [part~="custom-action"]:hover {
+  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 8%, var(--snice-color-surface-container-high));
+  box-shadow: none;
+}
+
+:host [part~="add-button"]:active,
+:host [part~="custom-action"]:active {
+  transform: scale(0.98);
+}
+
+:host [part~="add-button"]:focus-visible,
+:host [part~="custom-action"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="add-button-disabled"],
+:host [part~="add-button-disabled"]:hover,
+:host [part~="add-button-disabled"]:active {
+  opacity: 0.42;
+  cursor: not-allowed;
+  border-color: var(--snice-color-border);
+  background: var(--snice-color-surface-container-low);
+  transform: none;
+}
+
+:host [part~="add-icon"] {
+  background: transparent;
+  color: var(--snice-color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="dropzone"],
+  :host [part~="action-button"],
+  :host [part~="item"],
+  :host [part~="item-action"],
+  :host [part~="add-button"],
+  :host [part~="custom-action"] {
+    transition: none;
+  }
+
+  :host [part~="action-button"]:active,
+  :host [part~="item-action"]:active,
+  :host [part~="add-button"]:active,
+  :host [part~="custom-action"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="dropzone"],
+  :host [part~="item"],
+  :host [part~="add-button"],
+  :host [part~="custom-action"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="action-button"],
+  :host [part~="item-action"] {
+    background: Canvas;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+  }
+}
