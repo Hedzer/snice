@@ -1,0 +1,25 @@
+/* iOS 26+ Liquid Glass — snice-date-picker */
+[part~="input"] {
+  min-height: 2.75rem;
+  border-radius: 12px;
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="calendar"] {
+  border-radius: 22px;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+}
+
+[part~="day"] {
+  border-radius: 9999px;
+}
+
+[part~="nav-button"],
+[part~="today-button"] {
+  border-radius: 9999px;
+}

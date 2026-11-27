@@ -1,0 +1,33 @@
+/* iOS 26+ Liquid Glass — snice-kanban (Concentric Grouped Columns & Opaque Cards) */
+[part~="column"] {
+  border-radius: 20px;
+  background: var(--snice-color-surface-container-low);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  padding: 0.5rem;
+}
+
+[part~="column-header"] {
+  padding: 0.5rem 0.625rem;
+}
+
+[part~="column-title"] {
+  font-weight: 600;
+  letter-spacing: -0.016em;
+}
+
+[part~="column-count"] {
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container);
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="card"] {
+  border-radius: 14px;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="card-label"] {
+  border-radius: 9999px;
+}

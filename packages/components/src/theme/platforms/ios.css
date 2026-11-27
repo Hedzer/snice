@@ -1,0 +1,226 @@
+/* ==========================================================================
+   Snice Platform Skin — iOS 26+ Liquid Glass
+   Pinned Spec: Apple Human Interface Guidelines — iOS 26+ Liquid Glass
+                https://developer.apple.com/design/human-interface-guidelines/materials
+   Verified:    2026-08-20
+   Provenance:  System SF font stack only (-apple-system, BlinkMacSystemFont,
+                'SF Pro Text', 'SF Pro Display', system-ui, sans-serif).
+                Zero redistributed Apple fonts, SF Symbols binaries, or
+                endorsement claims.
+   Browser limits: CoreHaptics / UIImpactFeedbackGenerator and OS compositor
+                wallpaper refraction shaders are OS-private; CSS backdrop-filter
+                vibrancy + specular rims + spring micro-behaviors deliver
+                browser-expressible parity with crisp fallbacks.
+   ========================================================================== */
+
+:root {
+  /* Typography — Apple SF system stack */
+  --snice-font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif;
+  --snice-font-family-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+  --snice-font-family-mono: 'SF Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --snice-tracking-tight: -0.024em;
+  --snice-tracking-normal: -0.008em;
+
+  /* iOS 26 System Semantic Seeds — brand overrides on --snice-color-primary
+     cascade automatically through core.css color-mix() derivations. */
+  --snice-color-primary: hsl(211 100% 50%);
+  --snice-color-success: hsl(135 59% 49%);
+  --snice-color-warning: hsl(35 100% 50%);
+  --snice-color-danger: hsl(3 100% 59%);
+  --snice-color-neutral: hsl(240 4% 46%);
+
+  /* iOS Grouped Surface Hierarchy (opaque content surfaces — glass is reserved
+     strictly for floating control/navigation chrome above content). */
+  --snice-color-surface: hsl(240 20% 96%);
+  --snice-color-surface-container-lowest: hsl(240 14% 92%);
+  --snice-color-surface-container-low: hsl(240 16% 95%);
+  --snice-color-surface-container: hsl(240 14% 93%);
+  --snice-color-surface-container-high: hsl(0 0% 100%);
+  --snice-color-surface-container-highest: hsl(0 0% 100%);
+
+  /* Text & Hairline Separators */
+  --snice-color-text: hsl(0 0% 0%);
+  --snice-color-text-secondary: hsl(240 4% 34%);
+  --snice-color-text-tertiary: hsl(240 4% 52%);
+  --snice-color-text-inverse: hsl(0 0% 100%);
+  --snice-color-border: hsl(240 6% 24% / 0.16);
+  --snice-color-border-hover: hsl(240 6% 24% / 0.28);
+  --snice-color-border-subtle: hsl(240 6% 24% / 0.1);
+
+  /* Concentric Corner Geometry */
+  --snice-border-radius-sm: 8px;
+  --snice-border-radius-md: 12px;
+  --snice-border-radius-lg: 20px;
+  --snice-border-radius-xl: 28px;
+  --snice-border-radius-pill: 9999px;
+
+  /* Safe-Area Insets */
+  --snice-safe-top: env(safe-area-inset-top, 0px);
+  --snice-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --snice-safe-left: env(safe-area-inset-left, 0px);
+  --snice-safe-right: env(safe-area-inset-right, 0px);
+
+  /* Liquid Glass Materials — Regular Glass (navigation, menus, sheets, popovers)
+     vs Clear Glass (controls floating over rich media / active glass lens). */
+  --snice-ios-glass-regular-bg: hsl(0 0% 100% / 0.72);
+  --snice-ios-glass-clear-bg: hsl(0 0% 100% / 0.36);
+  --snice-ios-glass-tinted-bg: color-mix(in srgb, var(--snice-color-primary) 16%, hsl(0 0% 100% / 0.68));
+  --snice-ios-glass-blur: blur(24px) saturate(190%);
+  --snice-ios-glass-clear-blur: blur(14px) saturate(175%);
+  --snice-ios-glass-border: hsl(0 0% 100% / 0.72);
+  --snice-ios-glass-rim: inset 0 1px 0 0 hsl(0 0% 100% / 0.85), inset 0 -0.5px 0 0 hsl(0 0% 0% / 0.08), 0 0 0 0.5px hsl(0 0% 0% / 0.06);
+  --snice-ios-glass-shadow: 0 10px 32px -8px hsl(0 0% 0% / 0.16), 0 2px 8px -2px hsl(0 0% 0% / 0.08);
+
+  /* Ambient iOS Shadows */
+  --snice-shadow-xs: 0 1px 2px hsl(0 0% 0% / 0.05);
+  --snice-shadow-sm: 0 2px 8px -1px hsl(0 0% 0% / 0.08), 0 1px 2px hsl(0 0% 0% / 0.04);
+  --snice-shadow-md: 0 6px 20px -4px hsl(0 0% 0% / 0.12), 0 2px 6px -1px hsl(0 0% 0% / 0.06);
+  --snice-shadow-lg: 0 14px 36px -6px hsl(0 0% 0% / 0.16), 0 4px 12px -2px hsl(0 0% 0% / 0.08);
+  --snice-shadow-xl: 0 24px 48px -8px hsl(0 0% 0% / 0.22);
+  --snice-shadow-2xl: 0 32px 64px -12px hsl(0 0% 0% / 0.28);
+
+  /* iOS 26 Spring Motion */
+  --snice-transition-fast: 180ms;
+  --snice-transition-medium: 320ms;
+  --snice-transition-slow: 460ms;
+  --snice-ease-spring: cubic-bezier(0.28, 1.32, 0.42, 1);
+  --snice-ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+  --snice-ios-spring-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Focus Ring */
+  --snice-focus-ring-width: 3px;
+  --snice-focus-ring-offset: 2px;
+  --snice-focus-ring-color: color-mix(in srgb, var(--snice-color-primary) 45%, transparent);
+}
+
+[data-theme="dark"] {
+  --snice-color-primary: hsl(210 100% 52%);
+  --snice-color-success: hsl(135 63% 50%);
+  --snice-color-warning: hsl(36 100% 52%);
+  --snice-color-danger: hsl(3 100% 61%);
+  --snice-color-neutral: hsl(240 4% 58%);
+
+  --snice-color-surface: hsl(0 0% 0%);
+  --snice-color-surface-container-lowest: hsl(240 5% 12%);
+  --snice-color-surface-container-low: hsl(240 5% 9%);
+  --snice-color-surface-container: hsl(240 4% 16%);
+  --snice-color-surface-container-high: hsl(240 5% 11%);
+  --snice-color-surface-container-highest: hsl(240 4% 15%);
+
+  --snice-color-text: hsl(0 0% 100%);
+  --snice-color-text-secondary: hsl(240 5% 68%);
+  --snice-color-text-tertiary: hsl(240 4% 50%);
+  --snice-color-text-inverse: hsl(0 0% 0%);
+  --snice-color-border: hsl(240 6% 45% / 0.34);
+  --snice-color-border-hover: hsl(240 6% 60% / 0.46);
+  --snice-color-border-subtle: hsl(240 6% 45% / 0.22);
+
+  --snice-ios-glass-regular-bg: hsl(240 6% 16% / 0.68);
+  --snice-ios-glass-clear-bg: hsl(240 6% 24% / 0.36);
+  --snice-ios-glass-tinted-bg: color-mix(in srgb, var(--snice-color-primary) 24%, hsl(240 6% 16% / 0.68));
+  --snice-ios-glass-border: hsl(0 0% 100% / 0.22);
+  --snice-ios-glass-rim: inset 0 1px 0 0 hsl(0 0% 100% / 0.26), inset 0 -0.5px 0 0 hsl(0 0% 0% / 0.4), 0 0 0 0.5px hsl(0 0% 100% / 0.1);
+  --snice-ios-glass-shadow: 0 14px 40px -8px hsl(0 0% 0% / 0.65), 0 2px 10px -2px hsl(0 0% 0% / 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]),
+  :root[data-theme="auto"] {
+    --snice-color-primary: hsl(210 100% 52%);
+    --snice-color-success: hsl(135 63% 50%);
+    --snice-color-warning: hsl(36 100% 52%);
+    --snice-color-danger: hsl(3 100% 61%);
+    --snice-color-neutral: hsl(240 4% 58%);
+
+    --snice-color-surface: hsl(0 0% 0%);
+    --snice-color-surface-container-lowest: hsl(240 5% 12%);
+    --snice-color-surface-container-low: hsl(240 5% 9%);
+    --snice-color-surface-container: hsl(240 4% 16%);
+    --snice-color-surface-container-high: hsl(240 5% 11%);
+    --snice-color-surface-container-highest: hsl(240 4% 15%);
+
+    --snice-color-text: hsl(0 0% 100%);
+    --snice-color-text-secondary: hsl(240 5% 68%);
+    --snice-color-text-tertiary: hsl(240 4% 50%);
+    --snice-color-text-inverse: hsl(0 0% 0%);
+    --snice-color-border: hsl(240 6% 45% / 0.34);
+    --snice-color-border-hover: hsl(240 6% 60% / 0.46);
+    --snice-color-border-subtle: hsl(240 6% 45% / 0.22);
+
+    --snice-ios-glass-regular-bg: hsl(240 6% 16% / 0.68);
+    --snice-ios-glass-clear-bg: hsl(240 6% 24% / 0.36);
+    --snice-ios-glass-tinted-bg: color-mix(in srgb, var(--snice-color-primary) 24%, hsl(240 6% 16% / 0.68));
+    --snice-ios-glass-border: hsl(0 0% 100% / 0.22);
+    --snice-ios-glass-rim: inset 0 1px 0 0 hsl(0 0% 100% / 0.26), inset 0 -0.5px 0 0 hsl(0 0% 0% / 0.4), 0 0 0 0.5px hsl(0 0% 100% / 0.1);
+    --snice-ios-glass-shadow: 0 14px 40px -8px hsl(0 0% 0% / 0.65), 0 2px 10px -2px hsl(0 0% 0% / 0.4);
+  }
+}
+
+/* Progressive enhancement fallback when backdrop-filter is unavailable */
+@supports not (backdrop-filter: blur(1px)) {
+  :root {
+    --snice-ios-glass-regular-bg: hsl(0 0% 100% / 0.96);
+    --snice-ios-glass-clear-bg: hsl(240 16% 96% / 0.94);
+    --snice-ios-glass-blur: none;
+    --snice-ios-glass-clear-blur: none;
+  }
+  [data-theme="dark"] {
+    --snice-ios-glass-regular-bg: hsl(240 5% 15% / 0.96);
+    --snice-ios-glass-clear-bg: hsl(240 5% 20% / 0.94);
+  }
+}
+
+/* Accessibility: Reduced Transparency */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --snice-ios-glass-regular-bg: var(--snice-color-surface-container-high);
+    --snice-ios-glass-clear-bg: var(--snice-color-surface-container);
+    --snice-ios-glass-tinted-bg: var(--snice-color-primary-subtle);
+    --snice-ios-glass-blur: none;
+    --snice-ios-glass-clear-blur: none;
+    --snice-ios-glass-border: var(--snice-color-border-hover);
+  }
+}
+
+/* Accessibility: Increased Contrast & Forced Colors */
+@media (prefers-contrast: more) {
+  :root {
+    --snice-color-border: hsl(0 0% 0% / 0.48);
+    --snice-ios-glass-regular-bg: var(--snice-color-surface-container-high);
+    --snice-ios-glass-border: hsl(0 0% 0% / 0.55);
+    --snice-focus-ring-width: 3px;
+  }
+  [data-theme="dark"] {
+    --snice-color-border: hsl(0 0% 100% / 0.55);
+    --snice-ios-glass-border: hsl(0 0% 100% / 0.65);
+  }
+}
+
+@media (forced-colors: active) {
+  :root {
+    --snice-ios-glass-blur: none;
+    --snice-ios-glass-regular-bg: Canvas;
+    --snice-ios-glass-border: CanvasText;
+    --snice-focus-ring-color: Highlight;
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --snice-transition-fast: 0ms;
+    --snice-transition-medium: 0ms;
+    --snice-transition-slow: 0ms;
+    --snice-ease-spring: linear;
+    --snice-ios-spring-sheet: linear;
+  }
+}
+
+[data-motion="reduce"],
+[data-motion="off"] {
+  --snice-transition-fast: 0ms;
+  --snice-transition-medium: 0ms;
+  --snice-transition-slow: 0ms;
+  --snice-ease-spring: linear;
+  --snice-ios-spring-sheet: linear;
+}

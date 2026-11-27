@@ -1,0 +1,37 @@
+/* iOS 26+ Liquid Glass — snice-table (Grouped Inset Table View — zero blur on cells) */
+[part~="frame"],
+[part~="container"] {
+  border-radius: 20px;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-sm);
+  overflow: hidden;
+}
+
+[part~="toolbar"] {
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  padding: 0.75rem 1rem;
+}
+
+[part~="header-cell"] {
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border-bottom: 0.5px solid var(--snice-color-border);
+}
+
+[part~="cell"] {
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  font-size: 0.9375rem;
+  letter-spacing: -0.008em;
+}
+
+[part~="pagination-button"] {
+  border-radius: 9999px;
+}

@@ -1,0 +1,26 @@
+/* iOS 26+ Liquid Glass — snice-work-order */
+[part~="base"] {
+  border-radius: 20px;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+[part~="header"] {
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="title"] {
+  font-weight: 700;
+  letter-spacing: -0.022em;
+}
+
+[part~="status"],
+[part~="priority"] {
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+[part~="sign-button"] {
+  border-radius: 9999px;
+}

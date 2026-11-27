@@ -10,6 +10,7 @@ import { ICONS } from '../icons';
 import { classifyIcon } from '../utils';
 import cssContent from './snice-nav.css?inline';
 import type { SniceNavElement, NavVariant, NavOrientation, NavActiveStyle } from './snice-nav.types';
+import { attachCompiledPlatformBehavior } from '../platform-behaviors/bind';
 
 const NAME_KEY = 'data-placard-name';
 const GROUP_KEY = 'data-group';
@@ -38,11 +39,21 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
   private navElement: HTMLElement | null = null;
   private lastVariant: NavVariant | null = null;
   private lastOrientation: NavOrientation | null = null;
+  private platformBehaviorCleanup?: () => void;
 
   connectedCallback() {
-    this.attachShadow({ mode: 'open' });
+    if (!this.shadowRoot) {
+      this.attachShadow({ mode: 'open' });
+    }
     this.applyStyles();
     this.render();
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
+  }
+
+  disconnectedCallback() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = undefined;
   }
 
   @context()

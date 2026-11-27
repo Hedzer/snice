@@ -9,6 +9,7 @@ import {
   normalizeSteppedValue
 } from '../form-control-validity';
 import { FormLabelAssociation } from '../form-label-association';
+import { attachCompiledPlatformBehavior } from '../platform-behaviors/bind';
 
 @element('snice-slider', { formAssociated: true, delegatesFocus: true })
 export class SniceSlider extends HTMLElement implements SniceSliderElement {
@@ -26,6 +27,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
 
   private customValidationMessage = '';
   private readonly labelAssociation: FormLabelAssociation;
+  private platformBehaviorCleanup?: () => void;
 
   constructor() {
     super();
@@ -299,6 +301,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
     this.clampValue(false);
     this.syncFormState();
     this.labelAssociation.connect();
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
   }
 
   @reconnect()
@@ -664,6 +667,8 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
 
   @dispose()
   cleanup() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = undefined;
     this.stopDragging(false);
     this.labelAssociation.disconnect();
   }

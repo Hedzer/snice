@@ -1,0 +1,53 @@
+/* iOS 26+ Liquid Glass — snice-drawer (Bottom Sheet with Grabber & Detents) */
+[part~="backdrop"] {
+  background: hsl(0 0% 0% / 0.36);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+[part~="base"] {
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-2xl);
+  transition: transform var(--snice-transition-medium, 340ms) var(--snice-ios-spring-sheet, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+:host([position="bottom"]) [part~="base"] {
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  border-bottom: none;
+  padding-bottom: var(--snice-safe-bottom, 0px);
+}
+
+:host([position="left"]) [part~="base"] {
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+
+:host([position="right"]) [part~="base"] {
+  border-top-left-radius: 24px;
+  border-bottom-left-radius: 24px;
+}
+
+:host([position="bottom"]) [part~="grabber"] {
+  display: block;
+  width: 2.25rem;
+  height: 5px;
+  margin: 0.5rem auto 0.25rem;
+  border-radius: 9999px;
+  background: hsl(240 4% 50% / 0.38);
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+[part~="header"] {
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  padding: 0.75rem 1.25rem;
+}
+
+[part~="close"] {
+  border-radius: 9999px;
+  background: hsl(240 5% 50% / 0.14);
+}

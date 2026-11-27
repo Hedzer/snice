@@ -1,0 +1,19 @@
+/* iOS 26+ Liquid Glass — snice-command-palette (iOS Spotlight Glass Sheet) */
+[part~="backdrop"] {
+  background: hsl(0 0% 0% / 0.34);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+[part~="container"] {
+  border-radius: 26px;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-2xl);
+}
+
+[part~="item"] {
+  border-radius: 14px;
+}

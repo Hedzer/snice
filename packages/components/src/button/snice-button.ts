@@ -1,8 +1,9 @@
-import { element, property, state, query, render, styles, html, css, isSafeUrl } from 'snice';
+import { element, property, state, query, ready, dispose, render, styles, html, css, isSafeUrl } from 'snice';
 import { renderIcon, strictStringAttributeConverter } from '../utils';
 import cssContent from './snice-button.css?inline';
 import type { ButtonVariant, ButtonSize, ButtonType, IconPlacement, ButtonJustify, SniceButtonElement } from './snice-button.types';
 import { findFormOwner } from '../form-control-validity';
+import { attachCompiledPlatformBehavior } from '../platform-behaviors/bind';
 
 @element('snice-button', { formAssociated: true, delegatesFocus: true })
 export class SniceButton extends HTMLElement implements SniceButtonElement {
@@ -10,6 +11,19 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
 
   @state()
   private formDisabled = false;
+
+  private platformBehaviorCleanup?: () => void;
+
+  @ready()
+  private initPlatformBehavior() {
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
+  }
+
+  @dispose()
+  private cleanupPlatformBehavior() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = undefined;
+  }
 
   constructor() {
     super();

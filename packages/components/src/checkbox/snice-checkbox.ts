@@ -1,7 +1,8 @@
-import { element, property, state, query, watch, dispatch, ready, render, styles, html, css, on } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, dispose, render, styles, html, css, on } from 'snice';
 import cssContent from './snice-checkbox.css?inline';
 import type { CheckboxSize, SniceCheckboxElement } from './snice-checkbox.types';
 import { applyElementInternalsFormValue, applyElementInternalsValidity } from '../form-control-validity';
+import { attachCompiledPlatformBehavior } from '../platform-behaviors/bind';
 
 @element('snice-checkbox', { formAssociated: true, delegatesFocus: true })
 export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
@@ -11,6 +12,7 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   private pendingUserChange = false;
   private forwardingHostActivation = false;
   private customValidationMessage = '';
+  private platformBehaviorCleanup?: () => void;
 
   @state()
   private checkedState = false;
@@ -150,6 +152,13 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
 
     this.syncNativeInput();
     this.syncFormState();
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
+  }
+
+  @dispose()
+  private cleanupPlatformBehavior() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = undefined;
   }
 
   formAssociatedCallback() {

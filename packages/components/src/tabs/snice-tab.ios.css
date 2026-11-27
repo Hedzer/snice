@@ -1,0 +1,28 @@
+/* iOS 26+ Liquid Glass — snice-tab */
+:host {
+  position: relative;
+  z-index: 1;
+}
+
+[part~="base"] {
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--snice-color-text-secondary);
+  background: transparent;
+  transition: color var(--snice-transition-fast, 180ms) ease, background-color var(--snice-transition-fast, 180ms) ease;
+}
+
+[part~="base-active"] {
+  color: var(--snice-color-primary);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, var(--snice-color-surface-container-high));
+  box-shadow: 0 1px 4px hsl(0 0% 0% / 0.08), inset 0 1px 0 hsl(0 0% 100% / 0.65);
+}
+
+[part~="base"]:focus-visible {
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}

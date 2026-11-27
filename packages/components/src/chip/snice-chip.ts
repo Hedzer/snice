@@ -2,6 +2,7 @@ import { element, property, watch, query, dispatch, on, ready, dispose, render, 
 import { renderIcon, pickContrastColor, onThemeChange } from '../utils';
 import cssContent from './snice-chip.css?inline';
 import type { ChipVariant, ChipSize, ChipShape, SniceChipElement } from './snice-chip.types';
+import { attachCompiledPlatformBehavior } from '../platform-behaviors/bind';
 
 @element('snice-chip')
 export class SniceChip extends HTMLElement implements SniceChipElement {
@@ -138,15 +139,19 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
   }
 
   private themeUnsubscribe?: () => void;
+  private platformBehaviorCleanup?: () => void;
 
   @ready()
   init() {
     this.applyAutoContrastColor();
     this.themeUnsubscribe = onThemeChange(() => this.applyAutoContrastColor());
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
   }
 
   @dispose()
   teardown() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = undefined;
     this.themeUnsubscribe?.();
   }
 

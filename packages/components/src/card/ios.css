@@ -1,0 +1,23 @@
+/* iOS 26+ Liquid Glass — snice-card (Opaque Grouped Inset Container — no blur on content) */
+:host {
+  --card-border-radius: 20px;
+  --card-bg: var(--snice-color-surface-container-high);
+  --card-shadow: 0 2px 12px -2px hsl(0 0% 0% / 0.06), 0 0 0 0.5px var(--snice-color-border-subtle);
+}
+
+[part~="base"] {
+  border-radius: 20px;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+[part~="header"] {
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  font-weight: 600;
+  letter-spacing: -0.018em;
+}
+
+[part~="footer"] {
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+}

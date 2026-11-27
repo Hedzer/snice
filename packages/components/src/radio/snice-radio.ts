@@ -1,7 +1,8 @@
-import { element, property, state, query, on, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, state, query, on, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-radio.css?inline';
 import type { RadioSize, RadioVariant, SniceRadioElement } from './snice-radio.types';
 import { applyElementInternalsFormValue, applyElementInternalsValidity } from '../form-control-validity';
+import { attachCompiledPlatformBehavior } from '../platform-behaviors/bind';
 
 @element('snice-radio', { formAssociated: true, delegatesFocus: true })
 export class SniceRadio extends HTMLElement implements SniceRadioElement {
@@ -14,6 +15,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
   private forwardingHostActivation = false;
   private customValidationMessage = '';
   private lastRoot: ParentNode | null = null;
+  private platformBehaviorCleanup?: () => void;
 
   @state()
   private checkedState = false;
@@ -177,6 +179,13 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     this.lastRoot = this.radioRoot;
     this.setCheckedness(this.checked || (!this.dirtyCheckedness && this.defaultChecked), false, false);
     this.syncGroupState();
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
+  }
+
+  @dispose()
+  private cleanupPlatformBehavior() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = undefined;
   }
 
   connectedCallback() {

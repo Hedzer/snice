@@ -2,6 +2,7 @@ import { element, property, query, queryAll, watch, ready, dispose, dispatch, on
 import cssContent from './snice-tabs.css?inline';
 import type { TabsPlacement, SniceTabElement, SniceTabPanelElement, TabChangeDetail, TabSelectDetail } from './snice-tabs.types';
 import { transitions } from '../transitions';
+import { attachCompiledPlatformBehavior } from '../platform-behaviors/bind';
 
 @element('snice-tabs')
 export class SniceTabs extends HTMLElement {
@@ -90,6 +91,7 @@ export class SniceTabs extends HTMLElement {
   }
 
   private resizeObserver?: ResizeObserver;
+  private platformBehaviorCleanup?: () => void;
 
   @ready()
   init() {
@@ -104,12 +106,15 @@ export class SniceTabs extends HTMLElement {
     if (this.nav) {
       this.resizeObserver.observe(this.nav);
     }
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
   }
 
   private pendingTimeouts: Set<number> = new Set();
 
   @dispose()
   private cleanupResize() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = undefined;
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
     for (const id of this.pendingTimeouts) {

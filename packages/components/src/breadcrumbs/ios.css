@@ -1,0 +1,12 @@
+/* iOS 26+ Liquid Glass — snice-breadcrumbs */
+[part~="link"] {
+  border-radius: 9999px;
+  padding: 0.25rem 0.625rem;
+  color: var(--snice-color-primary);
+  font-weight: 500;
+}
+
+[part~="text-current"] {
+  font-weight: 600;
+  color: var(--snice-color-text);
+}

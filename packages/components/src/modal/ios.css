@@ -1,0 +1,47 @@
+/* iOS 26+ Liquid Glass — snice-modal (Concentric Liquid Glass Sheet/Alert) */
+[part~="backdrop"] {
+  background: hsl(0 0% 0% / 0.36);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+[part~="panel"] {
+  border-radius: 28px;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-2xl);
+  overflow: hidden;
+  transition:
+    opacity var(--snice-transition-medium, 280ms) var(--snice-ease-out, ease),
+    transform var(--snice-transition-medium, 320ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+}
+
+[part~="grabber"] {
+  display: block;
+  width: 2.25rem;
+  height: 5px;
+  margin: 0.5rem auto 0;
+  border-radius: 9999px;
+  background: hsl(240 4% 50% / 0.35);
+}
+
+[part~="header"] {
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  padding: 1rem 1.25rem 0.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+[part~="close"] {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background: hsl(240 5% 50% / 0.14);
+}
+
+[part~="footer"] {
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+  padding: 0.875rem 1.25rem calc(0.875rem + var(--snice-safe-bottom, 0px));
+}

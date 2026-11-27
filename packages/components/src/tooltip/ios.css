@@ -1,0 +1,11 @@
+/* iOS 26+ Liquid Glass — snice-tooltip */
+[part~="tooltip"],
+[part~="content"] {
+  border-radius: 12px;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  color: var(--snice-color-text);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+}

@@ -1,0 +1,10 @@
+/* iOS 26+ Liquid Glass — snice-progress */
+[part~="base"] {
+  border-radius: 9999px;
+  background: hsl(240 5% 50% / 0.18);
+}
+
+[part~="bar"] {
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}

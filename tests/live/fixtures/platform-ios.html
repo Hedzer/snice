@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en" data-platform="ios">
+<head>
+  <meta charset="utf-8" />
+  <title>iOS 26+ Liquid Glass Conformance Fixture</title>
+  <link rel="stylesheet" href="/dist/components/theme/core.css" />
+  <link rel="stylesheet" href="/dist/components/theme/dark.css" />
+  <link rel="stylesheet" href="/dist/components/theme/platforms/ios-scoped.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+      font-family: var(--snice-font-family);
+    }
+    .grid { display: grid; gap: 16px; max-width: 960px; }
+    .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .scroll-box { height: 240px; overflow-y: auto; border: 1px solid var(--snice-color-border-subtle); border-radius: 16px; padding: 12px; }
+    .tall-spacer { height: 600px; }
+  </style>
+  <style id="brand-css"></style>
+</head>
+<body>
+  <div class="grid">
+    <div class="scroll-box" data-ios-scroll-container>
+      <snice-nav id="ios-nav" orientation="horizontal"></snice-nav>
+      <div class="tall-spacer">Scrollable content beneath floating Liquid Glass nav</div>
+    </div>
+
+    <div class="row">
+      <snice-button id="btn-primary" variant="primary">Continue</snice-button>
+      <snice-button id="btn-default">Liquid Glass</snice-button>
+      <snice-switch id="sw-ios" label="Wi-Fi" checked></snice-switch>
+      <snice-checkbox id="cb-ios" label="Sync" checked></snice-checkbox>
+      <snice-radio id="rad-ios" name="ios-r" label="Auto" checked></snice-radio>
+      <snice-chip id="chip-ios" label="Photos" selectable selected></snice-chip>
+    </div>
+
+    <div class="row">
+      <snice-input id="inp-ios" label="Search" placeholder="Messages"></snice-input>
+      <snice-slider id="sld-ios" label="Brightness" value="65" min="0" max="100"></snice-slider>
+    </div>
+
+    <snice-tabs id="tabs-ios">
+      <snice-tab slot="nav">Overview</snice-tab>
+      <snice-tab slot="nav">Activity</snice-tab>
+      <snice-tab slot="nav">Sharing</snice-tab>
+      <snice-tab-panel>Overview panel</snice-tab-panel>
+      <snice-tab-panel>Activity panel</snice-tab-panel>
+      <snice-tab-panel>Sharing panel</snice-tab-panel>
+    </snice-tabs>
+
+    <snice-card id="card-ios">
+      <span slot="header">Grouped Card</span>
+      <p>Opaque iOS grouped inset card without backdrop blur.</p>
+    </snice-card>
+
+    <snice-table id="table-ios"></snice-table>
+    <snice-calendar id="cal-ios"></snice-calendar>
+    <snice-kanban id="kanban-ios"></snice-kanban>
+
+    <snice-drawer id="sheet-ios" position="bottom" size="medium">
+      <span slot="title">Share Sheet</span>
+      <div style="height: 500px;">Long sheet body content</div>
+    </snice-drawer>
+  </div>
+
+  <script type="module">
+    import '/dist/components/button/snice-button.js';
+    import '/dist/components/switch/snice-switch.js';
+    import '/dist/components/checkbox/snice-checkbox.js';
+    import '/dist/components/radio/snice-radio.js';
+    import '/dist/components/chip/snice-chip.js';
+    import '/dist/components/input/snice-input.js';
+    import '/dist/components/slider/snice-slider.js';
+    import '/dist/components/tabs/snice-tabs.js';
+    import '/dist/components/tabs/snice-tab.js';
+    import '/dist/components/tabs/snice-tab-panel.js';
+    import '/dist/components/card/snice-card.js';
+    import '/dist/components/nav/snice-nav.js';
+    import '/dist/components/drawer/snice-drawer.js';
+    import '/dist/components/table/snice-table.js';
+    import '/dist/components/calendar/snice-calendar.js';
+    import '/dist/components/kanban/snice-kanban.js';
+    import { enableRuntimePlatformBehaviors } from '/dist/components/platform-behaviors/runtime.js';
+
+    const nav = document.getElementById('ios-nav');
+    nav.update([
+      { name: 'home', title: 'Home', href: '#home' },
+      { name: 'library', title: 'Library', href: '#library' },
+      { name: 'search', title: 'Search', href: '#search' },
+    ], undefined, 'home');
+
+    const table = document.getElementById('table-ios');
+    table.columns = [
+      { key: 'name', label: 'Device', type: 'text' },
+      { key: 'status', label: 'Status', type: 'text' },
+    ];
+    table.data = [
+      { name: 'iPhone 17 Pro', status: 'Connected' },
+      { name: 'iPad Pro', status: 'Synced' },
+    ];
+
+    const kanban = document.getElementById('kanban-ios');
+    kanban.columns = [
+      { id: 'todo', title: 'Today', cards: [{ id: '1', title: 'Review HIG' }] },
+      { id: 'done', title: 'Done', cards: [{ id: '2', title: 'Liquid Glass' }] },
+    ];
+
+    window.__iosHandle = enableRuntimePlatformBehaviors(document);
+    window.__iosReady = Promise.all([
+      customElements.whenDefined('snice-switch'),
+      customElements.whenDefined('snice-button'),
+      customElements.whenDefined('snice-slider'),
+      customElements.whenDefined('snice-tabs'),
+      customElements.whenDefined('snice-drawer'),
+      customElements.whenDefined('snice-nav'),
+      customElements.whenDefined('snice-table'),
+      customElements.whenDefined('snice-calendar'),
+      customElements.whenDefined('snice-kanban'),
+    ]).then(() => new Promise((r) => setTimeout(r, 80)));
+  </script>
+</body>
+</html>

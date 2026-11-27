@@ -2,6 +2,7 @@ import { element, property, query, on, watch, ready, dispose, render, styles, ht
 import { X_MARK } from '../icons';
 import cssContent from './snice-drawer.css?inline';
 import type { DrawerPosition, DrawerSize, SniceDrawerElement } from './snice-drawer.types';
+import { attachCompiledPlatformBehavior } from '../platform-behaviors/bind';
 
 @element('snice-drawer')
 export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
@@ -70,6 +71,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
    *  unlock more times than we locked. */
   private scrollLocked = false;
   private boundBreakpointHandler?: (e: MediaQueryListEvent) => void;
+  private platformBehaviorCleanup?: () => void;
 
   @render()
   render() {
@@ -150,6 +152,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     if (this.open && !this.isInlineActive()) {
       this.handleOpen();
     }
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
   }
 
   private isHandlingOpenChange = false;
@@ -387,6 +390,8 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
 
   @dispose()
   cleanup() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = undefined;
     if (this.boundHandleEscape) {
       document.removeEventListener('keydown', this.boundHandleEscape);
     }

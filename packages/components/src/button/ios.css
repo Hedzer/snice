@@ -1,0 +1,88 @@
+/* iOS 26+ Liquid Glass — snice-button */
+[part~="base"] {
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  border-radius: 9999px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.014em;
+  overflow: hidden;
+  transition:
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
+    background-color var(--snice-transition-fast, 180ms) ease,
+    box-shadow var(--snice-transition-fast, 180ms) ease,
+    opacity var(--snice-transition-fast, 180ms) ease;
+}
+
+:host([size="small"]) [part~="base"] {
+  min-height: 2.125rem;
+  height: 2.125rem;
+  padding: 0 0.875rem;
+  font-size: 0.875rem;
+}
+
+:host([size="large"]) [part~="base"] {
+  min-height: 3.125rem;
+  height: 3.125rem;
+  padding: 0 1.5rem;
+  font-size: 1.0625rem;
+}
+
+/* Default button — Liquid Glass capsule */
+[part~="base"] {
+  background: var(--snice-ios-glass-regular-bg, hsl(0 0% 100% / 0.72));
+  backdrop-filter: var(--snice-ios-glass-blur, blur(24px) saturate(190%));
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur, blur(24px) saturate(190%));
+  border: 1px solid var(--snice-ios-glass-border, hsl(0 0% 100% / 0.72));
+  color: var(--snice-color-primary, hsl(211 100% 50%));
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-sm);
+}
+
+:host([variant="primary"]) [part~="base"] {
+  background: var(--snice-color-primary, hsl(211 100% 50%));
+  border-color: color-mix(in srgb, white 22%, var(--snice-color-primary, hsl(211 100% 50%)));
+  color: hsl(0 0% 100%);
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.35),
+    0 4px 14px -4px color-mix(in srgb, var(--snice-color-primary, hsl(211 100% 50%)) 45%, transparent);
+}
+
+:host([variant="danger"]) [part~="base"] {
+  background: var(--snice-color-danger, hsl(3 100% 59%));
+  border-color: color-mix(in srgb, white 20%, var(--snice-color-danger, hsl(3 100% 59%)));
+  color: hsl(0 0% 100%);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.3);
+}
+
+:host([variant="text"]) [part~="base"] {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--snice-color-primary, hsl(211 100% 50%));
+}
+
+[part~="base-outline"] {
+  background: var(--snice-ios-glass-tinted-bg, color-mix(in srgb, var(--snice-color-primary) 14%, transparent));
+  border: 1px solid color-mix(in srgb, var(--snice-color-primary, hsl(211 100% 50%)) 35%, transparent);
+  color: var(--snice-color-primary, hsl(211 100% 50%));
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.45);
+}
+
+[part~="base"]:active {
+  transform: scale(0.965);
+}
+
+[part~="base"]:focus-visible {
+  box-shadow:
+    0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color),
+    var(--snice-shadow-sm);
+}
+
+[part~="sheen"] {
+  display: block;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.28) 0%, transparent 48%);
+}

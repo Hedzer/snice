@@ -1,0 +1,22 @@
+/* iOS 26+ Liquid Glass — snice-radio */
+:host {
+  min-height: 2.75rem;
+}
+
+[part~="radio"] {
+  width: 1.375rem;
+  height: 1.375rem;
+  border: 1.5px solid var(--snice-color-border-hover);
+  background: var(--snice-color-surface-container-high);
+}
+
+[part~="radio-checked"] {
+  border-color: var(--snice-color-primary);
+  background: var(--snice-color-primary);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.35);
+}
+
+[part~="dot-checked"] {
+  background: hsl(0 0% 100%);
+  transform: scale(0.85);
+}

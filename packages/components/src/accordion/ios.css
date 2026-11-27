@@ -1,0 +1,13 @@
+/* iOS 26+ Liquid Glass — snice-accordion (iOS Grouped Inset Disclosure) */
+[part~="base"] {
+  border-radius: 18px;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  overflow: hidden;
+}
+
+[part~="header"] {
+  min-height: 2.75rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}

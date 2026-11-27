@@ -1,0 +1,10 @@
+/* iOS 26+ Liquid Glass — snice-stepper */
+[part~="step-indicator"] {
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+[part~="step-label"] {
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}

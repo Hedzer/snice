@@ -1,0 +1,14 @@
+/* iOS 26+ Liquid Glass — snice-alert */
+[part~="base"] {
+  border-radius: 18px;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-sm);
+}
+
+[part~="title"] {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}

@@ -1,0 +1,10 @@
+/* iOS 26+ Liquid Glass — snice-toast (Floating Notification Capsule) */
+[part~="toast"],
+[part~="base"] {
+  border-radius: 9999px;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+}

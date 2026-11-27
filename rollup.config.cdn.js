@@ -184,11 +184,21 @@ export function createCdnBuild(componentName, options = {}) {
         }
       },
       // Plugin to mark Snice core imports as external (resolved via shared runtime)
+      // and keep single-component CDN builds 0-byte free of compiled platform behaviors.
       {
         name: 'resolve-snice',
         resolveId(id) {
           if (id === 'snice' || id === 'snice/symbols' || id === 'snice/transitions') {
             return false;
+          }
+          if (id.replace(/\\/g, '/').endsWith('/platform-behaviors/bind') || id.replace(/\\/g, '/').endsWith('/platform-behaviors/bind.js')) {
+            return '\0snice-cdn-no-platform-behavior';
+          }
+          return null;
+        },
+        load(id) {
+          if (id === '\0snice-cdn-no-platform-behavior') {
+            return 'export function attachCompiledPlatformBehavior() { return undefined; }';
           }
           return null;
         }

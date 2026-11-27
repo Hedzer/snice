@@ -3,6 +3,7 @@ import cssContent from './snice-switch.css?inline';
 import type { SwitchSize, SniceSwitchElement } from './snice-switch.types';
 import { applyElementInternalsFormValue, applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
 import { FormLabelAssociation } from '../form-label-association';
+import { attachCompiledPlatformBehavior } from '../platform-behaviors/bind';
 
 @element('snice-switch', { formAssociated: true, delegatesFocus: true })
 export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
@@ -20,6 +21,7 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
 
   private customValidationMessage = '';
   private readonly labelAssociation: FormLabelAssociation;
+  private platformBehaviorCleanup?: () => void;
 
   constructor() {
     super();
@@ -213,6 +215,7 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
 
     // Update state labels if provided
     this.updateStateLabels();
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
   }
 
   @reconnect()
@@ -435,6 +438,8 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
 
   @dispose()
   private cleanup() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = undefined;
     this.labelAssociation.disconnect();
   }
 }

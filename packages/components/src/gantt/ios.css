@@ -1,0 +1,28 @@
+/* iOS 26+ Liquid Glass — snice-gantt */
+[part~="base"] {
+  border-radius: 20px;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  overflow: hidden;
+}
+
+[part~="header"] {
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="zoom-button"] {
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+[part~="bar"] {
+  border-radius: 9999px;
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.35), var(--snice-shadow-xs);
+}
+
+[part~="today-line"] {
+  background: var(--snice-color-danger);
+}

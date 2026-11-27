@@ -1,0 +1,27 @@
+/* iOS 26+ Liquid Glass — snice-chart (Apple Health / Stocks Grouped Card) */
+[part~="base"] {
+  border-radius: 20px;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-sm);
+  padding: 1rem;
+}
+
+[part~="legend-item"] {
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.008em;
+}
+
+[part~="legend-color"] {
+  border-radius: 9999px;
+}
+
+[part~="tooltip"] {
+  border-radius: 14px;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+}

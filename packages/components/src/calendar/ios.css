@@ -1,0 +1,45 @@
+/* iOS 26+ Liquid Glass — snice-calendar */
+[part~="base"] {
+  border-radius: 20px;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-sm);
+  overflow: hidden;
+}
+
+[part~="header"] {
+  padding: 0.875rem 1rem;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="title"] {
+  font-weight: 700;
+  letter-spacing: -0.022em;
+}
+
+[part~="nav-button"] {
+  border-radius: 9999px;
+  background: var(--snice-ios-glass-regular-bg);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+[part~="day-today"] {
+  color: var(--snice-color-danger);
+  font-weight: 700;
+}
+
+[part~="day-selected"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+}
+
+[part~="event-popover"],
+[part~="event-tooltip"] {
+  border-radius: 18px;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+}

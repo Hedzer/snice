@@ -1,0 +1,21 @@
+/* iOS 26+ Liquid Glass — snice-chip (Capsule Glass Pill) */
+[part~="base"] {
+  min-height: 2.25rem;
+  padding: 0 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-clear-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-clear-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-xs);
+}
+
+[part~="base-selected"] {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.32), var(--snice-shadow-sm);
+}
