@@ -1,0 +1,72 @@
+/* Windows 11 Fluent 2 / WinUI 3 radial gauge skin */
+
+:host [part~="track"] {
+  stroke: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  stroke-linecap: round;
+}
+
+:host [part~="fill"],
+:host([variant="default"]) [part~="fill"] {
+  stroke: var(--snice-color-neutral);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 187ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host([variant="primary"]) [part~="fill"],
+:host([variant="info"]) [part~="fill"] {
+  stroke: var(--snice-color-primary);
+}
+
+:host([variant="success"]) [part~="fill"] {
+  stroke: var(--snice-color-success);
+}
+
+:host([variant="warning"]) [part~="fill"] {
+  stroke: var(--snice-color-warning);
+}
+
+:host([variant="error"]) [part~="fill"] {
+  stroke: var(--snice-color-danger);
+}
+
+[part~="value"] {
+  font-family: var(--snice-font-family-display);
+  font-weight: 600;
+  letter-spacing: var(--snice-tracking-tight, -0.01em);
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+[part~="label"] {
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--snice-color-text-secondary);
+  margin-top: 0.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="fill"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="track"] {
+    stroke: GrayText;
+  }
+
+  :host [part~="fill"],
+  :host([variant="default"]) [part~="fill"],
+  :host([variant="primary"]) [part~="fill"],
+  :host([variant="info"]) [part~="fill"],
+  :host([variant="success"]) [part~="fill"],
+  :host([variant="warning"]) [part~="fill"],
+  :host([variant="error"]) [part~="fill"] {
+    stroke: Highlight;
+  }
+
+  [part~="value"],
+  [part~="label"] {
+    color: CanvasText;
+  }
+}
