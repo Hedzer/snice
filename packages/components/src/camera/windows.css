@@ -1,0 +1,146 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-camera
+ * Windows 11 Camera app viewfinder: 8px Fluent framing, 56px dual-ring WinUI
+ * shutter with zero hover bounce, 40px dark Acrylic switch button, high-
+ * contrast white/black dual-stroke focus, and WHCM support.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  border-radius: 8px;
+  border: 1px solid var(--snice-color-border-subtle);
+  background: rgb(0 0 0);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="base"] {
+  border-radius: 8px;
+  background: rgb(0 0 0);
+}
+
+:host [part~="controls"] {
+  gap: 12px;
+}
+
+/* 56px WinUI Camera Shutter — zero hover bounce */
+:host [part~="capture-button"] {
+  width: 56px;
+  height: 56px;
+  box-sizing: border-box;
+  border-radius: 9999px;
+  background: hsl(0 0% 100%);
+  color: hsl(0 0% 12%);
+  border: 3px solid hsl(0 0% 100% / 0.9);
+  box-shadow:
+    inset 0 0 0 2px hsl(0 0% 0% / 0.78),
+    var(--snice-shadow-md);
+  transition:
+    background-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1),
+    transform var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="capture-button"]:hover {
+  transform: none;
+  background: hsl(0 0% 96%);
+}
+
+:host [part~="capture-button"]:active {
+  transform: scale(0.96);
+}
+
+:host [part~="capture-button"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px hsl(0 0% 0%), 0 0 0 3px hsl(0 0% 100%);
+}
+
+/* Native Windows 11 Camera shutter is a crisp dual-ring disc without inner bullseye */
+:host [part~="capture-icon"] {
+  display: none;
+}
+
+/* 40px Dark Acrylic Switch Button */
+:host [part~="switch-button"] {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  background: hsl(0 0% 14% / 0.78);
+  backdrop-filter: var(--snice-win-acrylic-blur);
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur);
+  border: 1px solid hsl(0 0% 100% / 0.16);
+  border-top-color: hsl(0 0% 100% / 0.24);
+  color: hsl(0 0% 100%);
+  transition: background-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="switch-button"]:hover {
+  transform: none;
+  background: hsl(0 0% 20% / 0.86);
+}
+
+:host [part~="switch-button"]:active {
+  transform: none;
+  background: hsl(0 0% 12% / 0.9);
+}
+
+:host [part~="switch-button"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px hsl(0 0% 0%), 0 0 0 3px hsl(0 0% 100%);
+}
+
+:host [part~="button"]:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="switch-button"] {
+    background: hsl(0 0% 14% / 0.94);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :host [part~="switch-button"] {
+    background: hsl(0 0% 14% / 0.94);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="capture-button"],
+  :host [part~="switch-button"] {
+    transition: none;
+  }
+
+  :host [part~="capture-button"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="capture-button"],
+  :host [part~="switch-button"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 2px solid ButtonBorder;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  :host [part~="capture-icon"] {
+    display: block;
+  }
+
+  :host [part~="capture-button"]:focus-visible,
+  :host [part~="switch-button"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}

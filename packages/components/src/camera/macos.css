@@ -1,0 +1,150 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-camera
+ * Photo Booth / Continuity Camera viewfinder: 12px concentric desktop framing,
+ * compact 48px dual-ring shutter bezel, 34px dark Liquid Glass switch button,
+ * and AppKit focus halo.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  border-radius: 12px;
+  border: 0.5px solid var(--snice-color-border-subtle);
+  background: rgb(0 0 0);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="base"] {
+  border-radius: 12px;
+  background: rgb(0 0 0);
+}
+
+:host [part~="controls"] {
+  gap: 12px;
+}
+
+/* Compact 48px Desktop Shutter */
+:host [part~="capture-button"] {
+  width: 48px;
+  height: 48px;
+  box-sizing: border-box;
+  border-radius: 9999px;
+  background: hsl(0 0% 100%);
+  color: hsl(0 0% 14%);
+  border: 2.5px solid hsl(0 0% 100%);
+  box-shadow:
+    inset 0 0 0 2px hsl(0 0% 0% / 0.8),
+    0 3px 12px hsl(0 0% 0% / 0.36);
+  transition:
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out),
+    box-shadow var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="capture-button"]:hover {
+  transform: scale(1.03);
+  background: hsl(0 0% 100%);
+}
+
+:host [part~="capture-button"]:active {
+  transform: scale(0.94);
+}
+
+:host [part~="capture-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="capture-icon"] {
+  display: none;
+}
+
+/* Compact 34px Dark Liquid Glass Switch */
+:host [part~="switch-button"] {
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  background: hsl(240 6% 14% / 0.58);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid hsl(0 0% 100% / 0.26);
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.28),
+    0 3px 10px hsl(0 0% 0% / 0.35);
+  color: hsl(0 0% 100%);
+  transition:
+    background-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out),
+    border-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out),
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="switch-button"]:hover {
+  transform: none;
+  background: hsl(240 6% 18% / 0.72);
+  border-color: hsl(0 0% 100% / 0.42);
+}
+
+:host [part~="switch-button"]:active {
+  transform: scale(0.94);
+}
+
+:host [part~="switch-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="switch-icon"] {
+  width: 17px;
+  height: 17px;
+}
+
+:host [part~="button"]:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="switch-button"] {
+    background: hsl(240 6% 14% / 0.92);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :host [part~="switch-button"] {
+    background: hsl(240 6% 14% / 0.92);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="capture-button"],
+  :host [part~="switch-button"] {
+    transition: none;
+  }
+
+  :host [part~="capture-button"]:hover,
+  :host [part~="capture-button"]:active,
+  :host [part~="switch-button"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="capture-button"],
+  :host [part~="switch-button"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 2px solid ButtonBorder;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  :host [part~="capture-icon"] {
+    display: block;
+  }
+}
