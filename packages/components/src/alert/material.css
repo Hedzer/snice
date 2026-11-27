@@ -1,7 +1,165 @@
-/* Material 3 Expressive — snice-alert */
+/* Android Material 3 Expressive — snice-alert (Tonal Semantic Status Card) */
 [part~="base"] {
   border-radius: 16px;
-  background: var(--snice-m3-secondary-container);
-  color: var(--snice-m3-on-secondary-container);
+  padding: 1rem 1rem 1rem 1.125rem;
+  gap: 0.875rem;
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  line-height: 1.43;
+  letter-spacing: 0.008em;
+  background: var(--snice-m3-primary-container);
+  color: var(--snice-m3-on-primary-container, var(--snice-color-text));
   border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+:host([variant="info"]) [part~="base"] {
+  background: var(--snice-m3-primary-container);
+  color: var(--snice-m3-on-primary-container, var(--snice-color-text));
+  border: none;
+}
+
+:host([variant="success"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-success) 16%, var(--snice-color-surface-container-high));
+  color: var(--snice-color-text);
+  border: none;
+}
+
+:host([variant="warning"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-warning) 18%, var(--snice-color-surface-container-high));
+  color: var(--snice-color-text);
+  border: none;
+}
+
+:host([variant="error"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 16%, var(--snice-color-surface-container-high));
+  color: var(--snice-color-text);
+  border: none;
+}
+
+:host([appearance="accent"]) [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-left: 4px solid var(--snice-color-primary);
+}
+
+:host([appearance="accent"][variant="info"]) [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-left: 4px solid var(--snice-color-primary);
+}
+
+:host([appearance="accent"][variant="success"]) [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-left: 4px solid var(--snice-color-success);
+}
+
+:host([appearance="accent"][variant="warning"]) [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-left: 4px solid var(--snice-color-warning);
+}
+
+:host([appearance="accent"][variant="error"]) [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-left: 4px solid var(--snice-color-danger);
+}
+
+:host([size="small"]) [part~="base"] {
+  border-radius: 12px;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8125rem;
+}
+
+:host([size="large"]) [part~="base"] {
+  border-radius: 20px;
+  padding: 1.25rem 1.375rem;
+  font-size: 1rem;
+}
+
+[part~="icon"] {
+  color: var(--snice-color-primary);
+}
+
+:host([variant="info"]) [part~="icon"] {
+  color: var(--snice-color-primary);
+}
+
+:host([variant="success"]) [part~="icon"] {
+  color: var(--snice-color-success);
+}
+
+:host([variant="warning"]) [part~="icon"] {
+  color: var(--snice-color-warning);
+}
+
+:host([variant="error"]) [part~="icon"] {
+  color: var(--snice-color-danger);
+}
+
+:host([size="small"]) [part~="icon"] {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+:host([size="large"]) [part~="icon"] {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+[part~="title"] {
+  font-family: var(--snice-font-family);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  margin-bottom: 0.1875rem;
+}
+
+[part~="description"] {
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+[part~="close"] {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  color: inherit;
+  opacity: 0.85;
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects, ease),
+    border-radius 150ms var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    opacity 150ms ease;
+}
+
+[part~="close"]:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  opacity: 1;
+}
+
+[part~="close"]:active {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: 10px;
+}
+
+[part~="close"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="base"],
+  [part~="close"] {
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+  }
 }
