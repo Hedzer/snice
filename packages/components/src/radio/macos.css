@@ -1,8 +1,9 @@
 /* ==========================================================================
    macOS 26+ Liquid Glass / AppKit — snice-radio
    Compact desktop 16px AppKit radio button with top-lit accent fill & crisp
-   6px white center dot when checked, 13px SF Pro label, soft focus halo, and
-   crisp 10px macOS Settings grouped block cards.
+   6px white center dot when checked, 13px SF Pro label, soft focus halo,
+   complete invalid/loading/disabled/size overrides, and 10px macOS Settings
+   grouped block cards.
    ========================================================================== */
 
 :host {
@@ -24,14 +25,22 @@
   min-height: 0;
 }
 
+:host([hidden]) {
+  display: none;
+}
+
+/* Compact AppKit Radio Disc */
 [part~="radio"] {
   width: 1rem;
   height: 1rem;
+  flex-shrink: 0;
   box-sizing: border-box;
   border-radius: 50%;
   background: var(--snice-macos-control-bg);
   border: 1px solid var(--snice-color-border-hover);
   box-shadow: var(--snice-macos-control-shadow);
+  color: var(--snice-color-primary);
+  outline: none;
   transition:
     background-color var(--snice-transition-fast, 140ms) ease,
     border-color var(--snice-transition-fast, 140ms) ease,
@@ -48,18 +57,36 @@
   height: 1.25rem;
 }
 
-:host(:hover) [part~="radio"] {
-  border-color: color-mix(in srgb, var(--snice-color-primary) 55%, var(--snice-color-border-hover));
-}
-
+/* Checked Top-Lit Accent Disc */
 [part~="radio-checked"] {
   background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
   border-color: color-mix(in srgb, var(--snice-color-primary) 82%, black);
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.34),
     0 0.5px 1.5px hsl(0 0% 0% / 0.2);
+  color: hsl(0 0% 100%);
 }
 
+/* Hover & Active Feedback */
+:host(:hover) [part~="radio"] {
+  border-color: color-mix(in srgb, var(--snice-color-primary) 55%, var(--snice-color-border-hover));
+}
+
+:host(:hover) [part~="radio-checked"] {
+  border-color: color-mix(in srgb, var(--snice-color-primary) 82%, black);
+  filter: brightness(1.05);
+}
+
+:host(:active) [part~="radio"] {
+  filter: brightness(0.92);
+}
+
+:host(:active) [part~="radio-checked"] {
+  border-color: color-mix(in srgb, var(--snice-color-primary) 82%, black);
+  filter: brightness(0.92);
+}
+
+/* Crisp Pure-White Center Dot (light & dark modes) */
 [part~="dot"] {
   width: 0.375rem;
   height: 0.375rem;
@@ -80,20 +107,95 @@
 
 [part~="dot-checked"] {
   transform: scale(1);
+  background: hsl(0 0% 100%);
 }
 
 /* Invalid */
 [part~="radio-invalid"] {
   border-color: var(--snice-color-danger);
+  color: var(--snice-color-danger);
+}
+
+:host(:hover) [part~="radio-invalid"] {
+  border-color: color-mix(in srgb, var(--snice-color-danger) 85%, black);
 }
 
 [part~="radio-invalid"][part~="radio-checked"] {
   background: var(--snice-color-danger);
   border-color: color-mix(in srgb, var(--snice-color-danger) 82%, black);
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.34),
+    0 0.5px 1.5px hsl(0 0% 0% / 0.2);
+  color: hsl(0 0% 100%);
 }
 
+:host(:hover) [part~="radio-invalid"][part~="radio-checked"] {
+  border-color: color-mix(in srgb, var(--snice-color-danger) 82%, black);
+  filter: brightness(1.05);
+}
+
+:host(:active) [part~="radio-invalid"][part~="radio-checked"] {
+  border-color: color-mix(in srgb, var(--snice-color-danger) 82%, black);
+  filter: brightness(0.92);
+}
+
+:host([invalid]) [part~="dot"],
+:host([invalid]) [part~="dot-checked"] {
+  background: hsl(0 0% 100%);
+}
+
+/* Loading Spinner — inherits primary unchecked, pure white checked */
 [part~="spinner"] {
-  color: var(--snice-color-primary);
+  color: inherit;
+}
+
+:host([checked]) [part~="spinner"] {
+  color: hsl(0 0% 100%);
+}
+
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-width: 1.5px;
+}
+
+:host([size="small"]) [part~="spinner"]::after {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+:host([size="large"]) [part~="spinner"]::after {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+[part~="radio-loading"] {
+  cursor: wait;
+}
+
+:host([loading]:hover) [part~="radio"],
+:host([loading]:active) [part~="radio"] {
+  border-color: var(--snice-color-border-hover);
+  filter: none;
+}
+
+:host([loading]:hover) [part~="radio-checked"],
+:host([loading]:active) [part~="radio-checked"] {
+  border-color: color-mix(in srgb, var(--snice-color-primary) 82%, black);
+  filter: none;
+}
+
+:host([loading]:hover) [part~="radio-invalid"],
+:host([loading]:active) [part~="radio-invalid"] {
+  border-color: var(--snice-color-danger);
+  filter: none;
+}
+
+:host([loading]:hover) [part~="radio-invalid"][part~="radio-checked"],
+:host([loading]:active) [part~="radio-invalid"][part~="radio-checked"] {
+  border-color: color-mix(in srgb, var(--snice-color-danger) 82%, black);
+  filter: none;
 }
 
 /* Compact 13px AppKit Label */
@@ -101,7 +203,16 @@
   margin-left: 0.4375rem;
   font-size: 0.8125rem;
   font-weight: 400;
+  line-height: 1.35;
   color: var(--snice-color-text);
+}
+
+:host([size="small"]) [part~="label"] {
+  font-size: 0.75rem;
+}
+
+:host([size="large"]) [part~="label"] {
+  font-size: 0.9375rem;
 }
 
 /* Block Card Variant — macOS Settings grouped card */
@@ -118,29 +229,160 @@
     box-shadow var(--snice-transition-fast, 140ms) ease;
 }
 
+[part~="base-block"]:hover {
+  border-color: var(--snice-color-border-hover);
+  background: color-mix(in srgb, var(--snice-color-text) 2.5%, var(--snice-color-surface-container-lowest));
+}
+
+[part~="base-block"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 5%, var(--snice-color-surface-container-lowest));
+}
+
 [part~="base-block"][part~="base-checked"] {
   border-color: color-mix(in srgb, var(--snice-color-primary) 75%, transparent);
   background: color-mix(in srgb, var(--snice-color-primary) 7%, var(--snice-color-surface-container-lowest));
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--snice-color-primary) 26%, transparent);
 }
 
+[part~="base-block"][part~="base-checked"]:hover {
+  border-color: color-mix(in srgb, var(--snice-color-primary) 88%, transparent);
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, var(--snice-color-surface-container-lowest));
+}
+
+[part~="base-block"][part~="base-checked"]:active {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, var(--snice-color-surface-container-lowest));
+}
+
+:host([invalid]) [part~="base-block"],
+:host([invalid]) [part~="base-block"]:hover {
+  border-color: color-mix(in srgb, var(--snice-color-danger) 70%, transparent);
+}
+
+:host([invalid]) [part~="base-block"][part~="base-checked"],
+:host([invalid]) [part~="base-block"][part~="base-checked"]:hover {
+  border-color: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 6%, var(--snice-color-surface-container-lowest));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--snice-color-danger) 24%, transparent);
+}
+
+[part~="base-block"][part~="base-loading"]:hover,
+[part~="base-block"][part~="base-loading"]:active {
+  border-color: var(--snice-color-border);
+  background: var(--snice-color-surface-container-lowest);
+}
+
+[part~="base-block"][part~="base-loading"][part~="base-checked"]:hover,
+[part~="base-block"][part~="base-loading"][part~="base-checked"]:active {
+  border-color: color-mix(in srgb, var(--snice-color-primary) 75%, transparent);
+  background: color-mix(in srgb, var(--snice-color-primary) 7%, var(--snice-color-surface-container-lowest));
+}
+
 :host([variant="block"]) [part~="label"] {
   margin-left: 0;
-  font-size: 0.8125rem;
   font-weight: 600;
 }
 
 [part~="description"] {
   font-size: 0.75rem;
+  line-height: 1.4;
   color: var(--snice-color-text-secondary);
 }
 
-/* Focus Halo & Disabled */
-:host([data-macos-focus="keyboard"]) [part~="radio"] {
+/* Soft macOS Keyboard Focus Halo */
+[part~="radio-keyboard-focus"],
+:host([data-macos-focus="keyboard"]) [part~="radio"],
+:host(:focus-visible) [part~="radio"] {
   outline: none;
   box-shadow: var(--snice-macos-focus-halo);
 }
 
+[part~="radio-checked"][part~="radio-keyboard-focus"],
+:host([data-macos-focus="keyboard"]) [part~="radio-checked"],
+:host(:focus-visible) [part~="radio-checked"] {
+  outline: none;
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.34),
+    var(--snice-macos-focus-halo);
+}
+
+/* Disabled & Loading Opacity + Muted States */
 [part~="base-disabled"] {
   opacity: 0.44;
+  cursor: not-allowed;
+}
+
+[part~="base-loading"] {
+  opacity: 0.72;
+  cursor: wait;
+}
+
+:host([disabled]) [part~="base-disabled"],
+:host([disabled]) [part~="base-loading"] {
+  opacity: 0.44;
+  cursor: not-allowed;
+}
+
+:host([disabled]) [part~="radio"],
+:host([disabled]:hover) [part~="radio"],
+:host([disabled]:active) [part~="radio"],
+:host([disabled]) [part~="radio-invalid"],
+:host([disabled]:hover) [part~="radio-invalid"],
+:host([disabled]:active) [part~="radio-invalid"] {
+  background: var(--snice-color-surface-container);
+  border-color: var(--snice-color-border);
+  box-shadow: none;
+  filter: none;
+  color: var(--snice-color-text-secondary);
+}
+
+:host([disabled]) [part~="radio-checked"],
+:host([disabled]:hover) [part~="radio-checked"],
+:host([disabled]:active) [part~="radio-checked"],
+:host([disabled]) [part~="radio-invalid"][part~="radio-checked"],
+:host([disabled]:hover) [part~="radio-invalid"][part~="radio-checked"],
+:host([disabled]:active) [part~="radio-invalid"][part~="radio-checked"] {
+  background: var(--snice-color-neutral);
+  border-color: var(--snice-color-neutral);
+  box-shadow: none;
+  filter: none;
+  color: hsl(0 0% 100%);
+}
+
+:host([disabled]) [part~="dot"],
+:host([disabled]) [part~="dot-checked"] {
+  background: hsl(0 0% 100%);
+  box-shadow: none;
+}
+
+:host([disabled]) [part~="label"] {
+  color: var(--snice-color-text-secondary);
+  cursor: not-allowed;
+}
+
+:host([disabled]) [part~="base-block"],
+:host([disabled]) [part~="base-block"]:hover,
+:host([disabled]) [part~="base-block"]:active,
+:host([disabled][invalid]) [part~="base-block"],
+:host([disabled][invalid]) [part~="base-block"]:hover {
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-border);
+  box-shadow: none;
+}
+
+:host([disabled]) [part~="base-block"][part~="base-checked"],
+:host([disabled]) [part~="base-block"][part~="base-checked"]:hover,
+:host([disabled]) [part~="base-block"][part~="base-checked"]:active,
+:host([disabled][invalid]) [part~="base-block"][part~="base-checked"],
+:host([disabled][invalid]) [part~="base-block"][part~="base-checked"]:hover {
+  background: var(--snice-color-surface-container);
+  border-color: var(--snice-color-border-hover);
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="radio"],
+  [part~="dot"],
+  [part~="base-block"] {
+    transition: none;
+  }
 }

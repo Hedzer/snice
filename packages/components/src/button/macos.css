@@ -1,16 +1,19 @@
 /* ==========================================================================
    macOS 26+ Liquid Glass / AppKit — snice-button
-   Compact desktop AppKit push buttons (22px small / 28px medium / 34px large),
-   subtle vertical AppKit top-lit specular sheen, concentric desktop radii,
-   distinct semantic accent fills & bezeled tinted outlines, soft focus halo.
+   Compact desktop AppKit NSButton push buttons (22px small / 28px medium /
+   34px large), 0.5px hairline bezels, subtle top-lit AppKit gloss gradients,
+   concentric desktop radii (5px/6px/8px), bezeled tinted outlines, borderless
+   text buttons, loading preservation, and keyboard-only translucent focus halo.
    ========================================================================== */
 
-/* Base — Compact AppKit Push Button */
+/* Base — Compact AppKit Push Button (Default / Medium 28px) */
 [part~="base"] {
+  box-sizing: border-box;
   height: 1.75rem;
   min-height: 1.75rem;
   padding: 0 0.75rem;
   border-radius: 6px;
+  font-family: var(--snice-font-family);
   font-size: 0.8125rem;
   font-weight: 500;
   line-height: 1.25;
@@ -21,10 +24,12 @@
   border: 0.5px solid var(--snice-color-border);
   box-shadow: var(--snice-macos-control-shadow);
   transition:
-    background-color var(--snice-transition-fast, 140ms) ease,
-    border-color var(--snice-transition-fast, 140ms) ease,
-    box-shadow var(--snice-transition-fast, 140ms) ease,
-    filter var(--snice-transition-fast, 140ms) ease,
+    background-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease),
+    border-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease),
+    color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease),
+    box-shadow var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease),
+    filter var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease),
+    opacity var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease),
     transform var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease);
 }
 
@@ -32,15 +37,24 @@
   display: none;
 }
 
-[part~="base"]:hover {
+[part~="base"]:hover,
+:host([variant="default"]) [part~="base"]:hover {
+  background: var(--snice-macos-control-bg);
+  color: var(--snice-color-text);
+  border-color: var(--snice-color-border-hover);
+  box-shadow: var(--snice-macos-control-shadow), var(--snice-shadow-xs);
   transform: none;
   filter: brightness(1.04);
-  box-shadow: var(--snice-macos-control-shadow), var(--snice-shadow-xs);
 }
 
-[part~="base"]:active {
+[part~="base"]:active,
+:host([variant="default"]) [part~="base"]:active {
+  background: var(--snice-macos-control-bg);
+  color: var(--snice-color-text);
+  border-color: var(--snice-color-border-hover);
+  box-shadow: var(--snice-macos-control-shadow);
   transform: scale(0.98);
-  filter: brightness(0.94);
+  filter: brightness(0.93);
 }
 
 /* Compact Desktop Sizes (22px / 28px / 34px — strictly denser than iOS 44px) */
@@ -52,6 +66,14 @@
   font-size: 0.75rem;
 }
 
+:host([size="medium"]) [part~="base"] {
+  height: 1.75rem;
+  min-height: 1.75rem;
+  padding: 0 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+}
+
 :host([size="large"]) [part~="base"] {
   height: 2.125rem;
   min-height: 2.125rem;
@@ -60,7 +82,8 @@
   font-size: 0.875rem;
 }
 
-/* Accent & Semantic AppKit Push Buttons (subtle macOS top-lit gloss gradient) */
+/* Accent & Semantic AppKit Push Buttons (subtle macOS top-lit gloss gradient;
+   explicit white ink on saturated fills because macOS dark text-inverse is black) */
 :host([variant="primary"]) [part~="base"] {
   background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
   color: hsl(0 0% 100%);
@@ -68,6 +91,28 @@
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.32),
     0 0.5px 1.5px hsl(0 0% 0% / 0.22);
+}
+
+:host([variant="primary"]) [part~="base"]:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
+  color: hsl(0 0% 100%);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 76%, black);
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.36),
+    0 0.5px 1.5px hsl(0 0% 0% / 0.24);
+  transform: none;
+  filter: brightness(1.04);
+}
+
+:host([variant="primary"]) [part~="base"]:active {
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
+  color: hsl(0 0% 100%);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 72%, black);
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.22),
+    0 0.5px 1px hsl(0 0% 0% / 0.2);
+  transform: scale(0.98);
+  filter: brightness(0.93);
 }
 
 :host([variant="success"]) [part~="base"] {
@@ -79,6 +124,28 @@
     0 0.5px 1.5px hsl(0 0% 0% / 0.22);
 }
 
+:host([variant="success"]) [part~="base"]:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-success)) 0%, var(--snice-color-success) 100%);
+  color: hsl(0 0% 100%);
+  border-color: color-mix(in srgb, var(--snice-color-success) 76%, black);
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.36),
+    0 0.5px 1.5px hsl(0 0% 0% / 0.24);
+  transform: none;
+  filter: brightness(1.04);
+}
+
+:host([variant="success"]) [part~="base"]:active {
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-success)) 0%, var(--snice-color-success) 100%);
+  color: hsl(0 0% 100%);
+  border-color: color-mix(in srgb, var(--snice-color-success) 72%, black);
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.22),
+    0 0.5px 1px hsl(0 0% 0% / 0.2);
+  transform: scale(0.98);
+  filter: brightness(0.93);
+}
+
 :host([variant="warning"]) [part~="base"] {
   background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-warning)) 0%, var(--snice-color-warning) 100%);
   color: hsl(26 42% 10%);
@@ -88,6 +155,28 @@
     0 0.5px 1.5px hsl(0 0% 0% / 0.18);
 }
 
+:host([variant="warning"]) [part~="base"]:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-warning)) 0%, var(--snice-color-warning) 100%);
+  color: hsl(26 42% 10%);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 74%, black);
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.42),
+    0 0.5px 1.5px hsl(0 0% 0% / 0.2);
+  transform: none;
+  filter: brightness(1.04);
+}
+
+:host([variant="warning"]) [part~="base"]:active {
+  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-warning)) 0%, var(--snice-color-warning) 100%);
+  color: hsl(26 42% 10%);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 70%, black);
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.26),
+    0 0.5px 1px hsl(0 0% 0% / 0.18);
+  transform: scale(0.98);
+  filter: brightness(0.93);
+}
+
 :host([variant="danger"]) [part~="base"] {
   background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-danger)) 0%, var(--snice-color-danger) 100%);
   color: hsl(0 0% 100%);
@@ -95,6 +184,28 @@
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.3),
     0 0.5px 1.5px hsl(0 0% 0% / 0.22);
+}
+
+:host([variant="danger"]) [part~="base"]:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-danger)) 0%, var(--snice-color-danger) 100%);
+  color: hsl(0 0% 100%);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 76%, black);
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.34),
+    0 0.5px 1.5px hsl(0 0% 0% / 0.24);
+  transform: none;
+  filter: brightness(1.04);
+}
+
+:host([variant="danger"]) [part~="base"]:active {
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-danger)) 0%, var(--snice-color-danger) 100%);
+  color: hsl(0 0% 100%);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 72%, black);
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.2),
+    0 0.5px 1px hsl(0 0% 0% / 0.2);
+  transform: scale(0.98);
+  filter: brightness(0.93);
 }
 
 /* Text (AppKit Borderless Button) */
@@ -108,21 +219,48 @@
 
 :host([variant="text"]) [part~="base"]:hover {
   background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-primary);
+  border-color: transparent;
   box-shadow: none;
+  transform: none;
   filter: none;
 }
 
-/* Outline — AppKit Bezeled Tinted (each variant tints in its own semantic color) */
-[part~="base-outline"] {
+:host([variant="text"]) [part~="base"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+  color: var(--snice-color-primary);
+  border-color: transparent;
+  box-shadow: none;
+  transform: scale(0.98);
+  filter: none;
+}
+
+/* Outline — AppKit Bezeled Tinted (10% / 16% / 22% semantic tint fills) */
+[part~="base-outline"],
+:host([variant="default"]) [part~="base-outline"] {
   background: transparent;
   color: var(--snice-color-text);
   border: 0.5px solid var(--snice-color-border-hover);
   box-shadow: none;
 }
 
-[part~="base-outline"]:hover {
+[part~="base-outline"]:hover,
+:host([variant="default"]) [part~="base-outline"]:hover {
   background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-text);
+  border-color: var(--snice-color-border-hover);
   box-shadow: none;
+  transform: none;
+  filter: none;
+}
+
+[part~="base-outline"]:active,
+:host([variant="default"]) [part~="base-outline"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+  color: var(--snice-color-text);
+  border-color: var(--snice-color-border-hover);
+  box-shadow: none;
+  transform: scale(0.98);
   filter: none;
 }
 
@@ -130,48 +268,112 @@
   background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
   color: var(--snice-color-primary);
   border-color: color-mix(in srgb, var(--snice-color-primary) 42%, transparent);
+  box-shadow: none;
 }
 
 :host([variant="primary"]) [part~="base-outline"]:hover {
   background: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+  color: var(--snice-color-primary);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 50%, transparent);
+  box-shadow: none;
+  transform: none;
+  filter: none;
+}
+
+:host([variant="primary"]) [part~="base-outline"]:active {
+  background: color-mix(in srgb, var(--snice-color-primary) 22%, transparent);
+  color: var(--snice-color-primary);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 56%, transparent);
+  box-shadow: none;
+  transform: scale(0.98);
+  filter: none;
 }
 
 :host([variant="success"]) [part~="base-outline"] {
   background: color-mix(in srgb, var(--snice-color-success) 10%, transparent);
   color: var(--snice-color-success);
   border-color: color-mix(in srgb, var(--snice-color-success) 42%, transparent);
+  box-shadow: none;
 }
 
 :host([variant="success"]) [part~="base-outline"]:hover {
   background: color-mix(in srgb, var(--snice-color-success) 16%, transparent);
+  color: var(--snice-color-success);
+  border-color: color-mix(in srgb, var(--snice-color-success) 50%, transparent);
+  box-shadow: none;
+  transform: none;
+  filter: none;
 }
 
+:host([variant="success"]) [part~="base-outline"]:active {
+  background: color-mix(in srgb, var(--snice-color-success) 22%, transparent);
+  color: var(--snice-color-success);
+  border-color: color-mix(in srgb, var(--snice-color-success) 56%, transparent);
+  box-shadow: none;
+  transform: scale(0.98);
+  filter: none;
+}
+
+/* Warning outline mixes toward --snice-color-text so light-mode amber darkens
+   to >= 4.5:1 AA contrast while dark-mode amber stays bright luminous gold. */
 :host([variant="warning"]) [part~="base-outline"] {
-  background: color-mix(in srgb, var(--snice-color-warning) 12%, transparent);
-  color: var(--snice-color-warning);
-  border-color: color-mix(in srgb, var(--snice-color-warning) 44%, transparent);
+  background: color-mix(in srgb, var(--snice-color-warning) 10%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 52%, var(--snice-color-text));
+  border-color: color-mix(in srgb, var(--snice-color-warning) 42%, transparent);
+  box-shadow: none;
 }
 
 :host([variant="warning"]) [part~="base-outline"]:hover {
-  background: color-mix(in srgb, var(--snice-color-warning) 18%, transparent);
+  background: color-mix(in srgb, var(--snice-color-warning) 16%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 52%, var(--snice-color-text));
+  border-color: color-mix(in srgb, var(--snice-color-warning) 50%, transparent);
+  box-shadow: none;
+  transform: none;
+  filter: none;
+}
+
+:host([variant="warning"]) [part~="base-outline"]:active {
+  background: color-mix(in srgb, var(--snice-color-warning) 22%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 52%, var(--snice-color-text));
+  border-color: color-mix(in srgb, var(--snice-color-warning) 56%, transparent);
+  box-shadow: none;
+  transform: scale(0.98);
+  filter: none;
 }
 
 :host([variant="danger"]) [part~="base-outline"] {
   background: color-mix(in srgb, var(--snice-color-danger) 10%, transparent);
   color: var(--snice-color-danger);
   border-color: color-mix(in srgb, var(--snice-color-danger) 42%, transparent);
+  box-shadow: none;
 }
 
 :host([variant="danger"]) [part~="base-outline"]:hover {
   background: color-mix(in srgb, var(--snice-color-danger) 16%, transparent);
+  color: var(--snice-color-danger);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 50%, transparent);
+  box-shadow: none;
+  transform: none;
+  filter: none;
 }
 
-/* Pill & Circle Shapes */
-[part~="base-pill"] {
+:host([variant="danger"]) [part~="base-outline"]:active {
+  background: color-mix(in srgb, var(--snice-color-danger) 22%, transparent);
+  color: var(--snice-color-danger);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 56%, transparent);
+  box-shadow: none;
+  transform: scale(0.98);
+  filter: none;
+}
+
+/* Pill & Circle Shapes (match host-attribute specificity against size/variant) */
+[part~="base-pill"],
+:host([size]) [part~="base-pill"] {
   border-radius: 9999px;
 }
 
-[part~="base-circle"] {
+[part~="base-circle"],
+:host([variant]) [part~="base-circle"] {
   width: 1.75rem;
   min-width: 1.75rem;
   height: 1.75rem;
@@ -184,6 +386,7 @@
   min-width: 1.375rem;
   height: 1.375rem;
   padding: 0;
+  border-radius: 50%;
 }
 
 :host([size="large"]) [part~="base-circle"] {
@@ -191,9 +394,36 @@
   min-width: 2.125rem;
   height: 2.125rem;
   padding: 0;
+  border-radius: 50%;
 }
 
-/* Specular rim overlay */
+/* Compact AppKit Icon & Spinner Proportions */
+[part~="icon"] {
+  width: 1.125em;
+  height: 1.125em;
+}
+
+[part~="icon-start"] {
+  margin-right: 0.375em;
+}
+
+[part~="icon-end"] {
+  margin-left: 0.375em;
+}
+
+:host([circle]) [part~="icon"] {
+  width: auto;
+  height: auto;
+  margin: 0;
+}
+
+[part~="spinner"]::after {
+  border-width: 1.75px;
+  border-color: currentColor;
+  border-right-color: transparent;
+}
+
+/* Top Specular Rim Overlay (filled/bezeled push buttons only) */
 [part~="sheen"] {
   display: block;
   position: absolute;
@@ -209,22 +439,136 @@
   display: none;
 }
 
-/* Focus Halo & Disabled */
+/* Soft Translucent AppKit Keyboard Focus Halo */
 [part~="base"]:focus-visible,
-:host([data-macos-focus="keyboard"]) [part~="base"] {
+:host([variant]) [part~="base"]:focus-visible,
+:host([variant]) [part~="base"]:focus-visible:hover,
+:host([data-macos-focus="keyboard"]) [part~="base"],
+:host([data-macos-focus="keyboard"][variant]) [part~="base"],
+:host([data-macos-focus="keyboard"][variant]) [part~="base"]:hover {
   outline: none;
   box-shadow: var(--snice-macos-focus-halo);
 }
 
+/* Disabled State — 0.42 opacity, no shadow/filter/lift/hover shift across all variants */
 [part~="base-disabled"],
 [part~="base-disabled"]:hover,
 [part~="base-disabled"]:active,
-:host([disabled]) [part~="base"],
-:host([disabled][variant]) [part~="base"],
-:host([disabled][variant]) [part~="base"]:hover,
-:host([disabled][variant]) [part~="base"]:active {
+:host([variant]) [part~="base-disabled"],
+:host([variant]) [part~="base-disabled"]:hover,
+:host([variant]) [part~="base-disabled"]:active {
   opacity: 0.42;
   transform: none;
   filter: none;
   box-shadow: none;
+  cursor: not-allowed;
+}
+
+[part~="base-disabled"]:hover,
+[part~="base-disabled"]:active,
+:host([variant="default"]) [part~="base-disabled"]:hover,
+:host([variant="default"]) [part~="base-disabled"]:active {
+  background: var(--snice-macos-control-bg);
+  border-color: var(--snice-color-border);
+}
+
+:host([variant="text"]) [part~="base-disabled"]:hover,
+:host([variant="text"]) [part~="base-disabled"]:active {
+  background: transparent;
+  border-color: transparent;
+}
+
+[part~="base-outline"][part~="base-disabled"]:hover,
+[part~="base-outline"][part~="base-disabled"]:active,
+:host([variant="default"]) [part~="base-outline"][part~="base-disabled"]:hover,
+:host([variant="default"]) [part~="base-outline"][part~="base-disabled"]:active {
+  background: transparent;
+  border-color: var(--snice-color-border-hover);
+}
+
+:host([variant="primary"]) [part~="base-outline"][part~="base-disabled"]:hover,
+:host([variant="primary"]) [part~="base-outline"][part~="base-disabled"]:active {
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 42%, transparent);
+}
+
+:host([variant="success"]) [part~="base-outline"][part~="base-disabled"]:hover,
+:host([variant="success"]) [part~="base-outline"][part~="base-disabled"]:active {
+  background: color-mix(in srgb, var(--snice-color-success) 10%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-success) 42%, transparent);
+}
+
+:host([variant="warning"]) [part~="base-outline"][part~="base-disabled"]:hover,
+:host([variant="warning"]) [part~="base-outline"][part~="base-disabled"]:active {
+  background: color-mix(in srgb, var(--snice-color-warning) 10%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 42%, transparent);
+}
+
+:host([variant="danger"]) [part~="base-outline"][part~="base-disabled"]:hover,
+:host([variant="danger"]) [part~="base-outline"][part~="base-disabled"]:active {
+  background: color-mix(in srgb, var(--snice-color-danger) 10%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 42%, transparent);
+}
+
+/* Loading State — preserves AppKit fill/gradient & crisp spinner above disabled dimming */
+[part~="base-loading"],
+[part~="base-loading"]:hover,
+[part~="base-loading"]:active,
+:host([variant]) [part~="base-loading"],
+:host([variant]) [part~="base-loading"]:hover,
+:host([variant]) [part~="base-loading"]:active {
+  opacity: 0.88;
+  cursor: wait;
+  transform: none;
+  filter: none;
+}
+
+:host([variant="text"]) [part~="base-loading"]:hover,
+:host([variant="text"]) [part~="base-loading"]:active {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* Accessibility & Platform Preferences */
+@media (prefers-reduced-motion: reduce) {
+  [part~="base"],
+  [part~="base"]:active,
+  :host([variant]) [part~="base"]:active,
+  [part~="base-outline"]:active,
+  :host([variant]) [part~="base-outline"]:active {
+    transition: none;
+    transform: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  [part~="base"],
+  [part~="base-outline"] {
+    border-width: 1px;
+  }
+
+  [part~="sheen"] {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="base-outline"] {
+    border: 1px solid ButtonBorder;
+    box-shadow: none;
+  }
+
+  [part~="sheen"] {
+    display: none;
+  }
+
+  [part~="base"]:focus-visible,
+  :host([variant]) [part~="base"]:focus-visible,
+  :host([data-macos-focus="keyboard"]) [part~="base"],
+  :host([data-macos-focus="keyboard"][variant]) [part~="base"] {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
 }

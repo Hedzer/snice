@@ -1,8 +1,9 @@
 /* ==========================================================================
    iOS 26+ Liquid Glass — snice-checkbox
-   Iconic circular Apple selection checkmark, translucent glass unchecked ring,
-   filled iOS System Blue circle with specular rim and pure white checkmark
-   (explicit white ink in both light & dark modes).
+   Iconic circular Apple selection checkmark (22px medium / 18px small /
+   26px large), translucent glass unchecked ring, filled iOS System Blue
+   circle with specular rim, spring press compression, clean circular focus
+   halo, and pure white check/indeterminate glyphs in both light & dark modes.
    ========================================================================== */
 
 :host {
@@ -18,6 +19,12 @@
   min-height: 3.125rem;
 }
 
+:host([compact]) {
+  min-height: 0;
+  align-self: center;
+}
+
+/* Circular Selection Disc */
 [part~="checkbox"] {
   width: 1.375rem;
   height: 1.375rem;
@@ -25,6 +32,9 @@
   border-radius: 50%;
   background: var(--snice-ios-glass-clear-bg);
   border: 1.5px solid var(--snice-color-border-hover);
+  color: var(--snice-color-primary);
+  outline: none;
+  outline-offset: 0;
   box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.35);
   transition:
     background-color var(--snice-transition-fast, 180ms) ease,
@@ -43,18 +53,21 @@
   height: 1.625rem;
 }
 
+/* Hover & Tactile iOS Spring Press */
 :host(:hover) [part~="checkbox"] {
   border-color: var(--snice-color-primary);
 }
 
-[part~="base"]:active {
-  opacity: 0.9;
+:host(:active) [part~="checkbox"] {
+  transform: scale(0.9);
 }
 
+/* Checked & Indeterminate */
 [part~="checkbox-checked"],
 [part~="checkbox-indeterminate"] {
   background: var(--snice-color-primary);
   border-color: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
   box-shadow:
     inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
     0 2px 6px -2px color-mix(in srgb, var(--snice-color-primary) 55%, transparent);
@@ -69,27 +82,100 @@
 /* Invalid */
 [part~="checkbox-invalid"] {
   border-color: var(--snice-color-danger);
+  color: var(--snice-color-danger);
+}
+
+:host(:hover) [part~="checkbox-invalid"] {
+  border-color: color-mix(in srgb, var(--snice-color-danger) 90%, white);
 }
 
 [part~="checkbox-invalid"][part~="checkbox-checked"],
 [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
   background: var(--snice-color-danger);
   border-color: var(--snice-color-danger);
+  color: hsl(0 0% 100%);
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
+    0 2px 6px -2px color-mix(in srgb, var(--snice-color-danger) 50%, transparent);
 }
 
-/* Crisp white checkmark in BOTH light & dark modes */
+:host(:hover) [part~="checkbox-invalid"][part~="checkbox-checked"],
+:host(:hover) [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 92%, white);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 92%, white);
+}
+
+/* Clean Circular Keyboard Focus Halo (eliminates base square outline bleed) */
+:host(:focus-within) [part~="checkbox"] {
+  outline: none;
+}
+
+:host(:focus-visible) [part~="checkbox"] {
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.35),
+    0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color);
+}
+
+:host(:focus-visible) [part~="checkbox-checked"],
+:host(:focus-visible) [part~="checkbox-indeterminate"] {
+  outline: none;
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
+    0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color);
+}
+
+:host(:focus-visible) [part~="checkbox-invalid"] {
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.35),
+    0 0 0 var(--snice-focus-ring-width, 3px) color-mix(in srgb, var(--snice-color-danger) 42%, transparent);
+}
+
+:host(:focus-visible) [part~="checkbox-invalid"][part~="checkbox-checked"],
+:host(:focus-visible) [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
+  outline: none;
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.36),
+    0 0 0 var(--snice-focus-ring-width, 3px) color-mix(in srgb, var(--snice-color-danger) 42%, transparent);
+}
+
+/* Crisp White Check & Indeterminate Glyphs (explicit white in light & dark modes) */
 [part~="icon"] {
   color: hsl(0 0% 100%);
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
+/* Spinner inherits primary (unchecked), danger (invalid), or white (checked/indeterminate) */
 [part~="spinner"] {
-  color: var(--snice-color-primary);
+  color: inherit;
+}
+
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-width: 1.75px;
+}
+
+:host([size="small"]) [part~="spinner"]::after {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-width: 1.5px;
+}
+
+:host([size="large"]) [part~="spinner"]::after {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-width: 2px;
 }
 
 /* Label */
 [part~="label"] {
   margin-left: 0.625rem;
   font-size: 1rem;
+  line-height: 1.3;
   letter-spacing: -0.015em;
   color: var(--snice-color-text);
 }
@@ -102,20 +188,81 @@
   font-size: 1.0625rem;
 }
 
-/* Disabled */
+/* Disabled & Loading States */
 [part~="base-disabled"] {
   opacity: 0.4;
+}
+
+[part~="base-loading"] {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+:host([loading]:hover) [part~="checkbox"] {
+  border-color: var(--snice-color-border-hover);
+}
+
+:host([loading]:hover) [part~="checkbox-checked"],
+:host([loading]:hover) [part~="checkbox-indeterminate"] {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+}
+
+:host([loading]:hover) [part~="checkbox-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+:host([loading]:hover) [part~="checkbox-invalid"][part~="checkbox-checked"],
+:host([loading]:hover) [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
+  background: var(--snice-color-danger);
+  border-color: var(--snice-color-danger);
+}
+
+:host([loading]:active) [part~="checkbox"] {
+  transform: none;
+}
+
+:host([loading]) [part~="label"] {
+  cursor: wait;
+}
+
+:host([disabled]) [part~="base-loading"] {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 :host([disabled]) [part~="checkbox"],
 :host([disabled]:hover) [part~="checkbox"] {
   background: transparent;
   border-color: var(--snice-color-border-hover);
+  color: var(--snice-color-neutral);
   box-shadow: none;
 }
 
 :host([disabled]) [part~="checkbox-checked"],
-:host([disabled]:hover) [part~="checkbox-checked"] {
+:host([disabled]:hover) [part~="checkbox-checked"],
+:host([disabled]) [part~="checkbox-indeterminate"],
+:host([disabled]:hover) [part~="checkbox-indeterminate"] {
   background: var(--snice-color-neutral);
   border-color: var(--snice-color-neutral);
+  color: hsl(0 0% 100%);
+  box-shadow: none;
+}
+
+:host([disabled]:active) [part~="checkbox"] {
+  transform: none;
+}
+
+:host([disabled]) [part~="label"] {
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="checkbox"] {
+    transition: none;
+  }
+
+  :host(:active) [part~="checkbox"] {
+    transform: none;
+  }
 }

@@ -1,133 +1,233 @@
 /* ==========================================================================
    Android Material 3 Expressive — snice-slider
-   Updated M3 16dp rounded track, tall vertical 4x40dp pill handle with clean
-   surface-colored gap halo, end stop-indicator dot, semantic variants, and
-   vertical orientation parity.
+   M3 Expressive 16dp rounded track, 4x40dp vertical pill handle with surface
+   gap halo pinching to 2px on drag, variant-matched end-stop & discrete tick
+   dots, circular loading thumb, focus ring, and exact 12%/38% disabled state.
    ========================================================================== */
+
+:host {
+  --_m3-slider-accent: var(--snice-color-primary);
+  --_m3-slider-track-bg: var(--snice-m3-secondary-container);
+  --_m3-slider-label-ink: var(--snice-color-text-secondary);
+  --_m3-slider-ink: var(--snice-color-text);
+  --_m3-slider-controls-min: 2.75rem;
+  --_m3-slider-track-size: 16px;
+  --_m3-slider-stop-inset: 6px;
+  --_m3-slider-thumb-w: 4px;
+  --_m3-slider-thumb-h: 2.5rem;
+  --_m3-slider-pinch-size: 2px;
+}
+
+:host([size="small"]) {
+  --_m3-slider-controls-min: 2.25rem;
+  --_m3-slider-track-size: 12px;
+  --_m3-slider-stop-inset: 4px;
+  --_m3-slider-thumb-w: 4px;
+  --_m3-slider-thumb-h: 1.875rem;
+}
+
+:host([size="large"]) {
+  --_m3-slider-controls-min: 3.25rem;
+  --_m3-slider-track-size: 22px;
+  --_m3-slider-stop-inset: 9px;
+  --_m3-slider-thumb-w: 5px;
+  --_m3-slider-thumb-h: 3rem;
+}
+
+:host([variant="success"]) {
+  --_m3-slider-accent: var(--snice-color-success);
+}
+
+:host([variant="warning"]) {
+  --_m3-slider-accent: var(--snice-color-warning);
+}
+
+:host([variant="danger"]) {
+  --_m3-slider-accent: var(--snice-color-danger);
+}
+
+:host([invalid]) {
+  --_m3-slider-accent: var(--snice-color-danger);
+  --_m3-slider-track-bg: color-mix(in srgb, var(--snice-color-danger) 18%, var(--snice-m3-secondary-container));
+}
+
+:host([readonly]) {
+  --_m3-slider-pinch-size: var(--_m3-slider-thumb-w);
+}
+
+/* M3 Disabled state (opacity: 1; 12% track / 38% active fill, handle, stops & ink) */
+:host([disabled]),
+:host(:disabled) {
+  --_m3-slider-accent: color-mix(in srgb, var(--snice-color-text) 38%, var(--snice-color-surface));
+  --_m3-slider-track-bg: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  --_m3-slider-tick-bg: color-mix(in srgb, var(--snice-color-text) 28%, transparent);
+  --_m3-slider-label-ink: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  --_m3-slider-ink: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  --_m3-slider-pinch-size: var(--_m3-slider-thumb-w);
+}
 
 [part~="label"] {
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.025em;
-  color: var(--snice-color-text-secondary);
+  color: var(--_m3-slider-label-ink);
 }
 
 [part~="controls"] {
-  min-height: 2.75rem;
+  min-height: var(--_m3-slider-controls-min);
 }
 
+[part~="controls-vertical"] {
+  min-width: var(--_m3-slider-controls-min);
+}
+
+/* M3 Expressive 16dp thick rounded track */
 [part~="track"] {
-  height: 16px;
+  height: var(--_m3-slider-track-size);
   border-radius: 9999px;
-  background: var(--snice-m3-secondary-container);
+  background: var(--_m3-slider-track-bg);
 }
 
-:host([size="small"]) [part~="track"] {
-  height: 12px;
-}
-
-:host([size="large"]) [part~="track"] {
-  height: 22px;
-}
-
-[part~="track-vertical"] {
-  width: 16px;
+[part~="track"][part~="track-vertical"] {
+  width: var(--_m3-slider-track-size);
   height: 100%;
 }
 
-:host([size="small"]) [part~="track-vertical"] {
-  width: 12px;
-  height: 100%;
+[part~="track-invalid"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 18%, var(--snice-m3-secondary-container));
+  box-shadow: none;
 }
 
-:host([size="large"]) [part~="track-vertical"] {
-  width: 22px;
-  height: 100%;
+[part~="track-disabled"] {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  box-shadow: none;
+  cursor: not-allowed;
 }
 
+/* Loading track — placed after track-disabled because snice-slider sets both
+   track-disabled and track-loading when loading is active. */
+[part~="track"][part~="track-loading"] {
+  opacity: 0.78;
+  background: var(--_m3-slider-track-bg);
+  cursor: wait;
+}
+
+:host([disabled]) [part~="track"][part~="track-loading"],
+:host(:disabled) [part~="track"][part~="track-loading"] {
+  opacity: 1;
+  background: var(--_m3-slider-track-bg);
+  cursor: not-allowed;
+}
+
+:host([readonly]) [part~="track"],
+:host([readonly]) [part~="thumb"] {
+  cursor: default;
+}
+
+/* Active track fill — pill outer end, 4px inner corner meeting the handle gap */
 [part~="fill"] {
   border-radius: 9999px 4px 4px 9999px;
-  background: var(--snice-color-primary);
+  background: var(--_m3-slider-accent);
+  transition: width var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
 }
 
 [part~="fill-vertical"] {
   border-radius: 4px 4px 9999px 9999px;
+  transition: height var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
 }
 
-:host([variant="success"]) [part~="fill"] {
-  background: var(--snice-color-success);
+[part~="fill-dragging"] {
+  transition: none;
 }
 
-:host([variant="warning"]) [part~="fill"] {
-  background: var(--snice-color-warning);
-}
-
-:host([variant="danger"]) [part~="fill"] {
-  background: var(--snice-color-danger);
-}
-
-/* M3 end-stop indicator dot */
+/* M3 end-stop indicator dot (concentric with pill track cap, variant-matched) */
 [part~="stops"] {
   display: block;
   position: absolute;
-  right: 6px;
+  right: var(--_m3-slider-stop-inset);
   top: 50%;
   width: 4px;
   height: 4px;
   border-radius: 9999px;
   transform: translateY(-50%);
-  background: var(--snice-color-primary);
+  background: var(--_m3-slider-accent);
   pointer-events: none;
 }
 
 :host([vertical]) [part~="stops"] {
   right: auto;
-  top: 6px;
+  top: var(--_m3-slider-stop-inset);
   left: 50%;
   transform: translateX(-50%);
 }
 
-/* M3 Expressive vertical pill handle with surface-colored gap halo */
-[part~="thumb"] {
+/* M3 discrete circular tick dots */
+[part~="ticks"] {
+  z-index: 1;
+  top: calc(100% + 5px);
+  height: 6px;
+  align-items: center;
+  padding: 0 var(--_m3-slider-stop-inset);
+  pointer-events: none;
+}
+
+[part~="ticks-vertical"] {
+  top: 0;
+  bottom: 0;
+  left: calc(100% + 5px);
+  width: 6px;
+  height: 100%;
+  align-items: center;
+  padding: var(--_m3-slider-stop-inset) 0;
+}
+
+[part~="tick"],
+[part~="tick-vertical"] {
   width: 4px;
-  height: 2.5rem;
+  height: 4px;
   border-radius: 9999px;
-  background: var(--snice-color-primary);
+  background: var(--_m3-slider-tick-bg, color-mix(in srgb, var(--_m3-slider-accent) 55%, transparent));
+}
+
+/* M3 Expressive vertical pill handle with surface-colored cut-out gap halo */
+[part~="thumb"] {
+  z-index: 2;
+  width: var(--_m3-slider-thumb-w);
+  height: var(--_m3-slider-thumb-h);
+  border-radius: 9999px;
+  background: var(--_m3-slider-accent);
   border: none;
+  outline: none;
   box-shadow: 0 0 0 5px var(--snice-color-surface);
   transition:
     width var(--snice-transition-fast, 150ms) var(--snice-m3-spring-spatial-fast, ease),
-    transform var(--snice-transition-fast, 150ms) var(--snice-m3-spring-spatial-fast, ease);
-}
-
-:host([size="small"]) [part~="thumb"] {
-  width: 4px;
-  height: 1.875rem;
-}
-
-:host([size="large"]) [part~="thumb"] {
-  width: 5px;
-  height: 3rem;
+    height var(--snice-transition-fast, 150ms) var(--snice-m3-spring-spatial-fast, ease),
+    transform var(--snice-transition-fast, 150ms) var(--snice-m3-spring-spatial-fast, ease),
+    box-shadow var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
 }
 
 [part~="thumb-vertical"] {
-  width: 2.5rem;
-  height: 4px;
+  width: var(--_m3-slider-thumb-h);
+  height: var(--_m3-slider-thumb-w);
 }
 
-:host([variant="success"]) [part~="thumb"] {
-  background: var(--snice-color-success);
-}
-
-:host([variant="warning"]) [part~="thumb"] {
-  background: var(--snice-color-warning);
-}
-
-:host([variant="danger"]) [part~="thumb"],
-[part~="thumb-invalid"] {
+/* Invalid handle (covers both [invalid] attribute and programmatic constraintInvalid) */
+[part~="thumb"][part~="thumb-invalid"] {
   background: var(--snice-color-danger);
+  box-shadow: 0 0 0 5px var(--snice-color-surface);
 }
 
+:host([disabled]) [part~="thumb"],
+:host(:disabled) [part~="thumb"],
+:host([disabled]) [part~="thumb"][part~="thumb-invalid"],
+:host(:disabled) [part~="thumb"][part~="thumb-invalid"] {
+  background: var(--_m3-slider-accent);
+  box-shadow: 0 0 0 5px var(--snice-color-surface);
+  cursor: not-allowed;
+}
+
+/* Hover — zero scale jump, surface gap preserved */
 [part~="thumb"]:hover {
   transform: translate(-50%, -50%);
   box-shadow: 0 0 0 5px var(--snice-color-surface);
@@ -135,35 +235,91 @@
 
 [part~="thumb-vertical"]:hover {
   transform: translate(-50%, 50%);
+  box-shadow: 0 0 0 5px var(--snice-color-surface);
 }
 
+/* Active / Dragging — crisp 2px handle pinch, suppressing base scale(1.15) */
 :host([data-m3-dragging="true"]) [part~="thumb"],
-[part~="thumb-dragging"] {
-  width: 2px;
+[part~="thumb-dragging"],
+[part~="thumb"]:active {
+  width: var(--_m3-slider-pinch-size);
+  transform: translate(-50%, -50%);
   box-shadow: 0 0 0 5px var(--snice-color-surface);
 }
 
 :host([data-m3-dragging="true"]) [part~="thumb-vertical"],
-[part~="thumb-vertical"][part~="thumb-dragging"] {
-  width: 2.5rem;
-  height: 2px;
+[part~="thumb-vertical"][part~="thumb-dragging"],
+[part~="thumb-vertical"]:active {
+  width: var(--_m3-slider-thumb-h);
+  height: var(--_m3-slider-pinch-size);
+  transform: translate(-50%, 50%);
+  box-shadow: 0 0 0 5px var(--snice-color-surface);
 }
 
-[part~="thumb-loading"] {
+/* Keyboard focus-visible ring outside the gap halo */
+[part~="thumb"]:focus-visible {
+  outline: 3px solid var(--_m3-slider-accent);
+  outline-offset: 3px;
+}
+
+[part~="thumb"][part~="thumb-invalid"]:focus-visible {
+  outline-color: var(--snice-color-danger);
+}
+
+/* Loading state — 22px circular container housing centered spinner */
+[part~="thumb"][part~="thumb-loading"] {
   width: 1.375rem;
   height: 1.375rem;
   border-radius: 9999px;
   background: var(--snice-color-surface);
-  border: 2px solid var(--snice-color-primary);
+  border: 2px solid var(--_m3-slider-accent);
   box-shadow: 0 0 0 3px var(--snice-color-surface);
+  cursor: wait;
+}
+
+[part~="thumb"][part~="thumb-loading"][part~="thumb-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+:host([disabled]) [part~="thumb"][part~="thumb-loading"],
+:host(:disabled) [part~="thumb"][part~="thumb-loading"] {
+  background: var(--snice-color-surface);
+  border-color: var(--_m3-slider-accent);
+  cursor: not-allowed;
 }
 
 [part~="spinner"] {
-  color: var(--snice-color-primary);
+  color: var(--_m3-slider-accent);
 }
 
+/* Value readout & M3 supporting / error text */
 [part~="value"] {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--snice-color-text);
+  font-variant-numeric: tabular-nums;
+  color: var(--_m3-slider-ink);
+}
+
+[part~="helper-text"],
+[part~="error-text"] {
+  font-size: 0.75rem;
+  line-height: 1.33;
+  letter-spacing: 0.025em;
+  margin-top: 0.375rem;
+}
+
+[part~="helper-text"] {
+  color: var(--_m3-slider-label-ink);
+}
+
+[part~="error-text"] {
+  font-weight: 500;
+  color: var(--snice-color-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="fill"],
+  [part~="thumb"] {
+    transition: none;
+  }
 }

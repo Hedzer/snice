@@ -1,32 +1,93 @@
 /* ==========================================================================
    Windows 11 Fluent 2 / WinUI 3 — snice-switch
    Exact 40x20px hollow-border ToggleSwitch, 12px muted knob -> 14px hover ->
-   17px pressed pill stretch, solid accent track + on-accent inverted knob
-   when checked, dual-stroke WinUI 3 keyboard focus.
+   17x14px pressed pill stretch (proportionally scaled across small/medium/large),
+   solid accent track + on-accent inverted knob when checked, dual-stroke WinUI 3
+   keyboard focus, high-contrast loading spinner, and crisp disabled/WHCM states.
    ========================================================================== */
 
 :host {
-  min-height: 2rem;
+  min-height: 2rem; /* 32px — WinUI 3 standard control height */
+  --_win-thumb: 0.75rem;         /* 12px resting */
+  --_win-thumb-hover: 0.875rem;  /* 14px hover */
+  --_win-thumb-press: 1.0625rem; /* 17px pressed width */
+  --_win-thumb-inset: 3px;
+  --_win-thumb-inset-hover: 2px;
 }
 
-/* Track — WinUI 3 40x20px */
+:host([size="small"]) {
+  min-height: 1.625rem; /* 26px */
+  --_win-thumb: 0.625rem;        /* 10px resting */
+  --_win-thumb-hover: 0.75rem;   /* 12px hover */
+  --_win-thumb-press: 0.875rem;  /* 14px pressed width */
+  --_win-thumb-inset: 3px;
+  --_win-thumb-inset-hover: 2px;
+}
+
+:host([size="large"]) {
+  min-height: 2.5rem; /* 40px */
+  --_win-thumb: 0.9375rem;       /* 15px resting */
+  --_win-thumb-hover: 1.0625rem; /* 17px hover */
+  --_win-thumb-press: 1.3125rem; /* 21px pressed width */
+  --_win-thumb-inset: 4px;
+  --_win-thumb-inset-hover: 3px;
+}
+
+/* Track — WinUI 3 40x20px hollow-border pill */
 [part~="track"] {
+  --_win-checked-accent: var(--snice-color-primary);
   min-width: 2.5rem;
   height: 1.25rem;
   box-sizing: border-box;
   border-radius: 9999px;
   background: var(--snice-win-control-bg);
   border: 1px solid var(--snice-color-text-secondary);
+  box-shadow: none;
+  outline: none;
   transition:
     background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
     border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease);
 }
 
+/* Track Sizes */
+:host([size="small"]) [part~="track"] {
+  min-width: 2.125rem; /* 34px */
+  height: 1.125rem;    /* 18px */
+}
+
+:host([size="large"]) [part~="track"] {
+  min-width: 3rem;   /* 48px */
+  height: 1.5rem;    /* 24px */
+}
+
+/* Widen tracks with ON/OFF state labels so text never collides with knob */
+:host([label-on]) [part~="track"],
+:host([label-off]) [part~="track"] {
+  min-width: 3.5rem;
+}
+
+:host([size="small"][label-on]) [part~="track"],
+:host([size="small"][label-off]) [part~="track"] {
+  min-width: 2.125rem;
+}
+
+:host([size="large"][label-on]) [part~="track"],
+:host([size="large"][label-off]) [part~="track"] {
+  min-width: 4rem;
+}
+
+/* Track Hover & Pressed (Unchecked) */
 :host(:hover) [part~="track"] {
   background: var(--snice-win-control-bg-hover);
   border-color: var(--snice-color-text);
 }
 
+:host([data-win-pressed="true"]) [part~="track"] {
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-color-text-secondary);
+}
+
+/* Track Checked (Resting / Hover / Pressed) */
 [part~="track-checked"] {
   background: var(--snice-color-primary);
   border-color: var(--snice-color-primary);
@@ -37,19 +98,18 @@
   border-color: color-mix(in srgb, var(--snice-color-primary) 90%, var(--snice-color-surface));
 }
 
-/* Sizes */
-:host([size="small"]) [part~="track"] {
-  min-width: 2.125rem;
-  height: 1.125rem;
+:host([data-win-pressed="true"]) [part~="track-checked"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 82%, var(--snice-color-surface));
+  border-color: color-mix(in srgb, var(--snice-color-primary) 82%, var(--snice-color-surface));
 }
 
-:host([size="large"]) [part~="track"] {
-  min-width: 3rem;
-  height: 1.5rem;
-}
-
-/* Invalid */
+/* Track Invalid */
 [part~="track-invalid"] {
+  --_win-checked-accent: var(--snice-color-danger);
+  border-color: var(--snice-color-danger);
+}
+
+:host(:hover) [part~="track-invalid"] {
   border-color: var(--snice-color-danger);
 }
 
@@ -58,127 +118,269 @@
   border-color: var(--snice-color-danger);
 }
 
-/* Thumb — 12px -> 14px hover -> 17px pressed stretch */
+:host(:hover) [part~="track-invalid"][part~="track-checked"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 90%, var(--snice-color-surface));
+  border-color: color-mix(in srgb, var(--snice-color-danger) 90%, var(--snice-color-surface));
+}
+
+:host([data-win-pressed="true"]) [part~="track-invalid"][part~="track-checked"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 82%, var(--snice-color-surface));
+  border-color: color-mix(in srgb, var(--snice-color-danger) 82%, var(--snice-color-surface));
+}
+
+/* Thumb — size-aware 12->14->17px (medium), 10->12->14px (small), 15->17->21px (large) */
 [part~="thumb"] {
-  width: 0.75rem;
-  height: 0.75rem;
+  width: var(--_win-thumb);
+  height: var(--_win-thumb);
   top: 50%;
-  left: 3px;
+  left: var(--_win-thumb-inset);
   transform: translateY(-50%);
   border-radius: 9999px;
   background: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-inverse);
   box-shadow: none;
   transition:
     left var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
     width var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
     height var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
-    background-color var(--snice-transition-fast, 100ms) ease;
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease);
 }
 
 :host(:hover) [part~="thumb"] {
-  width: 0.875rem;
-  height: 0.875rem;
-  left: 2px;
+  width: var(--_win-thumb-hover);
+  height: var(--_win-thumb-hover);
+  left: var(--_win-thumb-inset-hover);
   background: var(--snice-color-text);
 }
 
 [part~="thumb-checked"] {
-  left: calc(100% - 0.75rem - 3px);
+  left: calc(100% - var(--_win-thumb) - var(--_win-thumb-inset));
   background: var(--snice-win-on-accent, hsl(0 0% 100%));
+  color: var(--_win-checked-accent, var(--snice-color-primary));
 }
 
 :host(:hover) [part~="thumb-checked"] {
-  width: 0.875rem;
-  height: 0.875rem;
-  left: calc(100% - 0.875rem - 2px);
+  width: var(--_win-thumb-hover);
+  height: var(--_win-thumb-hover);
+  left: calc(100% - var(--_win-thumb-hover) - var(--_win-thumb-inset-hover));
   background: var(--snice-win-on-accent, hsl(0 0% 100%));
 }
 
 :host([data-win-pressed="true"]) [part~="thumb"] {
-  width: 1.0625rem;
-  height: 0.875rem;
-  left: 2px;
+  width: var(--_win-thumb-press);
+  height: var(--_win-thumb-hover);
+  left: var(--_win-thumb-inset-hover);
+  background: var(--snice-color-text);
 }
 
 :host([data-win-pressed="true"]) [part~="thumb-checked"] {
-  width: 1.0625rem;
-  height: 0.875rem;
-  left: calc(100% - 1.0625rem - 2px);
+  width: var(--_win-thumb-press);
+  height: var(--_win-thumb-hover);
+  left: calc(100% - var(--_win-thumb-press) - var(--_win-thumb-inset-hover));
+  background: var(--snice-win-on-accent, hsl(0 0% 100%));
 }
 
-:host([size="small"]) [part~="thumb"] {
-  width: 0.625rem;
-  height: 0.625rem;
-  left: 3px;
-}
-
-:host([size="small"]) [part~="thumb-checked"] {
-  left: calc(100% - 0.625rem - 3px);
-}
-
-:host([size="large"]) [part~="thumb"] {
-  width: 0.9375rem;
-  height: 0.9375rem;
-  left: 4px;
-}
-
-:host([size="large"]) [part~="thumb-checked"] {
-  left: calc(100% - 0.9375rem - 4px);
-}
-
-/* State labels & spinner */
+/* State labels (ON/OFF inside track) & high-contrast spinner */
 [part~="label-on"] {
+  left: 0.375rem;
   color: var(--snice-win-on-accent, hsl(0 0% 100%));
 }
 
 [part~="label-off"] {
+  right: 0.4375rem;
   color: var(--snice-color-text-secondary);
 }
 
+/* Spinner inherits contrast color from [part~="thumb"] (unchecked inverse ink)
+   or [part~="thumb-checked"] (accent/danger ink on white light / black dark knob) */
 [part~="spinner"] {
-  color: var(--snice-color-surface);
+  color: inherit;
 }
 
-/* Label */
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  width: calc(var(--_win-thumb) - 4px);
+  height: calc(var(--_win-thumb) - 4px);
+  border-width: 1.5px;
+}
+
+/* Label — Segoe UI Variable body ramp */
 [part~="label"] {
-  font-size: 0.875rem;
+  font-size: 0.875rem; /* 14px */
   font-weight: 400;
+  line-height: 1.4286;
   color: var(--snice-color-text);
 }
 
-/* Focus & Disabled */
-:host([data-win-focus="keyboard"]) [part~="track"] {
+:host([size="small"]) [part~="label"] {
+  font-size: 0.75rem; /* 12px */
+  line-height: 1.3333;
+}
+
+:host([size="large"]) [part~="label"] {
+  font-size: 0.9375rem; /* 15px */
+  line-height: 1.4667;
+}
+
+[part~="label-required"]::after {
+  color: var(--snice-color-danger);
+}
+
+/* WinUI 3 Dual-Stroke Keyboard Focus */
+:host([data-win-focus="keyboard"]) [part~="track"],
+:host(:focus-visible) [part~="track"] {
   box-shadow: var(--snice-win-focus-shadow);
 }
 
+/* Disabled & Loading Wrapper */
 [part~="base-disabled"] {
   opacity: 0.55;
+  cursor: not-allowed;
+}
+
+[part~="base-loading"] {
+  opacity: 0.8;
+  cursor: wait;
+}
+
+[part~="track-loading"] {
+  cursor: wait;
+}
+
+/* Loading — freeze hover/press geometry & neutralize base opacity pulse */
+:host([loading]:hover) [part~="track"] {
+  background: var(--snice-win-control-bg);
+  border-color: var(--snice-color-text-secondary);
+}
+
+:host([loading]:hover) [part~="track-checked"] {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+}
+
+:host([loading]:hover) [part~="track-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+:host([loading]:hover) [part~="track-invalid"][part~="track-checked"] {
+  background: var(--snice-color-danger);
+  border-color: var(--snice-color-danger);
+}
+
+:host([loading]) [part~="thumb"],
+:host([loading]:hover) [part~="thumb"] {
+  width: var(--_win-thumb);
+  height: var(--_win-thumb);
+  left: var(--_win-thumb-inset);
+  background: var(--snice-color-text-secondary);
+  animation: none;
+}
+
+:host([loading]) [part~="thumb-checked"],
+:host([loading]:hover) [part~="thumb-checked"] {
+  width: var(--_win-thumb);
+  height: var(--_win-thumb);
+  left: calc(100% - var(--_win-thumb) - var(--_win-thumb-inset));
+  background: var(--snice-win-on-accent, hsl(0 0% 100%));
+  animation: none;
+}
+
+/* Disabled — flat WinUI 3 hollow/muted states, preserves exact per-size thumb geometry */
+:host([disabled]) [part~="base-disabled"] {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 :host([disabled]) [part~="track"],
-:host([disabled]:hover) [part~="track"] {
+:host([disabled]:hover) [part~="track"],
+:host([disabled][data-win-pressed="true"]) [part~="track"],
+:host([disabled]) [part~="track-invalid"],
+:host([disabled]:hover) [part~="track-invalid"] {
   background: transparent;
   border-color: var(--snice-color-border-hover);
+  box-shadow: none;
 }
 
 :host([disabled]) [part~="track-checked"],
-:host([disabled]:hover) [part~="track-checked"] {
+:host([disabled]:hover) [part~="track-checked"],
+:host([disabled][data-win-pressed="true"]) [part~="track-checked"],
+:host([disabled]) [part~="track-invalid"][part~="track-checked"],
+:host([disabled]:hover) [part~="track-invalid"][part~="track-checked"] {
   background: var(--snice-color-text-tertiary);
   border-color: transparent;
+  box-shadow: none;
+}
+
+:host([disabled][data-win-focus="keyboard"]) [part~="track"],
+:host([disabled]:focus-visible) [part~="track"] {
+  box-shadow: none;
 }
 
 :host([disabled]) [part~="thumb"],
-:host([disabled]:hover) [part~="thumb"] {
-  width: 0.75rem;
-  height: 0.75rem;
-  left: 3px;
+:host([disabled]:hover) [part~="thumb"],
+:host([disabled][data-win-pressed="true"]) [part~="thumb"] {
+  width: var(--_win-thumb);
+  height: var(--_win-thumb);
+  left: var(--_win-thumb-inset);
   background: var(--snice-color-text-tertiary);
+  color: var(--snice-color-surface);
 }
 
 :host([disabled]) [part~="thumb-checked"],
-:host([disabled]:hover) [part~="thumb-checked"] {
-  width: 0.75rem;
-  height: 0.75rem;
-  left: calc(100% - 0.75rem - 3px);
+:host([disabled]:hover) [part~="thumb-checked"],
+:host([disabled][data-win-pressed="true"]) [part~="thumb-checked"] {
+  width: var(--_win-thumb);
+  height: var(--_win-thumb);
+  left: calc(100% - var(--_win-thumb) - var(--_win-thumb-inset));
   background: var(--snice-color-surface);
+  color: var(--snice-color-text-tertiary);
+}
+
+:host([disabled]) [part~="label"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+:host([disabled]) [part~="label-on"] {
+  color: var(--snice-color-surface);
+}
+
+:host([disabled]) [part~="label-off"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+/* First-class Windows High Contrast Mode (WHCM / forced-colors) */
+@media (forced-colors: active) {
+  [part~="track"] {
+    background: Canvas;
+    border-color: ButtonText;
+  }
+
+  [part~="track-checked"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  [part~="thumb"] {
+    forced-color-adjust: none;
+    background: ButtonText;
+  }
+
+  [part~="thumb-checked"] {
+    forced-color-adjust: none;
+    background: HighlightText;
+  }
+
+  :host([disabled]) [part~="track"],
+  :host([disabled]) [part~="track-checked"] {
+    forced-color-adjust: none;
+    background: Canvas;
+    border-color: GrayText;
+  }
+
+  :host([disabled]) [part~="thumb"],
+  :host([disabled]) [part~="thumb-checked"] {
+    forced-color-adjust: none;
+    background: GrayText;
+  }
 }

@@ -1,29 +1,34 @@
 /* ==========================================================================
    Windows 11 Fluent 2 / WinUI 3 — snice-button
    32px standard height, 4px radius, signature 1px top-lit elevation border
-   with darker bottom hairline, subtle pressed ink fade, zero rubbery scale,
-   dual-stroke WinUI 3 keyboard focus, and exact dark-mode on-accent ink.
+   with darker bottom hairline, flat pressed ink fade, zero rubbery scale,
+   dual-stroke WinUI 3 keyboard focus, distinct loading surface, and exact
+   dark-mode --snice-win-on-accent ink.
    ========================================================================== */
 
-/* Base — WinUI 3 Standard Push Button */
+/* Base — WinUI 3 Standard Push Button (DefaultButtonStyle) */
 [part~="base"] {
   height: 2rem;
   min-height: 2rem;
   padding: 0 0.75rem;
   border-radius: 4px;
+  font-family: var(--snice-font-family);
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.25;
+  letter-spacing: var(--snice-tracking-normal, 0);
   background: var(--snice-win-control-bg);
   color: var(--snice-color-text);
   border-width: 1px;
   border-style: solid;
   border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-win-stroke-bottom);
   box-shadow: none;
+  transform: none;
   transition:
-    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
-    border-color var(--snice-transition-fast, 100ms) ease,
-    color var(--snice-transition-fast, 100ms) ease;
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    box-shadow var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
 }
 
 [part~="base"]::before {
@@ -32,6 +37,7 @@
 
 [part~="base"]:hover {
   background: var(--snice-win-control-bg-hover);
+  color: var(--snice-color-text);
   border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-win-stroke-bottom);
   box-shadow: none;
   transform: none;
@@ -44,9 +50,13 @@
   border-color: var(--snice-win-stroke-top);
   box-shadow: none;
   transform: none;
+  transition:
+    background-color 60ms var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    border-color 60ms var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    color 60ms var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
 }
 
-/* Sizes */
+/* Sizes — WinUI 3 desktop density */
 :host([size="small"]) [part~="base"] {
   height: 1.625rem;
   min-height: 1.625rem;
@@ -61,27 +71,36 @@
   font-size: 0.9375rem;
 }
 
-/* Accent & Semantic Filled Variants — use --snice-win-on-accent so dark mode
-   bright Fluent fills (#60CDFF, #6CCB5F, #FCE100, #FF99A4) get crisp dark ink! */
+/* Accent & Semantic Filled Variants (AccentButtonStyle)
+   Always use --snice-win-on-accent so bright Fluent dark fills
+   (#60CDFF, #6CCB5F, #FCE100, #FF99A4) receive crisp black ink. */
 :host([variant="primary"]) [part~="base"] {
   background: var(--snice-color-primary);
   color: var(--snice-win-on-accent, hsl(0 0% 100%));
   border-color: color-mix(in srgb, white 10%, var(--snice-color-primary))
     color-mix(in srgb, white 10%, var(--snice-color-primary))
     color-mix(in srgb, black 30%, var(--snice-color-primary));
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="primary"]) [part~="base"]:hover {
   background: color-mix(in srgb, var(--snice-color-primary) 90%, var(--snice-color-surface));
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
   border-color: color-mix(in srgb, white 10%, var(--snice-color-primary))
     color-mix(in srgb, white 10%, var(--snice-color-primary))
     color-mix(in srgb, black 30%, var(--snice-color-primary));
+  box-shadow: none;
+  transform: none;
 }
 
-:host([variant="primary"]) [part~="base"]:active {
+:host([variant="primary"]) [part~="base"]:active,
+:host([variant="primary"][data-win-pressed="true"]) [part~="base"] {
   background: color-mix(in srgb, var(--snice-color-primary) 80%, var(--snice-color-surface));
   color: color-mix(in srgb, var(--snice-win-on-accent, hsl(0 0% 100%)) 72%, transparent);
   border-color: transparent;
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="success"]) [part~="base"] {
@@ -90,10 +109,27 @@
   border-color: color-mix(in srgb, white 10%, var(--snice-color-success))
     color-mix(in srgb, white 10%, var(--snice-color-success))
     color-mix(in srgb, black 28%, var(--snice-color-success));
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="success"]) [part~="base"]:hover {
   background: color-mix(in srgb, var(--snice-color-success) 90%, var(--snice-color-surface));
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+  border-color: color-mix(in srgb, white 10%, var(--snice-color-success))
+    color-mix(in srgb, white 10%, var(--snice-color-success))
+    color-mix(in srgb, black 28%, var(--snice-color-success));
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="success"]) [part~="base"]:active,
+:host([variant="success"][data-win-pressed="true"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-success) 80%, var(--snice-color-surface));
+  color: color-mix(in srgb, var(--snice-win-on-accent, hsl(0 0% 100%)) 72%, transparent);
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="warning"]) [part~="base"] {
@@ -102,10 +138,27 @@
   border-color: color-mix(in srgb, white 10%, var(--snice-color-warning))
     color-mix(in srgb, white 10%, var(--snice-color-warning))
     color-mix(in srgb, black 28%, var(--snice-color-warning));
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="warning"]) [part~="base"]:hover {
   background: color-mix(in srgb, var(--snice-color-warning) 90%, var(--snice-color-surface));
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+  border-color: color-mix(in srgb, white 10%, var(--snice-color-warning))
+    color-mix(in srgb, white 10%, var(--snice-color-warning))
+    color-mix(in srgb, black 28%, var(--snice-color-warning));
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="warning"]) [part~="base"]:active,
+:host([variant="warning"][data-win-pressed="true"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-warning) 80%, var(--snice-color-surface));
+  color: color-mix(in srgb, var(--snice-win-on-accent, hsl(0 0% 100%)) 72%, transparent);
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="danger"]) [part~="base"] {
@@ -114,27 +167,53 @@
   border-color: color-mix(in srgb, white 10%, var(--snice-color-danger))
     color-mix(in srgb, white 10%, var(--snice-color-danger))
     color-mix(in srgb, black 28%, var(--snice-color-danger));
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="danger"]) [part~="base"]:hover {
   background: color-mix(in srgb, var(--snice-color-danger) 90%, var(--snice-color-surface));
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+  border-color: color-mix(in srgb, white 10%, var(--snice-color-danger))
+    color-mix(in srgb, white 10%, var(--snice-color-danger))
+    color-mix(in srgb, black 28%, var(--snice-color-danger));
+  box-shadow: none;
+  transform: none;
 }
 
-/* Text (Fluent Subtle Button) */
+:host([variant="danger"]) [part~="base"]:active,
+:host([variant="danger"][data-win-pressed="true"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 80%, var(--snice-color-surface));
+  color: color-mix(in srgb, var(--snice-win-on-accent, hsl(0 0% 100%)) 72%, transparent);
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Text (WinUI 3 SubtleButtonStyle) */
 :host([variant="text"]) [part~="base"] {
   background: transparent;
   border-color: transparent;
   color: var(--snice-color-primary);
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="text"]) [part~="base"]:hover {
   background: var(--snice-win-control-bg-hover);
   border-color: transparent;
+  color: var(--snice-color-primary);
+  box-shadow: none;
+  transform: none;
 }
 
-:host([variant="text"]) [part~="base"]:active {
+:host([variant="text"]) [part~="base"]:active,
+:host([variant="text"][data-win-pressed="true"]) [part~="base"] {
   background: var(--snice-win-control-bg-pressed);
   border-color: transparent;
+  color: color-mix(in srgb, var(--snice-color-primary) 75%, transparent);
+  box-shadow: none;
+  transform: none;
 }
 
 /* Outline — crisp 1px Fluent variant border */
@@ -142,50 +221,125 @@
   background: transparent;
   border-color: var(--snice-color-border-hover);
   color: var(--snice-color-text);
+  box-shadow: none;
+  transform: none;
 }
 
 [part~="base-outline"]:hover {
   background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-color-border-hover);
+  color: var(--snice-color-text);
+  box-shadow: none;
+  transform: none;
+}
+
+[part~="base-outline"]:active,
+:host([data-win-pressed="true"]) [part~="base-outline"] {
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-win-stroke-top);
+  color: var(--snice-color-text-secondary);
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="primary"]) [part~="base-outline"] {
   background: transparent;
   border-color: var(--snice-color-primary);
   color: var(--snice-color-primary);
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="primary"]) [part~="base-outline"]:hover {
   background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+  border-color: var(--snice-color-primary);
+  color: var(--snice-color-primary);
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="primary"]) [part~="base-outline"]:active,
+:host([variant="primary"][data-win-pressed="true"]) [part~="base-outline"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 18%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 80%, transparent);
+  color: color-mix(in srgb, var(--snice-color-primary) 80%, transparent);
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="success"]) [part~="base-outline"] {
   background: transparent;
   border-color: var(--snice-color-success);
   color: var(--snice-color-success);
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="success"]) [part~="base-outline"]:hover {
   background: color-mix(in srgb, var(--snice-color-success) 10%, transparent);
+  border-color: var(--snice-color-success);
+  color: var(--snice-color-success);
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="success"]) [part~="base-outline"]:active,
+:host([variant="success"][data-win-pressed="true"]) [part~="base-outline"] {
+  background: color-mix(in srgb, var(--snice-color-success) 18%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-success) 80%, transparent);
+  color: color-mix(in srgb, var(--snice-color-success) 80%, transparent);
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="warning"]) [part~="base-outline"] {
   background: transparent;
   border-color: var(--snice-color-warning);
   color: var(--snice-color-warning);
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="warning"]) [part~="base-outline"]:hover {
   background: color-mix(in srgb, var(--snice-color-warning) 10%, transparent);
+  border-color: var(--snice-color-warning);
+  color: var(--snice-color-warning);
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="warning"]) [part~="base-outline"]:active,
+:host([variant="warning"][data-win-pressed="true"]) [part~="base-outline"] {
+  background: color-mix(in srgb, var(--snice-color-warning) 18%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 80%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 80%, transparent);
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="danger"]) [part~="base-outline"] {
   background: transparent;
   border-color: var(--snice-color-danger);
   color: var(--snice-color-danger);
+  box-shadow: none;
+  transform: none;
 }
 
 :host([variant="danger"]) [part~="base-outline"]:hover {
   background: color-mix(in srgb, var(--snice-color-danger) 10%, transparent);
+  border-color: var(--snice-color-danger);
+  color: var(--snice-color-danger);
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="danger"]) [part~="base-outline"]:active,
+:host([variant="danger"][data-win-pressed="true"]) [part~="base-outline"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 18%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 80%, transparent);
+  color: color-mix(in srgb, var(--snice-color-danger) 80%, transparent);
+  box-shadow: none;
+  transform: none;
 }
 
 /* Pill & Circle Shapes */
@@ -197,6 +351,7 @@
   width: 2rem;
   min-width: 2rem;
   height: 2rem;
+  min-height: 2rem;
   padding: 0;
   border-radius: 50%;
 }
@@ -205,6 +360,7 @@
   width: 1.625rem;
   min-width: 1.625rem;
   height: 1.625rem;
+  min-height: 1.625rem;
   padding: 0;
 }
 
@@ -212,31 +368,231 @@
   width: 2.5rem;
   min-width: 2.5rem;
   height: 2.5rem;
+  min-height: 2.5rem;
   padding: 0;
 }
 
-/* WinUI 3 Dual-Stroke Keyboard Focus & Disabled */
-[part~="base"]:focus-visible,
-:host([data-win-focus="keyboard"]) [part~="base"] {
-  outline: none;
-  box-shadow: var(--snice-win-focus-shadow);
-}
-
+/* Disabled — flat muted surface; outline keeps transparent fill; text stays borderless */
 [part~="base-disabled"],
 [part~="base-disabled"]:hover,
 [part~="base-disabled"]:active,
 :host([disabled]) [part~="base"],
 :host([disabled]) [part~="base"]:hover,
 :host([disabled]) [part~="base"]:active,
+:host([variant]) [part~="base-disabled"],
+:host([variant]) [part~="base-disabled"]:hover,
+:host([variant]) [part~="base-disabled"]:active,
 :host([disabled][variant]) [part~="base"],
 :host([disabled][variant]) [part~="base"]:hover,
-:host([disabled][variant]) [part~="base"]:active,
-:host([disabled][outline]) [part~="base"],
-:host([disabled][variant][outline]) [part~="base"] {
+:host([disabled][variant]) [part~="base"]:active {
   background: var(--snice-win-control-bg-pressed);
   color: var(--snice-color-text-tertiary);
   border-color: var(--snice-color-border-subtle);
   opacity: 0.72;
+  cursor: not-allowed;
   box-shadow: none;
   transform: none;
+}
+
+[part~="base-outline"][part~="base-disabled"],
+[part~="base-outline"][part~="base-disabled"]:hover,
+[part~="base-outline"][part~="base-disabled"]:active,
+:host([variant]) [part~="base-outline"][part~="base-disabled"],
+:host([variant]) [part~="base-outline"][part~="base-disabled"]:hover,
+:host([variant]) [part~="base-outline"][part~="base-disabled"]:active,
+:host([disabled][outline]) [part~="base"],
+:host([disabled][outline]) [part~="base"]:hover,
+:host([disabled][outline]) [part~="base"]:active,
+:host([disabled][variant][outline]) [part~="base"],
+:host([disabled][variant][outline]) [part~="base"]:hover,
+:host([disabled][variant][outline]) [part~="base"]:active {
+  background: transparent;
+  color: var(--snice-color-text-tertiary);
+  border-color: var(--snice-color-border-subtle);
+  opacity: 0.72;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="text"]) [part~="base-disabled"],
+:host([variant="text"]) [part~="base-disabled"]:hover,
+:host([variant="text"]) [part~="base-disabled"]:active,
+:host([disabled][variant="text"]) [part~="base"],
+:host([disabled][variant="text"]) [part~="base"]:hover,
+:host([disabled][variant="text"]) [part~="base"]:active {
+  background: transparent;
+  color: var(--snice-color-text-tertiary);
+  border-color: transparent;
+  opacity: 0.72;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Loading — preserves variant surface & currentColor spinner, distinct from disabled gray */
+[part~="base-loading"],
+[part~="base-loading"]:hover,
+[part~="base-loading"]:active {
+  background: var(--snice-win-control-bg);
+  color: var(--snice-color-text);
+  border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-win-stroke-bottom);
+  opacity: 0.85;
+  cursor: wait;
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="primary"]) [part~="base-loading"],
+:host([variant="primary"]) [part~="base-loading"]:hover,
+:host([variant="primary"]) [part~="base-loading"]:active {
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+  border-color: color-mix(in srgb, white 10%, var(--snice-color-primary))
+    color-mix(in srgb, white 10%, var(--snice-color-primary))
+    color-mix(in srgb, black 30%, var(--snice-color-primary));
+  opacity: 0.85;
+  cursor: wait;
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="success"]) [part~="base-loading"],
+:host([variant="success"]) [part~="base-loading"]:hover,
+:host([variant="success"]) [part~="base-loading"]:active {
+  background: var(--snice-color-success);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+  border-color: color-mix(in srgb, white 10%, var(--snice-color-success))
+    color-mix(in srgb, white 10%, var(--snice-color-success))
+    color-mix(in srgb, black 28%, var(--snice-color-success));
+  opacity: 0.85;
+  cursor: wait;
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="warning"]) [part~="base-loading"],
+:host([variant="warning"]) [part~="base-loading"]:hover,
+:host([variant="warning"]) [part~="base-loading"]:active {
+  background: var(--snice-color-warning);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+  border-color: color-mix(in srgb, white 10%, var(--snice-color-warning))
+    color-mix(in srgb, white 10%, var(--snice-color-warning))
+    color-mix(in srgb, black 28%, var(--snice-color-warning));
+  opacity: 0.85;
+  cursor: wait;
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="danger"]) [part~="base-loading"],
+:host([variant="danger"]) [part~="base-loading"]:hover,
+:host([variant="danger"]) [part~="base-loading"]:active {
+  background: var(--snice-color-danger);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+  border-color: color-mix(in srgb, white 10%, var(--snice-color-danger))
+    color-mix(in srgb, white 10%, var(--snice-color-danger))
+    color-mix(in srgb, black 28%, var(--snice-color-danger));
+  opacity: 0.85;
+  cursor: wait;
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="text"]) [part~="base-loading"],
+:host([variant="text"]) [part~="base-loading"]:hover,
+:host([variant="text"]) [part~="base-loading"]:active {
+  background: transparent;
+  color: var(--snice-color-primary);
+  border-color: transparent;
+  opacity: 0.85;
+  cursor: wait;
+  box-shadow: none;
+  transform: none;
+}
+
+[part~="base-outline"][part~="base-loading"],
+[part~="base-outline"][part~="base-loading"]:hover,
+[part~="base-outline"][part~="base-loading"]:active {
+  background: transparent;
+  color: var(--snice-color-text);
+  border-color: var(--snice-color-border-hover);
+  opacity: 0.85;
+  cursor: wait;
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="primary"]) [part~="base-outline"][part~="base-loading"],
+:host([variant="primary"]) [part~="base-outline"][part~="base-loading"]:hover,
+:host([variant="primary"]) [part~="base-outline"][part~="base-loading"]:active {
+  background: transparent;
+  color: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+  opacity: 0.85;
+  cursor: wait;
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="success"]) [part~="base-outline"][part~="base-loading"],
+:host([variant="success"]) [part~="base-outline"][part~="base-loading"]:hover,
+:host([variant="success"]) [part~="base-outline"][part~="base-loading"]:active {
+  background: transparent;
+  color: var(--snice-color-success);
+  border-color: var(--snice-color-success);
+  opacity: 0.85;
+  cursor: wait;
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="warning"]) [part~="base-outline"][part~="base-loading"],
+:host([variant="warning"]) [part~="base-outline"][part~="base-loading"]:hover,
+:host([variant="warning"]) [part~="base-outline"][part~="base-loading"]:active {
+  background: transparent;
+  color: var(--snice-color-warning);
+  border-color: var(--snice-color-warning);
+  opacity: 0.85;
+  cursor: wait;
+  box-shadow: none;
+  transform: none;
+}
+
+:host([variant="danger"]) [part~="base-outline"][part~="base-loading"],
+:host([variant="danger"]) [part~="base-outline"][part~="base-loading"]:hover,
+:host([variant="danger"]) [part~="base-outline"][part~="base-loading"]:active {
+  background: transparent;
+  color: var(--snice-color-danger);
+  border-color: var(--snice-color-danger);
+  opacity: 0.85;
+  cursor: wait;
+  box-shadow: none;
+  transform: none;
+}
+
+/* WinUI 3 Dual-Stroke Keyboard Focus */
+[part~="base"]:focus-visible,
+[part~="base"]:focus-visible:hover,
+:host([variant]) [part~="base"]:focus-visible,
+:host([variant]) [part~="base"]:focus-visible:hover,
+:host([variant]) [part~="base-outline"]:focus-visible,
+:host([variant]) [part~="base-outline"]:focus-visible:hover,
+:host([data-win-focus="keyboard"]) [part~="base"],
+:host([data-win-focus="keyboard"]) [part~="base"]:hover,
+:host([data-win-focus="keyboard"][variant]) [part~="base"],
+:host([data-win-focus="keyboard"][variant]) [part~="base"]:hover,
+:host([data-win-focus="keyboard"][variant]) [part~="base-outline"],
+:host([data-win-focus="keyboard"][variant]) [part~="base-outline"]:hover {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* Windows High Contrast Mode (WHCM) keyboard focus fallback */
+@media (forced-colors: active) {
+  [part~="base"]:focus-visible,
+  :host([data-win-focus="keyboard"]) [part~="base"] {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
 }

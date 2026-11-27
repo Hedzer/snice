@@ -1,34 +1,89 @@
 /* ==========================================================================
    Windows 11 Fluent 2 / WinUI 3 — snice-slider
-   4px crisp pill track, signature concentric WinUI 3 thumb (white/surface
-   outer ring + inner accent dot that expands on hover and shrinks on press),
-   semantic variants, dual-stroke focus, and vertical parity.
+   4px crisp pill track, signature concentric WinUI 3 thumb (surface outer
+   ring + inner accent dot expanding on hover and contracting on press with
+   zero external scale bounce), crisp 1x4px ticks, semantic variants,
+   high-contrast --snice-win-on-accent loading spinner, dual-stroke focus,
+   disabled/readonly/invalid states, and vertical parity.
    ========================================================================== */
 
 [part~="label"] {
   font-size: 0.875rem;
   font-weight: 400;
+  line-height: 1.43;
   color: var(--snice-color-text);
+  margin-bottom: 4px;
+}
+
+[part~="label"][part~="label-required"]::after {
+  color: var(--snice-color-danger);
 }
 
 [part~="controls"] {
   min-height: 2rem;
 }
 
+:host([form-align]) [part~="controls"] {
+  min-height: 2rem;
+}
+
+[part~="controls"][part~="controls-vertical"] {
+  min-width: 2rem;
+  min-height: 0;
+}
+
+/* 4px Fluent 2 pill track (horizontal & vertical across all sizes) */
 [part~="track"] {
   height: 4px;
   border-radius: 9999px;
-  background: var(--snice-color-text-tertiary);
+  background: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
 }
 
-[part~="track-vertical"] {
+[part~="track"][part~="track-vertical"] {
   width: 4px;
   height: 100%;
 }
 
+/* Crisp 1px x 4px WinUI 3 tick marks */
+[part~="ticks"] {
+  top: calc(100% + 6px);
+  height: 4px;
+  padding: 0;
+}
+
+[part~="ticks"][part~="ticks-vertical"] {
+  top: 0;
+  left: calc(100% + 6px);
+  width: 4px;
+  height: 100%;
+  padding: 0;
+}
+
+[part~="tick"] {
+  width: 1px;
+  height: 4px;
+  border-radius: 0.5px;
+  background: var(--snice-color-text-tertiary);
+}
+
+[part~="tick"][part~="tick-vertical"] {
+  width: 4px;
+  height: 1px;
+}
+
+/* Filled track */
 [part~="fill"] {
   border-radius: 9999px;
   background: var(--snice-color-primary);
+  transition: width var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
+}
+
+[part~="fill"][part~="fill-vertical"] {
+  transition: height var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
+}
+
+[part~="fill"][part~="fill-dragging"] {
+  transition: none;
 }
 
 :host([variant="success"]) [part~="fill"] {
@@ -43,6 +98,7 @@
   background: var(--snice-color-danger);
 }
 
+/* Signature concentric WinUI 3 thumb: fixed outer circle + surface ring + inner accent dot */
 [part~="thumb"] {
   width: 1.25rem;
   height: 1.25rem;
@@ -51,7 +107,10 @@
   background: var(--snice-color-primary);
   border: 4px solid var(--snice-color-surface-container-lowest);
   box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom), var(--snice-shadow-xs);
-  transition: border-width var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease);
+  transition:
+    border-width var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    box-shadow var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
 }
 
 :host([size="small"]) [part~="thumb"] {
@@ -74,33 +133,315 @@
   background: var(--snice-color-warning);
 }
 
-:host([variant="danger"]) [part~="thumb"],
-[part~="thumb-invalid"] {
+:host([variant="danger"]) [part~="thumb"] {
   background: var(--snice-color-danger);
 }
 
+/* Hover: inner accent dot expands via border-width — zero external scale bounce */
 [part~="thumb"]:hover {
   transform: translate(-50%, -50%);
   border-width: 3px;
+  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom), var(--snice-shadow-xs);
 }
 
-[part~="thumb-vertical"]:hover {
+[part~="thumb"][part~="thumb-vertical"]:hover {
   transform: translate(-50%, 50%);
   border-width: 3px;
+  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom), var(--snice-shadow-xs);
+}
+
+:host([size="small"]) [part~="thumb"]:hover,
+:host([size="small"]) [part~="thumb"][part~="thumb-vertical"]:hover {
+  border-width: 2.5px;
+}
+
+:host([size="large"]) [part~="thumb"]:hover,
+:host([size="large"]) [part~="thumb"][part~="thumb-vertical"]:hover {
+  border-width: 4px;
+}
+
+/* Active / Pressed / Dragging: inner accent dot contracts — zero external scale bounce */
+[part~="thumb"]:active {
+  transform: translate(-50%, -50%);
+  border-width: 5px;
+  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom), var(--snice-shadow-xs);
+}
+
+[part~="thumb"][part~="thumb-vertical"]:active {
+  transform: translate(-50%, 50%);
+  border-width: 5px;
+  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom), var(--snice-shadow-xs);
 }
 
 :host([data-win-pressed="true"]) [part~="thumb"],
-[part~="thumb-dragging"] {
+:host([data-win-pressed="true"]) [part~="thumb"]:hover,
+[part~="thumb"][part~="thumb-dragging"],
+[part~="thumb"][part~="thumb-dragging"]:hover {
   border-width: 5px;
 }
 
+:host([size="small"]) [part~="thumb"]:active,
+:host([size="small"]) [part~="thumb"][part~="thumb-vertical"]:active,
+:host([size="small"][data-win-pressed="true"]) [part~="thumb"],
+:host([size="small"][data-win-pressed="true"]) [part~="thumb"]:hover,
+:host([size="small"]) [part~="thumb"][part~="thumb-dragging"],
+:host([size="small"]) [part~="thumb"][part~="thumb-dragging"]:hover {
+  border-width: 4px;
+}
+
+:host([size="large"]) [part~="thumb"]:active,
+:host([size="large"]) [part~="thumb"][part~="thumb-vertical"]:active,
+:host([size="large"][data-win-pressed="true"]) [part~="thumb"],
+:host([size="large"][data-win-pressed="true"]) [part~="thumb"]:hover,
+:host([size="large"]) [part~="thumb"][part~="thumb-dragging"],
+:host([size="large"]) [part~="thumb"][part~="thumb-dragging"]:hover {
+  border-width: 6px;
+}
+
+/* Invalid state: danger fill + danger inner dot with concentric surface ring preserved */
+[part~="track"][part~="track-invalid"] {
+  box-shadow: none;
+}
+
+:host([invalid]) [part~="fill"],
+:host([invalid][variant]) [part~="fill"] {
+  background: var(--snice-color-danger);
+}
+
+[part~="thumb"][part~="thumb-invalid"],
+[part~="thumb"][part~="thumb-invalid"]:hover,
+[part~="thumb"][part~="thumb-invalid"]:active,
+:host([variant]) [part~="thumb"][part~="thumb-invalid"],
+:host([invalid]) [part~="thumb"],
+:host([invalid][variant]) [part~="thumb"] {
+  background: var(--snice-color-danger);
+  border-color: var(--snice-color-surface-container-lowest);
+  box-shadow: 0 0 0 1px var(--snice-color-danger), var(--snice-shadow-xs);
+}
+
+/* WinUI 3 dual-stroke keyboard focus */
 [part~="thumb"]:focus-visible,
-:host([data-win-focus="keyboard"]) [part~="thumb"] {
+[part~="thumb"][part~="thumb-vertical"]:focus-visible,
+[part~="thumb"][part~="thumb-invalid"]:focus-visible,
+:host([invalid]) [part~="thumb"]:focus-visible,
+:host([invalid][variant]) [part~="thumb"]:focus-visible,
+:host([data-win-focus="keyboard"]) [part~="thumb"],
+:host([data-win-focus="keyboard"]) [part~="thumb"]:hover,
+:host([data-win-focus="keyboard"][invalid]) [part~="thumb"],
+:host([data-win-focus="keyboard"][invalid][variant]) [part~="thumb"] {
   outline: none;
   box-shadow: var(--snice-win-focus-shadow);
 }
 
+/* Disabled state: muted --snice-color-text-tertiary fill & dot, suppressed hover/press */
+[part~="track"][part~="track-disabled"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+:host([disabled]) [part~="label"],
+:host(:disabled) [part~="label"],
+:host([disabled]) [part~="value"],
+:host(:disabled) [part~="value"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+:host([disabled]) [part~="fill"],
+:host(:disabled) [part~="fill"],
+:host([disabled][variant]) [part~="fill"],
+:host(:disabled[variant]) [part~="fill"],
+:host([disabled][invalid]) [part~="fill"],
+:host([disabled][invalid][variant]) [part~="fill"] {
+  background: var(--snice-color-text-tertiary);
+}
+
+:host([disabled]) [part~="thumb"],
+:host(:disabled) [part~="thumb"],
+:host([disabled][variant]) [part~="thumb"],
+:host(:disabled[variant]) [part~="thumb"],
+:host([disabled][invalid]) [part~="thumb"],
+:host([disabled][invalid][variant]) [part~="thumb"],
+:host([disabled]) [part~="thumb"][part~="thumb-invalid"],
+:host(:disabled) [part~="thumb"][part~="thumb-invalid"] {
+  background: var(--snice-color-text-tertiary);
+  border-color: var(--snice-color-surface-container-lowest);
+  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom);
+  cursor: not-allowed;
+}
+
+:host([disabled]) [part~="thumb"]:hover,
+:host([disabled]) [part~="thumb"]:active,
+:host(:disabled) [part~="thumb"]:hover,
+:host(:disabled) [part~="thumb"]:active {
+  transform: translate(-50%, -50%);
+  border-width: 4px;
+  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom);
+  cursor: not-allowed;
+}
+
+:host([disabled]) [part~="thumb"][part~="thumb-vertical"]:hover,
+:host([disabled]) [part~="thumb"][part~="thumb-vertical"]:active,
+:host(:disabled) [part~="thumb"][part~="thumb-vertical"]:hover,
+:host(:disabled) [part~="thumb"][part~="thumb-vertical"]:active {
+  transform: translate(-50%, 50%);
+  border-width: 4px;
+  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom);
+  cursor: not-allowed;
+}
+
+:host([disabled][size="small"]) [part~="thumb"]:hover,
+:host([disabled][size="small"]) [part~="thumb"]:active,
+:host([size="small"]:disabled) [part~="thumb"]:hover,
+:host([size="small"]:disabled) [part~="thumb"]:active {
+  border-width: 3px;
+}
+
+:host([disabled][size="large"]) [part~="thumb"]:hover,
+:host([disabled][size="large"]) [part~="thumb"]:active,
+:host([size="large"]:disabled) [part~="thumb"]:hover,
+:host([size="large"]:disabled) [part~="thumb"]:active {
+  border-width: 5px;
+}
+
+/* Loading state: --snice-win-on-accent spinner centered cleanly inside concentric thumb */
+[part~="track"][part~="track-loading"] {
+  opacity: 0.8;
+  cursor: wait;
+}
+
+:host([disabled]) [part~="track"][part~="track-loading"],
+:host(:disabled) [part~="track"][part~="track-loading"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+[part~="thumb"][part~="thumb-loading"] {
+  cursor: wait;
+  pointer-events: none;
+  border-width: 4px;
+}
+
+:host([size="small"]) [part~="thumb"][part~="thumb-loading"] {
+  border-width: 3px;
+}
+
+:host([size="large"]) [part~="thumb"][part~="thumb-loading"] {
+  border-width: 5px;
+}
+
+[part~="spinner"] {
+  color: var(--snice-win-on-accent);
+}
+
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  width: 10px;
+  height: 10px;
+  border-width: 1.5px;
+  border-color: var(--snice-win-on-accent);
+  border-right-color: transparent;
+}
+
+:host([size="small"]) [part~="spinner"]::after {
+  width: 8px;
+  height: 8px;
+  border-width: 1.5px;
+}
+
+:host([size="large"]) [part~="spinner"]::after {
+  width: 12px;
+  height: 12px;
+  border-width: 2px;
+}
+
+/* Readonly state: preserve resting concentric dot without interactive deformation */
+:host([readonly]) [part~="track"],
+:host([readonly]) [part~="thumb"] {
+  cursor: default;
+}
+
+:host([readonly]) [part~="thumb"]:hover,
+:host([readonly]) [part~="thumb"]:active,
+:host([readonly][data-win-pressed="true"]) [part~="thumb"] {
+  transform: translate(-50%, -50%);
+  border-width: 4px;
+  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom), var(--snice-shadow-xs);
+}
+
+:host([readonly]) [part~="thumb"][part~="thumb-vertical"]:hover,
+:host([readonly]) [part~="thumb"][part~="thumb-vertical"]:active,
+:host([readonly][data-win-pressed="true"]) [part~="thumb"][part~="thumb-vertical"] {
+  transform: translate(-50%, 50%);
+  border-width: 4px;
+  box-shadow: 0 0 0 1px var(--snice-win-stroke-bottom), var(--snice-shadow-xs);
+}
+
+:host([readonly][size="small"]) [part~="thumb"]:hover,
+:host([readonly][size="small"]) [part~="thumb"]:active,
+:host([readonly][size="small"][data-win-pressed="true"]) [part~="thumb"] {
+  border-width: 3px;
+}
+
+:host([readonly][size="large"]) [part~="thumb"]:hover,
+:host([readonly][size="large"]) [part~="thumb"]:active,
+:host([readonly][size="large"][data-win-pressed="true"]) [part~="thumb"] {
+  border-width: 5px;
+}
+
+/* Value readout, helper & error text */
 [part~="value"] {
   font-size: 0.875rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
   color: var(--snice-color-text);
+}
+
+[part~="helper-text"] {
+  font-size: 0.75rem;
+  line-height: 1.33;
+  color: var(--snice-color-text-secondary);
+  margin-top: 4px;
+}
+
+[part~="error-text"] {
+  font-size: 0.75rem;
+  line-height: 1.33;
+  color: var(--snice-color-danger);
+  margin-top: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="fill"],
+  [part~="thumb"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="track"] {
+    background: CanvasText;
+  }
+
+  [part~="fill"] {
+    background: Highlight;
+  }
+
+  [part~="thumb"] {
+    background: Highlight;
+    border-color: Canvas;
+    box-shadow: 0 0 0 1px ButtonBorder;
+  }
+
+  [part~="tick"] {
+    background: CanvasText;
+  }
+
+  :host([disabled]) [part~="track"],
+  :host([disabled]) [part~="fill"],
+  :host([disabled]) [part~="thumb"],
+  :host(:disabled) [part~="track"],
+  :host(:disabled) [part~="fill"],
+  :host(:disabled) [part~="thumb"] {
+    background: GrayText;
+  }
 }

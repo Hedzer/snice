@@ -1,24 +1,77 @@
 /* ==========================================================================
    macOS 26+ Liquid Glass / AppKit — snice-textarea
-   Compact AppKit NSTextView with hairline recessed bezel and soft accent halo.
+   Compact AppKit NSTextView inside recessed 6px hairline bezel (13px SF Pro),
+   soft translucent accent focus halo across all variants, specificity-safe
+   invalid/readonly/disabled/loading states, and 11px AppKit captions/counter.
    ========================================================================== */
 
+/* Typography — AppKit Labels, Character Counter & Captions */
 [part~="label"] {
   font-size: 0.75rem;
   font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: var(--snice-tracking-normal, -0.005em);
   color: var(--snice-color-text-secondary);
   margin-bottom: 0.25rem;
 }
 
+[part~="label-required"]::after {
+  color: var(--snice-color-danger);
+}
+
+[part~="helper-text"],
+[part~="error-text"],
+[part~="character-count"] {
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  letter-spacing: var(--snice-tracking-normal, -0.005em);
+  margin-top: 0.25rem;
+}
+
+[part~="helper-text"],
+[part~="character-count"] {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="character-count"] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="character-count-exceeded"] {
+  color: var(--snice-color-danger);
+  font-weight: 500;
+}
+
+[part~="error-text"] {
+  color: var(--snice-color-danger);
+}
+
+/* Base Recessed AppKit NSTextView (13px medium) */
 [part~="textarea"] {
   padding: 0.375rem 0.5625rem;
   border-radius: 6px;
   font-size: 0.8125rem;
   line-height: 1.45;
+  letter-spacing: var(--snice-tracking-normal, -0.005em);
   background: var(--snice-macos-control-bg);
   color: var(--snice-color-text);
+  caret-color: var(--snice-color-primary);
   border: 0.5px solid var(--snice-color-border-hover);
   box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.08);
+  transition:
+    border-color var(--snice-transition-fast, 140ms) ease,
+    background-color var(--snice-transition-fast, 140ms) ease,
+    box-shadow var(--snice-transition-fast, 140ms) ease;
+}
+
+[part~="textarea"]::placeholder {
+  color: var(--snice-color-text-tertiary);
+  opacity: 1;
+}
+
+[part~="textarea"]:hover {
+  border-color: color-mix(in srgb, var(--snice-color-text) 32%, transparent);
 }
 
 [part~="textarea"]:focus,
@@ -28,6 +81,7 @@
   box-shadow: var(--snice-macos-focus-halo);
 }
 
+/* Compact Desktop Sizes (12px small / 14px large) */
 :host([size="small"]) [part~="textarea"] {
   padding: 0.25rem 0.4375rem;
   border-radius: 5px;
@@ -40,10 +94,25 @@
   font-size: 0.875rem;
 }
 
+/* Variants — Filled & Underlined (placed after sizes so underlined keeps 0 radius/padding
+   while filled preserves size-specific 5px / 6px / 8px radii) */
 :host([variant="filled"]) [part~="textarea"] {
   background: var(--snice-color-surface-container);
   border-color: transparent;
-  border-radius: 6px;
+  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.06);
+}
+
+:host([variant="filled"]) [part~="textarea"]:hover {
+  background: var(--snice-color-surface-container-high);
+  border-color: transparent;
+}
+
+:host([variant="filled"]) [part~="textarea"]:focus,
+:host([variant="filled"]) [part~="textarea"]:focus-visible {
+  outline: none;
+  background: var(--snice-macos-control-bg);
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-macos-focus-halo);
 }
 
 :host([variant="underlined"]) [part~="textarea"] {
@@ -56,11 +125,209 @@
   box-shadow: none;
 }
 
-[part~="textarea-invalid"] {
+:host([variant="underlined"]) [part~="textarea"]:hover {
+  border-bottom-color: color-mix(in srgb, var(--snice-color-text) 32%, transparent);
+}
+
+:host([variant="underlined"]) [part~="textarea"]:focus,
+:host([variant="underlined"]) [part~="textarea"]:focus-visible {
+  outline: none;
+  background: transparent;
+  border-bottom-color: var(--snice-color-primary);
+  box-shadow: none;
+}
+
+/* Readonly State (placed before disabled & loading since :read-only also matches :disabled) */
+[part~="textarea"]:read-only,
+:host([variant="outlined"]) [part~="textarea"]:read-only,
+:host([variant="filled"]) [part~="textarea"]:read-only {
+  background: var(--snice-color-surface-container-low);
+  box-shadow: none;
+  cursor: default;
+}
+
+[part~="textarea"]:read-only:hover,
+:host([variant="outlined"]) [part~="textarea"]:read-only:hover {
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-border-hover);
+  box-shadow: none;
+  cursor: default;
+}
+
+:host([variant="filled"]) [part~="textarea"]:read-only:hover {
+  background: var(--snice-color-surface-container-low);
+  border-color: transparent;
+  box-shadow: none;
+  cursor: default;
+}
+
+:host([variant="underlined"]) [part~="textarea"]:read-only {
+  background: transparent;
+  box-shadow: none;
+  cursor: default;
+}
+
+:host([variant="underlined"]) [part~="textarea"]:read-only:hover {
+  background: transparent;
+  border-bottom-color: var(--snice-color-border-hover);
+  box-shadow: none;
+  cursor: default;
+}
+
+[part~="textarea"]:read-only:focus,
+[part~="textarea"]:read-only:focus-visible,
+:host([variant="outlined"]) [part~="textarea"]:read-only:focus,
+:host([variant="outlined"]) [part~="textarea"]:read-only:focus-visible,
+:host([variant="filled"]) [part~="textarea"]:read-only:focus,
+:host([variant="filled"]) [part~="textarea"]:read-only:focus-visible {
+  outline: none;
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host([variant="underlined"]) [part~="textarea"]:read-only:focus,
+:host([variant="underlined"]) [part~="textarea"]:read-only:focus-visible {
+  outline: none;
+  background: transparent;
+  border-bottom-color: var(--snice-color-primary);
+  box-shadow: none;
+}
+
+/* Invalid State — specificity-safe across outlined, filled, and underlined */
+[part~="textarea-invalid"],
+[part~="textarea-invalid"]:hover,
+:host([variant]) [part~="textarea-invalid"],
+:host([variant]) [part~="textarea-invalid"]:hover {
   border-color: var(--snice-color-danger);
 }
 
-[part~="textarea"]:disabled {
+:host([variant="underlined"]) [part~="textarea-invalid"],
+:host([variant="underlined"]) [part~="textarea-invalid"]:hover {
+  border-bottom-color: var(--snice-color-danger);
+}
+
+[part~="textarea-invalid"]:focus,
+[part~="textarea-invalid"]:focus-visible,
+:host([variant]) [part~="textarea-invalid"]:focus,
+:host([variant]) [part~="textarea-invalid"]:focus-visible {
+  outline: none;
+  border-color: var(--snice-color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-danger) 38%, transparent);
+}
+
+:host([variant="underlined"]) [part~="textarea-invalid"]:focus,
+:host([variant="underlined"]) [part~="textarea-invalid"]:focus-visible {
+  outline: none;
+  border-bottom-color: var(--snice-color-danger);
+  box-shadow: none;
+}
+
+/* Disabled State — specificity-safe across all 3 variants */
+[part~="textarea"]:disabled,
+:host([variant="outlined"]) [part~="textarea"]:disabled,
+:host([variant="filled"]) [part~="textarea"]:disabled {
   opacity: 0.46;
   background: var(--snice-color-surface-container-low);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+[part~="textarea"]:disabled:hover,
+:host([variant="outlined"]) [part~="textarea"]:disabled:hover {
+  opacity: 0.46;
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-border-hover);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+:host([variant="filled"]) [part~="textarea"]:disabled:hover {
+  opacity: 0.46;
+  background: var(--snice-color-surface-container-low);
+  border-color: transparent;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+:host([variant="underlined"]) [part~="textarea"]:disabled {
+  opacity: 0.46;
+  background: transparent;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+:host([variant="underlined"]) [part~="textarea"]:disabled:hover {
+  opacity: 0.46;
+  background: transparent;
+  border-bottom-color: var(--snice-color-border-hover);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Loading State — overrides disabled dimming and guarantees spinner right clearance */
+[part~="textarea-loading"],
+[part~="textarea-loading"]:disabled,
+[part~="textarea-loading"]:disabled:hover,
+:host([size]) [part~="textarea-loading"],
+:host([variant="outlined"]) [part~="textarea-loading"],
+:host([variant="outlined"]) [part~="textarea-loading"]:disabled,
+:host([variant="outlined"]) [part~="textarea-loading"]:disabled:hover {
+  opacity: 0.85;
+  background: var(--snice-macos-control-bg);
+  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.08);
+  padding-right: 2rem;
+  cursor: wait;
+}
+
+:host([variant="filled"]) [part~="textarea-loading"],
+:host([variant="filled"]) [part~="textarea-loading"]:disabled,
+:host([variant="filled"]) [part~="textarea-loading"]:disabled:hover {
+  opacity: 0.85;
+  background: var(--snice-color-surface-container);
+  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.06);
+  padding-right: 2rem;
+  cursor: wait;
+}
+
+:host([variant="underlined"]) [part~="textarea-loading"],
+:host([variant="underlined"]) [part~="textarea-loading"]:disabled,
+:host([variant="underlined"]) [part~="textarea-loading"]:disabled:hover {
+  opacity: 0.85;
+  background: transparent;
+  box-shadow: none;
+  padding-right: 2rem;
+  cursor: wait;
+}
+
+/* Loading Spinner — AppKit accent ring aligned with first line */
+[part~="spinner"] {
+  top: 0.5rem;
+  right: 0.5625rem;
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--snice-color-primary);
+}
+
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  border-width: 1.5px;
+}
+
+:host([size="small"]) [part~="spinner"] {
+  top: 0.375rem;
+  right: 0.4375rem;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+:host([size="large"]) [part~="spinner"] {
+  top: 0.625rem;
+  right: 0.625rem;
+  width: 1rem;
+  height: 1rem;
+}
+
+:host([variant="underlined"]) [part~="spinner"] {
+  right: 0.25rem;
 }

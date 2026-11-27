@@ -1,15 +1,40 @@
 /* ==========================================================================
    Android Material 3 Expressive — snice-switch
    Exact M3 52x32dp track with 2px outline unchecked -> solid primary checked,
-   16dp -> 24dp -> 28dp growing thumb with spatial spring, 40dp circular state
-   layer ripple, and T80/T20 dark-mode on-primary thumb contrast.
+   16dp -> 24dp -> 28dp growing thumb with spatial spring (proportionally scaled
+   across small/medium/large), 40dp circular state-layer halo, M3 focus outline,
+   T80/T20 dark-mode on-primary contrast, invalid & loading contrast, and exact
+   M3 12%/38% disabled treatment.
    ========================================================================== */
 
 :host {
   min-height: 2.5rem;
+  align-self: center;
 }
 
-/* Track — M3 52x32dp */
+:host([size="small"]) {
+  min-height: 2rem;
+  align-self: center;
+}
+
+:host([size="large"]) {
+  min-height: 3rem;
+  align-self: center;
+}
+
+:host(:focus-visible) {
+  outline: none;
+}
+
+[part~="base"] {
+  gap: 0.75rem;
+}
+
+:host([size="small"]) [part~="base"] {
+  gap: 0.625rem;
+}
+
+/* Track — M3 52x32dp pill with 2px outline (unchecked) -> solid primary (checked) */
 [part~="track"] {
   min-width: 3.25rem;
   height: 2rem;
@@ -17,6 +42,16 @@
   border-radius: 9999px;
   background: var(--snice-color-surface-container-highest);
   border: 2px solid var(--snice-color-border);
+  box-shadow: none;
+  --_m3-thumb-bg-off: var(--snice-color-border);
+  --_m3-thumb-bg-off-hover: var(--snice-color-text-secondary);
+  --_m3-thumb-bg-on: var(--snice-m3-on-primary);
+  --_m3-spinner-color-off: var(--snice-color-surface);
+  --_m3-spinner-color-on: var(--snice-color-primary);
+  --_m3-ripple-color-off: var(--snice-color-text);
+  --_m3-ripple-color-on: var(--snice-color-primary);
+  --_m3-label-on-color: var(--snice-m3-on-primary);
+  --_m3-label-off-color: var(--snice-color-text-secondary);
   transition:
     background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
     border-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
@@ -37,7 +72,14 @@
   border-color: color-mix(in srgb, var(--snice-m3-on-primary) 8%, var(--snice-color-primary));
 }
 
-/* Sizes */
+/* M3 keyboard focus-visible outline (replaces generic base shadow ring) */
+:host(:focus-visible) [part~="track"] {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Track Sizes */
 :host([size="small"]) [part~="track"] {
   min-width: 2.625rem;
   height: 1.625rem;
@@ -48,10 +90,24 @@
   height: 2.25rem;
 }
 
-/* Invalid */
+/* Invalid — propagates danger palette to thumb, spinner, ripple & state labels */
 [part~="track-invalid"] {
   border-color: var(--snice-color-danger);
   background: color-mix(in srgb, var(--snice-color-danger) 12%, var(--snice-color-surface-container-highest));
+  --_m3-thumb-bg-off: var(--snice-color-danger);
+  --_m3-thumb-bg-off-hover: var(--snice-color-danger);
+  --_m3-thumb-bg-on: var(--snice-color-text-inverse);
+  --_m3-spinner-color-off: var(--snice-color-text-inverse);
+  --_m3-spinner-color-on: var(--snice-color-danger);
+  --_m3-ripple-color-off: var(--snice-color-danger);
+  --_m3-ripple-color-on: var(--snice-color-danger);
+  --_m3-label-on-color: var(--snice-color-text-inverse);
+  --_m3-label-off-color: var(--snice-color-danger);
+}
+
+:host(:hover) [part~="track-invalid"] {
+  border-color: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 18%, var(--snice-color-surface-container-highest));
 }
 
 [part~="track-invalid"][part~="track-checked"] {
@@ -59,7 +115,16 @@
   border-color: var(--snice-color-danger);
 }
 
-/* Thumb — M3 16dp unchecked -> 24dp checked -> 28dp pressed */
+:host(:hover) [part~="track-invalid"][part~="track-checked"] {
+  background: color-mix(in srgb, var(--snice-color-text-inverse) 8%, var(--snice-color-danger));
+  border-color: color-mix(in srgb, var(--snice-color-text-inverse) 8%, var(--snice-color-danger));
+}
+
+:host(:focus-visible) [part~="track-invalid"] {
+  outline-color: var(--snice-color-danger);
+}
+
+/* Thumb — M3 16dp unchecked -> 24dp checked -> 28dp pressed (medium) */
 [part~="thumb"] {
   width: 1rem;
   height: 1rem;
@@ -67,8 +132,12 @@
   left: 6px;
   transform: translateY(-50%);
   border-radius: 9999px;
-  background: var(--snice-color-border);
+  background: var(--_m3-thumb-bg-off, var(--snice-color-border));
+  color: var(--_m3-spinner-color-off, var(--snice-color-surface));
   box-shadow: none;
+  --_m3-ripple-color: var(--_m3-ripple-color-off, var(--snice-color-text));
+  --_m3-spinner-size: 0.625rem;
+  --_m3-spinner-stroke: 1.5px;
   transition:
     left var(--snice-transition-medium, 260ms) var(--snice-m3-spring-spatial, cubic-bezier(0.34, 1.38, 0.32, 1)),
     width var(--snice-transition-medium, 240ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.28, 0.28, 1)),
@@ -77,20 +146,58 @@
 }
 
 :host(:hover) [part~="thumb"] {
-  background: var(--snice-color-text-secondary);
+  background: var(--_m3-thumb-bg-off-hover, var(--snice-color-text-secondary));
 }
 
 [part~="thumb-checked"] {
   width: 1.5rem;
   height: 1.5rem;
   left: calc(100% - 1.5rem - 2px);
-  background: var(--snice-m3-on-primary);
+  background: var(--_m3-thumb-bg-on, var(--snice-m3-on-primary));
+  color: var(--_m3-spinner-color-on, var(--snice-color-primary));
+  --_m3-ripple-color: var(--_m3-ripple-color-on, var(--snice-color-primary));
+  --_m3-spinner-size: 0.875rem;
+  --_m3-spinner-stroke: 2px;
 }
 
 :host(:hover) [part~="thumb-checked"] {
-  background: var(--snice-m3-on-primary);
+  background: var(--_m3-thumb-bg-on, var(--snice-m3-on-primary));
 }
 
+/* Small & Large Resting Thumb Geometry (12/18px small, 18/28px large) */
+:host([size="small"]) [part~="thumb"] {
+  width: 0.75rem;
+  height: 0.75rem;
+  left: 5px;
+  --_m3-spinner-size: 0.5rem;
+  --_m3-spinner-stroke: 1.5px;
+}
+
+:host([size="small"]) [part~="thumb-checked"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  left: calc(100% - 1.125rem - 2px);
+  --_m3-spinner-size: 0.6875rem;
+  --_m3-spinner-stroke: 1.75px;
+}
+
+:host([size="large"]) [part~="thumb"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  left: 7px;
+  --_m3-spinner-size: 0.6875rem;
+  --_m3-spinner-stroke: 1.75px;
+}
+
+:host([size="large"]) [part~="thumb-checked"] {
+  width: 1.75rem;
+  height: 1.75rem;
+  left: calc(100% - 1.75rem - 2px);
+  --_m3-spinner-size: 1rem;
+  --_m3-spinner-stroke: 2px;
+}
+
+/* Pressed Thumb Geometry — concentric per-size expansion (22px small / 28px medium / 32px large) */
 :host([data-m3-pressed="true"]) [part~="thumb"] {
   width: 1.75rem;
   height: 1.75rem;
@@ -103,32 +210,31 @@
   left: calc(100% - 1.75rem);
 }
 
-/* Small & Large Thumb Geometry */
-:host([size="small"]) [part~="thumb"] {
-  width: 0.75rem;
-  height: 0.75rem;
-  left: 5px;
+:host([size="small"][data-m3-pressed="true"]) [part~="thumb"] {
+  width: 1.375rem;
+  height: 1.375rem;
+  left: 0;
 }
 
-:host([size="small"]) [part~="thumb-checked"] {
-  width: 1.125rem;
-  height: 1.125rem;
-  left: calc(100% - 1.125rem - 2px);
+:host([size="small"][data-m3-pressed="true"]) [part~="thumb-checked"] {
+  width: 1.375rem;
+  height: 1.375rem;
+  left: calc(100% - 1.375rem);
 }
 
-:host([size="large"]) [part~="thumb"] {
-  width: 1.125rem;
-  height: 1.125rem;
-  left: 7px;
+:host([size="large"][data-m3-pressed="true"]) [part~="thumb"] {
+  width: 2rem;
+  height: 2rem;
+  left: 0;
 }
 
-:host([size="large"]) [part~="thumb-checked"] {
-  width: 1.75rem;
-  height: 1.75rem;
-  left: calc(100% - 1.75rem - 2px);
+:host([size="large"][data-m3-pressed="true"]) [part~="thumb-checked"] {
+  width: 2rem;
+  height: 2rem;
+  left: calc(100% - 2rem);
 }
 
-/* 40dp M3 State-Layer Halo around thumb */
+/* 40dp M3 State-Layer Halo centered on thumb (proportionally scaled per size) */
 [part~="ripple"] {
   display: block;
   position: absolute;
@@ -138,12 +244,22 @@
   height: 2.5rem;
   border-radius: 9999px;
   pointer-events: none;
-  background: var(--snice-color-text);
+  background: var(--_m3-ripple-color, var(--snice-color-text));
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.6);
   transition:
-    opacity var(--snice-transition-fast, 150ms) ease,
+    opacity var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
     transform var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+:host([size="small"]) [part~="ripple"] {
+  width: 2rem;
+  height: 2rem;
+}
+
+:host([size="large"]) [part~="ripple"] {
+  width: 2.875rem;
+  height: 2.875rem;
 }
 
 :host(:hover) [part~="ripple"] {
@@ -151,61 +267,144 @@
   transform: translate(-50%, -50%) scale(1);
 }
 
+:host(:focus-visible) [part~="ripple"] {
+  opacity: 0.1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+:host([data-m3-ripple="static"]) [part~="ripple"] {
+  opacity: 0.12;
+  transform: translate(-50%, -50%) scale(1);
+}
+
 :host([data-m3-ripple="active"]) [part~="ripple"],
 :host([data-m3-pressed="true"]) [part~="ripple"] {
-  background: var(--snice-color-primary);
   opacity: 0.14;
   transform: translate(-50%, -50%) scale(1);
 }
 
-/* Spinner & State Labels */
-[part~="spinner"] {
-  color: var(--snice-color-primary);
+/* Loading & Spinner — crisp high-contrast ink inherited from thumb state */
+[part~="base-loading"] {
+  opacity: 1;
+  cursor: wait;
 }
 
+:host([loading]) [part~="thumb"] {
+  animation: none;
+}
+
+[part~="spinner"] {
+  color: inherit;
+}
+
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  width: var(--_m3-spinner-size, 0.625rem);
+  height: var(--_m3-spinner-size, 0.625rem);
+  border-width: var(--_m3-spinner-stroke, 1.5px);
+}
+
+/* In-track State Labels */
 [part~="label-on"] {
-  color: var(--snice-m3-on-primary);
+  left: 0.375rem;
+  color: var(--_m3-label-on-color, var(--snice-m3-on-primary));
 }
 
 [part~="label-off"] {
-  color: var(--snice-color-text-secondary);
+  right: 0.5rem;
+  color: var(--_m3-label-off-color, var(--snice-color-text-secondary));
 }
 
-/* Label */
+:host([size="large"]) [part~="label-on"] {
+  left: 0.5rem;
+}
+
+:host([size="large"]) [part~="label-off"] {
+  right: 0.5625rem;
+}
+
+/* Label — Roboto M3 medium scale */
 [part~="label"] {
   font-size: 0.875rem;
   font-weight: 500;
+  line-height: 1.25rem;
   letter-spacing: 0.008em;
   color: var(--snice-color-text);
 }
 
-/* Disabled — M3 12% surface / 38% ink spec */
+:host([size="small"]) [part~="label"] {
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+}
+
+:host([size="large"]) [part~="label"] {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+/* Disabled — exact M3 12% surface / 38% ink specification with opacity: 1 */
 [part~="base-disabled"] {
   opacity: 1;
 }
 
 :host([disabled]) [part~="track"],
-:host([disabled]:hover) [part~="track"] {
+:host([disabled]:hover) [part~="track"],
+:host([disabled]) [part~="track-invalid"],
+:host([disabled]:hover) [part~="track-invalid"] {
   background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
   border-color: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  box-shadow: none;
+  outline: none;
 }
 
 :host([disabled]) [part~="track-checked"],
-:host([disabled]:hover) [part~="track-checked"] {
+:host([disabled]:hover) [part~="track-checked"],
+:host([disabled]) [part~="track-invalid"][part~="track-checked"],
+:host([disabled]:hover) [part~="track-invalid"][part~="track-checked"] {
   background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
   border-color: transparent;
+  box-shadow: none;
+  outline: none;
 }
 
 :host([disabled]) [part~="thumb"],
 :host([disabled]:hover) [part~="thumb"] {
   background: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  color: var(--snice-color-surface);
 }
 
 :host([disabled]) [part~="thumb-checked"],
 :host([disabled]:hover) [part~="thumb-checked"] {
   background: var(--snice-color-surface);
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+:host([disabled]) [part~="ripple"],
+:host([disabled]:hover) [part~="ripple"],
+:host([disabled]:focus-visible) [part~="ripple"],
+:host([loading]) [part~="ripple"],
+:host([loading]:hover) [part~="ripple"] {
+  display: none;
+  opacity: 0;
 }
 
 :host([disabled]) [part~="label"] {
   color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+:host([disabled]) [part~="label-required"]::after {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+:host([disabled]) [part~="label-on"],
+:host([disabled]) [part~="label-off"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="track"],
+  [part~="thumb"],
+  [part~="ripple"] {
+    transition: none;
+  }
 }

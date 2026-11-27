@@ -1,8 +1,15 @@
 /* ==========================================================================
    iOS 26+ Liquid Glass — snice-range-slider
    Matches iOS 26 slider anatomy: 6px pill track, System Blue active range,
-   white shadowed pill thumbs, and Liquid Glass tooltip pill.
+   compact dual 26x22px white pill thumbs with Apple multi-layer elevation,
+   translucent Liquid Glass drag lens, Liquid Glass pill tooltips, focus
+   halo, vertical orientation parity, and harmonized disabled/invalid states.
    ========================================================================== */
+
+[part~="base"] {
+  padding-top: 0.75rem;
+  padding-bottom: 0.5rem;
+}
 
 [part~="track"] {
   height: 6px;
@@ -17,7 +24,7 @@
 
 [part~="range"] {
   border-radius: 9999px;
-  background: var(--snice-color-primary);
+  background: var(--_ios-range-bg, var(--snice-color-primary));
 }
 
 [part~="thumb"] {
@@ -30,13 +37,116 @@
     0 3px 10px hsl(0 0% 0% / 0.18),
     0 1px 2px hsl(0 0% 0% / 0.12),
     inset 0 1px 0 hsl(0 0% 100% / 0.9);
+  transition:
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
+    background-color var(--snice-transition-fast, 180ms) ease,
+    box-shadow var(--snice-transition-fast, 180ms) ease,
+    border-color var(--snice-transition-fast, 180ms) ease;
 }
 
 :host([orientation="vertical"]) [part~="thumb"] {
   width: 1.375rem;
   height: 1.625rem;
+  transform: translate(-50%, 50%);
 }
 
+[part~="thumb"]:hover {
+  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow:
+    0 4px 12px hsl(0 0% 0% / 0.22),
+    0 1px 3px hsl(0 0% 0% / 0.14),
+    inset 0 1px 0 hsl(0 0% 100% / 0.95);
+}
+
+:host([orientation="vertical"]) [part~="thumb"]:hover {
+  transform: translate(-50%, 50%) scale(1.06);
+}
+
+[part~="thumb"]:active,
+[part~="thumb-dragging"] {
+  cursor: grabbing;
+  background: var(--snice-ios-glass-clear-bg);
+  backdrop-filter: var(--snice-ios-glass-clear-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-clear-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+  transform: translate(-50%, -50%) scale(1.16);
+  z-index: 2;
+}
+
+:host([orientation="vertical"]) [part~="thumb"]:active,
+:host([orientation="vertical"]) [part~="thumb-dragging"] {
+  transform: translate(-50%, 50%) scale(1.16);
+}
+
+[part~="thumb"]:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color),
+    0 3px 10px hsl(0 0% 0% / 0.18),
+    0 1px 2px hsl(0 0% 0% / 0.12),
+    inset 0 1px 0 hsl(0 0% 100% / 0.9);
+  z-index: 2;
+}
+
+/* Invalid state */
+[part~="track-invalid"] {
+  --_ios-range-bg: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 20%, transparent);
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--snice-color-danger) 65%, transparent);
+}
+
+[part~="thumb-invalid"] {
+  border: 1.5px solid var(--snice-color-danger);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--snice-color-danger) 18%, transparent),
+    0 3px 10px hsl(0 0% 0% / 0.16),
+    0 1px 2px hsl(0 0% 0% / 0.1);
+}
+
+[part~="thumb-invalid"]:active,
+[part~="thumb-invalid"][part~="thumb-dragging"] {
+  border-color: var(--snice-color-danger);
+}
+
+[part~="thumb-invalid"]:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--snice-focus-ring-width, 3px) color-mix(in srgb, var(--snice-color-danger) 40%, transparent),
+    0 3px 10px hsl(0 0% 0% / 0.18),
+    0 1px 2px hsl(0 0% 0% / 0.12);
+}
+
+/* Disabled state — harmonize track + thumb opacity to avoid 0.25 washout */
+[part~="track-disabled"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+[part~="thumb-disabled"] {
+  opacity: 1;
+  cursor: not-allowed;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="thumb-disabled"]:hover,
+[part~="thumb-disabled"]:active {
+  cursor: not-allowed;
+  background: hsl(0 0% 100%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 0.5px solid hsl(0 0% 0% / 0.08);
+  box-shadow: var(--snice-shadow-xs);
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+:host([orientation="vertical"]) [part~="thumb-disabled"]:hover,
+:host([orientation="vertical"]) [part~="thumb-disabled"]:active {
+  transform: translate(-50%, 50%);
+}
+
+/* Liquid Glass pill tooltip */
 [part~="tooltip"] {
   border-radius: 9999px;
   padding: 0.25rem 0.625rem;
@@ -46,10 +156,22 @@
   color: var(--snice-color-text);
   border: 1px solid var(--snice-ios-glass-border);
   box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-sm);
+  font-size: 0.75rem;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--snice-tracking-tight, -0.024em);
 }
 
+/* Min/max labels */
 [part~="labels"] {
+  margin-top: 0.625rem;
   font-size: 0.75rem;
+  font-weight: 500;
   color: var(--snice-color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+:host([orientation="vertical"]) [part~="labels"] {
+  margin-top: 0;
+  margin-left: 0.75rem;
 }

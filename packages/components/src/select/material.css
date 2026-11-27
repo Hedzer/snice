@@ -1,17 +1,47 @@
 /* ==========================================================================
    Android Material 3 Expressive — snice-select
-   M3 Outlined Dropdown trigger (matching M3 TextField), tonal surface-container
-   elevation menu, and 48dp touch list items.
+   M3 Outlined Exposed Dropdown Menu matching snice-input (52px / 4px radius /
+   1px->2px focus outline), tonal surface-container elevated menu, 48dp touch
+   rows with secondary-container selection, 8px tonal input chips, clearable
+   padding clearance, and M3 4%/12%/38% disabled vs readable loading states.
    ========================================================================== */
 
+/* Label */
 [part~="label"] {
   font-size: 0.75rem;
   font-weight: 500;
+  line-height: 1.33;
   letter-spacing: 0.025em;
   color: var(--snice-color-text-secondary);
   margin-bottom: 0.375rem;
+  transition: color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
 }
 
+:host(:focus-within) [part~="label"],
+:host([open]) [part~="label"] {
+  color: var(--snice-color-primary);
+}
+
+:host([readonly]:focus-within) [part~="label"] {
+  color: var(--snice-color-text-secondary);
+}
+
+:host([invalid]) [part~="label"],
+:host([invalid]:focus-within) [part~="label"],
+:host([invalid][open]) [part~="label"] {
+  color: var(--snice-color-danger);
+}
+
+:host([disabled]) [part~="label"],
+:host([disabled]:focus-within) [part~="label"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+:host([disabled]) [part~="label-required"]::after {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+/* Base M3 Outlined Trigger & Editable Input (Medium 52px height) */
 [part~="trigger"],
 [part~="input"] {
   min-height: 3.25rem;
@@ -21,9 +51,26 @@
   border: 1px solid var(--snice-color-border);
   color: var(--snice-color-text);
   font-size: 1rem;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
   box-shadow: none;
+  transition:
+    border-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    box-shadow var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
 }
 
+[part~="input"] {
+  caret-color: var(--snice-color-primary);
+}
+
+[part~="placeholder"],
+[part~="input"]::placeholder {
+  color: var(--snice-color-text-secondary);
+  opacity: 0.78;
+}
+
+/* M3 Touch Heights — Small (40dp) & Large (56dp) */
 :host([size="small"]) [part~="trigger"],
 :host([size="small"]) [part~="input"] {
   min-height: 2.5rem;
@@ -38,6 +85,20 @@
   font-size: 1.0625rem;
 }
 
+/* Clearable Right-Padding Clearance — placed after size rules so text never clips under clear + chevron */
+:host([clearable]) [part~="trigger"] {
+  padding-right: 3.25rem;
+}
+
+:host([clearable][size="small"]) [part~="trigger"] {
+  padding-right: 2.75rem;
+}
+
+:host([clearable][size="large"]) [part~="trigger"] {
+  padding-right: 3.5rem;
+}
+
+/* Hover, Focus-Visible & Open */
 [part~="trigger"]:hover,
 [part~="input"]:hover {
   border-color: var(--snice-color-text);
@@ -45,42 +106,374 @@
 
 [part~="trigger"]:focus-visible,
 [part~="trigger-open"],
+[part~="trigger-open"]:hover,
 [part~="input"]:focus-visible,
-[part~="input-open"] {
+[part~="input"]:focus,
+[part~="input-open"],
+[part~="input-open"]:hover {
   outline: none;
   border-color: var(--snice-color-primary);
   box-shadow: inset 0 0 0 1px var(--snice-color-primary);
 }
 
+/* Invalid State */
 [part~="trigger-invalid"],
-[part~="input-invalid"] {
+[part~="trigger-invalid"]:hover,
+[part~="input-invalid"],
+[part~="input-invalid"]:hover {
   border-color: var(--snice-color-danger);
 }
 
+[part~="input-invalid"] {
+  caret-color: var(--snice-color-danger);
+}
+
+[part~="trigger-invalid"]:focus-visible,
+[part~="trigger-invalid"][part~="trigger-open"],
+[part~="trigger-invalid"][part~="trigger-open"]:hover,
+[part~="input-invalid"]:focus-visible,
+[part~="input-invalid"]:focus,
+[part~="input-invalid"][part~="input-open"],
+[part~="input-invalid"][part~="input-open"]:hover {
+  outline: none;
+  border-color: var(--snice-color-danger);
+  box-shadow: inset 0 0 0 1px var(--snice-color-danger);
+}
+
+/* Readonly State */
+:host([readonly]) [part~="trigger"],
+:host([readonly]) [part~="input"] {
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-border-subtle);
+  cursor: default;
+}
+
+:host([readonly]) [part~="trigger"]:hover,
+:host([readonly]) [part~="input"]:hover {
+  border-color: var(--snice-color-border-subtle);
+}
+
+:host([readonly]) [part~="trigger"]:focus-visible,
+:host([readonly]) [part~="input"]:focus-visible,
+:host([readonly]) [part~="input"]:focus {
+  outline: none;
+  border-color: var(--snice-color-border);
+  box-shadow: inset 0 0 0 1px var(--snice-color-border);
+}
+
+/* M3 Disabled State (4% fill, 12% border, 38% ink, opacity: 1) */
 [part~="trigger-disabled"],
-[part~="input-disabled"] {
+[part~="trigger-disabled"]:hover,
+[part~="input-disabled"],
+[part~="input-disabled"]:hover,
+:host([disabled]) [part~="trigger-disabled"],
+:host([disabled]) [part~="trigger-disabled"]:hover,
+:host([disabled]) [part~="input-disabled"],
+:host([disabled]) [part~="input-disabled"]:hover {
   background: color-mix(in srgb, var(--snice-color-text) 4%, transparent);
   border-color: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  box-shadow: none;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+:host([disabled]) [part~="placeholder"],
+[part~="input-disabled"]::placeholder {
   color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
   opacity: 1;
 }
 
-/* M3 Menu Container */
+/* Loading State — overrides trigger-disabled / input-disabled so loading remains readable */
+[part~="trigger-loading"],
+[part~="trigger-loading"]:hover,
+:host([loading]) [part~="trigger-loading"],
+:host([loading]) [part~="trigger-loading"]:hover,
+:host([loading]) [part~="input-disabled"],
+:host([loading]) [part~="input-disabled"]:hover {
+  background: transparent;
+  border-color: var(--snice-color-border);
+  color: var(--snice-color-text);
+  box-shadow: none;
+  opacity: 0.85;
+  cursor: wait;
+}
+
+:host([loading]) [part~="input-disabled"]::placeholder {
+  color: var(--snice-color-text-secondary);
+  opacity: 0.78;
+}
+
+[part~="spinner"] {
+  color: var(--snice-color-primary);
+}
+
+/* Trailing Icons, Arrow & Clear Button (M3 circular 8% hover / 10% press) */
+[part~="icons"] {
+  right: 0.625rem;
+  gap: 0.25rem;
+}
+
+:host([size="small"]) [part~="icons"] {
+  right: 0.5rem;
+  gap: 0.1875rem;
+}
+
+:host([size="large"]) [part~="icons"] {
+  right: 0.75rem;
+}
+
+[part~="arrow"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--snice-color-text-secondary);
+  transition:
+    transform var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+:host([editable]) [part~="arrow"] {
+  right: 0.75rem;
+}
+
+:host([editable][size="small"]) [part~="arrow"] {
+  right: 0.5rem;
+}
+
+:host([open]) [part~="arrow"] {
+  color: var(--snice-color-primary);
+}
+
+:host([invalid]) [part~="arrow"] {
+  color: var(--snice-color-danger);
+}
+
+:host([disabled]) [part~="arrow"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+[part~="clear-button"] {
+  width: 1.375rem;
+  height: 1.375rem;
+  padding: 0;
+  border-radius: 9999px;
+  color: var(--snice-color-text-secondary);
+  transition:
+    background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+:host([size="small"]) [part~="clear-button"] {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+:host([size="large"]) [part~="clear-button"] {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+[part~="clear-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) var(--snice-m3-state-hover, 8%), transparent);
+  color: var(--snice-color-text);
+}
+
+[part~="clear-button"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) var(--snice-m3-state-press, 10%), transparent);
+  color: var(--snice-color-text);
+}
+
+[part~="clear-button"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: 1px;
+}
+
+:host([disabled]) [part~="clear-button"],
+:host([disabled]) [part~="clear-button"]:hover {
+  background: transparent;
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  cursor: not-allowed;
+}
+
+/* Multi-Select M3 8px Tonal Input Chips */
+[part~="tags"] {
+  gap: 0.375rem;
+}
+
+[part~="tag"] {
+  gap: 0.25rem;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 8px;
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+}
+
+:host([size="small"]) [part~="tag"] {
+  padding: 0.125rem 0.4375rem;
+  font-size: 0.75rem;
+}
+
+[part~="tag-remove"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 9999px;
+  color: var(--snice-m3-on-secondary-container);
+  font-size: 0.875rem;
+  line-height: 1;
+  transition: background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+[part~="tag-remove"]:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) var(--snice-m3-state-hover, 8%), transparent);
+}
+
+[part~="tag-remove"]:active {
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) var(--snice-m3-state-press, 10%), transparent);
+}
+
+:host([disabled]) [part~="tag"] {
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+/* M3 Elevated Tonal Menu Container */
 [part~="dropdown"] {
   border-radius: 8px;
   background: var(--snice-color-surface-container);
   border: none;
   box-shadow: var(--snice-shadow-md);
   padding: 0.375rem 0;
+  transition:
+    opacity var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    transform var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+/* Search Bar Inside Menu */
+[part~="search"] {
+  padding: 0.5rem 0.75rem 0.625rem;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="search-input"] {
+  min-height: 2.375rem;
+  padding: 0.4375rem 0.75rem;
+  border-radius: 4px;
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text);
+  caret-color: var(--snice-color-primary);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  transition:
+    border-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    box-shadow var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+[part~="search-input"]::placeholder {
+  color: var(--snice-color-text-secondary);
+  opacity: 0.78;
+}
+
+[part~="search-input"]:hover {
+  border-color: var(--snice-color-text);
+}
+
+[part~="search-input"]:focus,
+[part~="search-input"]:focus-visible {
+  outline: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: inset 0 0 0 1px var(--snice-color-primary);
+}
+
+/* Menu Options List — full-bleed 48dp touch rows */
+[part~="options"] {
+  padding: 0;
+  scrollbar-color: var(--snice-color-border-subtle) transparent;
 }
 
 [part~="option"] {
-  min-height: 2.75rem;
+  min-height: 3rem;
   border-radius: 0;
   padding: 0.5rem 1rem;
+  color: var(--snice-color-text);
   font-size: 0.9375rem;
+  line-height: 1.4;
+  transition: background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
 }
 
 [part~="option"]:hover {
-  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  background: color-mix(in srgb, var(--snice-color-text) var(--snice-m3-state-hover, 8%), transparent);
+}
+
+[part~="option"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) var(--snice-m3-state-press, 10%), transparent);
+}
+
+[part~="option-selected"] {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  font-weight: 500;
+}
+
+[part~="option-selected"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) var(--snice-m3-state-hover, 8%), var(--snice-m3-secondary-container));
+}
+
+[part~="option-selected"]:active {
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) var(--snice-m3-state-press, 10%), var(--snice-m3-secondary-container));
+}
+
+[part~="option-check"] {
+  color: inherit;
+}
+
+[part~="option-check-mark"] {
+  color: var(--snice-m3-on-secondary-container);
+  font-weight: 600;
+}
+
+[part~="option-disabled"],
+[part~="option-disabled"]:hover,
+[part~="option-disabled"]:active {
+  background: transparent;
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+[part~="empty"],
+[part~="loading-indicator"] {
+  color: var(--snice-color-text-secondary);
+  font-size: 0.875rem;
+  padding: 0.875rem 1rem;
+}
+
+/* Supporting & Error Text */
+[part~="helper-text"] {
+  font-size: 0.75rem;
+  line-height: 1.33;
+  letter-spacing: 0.025em;
+  color: var(--snice-color-text-secondary);
+  margin-top: 0.25rem;
+}
+
+:host([disabled]) [part~="helper-text"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+[part~="error-text"] {
+  font-size: 0.75rem;
+  line-height: 1.33;
+  letter-spacing: 0.025em;
+  color: var(--snice-color-danger);
+  margin-top: 0.25rem;
 }

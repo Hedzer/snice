@@ -1,58 +1,264 @@
 /* ==========================================================================
    Windows 11 Fluent 2 / WinUI 3 — snice-step-input
-   32px WinUI 3 NumberBox with 4px radius, top-lit elevation stroke, and
-   2px bottom accent focus bar.
+   WinUI 3 NumberBox: 26px/32px/40px desktop heights, 4px corners, 1px
+   top-lit rim with strong bottom input stroke, 2px bottom accent focus bar,
+   crisp button hover/press/boundary states, and complete invalid, readonly,
+   disabled (zero compounded opacity), and WHCM forced-colors fidelity.
    ========================================================================== */
 
+:host {
+  font-family: var(--snice-font-family);
+}
+
+/* Base NumberBox — 32px desktop height, 4px corners, top-lit rim + bottom input stroke */
 [part~="base"] {
+  box-sizing: border-box;
+  height: 2rem;
+  align-items: stretch;
   border-radius: 4px;
   background: var(--snice-win-control-bg);
   border-width: 1px;
   border-style: solid;
   border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-win-stroke-input-bottom);
+  box-shadow: none;
+  transition:
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    box-shadow var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
 }
 
-[part~="base"]:focus-within {
+[part~="base"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-win-stroke-input-bottom);
+}
+
+[part~="base"]:focus-within,
+[part~="base"]:focus-within:hover {
   background: var(--snice-color-surface-container-lowest);
   border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-color-primary);
   box-shadow: inset 0 -1px 0 0 var(--snice-color-primary);
 }
 
+/* End Spin Buttons — Fluent subtle inline controls with 1px subtle dividers */
 [part~="button"] {
+  box-sizing: border-box;
   width: 2rem;
-  height: 2rem;
+  height: 100%;
   background: transparent;
   color: var(--snice-color-text);
   border-color: var(--snice-color-border-subtle);
+  transform: none;
+  transition:
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    opacity var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
+}
+
+[part~="decrement-button"] {
+  border-right: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="increment-button"] {
+  border-left: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="icon"] {
+  width: 14px;
+  height: 14px;
 }
 
 [part~="button"]:hover {
-  background: var(--snice-win-control-bg-hover);
+  background: color-mix(in srgb, var(--snice-color-text) 6%, transparent);
   color: var(--snice-color-text);
 }
 
+[part~="button"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  color: var(--snice-color-text-secondary);
+  transform: none;
+  transition:
+    background-color 60ms var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    color 60ms var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
+}
+
+/* Boundary-Disabled End Button (at min or max) */
+[part~="button"]:disabled,
+[part~="button"]:disabled:hover {
+  background: transparent;
+  color: var(--snice-color-text-tertiary);
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Numeric Field — Segoe UI Variable 14px Regular, tabular-nums */
 [part~="input"] {
-  height: 2rem;
+  box-sizing: border-box;
+  width: 3.75rem;
+  height: 100%;
+  padding: 0 0.5rem;
+  font-family: var(--snice-font-family);
   font-size: 0.875rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
   color: var(--snice-color-text);
+  caret-color: var(--snice-color-text);
+}
+
+[part~="input"]:focus,
+[part~="input"]:focus-visible {
+  outline: none;
+}
+
+/* Sizes — Small (26px), Medium (32px default), Large (40px) */
+:host([size="small"]) [part~="base"] {
+  height: 1.625rem;
 }
 
 :host([size="small"]) [part~="button"] {
   width: 1.625rem;
-  height: 1.625rem;
+}
+
+:host([size="small"]) [part~="icon"] {
+  width: 12px;
+  height: 12px;
 }
 
 :host([size="small"]) [part~="input"] {
-  height: 1.625rem;
+  width: 3rem;
+  padding: 0 0.25rem;
   font-size: 0.75rem;
+}
+
+:host([size="large"]) [part~="base"] {
+  height: 2.5rem;
 }
 
 :host([size="large"]) [part~="button"] {
   width: 2.5rem;
-  height: 2.5rem;
+}
+
+:host([size="large"]) [part~="icon"] {
+  width: 16px;
+  height: 16px;
 }
 
 :host([size="large"]) [part~="input"] {
-  height: 2.5rem;
+  width: 4.5rem;
+  padding: 0 0.5rem;
   font-size: 0.9375rem;
+  line-height: 1.3333;
+}
+
+/* Invalid State — 2px bottom danger bar (resting, hover, and focus-within) */
+[part~="base-invalid"] {
+  border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-color-danger);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-danger);
+}
+
+[part~="base-invalid"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-color-danger);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-danger);
+}
+
+[part~="base-invalid"]:focus-within,
+[part~="base-invalid"]:focus-within:hover {
+  background: var(--snice-color-surface-container-lowest);
+  border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-color-danger);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-danger);
+}
+
+/* Readonly State — muted Fluent control fill, subtle border, muted buttons */
+:host([readonly]) [part~="base"],
+:host([readonly]) [part~="base"]:hover,
+:host([readonly]) [part~="base"]:focus-within,
+:host([readonly]) [part~="base"]:focus-within:hover {
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-color-border-subtle);
+  box-shadow: none;
+  cursor: default;
+}
+
+:host([readonly]) [part~="input"],
+[part~="input"]:read-only {
+  color: var(--snice-color-text);
+  cursor: default;
+}
+
+:host([readonly]) [part~="button"],
+:host([readonly]) [part~="button"]:hover,
+:host([readonly]) [part~="button"]:active,
+:host([readonly]) [part~="button"]:disabled,
+:host([readonly]) [part~="button"]:disabled:hover {
+  background: transparent;
+  color: var(--snice-color-text-tertiary);
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+
+/* Disabled State — flat Fluent disabled chrome, single 0.65 opacity on base (zero compounding) */
+:host([disabled]) [part~="base"],
+:host([disabled]) [part~="base"]:hover,
+:host(:disabled) [part~="base"],
+:host(:disabled) [part~="base"]:hover {
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-color-border-subtle);
+  box-shadow: none;
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+:host([disabled]) [part~="input"],
+:host([disabled]) [part~="input"]:disabled,
+:host(:disabled) [part~="input"]:disabled {
+  color: var(--snice-color-text-tertiary);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+:host([disabled]) [part~="button"],
+:host([disabled]) [part~="button"]:hover,
+:host([disabled]) [part~="button"]:disabled,
+:host([disabled]) [part~="button"]:disabled:hover,
+:host(:disabled) [part~="button"]:disabled,
+:host(:disabled) [part~="button"]:disabled:hover {
+  background: transparent;
+  color: var(--snice-color-text-tertiary);
+  border-color: var(--snice-color-border-subtle);
+  opacity: 1;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Windows High Contrast Mode (WHCM / forced-colors) */
+@media (forced-colors: active) {
+  [part~="base"]:focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: 1px;
+  }
+
+  :host([disabled]) [part~="base"],
+  :host(:disabled) [part~="base"] {
+    border-color: GrayText;
+    opacity: 1;
+  }
+
+  :host([disabled]) [part~="input"],
+  :host([disabled]) [part~="button"],
+  :host(:disabled) [part~="input"],
+  :host(:disabled) [part~="button"],
+  [part~="button"]:disabled {
+    color: GrayText;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="base"],
+  [part~="button"] {
+    transition: none;
+  }
 }

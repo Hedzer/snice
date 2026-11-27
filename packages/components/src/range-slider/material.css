@@ -1,13 +1,32 @@
 /* ==========================================================================
    Android Material 3 Expressive — snice-range-slider
-   M3 Expressive 16dp track, tall 4x36dp vertical pill handles with surface
-   gap halos, and M3 inverse-surface pill tooltips.
+   M3 Expressive 16dp track, dual tall 4x36dp vertical pill handles with
+   surface gap halos pinching to 2px on active/drag, fixed vertical orientation
+   transforms, M3 on-primary pill tooltips, keyboard focus-visible outline,
+   invalid error palette, and exact M3 12%/38% disabled treatment.
    ========================================================================== */
 
+[part~="base"] {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+[part~="container"] {
+  min-height: 2.5rem;
+}
+
+[part~="container-vertical"] {
+  min-width: 2.5rem;
+}
+
+/* Track — M3 Expressive 16dp pill track */
 [part~="track"] {
   height: 16px;
   border-radius: 9999px;
   background: var(--snice-m3-secondary-container);
+  --_m3-range-bg: var(--snice-color-primary);
+  --_m3-tooltip-bg: var(--snice-color-primary);
+  --_m3-tooltip-ink: var(--snice-m3-on-primary);
 }
 
 :host([orientation="vertical"]) [part~="track"] {
@@ -15,11 +34,13 @@
   height: 100%;
 }
 
+/* Active range */
 [part~="range"] {
   border-radius: 4px;
-  background: var(--snice-color-primary);
+  background: var(--_m3-range-bg, var(--snice-color-primary));
 }
 
+/* Handles — M3 Expressive 4x36dp pill bars with surface gap halo */
 [part~="thumb"] {
   width: 4px;
   height: 2.25rem;
@@ -27,27 +48,226 @@
   background: var(--snice-color-primary);
   border: none;
   box-shadow: 0 0 0 5px var(--snice-color-surface);
+  transform: translate(-50%, -50%);
+  transition:
+    width var(--snice-transition-fast, 150ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.28, 0.28, 1)),
+    height var(--snice-transition-fast, 150ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.28, 0.28, 1)),
+    box-shadow var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
 }
 
 :host([orientation="vertical"]) [part~="thumb"] {
   width: 2.25rem;
   height: 4px;
+  transform: translate(-50%, 50%);
 }
 
+/* Hover — zero scale bounce, preserve exact horizontal & vertical transforms */
 [part~="thumb"]:hover {
   transform: translate(-50%, -50%);
   box-shadow: 0 0 0 5px var(--snice-color-surface);
 }
 
+:host([orientation="vertical"]) [part~="thumb"]:hover {
+  transform: translate(-50%, 50%);
+  box-shadow: 0 0 0 5px var(--snice-color-surface);
+}
+
+/* Active / Dragging — M3 Expressive 2px handle pinch with zero scale bounce */
+[part~="thumb"]:active,
+[part~="thumb"][part~="thumb-dragging"] {
+  width: 2px;
+  height: 2.25rem;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 5px var(--snice-color-surface);
+}
+
+:host([orientation="vertical"]) [part~="thumb"]:active,
+:host([orientation="vertical"]) [part~="thumb"][part~="thumb-dragging"] {
+  width: 2.25rem;
+  height: 2px;
+  transform: translate(-50%, 50%);
+  box-shadow: 0 0 0 5px var(--snice-color-surface);
+}
+
+/* Keyboard focus-visible — crisp M3 outline outside surface gap halo */
+[part~="thumb"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px var(--snice-color-surface);
+}
+
+/* Invalid — M3 error palette across track, active range, handles & tooltip */
+[part~="track-invalid"],
+:host(:invalid) [part~="track"] {
+  box-shadow: none;
+  background: color-mix(in srgb, var(--snice-color-danger) 18%, var(--snice-color-surface-container-highest));
+  --_m3-range-bg: var(--snice-color-danger);
+  --_m3-tooltip-bg: var(--snice-color-danger);
+  --_m3-tooltip-ink: var(--snice-color-text-inverse);
+}
+
+:host(:invalid) [part~="range"] {
+  background: var(--snice-color-danger);
+}
+
+[part~="thumb-invalid"],
+:host(:invalid) [part~="thumb"] {
+  background: var(--snice-color-danger);
+}
+
+[part~="thumb-invalid"]:focus-visible,
+:host(:invalid) [part~="thumb"]:focus-visible {
+  outline-color: var(--snice-color-danger);
+}
+
+/* M3 Value Pill Tooltip — on-primary ink (white in light, dark purple on T80 lavender in dark) */
 [part~="tooltip"] {
   border-radius: 9999px;
   padding: 0.25rem 0.625rem;
-  background: var(--snice-color-primary);
-  color: var(--snice-m3-on-primary);
+  min-width: 1.75rem;
+  text-align: center;
+  background: var(--_m3-tooltip-bg, var(--snice-color-primary));
+  color: var(--_m3-tooltip-ink, var(--snice-m3-on-primary));
+  font-size: 0.75rem;
   font-weight: 500;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.015em;
+  visibility: var(--_m3-tooltip-visibility, visible);
+  transition: opacity var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
 }
 
+:host(:invalid) [part~="tooltip"] {
+  background: var(--snice-color-danger);
+  color: var(--snice-color-text-inverse);
+}
+
+/* Min / Max Labels */
 [part~="labels"] {
+  margin-top: 0.25rem;
   font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
   color: var(--snice-color-text-secondary);
+}
+
+/* Disabled — exact M3 12% track / 38% active range, handles & labels with opacity: 1 */
+[part~="track-disabled"],
+:host([disabled]) [part~="track"],
+:host(:disabled) [part~="track"],
+:host([disabled]) [part~="track-invalid"],
+:host(:disabled) [part~="track-invalid"] {
+  opacity: 1;
+  cursor: not-allowed;
+  box-shadow: none;
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  --_m3-range-bg: color-mix(in srgb, var(--snice-color-text) 38%, var(--snice-color-surface));
+}
+
+:host([disabled]) [part~="range"],
+:host(:disabled) [part~="range"] {
+  background: color-mix(in srgb, var(--snice-color-text) 38%, var(--snice-color-surface));
+}
+
+[part~="thumb"][part~="thumb-disabled"],
+[part~="thumb"][part~="thumb-disabled"]:hover,
+[part~="thumb"][part~="thumb-disabled"]:active,
+:host([disabled]) [part~="thumb"],
+:host([disabled]) [part~="thumb"]:hover,
+:host([disabled]) [part~="thumb"]:active,
+:host(:disabled) [part~="thumb"],
+:host(:disabled) [part~="thumb"]:hover,
+:host(:disabled) [part~="thumb"]:active {
+  opacity: 1;
+  cursor: not-allowed;
+  width: 4px;
+  height: 2.25rem;
+  transform: translate(-50%, -50%);
+  background: color-mix(in srgb, var(--snice-color-text) 38%, var(--snice-color-surface));
+  box-shadow: 0 0 0 5px var(--snice-color-surface);
+  outline: none;
+  transition: none;
+  --_m3-tooltip-visibility: hidden;
+}
+
+:host([orientation="vertical"]) [part~="thumb"][part~="thumb-disabled"],
+:host([orientation="vertical"]) [part~="thumb"][part~="thumb-disabled"]:hover,
+:host([orientation="vertical"]) [part~="thumb"][part~="thumb-disabled"]:active,
+:host([orientation="vertical"][disabled]) [part~="thumb"],
+:host([orientation="vertical"][disabled]) [part~="thumb"]:hover,
+:host([orientation="vertical"][disabled]) [part~="thumb"]:active,
+:host([orientation="vertical"]:disabled) [part~="thumb"],
+:host([orientation="vertical"]:disabled) [part~="thumb"]:hover,
+:host([orientation="vertical"]:disabled) [part~="thumb"]:active {
+  width: 2.25rem;
+  height: 4px;
+  transform: translate(-50%, 50%);
+}
+
+:host([disabled]) [part~="tooltip"],
+:host(:disabled) [part~="tooltip"] {
+  visibility: hidden;
+}
+
+:host([disabled]) [part~="labels"],
+:host(:disabled) [part~="labels"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="thumb"],
+  [part~="tooltip"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="track"] {
+    background: Canvas;
+    border: 1px solid ButtonText;
+  }
+
+  [part~="range"] {
+    background: Highlight;
+  }
+
+  [part~="thumb"] {
+    background: Highlight;
+    box-shadow: 0 0 0 5px Canvas;
+  }
+
+  [part~="thumb"]:focus-visible {
+    outline-color: Highlight;
+  }
+
+  [part~="tooltip"] {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  [part~="track-disabled"],
+  :host([disabled]) [part~="track"],
+  :host(:disabled) [part~="track"] {
+    border-color: GrayText;
+    background: Canvas;
+  }
+
+  :host([disabled]) [part~="range"],
+  :host(:disabled) [part~="range"] {
+    background: GrayText;
+  }
+
+  [part~="thumb"][part~="thumb-disabled"],
+  :host([disabled]) [part~="thumb"],
+  :host(:disabled) [part~="thumb"] {
+    background: GrayText;
+    box-shadow: 0 0 0 5px Canvas;
+  }
+
+  :host([disabled]) [part~="labels"],
+  :host(:disabled) [part~="labels"] {
+    color: GrayText;
+  }
 }

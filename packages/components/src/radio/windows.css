@@ -1,8 +1,15 @@
 /* ==========================================================================
    Windows 11 Fluent 2 / WinUI 3 — snice-radio
-   Iconic WinUI 3 20px RadioButton: 1px border ring unchecked -> solid Accent
-   filled disc with inverted on-accent center dot (8px resting -> 10px hover),
-   dual-stroke keyboard focus, and crisp 8px Fluent Settings block cards.
+   1:1 WinUI 3 RadioButton & Fluent Settings selection card:
+   - 20px disc (16px small / 24px large), 1px border ring unchecked -> solid
+     Accent filled disc with inverted --snice-win-on-accent center dot
+   - Signature WinUI 3 dot micro-interaction:
+     medium 8px -> 10px hover -> 6px pressed
+     small  6px ->  8px hover -> 5px pressed
+     large 10px -> 12px hover -> 8px pressed
+   - Dual-stroke keyboard focus via [part~="radio-keyboard-focus"] &
+     [data-win-focus="keyboard"], zero base blue outline bleed
+   - 8px Fluent Settings block cards with crisp selected border & accent tint
    ========================================================================== */
 
 :host {
@@ -11,21 +18,37 @@
   min-height: 2rem;
 }
 
-:host([variant="block"]) {
+:host([size="small"]) {
+  min-height: 1.625rem;
+}
+
+:host([size="large"]) {
+  min-height: 2.5rem;
+}
+
+:host([variant="block"]),
+:host([variant="block"][size="small"]),
+:host([variant="block"][size="large"]) {
   display: block;
   min-height: 0;
 }
 
+/* Radio Disc — Unchecked Resting, Sizes, Hover & Pressed */
 [part~="radio"] {
   width: 1.25rem;
   height: 1.25rem;
   box-sizing: border-box;
+  flex-shrink: 0;
   border-radius: 50%;
   background: var(--snice-win-control-bg);
   border: 1px solid var(--snice-color-text-secondary);
+  color: var(--snice-color-primary);
+  outline: none;
+  box-shadow: none;
   transition:
     background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
-    border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease);
+    border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
+    box-shadow var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease);
 }
 
 :host([size="small"]) [part~="radio"] {
@@ -43,10 +66,17 @@
   border-color: var(--snice-color-text);
 }
 
-/* Checked — solid accent disc with inverted center dot (exact WinUI 3!) */
+:host(:active) [part~="radio"],
+:host([data-win-pressed="true"]) [part~="radio"] {
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-color-text-secondary);
+}
+
+/* Checked Disc — Solid Fluent Accent Fill */
 [part~="radio-checked"] {
   background: var(--snice-color-primary);
   border-color: var(--snice-color-primary);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
 }
 
 :host(:hover) [part~="radio-checked"] {
@@ -54,6 +84,13 @@
   border-color: color-mix(in srgb, var(--snice-color-primary) 90%, var(--snice-color-surface));
 }
 
+:host(:active) [part~="radio-checked"],
+:host([data-win-pressed="true"]) [part~="radio-checked"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 82%, var(--snice-color-surface));
+  border-color: color-mix(in srgb, var(--snice-color-primary) 82%, var(--snice-color-surface));
+}
+
+/* Inner Dot — Inverted On-Accent Fill + WinUI 3 Size-Aware Hover/Press Motion */
 [part~="dot"] {
   width: 0.5rem;
   height: 0.5rem;
@@ -66,11 +103,7 @@
 
 [part~="dot-checked"] {
   transform: scale(1);
-}
-
-:host(:hover) [part~="dot-checked"] {
-  width: 0.625rem;
-  height: 0.625rem;
+  background: var(--snice-win-on-accent, hsl(0 0% 100%));
 }
 
 :host([size="small"]) [part~="dot"] {
@@ -83,26 +116,101 @@
   height: 0.625rem;
 }
 
-/* Invalid */
+/* Hover Dot Expansion (+2px per size) */
+:host(:hover) [part~="dot-checked"] {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+:host([size="small"]:hover) [part~="dot-checked"] {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+:host([size="large"]:hover) [part~="dot-checked"] {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Pressed Dot Contraction (WinUI 3 press detent per size) */
+:host(:active) [part~="dot-checked"],
+:host([data-win-pressed="true"]) [part~="dot-checked"] {
+  width: 0.375rem;
+  height: 0.375rem;
+}
+
+:host([size="small"]:active) [part~="dot-checked"],
+:host([size="small"][data-win-pressed="true"]) [part~="dot-checked"] {
+  width: 0.3125rem;
+  height: 0.3125rem;
+}
+
+:host([size="large"]:active) [part~="dot-checked"],
+:host([size="large"][data-win-pressed="true"]) [part~="dot-checked"] {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+/* Invalid State (Danger Disc + Guaranteed High-Contrast On-Accent Dot) */
 [part~="radio-invalid"] {
+  border-color: var(--snice-color-danger);
+  color: var(--snice-color-danger);
+}
+
+:host(:hover) [part~="radio-invalid"] {
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-color-danger);
+}
+
+:host(:active) [part~="radio-invalid"],
+:host([data-win-pressed="true"]) [part~="radio-invalid"] {
+  background: var(--snice-win-control-bg-pressed);
   border-color: var(--snice-color-danger);
 }
 
 [part~="radio-invalid"][part~="radio-checked"] {
   background: var(--snice-color-danger);
   border-color: var(--snice-color-danger);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
 }
 
+:host(:hover) [part~="radio-invalid"][part~="radio-checked"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 90%, var(--snice-color-surface));
+  border-color: color-mix(in srgb, var(--snice-color-danger) 90%, var(--snice-color-surface));
+}
+
+:host(:active) [part~="radio-invalid"][part~="radio-checked"],
+:host([data-win-pressed="true"]) [part~="radio-invalid"][part~="radio-checked"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 82%, var(--snice-color-surface));
+  border-color: color-mix(in srgb, var(--snice-color-danger) 82%, var(--snice-color-surface));
+}
+
+:host([invalid]) [part~="dot-checked"] {
+  background: var(--snice-win-on-accent, hsl(0 0% 100%));
+}
+
+/* Loading Spinner — Inherits --snice-color-primary Unchecked / --snice-win-on-accent Checked */
 [part~="spinner"] {
-  color: var(--snice-color-primary);
+  color: inherit;
 }
 
-/* Label */
+/* Typography & Labels — Segoe UI Variable Scale */
 [part~="label"] {
   margin-left: 0.5rem;
   font-size: 0.875rem;
   font-weight: 400;
+  line-height: 1.25rem;
   color: var(--snice-color-text);
+}
+
+:host([size="small"]) [part~="label"] {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+:host([size="large"]) [part~="label"] {
+  font-size: 0.9375rem;
+  line-height: 1.375rem;
 }
 
 /* Block Card Variant — WinUI 3 Fluent 2 8px Settings Card */
@@ -115,7 +223,19 @@
   gap: 0.75rem;
   transition:
     background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
-    border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease);
+    border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease),
+    box-shadow var(--snice-transition-fast, 100ms) var(--snice-ease-out, ease);
+}
+
+:host(:hover) [part~="base-block"] {
+  background: color-mix(in srgb, var(--snice-color-text) 4%, var(--snice-color-surface-container-high));
+  border-color: var(--snice-color-border-hover);
+}
+
+:host(:active) [part~="base-block"],
+:host([data-win-pressed="true"]) [part~="base-block"] {
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-color-border);
 }
 
 [part~="base-block"][part~="base-checked"] {
@@ -123,23 +243,189 @@
   background: color-mix(in srgb, var(--snice-color-primary) 7%, var(--snice-color-surface-container-high));
 }
 
+:host(:hover) [part~="base-block"][part~="base-checked"] {
+  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, var(--snice-color-surface-container-high));
+}
+
+:host(:active) [part~="base-block"][part~="base-checked"],
+:host([data-win-pressed="true"]) [part~="base-block"][part~="base-checked"] {
+  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 5%, var(--snice-color-surface-container-high));
+}
+
 :host([variant="block"]) [part~="label"] {
   margin-left: 0;
   font-size: 0.875rem;
   font-weight: 600;
+  line-height: 1.25rem;
+}
+
+:host([variant="block"][size="small"]) [part~="label"] {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+:host([variant="block"][size="large"]) [part~="label"] {
+  font-size: 0.9375rem;
+  line-height: 1.375rem;
 }
 
 [part~="description"] {
   font-size: 0.75rem;
+  line-height: 1rem;
   color: var(--snice-color-text-secondary);
 }
 
-/* Dual-Stroke Focus & Disabled */
-:host([data-win-focus="keyboard"]) [part~="radio"] {
+/* WinUI 3 Dual-Stroke Keyboard Focus (Zero Base Outline Bleed) */
+[part~="radio-keyboard-focus"],
+:host([data-win-focus="keyboard"]) [part~="radio"],
+:host(:focus-visible) [part~="radio"] {
   outline: none;
   box-shadow: var(--snice-win-focus-shadow);
 }
 
+/* Disabled State — Full Disc, Dot, Label & Block Card Overrides */
 [part~="base-disabled"] {
   opacity: 0.55;
+  cursor: not-allowed;
+}
+
+:host([disabled]) [part~="label"],
+:host([disabled]) [part~="description"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+:host([disabled]) [part~="radio"],
+:host([disabled]:hover) [part~="radio"],
+:host([disabled]:active) [part~="radio"],
+:host([disabled][data-win-pressed="true"]) [part~="radio"],
+:host([disabled]) [part~="radio-invalid"],
+:host([disabled]:hover) [part~="radio-invalid"],
+:host([disabled]:active) [part~="radio-invalid"],
+:host([disabled][data-win-pressed="true"]) [part~="radio-invalid"] {
+  background: transparent;
+  border-color: var(--snice-color-border-hover);
+  color: var(--snice-color-text-tertiary);
+}
+
+:host([disabled]) [part~="radio-checked"],
+:host([disabled]:hover) [part~="radio-checked"],
+:host([disabled]:active) [part~="radio-checked"],
+:host([disabled][data-win-pressed="true"]) [part~="radio-checked"],
+:host([disabled]) [part~="radio-invalid"][part~="radio-checked"],
+:host([disabled]:hover) [part~="radio-invalid"][part~="radio-checked"],
+:host([disabled]:active) [part~="radio-invalid"][part~="radio-checked"],
+:host([disabled][data-win-pressed="true"]) [part~="radio-invalid"][part~="radio-checked"] {
+  background: var(--snice-color-text-tertiary);
+  border-color: transparent;
+  color: var(--snice-color-surface);
+}
+
+:host([disabled]) [part~="dot-checked"],
+:host([disabled]:hover) [part~="dot-checked"],
+:host([disabled]:active) [part~="dot-checked"],
+:host([disabled][data-win-pressed="true"]) [part~="dot-checked"],
+:host([disabled][invalid]) [part~="dot-checked"] {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--snice-color-surface);
+}
+
+:host([disabled][size="small"]) [part~="dot-checked"],
+:host([disabled][size="small"]:hover) [part~="dot-checked"],
+:host([disabled][size="small"]:active) [part~="dot-checked"],
+:host([disabled][size="small"][data-win-pressed="true"]) [part~="dot-checked"] {
+  width: 0.375rem;
+  height: 0.375rem;
+}
+
+:host([disabled][size="large"]) [part~="dot-checked"],
+:host([disabled][size="large"]:hover) [part~="dot-checked"],
+:host([disabled][size="large"]:active) [part~="dot-checked"],
+:host([disabled][size="large"][data-win-pressed="true"]) [part~="dot-checked"] {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+[part~="base-block"][part~="base-disabled"],
+:host([disabled]) [part~="base-block"],
+:host([disabled]:hover) [part~="base-block"],
+:host([disabled]:active) [part~="base-block"],
+:host([disabled][data-win-pressed="true"]) [part~="base-block"] {
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-border-subtle);
+  box-shadow: none;
+}
+
+[part~="base-block"][part~="base-checked"][part~="base-disabled"],
+:host([disabled]) [part~="base-block"][part~="base-checked"],
+:host([disabled]:hover) [part~="base-block"][part~="base-checked"],
+:host([disabled]:active) [part~="base-block"][part~="base-checked"],
+:host([disabled][data-win-pressed="true"]) [part~="base-block"][part~="base-checked"] {
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-border-hover);
+  box-shadow: none;
+}
+
+/* Loading State Overrides (distinct from Disabled while suppressing hover jitter) */
+[part~="base-loading"] {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+:host([loading]:hover) [part~="radio"],
+:host([loading]:active) [part~="radio"] {
+  background: var(--snice-win-control-bg);
+  border-color: var(--snice-color-text-secondary);
+}
+
+:host([loading]:hover) [part~="radio-checked"],
+:host([loading]:active) [part~="radio-checked"] {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+}
+
+:host([loading]:hover) [part~="radio-invalid"],
+:host([loading]:active) [part~="radio-invalid"] {
+  background: var(--snice-win-control-bg);
+  border-color: var(--snice-color-danger);
+}
+
+:host([loading]:hover) [part~="radio-invalid"][part~="radio-checked"],
+:host([loading]:active) [part~="radio-invalid"][part~="radio-checked"] {
+  background: var(--snice-color-danger);
+  border-color: var(--snice-color-danger);
+}
+
+[part~="base-block"][part~="base-loading"],
+:host([loading]:hover) [part~="base-block"],
+:host([loading]:active) [part~="base-block"] {
+  background: var(--snice-color-surface-container-high);
+  border-color: var(--snice-color-border);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="base-block"][part~="base-checked"][part~="base-loading"],
+:host([loading]:hover) [part~="base-block"][part~="base-checked"],
+:host([loading]:active) [part~="base-block"][part~="base-checked"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 7%, var(--snice-color-surface-container-high));
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+/* Windows High Contrast Mode (WHCM / forced-colors) */
+@media (forced-colors: active) {
+  [part~="radio-checked"],
+  [part~="dot-checked"] {
+    forced-color-adjust: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="radio"],
+  [part~="dot"],
+  [part~="base-block"] {
+    transition: none;
+  }
 }

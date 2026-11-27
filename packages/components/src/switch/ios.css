@@ -2,7 +2,8 @@
    iOS 26+ Liquid Glass — snice-switch
    Iconic 51x31pt pill track, iOS System Green checked fill, crisp white
    floating thumb with Apple multi-layer shadow, Liquid Glass press/drag
-   magnification lens, and high-contrast state labels in light & dark.
+   magnification lens, accessible focus halo, and high-contrast state labels
+   and loading spinner across light & dark modes.
    ========================================================================== */
 
 :host {
@@ -17,13 +18,32 @@
   min-height: 3.125rem;
 }
 
-/* Track — iOS 51x31pt pill */
+[part~="base"] {
+  gap: 0.625rem;
+}
+
+[part~="base-disabled"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+[part~="base-loading"] {
+  opacity: 0.85;
+  cursor: wait;
+}
+
+:host([disabled]) [part~="base-loading"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Track — iOS 51x31pt pill with light/OLED-dark adaptive neutral fill */
 [part~="track"] {
   min-width: 3.1875rem;
   height: 1.9375rem;
   border-radius: 9999px;
-  background: hsl(240 6% 48% / 0.24);
-  box-shadow: inset 0 0 0 0.5px hsl(0 0% 0% / 0.06);
+  background: color-mix(in srgb, var(--snice-color-border-hover) 58%, hsl(240 6% 56% / 0.22));
+  box-shadow: inset 0 0 0 0.5px var(--snice-color-border);
   transition:
     background-color var(--snice-transition-medium, 280ms) var(--snice-ease-out, ease),
     box-shadow var(--snice-transition-fast, 180ms) ease;
@@ -31,11 +51,13 @@
 
 [part~="track-checked"] {
   background: var(--snice-color-success);
-  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.22), inset 0 0 0 0.5px hsl(0 0% 0% / 0.06);
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.22),
+    inset 0 0 0 0.5px hsl(0 0% 0% / 0.08);
 }
 
 :host(:hover) [part~="track"] {
-  background: hsl(240 6% 48% / 0.3);
+  background: color-mix(in srgb, var(--snice-color-border-hover) 72%, hsl(240 6% 56% / 0.28));
 }
 
 :host(:hover) [part~="track-checked"] {
@@ -53,22 +75,74 @@
   height: 2.25rem;
 }
 
+/* Widened track + horizontal breathing room when state labels are present */
 :host([label-on]) [part~="track"],
 :host([label-off]) [part~="track"] {
-  min-width: 4rem;
+  min-width: 4.375rem;
+  box-sizing: border-box;
+  padding-inline: 0.375rem;
+}
+
+:host([size="large"][label-on]) [part~="track"],
+:host([size="large"][label-off]) [part~="track"] {
+  min-width: 5rem;
+  padding-inline: 0.4375rem;
+}
+
+/* Small hides state labels in base CSS — preserve compact 40x24px pill */
+:host([size="small"][label-on]) [part~="track"],
+:host([size="small"][label-off]) [part~="track"] {
+  min-width: 2.5rem;
+  padding-inline: 0;
 }
 
 /* Invalid track */
 [part~="track-invalid"] {
-  background: color-mix(in srgb, var(--snice-color-danger) 28%, hsl(240 6% 48% / 0.16));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--snice-color-danger) 65%, transparent);
+  background: color-mix(in srgb, var(--snice-color-danger) 28%, var(--snice-color-border));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--snice-color-danger) 68%, transparent);
 }
 
 [part~="track-invalid"][part~="track-checked"] {
   background: var(--snice-color-danger);
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.22),
+    inset 0 0 0 0.5px hsl(0 0% 0% / 0.1);
 }
 
-/* Thumb — 27px floating pure-white Apple disc */
+:host(:hover) [part~="track-invalid"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 35%, var(--snice-color-border));
+}
+
+:host(:hover) [part~="track-invalid"][part~="track-checked"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 90%, white);
+}
+
+[part~="track-loading"] {
+  cursor: wait;
+}
+
+/* Keyboard focus halo — iOS 3px focus ring preserving track specular rim */
+:host(:focus-visible) [part~="track"] {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 0.5px var(--snice-color-border),
+    0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color);
+}
+
+:host(:focus-visible) [part~="track-checked"] {
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.22),
+    inset 0 0 0 0.5px hsl(0 0% 0% / 0.08),
+    0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color);
+}
+
+:host(:focus-visible) [part~="track-invalid"] {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--snice-color-danger) 68%, transparent),
+    0 0 0 var(--snice-focus-ring-width, 3px) color-mix(in srgb, var(--snice-color-danger) 42%, transparent);
+}
+
+/* Thumb — 27px floating pure-white Apple disc, anchored inward during stretch */
 [part~="thumb"] {
   width: 1.6875rem;
   height: 1.6875rem;
@@ -76,6 +150,7 @@
   left: 2px;
   border-radius: 9999px;
   background: hsl(0 0% 100%);
+  transform-origin: left center;
   box-shadow:
     0 3px 8px hsl(0 0% 0% / 0.15),
     0 1px 1px hsl(0 0% 0% / 0.16),
@@ -89,6 +164,7 @@
 
 [part~="thumb-checked"] {
   left: calc(100% - 1.6875rem - 2px);
+  transform-origin: right center;
 }
 
 :host([size="small"]) [part~="thumb"] {
@@ -117,6 +193,7 @@
   transform: translateX(var(--snice-ios-drag-x, 0px)) scaleX(1.18) scaleY(1.06);
   box-shadow:
     inset 0 1px 1px hsl(0 0% 100% / 0.9),
+    inset 0 -0.5px 1px hsl(0 0% 0% / 0.08),
     0 6px 18px hsl(0 0% 0% / 0.22);
 }
 
@@ -127,7 +204,7 @@
   border-radius: inherit;
   pointer-events: none;
   opacity: 0;
-  background: radial-gradient(circle at 32% 28%, hsl(0 0% 100% / 0.85), transparent 64%);
+  background: radial-gradient(circle at 32% 28%, hsl(0 0% 100% / 0.9), hsl(0 0% 100% / 0.18) 46%, transparent 68%);
   transition: opacity var(--snice-transition-fast, 180ms) ease;
 }
 
@@ -135,23 +212,101 @@
   opacity: 1;
 }
 
-/* Loading spinner inside white thumb */
+/* Loading state — crisp dark-neutral spinner inside steady white knob */
 [part~="spinner"] {
-  color: var(--snice-color-neutral);
+  color: hsl(240 4% 36%);
 }
 
-/* State labels — explicit white on green checked track in both light & dark */
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-width: 1.75px;
+}
+
+:host([size="small"]) [part~="spinner"]::after {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-width: 1.5px;
+}
+
+:host([size="large"]) [part~="spinner"]::after {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-width: 2px;
+}
+
+:host([loading]) [part~="thumb"],
+:host([loading][data-ios-pressed="true"]) [part~="thumb"] {
+  animation: none;
+  background: hsl(0 0% 100%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transform: none;
+  box-shadow:
+    0 3px 8px hsl(0 0% 0% / 0.15),
+    0 1px 1px hsl(0 0% 0% / 0.16),
+    0 3px 1px hsl(0 0% 0% / 0.06);
+}
+
+:host([loading]) [part~="lens"],
+:host([loading][data-ios-pressed="true"]) [part~="lens"] {
+  opacity: 0;
+}
+
+:host([loading]) [part~="track"],
+:host([loading]:hover) [part~="track"] {
+  background: color-mix(in srgb, var(--snice-color-border-hover) 58%, hsl(240 6% 56% / 0.22));
+}
+
+:host([loading]) [part~="track-checked"],
+:host([loading]:hover) [part~="track-checked"] {
+  background: var(--snice-color-success);
+}
+
+:host([loading]) [part~="track-invalid"],
+:host([loading]:hover) [part~="track-invalid"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 28%, var(--snice-color-border));
+}
+
+:host([loading]) [part~="track-invalid"][part~="track-checked"],
+:host([loading]:hover) [part~="track-invalid"][part~="track-checked"] {
+  background: var(--snice-color-danger);
+}
+
+/* State labels — explicit white on green/danger checked track in light & dark */
 [part~="label-on"] {
+  left: 0.4375rem;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
   color: hsl(0 0% 100%);
 }
 
 [part~="label-off"] {
-  color: var(--snice-color-text-secondary);
+  right: 0.5rem;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: color-mix(in srgb, var(--snice-color-text) 78%, transparent);
+}
+
+:host([size="large"]) [part~="label-on"] {
+  left: 0.5625rem;
+  font-size: 0.625rem;
+}
+
+:host([size="large"]) [part~="label-off"] {
+  right: 0.5625rem;
+  font-size: 0.625rem;
 }
 
 /* Label */
 [part~="label"] {
   font-size: 1rem;
+  line-height: 1.375;
   letter-spacing: -0.015em;
   color: var(--snice-color-text);
 }
@@ -164,17 +319,103 @@
   font-size: 1.0625rem;
 }
 
-/* Disabled */
-[part~="base-disabled"] {
-  opacity: 0.4;
+:host([loading]) [part~="label"] {
+  cursor: wait;
 }
 
+:host([disabled]) [part~="label"] {
+  color: var(--snice-color-text-secondary);
+  cursor: not-allowed;
+}
+
+/* Disabled — preserve System Green on checked, suppress hover & press lens */
 :host([disabled]) [part~="track"],
 :host([disabled]:hover) [part~="track"] {
-  background: hsl(240 6% 48% / 0.2);
+  background: color-mix(in srgb, var(--snice-color-border-hover) 50%, hsl(240 6% 56% / 0.18));
 }
 
 :host([disabled]) [part~="track-checked"],
 :host([disabled]:hover) [part~="track-checked"] {
   background: var(--snice-color-success);
+}
+
+:host([disabled]) [part~="track-invalid"],
+:host([disabled]:hover) [part~="track-invalid"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 28%, var(--snice-color-border));
+}
+
+:host([disabled]) [part~="track-invalid"][part~="track-checked"],
+:host([disabled]:hover) [part~="track-invalid"][part~="track-checked"] {
+  background: var(--snice-color-danger);
+}
+
+:host([disabled]) [part~="thumb"],
+:host([disabled][data-ios-pressed="true"]) [part~="thumb"] {
+  background: hsl(0 0% 100%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transform: none;
+  box-shadow:
+    0 3px 8px hsl(0 0% 0% / 0.15),
+    0 1px 1px hsl(0 0% 0% / 0.16),
+    0 3px 1px hsl(0 0% 0% / 0.06);
+}
+
+:host([disabled]) [part~="lens"],
+:host([disabled][data-ios-pressed="true"]) [part~="lens"] {
+  opacity: 0;
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  [part~="track"],
+  [part~="thumb"],
+  [part~="lens"] {
+    transition: none;
+  }
+
+  :host([data-ios-pressed="true"]) [part~="thumb"] {
+    transform: none;
+  }
+}
+
+/* Accessibility: Reduced Transparency */
+@media (prefers-reduced-transparency: reduce) {
+  :host([data-ios-pressed="true"]) [part~="thumb"] {
+    background: hsl(0 0% 100%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Accessibility: Forced Colors */
+@media (forced-colors: active) {
+  [part~="track"] {
+    background: Canvas;
+    box-shadow: none;
+    outline: 1px solid ButtonText;
+    outline-offset: -1px;
+  }
+
+  [part~="track-checked"] {
+    background: Highlight;
+    outline-color: Highlight;
+  }
+
+  :host(:focus-visible) [part~="track"],
+  :host(:focus-visible) [part~="track-checked"],
+  :host(:focus-visible) [part~="track-invalid"] {
+    box-shadow: none;
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  [part~="thumb"] {
+    background: ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="thumb-checked"] {
+    background: HighlightText;
+  }
 }

@@ -1,28 +1,47 @@
 /* ==========================================================================
    iOS 26+ Liquid Glass — snice-step-input
-   Capsule Liquid Glass UIStepper pill (44pt medium), frosted glass fill,
-   hairline dividers, crisp interactive press tint.
+   1:1 Apple HIG UIStepper capsule extended with centered numeric readout:
+   34px / 44pt / 50px heights aligned with snice-button & snice-input,
+   frosted Liquid Glass pill shell with hairline dividers, crisp press tint,
+   and clean boundary/invalid/readonly/disabled states with zero compounded
+   opacity washout.
    ========================================================================== */
 
+/* Base Liquid Glass capsule shell (44pt medium standard) */
 [part~="base"] {
+  box-sizing: border-box;
+  height: 2.75rem;
   border-radius: 9999px;
   background: var(--snice-ios-glass-regular-bg);
   backdrop-filter: var(--snice-ios-glass-blur);
   -webkit-backdrop-filter: var(--snice-ios-glass-blur);
   border: 1px solid var(--snice-ios-glass-border);
   box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-sm);
+  transition:
+    border-color var(--snice-transition-fast, 180ms) ease,
+    box-shadow var(--snice-transition-fast, 180ms) ease,
+    background-color var(--snice-transition-fast, 180ms) ease,
+    opacity var(--snice-transition-fast, 180ms) ease;
 }
 
 [part~="base"]:focus-within {
   border-color: var(--snice-color-primary);
-  box-shadow: 0 0 0 3px var(--snice-focus-ring-color), var(--snice-ios-glass-rim);
+  box-shadow:
+    0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color),
+    var(--snice-ios-glass-rim);
 }
 
+/* Stepper segment buttons — square touch targets with crisp press tint */
 [part~="button"] {
-  width: 2.5rem;
-  height: 2.5rem;
+  box-sizing: border-box;
+  width: 2.75rem;
+  height: 100%;
   background: transparent;
   color: var(--snice-color-text);
+  transition:
+    background-color var(--snice-transition-fast, 180ms) ease,
+    color var(--snice-transition-fast, 180ms) ease,
+    opacity var(--snice-transition-fast, 180ms) ease;
 }
 
 [part~="button"]:hover {
@@ -30,6 +49,31 @@
   color: var(--snice-color-primary);
 }
 
+[part~="button"]:active {
+  background: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+  color: var(--snice-color-primary);
+}
+
+[part~="button"]:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  color: var(--snice-color-primary);
+  box-shadow: inset 0 0 0 2px var(--snice-color-primary);
+}
+
+/* Boundary disabled end-cap (at min/max) — sibling end-cap stays crisp */
+[part~="button"]:disabled,
+[part~="button"]:disabled:hover,
+[part~="button"]:disabled:active,
+[part~="button"]:disabled:focus-visible {
+  opacity: 0.32;
+  background: transparent;
+  color: var(--snice-color-text);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Hairline inner vertical dividers */
 [part~="decrement-button"] {
   border-right: 0.5px solid var(--snice-color-border-subtle);
 }
@@ -38,29 +82,184 @@
   border-left: 0.5px solid var(--snice-color-border-subtle);
 }
 
+/* Scaled stepper icons */
+[part~="icon"] {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.2;
+}
+
+/* Centered editable numeric readout */
 [part~="input"] {
-  height: 2.5rem;
+  box-sizing: border-box;
+  width: 3.75rem;
+  height: 100%;
+  padding: 0 0.375rem;
+  font-family: var(--snice-font-family);
   font-size: 1rem;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.012em;
   color: var(--snice-color-text);
+  caret-color: var(--snice-color-primary);
+}
+
+/* Form-disabled fallback (e.g. fieldset[disabled] without host [disabled]) */
+[part~="input"]:disabled {
+  opacity: 0.38;
+  color: var(--snice-color-text);
+  cursor: not-allowed;
+}
+
+/* Sizes — 34px / 44px / 50px aligned with iOS snice-button & snice-input */
+:host([size="small"]) [part~="base"] {
+  height: 2.125rem;
 }
 
 :host([size="small"]) [part~="button"] {
-  width: 2rem;
-  height: 2rem;
+  width: 2.125rem;
 }
 
 :host([size="small"]) [part~="input"] {
-  height: 2rem;
+  width: 3rem;
+  padding: 0 0.25rem;
   font-size: 0.875rem;
+  letter-spacing: -0.008em;
+}
+
+:host([size="small"]) [part~="icon"] {
+  width: 14px;
+  height: 14px;
+}
+
+:host([size="large"]) [part~="base"] {
+  height: 3.125rem;
 }
 
 :host([size="large"]) [part~="button"] {
-  width: 2.875rem;
-  height: 2.875rem;
+  width: 3.125rem;
 }
 
 :host([size="large"]) [part~="input"] {
-  height: 2.875rem;
+  width: 4.25rem;
+  padding: 0 0.5rem;
   font-size: 1.0625rem;
+  letter-spacing: -0.016em;
+}
+
+:host([size="large"]) [part~="icon"] {
+  width: 18px;
+  height: 18px;
+}
+
+/* Invalid state — danger border + 32% danger focus halo */
+[part~="base-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+[part~="base-invalid"]:focus-within {
+  border-color: var(--snice-color-danger);
+  box-shadow:
+    0 0 0 var(--snice-focus-ring-width, 3px) color-mix(in srgb, var(--snice-color-danger) 32%, transparent),
+    var(--snice-ios-glass-rim);
+}
+
+/* Readonly state — opaque subtle capsule, muted step buttons, non-interactive cursor */
+:host([readonly]) [part~="base"],
+:host([readonly]) [part~="base"]:focus-within {
+  background: var(--snice-color-surface-container-low);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: var(--snice-color-border);
+  box-shadow: none;
+  cursor: default;
+}
+
+:host([readonly]) [part~="input"] {
+  color: var(--snice-color-text-secondary);
+  cursor: default;
+}
+
+:host([readonly]) [part~="button"],
+:host([readonly]) [part~="button"]:hover,
+:host([readonly]) [part~="button"]:active,
+:host([readonly]) [part~="button"]:focus-visible,
+:host([readonly]) [part~="button"]:disabled,
+:host([readonly]) [part~="button"]:disabled:hover,
+:host([readonly]) [part~="button"]:disabled:active,
+:host([readonly]) [part~="button"]:disabled:focus-visible {
+  opacity: 1;
+  background: transparent;
+  color: var(--snice-color-text-tertiary);
+  box-shadow: none;
+  cursor: default;
+}
+
+/* Disabled state — single clean 0.38 mute on shell, children forced to opacity: 1
+   (eliminates base CSS compounded 0.6 * 0.4 = 0.24 washout) */
+:host([disabled]) [part~="base"],
+:host([disabled]) [part~="base"]:focus-within {
+  opacity: 0.38;
+  border-color: var(--snice-color-border);
+  box-shadow: var(--snice-ios-glass-rim);
+  cursor: not-allowed;
+}
+
+:host([disabled]) [part~="button"],
+:host([disabled]) [part~="button"]:hover,
+:host([disabled]) [part~="button"]:active,
+:host([disabled]) [part~="button"]:focus-visible,
+:host([disabled]) [part~="button"]:disabled,
+:host([disabled]) [part~="button"]:disabled:hover,
+:host([disabled]) [part~="button"]:disabled:active,
+:host([disabled]) [part~="button"]:disabled:focus-visible {
+  opacity: 1;
+  background: transparent;
+  color: var(--snice-color-text);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+:host([disabled]) [part~="input"],
+:host([disabled]) [part~="input"]:disabled {
+  opacity: 1;
+  color: var(--snice-color-text);
+  cursor: not-allowed;
+}
+
+/* Accessibility: Reduced Transparency */
+@media (prefers-reduced-transparency: reduce) {
+  [part~="base"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-color: var(--snice-color-border-hover);
+  }
+}
+
+/* Accessibility: Forced Colors */
+@media (forced-colors: active) {
+  [part~="base"] {
+    border-color: ButtonBorder;
+    box-shadow: none;
+  }
+
+  [part~="base"]:focus-within {
+    border-color: Highlight;
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+
+  [part~="decrement-button"],
+  [part~="increment-button"] {
+    border-color: ButtonBorder;
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  [part~="base"],
+  [part~="button"] {
+    transition: none;
+  }
 }

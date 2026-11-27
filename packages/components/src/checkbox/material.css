@@ -1,8 +1,9 @@
 /* ==========================================================================
    Android Material 3 Expressive — snice-checkbox
    Exact M3 18x18dp square with 2px corners, 2px on-surface-variant border,
-   solid primary fill with M3 on-primary checkmark (crisp dark check on T80
-   lavender in dark mode), and 40dp circular state-layer ripple halo.
+   solid primary fill with M3 on-primary checkmark (crisp dark ink on T80
+   lavender in dark mode), invalid error/on-error contrast, 40dp circular
+   state-layer ripple halo, clean single focus ring, and exact 38% disabled.
    ========================================================================== */
 
 :host {
@@ -10,6 +11,19 @@
   align-self: center;
 }
 
+:host([size="small"]) {
+  min-height: 2rem;
+}
+
+:host([size="large"]) {
+  min-height: 3rem;
+}
+
+:host([compact]) {
+  min-height: 0;
+}
+
+/* Box geometry & resting state (18x18dp, 2px radius, 2px stroke) */
 [part~="checkbox"] {
   width: 1.125rem;
   height: 1.125rem;
@@ -17,9 +31,15 @@
   border-radius: 2px;
   background: transparent;
   border: 2px solid var(--snice-color-text-secondary);
+  outline: none;
+  box-shadow: none;
+  --_m3-check-ink: var(--snice-m3-on-primary);
+  --_m3-ripple-color: var(--snice-color-text);
+  --_m3-spinner-color: var(--snice-color-primary);
   transition:
     background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
-    border-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+    border-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    outline-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
 }
 
 :host([size="small"]) [part~="checkbox"] {
@@ -32,14 +52,19 @@
   height: 1.375rem;
 }
 
-:host(:hover) [part~="checkbox"] {
+/* Unchecked hover & active */
+:host(:hover) [part~="checkbox"],
+:host([data-m3-pressed="true"]) [part~="checkbox"] {
   border-color: var(--snice-color-text);
 }
 
+/* Checked & indeterminate */
 [part~="checkbox-checked"],
 [part~="checkbox-indeterminate"] {
   background: var(--snice-color-primary);
   border-color: var(--snice-color-primary);
+  --_m3-ripple-color: var(--snice-color-primary);
+  --_m3-spinner-color: var(--snice-m3-on-primary);
 }
 
 :host(:hover) [part~="checkbox-checked"],
@@ -48,8 +73,22 @@
   border-color: color-mix(in srgb, var(--snice-m3-on-primary) 8%, var(--snice-color-primary));
 }
 
-/* Invalid */
+:host([data-m3-pressed="true"]) [part~="checkbox-checked"],
+:host([data-m3-pressed="true"]) [part~="checkbox-indeterminate"] {
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 10%, var(--snice-color-primary));
+  border-color: color-mix(in srgb, var(--snice-m3-on-primary) 10%, var(--snice-color-primary));
+}
+
+/* Invalid (error / on-error — crisp dark inverse ink on T80 red in dark mode) */
 [part~="checkbox-invalid"] {
+  border-color: var(--snice-color-danger);
+  --_m3-check-ink: var(--snice-color-text-inverse);
+  --_m3-ripple-color: var(--snice-color-danger);
+  --_m3-spinner-color: var(--snice-color-danger);
+}
+
+:host(:hover) [part~="checkbox-invalid"],
+:host([data-m3-pressed="true"]) [part~="checkbox-invalid"] {
   border-color: var(--snice-color-danger);
 }
 
@@ -57,18 +96,44 @@
 [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
   background: var(--snice-color-danger);
   border-color: var(--snice-color-danger);
+  --_m3-check-ink: var(--snice-color-text-inverse);
+  --_m3-ripple-color: var(--snice-color-danger);
+  --_m3-spinner-color: var(--snice-color-text-inverse);
 }
 
-/* M3 On-Primary icon contrast (white in light, deep purple in dark) */
+:host(:hover) [part~="checkbox-invalid"][part~="checkbox-checked"],
+:host(:hover) [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
+  background: color-mix(in srgb, var(--snice-color-text-inverse) 8%, var(--snice-color-danger));
+  border-color: color-mix(in srgb, var(--snice-color-text-inverse) 8%, var(--snice-color-danger));
+}
+
+:host([data-m3-pressed="true"]) [part~="checkbox-invalid"][part~="checkbox-checked"],
+:host([data-m3-pressed="true"]) [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
+  background: color-mix(in srgb, var(--snice-color-text-inverse) 10%, var(--snice-color-danger));
+  border-color: color-mix(in srgb, var(--snice-color-text-inverse) 10%, var(--snice-color-danger));
+}
+
+/* Clean keyboard focus indicator (zero base double ring) */
+:host(:focus-visible) [part~="checkbox"] {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-color-primary);
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+  box-shadow: none;
+}
+
+:host(:focus-visible) [part~="checkbox-invalid"] {
+  outline-color: var(--snice-color-danger);
+}
+
+/* M3 On-Primary / On-Error icon & loading spinner contrast */
 [part~="icon"] {
-  color: var(--snice-m3-on-primary);
+  color: var(--_m3-check-ink, var(--snice-m3-on-primary));
 }
 
 [part~="spinner"] {
-  color: var(--snice-color-primary);
+  color: var(--_m3-spinner-color, var(--snice-color-primary));
 }
 
-/* 40dp M3 circular state-layer ripple */
+/* 40dp M3 circular state-layer ripple (on-surface unchecked, primary checked, danger invalid) */
 [part~="ripple"] {
   display: block;
   position: absolute;
@@ -78,12 +143,22 @@
   height: 2.5rem;
   border-radius: 9999px;
   pointer-events: none;
-  background: var(--snice-color-primary);
+  background: var(--_m3-ripple-color, var(--snice-color-text));
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.5);
   transition:
-    opacity var(--snice-transition-fast, 150ms) ease,
+    opacity var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
     transform var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+:host([size="small"]) [part~="ripple"] {
+  width: 2rem;
+  height: 2rem;
+}
+
+:host([size="large"]) [part~="ripple"] {
+  width: 3rem;
+  height: 3rem;
 }
 
 :host(:hover) [part~="ripple"] {
@@ -91,7 +166,13 @@
   transform: translate(-50%, -50%) scale(1);
 }
 
+:host(:focus-visible) [part~="ripple"] {
+  opacity: 0.1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
 :host([data-m3-ripple="active"]) [part~="ripple"],
+:host([data-m3-ripple="static"]) [part~="ripple"],
 :host([data-m3-pressed="true"]) [part~="ripple"] {
   opacity: 0.14;
   transform: translate(-50%, -50%) scale(1);
@@ -101,34 +182,136 @@
 [part~="label"] {
   margin-left: 0.75rem;
   font-size: 0.875rem;
+  line-height: 1.25rem;
   font-weight: 400;
   letter-spacing: 0.008em;
   color: var(--snice-color-text);
 }
 
-/* Disabled — M3 38% ink spec */
+:host([size="small"]) [part~="label"] {
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+}
+
+:host([size="large"]) [part~="label"] {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+/* Loading — suppress hover shifts and ripple while keeping active M3 colors */
+[part~="base-loading"] {
+  opacity: 1;
+  cursor: wait;
+}
+
+:host([loading]) [part~="label"] {
+  cursor: wait;
+}
+
+:host([loading]:hover) [part~="checkbox"] {
+  border-color: var(--snice-color-text-secondary);
+}
+
+:host([loading]:hover) [part~="checkbox-checked"],
+:host([loading]:hover) [part~="checkbox-indeterminate"] {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+}
+
+:host([loading]:hover) [part~="checkbox-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+:host([loading]:hover) [part~="checkbox-invalid"][part~="checkbox-checked"],
+:host([loading]:hover) [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
+  background: var(--snice-color-danger);
+  border-color: var(--snice-color-danger);
+}
+
+:host([loading]) [part~="ripple"],
+:host([loading]:hover) [part~="ripple"],
+:host([loading]:focus-visible) [part~="ripple"] {
+  opacity: 0;
+}
+
+/* Disabled — exact M3 38% ink spec (opacity: 1) */
 [part~="base-disabled"] {
   opacity: 1;
 }
 
 :host([disabled]) [part~="checkbox"],
-:host([disabled]:hover) [part~="checkbox"] {
+:host([disabled]:hover) [part~="checkbox"],
+:host([disabled]) [part~="checkbox-invalid"],
+:host([disabled]:hover) [part~="checkbox-invalid"] {
   background: transparent;
   border-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  --_m3-spinner-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
 }
 
 :host([disabled]) [part~="checkbox-checked"],
 :host([disabled]:hover) [part~="checkbox-checked"],
 :host([disabled]) [part~="checkbox-indeterminate"],
-:host([disabled]:hover) [part~="checkbox-indeterminate"] {
+:host([disabled]:hover) [part~="checkbox-indeterminate"],
+:host([disabled]) [part~="checkbox-invalid"][part~="checkbox-checked"],
+:host([disabled]:hover) [part~="checkbox-invalid"][part~="checkbox-checked"],
+:host([disabled]) [part~="checkbox-invalid"][part~="checkbox-indeterminate"],
+:host([disabled]:hover) [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
   background: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
   border-color: transparent;
+  --_m3-spinner-color: var(--snice-color-surface);
 }
 
 :host([disabled]) [part~="icon"] {
   color: var(--snice-color-surface);
 }
 
-:host([disabled]) [part~="label"] {
+:host([disabled]) [part~="ripple"],
+:host([disabled]:hover) [part~="ripple"],
+:host([disabled]:focus-visible) [part~="ripple"] {
+  opacity: 0;
+}
+
+:host([disabled]) [part~="label"],
+:host([disabled]) [part~="label-required"]::after {
   color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="checkbox"],
+  [part~="ripple"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="checkbox"] {
+    border-color: ButtonText;
+    forced-color-adjust: auto;
+  }
+
+  [part~="checkbox-checked"],
+  [part~="checkbox-indeterminate"] {
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  [part~="icon"] {
+    color: HighlightText;
+  }
+
+  :host(:focus-visible) [part~="checkbox"] {
+    outline-color: Highlight;
+  }
+
+  :host([disabled]) [part~="checkbox"],
+  :host([disabled]) [part~="checkbox-checked"],
+  :host([disabled]) [part~="checkbox-indeterminate"] {
+    background: Canvas;
+    border-color: GrayText;
+  }
+
+  :host([disabled]) [part~="icon"],
+  :host([disabled]) [part~="label"] {
+    color: GrayText;
+  }
 }

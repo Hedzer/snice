@@ -1,8 +1,9 @@
 /* ==========================================================================
    macOS 26+ Liquid Glass / AppKit — snice-checkbox
-   Compact desktop 16x16px rounded-4px AppKit checkbox, top-lit gradient fill
-   for checked & indeterminate states, crisp pure-white checkmark in both light
-   & dark modes, 13px SF Pro label, and soft macOS accent focus halo.
+   Compact desktop 16x16px rounded-4px AppKit NSButton switch/checkbox bezel,
+   top-lit accent gradient checked & indeterminate fills, crisp pure-white
+   glyphs & spinners in both light & dark modes, 13px SF Pro label,
+   :host([compact]) preservation, AppKit press darkening, and soft focus halo.
    ========================================================================== */
 
 :host {
@@ -18,18 +19,30 @@
   min-height: 2.125rem;
 }
 
+:host([compact]),
+:host([compact][size="small"]),
+:host([compact][size="large"]) {
+  min-height: 0;
+}
+
+/* Compact 16x16px AppKit bezel box */
 [part~="checkbox"] {
   width: 1rem;
   height: 1rem;
+  flex-shrink: 0;
   box-sizing: border-box;
   border-radius: 4px;
   background: var(--snice-macos-control-bg);
   border: 1px solid var(--snice-color-border-hover);
   box-shadow: var(--snice-macos-control-shadow);
+  color: var(--snice-color-primary);
+  outline: none;
+  outline-offset: 0;
   transition:
     background-color var(--snice-transition-fast, 140ms) ease,
     border-color var(--snice-transition-fast, 140ms) ease,
-    box-shadow var(--snice-transition-fast, 140ms) ease;
+    box-shadow var(--snice-transition-fast, 140ms) ease,
+    filter var(--snice-transition-fast, 140ms) ease;
 }
 
 :host([size="small"]) [part~="checkbox"] {
@@ -48,6 +61,7 @@
   border-color: color-mix(in srgb, var(--snice-color-primary) 55%, var(--snice-color-border-hover));
 }
 
+/* Checked & Indeterminate — top-lit AppKit accent gradient */
 [part~="checkbox-checked"],
 [part~="checkbox-indeterminate"] {
   background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
@@ -55,25 +69,44 @@
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.34),
     0 0.5px 1.5px hsl(0 0% 0% / 0.2);
+  color: hsl(0 0% 100%);
 }
 
 :host(:hover) [part~="checkbox-checked"],
 :host(:hover) [part~="checkbox-indeterminate"] {
+  border-color: color-mix(in srgb, var(--snice-color-primary) 82%, black);
   filter: brightness(1.05);
 }
 
 /* Invalid */
-[part~="checkbox-invalid"] {
+[part~="checkbox-invalid"],
+:host(:hover) [part~="checkbox-invalid"] {
   border-color: var(--snice-color-danger);
+  color: var(--snice-color-danger);
 }
 
 [part~="checkbox-invalid"][part~="checkbox-checked"],
 [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
   background: var(--snice-color-danger);
   border-color: color-mix(in srgb, var(--snice-color-danger) 82%, black);
+  color: hsl(0 0% 100%);
 }
 
-/* Crisp pure-white checkmark in BOTH light & dark modes */
+:host(:hover) [part~="checkbox-invalid"][part~="checkbox-checked"],
+:host(:hover) [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
+  border-color: color-mix(in srgb, var(--snice-color-danger) 82%, black);
+  filter: brightness(1.05);
+}
+
+/* Active / Pressed — subtle AppKit darkening, zero scale bounce */
+:host(:active) [part~="checkbox"],
+:host(:active) [part~="checkbox-checked"],
+:host(:active) [part~="checkbox-indeterminate"] {
+  filter: brightness(0.92);
+  transform: none;
+}
+
+/* Crisp pure-white checkmark & indeterminate dash in BOTH light & dark modes */
 [part~="icon"] {
   width: 0.75rem;
   height: 0.75rem;
@@ -90,15 +123,70 @@
   height: 0.875rem;
 }
 
-[part~="spinner"] {
-  color: var(--snice-color-primary);
+/* Loading spinner — inherits primary unchecked, danger invalid, white on checked/indeterminate */
+[part~="checkbox-checked"][part~="checkbox-loading"],
+[part~="checkbox-indeterminate"][part~="checkbox-loading"] {
+  color: hsl(0 0% 100%);
 }
 
-/* Compact 13px AppKit label */
+[part~="spinner"] {
+  color: inherit;
+}
+
+[part~="spinner"]::after {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-width: 1.5px;
+  box-sizing: border-box;
+}
+
+:host([size="small"]) [part~="spinner"]::after {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-width: 1.5px;
+}
+
+:host([size="large"]) [part~="spinner"]::after {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-width: 1.75px;
+}
+
+:host([loading]:hover) [part~="checkbox"],
+:host([loading]:active) [part~="checkbox"] {
+  border-color: var(--snice-color-border-hover);
+  filter: none;
+}
+
+:host([loading]:hover) [part~="checkbox-checked"],
+:host([loading]:active) [part~="checkbox-checked"],
+:host([loading]:hover) [part~="checkbox-indeterminate"],
+:host([loading]:active) [part~="checkbox-indeterminate"] {
+  border-color: color-mix(in srgb, var(--snice-color-primary) 82%, black);
+  filter: none;
+}
+
+:host([loading]:hover) [part~="checkbox-invalid"],
+:host([loading]:active) [part~="checkbox-invalid"] {
+  border-color: var(--snice-color-danger);
+  filter: none;
+}
+
+:host([loading]:hover) [part~="checkbox-invalid"][part~="checkbox-checked"],
+:host([loading]:active) [part~="checkbox-invalid"][part~="checkbox-checked"],
+:host([loading]:hover) [part~="checkbox-invalid"][part~="checkbox-indeterminate"],
+:host([loading]:active) [part~="checkbox-invalid"][part~="checkbox-indeterminate"] {
+  border-color: color-mix(in srgb, var(--snice-color-danger) 82%, black);
+  filter: none;
+}
+
+/* Compact 13px SF Pro AppKit label */
 [part~="label"] {
   margin-left: 0.4375rem;
   font-size: 0.8125rem;
+  line-height: 1.25;
   font-weight: 400;
+  letter-spacing: var(--snice-tracking-normal, -0.005em);
   color: var(--snice-color-text);
 }
 
@@ -110,26 +198,87 @@
   font-size: 0.9375rem;
 }
 
-/* Focus Halo & Disabled */
+[part~="label-required"]::after {
+  color: var(--snice-color-danger);
+}
+
+:host([loading]) [part~="label"] {
+  cursor: wait;
+}
+
+:host([disabled]) [part~="label"] {
+  color: var(--snice-color-text);
+  cursor: not-allowed;
+}
+
+/* Focus Halo — soft keyboard-only AppKit halo, zero double outline */
+:host(:focus-visible) [part~="checkbox"],
 :host([data-macos-focus="keyboard"]) [part~="checkbox"] {
   outline: none;
+  outline-offset: 0;
   box-shadow: var(--snice-macos-focus-halo);
 }
 
-[part~="base-disabled"] {
-  opacity: 0.44;
+:host(:focus-visible) [part~="checkbox-checked"],
+:host(:focus-visible) [part~="checkbox-indeterminate"],
+:host([data-macos-focus="keyboard"]) [part~="checkbox-checked"],
+:host([data-macos-focus="keyboard"]) [part~="checkbox-indeterminate"] {
+  outline: none;
+  outline-offset: 0;
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.34),
+    var(--snice-macos-focus-halo);
 }
 
+:host(:focus-visible) [part~="checkbox-invalid"],
+:host([data-macos-focus="keyboard"]) [part~="checkbox-invalid"] {
+  outline: none;
+  outline-offset: 0;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-danger) 42%, transparent);
+}
+
+/* Disabled & Loading wrapper opacity */
+[part~="base-disabled"] {
+  opacity: 0.44;
+  cursor: not-allowed;
+}
+
+[part~="base-loading"] {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+:host([disabled]) [part~="base-disabled"] {
+  opacity: 0.44;
+  cursor: not-allowed;
+}
+
+/* Disabled box surfaces — muted flat unchecked & neutral gray checked/indeterminate */
 :host([disabled]) [part~="checkbox"],
-:host([disabled]:hover) [part~="checkbox"] {
+:host([disabled]:hover) [part~="checkbox"],
+:host([disabled]:active) [part~="checkbox"] {
   background: var(--snice-color-surface-container);
   border-color: var(--snice-color-border);
   box-shadow: none;
   filter: none;
+  color: var(--snice-color-text-secondary);
 }
 
 :host([disabled]) [part~="checkbox-checked"],
-:host([disabled]:hover) [part~="checkbox-checked"] {
+:host([disabled]:hover) [part~="checkbox-checked"],
+:host([disabled]:active) [part~="checkbox-checked"],
+:host([disabled]) [part~="checkbox-indeterminate"],
+:host([disabled]:hover) [part~="checkbox-indeterminate"],
+:host([disabled]:active) [part~="checkbox-indeterminate"] {
   background: var(--snice-color-neutral);
   border-color: var(--snice-color-neutral);
+  box-shadow: none;
+  filter: none;
+  color: hsl(0 0% 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="checkbox"] {
+    transition: none;
+  }
 }

@@ -2,7 +2,7 @@
    macOS 26+ Liquid Glass / AppKit — snice-switch
    Compact desktop NSSwitch (38x22px), recessed hairline pill track, macOS
    System Accent Blue active fill (distinct from iOS green), crisp 18px white
-   knob with Liquid Glass press stretch, and 13px AppKit label.
+   knob with inward Liquid Glass press stretch, and 13px AppKit label.
    ========================================================================== */
 
 :host {
@@ -15,6 +15,11 @@
 
 :host([size="large"]) {
   min-height: 2.125rem;
+}
+
+/* Base wrapper */
+[part~="base"] {
+  gap: 0.5rem;
 }
 
 /* Track — compact 38x22px NSSwitch */
@@ -38,14 +43,6 @@
     inset 0 0 0 0.5px color-mix(in srgb, var(--snice-color-primary) 75%, black);
 }
 
-:host(:hover) [part~="track"] {
-  background: hsl(0 0% 50% / 0.3);
-}
-
-:host(:hover) [part~="track-checked"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 92%, white);
-}
-
 /* Sizes */
 :host([size="small"]) [part~="track"] {
   min-width: 2rem;
@@ -57,6 +54,22 @@
   height: 1.625rem;
 }
 
+/* Wider pill floor when state labels are authored so text never crowds the knob */
+:host([label-on]) [part~="track"],
+:host([label-off]) [part~="track"] {
+  min-width: 3.5rem;
+}
+
+:host([size="small"][label-on]) [part~="track"],
+:host([size="small"][label-off]) [part~="track"] {
+  min-width: 2rem;
+}
+
+:host([size="large"][label-on]) [part~="track"],
+:host([size="large"][label-off]) [part~="track"] {
+  min-width: 3.875rem;
+}
+
 /* Invalid */
 [part~="track-invalid"] {
   background: color-mix(in srgb, var(--snice-color-danger) 28%, hsl(0 0% 50% / 0.18));
@@ -65,6 +78,97 @@
 
 [part~="track-invalid"][part~="track-checked"] {
   background: var(--snice-color-danger);
+  box-shadow:
+    inset 0 0.5px 1px hsl(0 0% 0% / 0.14),
+    inset 0 0 0 0.5px color-mix(in srgb, var(--snice-color-danger) 75%, black);
+}
+
+/* Hover — subtle desktop luminance shift */
+:host(:hover) [part~="track"] {
+  background: hsl(0 0% 50% / 0.3);
+}
+
+:host(:hover) [part~="track-checked"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 92%, white);
+}
+
+:host(:hover) [part~="track-invalid"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 34%, hsl(0 0% 50% / 0.22));
+}
+
+:host(:hover) [part~="track-invalid"][part~="track-checked"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 92%, white);
+}
+
+/* Disabled & loading track overrides — suppress hover tint and preserve Accent Blue */
+:host([disabled]) [part~="track"],
+:host([disabled]:hover) [part~="track"],
+:host([loading]) [part~="track"],
+:host([loading]:hover) [part~="track"] {
+  background: hsl(0 0% 50% / 0.24);
+  box-shadow:
+    inset 0 0.5px 1.5px hsl(0 0% 0% / 0.16),
+    inset 0 0 0 0.5px hsl(0 0% 0% / 0.08);
+}
+
+:host([disabled]) [part~="track-checked"],
+:host([disabled]:hover) [part~="track-checked"],
+:host([loading]) [part~="track-checked"],
+:host([loading]:hover) [part~="track-checked"] {
+  background: var(--snice-color-primary);
+  box-shadow:
+    inset 0 0.5px 1px hsl(0 0% 0% / 0.14),
+    inset 0 0 0 0.5px color-mix(in srgb, var(--snice-color-primary) 75%, black);
+}
+
+:host([disabled]) [part~="track-invalid"],
+:host([disabled]:hover) [part~="track-invalid"],
+:host([loading]) [part~="track-invalid"],
+:host([loading]:hover) [part~="track-invalid"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 28%, hsl(0 0% 50% / 0.18));
+  box-shadow: inset 0 0 0 1px var(--snice-color-danger);
+}
+
+:host([disabled]) [part~="track-invalid"][part~="track-checked"],
+:host([disabled]:hover) [part~="track-invalid"][part~="track-checked"],
+:host([loading]) [part~="track-invalid"][part~="track-checked"],
+:host([loading]:hover) [part~="track-invalid"][part~="track-checked"] {
+  background: var(--snice-color-danger);
+  box-shadow:
+    inset 0 0.5px 1px hsl(0 0% 0% / 0.14),
+    inset 0 0 0 0.5px color-mix(in srgb, var(--snice-color-danger) 75%, black);
+}
+
+/* Focus Halo — soft macOS translucent accent halo */
+:host([data-macos-focus="keyboard"]) [part~="track"],
+:host(:focus-visible) [part~="track"] {
+  box-shadow:
+    var(--snice-macos-focus-halo),
+    inset 0 0.5px 1.5px hsl(0 0% 0% / 0.16),
+    inset 0 0 0 0.5px hsl(0 0% 0% / 0.08);
+}
+
+:host([data-macos-focus="keyboard"]) [part~="track-checked"],
+:host(:focus-visible) [part~="track-checked"] {
+  box-shadow:
+    var(--snice-macos-focus-halo),
+    inset 0 0.5px 1px hsl(0 0% 0% / 0.14),
+    inset 0 0 0 0.5px color-mix(in srgb, var(--snice-color-primary) 75%, black);
+}
+
+:host([data-macos-focus="keyboard"]) [part~="track-invalid"],
+:host(:focus-visible) [part~="track-invalid"] {
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--snice-color-danger) 42%, transparent),
+    inset 0 0 0 1px var(--snice-color-danger);
+}
+
+:host([data-macos-focus="keyboard"]) [part~="track-invalid"][part~="track-checked"],
+:host(:focus-visible) [part~="track-invalid"][part~="track-checked"] {
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--snice-color-danger) 42%, transparent),
+    inset 0 0.5px 1px hsl(0 0% 0% / 0.14),
+    inset 0 0 0 0.5px color-mix(in srgb, var(--snice-color-danger) 75%, black);
 }
 
 /* Thumb — crisp 18px AppKit knob */
@@ -78,6 +182,7 @@
   box-shadow:
     0 1px 2.5px hsl(0 0% 0% / 0.24),
     0 0 0 0.5px hsl(0 0% 0% / 0.08);
+  transform-origin: left center;
   transition:
     left var(--snice-transition-medium, 200ms) var(--snice-ease-spring, cubic-bezier(0.24, 1.18, 0.36, 1)),
     transform var(--snice-transition-fast, 140ms) var(--snice-ease-spring, cubic-bezier(0.24, 1.18, 0.36, 1)),
@@ -86,6 +191,7 @@
 
 [part~="thumb-checked"] {
   left: calc(100% - 1.125rem - 2px);
+  transform-origin: right center;
 }
 
 :host([size="small"]) [part~="thumb"] {
@@ -106,9 +212,18 @@
   left: calc(100% - 1.375rem - 2px);
 }
 
-/* macOS 26 Liquid Glass press lens */
+/* Keep loading knob crisp opaque white so the centered spinner retains high contrast */
+:host([loading]) [part~="thumb"] {
+  animation: none;
+}
+
+/* macOS 26 Liquid Glass press lens — expands inward from anchored track end */
 :host([data-macos-pressed="true"]) [part~="thumb"] {
   background: hsl(0 0% 100% / 0.86);
+  box-shadow:
+    0 1px 3px hsl(0 0% 0% / 0.22),
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.9),
+    0 0 0 0.5px hsl(0 0% 0% / 0.08);
   transform: scaleX(1.14) scaleY(1.04);
 }
 
@@ -127,23 +242,58 @@
   opacity: 1;
 }
 
+/* Suppress press stretch & lens on disabled and loading switches */
+:host([disabled][data-macos-pressed="true"]) [part~="thumb"],
+:host([loading][data-macos-pressed="true"]) [part~="thumb"] {
+  background: hsl(0 0% 100%);
+  box-shadow:
+    0 1px 2.5px hsl(0 0% 0% / 0.24),
+    0 0 0 0.5px hsl(0 0% 0% / 0.08);
+  transform: none;
+}
+
+:host([disabled][data-macos-pressed="true"]) [part~="lens"],
+:host([loading][data-macos-pressed="true"]) [part~="lens"] {
+  opacity: 0;
+}
+
 /* State labels & spinner */
 [part~="label-on"] {
+  left: 0.4375rem;
   color: hsl(0 0% 100%);
 }
 
 [part~="label-off"] {
-  color: var(--snice-color-text-secondary);
+  right: 0.4375rem;
+  color: color-mix(in srgb, var(--snice-color-text) 72%, transparent);
 }
 
 [part~="spinner"] {
-  color: var(--snice-color-neutral);
+  color: hsl(240 4% 36%);
+}
+
+[part~="spinner"]::after {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-width: 1.5px;
+}
+
+:host([size="small"]) [part~="spinner"]::after {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+:host([size="large"]) [part~="spinner"]::after {
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 /* Compact 13px AppKit Label */
 [part~="label"] {
   font-size: 0.8125rem;
   font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: var(--snice-tracking-normal, -0.005em);
   color: var(--snice-color-text);
 }
 
@@ -155,11 +305,55 @@
   font-size: 0.9375rem;
 }
 
-/* Focus Halo & Disabled */
-:host([data-macos-focus="keyboard"]) [part~="track"] {
-  box-shadow: var(--snice-macos-focus-halo);
-}
-
+/* Disabled & Loading States */
 [part~="base-disabled"] {
   opacity: 0.44;
+  cursor: not-allowed;
+}
+
+[part~="base-loading"] {
+  opacity: 0.82;
+  cursor: wait;
+}
+
+:host([disabled]) [part~="label"] {
+  cursor: not-allowed;
+}
+
+:host([loading]) [part~="label"] {
+  cursor: wait;
+}
+
+/* Accessibility: Reduced Motion & Forced Colors */
+@media (prefers-reduced-motion: reduce) {
+  [part~="track"],
+  [part~="thumb"],
+  [part~="lens"] {
+    transition: none;
+  }
+
+  :host([data-macos-pressed="true"]) [part~="thumb"] {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="track"] {
+    background: Canvas;
+    box-shadow: inset 0 0 0 1px ButtonText;
+  }
+
+  [part~="track-checked"] {
+    background: Highlight;
+    box-shadow: inset 0 0 0 1px Highlight;
+  }
+
+  [part~="thumb"] {
+    background: ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="thumb-checked"] {
+    background: HighlightText;
+  }
 }

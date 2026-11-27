@@ -1,34 +1,111 @@
 /* ==========================================================================
    macOS 26+ Liquid Glass / AppKit — snice-select
-   Compact 28px NSPopUpButton (22px small / 34px large) with AppKit hairline
-   shadow, preserved chevron clearance, Liquid Glass popup menu & 5px rows.
+   Compact desktop AppKit NSPopUpButton & NSComboBox (22px small / 28px
+   medium / 34px large), 0.5px hairline bezels, clearable right-padding
+   clearance, Liquid Glass 10px popup menu, 5px accent-blue highlight rows
+   with explicit white ink in light & dark modes, compact AppKit tokens,
+   and keyboard-gated soft translucent focus halo.
    ========================================================================== */
 
+/* Typography — AppKit Labels & Captions */
 [part~="label"] {
   font-size: 0.75rem;
   font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: var(--snice-tracking-normal, -0.005em);
   color: var(--snice-color-text-secondary);
   margin-bottom: 0.25rem;
 }
 
+[part~="label-required"]::after {
+  color: var(--snice-color-danger);
+}
+
+:host([disabled]) [part~="label"] {
+  opacity: 0.5;
+}
+
+[part~="helper-text"],
+[part~="error-text"] {
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  letter-spacing: var(--snice-tracking-normal, -0.005em);
+  margin-top: 0.25rem;
+}
+
+[part~="helper-text"] {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="error-text"] {
+  color: var(--snice-color-danger);
+}
+
+/* Base Compact Desktop Trigger (NSPopUpButton) & Editable Input (NSComboBox) — 28px medium */
 [part~="trigger"],
 [part~="input"] {
+  box-sizing: border-box;
   min-height: 1.75rem;
   padding: 0.25rem 2rem 0.25rem 0.625rem;
   border-radius: 6px;
+  font-family: var(--snice-font-family);
   font-size: 0.8125rem;
+  line-height: 1.25;
+  letter-spacing: var(--snice-tracking-normal, -0.005em);
   background: var(--snice-macos-control-bg);
   color: var(--snice-color-text);
   border: 0.5px solid var(--snice-color-border);
   box-shadow: var(--snice-macos-control-shadow);
+  transition:
+    border-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease),
+    background-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease),
+    box-shadow var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease),
+    filter var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease);
 }
 
+/* Recessed AppKit bezel for editable NSComboBox input */
+[part~="input"] {
+  border-color: var(--snice-color-border-hover);
+  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.08);
+}
+
+[part~="input"]::placeholder {
+  color: var(--snice-color-text-tertiary);
+  opacity: 1;
+}
+
+[part~="placeholder"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="trigger"]:hover {
+  border-color: var(--snice-color-border-hover);
+  box-shadow: var(--snice-macos-control-shadow), var(--snice-shadow-xs);
+}
+
+[part~="trigger"]:active {
+  filter: brightness(0.96);
+}
+
+[part~="input"]:hover {
+  border-color: color-mix(in srgb, var(--snice-color-text) 32%, transparent);
+}
+
+/* Compact Desktop Sizes (22px small / 28px medium / 34px large) */
 :host([size="small"]) [part~="trigger"],
 :host([size="small"]) [part~="input"] {
   min-height: 1.375rem;
   padding: 0.125rem 1.75rem 0.125rem 0.5rem;
   border-radius: 5px;
   font-size: 0.75rem;
+}
+
+:host([size="medium"]) [part~="trigger"],
+:host([size="medium"]) [part~="input"] {
+  min-height: 1.75rem;
+  padding: 0.25rem 2rem 0.25rem 0.625rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
 }
 
 :host([size="large"]) [part~="trigger"],
@@ -39,46 +116,573 @@
   font-size: 0.875rem;
 }
 
+/* Multi-select trigger keeps single-row tokens centered inside 28px height */
+:host([multiple]) [part~="trigger"] {
+  padding-top: 0.1875rem;
+  padding-bottom: 0.1875rem;
+}
+
+:host([multiple][size="small"]) [part~="trigger"] {
+  padding-top: 0.0625rem;
+  padding-bottom: 0.0625rem;
+}
+
+:host([multiple][size="large"]) [part~="trigger"] {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+/* Clearable Right-Padding Clearance (placed after size rules to prevent overlap
+   with clear button + disclosure chevron across all sizes) */
+:host([clearable]) [part~="trigger"],
+:host([clearable][size="medium"]) [part~="trigger"] {
+  padding-right: 2.75rem;
+}
+
+:host([clearable][size="small"]) [part~="trigger"] {
+  padding-right: 2.375rem;
+}
+
+:host([clearable][size="large"]) [part~="trigger"] {
+  padding-right: 3rem;
+}
+
+/* Open & Soft Translucent AppKit Focus Halo (native + macos.ts keyboard gating) */
 [part~="trigger"]:focus-visible,
 [part~="trigger-open"],
+[part~="input"]:focus,
 [part~="input"]:focus-visible,
-[part~="input-open"] {
+[part~="input-open"],
+:host([data-macos-focus="keyboard"]) [part~="trigger"],
+:host([data-macos-focus="keyboard"]) [part~="input"] {
   outline: none;
   border-color: var(--snice-color-primary);
   box-shadow: var(--snice-macos-focus-halo);
 }
 
+/* Invalid State — specificity-safe across sizes, open, and focus states */
 [part~="trigger-invalid"],
-[part~="input-invalid"] {
+[part~="trigger-invalid"]:hover,
+[part~="input-invalid"],
+[part~="input-invalid"]:hover,
+:host([invalid]) [part~="trigger"],
+:host([invalid]) [part~="trigger"]:hover,
+:host([invalid]) [part~="input"],
+:host([invalid]) [part~="input"]:hover {
   border-color: var(--snice-color-danger);
 }
 
-[part~="trigger-disabled"],
-[part~="input-disabled"] {
-  opacity: 0.44;
-  background: var(--snice-color-surface-container-low);
-  box-shadow: none;
+[part~="trigger-invalid"]:focus-visible,
+[part~="trigger-invalid"][part~="trigger-open"],
+[part~="input-invalid"]:focus,
+[part~="input-invalid"]:focus-visible,
+[part~="input-invalid"][part~="input-open"],
+:host([invalid]) [part~="trigger"]:focus-visible,
+:host([invalid]) [part~="trigger-open"],
+:host([invalid]) [part~="input"]:focus,
+:host([invalid]) [part~="input"]:focus-visible,
+:host([invalid]) [part~="input-open"],
+:host([invalid][data-macos-focus="keyboard"]) [part~="trigger"],
+:host([invalid][data-macos-focus="keyboard"]) [part~="input"] {
+  outline: none;
+  border-color: var(--snice-color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-danger) 38%, transparent);
 }
 
-/* macOS 26 Liquid Glass Menu */
+/* Readonly State (placed before disabled & loading since :read-only also matches :disabled) */
+:host([readonly]) [part~="trigger"],
+:host([readonly]) [part~="trigger"]:hover,
+:host([readonly]) [part~="trigger"]:active,
+:host([readonly]) [part~="input"],
+:host([readonly]) [part~="input"]:hover,
+[part~="input"]:read-only,
+[part~="input"]:read-only:hover {
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-border-subtle);
+  box-shadow: none;
+  cursor: default;
+  filter: none;
+}
+
+:host([readonly]) [part~="arrow"] {
+  opacity: 0.45;
+}
+
+/* Disabled State */
+[part~="trigger-disabled"],
+[part~="trigger-disabled"]:hover,
+[part~="trigger-disabled"]:active,
+[part~="input-disabled"],
+[part~="input-disabled"]:hover,
+[part~="input-disabled"]:disabled,
+[part~="input-disabled"]:disabled:hover,
+:host([disabled]) [part~="trigger"],
+:host([disabled]) [part~="trigger"]:hover,
+:host([disabled]) [part~="trigger"]:active,
+:host([disabled]) [part~="input"],
+:host([disabled]) [part~="input"]:hover {
+  opacity: 0.44;
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-border);
+  box-shadow: none;
+  cursor: not-allowed;
+  filter: none;
+}
+
+:host([disabled]) [part~="arrow"] {
+  opacity: 0.5;
+}
+
+/* Loading State — preserves 0.85 legibility & primary spinner above disabled dimming */
+[part~="trigger-loading"],
+[part~="trigger-loading"]:hover,
+[part~="trigger-loading"]:active,
+[part~="trigger-disabled"][part~="trigger-loading"],
+[part~="trigger-disabled"][part~="trigger-loading"]:hover,
+[part~="trigger-disabled"][part~="trigger-loading"]:active,
+:host([loading]) [part~="trigger"],
+:host([loading]) [part~="trigger"]:hover,
+:host([loading]) [part~="trigger"]:active {
+  opacity: 0.85;
+  background: var(--snice-macos-control-bg);
+  border-color: var(--snice-color-border);
+  box-shadow: var(--snice-macos-control-shadow);
+  cursor: wait;
+  filter: none;
+}
+
+:host([loading]) [part~="input"],
+:host([loading]) [part~="input"]:hover,
+:host([loading]) [part~="input-disabled"],
+:host([loading]) [part~="input-disabled"]:hover {
+  opacity: 0.85;
+  background: var(--snice-macos-control-bg);
+  border-color: var(--snice-color-border-hover);
+  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.08);
+  cursor: wait;
+  filter: none;
+}
+
+/* Selected Value & Multi-Select AppKit Tokens */
+[part~="value-single"] {
+  gap: 0.375rem;
+}
+
+[part~="value-icon"] {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+:host([size="small"]) [part~="value-icon"] {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+:host([size="large"]) [part~="value-icon"] {
+  width: 1rem;
+  height: 1rem;
+}
+
+[part~="tags"] {
+  gap: 0.25rem;
+  align-items: center;
+}
+
+[part~="tag"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 1.125rem;
+  padding: 0.0625rem 0.375rem;
+  border-radius: 5px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.25;
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  color: var(--snice-color-primary);
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-primary) 24%, transparent);
+}
+
+[part~="tag-icon"] {
+  width: 0.6875rem;
+  height: 0.6875rem;
+}
+
+[part~="tag-remove"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  line-height: 1;
+  color: inherit;
+  opacity: 0.72;
+  transition:
+    background-color var(--snice-transition-fast, 140ms) ease,
+    opacity var(--snice-transition-fast, 140ms) ease;
+}
+
+[part~="tag-remove"]:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-primary) 18%, transparent);
+}
+
+/* Compact Trailing Icons, Clear Button, Disclosure Arrow & Spinner */
+[part~="icons"] {
+  right: 0.4375rem;
+  gap: 0.1875rem;
+}
+
+:host([size="small"]) [part~="icons"] {
+  right: 0.3125rem;
+  gap: 0.125rem;
+}
+
+:host([size="large"]) [part~="icons"] {
+  right: 0.5625rem;
+  gap: 0.25rem;
+}
+
+[part~="clear-button"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  padding: 0.125rem;
+  border-radius: 4px;
+  color: var(--snice-color-text-secondary);
+  transition:
+    background-color var(--snice-transition-fast, 140ms) ease,
+    color var(--snice-transition-fast, 140ms) ease;
+}
+
+[part~="clear-button"]:hover {
+  background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-text);
+}
+
+[part~="clear-button"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+}
+
+[part~="clear-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+[part~="clear-icon"] {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+:host([size="small"]) [part~="clear-button"] {
+  width: 0.9375rem;
+  height: 0.9375rem;
+  border-radius: 3px;
+}
+
+:host([size="small"]) [part~="clear-icon"] {
+  width: 0.5625rem;
+  height: 0.5625rem;
+}
+
+:host([size="large"]) [part~="clear-button"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 5px;
+}
+
+:host([size="large"]) [part~="clear-icon"] {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+[part~="arrow"] {
+  width: 1rem;
+  height: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--snice-color-text-secondary);
+  transition:
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease),
+    color var(--snice-transition-fast, 140ms) ease;
+}
+
+:host([open]) [part~="arrow"] {
+  color: var(--snice-color-text);
+}
+
+[part~="arrow-icon"] {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+:host([size="small"]) [part~="arrow"] {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+:host([size="small"]) [part~="arrow-icon"] {
+  width: 0.5625rem;
+  height: 0.5625rem;
+}
+
+:host([size="large"]) [part~="arrow-icon"] {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+[part~="spinner"] {
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-right: 0.125rem;
+  color: var(--snice-color-primary);
+}
+
+[part~="spinner"]::after {
+  border-width: 1.5px;
+}
+
+:host([size="small"]) [part~="spinner"] {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+:host([size="large"]) [part~="spinner"] {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* macOS 26 Liquid Glass Popup Menu (NSMenu) */
 [part~="dropdown"] {
+  margin-top: 0.25rem;
+  padding: 0.25rem;
   border-radius: 10px;
   background: var(--snice-macos-glass-menu-bg);
   backdrop-filter: var(--snice-macos-glass-blur);
   -webkit-backdrop-filter: var(--snice-macos-glass-blur);
   border: 0.5px solid var(--snice-macos-glass-border);
   box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-lg);
-  padding: 0.25rem;
+  transform: translateY(-4px) scale(0.98);
+  transition:
+    opacity var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease),
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease);
+}
+
+[part~="dropdown-open"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Search Input Inside Liquid Glass Menu (compact 5px AppKit recessed bezel) */
+[part~="search"] {
+  padding: 0.125rem 0.125rem 0.375rem;
+  margin-bottom: 0.25rem;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="search-input"] {
+  min-height: 1.625rem;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  background: var(--snice-macos-control-bg);
+  color: var(--snice-color-text);
+  border: 0.5px solid var(--snice-color-border-hover);
+  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.08);
+  transition:
+    border-color var(--snice-transition-fast, 140ms) ease,
+    box-shadow var(--snice-transition-fast, 140ms) ease;
+}
+
+[part~="search-input"]::placeholder {
+  color: var(--snice-color-text-tertiary);
+  opacity: 1;
+}
+
+[part~="search-input"]:focus,
+[part~="search-input"]:focus-visible {
+  outline: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Options List & Menu Rows */
+[part~="options"] {
+  padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--snice-color-text) 24%, transparent) transparent;
 }
 
 [part~="option"] {
+  box-sizing: border-box;
   min-height: 1.625rem;
   border-radius: 5px;
   padding: 0.1875rem 0.5rem;
+  gap: 0.375rem;
   font-size: 0.8125rem;
+  line-height: 1.3;
+  letter-spacing: var(--snice-tracking-normal, -0.005em);
+  color: var(--snice-color-text);
+  transition:
+    background-color 80ms ease,
+    color 80ms ease;
 }
 
-[part~="option"]:hover {
+/* Resting selected AppKit menu item: transparent with crisp checkmark (no blue wash) */
+[part~="option-selected"] {
+  background: transparent;
+  color: var(--snice-color-text);
+  font-weight: 500;
+}
+
+[part~="option-selected"]::after {
+  content: '✓';
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  color: currentColor;
+}
+
+:host([multiple]) [part~="option-selected"]::after {
+  content: none;
+}
+
+/* Hovered enabled menu rows: solid macOS Accent Blue + explicit white ink
+   (NEVER --snice-color-text-inverse, which is black in macOS dark mode) */
+[part~="option"]:hover,
+[part~="option-selected"]:hover,
+[part~="option"][part~="option-selected"]:hover {
   background: var(--snice-color-primary);
   color: hsl(0 0% 100%);
+}
+
+/* Disabled menu rows: dimmed at 0.38 and hover strictly suppressed */
+[part~="option-disabled"],
+[part~="option-disabled"]:hover,
+[part~="option"][part~="option-disabled"]:hover,
+[part~="option-selected"][part~="option-disabled"]:hover {
+  opacity: 0.38;
+  background: transparent;
+  color: var(--snice-color-text);
+  cursor: not-allowed;
+}
+
+[part~="option-check"] {
+  width: 0.875rem;
+  height: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: currentColor;
+}
+
+[part~="option-icon"] {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+[part~="option-label"] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Dropdown Empty & Remote Loading States */
+[part~="empty"] {
+  padding: 0.75rem 0.5rem;
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="loading-indicator"] {
+  padding: 0.625rem 0.75rem;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="loading-spinner"] {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+[part~="loading-spinner"]::after {
+  border-width: 1.5px;
+  border-color: var(--snice-color-border);
+  border-top-color: var(--snice-color-primary);
+}
+
+/* Accessibility & Platform Preferences */
+@media (prefers-reduced-motion: reduce) {
+  [part~="trigger"],
+  [part~="input"],
+  [part~="arrow"],
+  [part~="clear-button"],
+  [part~="tag-remove"],
+  [part~="dropdown"],
+  [part~="search-input"],
+  [part~="option"] {
+    transition: none;
+  }
+
+  [part~="dropdown"],
+  [part~="dropdown-open"] {
+    transform: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  [part~="trigger"],
+  [part~="input"],
+  [part~="dropdown"],
+  [part~="search-input"],
+  [part~="tag"] {
+    border-width: 1px;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="trigger"],
+  [part~="input"],
+  [part~="dropdown"],
+  [part~="search-input"] {
+    border: 1px solid ButtonBorder;
+    box-shadow: none;
+  }
+
+  [part~="dropdown"] {
+    background: Canvas;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  [part~="trigger"]:focus-visible,
+  [part~="trigger-open"],
+  [part~="input"]:focus-visible,
+  [part~="input-open"],
+  [part~="search-input"]:focus-visible,
+  :host([data-macos-focus="keyboard"]) [part~="trigger"],
+  :host([data-macos-focus="keyboard"]) [part~="input"] {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  [part~="option"]:hover,
+  [part~="option-selected"]:hover,
+  [part~="option"][part~="option-selected"]:hover {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  [part~="option-disabled"],
+  [part~="option-disabled"]:hover,
+  [part~="option"][part~="option-disabled"]:hover,
+  [part~="option-selected"][part~="option-disabled"]:hover {
+    background: transparent;
+    color: GrayText;
+  }
 }

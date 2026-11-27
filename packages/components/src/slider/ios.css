@@ -1,24 +1,70 @@
 /* ==========================================================================
    iOS 26+ Liquid Glass — snice-slider
-   6px rounded track, iOS 26 elongated Liquid Glass pill thumb (34x22px) with
-   Apple multi-layer drop shadow & translucent drag lens, semantic variants,
-   and full vertical orientation parity.
+   6px rounded pill track, elongated iOS 26 pure-white pill thumb (34x22px)
+   with Apple 3-layer elevation shadow & Liquid Glass drag magnification lens,
+   vertical orientation across all sizes, rounded tick marks, tabular value
+   readout, semantic variants, keyboard focus halo, and loading/disabled/
+   invalid/readonly parity across light & dark modes.
    ========================================================================== */
 
+/* Label */
 [part~="label"] {
   font-size: 0.8125rem;
   font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.008em;
   color: var(--snice-color-text-secondary);
+  margin-bottom: 0.25rem;
 }
 
+[part~="label-required"]::after {
+  color: var(--snice-color-danger);
+}
+
+:host([disabled]) [part~="label"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Controls Row / Column */
 [part~="controls"] {
   min-height: 2.5rem;
+  gap: 0.875rem;
 }
 
+:host([size="small"]) [part~="controls"] {
+  min-height: 2.125rem;
+}
+
+:host([size="large"]) [part~="controls"] {
+  min-height: 3rem;
+}
+
+[part~="controls-vertical"] {
+  min-width: 2.5rem;
+  min-height: 0;
+}
+
+:host([size="small"]) [part~="controls-vertical"] {
+  min-width: 2.125rem;
+  min-height: 0;
+}
+
+:host([size="large"]) [part~="controls-vertical"] {
+  min-width: 3rem;
+  min-height: 0;
+}
+
+/* Track — 6px pill (4px small / 8px large), light & OLED dark adaptive */
 [part~="track"] {
   height: 6px;
   border-radius: 9999px;
   background: hsl(240 6% 48% / 0.24);
+  box-shadow: inset 0 0 0 0.5px hsl(240 6% 48% / 0.14);
+  transition:
+    background-color var(--snice-transition-fast, 180ms) ease,
+    box-shadow var(--snice-transition-fast, 180ms) ease,
+    opacity var(--snice-transition-fast, 180ms) ease;
 }
 
 :host([size="small"]) [part~="track"] {
@@ -29,23 +75,67 @@
   height: 8px;
 }
 
-[part~="track-vertical"] {
+[part~="track"][part~="track-vertical"] {
   width: 6px;
   height: 100%;
 }
 
-:host([size="small"]) [part~="track-vertical"] {
+:host([size="small"]) [part~="track"][part~="track-vertical"] {
   width: 4px;
   height: 100%;
 }
 
-:host([size="large"]) [part~="track-vertical"] {
+:host([size="large"]) [part~="track"][part~="track-vertical"] {
   width: 8px;
   height: 100%;
 }
 
+[part~="track"][part~="track-invalid"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 16%, hsl(240 6% 48% / 0.24));
+  box-shadow: 0 0 0 1px var(--snice-color-danger);
+}
+
+[part~="track"][part~="track-disabled"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Loading sets both track-disabled & track-loading in DOM; keep loading distinct unless also disabled */
+[part~="track"][part~="track-loading"] {
+  opacity: 0.78;
+  cursor: wait;
+}
+
+:host([disabled]) [part~="track"][part~="track-loading"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+:host([readonly]) [part~="track"] {
+  cursor: default;
+}
+
+/* Active Fill */
 [part~="fill"] {
   border-radius: 9999px;
+  background: var(--snice-color-primary);
+  transition:
+    width var(--snice-transition-fast, 180ms) var(--snice-ease-out, cubic-bezier(0.32, 0.72, 0, 1)),
+    background-color var(--snice-transition-fast, 180ms) ease;
+}
+
+[part~="fill-vertical"] {
+  transition:
+    height var(--snice-transition-fast, 180ms) var(--snice-ease-out, cubic-bezier(0.32, 0.72, 0, 1)),
+    background-color var(--snice-transition-fast, 180ms) ease;
+}
+
+[part~="fill-dragging"] {
+  transition: none;
+}
+
+:host([variant="default"]) [part~="fill"],
+:host([variant="primary"]) [part~="fill"] {
   background: var(--snice-color-primary);
 }
 
@@ -61,7 +151,9 @@
   background: var(--snice-color-danger);
 }
 
+/* Elongated iOS 26 Pill Thumb — 34x22px medium, 28x18px small, 40x26px large */
 [part~="thumb"] {
+  box-sizing: border-box;
   width: 2.125rem;
   height: 1.375rem;
   border-radius: 9999px;
@@ -73,7 +165,9 @@
     inset 0 1px 0 hsl(0 0% 100% / 0.9);
   transition:
     transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
-    background-color var(--snice-transition-fast, 180ms) ease;
+    background-color var(--snice-transition-fast, 180ms) ease,
+    box-shadow var(--snice-transition-fast, 180ms) ease,
+    border-color var(--snice-transition-fast, 180ms) ease;
 }
 
 :host([size="small"]) [part~="thumb"] {
@@ -86,11 +180,73 @@
   height: 1.625rem;
 }
 
-[part~="thumb-vertical"] {
+/* Vertical Pill Thumb — exact swapped aspect ratios across all 3 sizes */
+[part~="thumb"][part~="thumb-vertical"] {
   width: 1.375rem;
   height: 2.125rem;
 }
 
+:host([size="small"]) [part~="thumb"][part~="thumb-vertical"] {
+  width: 1.125rem;
+  height: 1.75rem;
+}
+
+:host([size="large"]) [part~="thumb"][part~="thumb-vertical"] {
+  width: 1.625rem;
+  height: 2.5rem;
+}
+
+/* Hover — subtle crisp shadow lift, axis-locked for horizontal & vertical */
+[part~="thumb"]:hover {
+  transform: translate(-50%, -50%) scale(1.04);
+  box-shadow:
+    0 4px 12px hsl(0 0% 0% / 0.22),
+    0 1.5px 3px hsl(0 0% 0% / 0.14),
+    inset 0 1px 0 hsl(0 0% 100% / 0.95);
+}
+
+[part~="thumb"][part~="thumb-vertical"]:hover {
+  transform: translate(-50%, 50%) scale(1.04);
+}
+
+/* Invalid Thumb — outranks base .slider-thumb.slider-thumb--invalid (0,2,0) */
+[part~="thumb"][part~="thumb-invalid"] {
+  border: 1.5px solid var(--snice-color-danger);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--snice-color-danger) 28%, transparent),
+    0 3px 10px hsl(0 0% 0% / 0.18),
+    0 1px 2px hsl(0 0% 0% / 0.12),
+    inset 0 1px 0 hsl(0 0% 100% / 0.9);
+}
+
+[part~="thumb"][part~="thumb-invalid"]:hover {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--snice-color-danger) 36%, transparent),
+    0 4px 12px hsl(0 0% 0% / 0.22),
+    0 1.5px 3px hsl(0 0% 0% / 0.14),
+    inset 0 1px 0 hsl(0 0% 100% / 0.95);
+}
+
+/* Keyboard Focus Halo — 3px iOS focus ring preserving pill elevation */
+[part~="thumb"]:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--snice-focus-ring-width, 3px) var(--snice-focus-ring-color),
+    0 3px 10px hsl(0 0% 0% / 0.18),
+    0 1px 2px hsl(0 0% 0% / 0.12),
+    inset 0 1px 0 hsl(0 0% 100% / 0.9);
+}
+
+[part~="thumb"][part~="thumb-invalid"]:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--snice-focus-ring-width, 3px) color-mix(in srgb, var(--snice-color-danger) 42%, transparent),
+    0 3px 10px hsl(0 0% 0% / 0.18),
+    0 1px 2px hsl(0 0% 0% / 0.12),
+    inset 0 1px 0 hsl(0 0% 100% / 0.9);
+}
+
+/* Liquid Glass Magnification Lens — revealed during press / drag */
 [part~="lens"] {
   display: block;
   position: absolute;
@@ -104,35 +260,317 @@
   border: 1px solid var(--snice-ios-glass-border);
   box-shadow: var(--snice-ios-glass-rim);
   transform: scale(0.88);
-  transition: opacity 160ms ease, transform 220ms var(--snice-ease-spring, ease);
+  transition:
+    opacity 160ms ease,
+    transform 220ms var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
 }
 
+:host([vertical]) [part~="lens"] {
+  inset: -6px -4px;
+}
+
+/* Dragging / Pressed — translucent glass pill at 1.18x + active refraction ring */
 :host([data-ios-pressed="true"]) [part~="thumb"],
-[part~="thumb-dragging"] {
+[part~="thumb"][part~="thumb-dragging"],
+[part~="thumb"]:active {
   background: var(--snice-ios-glass-clear-bg);
+  backdrop-filter: var(--snice-ios-glass-clear-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-clear-blur);
+  border-color: var(--snice-ios-glass-border);
+  box-shadow:
+    var(--snice-ios-glass-rim),
+    0 6px 18px hsl(0 0% 0% / 0.22),
+    0 2px 6px hsl(0 0% 0% / 0.12);
   transform: translate(-50%, -50%) scale(1.18);
 }
 
-:host([data-ios-pressed="true"]) [part~="thumb-vertical"],
-[part~="thumb-vertical"][part~="thumb-dragging"] {
+:host([data-ios-pressed="true"]) [part~="thumb"][part~="thumb-vertical"],
+[part~="thumb"][part~="thumb-vertical"][part~="thumb-dragging"],
+[part~="thumb"][part~="thumb-vertical"]:active {
   transform: translate(-50%, 50%) scale(1.18);
 }
 
-:host([data-ios-pressed="true"]) [part~="lens"] {
+:host([data-ios-pressed="true"]) [part~="lens"],
+:host(:active) [part~="lens"] {
   opacity: 1;
   transform: scale(1);
 }
 
-[part~="thumb-invalid"] {
-  border-color: var(--snice-color-danger);
-}
-
+/* Loading State — crisp dark-neutral spinner inside steady pure-white pill */
 [part~="spinner"] {
-  color: hsl(240 4% 38%);
+  color: hsl(240 4% 36%);
 }
 
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-width: 1.75px;
+}
+
+:host([size="small"]) [part~="spinner"]::after {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-width: 1.5px;
+}
+
+:host([size="large"]) [part~="spinner"]::after {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-width: 2px;
+}
+
+:host([loading]) [part~="thumb"],
+:host([loading]) [part~="thumb"]:hover,
+:host([loading]) [part~="thumb"]:active,
+:host([loading][data-ios-pressed="true"]) [part~="thumb"],
+[part~="thumb"][part~="thumb-loading"],
+[part~="thumb"][part~="thumb-loading"]:hover,
+[part~="thumb"][part~="thumb-loading"]:active {
+  background: hsl(0 0% 100%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: hsl(0 0% 0% / 0.08);
+  cursor: wait;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 3px 10px hsl(0 0% 0% / 0.18),
+    0 1px 2px hsl(0 0% 0% / 0.12),
+    inset 0 1px 0 hsl(0 0% 100% / 0.9);
+}
+
+:host([loading]) [part~="thumb"][part~="thumb-vertical"],
+:host([loading]) [part~="thumb"][part~="thumb-vertical"]:hover,
+:host([loading]) [part~="thumb"][part~="thumb-vertical"]:active,
+:host([loading][data-ios-pressed="true"]) [part~="thumb"][part~="thumb-vertical"],
+[part~="thumb"][part~="thumb-vertical"][part~="thumb-loading"],
+[part~="thumb"][part~="thumb-vertical"][part~="thumb-loading"]:hover,
+[part~="thumb"][part~="thumb-vertical"][part~="thumb-loading"]:active {
+  transform: translate(-50%, 50%);
+}
+
+:host([loading]) [part~="lens"],
+:host([loading][data-ios-pressed="true"]) [part~="lens"],
+:host([loading]:active) [part~="lens"] {
+  opacity: 0;
+}
+
+/* Disabled & Readonly — suppress hover lift, press scale, and glass lens */
+:host([disabled]) [part~="thumb"],
+:host([disabled]) [part~="thumb"]:hover,
+:host([disabled]) [part~="thumb"]:active,
+:host([disabled][data-ios-pressed="true"]) [part~="thumb"] {
+  background: hsl(0 0% 100%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: hsl(0 0% 0% / 0.08);
+  cursor: not-allowed;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 3px 10px hsl(0 0% 0% / 0.18),
+    0 1px 2px hsl(0 0% 0% / 0.12),
+    inset 0 1px 0 hsl(0 0% 100% / 0.9);
+}
+
+:host([disabled]) [part~="thumb"][part~="thumb-vertical"],
+:host([disabled]) [part~="thumb"][part~="thumb-vertical"]:hover,
+:host([disabled]) [part~="thumb"][part~="thumb-vertical"]:active,
+:host([disabled][data-ios-pressed="true"]) [part~="thumb"][part~="thumb-vertical"] {
+  transform: translate(-50%, 50%);
+}
+
+:host([disabled]) [part~="lens"],
+:host([disabled][data-ios-pressed="true"]) [part~="lens"],
+:host([disabled]:active) [part~="lens"] {
+  opacity: 0;
+}
+
+:host([readonly]) [part~="thumb"],
+:host([readonly]) [part~="thumb"]:hover,
+:host([readonly]) [part~="thumb"]:active,
+:host([readonly][data-ios-pressed="true"]) [part~="thumb"] {
+  background: hsl(0 0% 100%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: hsl(0 0% 0% / 0.08);
+  cursor: default;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 3px 10px hsl(0 0% 0% / 0.18),
+    0 1px 2px hsl(0 0% 0% / 0.12),
+    inset 0 1px 0 hsl(0 0% 100% / 0.9);
+}
+
+:host([readonly]) [part~="thumb"][part~="thumb-vertical"],
+:host([readonly]) [part~="thumb"][part~="thumb-vertical"]:hover,
+:host([readonly]) [part~="thumb"][part~="thumb-vertical"]:active,
+:host([readonly][data-ios-pressed="true"]) [part~="thumb"][part~="thumb-vertical"] {
+  transform: translate(-50%, 50%);
+}
+
+:host([readonly]) [part~="lens"],
+:host([readonly][data-ios-pressed="true"]) [part~="lens"],
+:host([readonly]:active) [part~="lens"] {
+  opacity: 0;
+}
+
+/* Tick Marks — rounded 2x5px muted pills padded cleanly to thumb half-width */
+[part~="ticks"] {
+  top: calc(100% + 0.5625rem);
+  height: 5px;
+  padding: 0 1.0625rem;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+:host([size="small"]) [part~="ticks"] {
+  top: calc(100% + 0.5rem);
+  padding: 0 0.875rem;
+}
+
+:host([size="large"]) [part~="ticks"] {
+  top: calc(100% + 0.625rem);
+  padding: 0 1.25rem;
+}
+
+[part~="ticks"][part~="ticks-vertical"] {
+  top: 0;
+  left: calc(100% + 0.5625rem);
+  width: 5px;
+  height: 100%;
+  padding: 1.0625rem 0;
+}
+
+:host([size="small"]) [part~="ticks"][part~="ticks-vertical"] {
+  left: calc(100% + 0.5rem);
+  padding: 0.875rem 0;
+}
+
+:host([size="large"]) [part~="ticks"][part~="ticks-vertical"] {
+  left: calc(100% + 0.625rem);
+  padding: 1.25rem 0;
+}
+
+[part~="tick"] {
+  width: 2px;
+  height: 5px;
+  border-radius: 9999px;
+  background: hsl(240 6% 48% / 0.36);
+}
+
+[part~="tick"][part~="tick-vertical"] {
+  width: 5px;
+  height: 2px;
+}
+
+/* Value Readout — tabular numerals */
 [part~="value"] {
+  min-width: 3rem;
+  text-align: right;
   font-size: 0.875rem;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
   color: var(--snice-color-text);
+}
+
+:host([vertical]) [part~="value"] {
+  text-align: center;
+}
+
+:host([disabled]) [part~="value"] {
+  opacity: 0.45;
+}
+
+/* Helper & Error Text */
+[part~="helper-text"],
+[part~="error-text"] {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  letter-spacing: -0.004em;
+  margin-top: 0.25rem;
+}
+
+[part~="helper-text"] {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="error-text"] {
+  color: var(--snice-color-danger);
+  font-weight: 500;
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  [part~="track"],
+  [part~="fill"],
+  [part~="thumb"],
+  [part~="lens"] {
+    transition: none;
+  }
+
+  [part~="thumb"]:hover,
+  [part~="thumb"]:active,
+  [part~="thumb"][part~="thumb-dragging"],
+  :host([data-ios-pressed="true"]) [part~="thumb"] {
+    transform: translate(-50%, -50%);
+  }
+
+  [part~="thumb"][part~="thumb-vertical"]:hover,
+  [part~="thumb"][part~="thumb-vertical"]:active,
+  [part~="thumb"][part~="thumb-vertical"][part~="thumb-dragging"],
+  :host([data-ios-pressed="true"]) [part~="thumb"][part~="thumb-vertical"] {
+    transform: translate(-50%, 50%);
+  }
+}
+
+/* Accessibility: Reduced Transparency */
+@media (prefers-reduced-transparency: reduce) {
+  :host([data-ios-pressed="true"]) [part~="thumb"],
+  [part~="thumb"][part~="thumb-dragging"],
+  [part~="thumb"]:active {
+    background: hsl(0 0% 100%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  [part~="lens"] {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Accessibility: Forced Colors */
+@media (forced-colors: active) {
+  [part~="track"] {
+    background: Canvas;
+    box-shadow: none;
+    outline: 1px solid ButtonText;
+    outline-offset: -1px;
+  }
+
+  [part~="fill"] {
+    background: Highlight;
+  }
+
+  [part~="thumb"] {
+    background: ButtonText;
+    border-color: Canvas;
+    box-shadow: none;
+  }
+
+  [part~="thumb"]:focus-visible,
+  [part~="thumb"][part~="thumb-invalid"]:focus-visible {
+    box-shadow: none;
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  [part~="lens"] {
+    display: none;
+  }
+
+  [part~="tick"] {
+    background: ButtonText;
+  }
 }

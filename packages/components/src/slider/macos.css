@@ -1,32 +1,122 @@
 /* ==========================================================================
    macOS 26+ Liquid Glass / AppKit — snice-slider
-   Compact 4px NSSlider track, crisp 16px pure-white AppKit knob with subtle
-   Liquid Glass press lens, semantic variants, soft focus halo & vertical parity.
+   Compact 4px recessed NSSlider track, crisp 16px pure-white AppKit knob with
+   Liquid Glass [part~="lens"] drag magnification, vertical hover/drag parity,
+   AppKit tick marks, soft focus halo, and loading/invalid/disabled states.
    ========================================================================== */
 
+/* Typography — Compact Desktop AppKit Labels, Value & Captions */
 [part~="label"] {
   font-size: 0.75rem;
   font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: var(--snice-tracking-normal, -0.005em);
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+[part~="label-required"]::after {
+  color: var(--snice-color-danger);
+}
+
+[part~="value"] {
+  min-width: 2.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--snice-tracking-normal, -0.005em);
+  color: var(--snice-color-text);
+}
+
+[part~="helper-text"],
+[part~="error-text"] {
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  margin-top: 0.25rem;
+}
+
+[part~="helper-text"] {
   color: var(--snice-color-text-secondary);
 }
 
+[part~="error-text"] {
+  color: var(--snice-color-danger);
+}
+
+/* Controls Container — Compact Desktop AppKit Density (22px / 28px / 34px) */
 [part~="controls"] {
+  min-height: 1.75rem;
+  gap: 0.625rem;
+}
+
+:host([form-align]) [part~="controls"] {
   min-height: 1.75rem;
 }
 
+:host([size="small"]) [part~="controls"],
+:host([size="small"][form-align]) [part~="controls"] {
+  min-height: 1.375rem;
+}
+
+:host([size="large"]) [part~="controls"],
+:host([size="large"][form-align]) [part~="controls"] {
+  min-height: 2.125rem;
+}
+
+[part~="controls-vertical"] {
+  min-height: 0;
+  min-width: 1.75rem;
+}
+
+:host([size="small"]) [part~="controls-vertical"] {
+  min-width: 1.375rem;
+}
+
+:host([size="large"]) [part~="controls-vertical"] {
+  min-width: 2.125rem;
+}
+
+/* Compact 4px Recessed NSSlider Track */
 [part~="track"] {
   height: 4px;
   border-radius: 9999px;
   background: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
+  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.14);
 }
 
-[part~="track-vertical"] {
+:host([size="small"]) [part~="track"] {
+  height: 3px;
+}
+
+:host([size="large"]) [part~="track"] {
+  height: 5px;
+}
+
+/* Two part tokens match base CSS .slider-track--vertical.slider-track--medium specificity */
+[part~="track"][part~="track-vertical"] {
   width: 4px;
+  height: 100%;
+  box-shadow: inset 0.5px 0 1px hsl(0 0% 0% / 0.14);
+}
+
+:host([size="small"]) [part~="track"][part~="track-vertical"] {
+  width: 3px;
   height: 100%;
 }
 
+:host([size="large"]) [part~="track"][part~="track-vertical"] {
+  width: 5px;
+  height: 100%;
+}
+
+/* Active Fill — macOS System Accent & Semantic Variants */
 [part~="fill"] {
   border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+:host([variant="primary"]) [part~="fill"] {
   background: var(--snice-color-primary);
 }
 
@@ -42,16 +132,21 @@
   background: var(--snice-color-danger);
 }
 
+/* Crisp 16px Pure-White AppKit Knob (14px small / 16px medium / 20px large) */
 [part~="thumb"] {
   width: 1rem;
   height: 1rem;
+  box-sizing: border-box;
   border-radius: 9999px;
   background: hsl(0 0% 100%);
   border: 0.5px solid hsl(0 0% 0% / 0.16);
   box-shadow: 0 1px 3px hsl(0 0% 0% / 0.24);
+  cursor: grab;
   transition:
-    transform var(--snice-transition-fast, 140ms) var(--snice-ease-spring, ease),
-    background-color var(--snice-transition-fast, 140ms) ease;
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-spring, cubic-bezier(0.24, 1.18, 0.36, 1)),
+    background-color var(--snice-transition-fast, 140ms) ease,
+    box-shadow var(--snice-transition-fast, 140ms) ease,
+    border-color var(--snice-transition-fast, 140ms) ease;
 }
 
 :host([size="small"]) [part~="thumb"] {
@@ -64,27 +159,305 @@
   height: 1.25rem;
 }
 
-:host([data-macos-pressed="true"]) [part~="thumb"] {
+/* Hover — Subtle Crisp Shadow Lift, Zero Wobble (Horizontal & Vertical Parity) */
+[part~="thumb"]:hover {
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 1.5px 4px hsl(0 0% 0% / 0.28),
+    0 0 0 0.5px hsl(0 0% 0% / 0.06);
+}
+
+[part~="thumb"][part~="thumb-vertical"]:hover {
+  transform: translate(-50%, 50%);
+}
+
+/* Focus Halo — Soft Translucent macOS Keyboard Focus Ring */
+[part~="thumb"]:focus {
+  outline: none;
+}
+
+:host([data-macos-focus="keyboard"]) [part~="thumb"],
+[part~="thumb"]:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--snice-color-primary) 55%, hsl(0 0% 0% / 0.16));
+  box-shadow:
+    var(--snice-macos-focus-halo),
+    0 1px 3px hsl(0 0% 0% / 0.24);
+}
+
+/* macOS 26 Liquid Glass Press & Drag Magnification */
+:host([data-macos-pressed="true"]) [part~="thumb"],
+[part~="thumb"][part~="thumb-dragging"],
+[part~="thumb"]:active {
+  cursor: grabbing;
   transform: translate(-50%, -50%) scale(1.22);
   background: var(--snice-macos-glass-bg);
+  border-color: var(--snice-macos-glass-border);
   backdrop-filter: var(--snice-macos-glass-blur);
   -webkit-backdrop-filter: var(--snice-macos-glass-blur);
   box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-sm);
 }
 
-:host([data-macos-pressed="true"]) [part~="thumb-vertical"] {
+:host([data-macos-pressed="true"]) [part~="thumb"][part~="thumb-vertical"],
+[part~="thumb"][part~="thumb-vertical"][part~="thumb-dragging"],
+[part~="thumb"][part~="thumb-vertical"]:active {
   transform: translate(-50%, 50%) scale(1.22);
 }
 
-:host([data-macos-focus="keyboard"]) [part~="thumb"] {
-  box-shadow: var(--snice-macos-focus-halo);
+/* Liquid Glass Refraction Lens ([part~="lens"], data-platform-only="ios,macos") */
+[part~="lens"] {
+  display: block;
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.88);
+  background: var(--snice-macos-glass-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-sm);
+  transition:
+    opacity var(--snice-transition-fast, 140ms) ease,
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-spring, cubic-bezier(0.24, 1.18, 0.36, 1));
 }
 
+:host([data-macos-pressed="true"]) [part~="lens"],
+:host(:active) [part~="lens"] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Refined AppKit Tick Marks (1.5px x 4px horizontal / 4px x 1.5px vertical) */
+[part~="ticks"] {
+  top: calc(100% + 4px);
+  height: 4px;
+  align-items: center;
+  padding: 0 1px;
+  pointer-events: none;
+}
+
+[part~="ticks"][part~="ticks-vertical"] {
+  top: 0;
+  bottom: 0;
+  left: calc(100% + 4px);
+  right: auto;
+  width: 4px;
+  height: 100%;
+  padding: 1px 0;
+}
+
+[part~="tick"] {
+  width: 1.5px;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--snice-color-border-hover);
+}
+
+[part~="tick"][part~="tick-vertical"] {
+  width: 4px;
+  height: 1.5px;
+}
+
+/* Invalid State — Danger Track Ring + Danger Knob Border */
+[part~="track"][part~="track-invalid"] {
+  box-shadow:
+    0 0 0 1px var(--snice-color-danger),
+    inset 0 0.5px 1px hsl(0 0% 0% / 0.14);
+}
+
+[part~="track"][part~="track-vertical"][part~="track-invalid"] {
+  box-shadow:
+    0 0 0 1px var(--snice-color-danger),
+    inset 0.5px 0 1px hsl(0 0% 0% / 0.14);
+}
+
+[part~="thumb"][part~="thumb-invalid"] {
+  border: 1.5px solid var(--snice-color-danger);
+  box-shadow:
+    0 1px 3px hsl(0 0% 0% / 0.24),
+    0 0 0 2px color-mix(in srgb, var(--snice-color-danger) 24%, transparent);
+}
+
+[part~="thumb"][part~="thumb-invalid"]:hover {
+  border-color: var(--snice-color-danger);
+  box-shadow:
+    0 1.5px 4px hsl(0 0% 0% / 0.28),
+    0 0 0 2px color-mix(in srgb, var(--snice-color-danger) 30%, transparent);
+}
+
+:host([data-macos-focus="keyboard"]) [part~="thumb"][part~="thumb-invalid"],
+[part~="thumb"][part~="thumb-invalid"]:focus-visible {
+  outline: none;
+  border-color: var(--snice-color-danger);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--snice-color-danger) 42%, transparent),
+    0 1px 3px hsl(0 0% 0% / 0.24);
+}
+
+/* Loading State — Crisp Spinner Centered in White Knob (overrides track-disabled) */
 [part~="spinner"] {
-  color: hsl(240 4% 38%);
+  color: hsl(240 4% 36%);
 }
 
-[part~="value"] {
-  font-size: 0.8125rem;
-  color: var(--snice-color-text);
+[part~="spinner"]::after {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-width: 1.5px;
+}
+
+:host([size="small"]) [part~="spinner"]::after {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+:host([size="large"]) [part~="spinner"]::after {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Disabled State — 0.44 Opacity, Hover & Liquid Glass Lens Suppressed */
+[part~="track-disabled"] {
+  opacity: 0.44;
+  cursor: not-allowed;
+}
+
+/* Loading track sits after track-disabled so interactionDisabled doesn't dim loading */
+[part~="track"][part~="track-loading"] {
+  opacity: 0.78;
+  cursor: wait;
+}
+
+:host([disabled]) [part~="label"],
+:host([disabled]) [part~="value"] {
+  opacity: 0.44;
+}
+
+:host([readonly]) [part~="track"] {
+  cursor: default;
+}
+
+:host([disabled]) [part~="thumb"],
+:host([disabled]) [part~="thumb"]:hover,
+:host([disabled]) [part~="thumb"]:active,
+:host([disabled][data-macos-pressed="true"]) [part~="thumb"],
+:host([readonly]) [part~="thumb"],
+:host([readonly]) [part~="thumb"]:hover,
+:host([readonly]) [part~="thumb"]:active,
+:host([readonly][data-macos-pressed="true"]) [part~="thumb"],
+[part~="thumb"][part~="thumb-loading"],
+[part~="thumb"][part~="thumb-loading"]:hover,
+[part~="thumb"][part~="thumb-loading"]:active,
+:host([loading][data-macos-pressed="true"]) [part~="thumb"] {
+  transform: translate(-50%, -50%);
+  background: hsl(0 0% 100%);
+  border-color: hsl(0 0% 0% / 0.16);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.24);
+}
+
+:host([disabled]) [part~="thumb"],
+:host([disabled]) [part~="thumb"]:hover,
+:host([disabled]) [part~="thumb"]:active {
+  cursor: not-allowed;
+}
+
+:host([readonly]) [part~="thumb"],
+:host([readonly]) [part~="thumb"]:hover,
+:host([readonly]) [part~="thumb"]:active {
+  cursor: default;
+}
+
+[part~="thumb"][part~="thumb-loading"],
+[part~="thumb"][part~="thumb-loading"]:hover,
+[part~="thumb"][part~="thumb-loading"]:active {
+  cursor: wait;
+}
+
+:host([disabled]) [part~="thumb"][part~="thumb-vertical"],
+:host([disabled]) [part~="thumb"][part~="thumb-vertical"]:hover,
+:host([disabled]) [part~="thumb"][part~="thumb-vertical"]:active,
+:host([disabled][data-macos-pressed="true"]) [part~="thumb"][part~="thumb-vertical"],
+:host([readonly]) [part~="thumb"][part~="thumb-vertical"],
+:host([readonly]) [part~="thumb"][part~="thumb-vertical"]:hover,
+:host([readonly]) [part~="thumb"][part~="thumb-vertical"]:active,
+:host([readonly][data-macos-pressed="true"]) [part~="thumb"][part~="thumb-vertical"],
+[part~="thumb"][part~="thumb-vertical"][part~="thumb-loading"],
+[part~="thumb"][part~="thumb-vertical"][part~="thumb-loading"]:hover,
+[part~="thumb"][part~="thumb-vertical"][part~="thumb-loading"]:active,
+:host([loading][data-macos-pressed="true"]) [part~="thumb"][part~="thumb-vertical"] {
+  transform: translate(-50%, 50%);
+}
+
+:host([disabled]) [part~="thumb"][part~="thumb-invalid"],
+:host([readonly]) [part~="thumb"][part~="thumb-invalid"],
+:host([loading]) [part~="thumb"][part~="thumb-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+:host([disabled]) [part~="lens"],
+:host([disabled]:active) [part~="lens"],
+:host([disabled][data-macos-pressed="true"]) [part~="lens"],
+:host([readonly]) [part~="lens"],
+:host([readonly]:active) [part~="lens"],
+:host([readonly][data-macos-pressed="true"]) [part~="lens"],
+:host([loading]) [part~="lens"],
+:host([loading]:active) [part~="lens"],
+:host([loading][data-macos-pressed="true"]) [part~="lens"] {
+  opacity: 0;
+  transform: scale(0.88);
+}
+
+/* Accessibility — Reduced Motion & Forced Colors */
+@media (prefers-reduced-motion: reduce) {
+  [part~="fill"],
+  [part~="thumb"],
+  [part~="lens"] {
+    transition: none;
+  }
+
+  :host([data-macos-pressed="true"]) [part~="thumb"],
+  [part~="thumb"][part~="thumb-dragging"],
+  [part~="thumb"]:active {
+    transform: translate(-50%, -50%);
+  }
+
+  :host([data-macos-pressed="true"]) [part~="thumb"][part~="thumb-vertical"],
+  [part~="thumb"][part~="thumb-vertical"][part~="thumb-dragging"],
+  [part~="thumb"][part~="thumb-vertical"]:active {
+    transform: translate(-50%, 50%);
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="track"] {
+    background: Canvas;
+    box-shadow: inset 0 0 0 1px ButtonText;
+  }
+
+  [part~="fill"] {
+    background: Highlight;
+  }
+
+  [part~="thumb"] {
+    background: ButtonFace;
+    border: 1.5px solid ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="tick"] {
+    background: ButtonText;
+  }
+
+  [part~="lens"] {
+    display: none;
+  }
+
+  :host([data-macos-focus="keyboard"]) [part~="thumb"],
+  [part~="thumb"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
 }

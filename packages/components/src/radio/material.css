@@ -1,7 +1,8 @@
 /* ==========================================================================
    Android Material 3 Expressive — snice-radio
-   20dp M3 radio ring with 2px stroke, spring-animated 10dp primary dot, 40dp
-   circular state-layer ripple halo, and rounded-16dp tonal block cards.
+   20dp hollow M3 radio ring with 2px stroke, spring-animated 10dp primary dot,
+   40dp circular state-layer ripple halo, crisp M3 focus outline, rounded-16dp
+   tonal selection cards with on-primary-container ink, and M3 38% disabled.
    ========================================================================== */
 
 :host {
@@ -23,13 +24,27 @@
   min-height: 0;
 }
 
+[part~="base"] {
+  --_m3-label-color: var(--snice-color-text);
+  --_m3-description-color: var(--snice-color-text-secondary);
+  --_m3-ripple-hover-opacity: 0.08;
+  --_m3-ripple-focus-opacity: 0.1;
+  --_m3-ripple-active-opacity: 0.14;
+}
+
+/* Radio Ring — 20dp hollow 2px-stroke M3 disc */
 [part~="radio"] {
   width: 1.25rem;
   height: 1.25rem;
+  flex-shrink: 0;
   box-sizing: border-box;
   border-radius: 50%;
   background: transparent;
-  border: 2px solid var(--snice-color-text-secondary);
+  border: 2px solid var(--_m3-disabled-ink, var(--snice-color-text-secondary));
+  box-shadow: none;
+  outline: none;
+  --_m3-ripple-color: var(--snice-color-text);
+  --_m3-dot-bg: var(--snice-color-primary);
   transition: border-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
 }
 
@@ -44,19 +59,25 @@
 }
 
 :host(:hover) [part~="radio"] {
-  border-color: var(--snice-color-text);
+  border-color: var(--_m3-disabled-ink, var(--snice-color-text));
 }
 
 [part~="radio-checked"],
 :host(:hover) [part~="radio-checked"] {
-  border-color: var(--snice-color-primary);
+  background: transparent;
+  border-color: var(--_m3-disabled-ink, var(--snice-color-primary));
+  --_m3-ripple-color: var(--snice-color-primary);
 }
 
+/* Inner Dot — 10dp spatial-spring primary indicator */
 [part~="dot"] {
   width: 0.625rem;
   height: 0.625rem;
-  background: var(--snice-color-primary);
-  transition: transform var(--snice-transition-medium, 220ms) var(--snice-m3-spring-spatial, cubic-bezier(0.34, 1.38, 0.32, 1));
+  background: var(--_m3-disabled-ink, var(--_m3-dot-bg, var(--snice-color-primary)));
+  transform: scale(0);
+  transition:
+    transform var(--snice-transition-medium, 220ms) var(--snice-m3-spring-spatial, cubic-bezier(0.34, 1.38, 0.32, 1)),
+    background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
 }
 
 :host([size="small"]) [part~="dot"] {
@@ -75,15 +96,34 @@
 
 /* Invalid */
 [part~="radio-invalid"],
-[part~="radio-invalid"][part~="radio-checked"] {
-  border-color: var(--snice-color-danger);
+[part~="radio-invalid"][part~="radio-checked"],
+:host(:hover) [part~="radio-invalid"],
+:host(:hover) [part~="radio-invalid"][part~="radio-checked"] {
+  border-color: var(--_m3-disabled-ink, var(--snice-color-danger));
+  --_m3-dot-bg: var(--snice-color-danger);
+  --_m3-ripple-color: var(--snice-color-danger);
 }
 
 :host([invalid]) [part~="dot"] {
-  background: var(--snice-color-danger);
+  background: var(--_m3-disabled-ink, var(--snice-color-danger));
 }
 
-/* 40dp M3 circular state-layer ripple */
+/* Focus-Visible & Programmatic Keyboard Focus — crisp M3 3px primary outline, zero base box-shadow bleed */
+:host(:focus-visible) [part~="radio"],
+[part~="radio-keyboard-focus"] {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-color-primary);
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+  box-shadow: none;
+}
+
+:host(:focus-visible) [part~="radio-invalid"],
+[part~="radio-invalid"][part~="radio-keyboard-focus"] {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-color-danger);
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+  box-shadow: none;
+}
+
+/* 40dp M3 Circular State-Layer Ripple */
 [part~="ripple"] {
   display: block;
   position: absolute;
@@ -93,42 +133,91 @@
   height: 2.5rem;
   border-radius: 9999px;
   pointer-events: none;
-  background: var(--snice-color-primary);
+  background: var(--_m3-ripple-color, var(--snice-color-text));
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.5);
   transition:
-    opacity var(--snice-transition-fast, 150ms) ease,
-    transform var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+    opacity var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    transform var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease),
+    background-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
+}
+
+:host([size="small"]) [part~="ripple"] {
+  width: 2rem;
+  height: 2rem;
+}
+
+:host([size="large"]) [part~="ripple"] {
+  width: 3rem;
+  height: 3rem;
 }
 
 :host(:hover) [part~="ripple"] {
-  opacity: 0.08;
+  opacity: var(--_m3-ripple-hover-opacity, 0.08);
+  transform: translate(-50%, -50%) scale(1);
+}
+
+:host(:focus-visible) [part~="ripple"] {
+  opacity: var(--_m3-ripple-focus-opacity, 0.1);
   transform: translate(-50%, -50%) scale(1);
 }
 
 :host([data-m3-ripple="active"]) [part~="ripple"],
+:host([data-m3-ripple="static"]) [part~="ripple"],
 :host([data-m3-pressed="true"]) [part~="ripple"] {
-  opacity: 0.14;
+  opacity: var(--_m3-ripple-active-opacity, 0.14);
   transform: translate(-50%, -50%) scale(1);
 }
 
+/* Loading Spinner */
 [part~="spinner"] {
   color: var(--snice-color-primary);
 }
 
-/* Label */
+:host([invalid]) [part~="spinner"] {
+  color: var(--snice-color-danger);
+}
+
+[part~="radio-loading"] {
+  border-color: var(--_m3-disabled-ink, var(--snice-color-primary));
+}
+
+[part~="radio-loading"][part~="radio-invalid"] {
+  border-color: var(--_m3-disabled-ink, var(--snice-color-danger));
+}
+
+/* Typography & Label Scaling */
 [part~="label"] {
   margin-left: 0.75rem;
   font-size: 0.875rem;
   font-weight: 400;
+  line-height: 1.43;
   letter-spacing: 0.008em;
-  color: var(--snice-color-text);
+  color: var(--_m3-label-color, var(--snice-color-text));
+}
+
+:host([size="small"]) [part~="label"] {
+  font-size: 0.8125rem;
+}
+
+:host([size="large"]) [part~="label"] {
+  font-size: 1rem;
+}
+
+[part~="label-required"]::after {
+  color: var(--_m3-disabled-ink, var(--snice-color-danger));
+}
+
+[part~="description"] {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--_m3-description-color, var(--snice-color-text-secondary));
 }
 
 /* Block Card Variant — M3 rounded-16dp tonal selection card */
 [part~="base-block"] {
   padding: 0.875rem 1rem;
-  border-radius: 16px;
+  border-radius: var(--snice-border-radius-lg, 16px);
   background: var(--snice-color-surface-container-low);
   border: 1px solid var(--snice-color-border-subtle);
   gap: 0.875rem;
@@ -137,9 +226,63 @@
     border-color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
 }
 
+:host([size="small"]) [part~="base-block"] {
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--snice-border-radius-md, 12px);
+  gap: 0.75rem;
+}
+
+:host([size="large"]) [part~="base-block"] {
+  padding: 1rem 1.25rem;
+  border-radius: var(--snice-border-radius-lg, 16px);
+  gap: 1rem;
+}
+
+[part~="base-block"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-low));
+  border-color: var(--snice-color-border);
+}
+
+:host([data-m3-pressed="true"]) [part~="base-block"] {
+  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface-container-low));
+}
+
 [part~="base-block"][part~="base-checked"] {
   background: var(--snice-m3-primary-container);
   border-color: var(--snice-color-primary);
+  --_m3-label-color: var(--snice-m3-on-primary-container);
+  --_m3-description-color: color-mix(in srgb, var(--snice-m3-on-primary-container) 88%, transparent);
+}
+
+[part~="base-block"][part~="base-checked"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-primary-container) 8%, var(--snice-m3-primary-container));
+  border-color: var(--snice-color-primary);
+}
+
+:host([data-m3-pressed="true"]) [part~="base-block"][part~="base-checked"] {
+  background: color-mix(in srgb, var(--snice-m3-on-primary-container) 10%, var(--snice-m3-primary-container));
+  border-color: var(--snice-color-primary);
+}
+
+:host([invalid]) [part~="base-block"] {
+  border-color: var(--snice-color-danger);
+}
+
+:host([invalid]) [part~="base-block"]:hover {
+  background: color-mix(in srgb, var(--snice-color-danger) 8%, var(--snice-color-surface-container-low));
+  border-color: var(--snice-color-danger);
+}
+
+:host([invalid]) [part~="base-block"][part~="base-checked"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 14%, var(--snice-color-surface-container-low));
+  border-color: var(--snice-color-danger);
+  --_m3-label-color: var(--snice-color-text);
+  --_m3-description-color: var(--snice-color-text-secondary);
+}
+
+:host([invalid]) [part~="base-block"][part~="base-checked"]:hover {
+  background: color-mix(in srgb, var(--snice-color-danger) 18%, var(--snice-color-surface-container-low));
+  border-color: var(--snice-color-danger);
 }
 
 :host([variant="block"]) [part~="label"] {
@@ -148,25 +291,103 @@
   font-weight: 500;
 }
 
-[part~="description"] {
-  font-size: 0.8125rem;
-  color: var(--snice-color-text-secondary);
+:host([variant="block"][size="small"]) [part~="label"] {
+  font-size: 0.875rem;
 }
 
-/* Disabled — M3 38% ink spec */
+:host([variant="block"][size="large"]) [part~="label"] {
+  font-size: 1rem;
+}
+
+/* Disabled (including fieldset[disabled] via base-disabled) — M3 38% ink / 4% fill / 12% border */
 [part~="base-disabled"] {
   opacity: 1;
+  --_m3-disabled-ink: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  --_m3-label-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  --_m3-description-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  --_m3-ripple-hover-opacity: 0;
+  --_m3-ripple-focus-opacity: 0;
+  --_m3-ripple-active-opacity: 0;
+}
+
+[part~="base-block"][part~="base-disabled"],
+[part~="base-block"][part~="base-disabled"]:hover,
+[part~="base-block"][part~="base-disabled"][part~="base-checked"],
+[part~="base-block"][part~="base-disabled"][part~="base-checked"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 4%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  --_m3-label-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  --_m3-description-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+}
+
+/* Loading restores active ink (while keeping ripple suppressed and opacity: 1) */
+[part~="base-loading"] {
+  opacity: 1;
+  --_m3-disabled-ink: initial;
+  --_m3-label-color: var(--snice-color-text);
+  --_m3-description-color: var(--snice-color-text-secondary);
+  --_m3-ripple-hover-opacity: 0;
+  --_m3-ripple-focus-opacity: 0;
+  --_m3-ripple-active-opacity: 0;
+}
+
+[part~="base-block"][part~="base-loading"],
+[part~="base-block"][part~="base-loading"]:hover {
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-border-subtle);
+  --_m3-label-color: var(--snice-color-text);
+  --_m3-description-color: var(--snice-color-text-secondary);
+}
+
+[part~="base-block"][part~="base-loading"][part~="base-checked"],
+[part~="base-block"][part~="base-loading"][part~="base-checked"]:hover {
+  background: var(--snice-m3-primary-container);
+  border-color: var(--snice-color-primary);
+  --_m3-label-color: var(--snice-m3-on-primary-container);
+  --_m3-description-color: color-mix(in srgb, var(--snice-m3-on-primary-container) 88%, transparent);
+}
+
+/* Explicit [disabled] host overrides — guaranteed precedence over invalid/hover/checked/loading */
+:host([disabled]) [part~="base"] {
+  opacity: 1;
+  --_m3-disabled-ink: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  --_m3-label-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  --_m3-description-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  --_m3-ripple-hover-opacity: 0;
+  --_m3-ripple-focus-opacity: 0;
+  --_m3-ripple-active-opacity: 0;
 }
 
 :host([disabled]) [part~="radio"],
 :host([disabled]:hover) [part~="radio"] {
+  background: transparent;
   border-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
 }
 
-:host([disabled]) [part~="dot"] {
-  background: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+:host([disabled]:focus-visible) [part~="radio"],
+:host([disabled]) [part~="radio-keyboard-focus"] {
+  outline: none;
+  box-shadow: none;
 }
 
-:host([disabled]) [part~="label"] {
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+:host([disabled]) [part~="ripple"],
+:host([disabled]:hover) [part~="ripple"],
+:host([loading]) [part~="ripple"],
+:host([loading]:hover) [part~="ripple"] {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.5);
+}
+
+:host([disabled]) [part~="base-block"],
+:host([disabled]:hover) [part~="base-block"],
+:host([disabled]) [part~="base-block"][part~="base-checked"],
+:host([disabled]:hover) [part~="base-block"][part~="base-checked"],
+:host([disabled][invalid]) [part~="base-block"],
+:host([disabled][invalid]) [part~="base-block"]:hover,
+:host([disabled][invalid]) [part~="base-block"][part~="base-checked"],
+:host([disabled][invalid]) [part~="base-block"][part~="base-checked"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 4%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  --_m3-label-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  --_m3-description-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
 }

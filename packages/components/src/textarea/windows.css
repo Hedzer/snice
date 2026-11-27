@@ -1,51 +1,121 @@
 /* ==========================================================================
    Windows 11 Fluent 2 / WinUI 3 — snice-textarea
-   Multiline WinUI 3 TextBox with 4px radius and 2px bottom accent focus bar.
+   Multiline WinUI 3 TextBox: 4px corners, 1px top-lit rim with pronounced
+   bottom input stroke, 2px bottom accent bar on focus, Segoe UI Variable
+   14px ramp, and specificity-safe invalid/readonly/disabled/loading states
+   across outlined, filled, and underlined variants.
    ========================================================================== */
 
+/* Typography — WinUI 3 Header (Body 14px Regular) & Caption (12px) */
 [part~="label"] {
   font-size: 0.875rem;
   font-weight: 400;
+  line-height: 1.4286;
   color: var(--snice-color-text);
   margin-bottom: 0.25rem;
 }
 
+[part~="label-required"]::after {
+  color: var(--snice-color-danger);
+}
+
+[part~="helper-text"],
+[part~="error-text"],
+[part~="character-count"] {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.3333;
+  margin-top: 0.25rem;
+}
+
+[part~="helper-text"] {
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="error-text"] {
+  color: var(--snice-color-danger);
+}
+
+[part~="character-count"] {
+  color: var(--snice-color-text-secondary);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="character-count-exceeded"] {
+  color: var(--snice-color-danger);
+  font-weight: 600;
+}
+
+/* Base Multiline TextBox — 4px corners, top-lit rim + strong bottom stroke */
 [part~="textarea"] {
   padding: 0.4375rem 0.6875rem;
   border-radius: 4px;
   font-size: 0.875rem;
+  line-height: 1.43;
   background: var(--snice-win-control-bg);
   color: var(--snice-color-text);
+  caret-color: var(--snice-color-text);
   border-width: 1px;
   border-style: solid;
   border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-win-stroke-input-bottom);
   box-shadow: none;
+  transition:
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    box-shadow var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
+}
+
+[part~="textarea"]::placeholder {
+  color: var(--snice-color-text-secondary);
+  opacity: 0.85;
 }
 
 [part~="textarea"]:hover {
   background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-win-stroke-input-bottom);
 }
 
+[part~="textarea"]:focus,
 [part~="textarea"]:focus-visible {
+  outline: none;
   background: var(--snice-color-surface-container-lowest);
   border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-color-primary);
   box-shadow: inset 0 -1px 0 0 var(--snice-color-primary);
 }
 
+/* Sizes — Small (12px), Medium (14px default), Large (15px) */
 :host([size="small"]) [part~="textarea"] {
   padding: 0.3125rem 0.5625rem;
   font-size: 0.75rem;
+  line-height: 1.3333;
 }
 
 :host([size="large"]) [part~="textarea"] {
   padding: 0.625rem 0.875rem;
   font-size: 0.9375rem;
+  line-height: 1.4667;
 }
 
+/* Variants — Filled & Underlined */
 :host([variant="filled"]) [part~="textarea"] {
   background: var(--snice-color-surface-container);
   border-color: transparent transparent var(--snice-win-stroke-input-bottom);
   border-radius: 4px;
+  box-shadow: none;
+}
+
+:host([variant="filled"]) [part~="textarea"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  border-color: transparent transparent var(--snice-win-stroke-input-bottom);
+}
+
+:host([variant="filled"]) [part~="textarea"]:focus,
+:host([variant="filled"]) [part~="textarea"]:focus-visible {
+  outline: none;
+  background: var(--snice-color-surface-container-lowest);
+  border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-color-primary);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-primary);
 }
 
 :host([variant="underlined"]) [part~="textarea"] {
@@ -58,14 +128,185 @@
   box-shadow: none;
 }
 
-[part~="textarea-invalid"] {
+:host([variant="underlined"]) [part~="textarea"]:hover {
+  background: transparent;
+  border-bottom-color: var(--snice-color-text-secondary);
+}
+
+:host([variant="underlined"]) [part~="textarea"]:focus,
+:host([variant="underlined"]) [part~="textarea"]:focus-visible {
+  outline: none;
+  background: transparent;
+  border-bottom-color: var(--snice-color-primary);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-primary);
+}
+
+/* Loading Spinner Padding Clearance (ordered after size & variant rules) */
+[part~="textarea-loading"],
+:host([size]) [part~="textarea-loading"],
+:host([variant]) [part~="textarea-loading"],
+:host([size][variant]) [part~="textarea-loading"] {
+  padding-right: 2.25rem;
+}
+
+/* Invalid State — 2px bottom danger bar across all 3 variants (resting, hover & focus) */
+[part~="textarea-invalid"],
+:host([variant]) [part~="textarea-invalid"] {
   border-bottom-color: var(--snice-color-danger);
   box-shadow: inset 0 -1px 0 0 var(--snice-color-danger);
 }
 
-[part~="textarea"]:disabled {
+[part~="textarea-invalid"]:hover,
+:host([variant]) [part~="textarea-invalid"]:hover {
+  border-bottom-color: var(--snice-color-danger);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-danger);
+}
+
+[part~="textarea-invalid"]:focus,
+[part~="textarea-invalid"]:focus-visible,
+:host([variant]) [part~="textarea-invalid"]:focus,
+:host([variant]) [part~="textarea-invalid"]:focus-visible {
+  outline: none;
+  border-bottom-color: var(--snice-color-danger);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-danger);
+}
+
+/* Readonly State — muted Fluent control fill, subtle border, no 2px accent bar */
+[part~="textarea"]:read-only,
+[part~="textarea"]:read-only:hover,
+[part~="textarea"]:read-only:focus,
+[part~="textarea"]:read-only:focus-visible,
+:host([variant]) [part~="textarea"]:read-only,
+:host([variant]) [part~="textarea"]:read-only:hover,
+:host([variant]) [part~="textarea"]:read-only:focus,
+:host([variant]) [part~="textarea"]:read-only:focus-visible {
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-color-border-subtle);
+  box-shadow: none;
+  cursor: default;
+}
+
+:host([variant="underlined"]) [part~="textarea"]:read-only,
+:host([variant="underlined"]) [part~="textarea"]:read-only:hover,
+:host([variant="underlined"]) [part~="textarea"]:read-only:focus,
+:host([variant="underlined"]) [part~="textarea"]:read-only:focus-visible {
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  box-shadow: none;
+  cursor: default;
+}
+
+/* Disabled State — across all 3 variants (beats :read-only & variant hover/focus) */
+[part~="textarea"]:disabled,
+[part~="textarea"]:disabled:hover,
+:host([variant]) [part~="textarea"]:disabled,
+:host([variant]) [part~="textarea"]:disabled:hover {
   background: var(--snice-win-control-bg-pressed);
   border-color: var(--snice-color-border-subtle);
   color: var(--snice-color-text-tertiary);
+  box-shadow: none;
   opacity: 0.65;
+  cursor: not-allowed;
+}
+
+:host([variant="underlined"]) [part~="textarea"]:disabled,
+:host([variant="underlined"]) [part~="textarea"]:disabled:hover {
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text-tertiary);
+  box-shadow: none;
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+[part~="textarea"]:disabled::placeholder {
+  color: var(--snice-color-text-tertiary);
+  opacity: 1;
+}
+
+:host([disabled]) [part~="label"],
+:host([disabled]) [part~="character-count"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Loading State — overrides disabled washout, preserves legible text & strokes */
+[part~="textarea-loading"]:disabled,
+[part~="textarea-loading"]:disabled:hover,
+:host([variant]) [part~="textarea-loading"]:disabled,
+:host([variant]) [part~="textarea-loading"]:disabled:hover {
+  background: var(--snice-win-control-bg);
+  border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-win-stroke-input-bottom);
+  color: var(--snice-color-text);
+  box-shadow: none;
+  opacity: 0.85;
+  cursor: wait;
+}
+
+:host([variant="filled"]) [part~="textarea-loading"]:disabled,
+:host([variant="filled"]) [part~="textarea-loading"]:disabled:hover {
+  background: var(--snice-color-surface-container);
+  border-color: transparent transparent var(--snice-win-stroke-input-bottom);
+  color: var(--snice-color-text);
+  box-shadow: none;
+  opacity: 0.85;
+  cursor: wait;
+}
+
+:host([variant="underlined"]) [part~="textarea-loading"]:disabled,
+:host([variant="underlined"]) [part~="textarea-loading"]:disabled:hover {
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid var(--snice-win-stroke-input-bottom);
+  color: var(--snice-color-text);
+  box-shadow: none;
+  opacity: 0.85;
+  cursor: wait;
+}
+
+[part~="textarea-loading"]:disabled::placeholder {
+  color: var(--snice-color-text-secondary);
+  opacity: 0.85;
+}
+
+[part~="textarea-invalid"][part~="textarea-loading"]:disabled,
+[part~="textarea-invalid"][part~="textarea-loading"]:disabled:hover,
+:host([variant]) [part~="textarea-invalid"][part~="textarea-loading"]:disabled,
+:host([variant]) [part~="textarea-invalid"][part~="textarea-loading"]:disabled:hover {
+  border-bottom-color: var(--snice-color-danger);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-danger);
+}
+
+/* Loading Spinner — Fluent accent ProgressRing */
+[part~="spinner"] {
+  top: 0.5625rem;
+  right: 0.625rem;
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--snice-color-primary);
+}
+
+:host([size="small"]) [part~="spinner"] {
+  top: 0.4375rem;
+  right: 0.5rem;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+:host([size="large"]) [part~="spinner"] {
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 1rem;
+  height: 1rem;
+}
+
+:host([variant="underlined"]) [part~="spinner"] {
+  right: 0.25rem;
 }
