@@ -4,16 +4,27 @@
 
 :host {
   display: block;
+  box-sizing: border-box;
   height: 25rem; /* 400px */
   overflow: auto;
   position: relative;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-  contain: layout style paint;
+  contain: layout style;
 }
 
 .scroller {
   position: relative;
   width: 100%;
+}
+
+.scroller:focus,
+.scroller:focus-visible {
+  outline: none;
+}
+
+:host:focus-visible {
+  outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: 2px;
 }
 
 .scroller__spacer {

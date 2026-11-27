@@ -1,16 +1,18 @@
-/* Android Material 3 Expressive — snice-virtual-scroller
-   Native counterpart: Material 3 LazyColumn / RecyclerView Tonal Card Container (16px radius, 8%/10% state layers). */
+/* Android Material 3 Expressive / LazyColumn Tonal Card — snice-virtual-scroller
+ * 24px borderless primary-tinted tonal surface (-low), primary-tinted scrollbar,
+ * 8%/10% M3 state layers (preserving JS virtualized translateY), and complete WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
   background: var(--snice-color-surface-container-low);
   color: var(--snice-color-text);
-  border: 1px solid var(--snice-color-border-subtle);
-  border-radius: 16px;
+  border: none;
+  border-radius: 24px;
   box-shadow: var(--snice-shadow-xs);
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--snice-color-primary) 34%, var(--snice-color-border)) transparent;
+  scrollbar-color: color-mix(in srgb, var(--snice-color-primary) 38%, var(--snice-color-border)) transparent;
 }
 
 :host:focus-visible {
@@ -19,30 +21,43 @@
 }
 
 /* Never declare transform or override position: absolute — JS owns virtualized translateY positioning! */
-:host [part~="item"] {
+[part~="item"] {
   box-sizing: border-box;
   font-size: 0.9375rem;
   letter-spacing: 0.005em;
   color: var(--snice-color-text);
   border-bottom: 1px solid var(--snice-color-border-subtle);
-  transition: background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects);
+  transition: background-color 150ms var(--snice-m3-spring-effects);
 }
 
-:host [part~="item"]:hover {
-  background-color: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+[part~="item"]:hover {
+  background-color: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
 }
 
-:host [part~="item"]:active {
-  background-color: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+[part~="item"]:active {
+  background-color: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="item"] {
+    transition: none;
+  }
 }
 
 @media (forced-colors: active) {
   :host {
+    background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
     box-shadow: none;
   }
 
-  :host [part~="item"] {
+  :host:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  [part~="item"] {
     border-bottom: 1px solid CanvasText;
   }
 }

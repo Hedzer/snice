@@ -307,6 +307,10 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
     this.performLayout();
   }
 
+  private getContainerRect(): DOMRect {
+    return (this.container ?? this).getBoundingClientRect();
+  }
+
   fit(element: HTMLElement, x?: number, y?: number): void {
     if (!this.items.includes(element)) return;
 
@@ -318,7 +322,7 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
     this.performLayout(element);
 
     const rect = element.getBoundingClientRect();
-    const containerRect = this.getBoundingClientRect();
+    const containerRect = this.getContainerRect();
     const finalX = rect.left - containerRect.left;
     const finalY = rect.top - containerRect.top;
     this.emitFitComplete(element, finalX, finalY);
@@ -536,8 +540,8 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
   }
 
   private performLayout(fittedElement?: HTMLElement): void {
-    const containerWidth = this.clientWidth;
-    const containerHeight = this.clientHeight;
+    const containerWidth = this.container?.clientWidth || this.clientWidth;
+    const containerHeight = this.container?.clientHeight || this.clientHeight;
     const gapPx = this.getGapPixels();
 
     // Packer dimensions include one extra gutter so edge items fit.
@@ -561,7 +565,7 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
         };
       } else {
         const rect = stamped.getBoundingClientRect();
-        const containerRect = this.getBoundingClientRect();
+        const containerRect = this.getContainerRect();
         stampRect = {
           x: rect.left - containerRect.left,
           y: rect.top - containerRect.top,
@@ -575,7 +579,7 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
     // If a fitted element is specified, mark it as placed first
     if (fittedElement) {
       const rect = fittedElement.getBoundingClientRect();
-      const containerRect = this.getBoundingClientRect();
+      const containerRect = this.getContainerRect();
       const fitRect: Rect = {
         x: rect.left - containerRect.left,
         y: rect.top - containerRect.top,
@@ -680,7 +684,7 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
   };
 
   private dragItemStart(item: HTMLElement, e: PointerEvent): void {
-    const containerRect = this.getBoundingClientRect();
+    const containerRect = this.getContainerRect();
 
     // Get the item's current position from its transform
     const itemRect = item.getBoundingClientRect();
@@ -726,7 +730,7 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
   private onPointerMove(e: PointerEvent): void {
     if (!this.dragItem) return;
 
-    const containerRect = this.getBoundingClientRect();
+    const containerRect = this.getContainerRect();
     const x = e.clientX - containerRect.left - this.dragOffsetX;
     const y = e.clientY - containerRect.top - this.dragOffsetY;
 
@@ -813,8 +817,8 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
     if (!this.dragItem) return;
 
     const gapPx = this.getGapPixels();
-    const containerWidth = this.clientWidth;
-    const containerHeight = this.clientHeight;
+    const containerWidth = this.container?.clientWidth || this.clientWidth;
+    const containerHeight = this.container?.clientHeight || this.clientHeight;
     const packWidth = this.horizontal ? 100000 : containerWidth + gapPx;
     const packHeight = this.horizontal ? containerHeight + gapPx : 100000;
 
@@ -824,7 +828,7 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
     for (const stamped of this.stampedElements) {
       if (stamped === this.dragItem) continue;
       const rect = stamped.getBoundingClientRect();
-      const containerRect = this.getBoundingClientRect();
+      const containerRect = this.getContainerRect();
       const stampRect: Rect = {
         x: rect.left - containerRect.left,
         y: rect.top - containerRect.top,

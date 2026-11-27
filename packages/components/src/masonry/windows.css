@@ -1,17 +1,30 @@
-/* Windows 11 Fluent 2 / WinUI 3 masonry layout skin */
+/* Windows 11 Fluent 2 / WinUI 3 Staggered ItemsView — snice-masonry
+ * Crisp 8px top-lit opaque Mica canvas, structured Fluent spacing,
+ * balanced multi-column flow, and complete WHCM.
+ */
 
 :host {
+  box-sizing: border-box;
+  font-family: var(--snice-font-family);
   --masonry-gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  box-shadow: var(--snice-shadow-xs);
 }
 
 [part~="base"] {
   overflow: visible;
-  padding: 0.25rem;
   column-fill: balance;
 }
 
 @media (forced-colors: active) {
-  [part~="base"] {
-    forced-color-adjust: auto;
+  :host {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+    box-shadow: none;
   }
 }

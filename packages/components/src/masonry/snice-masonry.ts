@@ -30,7 +30,9 @@ export class SniceMasonry extends HTMLElement implements SniceMasonryElement {
   @ready()
   init() {
     this.updateColumns();
-    this.updateGap();
+    if (this.hasAttribute('gap') || this.gap !== '1rem') {
+      this.updateGap();
+    }
     this.updateColumnWidth();
 
     queueMicrotask(() => this.applyListItemRoles());

@@ -1,7 +1,19 @@
-/* Windows 11 Fluent 2 / WinUI 3 binpack layout skin */
+/* Windows 11 Fluent 2 / WinUI 3 Packed Widgets Board — snice-binpack
+ * Crisp 8px top-lit opaque Mica dashboard canvas (padding on :host preserves JS
+ * absolute/transform layout math on [part~="base"]), sharp 4px Fluent drop target,
+ * 180ms fast-out motion, and complete WHCM.
+ */
 
 :host {
-  --binpack-transition-duration: 0.16s;
+  box-sizing: border-box;
+  font-family: var(--snice-font-family);
+  --binpack-transition-duration: 0.18s;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  box-shadow: var(--snice-shadow-xs);
 }
 
 [part~="base"] {
@@ -9,10 +21,10 @@
 }
 
 [part~="drop-placeholder"] {
-  border-radius: 0.5rem;
-  background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
-  outline: 1.5px dashed var(--snice-color-primary);
-  outline-offset: -3px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  outline: 2px dashed var(--snice-color-primary);
+  outline-offset: -4px;
   transition: transform 100ms cubic-bezier(0, 0, 0, 1);
 }
 
@@ -27,8 +39,15 @@
 }
 
 @media (forced-colors: active) {
+  :host {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
   [part~="drop-placeholder"] {
     background: transparent;
-    outline-color: Highlight;
+    outline: 2px dashed Highlight;
   }
 }

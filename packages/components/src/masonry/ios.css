@@ -1,11 +1,34 @@
-/* iOS 26+ Liquid Glass / UIKit masonry layout skin */
+/* iOS 26+ Liquid Glass / Apple Photos & Freeform Masonry Gallery — snice-masonry
+ * 22px luminous inset-grouped Apple gallery canvas with subtle top sheen & catchlight,
+ * balanced multi-column flow, and complete WHCM.
+ */
 
 :host {
+  box-sizing: border-box;
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
   --masonry-gap: 0.875rem;
+  padding: 0.875rem;
+  border-radius: 22px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 4.5%, var(--snice-color-surface-container-high)) 0%,
+    var(--snice-color-surface-container-high) 42%
+  );
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-sm);
 }
 
 [part~="base"] {
   overflow: visible;
-  padding: 0.25rem;
   column-fill: balance;
+}
+
+@media (forced-colors: active) {
+  :host {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
 }

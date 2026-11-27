@@ -1,7 +1,22 @@
-/* macOS 26 Tahoe AppKit binpack layout skin */
+/* macOS 26+ Tahoe AppKit / Desktop Packed Workspace Well — snice-binpack
+ * Sunken 10px AppKit workspace well in both light & dark (padding on :host preserves
+ * JS absolute/transform layout math on [part~="base"]), crisp 8px dashed AppKit drop
+ * target, 220ms desktop ease, and complete WHCM.
+ */
 
 :host {
-  --binpack-transition-duration: 0.24s;
+  box-sizing: border-box;
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+  --binpack-transition-duration: 0.22s;
+  padding: 0.6875rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, black 5%, var(--snice-color-surface));
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow:
+    inset 0 1.5px 4px hsl(0 0% 0% / 0.22),
+    inset 0 0 0 0.5px var(--snice-color-border-subtle),
+    0 0.5px 0 hsl(0 0% 100% / 0.08);
 }
 
 [part~="base"] {
@@ -9,9 +24,9 @@
 }
 
 [part~="drop-placeholder"] {
-  border-radius: 0.75rem;
-  background: color-mix(in srgb, var(--snice-color-primary) 9%, transparent);
-  outline: 1.5px dashed var(--snice-color-primary);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+  outline: 2px dashed var(--snice-color-primary);
   outline-offset: -4px;
   transition: transform 160ms ease;
 }
@@ -23,5 +38,19 @@
 
   [part~="drop-placeholder"] {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="drop-placeholder"] {
+    background: transparent;
+    outline: 2px dashed Highlight;
   }
 }

@@ -1,15 +1,19 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-virtual-scroller
-   Native counterpart: WinUI 3 ScrollViewer + ItemsRepeater (8px Mica card, 14px Segoe UI Variable, zero Acrylic/transform). */
+/* Windows 11 Fluent 2 / WinUI 3 ScrollViewer & ItemsRepeater — snice-virtual-scroller
+ * Crisp 8px top-lit opaque Mica list frame, 3px left Fluent accent hover bar,
+ * 100ms fast-out motion (preserving JS virtualized translateY), and complete WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
-  background: var(--snice-color-surface-container-lowest);
+  background: var(--snice-color-surface-container-highest);
   color: var(--snice-color-text);
-  border: 1px solid var(--snice-color-border-subtle);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
   border-radius: 8px;
+  box-shadow: var(--snice-shadow-xs);
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--snice-color-text) 32%, transparent) transparent;
+  scrollbar-color: color-mix(in srgb, var(--snice-color-text) 34%, transparent) transparent;
 }
 
 :host:focus-visible {
@@ -18,20 +22,28 @@
 }
 
 /* Never declare transform or override position: absolute — JS owns virtualized translateY positioning! */
-:host [part~="item"] {
+[part~="item"] {
   box-sizing: border-box;
   font-size: 0.875rem;
   color: var(--snice-color-text);
   border-bottom: 1px solid var(--snice-color-border-subtle);
-  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1), box-shadow 100ms cubic-bezier(0, 0, 0, 1);
 }
 
-:host [part~="item"]:hover {
-  background-color: color-mix(in srgb, var(--snice-color-text) 4.5%, transparent);
+[part~="item"]:hover {
+  background-color: color-mix(in srgb, var(--snice-color-text) 5%, transparent);
+  box-shadow: inset 3px 0 0 var(--snice-color-primary);
 }
 
-:host [part~="item"]:active {
+[part~="item"]:active {
   background-color: color-mix(in srgb, var(--snice-color-text) 3%, transparent);
+  box-shadow: inset 3px 0 0 var(--snice-color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="item"] {
+    transition: none;
+  }
 }
 
 @media (forced-colors: active) {
@@ -39,9 +51,17 @@
     background: Canvas;
     color: CanvasText;
     border-color: CanvasText;
+    box-shadow: none;
   }
 
-  :host [part~="item"] {
+  :host:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  [part~="item"] {
     border-bottom-color: CanvasText;
+    box-shadow: none;
   }
 }

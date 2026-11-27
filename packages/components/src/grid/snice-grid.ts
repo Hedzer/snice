@@ -546,10 +546,12 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
       p.item.style.height = `${itemHeight}px`;
 
       if (!this.originLeft) {
-        x = this.clientWidth - x - itemWidth;
+        const containerWidth = this.container?.clientWidth || this.clientWidth;
+        x = containerWidth - x - itemWidth;
       }
       if (!this.originTop) {
-        y = this.clientHeight - y - itemHeight;
+        const containerHeight = this.container?.clientHeight || this.clientHeight;
+        y = containerHeight - y - itemHeight;
       }
 
       this.positionItem(p.item, x, y, this.stagger > 0 ? staggerIndex * this.stagger : 0);
@@ -616,8 +618,12 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
     this.dragItemStart(item, e);
   };
 
+  private getContainerRect(): DOMRect {
+    return (this.container ?? this).getBoundingClientRect();
+  }
+
   private dragItemStart(item: HTMLElement, e: PointerEvent): void {
-    const containerRect = this.getBoundingClientRect();
+    const containerRect = this.getContainerRect();
     const itemRect = item.getBoundingClientRect();
     const currentX = itemRect.left - containerRect.left;
     const currentY = itemRect.top - containerRect.top;
@@ -649,7 +655,7 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
   private onPointerMove(e: PointerEvent): void {
     if (!this.dragItem) return;
 
-    const containerRect = this.getBoundingClientRect();
+    const containerRect = this.getContainerRect();
     const x = e.clientX - containerRect.left - this.dragOffsetX;
     const y = e.clientY - containerRect.top - this.dragOffsetY;
 

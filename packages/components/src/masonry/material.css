@@ -1,11 +1,29 @@
-/* Material 3 Expressive masonry layout skin */
+/* Android Material 3 Expressive / Keep & Photos Tonal Gallery — snice-masonry
+ * 24px borderless primary-tinted tonal surface (-low), airy M3 gallery spacing,
+ * balanced multi-column flow, and complete WHCM.
+ */
 
 :host {
-  --masonry-gap: 1rem;
+  box-sizing: border-box;
+  font-family: var(--snice-font-family);
+  --masonry-gap: 0.875rem;
+  padding: 0.9375rem;
+  border-radius: 24px;
+  background: var(--snice-color-surface-container-low);
+  border: none;
+  box-shadow: var(--snice-shadow-xs);
 }
 
 [part~="base"] {
   overflow: visible;
-  padding: 0.25rem;
   column-fill: balance;
+}
+
+@media (forced-colors: active) {
+  :host {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
 }
