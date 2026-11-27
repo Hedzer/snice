@@ -1,0 +1,41 @@
+/* macOS 26 Tahoe AppKit / Activity Monitor inline sparkline skin */
+
+[part~="base"] {
+  display: inline-block;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+[part~="line"] {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation-duration: 560ms;
+  animation-timing-function: ease-out;
+}
+
+[part~="bar"] {
+  rx: 2px;
+  ry: 2px;
+  animation-duration: 300ms;
+  animation-timing-function: ease-out;
+  transition: opacity 140ms ease;
+}
+
+[part~="bar"]:hover {
+  opacity: 0.84;
+}
+
+[part~="dot"] {
+  fill: var(--snice-color-background-element);
+  animation-duration: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="line"],
+  [part~="bar"],
+  [part~="area"],
+  [part~="dot"] {
+    animation-duration: 0.01ms;
+    transition: none;
+  }
+}

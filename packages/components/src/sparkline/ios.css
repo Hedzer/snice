@@ -1,0 +1,40 @@
+/* iOS 26+ Liquid Glass / Apple Stocks inline sparkline skin */
+
+[part~="base"] {
+  display: inline-block;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+[part~="line"] {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation-duration: 720ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[part~="bar"] {
+  rx: 2.5px;
+  ry: 2.5px;
+  animation-duration: 360ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 160ms ease;
+}
+
+[part~="bar"]:hover {
+  opacity: 0.85;
+}
+
+[part~="dot"] {
+  fill: var(--snice-color-surface-container-high);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="line"],
+  [part~="bar"],
+  [part~="area"],
+  [part~="dot"] {
+    animation-duration: 0.01ms;
+    transition: none;
+  }
+}
