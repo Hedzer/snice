@@ -1,56 +1,55 @@
-/* macOS 26+ Tahoe AppKit — snice-timeline
-   Native counterpart: AppKit / Xcode Commit & Activity Timeline (compact 13px/12px/11px desktop density, 1.5rem markers). */
+/* macOS 26+ Tahoe AppKit / Xcode Commit & Console Inspector Timeline — snice-timeline
+ * Compact desktop inspector density with clean 0.5px hairline row rules (no puffy cards),
+ * crisp 1.5px bordered markers, SF Mono 11px tabular timestamps, and 13px/12px AppKit ramp.
+ */
 
 :host {
   font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+  --snice-timeline-item-gap: 1rem;
+  --snice-timeline-content-divider: 0.5px solid var(--snice-color-border-subtle);
+  --snice-timeline-content-divider-pad: 0.6875rem;
 }
 
-:host [part~="item"] {
-  padding-bottom: 1.25rem;
-}
-
-:host [part~="item"]:last-child,
-:host([orientation="horizontal"]) [part~="item"] {
-  padding-bottom: 0;
-}
-
-:host [part~="item"]::before {
+[part~="item"]::before {
   background: var(--snice-color-border);
 }
 
-/* Keep 1.5rem geometry for pixel-centered connectors; never declare background so semantic marker tints work in Mode B. */
-:host [part~="marker"] {
+/* Preserve 1.5rem geometry for pixel-centered connectors; leave background unset for semantic tints. */
+[part~="marker"] {
   width: 1.5rem;
   height: 1.5rem;
   border-width: 1.5px;
   box-shadow: 0 0 0 3px var(--snice-color-surface);
 }
 
-:host [part~="item-info"] {
+[part~="item-info"] {
   --snice-color-primary-subtle: color-mix(in srgb, var(--snice-color-primary) 15%, var(--snice-color-background-element));
 }
 
-:host [part~="item-success"] {
+[part~="item-success"] {
   --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 15%, var(--snice-color-background-element));
 }
 
-:host [part~="item-warning"] {
+[part~="item-warning"] {
   --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 15%, var(--snice-color-background-element));
 }
 
-:host [part~="item-error"] {
+[part~="item-error"] {
   --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 15%, var(--snice-color-background-element));
 }
 
-:host [part~="timestamp"] {
-  font-family: var(--snice-font-family);
+[part~="timestamp"] {
+  font-family: var(--snice-font-family-mono);
   font-size: 0.6875rem;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
-  color: var(--snice-color-text-tertiary);
-  margin-bottom: 0.0625rem;
+  letter-spacing: -0.01em;
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 0.125rem;
 }
 
-:host [part~="title"] {
+[part~="title"] {
   font-family: var(--snice-font-family);
   font-size: 0.8125rem;
   font-weight: 600;
@@ -59,7 +58,7 @@
   line-height: 1.35;
 }
 
-:host [part~="description"] {
+[part~="description"] {
   font-family: var(--snice-font-family);
   font-size: 0.75rem;
   color: var(--snice-color-text-secondary);
@@ -67,12 +66,17 @@
 }
 
 @media (forced-colors: active) {
-  :host [part~="item"]::before {
+  :host {
+    --snice-timeline-content-divider: 1px solid CanvasText;
+  }
+
+  [part~="item"]::before {
     background: CanvasText;
   }
 
-  :host [part~="marker"] {
+  [part~="marker"] {
     border-color: CanvasText;
+    background: Canvas;
     box-shadow: none;
   }
 }

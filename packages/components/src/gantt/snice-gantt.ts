@@ -61,7 +61,7 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
     this.timelineStart = new Date(minDate - padding);
     this.timelineEnd = new Date(maxDate + padding);
 
-    this.cellWidth = this.zoom === 'day' ? 40 : this.zoom === 'week' ? 28 : 12;
+    this.cellWidth = this.zoom === 'day' ? 52 : this.zoom === 'week' ? 46 : 16;
   }
 
   private getTimelineDays(): Date[] {
@@ -250,7 +250,7 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
                 const width = Math.max(right - left, this.cellWidth / 2);
                 const rowIdx = taskRowMap.get(task.id) || 0;
                 const top = rowIdx * 2.25;
-                const bgColor = task.color || 'var(--snice-color-primary, rgb(37 99 235))';
+                const bgColor = task.color || 'var(--snice-gantt-bar-bg, var(--snice-color-primary, rgb(37 99 235)))';
                 const progress = task.progress || 0;
                 const hasProgress = progress > 0;
 

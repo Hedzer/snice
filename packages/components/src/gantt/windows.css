@@ -1,9 +1,19 @@
-/* Windows 11 Fluent 2 / WinUI 3 Gantt chart skin */
+/* Windows 11 Fluent 2 / Microsoft Project & Azure Delivery Plans — snice-gantt
+ * Crisp 8px top-lit opaque Mica frame, 4px WinUI segmented toggles with Fluent accent
+ * active state, 3px Fluent left accent strip on phase group headers, razor-sharp 2px
+ * project bars, 100ms fast-out motion, and complete WHCM.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --snice-gantt-bar-bg: color-mix(in srgb, var(--snice-color-primary) 38%, hsl(206 96% 22%));
+}
 
 [part~="base"] {
-  background: var(--snice-color-surface-container-high);
-  border: 1px solid var(--snice-color-border);
-  border-radius: 0.5rem;
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  border-radius: 8px;
   box-shadow: var(--snice-shadow-xs);
 }
 
@@ -12,21 +22,22 @@
   border-bottom: 1px solid var(--snice-color-border);
 }
 
-/* WinUI segmented toggle buttons */
+/* WinUI 3 segmented toggle buttons */
 [part~="zoom-button"] {
   min-height: 1.75rem;
   padding: 0 0.75rem;
-  border: 1px solid var(--snice-win-stroke-top, var(--snice-color-border));
-  border-bottom-color: var(--snice-win-stroke-bottom, var(--snice-color-border-hover));
-  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  background: var(--snice-win-control-bg);
   color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
   font-size: 0.75rem;
   font-weight: 500;
   transition: background-color 100ms cubic-bezier(0, 0, 0, 1), border-color 100ms cubic-bezier(0, 0, 0, 1);
 }
 
 [part~="zoom-button-day"] {
-  border-radius: 0.25rem 0 0 0.25rem;
+  border-radius: 4px 0 0 4px;
 }
 
 [part~="zoom-button-week"] {
@@ -35,12 +46,12 @@
 }
 
 [part~="zoom-button-month"] {
-  border-radius: 0 0.25rem 0.25rem 0;
+  border-radius: 0 4px 4px 0;
   border-left: none;
 }
 
 [part~="zoom-button"]:hover {
-  background: var(--snice-color-surface-container);
+  background: var(--snice-win-control-bg-hover);
 }
 
 [part~="zoom-button-active"] {
@@ -62,7 +73,7 @@
 
 /* Sidebar & timeline */
 [part~="task-list"] {
-  background: var(--snice-color-surface-container-high);
+  background: var(--snice-color-surface-container-highest);
   border-right: 1px solid var(--snice-color-border);
 }
 
@@ -74,21 +85,36 @@
   height: 2.25rem;
 }
 
-[part~="task-name"],
+/* Iconic 3px Fluent left accent strip on phase group headers */
 [part~="group-header"] {
+  border-left: 3px solid var(--snice-color-primary);
+  border-bottom-color: var(--snice-color-border);
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, var(--snice-color-surface-container));
+  color: var(--snice-color-primary);
+}
+
+[part~="task-name"] {
   border-bottom-color: var(--snice-color-border);
 }
 
 [part~="timeline-cell"] {
   border-right-color: var(--snice-color-border);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.6875rem;
 }
 
+[part~="timeline-cell-today"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+  color: var(--snice-color-primary);
+}
+
+/* Razor-sharp 2px Microsoft Project bars */
 [part~="bar"] {
-  border-radius: 0.25rem;
+  border-radius: 2px;
 }
 
 [part~="bar-progress"] {
-  border-radius: 0.25rem 0 0 0.25rem;
+  border-radius: 2px 0 0 2px;
 }
 
 [part~="bar-label"] {
@@ -104,9 +130,20 @@
 
 @media (forced-colors: active) {
   [part~="base"],
-  [part~="zoom-button"],
-  [part~="bar"] {
+  [part~="zoom-button"] {
+    background: Canvas;
+    color: CanvasText;
     border-color: ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="bar"] {
+    border: 1px solid ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="group-header"] {
+    border-left-color: Highlight;
   }
 
   [part~="zoom-button-active"],
@@ -123,5 +160,9 @@
     outline: 2px solid Highlight;
     outline-offset: -2px;
     box-shadow: none;
+  }
+
+  [part~="today-line"] {
+    background: Highlight;
   }
 }

@@ -1,73 +1,100 @@
-/* iOS 26+ Liquid Glass — snice-timeline
-   Native counterpart: iOS 26 Apple Wallet Order Tracking & Health Event Timeline (zero blur, 1.5rem centered markers). */
+/* iOS 26+ Liquid Glass / Apple Wallet & Health Event Timeline — snice-timeline
+ * Luminous 16px inset-grouped event cards with subtle top sheen, lifted circular
+ * 1.5rem semantic medallions (preserving pixel-centered 0.6875rem connectors),
+ * SF Pro tabular captions, and complete WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
 }
 
-:host [part~="item"]::before {
-  background: var(--snice-color-border);
+[part~="item"]::before {
+  background: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
 }
 
-/* Preserve 1.5rem geometry so base 0.6875rem connector offsets stay pixel-centered across all positions/orientations.
-   Never declare background here so semantic .timeline-item--* marker backgrounds work in both Mode A and Mode B. */
-:host [part~="marker"] {
+/* Keep 1.5rem geometry so base 0.6875rem connector offsets stay pixel-centered;
+   leave background unset so semantic .timeline-item--* marker tints render cleanly. */
+[part~="marker"] {
   width: 1.5rem;
   height: 1.5rem;
   border-width: 2px;
-  box-shadow: 0 0 0 3px var(--snice-color-surface);
+  box-shadow:
+    0 0 0 3px var(--snice-color-surface),
+    0 1.5px 4px hsl(0 0% 0% / 0.14);
 }
 
-:host [part~="item-info"] {
-  --snice-color-primary-subtle: color-mix(in srgb, var(--snice-color-primary) 16%, var(--snice-color-surface-container-high));
+[part~="item-info"] {
+  --snice-color-primary-subtle: color-mix(in srgb, var(--snice-color-primary) 18%, var(--snice-color-surface-container-high));
 }
 
-:host [part~="item-success"] {
-  --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 16%, var(--snice-color-surface-container-high));
+[part~="item-success"] {
+  --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 18%, var(--snice-color-surface-container-high));
 }
 
-:host [part~="item-warning"] {
-  --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 16%, var(--snice-color-surface-container-high));
+[part~="item-warning"] {
+  --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 18%, var(--snice-color-surface-container-high));
 }
 
-:host [part~="item-error"] {
-  --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 16%, var(--snice-color-surface-container-high));
+[part~="item-error"] {
+  --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 18%, var(--snice-color-surface-container-high));
 }
 
-:host [part~="timestamp"] {
+/* Luminous 16px Apple inset-grouped event card */
+[part~="content"] {
+  padding: 0.6875rem 0.9375rem;
+  border-radius: 16px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 4%, var(--snice-color-surface-container-high)) 0%,
+    var(--snice-color-surface-container-high) 46%
+  );
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-xs);
+}
+
+[part~="timestamp"] {
   font-family: var(--snice-font-family);
   font-size: 0.75rem;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.004em;
-  color: var(--snice-color-text-tertiary);
-  margin-bottom: 0.125rem;
+  letter-spacing: -0.005em;
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 0.1875rem;
 }
 
-:host [part~="title"] {
+[part~="title"] {
   font-family: var(--snice-font-family-display);
   font-size: 0.9375rem;
   font-weight: 600;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.016em;
   color: var(--snice-color-text);
   line-height: 1.3;
 }
 
-:host [part~="description"] {
+[part~="description"] {
   font-family: var(--snice-font-family);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   letter-spacing: -0.008em;
   color: var(--snice-color-text-secondary);
   line-height: 1.45;
 }
 
 @media (forced-colors: active) {
-  :host [part~="item"]::before {
+  [part~="item"]::before {
     background: CanvasText;
   }
 
-  :host [part~="marker"] {
+  [part~="marker"] {
     border-color: CanvasText;
+    background: Canvas;
+    box-shadow: none;
+  }
+
+  [part~="content"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
     box-shadow: none;
   }
 }

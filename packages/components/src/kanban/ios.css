@@ -1,9 +1,24 @@
-/* iOS 26+ Liquid Glass / UIKit kanban board skin */
+/* iOS 26+ Liquid Glass / Apple Reminders & Freeform Columns — snice-kanban
+ * 22px luminous inset-grouped Apple lanes with subtle top sheen, concentric 16px
+ * elevated cards (preserving 3px left accent stripe), pill count & tag chips, and WHCM.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+  --kanban-label-bg: color-mix(in srgb, var(--snice-color-primary) 14%, var(--snice-color-surface-container-high));
+  --kanban-label-color: var(--snice-color-primary);
+}
 
 [part~="column"] {
-  border-radius: 1.25rem;
-  background: var(--snice-color-surface-container-low);
-  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 22px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 4%, var(--snice-color-surface-container-low)) 0%,
+    var(--snice-color-surface-container-low) 36%
+  );
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-xs);
   overflow: hidden;
 }
 
@@ -13,14 +28,16 @@
 }
 
 [part~="column-title"] {
+  font-family: var(--snice-font-family-display);
   font-size: 0.9375rem;
   font-weight: 600;
   letter-spacing: -0.016em;
+  color: var(--snice-color-text);
 }
 
 [part~="column-count"] {
   border-radius: 9999px;
-  background: var(--snice-color-surface-container-high);
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-high));
   color: var(--snice-color-text-secondary);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
@@ -31,31 +48,34 @@
   gap: 0.625rem;
 }
 
-/* Concentric 14px opaque card; preserve 3px left accent stripe */
+/* Concentric 16px elevated Apple card; preserve 3px left accent stripe */
 [part~="card"] {
-  border-radius: 0.875rem;
+  border-radius: 16px;
   background: var(--snice-color-surface-container-high);
   border-top: 0.5px solid var(--snice-color-border-subtle);
   border-right: 0.5px solid var(--snice-color-border-subtle);
   border-bottom: 0.5px solid var(--snice-color-border-subtle);
-  box-shadow: var(--snice-shadow-xs);
-  transition: box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1), transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-sm);
+  transition: box-shadow 180ms var(--snice-ease-out), background-color 180ms var(--snice-ease-out);
 }
 
 [part~="card"]:hover {
-  box-shadow: var(--snice-shadow-sm);
+  transform: none;
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.18), var(--snice-shadow-md);
 }
 
 [part~="card"]:focus-visible,
 [part~="card-grabbed"] {
-  outline: 2px solid var(--snice-focus-ring-color);
+  outline: 3px solid var(--snice-focus-ring-color);
   outline-offset: 2px;
 }
 
 [part~="card-title"] {
+  font-family: var(--snice-font-family-display);
   font-size: 0.9375rem;
   font-weight: 600;
   letter-spacing: -0.012em;
+  color: var(--snice-color-text);
 }
 
 [part~="card-description"] {
@@ -72,8 +92,22 @@
   [part~="card"] {
     transition: none;
   }
+}
 
-  [part~="card"]:hover {
-    transform: none;
+@media (forced-colors: active) {
+  [part~="column"],
+  [part~="column-count"],
+  [part~="card"],
+  [part~="card-label"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="card"]:focus-visible,
+  [part~="card-grabbed"] {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
   }
 }

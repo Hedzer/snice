@@ -1,47 +1,72 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-timeline
-   Native counterpart: WinUI 3 Activity Feed & Deployment Timeline (16% Fluent spine, Segoe UI Variable ramp, WHCM). */
+/* Windows 11 Fluent 2 / Azure DevOps Deployment Timeline — snice-timeline
+ * Crisp 6px rounded-square Fluent markers (1.5rem centered), 6px top-lit opaque Mica
+ * event cards with 3px semantic top Fluent accent bar, Segoe UI Variable, and WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
+  --timeline-default-marker-border: var(--snice-color-border-hover);
+  --timeline-default-marker-bg: var(--snice-color-surface-container-highest);
 }
 
-:host [part~="item"]::before {
+[part~="item"]::before {
   background: var(--snice-color-border-hover);
 }
 
-/* Keep 1.5rem geometry for pixel-centered connectors; leave background unset so semantic marker tints render in Mode B. */
-:host [part~="marker"] {
+/* 6px rounded-square Fluent badge preserving 1.5rem geometry for pixel-centered connectors */
+[part~="marker"] {
   width: 1.5rem;
   height: 1.5rem;
+  border-radius: 6px;
   border-width: 1.5px;
   box-shadow: 0 0 0 3px var(--snice-color-surface);
 }
 
-:host [part~="item-info"] {
-  --snice-color-primary-subtle: color-mix(in srgb, var(--snice-color-primary) 14%, var(--snice-color-surface-container-lowest));
+[part~="item-default"] {
+  --timeline-win-accent: var(--snice-color-border-hover);
 }
 
-:host [part~="item-success"] {
-  --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 14%, var(--snice-color-surface-container-lowest));
+[part~="item-info"] {
+  --snice-color-primary-subtle: color-mix(in srgb, var(--snice-color-primary) 16%, var(--snice-color-surface-container-highest));
+  --timeline-win-accent: var(--snice-color-primary);
 }
 
-:host [part~="item-warning"] {
-  --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 14%, var(--snice-color-surface-container-lowest));
+[part~="item-success"] {
+  --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 16%, var(--snice-color-surface-container-highest));
+  --timeline-win-accent: var(--snice-color-success);
 }
 
-:host [part~="item-error"] {
-  --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 14%, var(--snice-color-surface-container-lowest));
+[part~="item-warning"] {
+  --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 16%, var(--snice-color-surface-container-highest));
+  --timeline-win-accent: var(--snice-color-warning);
 }
 
-:host [part~="timestamp"] {
+[part~="item-error"] {
+  --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 16%, var(--snice-color-surface-container-highest));
+  --timeline-win-accent: var(--snice-color-danger);
+}
+
+/* Crisp 6px opaque Mica card with iconic 3px top Fluent semantic accent bar */
+[part~="content"] {
+  padding: 0.625rem 0.875rem;
+  border-radius: 6px;
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  border-top: 3px solid var(--timeline-win-accent, var(--snice-color-border-hover));
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="timestamp"] {
   font-family: var(--snice-font-family);
   font-size: 0.75rem;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
-  color: var(--snice-color-text-tertiary);
+  color: var(--snice-color-text-secondary);
   margin-bottom: 0.125rem;
 }
 
-:host [part~="title"] {
+[part~="title"] {
   font-family: var(--snice-font-family);
   font-size: 0.875rem;
   font-weight: 600;
@@ -49,7 +74,7 @@
   line-height: 1.4;
 }
 
-:host [part~="description"] {
+[part~="description"] {
   font-family: var(--snice-font-family);
   font-size: 0.8125rem;
   color: var(--snice-color-text-secondary);
@@ -57,13 +82,21 @@
 }
 
 @media (forced-colors: active) {
-  :host [part~="item"]::before {
+  [part~="item"]::before {
     background: CanvasText;
   }
 
-  :host [part~="marker"] {
+  [part~="marker"] {
     border-color: CanvasText;
     background: Canvas;
+    box-shadow: none;
+  }
+
+  [part~="content"] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+    border-top-color: Highlight;
     box-shadow: none;
   }
 }

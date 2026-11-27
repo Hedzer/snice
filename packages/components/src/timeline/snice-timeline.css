@@ -5,6 +5,9 @@
 :host {
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  --snice-timeline-item-gap: var(--snice-spacing-xl, 2rem);
+  --snice-timeline-content-divider: none;
+  --snice-timeline-content-divider-pad: 0;
 }
 
 .timeline {
@@ -23,20 +26,27 @@
 .timeline--vertical .timeline-item {
   display: flex;
   position: relative;
-  padding-bottom: var(--snice-spacing-xl, 2rem);
+  padding-bottom: var(--snice-timeline-item-gap, var(--snice-spacing-xl, 2rem));
 }
 
 .timeline--vertical .timeline-item:last-child {
   padding-bottom: 0;
 }
 
+.timeline--vertical .timeline-item:not(:last-child) .timeline-item__content {
+  border-bottom: var(--snice-timeline-content-divider, none);
+  padding-bottom: var(--snice-timeline-content-divider-pad, 0);
+}
+
 .timeline--vertical .timeline-item::before {
   content: '';
   position: absolute;
-  /* Center the 2px line on the 24px (1.5rem) marker: (24-2)/2 = 11px = 0.6875rem */
+  /* Center the 2px line on the 24px (1.5rem) marker: (24-2)/2 = 11px = 0.6875rem.
+     Anchor marker-center to next marker-center behind z-index: 1 markers so halos
+     carve crisp symmetrical gaps regardless of item spacing. */
   left: 0.6875rem;
-  top: var(--snice-spacing-xl, 2rem);
-  bottom: var(--snice-spacing-xs, -0.5rem);
+  top: 0.75rem;
+  bottom: -0.75rem;
   width: 2px;
   background: var(--snice-color-border, rgb(226 226 226));
 }
@@ -130,8 +140,9 @@
 .timeline--horizontal .timeline-item::before {
   content: '';
   position: absolute;
-  left: var(--snice-spacing-xl, 2rem);
-  right: calc(-1 * var(--snice-spacing-xl, 2rem));
+  /* Anchor marker-center to next marker-center symmetrically behind z-index: 1 markers */
+  left: 0.75rem;
+  right: calc(-1 * var(--snice-spacing-xl, 2rem) - 0.75rem);
   /* Center 2px line on 24px marker: (24-2)/2 = 11px = 0.6875rem */
   top: 0.6875rem;
   height: 2px;
@@ -148,7 +159,7 @@
 }
 
 .timeline--horizontal .timeline-item__content {
-  padding-top: var(--snice-spacing-xl, 2rem);
+  margin-top: var(--snice-spacing-xl, 2rem);
 }
 
 /* Reverse */
@@ -189,8 +200,8 @@
 
 /* Marker variants */
 .timeline-item--default .timeline-item__marker {
-  border-color: var(--snice-color-border, rgb(226 226 226));
-  background: var(--snice-color-surface, rgb(255 255 255));
+  border-color: var(--timeline-default-marker-border, var(--snice-color-border, rgb(226 226 226)));
+  background: var(--timeline-default-marker-bg, var(--snice-color-surface, rgb(255 255 255)));
 }
 
 .timeline-item--success .timeline-item__marker {

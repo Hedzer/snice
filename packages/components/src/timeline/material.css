@@ -1,48 +1,60 @@
-/* Android Material 3 Expressive — snice-timeline
-   Native counterpart: Material 3 Activity / Order Tracking Timeline (tonal markers, outline-variant spine, Roboto ramp). */
+/* Android Material 3 Expressive / Order & Activity Timeline — snice-timeline
+ * 20px borderless primary-tinted tonal event surfaces (-low), primary-tinted spine,
+ * tonal semantic markers, Roboto Label Small timestamps, and complete WHCM.
+ */
 
 :host {
   font-family: var(--snice-font-family);
 }
 
-:host [part~="item"]::before {
-  background: var(--snice-color-border-subtle);
+[part~="item"]::before {
+  background: color-mix(in srgb, var(--snice-color-primary) 28%, var(--snice-color-border-subtle));
 }
 
-/* Preserve 1.5rem geometry so base 0.6875rem connector offsets stay centered; let semantic marker tints apply cleanly. */
-:host [part~="marker"] {
+/* Preserve 1.5rem geometry for pixel-centered connectors; leave background unset for semantic tints. */
+[part~="marker"] {
   width: 1.5rem;
   height: 1.5rem;
   border-width: 2px;
   box-shadow: 0 0 0 3px var(--snice-color-surface);
 }
 
-:host [part~="item-info"] {
+[part~="item-info"] {
   --snice-color-primary-subtle: var(--snice-m3-primary-container);
 }
 
-:host [part~="item-success"] {
-  --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 16%, var(--snice-color-surface-container-low));
+[part~="item-success"] {
+  --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 18%, var(--snice-color-surface-container-low));
 }
 
-:host [part~="item-warning"] {
-  --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 16%, var(--snice-color-surface-container-low));
+[part~="item-warning"] {
+  --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 18%, var(--snice-color-surface-container-low));
 }
 
-:host [part~="item-error"] {
-  --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 16%, var(--snice-color-surface-container-low));
+[part~="item-error"] {
+  --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 18%, var(--snice-color-surface-container-low));
 }
 
-:host [part~="timestamp"] {
+/* Expressive 20px borderless M3 tonal surface card */
+[part~="content"] {
+  padding: 0.75rem 1rem;
+  border-radius: 20px;
+  background: var(--snice-color-surface-container-low);
+  border: none;
+}
+
+[part~="timestamp"] {
   font-family: var(--snice-font-family);
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   font-variant-numeric: tabular-nums;
-  color: var(--snice-color-text-tertiary);
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 0.25rem;
 }
 
-:host [part~="title"] {
+[part~="title"] {
   font-family: var(--snice-font-family);
   font-size: 0.9375rem;
   font-weight: 500;
@@ -51,7 +63,7 @@
   line-height: 1.35;
 }
 
-:host [part~="description"] {
+[part~="description"] {
   font-family: var(--snice-font-family);
   font-size: 0.875rem;
   letter-spacing: 0.015em;
@@ -60,12 +72,19 @@
 }
 
 @media (forced-colors: active) {
-  :host [part~="item"]::before {
+  [part~="item"]::before {
     background: CanvasText;
   }
 
-  :host [part~="marker"] {
+  [part~="marker"] {
     border-color: CanvasText;
+    background: Canvas;
     box-shadow: none;
+  }
+
+  [part~="content"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
   }
 }
