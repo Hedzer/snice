@@ -1,0 +1,134 @@
+/* snice-countdown — iOS 26+ Apple Clock / Live Activity countdown skin
+ *
+ * Strictly Layer 2 platform CSS (only :host / [part~="..."] selectors).
+ * Uses opaque grouped surfaces on inline flip tiles (never frosted glass on
+ * inline content), tabular numerals, and pixel-locked separator alignment.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+}
+
+[part~="base"] {
+  align-items: flex-start;
+  gap: 0.625rem;
+}
+
+[part~="segment"] {
+  gap: 0.25rem;
+}
+
+[part~="value"] {
+  box-sizing: border-box;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  min-width: 2.75rem;
+  color: var(--snice-color-text);
+  transition: color 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[part~="label"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="separator"] {
+  height: 2rem;
+  font-size: 1.625rem;
+  font-weight: 500;
+  line-height: 1;
+  color: color-mix(in srgb, var(--snice-color-text) 32%, transparent);
+}
+
+/* Flip variant — opaque iOS grouped digit tiles with subtle hinge midline */
+:host([variant="flip"]) [part~="base"] {
+  gap: 0.5rem;
+}
+
+:host([variant="flip"]) [part~="segment"] {
+  gap: 0.375rem;
+}
+
+:host([variant="flip"]) [part~="value"] {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.5rem;
+  height: 3.5rem;
+  padding: 0 0.625rem;
+  font-size: 1.625rem;
+  font-weight: 600;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 0.875rem;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host([variant="flip"]) [part~="value"]::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  pointer-events: none;
+}
+
+:host([variant="flip"]) [part~="separator"] {
+  height: 3.5rem;
+  font-size: 1.5rem;
+}
+
+/* Circular variant — Apple Clock tinted ring medallions */
+:host([variant="circular"]) [part~="base"] {
+  gap: 0.5rem;
+}
+
+:host([variant="circular"]) [part~="segment"] {
+  gap: 0.375rem;
+}
+
+:host([variant="circular"]) [part~="value"] {
+  width: 3.75rem;
+  height: 3.75rem;
+  min-width: 3.75rem;
+  padding: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, var(--snice-color-surface));
+  border: 2px solid var(--snice-color-primary);
+  color: var(--snice-color-text);
+  box-shadow: none;
+}
+
+:host([variant="circular"]) [part~="separator"] {
+  height: 3.75rem;
+  font-size: 1.375rem;
+}
+
+/* Complete state */
+:host(.complete) [part~="value"] {
+  color: var(--snice-color-success);
+}
+
+:host(.complete[variant="flip"]) [part~="value"] {
+  border-color: color-mix(in srgb, var(--snice-color-success) 38%, transparent);
+}
+
+:host(.complete[variant="circular"]) [part~="value"] {
+  border-color: var(--snice-color-success);
+  background: color-mix(in srgb, var(--snice-color-success) 12%, var(--snice-color-surface));
+}

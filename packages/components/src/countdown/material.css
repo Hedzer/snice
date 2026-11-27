@@ -1,0 +1,121 @@
+/* snice-countdown — Android Material 3 Expressive TimePicker countdown skin
+ *
+ * Strictly Layer 2 platform CSS (only :host / [part~="..."] selectors).
+ * Borderless tonal surface containers (zero glass blur), Expressive tabular
+ * numerals, and exact separator height locking across all variants.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+}
+
+[part~="base"] {
+  align-items: flex-start;
+  gap: 0.625rem;
+}
+
+[part~="segment"] {
+  gap: 0.25rem;
+}
+
+[part~="value"] {
+  box-sizing: border-box;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  font-size: 1.875rem;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.015em;
+  min-width: 2.75rem;
+  color: var(--snice-color-text);
+  transition: color 0.2s cubic-bezier(0.2, 0, 0, 1),
+    background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+[part~="label"] {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="separator"] {
+  height: 1.875rem;
+  font-size: 1.625rem;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Flip variant — signature M3 TimePicker borderless primaryContainer cells */
+:host([variant="flip"]) [part~="base"] {
+  gap: 0.5rem;
+}
+
+:host([variant="flip"]) [part~="segment"] {
+  gap: 0.375rem;
+}
+
+:host([variant="flip"]) [part~="value"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.75rem;
+  height: 3.75rem;
+  padding: 0 0.75rem;
+  font-size: 1.75rem;
+  font-weight: 500;
+  background: var(--snice-m3-primary-container);
+  color: var(--snice-m3-on-primary-container);
+  border: none;
+  border-radius: 1rem;
+  box-shadow: none;
+}
+
+:host([variant="flip"]) [part~="separator"] {
+  height: 3.75rem;
+  font-size: 1.625rem;
+  color: var(--snice-color-text-secondary);
+}
+
+/* Circular variant — borderless M3 secondaryContainer tonal badges */
+:host([variant="circular"]) [part~="base"] {
+  gap: 0.5rem;
+}
+
+:host([variant="circular"]) [part~="segment"] {
+  gap: 0.375rem;
+}
+
+:host([variant="circular"]) [part~="value"] {
+  width: 3.75rem;
+  height: 3.75rem;
+  min-width: 3.75rem;
+  padding: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 9999px;
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  box-shadow: none;
+}
+
+:host([variant="circular"]) [part~="separator"] {
+  height: 3.75rem;
+  font-size: 1.5rem;
+  color: var(--snice-color-text-secondary);
+}
+
+/* Complete state */
+:host(.complete) [part~="value"] {
+  color: var(--snice-color-success);
+}
+
+:host(.complete[variant="flip"]) [part~="value"],
+:host(.complete[variant="circular"]) [part~="value"] {
+  background: color-mix(in srgb, var(--snice-color-success) 16%, var(--snice-color-surface-container-high));
+  color: var(--snice-color-success);
+}
