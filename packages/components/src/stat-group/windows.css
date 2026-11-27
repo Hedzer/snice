@@ -1,0 +1,144 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-stat-group
+   Native counterpart: WinUI 3 Dashboard Metric Strip (8px Mica card, 4px trend badges, 100ms fast-out, zero Acrylic). */
+
+:host {
+  font-family: var(--snice-font-family);
+  --sg-bg: var(--snice-color-surface-container-lowest);
+  --sg-bg-element: var(--snice-win-control-bg-hover);
+  --sg-border: var(--snice-color-border-subtle);
+}
+
+:host [part~="base"] {
+  gap: 0.75rem;
+}
+
+/* Default / Card variant */
+:host [part~="stat"],
+:host([variant="card"]) [part~="stat"] {
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  border-radius: 8px;
+  padding: 1rem 1.125rem;
+  box-shadow: var(--snice-shadow-xs);
+  transition:
+    background-color 100ms cubic-bezier(0, 0, 0, 1),
+    border-color 100ms cubic-bezier(0, 0, 0, 1),
+    box-shadow 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="stat"]:hover,
+:host([variant="card"]) [part~="stat"]:hover {
+  transform: none;
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-color-border-hover);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="stat"]:active,
+:host([variant="card"]) [part~="stat"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  box-shadow: none;
+}
+
+:host [part~="stat"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* Minimal variant (constant padding at rest & hover — zero layout shift) */
+:host([variant="minimal"]) [part~="stat"] {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 0.625rem 0.75rem;
+  box-shadow: none;
+}
+
+:host([variant="minimal"]) [part~="stat"]:hover {
+  transform: none;
+  box-shadow: none;
+  background: var(--snice-win-control-bg-hover);
+  border-color: transparent;
+  border-radius: 6px;
+  padding: 0.625rem 0.75rem;
+}
+
+:host([variant="minimal"]) [part~="stat"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+/* Bordered variant */
+:host([variant="bordered"]) [part~="stat"] {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--snice-color-border);
+  border-radius: 0;
+  padding: 0.75rem 0.5rem;
+  box-shadow: none;
+}
+
+:host([variant="bordered"]) [part~="stat"]:hover {
+  transform: none;
+  box-shadow: none;
+  background: transparent;
+  border-bottom-color: var(--snice-color-primary);
+}
+
+:host([variant="bordered"]) [part~="stat"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="value"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+:host [part~="trend"] {
+  border-radius: 4px;
+  padding: 0.0625rem 0.4375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  width: fit-content;
+}
+
+:host [part~="trend-up"] {
+  background: color-mix(in srgb, var(--snice-color-success) 14%, transparent);
+  color: var(--snice-color-success);
+}
+
+:host [part~="trend-down"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 14%, transparent);
+  color: var(--snice-color-danger);
+}
+
+:host [part~="trend-neutral"] {
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text-secondary);
+}
+
+@media (forced-colors: active) {
+  :host [part~="stat"],
+  :host([variant="card"]) [part~="stat"] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="trend"] {
+    border: 1px solid CanvasText;
+  }
+}

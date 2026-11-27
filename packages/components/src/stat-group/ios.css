@@ -1,0 +1,138 @@
+/* iOS 26+ Liquid Glass — snice-stat-group
+   Native counterpart: iOS 26 Apple Health / Activity Summary Stat Strip (opaque grouped 20px cards, zero blur). */
+
+:host {
+  font-family: var(--snice-font-family);
+  --sg-bg: var(--snice-color-surface-container-high);
+  --sg-bg-element: var(--snice-color-surface-container-low);
+  --sg-border: var(--snice-color-border-subtle);
+}
+
+:host [part~="base"] {
+  gap: 0.75rem;
+}
+
+/* Default / Card variant */
+:host [part~="stat"],
+:host([variant="card"]) [part~="stat"] {
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 20px;
+  padding: 1rem 1.125rem;
+  box-shadow: var(--snice-shadow-sm);
+  transition:
+    transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring),
+    background-color 140ms ease,
+    box-shadow 180ms ease;
+}
+
+:host [part~="stat"]:hover,
+:host([variant="card"]) [part~="stat"]:hover {
+  transform: none;
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="stat"]:active,
+:host([variant="card"]) [part~="stat"]:active {
+  transform: scale(0.975);
+}
+
+:host [part~="stat"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Minimal variant (constant padding at rest & hover — zero layout shift) */
+:host([variant="minimal"]) [part~="stat"] {
+  background: transparent;
+  border: none;
+  border-radius: 14px;
+  padding: 0.625rem 0.75rem;
+  box-shadow: none;
+}
+
+:host([variant="minimal"]) [part~="stat"]:hover {
+  transform: none;
+  box-shadow: none;
+  background: color-mix(in srgb, var(--snice-color-text) 4.5%, transparent);
+  border-radius: 14px;
+  padding: 0.625rem 0.75rem;
+}
+
+:host([variant="minimal"]) [part~="stat"]:active {
+  transform: scale(0.975);
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+/* Bordered variant */
+:host([variant="bordered"]) [part~="stat"] {
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--snice-color-border);
+  border-radius: 0;
+  padding: 0.75rem 0.5rem;
+  box-shadow: none;
+}
+
+:host([variant="bordered"]) [part~="stat"]:hover {
+  transform: none;
+  box-shadow: none;
+  border-bottom-color: var(--snice-color-primary);
+}
+
+:host([variant="bordered"]) [part~="stat"]:active {
+  transform: none;
+}
+
+:host [part~="label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="value"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.625rem;
+  font-weight: 700;
+  letter-spacing: -0.028em;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+:host [part~="trend"] {
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  border-radius: 9999px;
+  padding: 0.125rem 0.5rem;
+  width: fit-content;
+}
+
+:host [part~="trend-up"] {
+  background: color-mix(in srgb, var(--snice-color-success) 14%, transparent);
+  color: var(--snice-color-success);
+}
+
+:host [part~="trend-down"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 14%, transparent);
+  color: var(--snice-color-danger);
+}
+
+:host [part~="trend-neutral"] {
+  background: color-mix(in srgb, var(--snice-color-text-secondary) 12%, transparent);
+  color: var(--snice-color-text-secondary);
+}
+
+@media (forced-colors: active) {
+  :host [part~="stat"],
+  :host([variant="card"]) [part~="stat"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="trend"] {
+    border: 1px solid CanvasText;
+  }
+}

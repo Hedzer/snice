@@ -1,0 +1,141 @@
+/* Android Material 3 Expressive — snice-stat-group
+   Native counterpart: Material 3 Tonal Metric Card Grid (surface-container-low, 16px radius, 8%/10% state layers). */
+
+:host {
+  font-family: var(--snice-font-family);
+  --sg-bg: var(--snice-color-surface-container-low);
+  --sg-bg-element: var(--snice-color-surface-container);
+  --sg-border: var(--snice-color-border-subtle);
+}
+
+:host [part~="base"] {
+  gap: 0.75rem;
+}
+
+/* Default / Card variant */
+:host [part~="stat"],
+:host([variant="card"]) [part~="stat"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 16px;
+  padding: 1.125rem 1.25rem;
+  box-shadow: var(--snice-shadow-xs);
+  transition:
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects),
+    border-radius var(--snice-transition-fast, 150ms) var(--snice-m3-spring-spatial-fast);
+}
+
+:host [part~="stat"]:hover,
+:host([variant="card"]) [part~="stat"]:hover {
+  transform: none;
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-low));
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="stat"]:active,
+:host([variant="card"]) [part~="stat"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface-container-low));
+  border-radius: var(--snice-m3-shape-morph-selected, 12px);
+}
+
+:host [part~="stat"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+/* Minimal variant (constant padding at rest & hover — zero layout shift) */
+:host([variant="minimal"]) [part~="stat"] {
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem;
+  box-shadow: none;
+}
+
+:host([variant="minimal"]) [part~="stat"]:hover {
+  transform: none;
+  box-shadow: none;
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  border-radius: 12px;
+  padding: 0.75rem;
+}
+
+:host([variant="minimal"]) [part~="stat"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+/* Bordered variant */
+:host([variant="bordered"]) [part~="stat"] {
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--snice-color-border-subtle);
+  border-radius: 0;
+  padding: 0.875rem 0.5rem;
+  box-shadow: none;
+}
+
+:host([variant="bordered"]) [part~="stat"]:hover {
+  transform: none;
+  box-shadow: none;
+  background: transparent;
+  border-bottom-color: var(--snice-color-primary);
+}
+
+:host([variant="bordered"]) [part~="stat"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 6%, transparent);
+  border-radius: 0;
+}
+
+:host [part~="label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="value"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.625rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+:host [part~="trend"] {
+  border-radius: 9999px;
+  padding: 0.125rem 0.5625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  width: fit-content;
+}
+
+:host [part~="trend-up"] {
+  background: color-mix(in srgb, var(--snice-color-success) 15%, transparent);
+  color: var(--snice-color-success);
+}
+
+:host [part~="trend-down"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 15%, transparent);
+  color: var(--snice-color-danger);
+}
+
+:host [part~="trend-neutral"] {
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text-secondary);
+}
+
+@media (forced-colors: active) {
+  :host [part~="stat"],
+  :host([variant="card"]) [part~="stat"] {
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="trend"] {
+    border: 1px solid CanvasText;
+  }
+}
