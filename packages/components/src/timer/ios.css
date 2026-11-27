@@ -1,0 +1,115 @@
+/* snice-timer — iOS 26+ Apple Clock timer / stopwatch skin
+ *
+ * Strictly Layer 2 platform CSS (only :host / [part~="..."] selectors).
+ * Opaque grouped card container, SF Pro tabular numerals, Apple Clock tinted
+ * green Start / tinted amber Pause / neutral Reset 48px circular touch targets.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+}
+
+[part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--snice-shadow-sm);
+  gap: 1rem;
+}
+
+[part~="display"] {
+  font-size: 2.25rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--snice-color-text);
+  min-width: 8.5rem;
+}
+
+[part~="controls"] {
+  gap: 0.875rem;
+}
+
+[part~="button"] {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  border: none;
+  box-shadow: none;
+  transition: background-color 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.16s ease;
+}
+
+[part~="button"]:hover {
+  transform: none;
+}
+
+[part~="button"]:active {
+  transform: scale(0.95);
+}
+
+[part~="button"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+[part~="icon"] {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Apple Clock tinted green Start circle */
+[part~="button"][part~="start-button"] {
+  background: color-mix(in srgb, var(--snice-color-success) 18%, transparent);
+  color: var(--snice-color-success);
+}
+
+[part~="button"][part~="start-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-success) 25%, transparent);
+  transform: none;
+}
+
+[part~="button"][part~="start-button"]:active {
+  background: color-mix(in srgb, var(--snice-color-success) 32%, transparent);
+}
+
+/* Apple Clock tinted amber Pause circle (calibrated for light & dark legibility) */
+[part~="button"][part~="pause-button"] {
+  background: color-mix(in srgb, var(--snice-color-warning) 20%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 76%, var(--snice-color-text));
+}
+
+[part~="button"][part~="pause-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-warning) 28%, transparent);
+  transform: none;
+}
+
+[part~="button"][part~="pause-button"]:active {
+  background: color-mix(in srgb, var(--snice-color-warning) 35%, transparent);
+}
+
+/* Apple Clock neutral Reset circle */
+[part~="button"][part~="reset-button"] {
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="button"][part~="reset-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
+  color: var(--snice-color-text);
+  transform: none;
+}
+
+[part~="button"][part~="reset-button"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 22%, transparent);
+}
+
+[part~="button"]:disabled {
+  opacity: 0.4;
+  transform: none;
+}

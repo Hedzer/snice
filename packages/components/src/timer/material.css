@@ -1,0 +1,129 @@
+/* snice-timer — Android Material 3 Expressive Clock timer / stopwatch skin
+ *
+ * Strictly Layer 2 platform CSS (only :host / [part~="..."] selectors).
+ * Borderless 24px tonal container (zero glass blur), wide 64dp pill Start FAB,
+ * 16px squircle Pause toggle, tonal circular Reset, press shape-morph, and
+ * exact M3 12%/38% disabled states.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+}
+
+[part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border: none;
+  border-radius: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  box-shadow: none;
+  gap: 1.125rem;
+}
+
+[part~="display"] {
+  font-size: 2.25rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  color: var(--snice-color-text);
+  min-width: 8.5rem;
+}
+
+[part~="controls"] {
+  gap: 0.75rem;
+}
+
+[part~="button"] {
+  height: 3rem;
+  border: none;
+  box-shadow: none;
+  transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1),
+    border-radius 0.16s cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+[part~="button"]:hover {
+  transform: none;
+}
+
+[part~="button"]:active {
+  transform: none;
+}
+
+[part~="button"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+[part~="icon"] {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+/* M3 Expressive wide pill Start FAB */
+[part~="button"][part~="start-button"] {
+  width: 4rem;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
+}
+
+[part~="button"][part~="start-button"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 8%, var(--snice-color-primary));
+  transform: none;
+}
+
+[part~="button"][part~="start-button"]:active {
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 12%, var(--snice-color-primary));
+  border-radius: 0.75rem;
+}
+
+/* M3 Expressive squircle active Pause toggle */
+[part~="button"][part~="pause-button"] {
+  width: 4rem;
+  border-radius: 1rem;
+  background: var(--snice-m3-primary-container);
+  color: var(--snice-m3-on-primary-container);
+}
+
+[part~="button"][part~="pause-button"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-primary-container) 8%, var(--snice-m3-primary-container));
+  transform: none;
+}
+
+[part~="button"][part~="pause-button"]:active {
+  background: color-mix(in srgb, var(--snice-m3-on-primary-container) 12%, var(--snice-m3-primary-container));
+  border-radius: 0.5rem;
+}
+
+/* M3 tonal circular Reset button */
+[part~="button"][part~="reset-button"] {
+  width: 3rem;
+  border-radius: 9999px;
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+}
+
+[part~="button"][part~="reset-button"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) 8%, var(--snice-m3-secondary-container));
+  transform: none;
+}
+
+[part~="button"][part~="reset-button"]:active {
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) 12%, var(--snice-m3-secondary-container));
+  border-radius: 0.75rem;
+}
+
+/* Exact M3 12% container / 38% ink disabled state (no opacity washout) */
+[part~="button"]:disabled,
+[part~="button"][part~="start-button"]:disabled,
+[part~="button"][part~="pause-button"]:disabled,
+[part~="button"][part~="reset-button"]:disabled {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  transform: none;
+  box-shadow: none;
+}
