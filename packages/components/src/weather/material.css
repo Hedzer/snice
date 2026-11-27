@@ -1,0 +1,149 @@
+/* Android Material 3 Expressive — snice-weather
+ * Pixel Weather Widget (M3 Expressive):
+ * Expressive 28px tonal card (--snice-color-surface-container-low), secondary-container pill chips,
+ * 16px tonal forecast capsules (--snice-color-surface-container-high), and iconic 20px
+ * --snice-m3-primary-container Pixel Weather compact pill with --snice-m3-on-primary-container ink.
+ */
+
+[part~="base"] {
+  box-sizing: border-box;
+  border-radius: var(--snice-border-radius-xl, 28px);
+  padding: 1.375rem 1.5rem;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+[part~="empty"] {
+  display: block;
+  text-align: center;
+  padding: 1rem 0;
+  color: var(--snice-color-text-secondary);
+  font-size: 0.875rem;
+}
+
+[part~="current"] {
+  gap: 1rem;
+}
+
+[part~="icon"] {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+[part~="temperature"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 3.25rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+[part~="condition"] {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+  margin-top: 0.125rem;
+}
+
+[part~="details"] {
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+  flex-wrap: wrap;
+}
+
+[part~="detail-item"] {
+  padding: 0.3125rem 0.75rem;
+  border-radius: 9999px;
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="forecast"] {
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="forecast-day"] {
+  box-sizing: border-box;
+  flex: 1 1 0;
+  min-width: 3.125rem;
+  padding: 0.5625rem 0.25rem;
+  border-radius: 16px;
+  background: var(--snice-color-surface-container-high);
+  gap: 0.25rem;
+}
+
+[part~="forecast-day-name"] {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="forecast-icon"] {
+  font-size: 1.25rem;
+  line-height: 1.1;
+}
+
+[part~="forecast-temps"] {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.0625rem;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+[part~="forecast-high"] {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+[part~="forecast-low"] {
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Compact Variant — Iconic Pixel Weather Tonal Primary-Container Pill */
+:host([variant="compact"]) [part~="base"] {
+  border-radius: 20px;
+  padding: 0.75rem 1.125rem;
+  background: var(--snice-m3-primary-container);
+  border-color: transparent;
+  color: var(--snice-m3-on-primary-container);
+  box-shadow: none;
+}
+
+:host([variant="compact"]) [part~="current"] {
+  gap: 0.75rem;
+}
+
+:host([variant="compact"]) [part~="icon"] {
+  font-size: 1.625rem;
+}
+
+:host([variant="compact"]) [part~="temperature"] {
+  font-size: 1.625rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--snice-m3-on-primary-container);
+}
+
+:host([variant="compact"]) [part~="condition"] {
+  font-size: 0.875rem;
+  color: var(--snice-m3-on-primary-container);
+  opacity: 0.85;
+  margin-top: 0.0625rem;
+}
+
+:host([variant="compact"]) [part~="empty"] {
+  color: var(--snice-m3-on-primary-container);
+}

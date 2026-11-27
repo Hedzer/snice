@@ -1,0 +1,145 @@
+/* iOS 26+ Liquid Glass — snice-weather
+ * Apple Weather Widget (WidgetKit):
+ * Concentric 22px opaque grouped card (16px compact) with subtle top sky atmospheric wash,
+ * SF Pro Display light tabular numerals, pill metric chips, 0.5px hairline divider,
+ * and concentric 12px forecast tiles (zero glass blur on content card).
+ */
+
+[part~="base"] {
+  box-sizing: border-box;
+  border-radius: 22px;
+  padding: 1.25rem 1.375rem;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 10%, var(--snice-color-surface-container-high)) 0%,
+    var(--snice-color-surface-container-high) 62%
+  );
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-md);
+}
+
+[part~="empty"] {
+  display: block;
+  text-align: center;
+  padding: 1rem 0;
+  color: var(--snice-color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+[part~="current"] {
+  gap: 0.875rem;
+}
+
+[part~="icon"] {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+[part~="temperature"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 3.25rem;
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+[part~="condition"] {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--snice-color-text-secondary);
+  margin-top: 0.125rem;
+}
+
+[part~="details"] {
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+  flex-wrap: wrap;
+}
+
+[part~="detail-item"] {
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-text) 5%, transparent);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="forecast"] {
+  gap: 0.375rem;
+  margin-top: 1rem;
+  padding-top: 0.875rem;
+  border-top: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="forecast-day"] {
+  box-sizing: border-box;
+  flex: 1 1 0;
+  min-width: 3.125rem;
+  padding: 0.5rem 0.25rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--snice-color-text) 3.5%, transparent);
+  gap: 0.25rem;
+}
+
+[part~="forecast-day-name"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="forecast-icon"] {
+  font-size: 1.25rem;
+  line-height: 1.1;
+}
+
+[part~="forecast-temps"] {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.0625rem;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+[part~="forecast-high"] {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+[part~="forecast-low"] {
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-tertiary);
+}
+
+/* Compact Variant */
+:host([variant="compact"]) [part~="base"] {
+  border-radius: 16px;
+  padding: 0.75rem 1rem;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host([variant="compact"]) [part~="current"] {
+  gap: 0.625rem;
+}
+
+:host([variant="compact"]) [part~="icon"] {
+  font-size: 1.625rem;
+}
+
+:host([variant="compact"]) [part~="temperature"] {
+  font-size: 1.625rem;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+
+:host([variant="compact"]) [part~="condition"] {
+  font-size: 0.875rem;
+  margin-top: 0.0625rem;
+}
