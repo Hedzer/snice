@@ -1,0 +1,40 @@
+/* Android Material 3 Expressive — snice-popover (16dp Tonal Surface Popover Card) */
+[part~="panel"] {
+  border-radius: 16px;
+  padding: 0.875rem 1rem;
+  min-width: 12.5rem;
+  background: var(--snice-color-surface-container-high);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  box-shadow: var(--snice-shadow-md);
+  color: var(--snice-color-text);
+  font-size: 0.875rem;
+  line-height: 1.43;
+  letter-spacing: 0.015em;
+  overflow: visible;
+  scale: 0.94;
+  transition:
+    opacity 180ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    transform 220ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    scale 220ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="panel"][part~="panel-open"] {
+  scale: 1;
+}
+
+[part~="trigger"] {
+  border-radius: 9999px;
+}
+
+[part~="trigger"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="panel"] {
+    transition-duration: 0.01ms;
+  }
+}

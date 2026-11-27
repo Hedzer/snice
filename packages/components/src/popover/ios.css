@@ -1,0 +1,48 @@
+/* iOS 26+ Liquid Glass — snice-popover (Concentric 20px Liquid Glass Popover) */
+[part~="panel"] {
+  border-radius: 20px;
+  padding: 0.875rem 1rem;
+  min-width: 13rem;
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 88%, transparent);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+  color: var(--snice-color-text);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  letter-spacing: -0.012em;
+  overflow: visible;
+  scale: 0.96;
+  transition:
+    opacity 180ms var(--snice-ease-out, ease),
+    transform 260ms var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
+    scale 260ms var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+}
+
+[part~="panel"][part~="panel-open"] {
+  scale: 1;
+}
+
+[part~="trigger"] {
+  border-radius: 12px;
+}
+
+[part~="trigger"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="panel"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="panel"] {
+    transition-duration: 0.01ms;
+  }
+}
