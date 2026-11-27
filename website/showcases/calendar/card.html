@@ -20,13 +20,13 @@
 &lt;script&gt;
   cal.events = [
     { id: 1, title: 'Sprint Review', start: inDays(1),
-      color: '#3b82f6', avatar: { src: 'assets/avatars/pravatar-40-alice.jpg?v=80938d7',
+      color: '#2563eb', avatar: { src: 'assets/avatars/pravatar-40-alice.jpg?v=80938d7',
       name: 'Dana Ives' } },
     { id: 2, title: 'Conference',
       start: inDays(3), end: inDays(9),
-      color: '#22c55e', tooltip: 'Berlin, hall 2' },
+      color: '#15803d', tooltip: 'Berlin, hall 2' },
     { id: 3, title: 'Planning', start: inDays(4),
-      color: '#f59e0b' }
+      color: '#b45309' }
   ];
 &lt;/script&gt;</snice-code-block>
         </div>
@@ -40,11 +40,11 @@
       if (cal) {
         const inDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d; };
         cal.events = [
-          { id: 1, title: 'Sprint Review', start: inDays(1), color: '#3b82f6', avatar: { src: 'assets/avatars/pravatar-40-alice.jpg?v=80938d7',
+          { id: 1, title: 'Sprint Review', start: inDays(1), color: '#2563eb', avatar: { src: 'assets/avatars/pravatar-40-alice.jpg?v=80938d7',
       name: 'Dana Ives' } },
-          { id: 2, title: 'Conference', start: inDays(3), end: inDays(9), color: '#22c55e', tooltip: 'Berlin, hall 2', popover: true },
-          { id: 3, title: 'Planning', start: inDays(4), color: '#f59e0b' },
-          { id: 4, title: 'Demo Day', start: inDays(6), color: '#8b5cf6' }
+          { id: 2, title: 'Conference', start: inDays(3), end: inDays(9), color: '#15803d', tooltip: 'Berlin, hall 2', popover: true },
+          { id: 3, title: 'Planning', start: inDays(4), color: '#b45309' },
+          { id: 4, title: 'Demo Day', start: inDays(6), color: '#6d28d9' }
         ];
         // Click the Conference stripe: lazily-loaded details popover.
         cal.eventPopover = async (event) => {

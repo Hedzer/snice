@@ -62,10 +62,10 @@
 
 :host [part~="node-type"] {
   font-size: 0.625rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.04em;
   color: inherit;
-  opacity: 0.78;
+  opacity: 1;
 }
 
 :host [part~="node-body"] {

@@ -21,8 +21,8 @@ export const strictStringAttributeConverter = {
  * been stripped. Keep in lockstep with `theme.css` --snice-color-accent-1..8.
  */
 export const FALLBACK_ACCENTS = [
-  'hsl(214 55% 48%)', 'hsl(27 62% 50%)', 'hsl(160 40% 40%)', 'hsl(275 32% 52%)',
-  'hsl(42 62% 48%)',  'hsl(340 42% 55%)', 'hsl(110 32% 42%)', 'hsl(195 45% 46%)',
+  'hsl(214 68% 42%)', 'hsl(24 78% 36%)', 'hsl(160 64% 28%)', 'hsl(275 48% 44%)',
+  'hsl(38 84% 31%)',  'hsl(340 58% 43%)', 'hsl(110 46% 31%)', 'hsl(195 72% 33%)',
 ];
 
 /**
