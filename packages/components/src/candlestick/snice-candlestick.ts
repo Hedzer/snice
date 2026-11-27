@@ -2,7 +2,7 @@ import { element, property, render, styles, dispatch, query, ready, dispose, wat
 import cssContent from './snice-candlestick.css?inline';
 import type { CandleData, TimeFormat, YAxisFormat, SniceCandlestickElement } from './snice-candlestick.types';
 
-const PADDING = { top: 16, right: 64, bottom: 32, left: 8 };
+const PADDING = { top: 16, right: 68, bottom: 32, left: 20 };
 const VOLUME_HEIGHT_RATIO = 0.2;
 const MIN_CANDLE_WIDTH = 3;
 const MAX_CANDLE_WIDTH = 24;
@@ -12,28 +12,28 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
   @property({ type: Array, attribute: false })
   data: CandleData[] = [];
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, attribute: 'show-volume' })
   showVolume = false;
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, attribute: 'show-grid' })
   showGrid = true;
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, attribute: 'show-crosshair' })
   showCrosshair = true;
 
-  @property()
+  @property({ attribute: 'bullish-color' })
   bullishColor = '';
 
-  @property()
+  @property({ attribute: 'bearish-color' })
   bearishColor = '';
 
-  @property()
+  @property({ attribute: 'time-format' })
   timeFormat: TimeFormat = 'auto';
 
-  @property()
+  @property({ attribute: 'y-axis-format' })
   yAxisFormat: YAxisFormat = 'number';
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, attribute: 'zoom-enabled' })
   zoomEnabled = true;
 
   @property({ type: Boolean })
@@ -128,9 +128,10 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
 
   private measureSize() {
     if (!this.containerEl) return;
-    const rect = this.containerEl.getBoundingClientRect();
-    if (rect.width > 0) this.svgWidth = rect.width;
-    if (rect.height > 0) this.svgHeight = rect.height;
+    const width = this.containerEl.clientWidth;
+    const height = this.containerEl.clientHeight;
+    if (width > 0) this.svgWidth = width;
+    if (height > 0) this.svgHeight = height;
   }
 
   private get visibleData(): CandleData[] {
@@ -252,11 +253,6 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     // Update SVG viewBox
     this.svgEl.setAttribute('viewBox', `0 0 ${this.svgWidth} ${this.svgHeight}`);
     this.svgEl.setAttribute('aria-label', `Candlestick chart with ${this.cachedData.length} data points`);
-
-    // Update container height
-    if (this.containerEl) {
-      this.containerEl.style.height = `${this.svgHeight}px`;
-    }
 
     // Consume animation flag after building candles
     this.animateNext = false;
@@ -477,7 +473,7 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
     const ticks = 6;
     const step = (max - min) / ticks;
     let labels = '';
-    const labelX = this.svgWidth - PADDING.right + 8;
+    const labelX = this.svgWidth - 12;
 
     for (let i = 0; i <= ticks; i++) {
       const price = min + step * i;
@@ -590,7 +586,6 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
   renderContent() {
     return html/*html*/`
       <div class="candlestick" part="base"
-           style="height: ${this.svgHeight}px;"
            @mousemove=${this.handleMouseMove}
            @mouseleave=${this.handleMouseLeave}
            @mousedown=${this.handleMouseDown}

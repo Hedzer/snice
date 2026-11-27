@@ -1,0 +1,97 @@
+/* Windows 11 Fluent 2 / WinUI 3 candlestick chart skin */
+
+:host {
+  --candlestick-bg: var(--snice-color-surface-container-high);
+  --candlestick-bullish: var(--snice-color-success);
+  --candlestick-bearish: var(--snice-color-danger);
+  --candlestick-grid: var(--snice-color-border);
+  --candlestick-border: var(--snice-color-border);
+}
+
+[part~="base"] {
+  border-radius: 0.5rem;
+  border: 1px solid var(--snice-color-border);
+}
+
+[part~="grid-line"] {
+  stroke-dasharray: 2 3;
+  opacity: 0.85;
+}
+
+[part~="axis-label"] {
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  fill: var(--snice-color-text-secondary);
+}
+
+[part~="candle"] {
+  rx: 1px;
+  ry: 1px;
+  transition: opacity 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="candle"]:hover {
+  opacity: 0.84;
+}
+
+[part~="volume-bar"] {
+  rx: 1px;
+  ry: 1px;
+  opacity: 0.28;
+}
+
+[part~="crosshair-line"] {
+  stroke: var(--snice-color-text-secondary);
+  stroke-dasharray: 3 2;
+  opacity: 0.7;
+}
+
+[part~="crosshair-label-background"] {
+  fill: var(--snice-color-surface-container-highest);
+  stroke: var(--snice-color-border-hover);
+  rx: 2px;
+  ry: 2px;
+}
+
+[part~="crosshair-label"] {
+  fill: var(--snice-color-text);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+:host([zoom-enabled]) [part~="canvas"]:active {
+  cursor: grabbing;
+}
+
+/* Transient Acrylic OHLC flyout (preserve base opacity visibility toggle) */
+[part~="tooltip"] {
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.625rem;
+  background: var(--snice-win-acrylic-bg);
+  backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
+  border: 1px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-md);
+  color: var(--snice-color-text);
+  transition: opacity 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="tooltip-value"] {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="candle"],
+  [part~="tooltip"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="tooltip"] {
+    background: Canvas;
+    border-color: CanvasText;
+    color: CanvasText;
+  }
+}

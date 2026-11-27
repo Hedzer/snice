@@ -1,0 +1,86 @@
+/* macOS 26 Tahoe AppKit / Stocks.app candlestick chart skin */
+
+:host {
+  --candlestick-bg: var(--snice-color-background-element);
+  --candlestick-bullish: var(--snice-color-success);
+  --candlestick-bearish: var(--snice-color-danger);
+  --candlestick-grid: var(--snice-color-border);
+  --candlestick-border: var(--snice-color-border);
+}
+
+[part~="base"] {
+  border-radius: 0.75rem;
+  border: 1px solid var(--snice-color-border);
+}
+
+[part~="grid-line"] {
+  stroke-dasharray: 2 3;
+  stroke-width: 0.75px;
+  opacity: 0.8;
+}
+
+[part~="axis-label"] {
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  fill: var(--snice-color-text-secondary);
+}
+
+[part~="candle"] {
+  rx: 1.5px;
+  ry: 1.5px;
+}
+
+[part~="candle"]:hover {
+  opacity: 0.84;
+}
+
+[part~="wick"] {
+  stroke-width: 1px;
+}
+
+[part~="volume-bar"] {
+  rx: 1px;
+  ry: 1px;
+  opacity: 0.24;
+}
+
+[part~="crosshair-line"] {
+  stroke: var(--snice-color-text-tertiary);
+  stroke-dasharray: 3 3;
+  opacity: 0.8;
+}
+
+[part~="crosshair-label-background"] {
+  fill: var(--snice-color-surface-container-high);
+  stroke: var(--snice-color-border);
+  stroke-width: 0.5px;
+  rx: 4px;
+  ry: 4px;
+}
+
+[part~="crosshair-label"] {
+  fill: var(--snice-color-text);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+:host([zoom-enabled]) [part~="canvas"]:active {
+  cursor: grabbing;
+}
+
+/* macOS Liquid Glass floating OHLC popover (preserve base opacity visibility toggle) */
+[part~="tooltip"] {
+  border-radius: 0.5rem;
+  padding: 0.4375rem 0.625rem;
+  background: var(--snice-macos-glass-menu-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid var(--snice-macos-glass-border);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-md);
+  color: var(--snice-color-text);
+  font-size: 0.6875rem;
+}
+
+[part~="tooltip-value"] {
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,78 @@
+/* Material 3 Expressive / Google Finance candlestick chart skin */
+
+:host {
+  --candlestick-bg: var(--snice-color-surface-container-low);
+  --candlestick-bullish: var(--snice-color-success);
+  --candlestick-bearish: var(--snice-color-danger);
+  --candlestick-grid: var(--snice-color-border-subtle);
+  --candlestick-border: var(--snice-color-border-subtle);
+}
+
+[part~="base"] {
+  border-radius: 1rem;
+  border: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="grid-line"] {
+  stroke-dasharray: 2 4;
+  opacity: 0.75;
+}
+
+[part~="axis-label"] {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  fill: var(--snice-color-text-secondary);
+}
+
+[part~="candle"] {
+  rx: 2px;
+  ry: 2px;
+}
+
+[part~="candle"]:hover {
+  opacity: 0.82;
+}
+
+[part~="volume-bar"] {
+  rx: 2px;
+  ry: 2px;
+  opacity: 0.28;
+}
+
+[part~="crosshair-line"] {
+  stroke: var(--snice-color-primary);
+  stroke-dasharray: 4 3;
+  opacity: 0.65;
+}
+
+[part~="crosshair-label-background"] {
+  fill: var(--snice-m3-secondary-container, var(--snice-color-surface-container-high));
+  stroke: var(--snice-color-border-subtle);
+  rx: 6px;
+  ry: 6px;
+}
+
+[part~="crosshair-label"] {
+  fill: var(--snice-m3-on-secondary-container, var(--snice-color-text));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+:host([zoom-enabled]) [part~="canvas"]:active {
+  cursor: grabbing;
+}
+
+/* M3 Rich Tooltip (preserve base opacity visibility toggle) */
+[part~="tooltip"] {
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-md);
+  color: var(--snice-color-text);
+}
+
+[part~="tooltip-value"] {
+  font-variant-numeric: tabular-nums;
+}

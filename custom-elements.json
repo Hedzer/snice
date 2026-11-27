@@ -7233,7 +7233,7 @@
               "reflects": true
             },
             {
-              "name": "bearishcolor",
+              "name": "bearish-color",
               "fieldName": "bearishColor",
               "type": {
                 "text": "string"
@@ -7241,7 +7241,7 @@
               "reflects": true
             },
             {
-              "name": "bullishcolor",
+              "name": "bullish-color",
               "fieldName": "bullishColor",
               "type": {
                 "text": "string"
@@ -7249,7 +7249,7 @@
               "reflects": true
             },
             {
-              "name": "showcrosshair",
+              "name": "show-crosshair",
               "fieldName": "showCrosshair",
               "type": {
                 "text": "boolean"
@@ -7257,7 +7257,7 @@
               "reflects": true
             },
             {
-              "name": "showgrid",
+              "name": "show-grid",
               "fieldName": "showGrid",
               "type": {
                 "text": "boolean"
@@ -7265,7 +7265,7 @@
               "reflects": true
             },
             {
-              "name": "showvolume",
+              "name": "show-volume",
               "fieldName": "showVolume",
               "type": {
                 "text": "boolean"
@@ -7273,7 +7273,7 @@
               "reflects": true
             },
             {
-              "name": "timeformat",
+              "name": "time-format",
               "fieldName": "timeFormat",
               "type": {
                 "text": "'auto' | 'date' | 'time' | 'datetime' | 'month' | 'year'"
@@ -7281,7 +7281,7 @@
               "reflects": true
             },
             {
-              "name": "yaxisformat",
+              "name": "y-axis-format",
               "fieldName": "yAxisFormat",
               "type": {
                 "text": "'number' | 'currency' | 'percent'"
@@ -7289,7 +7289,7 @@
               "reflects": true
             },
             {
-              "name": "zoomenabled",
+              "name": "zoom-enabled",
               "fieldName": "zoomEnabled",
               "type": {
                 "text": "boolean"

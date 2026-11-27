@@ -2882,32 +2882,32 @@ export const ANALYZER_CONTRACTS = {
           "type": "boolean",
           "literals": []
         },
-        "bearishcolor": {
+        "bearish-color": {
           "property": "bearishColor",
           "type": "string",
           "literals": []
         },
-        "bullishcolor": {
+        "bullish-color": {
           "property": "bullishColor",
           "type": "string",
           "literals": []
         },
-        "showcrosshair": {
+        "show-crosshair": {
           "property": "showCrosshair",
           "type": "boolean",
           "literals": []
         },
-        "showgrid": {
+        "show-grid": {
           "property": "showGrid",
           "type": "boolean",
           "literals": []
         },
-        "showvolume": {
+        "show-volume": {
           "property": "showVolume",
           "type": "boolean",
           "literals": []
         },
-        "timeformat": {
+        "time-format": {
           "property": "timeFormat",
           "type": "'auto' | 'date' | 'time' | 'datetime' | 'month' | 'year'",
           "literals": [
@@ -2919,7 +2919,7 @@ export const ANALYZER_CONTRACTS = {
             "year"
           ]
         },
-        "yaxisformat": {
+        "y-axis-format": {
           "property": "yAxisFormat",
           "type": "'number' | 'currency' | 'percent'",
           "literals": [
@@ -2928,7 +2928,7 @@ export const ANALYZER_CONTRACTS = {
             "percent"
           ]
         },
-        "zoomenabled": {
+        "zoom-enabled": {
           "property": "zoomEnabled",
           "type": "boolean",
           "literals": []
@@ -2942,12 +2942,12 @@ export const ANALYZER_CONTRACTS = {
         },
         "bearishColor": {
           "type": "string",
-          "attribute": "bearishcolor",
+          "attribute": "bearish-color",
           "structured": false
         },
         "bullishColor": {
           "type": "string",
-          "attribute": "bullishcolor",
+          "attribute": "bullish-color",
           "structured": false
         },
         "data": {
@@ -2957,32 +2957,32 @@ export const ANALYZER_CONTRACTS = {
         },
         "showCrosshair": {
           "type": "boolean",
-          "attribute": "showcrosshair",
+          "attribute": "show-crosshair",
           "structured": false
         },
         "showGrid": {
           "type": "boolean",
-          "attribute": "showgrid",
+          "attribute": "show-grid",
           "structured": false
         },
         "showVolume": {
           "type": "boolean",
-          "attribute": "showvolume",
+          "attribute": "show-volume",
           "structured": false
         },
         "timeFormat": {
           "type": "'auto' | 'date' | 'time' | 'datetime' | 'month' | 'year'",
-          "attribute": "timeformat",
+          "attribute": "time-format",
           "structured": false
         },
         "yAxisFormat": {
           "type": "'number' | 'currency' | 'percent'",
-          "attribute": "yaxisformat",
+          "attribute": "y-axis-format",
           "structured": false
         },
         "zoomEnabled": {
           "type": "boolean",
-          "attribute": "zoomenabled",
+          "attribute": "zoom-enabled",
           "structured": false
         }
       },

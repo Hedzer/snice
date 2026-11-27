@@ -1108,27 +1108,27 @@
           "description": "animation: boolean"
         },
         {
-          "name": "bearishcolor",
+          "name": "bearish-color",
           "description": "bearishColor: string"
         },
         {
-          "name": "bullishcolor",
+          "name": "bullish-color",
           "description": "bullishColor: string"
         },
         {
-          "name": "showcrosshair",
+          "name": "show-crosshair",
           "description": "showCrosshair: boolean"
         },
         {
-          "name": "showgrid",
+          "name": "show-grid",
           "description": "showGrid: boolean"
         },
         {
-          "name": "showvolume",
+          "name": "show-volume",
           "description": "showVolume: boolean"
         },
         {
-          "name": "timeformat",
+          "name": "time-format",
           "description": "timeFormat: 'auto' | 'date' | 'time' | 'datetime' | 'month' | 'year'",
           "values": [
             {
@@ -1152,7 +1152,7 @@
           ]
         },
         {
-          "name": "yaxisformat",
+          "name": "y-axis-format",
           "description": "yAxisFormat: 'number' | 'currency' | 'percent'",
           "values": [
             {
@@ -1167,7 +1167,7 @@
           ]
         },
         {
-          "name": "zoomenabled",
+          "name": "zoom-enabled",
           "description": "zoomEnabled: boolean"
         }
       ]
