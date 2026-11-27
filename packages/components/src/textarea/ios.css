@@ -273,6 +273,11 @@
   color: var(--snice-color-primary);
 }
 
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  border-width: 1.75px;
+}
+
 :host([size="small"]) [part~="spinner"] {
   top: 0.5625rem;
   right: 0.625rem;

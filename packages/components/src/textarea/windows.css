@@ -99,7 +99,7 @@
 
 /* Variants — Filled & Underlined */
 :host([variant="filled"]) [part~="textarea"] {
-  background: var(--snice-color-surface-container);
+  background: color-mix(in srgb, var(--snice-color-text) 5%, var(--snice-color-surface-container-high));
   border-color: transparent transparent var(--snice-win-stroke-input-bottom);
   border-radius: 4px;
   box-shadow: none;
@@ -250,7 +250,7 @@
 
 :host([variant="filled"]) [part~="textarea-loading"]:disabled,
 :host([variant="filled"]) [part~="textarea-loading"]:disabled:hover {
-  background: var(--snice-color-surface-container);
+  background: color-mix(in srgb, var(--snice-color-text) 5%, var(--snice-color-surface-container-high));
   border-color: transparent transparent var(--snice-win-stroke-input-bottom);
   color: var(--snice-color-text);
   box-shadow: none;
@@ -291,6 +291,11 @@
   width: 0.875rem;
   height: 0.875rem;
   color: var(--snice-color-primary);
+}
+
+[part~="spinner"]::after {
+  box-sizing: border-box;
+  border-width: 1.5px;
 }
 
 :host([size="small"]) [part~="spinner"] {
