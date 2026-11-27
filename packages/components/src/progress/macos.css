@@ -1,0 +1,11 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-progress (NSProgressIndicator) */
+[part~="base"] {
+  height: 6px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+}
+
+[part~="bar"] {
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}

@@ -1,0 +1,51 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-switch (38x22px compact NSSwitch) */
+:host {
+  min-height: 1.5rem;
+}
+
+[part~="track"] {
+  min-width: 2.375rem;
+  height: 1.375rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: inset 0 1px 2px hsl(0 0% 0% / 0.12);
+  transition: background-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease);
+}
+
+[part~="track-checked"] {
+  background: var(--snice-color-primary);
+  border-color: transparent;
+  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.16);
+}
+
+[part~="thumb"] {
+  top: 50%;
+  left: 2px;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 9999px;
+  background: hsl(0 0% 100%);
+  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.22), 0 0.5px 1px hsl(0 0% 0% / 0.12);
+  transform: translateY(-50%);
+  transition:
+    left var(--snice-transition-medium, 220ms) var(--snice-ease-spring, ease),
+    width var(--snice-transition-fast, 140ms) ease,
+    background-color var(--snice-transition-fast, 140ms) ease;
+}
+
+[part~="thumb-checked"] {
+  left: calc(100% - 1.125rem - 2px);
+}
+
+:host([data-macos-pressed="true"]) [part~="thumb"] {
+  width: 1.375rem;
+  background: var(--snice-macos-glass-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-sm);
+}
+
+:host([data-macos-focus="keyboard"]) [part~="track"] {
+  box-shadow: var(--snice-macos-focus-halo);
+}

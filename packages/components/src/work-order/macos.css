@@ -1,0 +1,12 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-work-order */
+[part~="base"] {
+  border-radius: 12px;
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+}
+
+[part~="status"],
+[part~="priority"],
+[part~="sign-button"] {
+  border-radius: 6px;
+}

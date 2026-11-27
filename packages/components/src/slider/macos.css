@@ -1,0 +1,35 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-slider (NSSlider + Glass Lens Thumb) */
+[part~="track"] {
+  height: 4px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+}
+
+[part~="fill"] {
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+[part~="thumb"] {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  background: hsl(0 0% 100%);
+  border: 0.5px solid hsl(0 0% 0% / 0.14);
+  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.22);
+  transition:
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-spring, ease),
+    background-color var(--snice-transition-fast, 140ms) ease;
+}
+
+:host([data-macos-pressed="true"]) [part~="thumb"] {
+  transform: translate(-50%, -50%) scale(1.22);
+  background: var(--snice-macos-glass-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-sm);
+}
+
+:host([data-macos-focus="keyboard"]) [part~="thumb"] {
+  box-shadow: var(--snice-macos-focus-halo);
+}

@@ -1,0 +1,23 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-card (Opaque Content Group Box, 12px concentric radius, 0 blur) */
+:host {
+  --card-border-radius: 12px;
+  --card-bg: var(--snice-color-background-element);
+  --card-shadow: var(--snice-shadow-xs);
+}
+
+[part~="base"] {
+  border-radius: 12px;
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="base"]::before {
+  display: none;
+}
+
+[part~="header"] {
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}

@@ -1,0 +1,55 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-button (Compact 26px Desktop Push Button) */
+[part~="base"] {
+  height: 1.75rem;
+  min-height: 1.75rem;
+  padding: 0 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.25;
+  background: var(--snice-macos-control-bg);
+  color: var(--snice-color-text);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-macos-control-shadow);
+  transition:
+    background-color var(--snice-transition-fast, 140ms) ease,
+    box-shadow var(--snice-transition-fast, 140ms) ease,
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease);
+}
+
+[part~="base"]:active {
+  transform: scale(0.985);
+}
+
+[part~="base"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host([data-macos-focus="keyboard"]) [part~="base"] {
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host([variant="primary"]) [part~="base"] {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 82%, black);
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.28), 0 0.5px 1.5px hsl(0 0% 0% / 0.2);
+}
+
+:host([variant="danger"]) [part~="base"] {
+  background: var(--snice-color-danger);
+  color: hsl(0 0% 100%);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 82%, black);
+}
+
+:host([outline]) [part~="base"] {
+  background: transparent;
+  color: var(--snice-color-primary);
+  border: 1px solid color-mix(in srgb, var(--snice-color-primary) 45%, var(--snice-color-border));
+  box-shadow: none;
+}
+
+:host([pill]) [part~="base"] {
+  border-radius: 9999px;
+}

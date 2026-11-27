@@ -1,0 +1,26 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-kanban (AppKit Column View + 10px Cards) */
+[part~="column"] {
+  border-radius: 12px;
+  background: var(--snice-color-surface-container);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  padding: 0.5rem;
+}
+
+[part~="column-count"] {
+  border-radius: 9999px;
+  background: var(--snice-macos-control-bg);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-text-secondary);
+  font-size: 0.6875rem;
+}
+
+[part~="card"] {
+  border-radius: 8px;
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="card-label"] {
+  border-radius: 4px;
+}

@@ -1,0 +1,21 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-tab (Compact 22px NSSegmentedControl Segment) */
+:host {
+  position: relative;
+  z-index: 1;
+}
+
+[part~="tab"] {
+  min-height: 1.375rem;
+  padding: 0.1875rem 0.6875rem;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+  background: transparent;
+  transition: color var(--snice-transition-fast, 140ms) ease;
+}
+
+:host([selected]) [part~="tab"] {
+  color: var(--snice-color-text);
+  font-weight: 600;
+}

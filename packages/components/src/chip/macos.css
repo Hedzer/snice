@@ -1,0 +1,23 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-chip (Compact Token Capsule) */
+[part~="base"] {
+  min-height: 1.5rem;
+  padding: 0 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--snice-macos-control-bg);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-macos-control-shadow);
+  color: var(--snice-color-text);
+}
+
+[part~="base-selected"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 42%, transparent);
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+:host([data-macos-focus="keyboard"]) [part~="base"] {
+  box-shadow: var(--snice-macos-focus-halo);
+}

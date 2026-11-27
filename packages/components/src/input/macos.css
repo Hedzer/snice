@@ -1,0 +1,28 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-input (Compact 26px NSTextField + Soft Accent Halo) */
+[part~="label"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+[part~="input"] {
+  height: 1.75rem;
+  min-height: 1.75rem;
+  padding: 0 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  background: var(--snice-macos-control-bg);
+  color: var(--snice-color-text);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.08);
+  transition:
+    border-color var(--snice-transition-fast, 140ms) ease,
+    box-shadow var(--snice-transition-fast, 140ms) ease;
+}
+
+[part~="input"]:focus {
+  outline: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-macos-focus-halo);
+}

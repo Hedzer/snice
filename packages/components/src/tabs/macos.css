@@ -1,0 +1,41 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-tabs (NSSegmentedControl Capsule + Sliding Glass Pill) */
+[part~="nav-container"] {
+  border-bottom: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--snice-color-text) 7%, transparent);
+  border: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="nav-track"] {
+  position: relative;
+  min-height: 1.5rem;
+  gap: 1px;
+}
+
+[part~="indicator"] {
+  display: none;
+}
+
+[part~="pill"] {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 5px;
+  background: var(--snice-macos-control-bg);
+  box-shadow: var(--snice-macos-control-shadow);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 0;
+  transition:
+    transform var(--snice-transition-medium, 220ms) var(--snice-ease-spring, ease),
+    width var(--snice-transition-medium, 220ms) var(--snice-ease-spring, ease),
+    opacity 120ms ease;
+}
+
+[part~="panels"] {
+  padding-top: 0.75rem;
+}

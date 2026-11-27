@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en" data-platform="macos">
+<head>
+  <meta charset="utf-8" />
+  <title>macOS 26+ Liquid Glass / AppKit Conformance Fixture</title>
+  <link rel="stylesheet" href="/dist/components/theme/core.css" />
+  <link rel="stylesheet" href="/dist/components/theme/dark.css" />
+  <link rel="stylesheet" href="/dist/components/theme/platforms/macos-scoped.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      min-height: 1600px;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+      font-family: var(--snice-font-family);
+      font-size: var(--snice-font-size-md);
+    }
+    .grid { display: grid; gap: 16px; max-width: 960px; }
+    .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  </style>
+  <style id="brand-css"></style>
+</head>
+<body>
+  <div class="grid">
+    <snice-nav id="mac-nav" orientation="horizontal"></snice-nav>
+
+    <div class="row">
+      <snice-button id="btn-primary" variant="primary">Apply</snice-button>
+      <snice-button id="btn-default">Cancel</snice-button>
+      <snice-button id="btn-outline" outline>Outline</snice-button>
+    </div>
+
+    <div class="row">
+      <snice-switch id="sw-mac" label="Stage Manager" checked></snice-switch>
+      <snice-checkbox id="cb-mac" label="Show status bar" checked></snice-checkbox>
+      <snice-radio id="rad-mac" name="mac-r" label="Automatic" checked></snice-radio>
+      <snice-chip id="chip-mac" label="AppKit" selectable></snice-chip>
+    </div>
+
+    <div class="row">
+      <snice-input id="inp-mac" label="Window title" placeholder="Untitled.swift"></snice-input>
+      <snice-slider id="sld-mac" label="Sidebar width" value="50" min="0" max="100"></snice-slider>
+    </div>
+
+    <snice-tabs id="tabs-mac">
+      <snice-tab slot="nav">General</snice-tab>
+      <snice-tab slot="nav">Appearance</snice-tab>
+      <snice-tab-panel>General preferences</snice-tab-panel>
+      <snice-tab-panel>Appearance preferences</snice-tab-panel>
+    </snice-tabs>
+
+    <snice-card id="card-mac">
+      <span slot="header">AppKit Content Group</span>
+      <p>Opaque desktop content container beneath floating Liquid Glass chrome.</p>
+    </snice-card>
+
+    <snice-menu id="menu-mac" open>
+      <snice-menu-item>New Window</snice-menu-item>
+      <snice-menu-item>Settings…</snice-menu-item>
+    </snice-menu>
+
+    <snice-table id="table-mac"></snice-table>
+    <snice-kanban id="kanban-mac"></snice-kanban>
+    <snice-calendar id="cal-mac"></snice-calendar>
+  </div>
+
+  <script type="module">
+    import '/dist/components/button/snice-button.js';
+    import '/dist/components/switch/snice-switch.js';
+    import '/dist/components/checkbox/snice-checkbox.js';
+    import '/dist/components/radio/snice-radio.js';
+    import '/dist/components/chip/snice-chip.js';
+    import '/dist/components/input/snice-input.js';
+    import '/dist/components/slider/snice-slider.js';
+    import '/dist/components/tabs/snice-tabs.js';
+    import '/dist/components/tabs/snice-tab.js';
+    import '/dist/components/tabs/snice-tab-panel.js';
+    import '/dist/components/card/snice-card.js';
+    import '/dist/components/nav/snice-nav.js';
+    import '/dist/components/menu/snice-menu.js';
+    import '/dist/components/menu/snice-menu-item.js';
+    import '/dist/components/table/snice-table.js';
+    import '/dist/components/kanban/snice-kanban.js';
+    import '/dist/components/calendar/snice-calendar.js';
+    import { enableRuntimePlatformBehaviors } from '/dist/components/platform-behaviors/runtime.js';
+
+    const nav = document.getElementById('mac-nav');
+    nav.update([
+      { name: 'recents', title: 'Recents', href: '#recents' },
+      { name: 'desktop', title: 'Desktop', href: '#desktop' },
+      { name: 'icloud', title: 'iCloud Drive', href: '#icloud' },
+    ], undefined, 'recents');
+
+    const table = document.getElementById('table-mac');
+    table.columns = [
+      { key: 'name', label: 'Name', type: 'text' },
+      { key: 'kind', label: 'Kind', type: 'text' },
+    ];
+    table.data = [
+      { name: 'Project.xcodeproj', kind: 'Xcode Project' },
+      { name: 'README.md', kind: 'Markdown Document' },
+    ];
+
+    const kanban = document.getElementById('kanban-mac');
+    kanban.columns = [
+      { id: 'draft', title: 'Draft', cards: [{ id: '1', title: 'AppKit Density' }] },
+      { id: 'ship', title: 'Shipped', cards: [{ id: '2', title: 'Liquid Glass Sidebar' }] },
+    ];
+
+    window.__macHandle = enableRuntimePlatformBehaviors(document);
+    window.__macReady = Promise.all([
+      customElements.whenDefined('snice-button'),
+      customElements.whenDefined('snice-switch'),
+      customElements.whenDefined('snice-slider'),
+      customElements.whenDefined('snice-tabs'),
+      customElements.whenDefined('snice-nav'),
+      customElements.whenDefined('snice-table'),
+    ]).then(() => new Promise((r) => setTimeout(r, 80)));
+  </script>
+</body>
+</html>

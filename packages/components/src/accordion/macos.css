@@ -1,0 +1,13 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-accordion (NSDisclosureGroup) */
+[part~="base"] {
+  border-radius: 10px;
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  overflow: hidden;
+}
+
+[part~="header"] {
+  min-height: 2rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}

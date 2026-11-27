@@ -1,0 +1,8 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-alert */
+[part~="base"] {
+  border-radius: 10px;
+  background: var(--snice-color-surface-container);
+  border: 0.5px solid var(--snice-color-border);
+  color: var(--snice-color-text);
+  font-size: 0.8125rem;
+}

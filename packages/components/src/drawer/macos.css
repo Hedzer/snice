@@ -1,0 +1,15 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-drawer (Floating Liquid Glass Inspector / Sidebar) */
+[part~="panel"] {
+  border-radius: 12px;
+  background: var(--snice-macos-glass-sidebar-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid var(--snice-macos-glass-border);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-lg);
+}
+
+[part~="header"] {
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  font-size: 0.875rem;
+  font-weight: 600;
+}

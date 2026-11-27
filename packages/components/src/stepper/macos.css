@@ -1,0 +1,6 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-stepper */
+[part~="step-indicator"] {
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}

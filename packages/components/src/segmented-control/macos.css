@@ -1,0 +1,20 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-segmented-control (NSSegmentedControl) */
+[part~="base"] {
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--snice-color-text) 7%, transparent);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  padding: 2px;
+}
+
+[part~="indicator"] {
+  border-radius: 5px;
+  background: var(--snice-macos-control-bg);
+  box-shadow: var(--snice-macos-control-shadow);
+}
+
+[part~="segment"] {
+  min-height: 1.375rem;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
