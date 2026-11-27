@@ -1,0 +1,161 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-empty-state (Fluent 2 Layered Icon Tile + Accent Button) */
+:host {
+  font-family: var(--snice-font-family);
+  --snice-font-size-4xl: 2rem;
+  --snice-font-size-3xl: 1.5rem;
+}
+
+[part~="base"] {
+  padding: 2.25rem 1.75rem;
+  animation-duration: var(--snice-transition-medium, 187ms);
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+}
+
+:host([size="small"]) [part~="base"] {
+  padding: 1.5rem 1.25rem;
+}
+
+:host([size="large"]) [part~="base"] {
+  padding: 3rem 2rem;
+}
+
+/* Suppress base rotating dashed ring — crisp Fluent 8px neutral icon tile */
+[part~="icon"] {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: var(--snice-border-radius-lg, 8px);
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 1.25rem;
+}
+
+[part~="icon"]::before {
+  content: none;
+  animation: none;
+  border: none;
+}
+
+:host([size="small"]) [part~="icon"] {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 6px;
+  margin-bottom: 0.875rem;
+}
+
+:host([size="large"]) [part~="icon"] {
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+[part~="title"] {
+  font-family: var(--snice-font-family-display, var(--snice-font-family));
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: var(--snice-tracking-tight, -0.01em);
+  color: var(--snice-color-text);
+  margin-bottom: 0.375rem;
+}
+
+:host([size="small"]) [part~="title"] {
+  font-size: 1rem;
+}
+
+:host([size="large"]) [part~="title"] {
+  font-size: 1.5rem;
+}
+
+[part~="description"] {
+  font-family: var(--snice-font-family);
+  font-size: var(--snice-font-size-md, 0.875rem);
+  line-height: 1.45;
+  color: var(--snice-color-text-secondary);
+  max-width: 28rem;
+  margin-bottom: 1.25rem;
+}
+
+:host([size="small"]) [part~="description"] {
+  font-size: 0.8125rem;
+  margin-bottom: 1rem;
+}
+
+:host([size="large"]) [part~="description"] {
+  font-size: 0.9375rem;
+  margin-bottom: 1.5rem;
+}
+
+[part~="action"] {
+  box-sizing: border-box;
+  min-height: 2rem;
+  padding: 0 0.875rem;
+  border-radius: var(--snice-border-radius-md, 4px);
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent, hsl(0 0% 100%));
+  border: 1px solid color-mix(in srgb, hsl(0 0% 100%) 10%, transparent);
+  border-bottom-color: color-mix(in srgb, hsl(0 0% 0%) 32%, transparent);
+  font-family: var(--snice-font-family);
+  font-size: var(--snice-font-size-md, 0.875rem);
+  font-weight: 400;
+  transition:
+    background-color var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1),
+    opacity var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1);
+}
+
+:host([size="small"]) [part~="action"] {
+  min-height: 1.625rem;
+  padding: 0 0.625rem;
+  font-size: 0.75rem;
+}
+
+:host([size="large"]) [part~="action"] {
+  min-height: 2.5rem;
+  padding: 0 1.25rem;
+  font-size: 0.9375rem;
+}
+
+[part~="action"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 90%, var(--snice-color-surface));
+}
+
+[part~="action"]:active {
+  background: color-mix(in srgb, var(--snice-color-primary) 80%, var(--snice-color-surface));
+  opacity: 0.88;
+  transform: none;
+}
+
+[part~="action"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="base"] {
+    animation: none;
+  }
+
+  [part~="action"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="icon"] {
+    background: Canvas;
+    border-color: CanvasText;
+    color: CanvasText;
+  }
+
+  [part~="action"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: ButtonBorder;
+  }
+
+  [part~="action"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}

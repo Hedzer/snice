@@ -1,0 +1,146 @@
+/* Android Material 3 Expressive — snice-empty-state (M3 Expressive Tonal Squircle Empty State) */
+:host {
+  font-family: var(--snice-font-family);
+  --snice-font-size-4xl: 2.5rem;
+  --snice-font-size-3xl: 1.875rem;
+}
+
+[part~="base"] {
+  padding: 3rem 2rem;
+  animation-timing-function: var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host([size="small"]) [part~="base"] {
+  padding: 2rem 1.5rem;
+}
+
+:host([size="large"]) [part~="base"] {
+  padding: 4rem 2.5rem;
+}
+
+/* Suppress base rotating dashed ring — M3 Expressive 28px tonal squircle icon container */
+[part~="icon"] {
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: var(--snice-border-radius-xl, 28px);
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  margin-bottom: 1.5rem;
+}
+
+[part~="icon"]::before {
+  content: none;
+  animation: none;
+  border: none;
+}
+
+:host([size="small"]) [part~="icon"] {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+}
+
+:host([size="large"]) [part~="icon"] {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 32px;
+  margin-bottom: 1.75rem;
+}
+
+[part~="title"] {
+  font-family: var(--snice-font-family-display, var(--snice-font-family));
+  font-size: 1.375rem;
+  font-weight: 500;
+  letter-spacing: var(--snice-tracking-tight, -0.01em);
+  color: var(--snice-color-text);
+  margin-bottom: 0.5rem;
+}
+
+:host([size="small"]) [part~="title"] {
+  font-size: 1.125rem;
+}
+
+:host([size="large"]) [part~="title"] {
+  font-size: 1.75rem;
+}
+
+[part~="description"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--snice-color-text-secondary);
+  max-width: 28rem;
+  margin-bottom: 1.5rem;
+}
+
+:host([size="small"]) [part~="description"] {
+  font-size: 0.8125rem;
+  margin-bottom: 1rem;
+}
+
+:host([size="large"]) [part~="description"] {
+  font-size: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+[part~="action"] {
+  box-sizing: border-box;
+  min-height: 2.5rem;
+  padding: 0 1.5rem;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary, var(--snice-color-text-inverse));
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition:
+    border-radius var(--snice-transition-fast, 200ms) var(--snice-m3-spring-spatial, cubic-bezier(0.2, 0, 0, 1)),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    background-color var(--snice-transition-fast, 160ms) ease;
+}
+
+:host([size="small"]) [part~="action"] {
+  min-height: 2.25rem;
+  padding: 0 1.125rem;
+  font-size: 0.8125rem;
+}
+
+:host([size="large"]) [part~="action"] {
+  min-height: 3rem;
+  padding: 0 1.75rem;
+  font-size: 0.9375rem;
+}
+
+[part~="action"]:hover {
+  background: var(--snice-color-primary);
+  box-shadow:
+    var(--snice-shadow-xs),
+    inset 0 0 0 999px color-mix(in srgb, var(--snice-m3-on-primary, var(--snice-color-text-inverse)) 8%, transparent);
+}
+
+[part~="action"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  box-shadow:
+    inset 0 0 0 999px color-mix(in srgb, var(--snice-m3-on-primary, var(--snice-color-text-inverse)) 10%, transparent);
+}
+
+[part~="action"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 3px) solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="base"] {
+    animation: none;
+  }
+
+  [part~="action"] {
+    transition: none;
+  }
+
+  [part~="action"]:active {
+    border-radius: 9999px;
+  }
+}
