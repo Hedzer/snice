@@ -1,0 +1,21 @@
+/* iOS 26+ Liquid Glass / UIKit sortable list container skin */
+
+:host {
+  --snice-transition-fast: 180ms;
+}
+
+[part~="base"] {
+  padding: 0.625rem;
+  gap: 0.5rem;
+  border-radius: 1.25rem;
+  background: var(--snice-color-surface-container-low);
+  border: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host([direction="horizontal"]) [part~="base"] {
+  gap: 0.625rem;
+}
+
+:host([disabled]) {
+  opacity: 0.45;
+}

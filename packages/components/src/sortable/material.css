@@ -1,0 +1,21 @@
+/* Material 3 Expressive sortable list container skin */
+
+:host {
+  --snice-transition-fast: 160ms;
+}
+
+[part~="base"] {
+  padding: 0.625rem;
+  gap: 0.5rem;
+  border-radius: 1rem;
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
+}
+
+:host([direction="horizontal"]) [part~="base"] {
+  gap: 0.625rem;
+}
+
+:host([disabled]) {
+  opacity: 0.38;
+}
