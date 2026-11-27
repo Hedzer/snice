@@ -81,7 +81,7 @@
 
 /* Compact badge with explicit white ink */
 [part~="badge"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
   border-radius: 9999px;
   padding: 0.125rem 0.5625rem;
@@ -146,8 +146,8 @@
 [part~="cta-primary"] {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--snice-color-primary) 88%, white),
-    var(--snice-color-primary)
+    color-mix(in srgb, var(--snice-macos-fill-primary) 88%, white),
+    var(--snice-macos-fill-primary)
   );
   border: 0.5px solid hsl(0 0% 100% / 0.16);
   box-shadow: 0 0.5px 1.5px hsl(0 0% 0% / 0.22), inset 0 0.5px 0 hsl(0 0% 100% / 0.22);

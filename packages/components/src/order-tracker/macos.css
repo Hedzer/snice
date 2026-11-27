@@ -73,15 +73,15 @@
 
 /* CRITICAL macOS dark-mode fix: explicit white ink + seed-derived halo */
 [part~="step-indicator-active"] {
-  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent 55%), var(--snice-color-primary);
-  border: 1px solid var(--snice-color-primary);
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent 55%), var(--snice-macos-fill-primary);
+  border: 1px solid var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-primary) 24%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-macos-fill-primary) 24%, transparent);
 }
 
 [part~="step-indicator-completed"] {
-  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent 55%), var(--snice-color-success);
-  border: 1px solid var(--snice-color-success);
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent 55%), var(--snice-macos-fill-success);
+  border: 1px solid var(--snice-macos-fill-success);
   color: hsl(0 0% 100%);
 }
 

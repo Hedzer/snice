@@ -226,8 +226,8 @@
   font-weight: 600;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--snice-color-primary) 88%, white),
-    var(--snice-color-primary)
+    color-mix(in srgb, var(--snice-macos-fill-primary) 88%, white),
+    var(--snice-macos-fill-primary)
   );
   border: 0.5px solid hsl(0 0% 100% / 0.16);
   color: hsl(0 0% 100%);

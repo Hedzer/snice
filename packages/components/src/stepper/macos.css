@@ -21,22 +21,22 @@
 }
 
 [part~="step-indicator"][part~="step-indicator-active"] {
-  background: var(--snice-color-primary);
-  border: 0.5px solid color-mix(in srgb, var(--snice-color-primary) 75%, black);
+  background: var(--snice-macos-fill-primary);
+  border: 0.5px solid color-mix(in srgb, var(--snice-macos-fill-primary) 75%, black);
   color: hsl(0 0% 100%);
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.28), 0 0.5px 1.5px hsl(0 0% 0% / 0.18);
 }
 
 [part~="step-indicator"][part~="step-indicator-completed"] {
-  background: var(--snice-color-success);
-  border: 0.5px solid color-mix(in srgb, var(--snice-color-success) 75%, black);
+  background: var(--snice-macos-fill-success);
+  border: 0.5px solid color-mix(in srgb, var(--snice-macos-fill-success) 75%, black);
   color: hsl(0 0% 100%);
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.25);
 }
 
 [part~="step-indicator"][part~="step-indicator-error"] {
-  background: var(--snice-color-danger);
-  border: 0.5px solid color-mix(in srgb, var(--snice-color-danger) 75%, black);
+  background: var(--snice-macos-fill-danger);
+  border: 0.5px solid color-mix(in srgb, var(--snice-macos-fill-danger) 75%, black);
   color: hsl(0 0% 100%);
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.25);
 }

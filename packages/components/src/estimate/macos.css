@@ -135,9 +135,9 @@
 }
 
 [part~="accept-button"] {
-  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent 55%), var(--snice-color-primary);
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent 55%), var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
-  border: 0.5px solid color-mix(in srgb, var(--snice-color-primary) 80%, hsl(0 0% 0%));
+  border: 0.5px solid color-mix(in srgb, var(--snice-macos-fill-primary) 80%, hsl(0 0% 0%));
   box-shadow: 0 0.5px 1px hsl(0 0% 0% / 0.18), inset 0 0.5px 0 hsl(0 0% 100% / 0.22);
 }
 
@@ -166,9 +166,9 @@
 }
 
 [part~="option-button"]:hover {
-  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent 55%), var(--snice-color-primary);
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent 55%), var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
-  border-color: var(--snice-color-primary);
+  border-color: var(--snice-macos-fill-primary);
 }
 
 :host([variant="creative"]) [part~="accept-button"],

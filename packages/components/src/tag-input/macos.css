@@ -68,7 +68,7 @@
 }
 
 [part~="tag-remove"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
 }
 
@@ -117,7 +117,7 @@
 [part~="suggestion"]:hover,
 [part~="suggestion-highlighted"],
 [part~="suggestion-highlighted"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
 }
 

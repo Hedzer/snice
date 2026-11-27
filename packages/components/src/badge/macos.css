@@ -70,21 +70,21 @@
 
 :host([variant="primary"]) [part~="badge"],
 :host([variant="info"]) [part~="badge"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
 }
 
 :host([variant="success"]) [part~="badge"] {
-  background: var(--snice-color-success);
+  background: var(--snice-macos-fill-success);
   color: hsl(0 0% 100%);
 }
 
 :host([variant="warning"]) [part~="badge"] {
   background: var(--snice-color-warning);
-  color: hsl(26 42% 10%);
+  color: var(--snice-macos-on-warning);
 }
 
 :host([variant="error"]) [part~="badge"] {
-  background: var(--snice-color-danger);
+  background: var(--snice-macos-fill-danger);
   color: hsl(0 0% 100%);
 }

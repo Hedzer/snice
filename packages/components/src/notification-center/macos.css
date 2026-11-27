@@ -30,7 +30,7 @@
 }
 
 [part~="badge-badge"] {
-  background: var(--snice-color-danger);
+  background: var(--snice-macos-fill-danger);
   color: hsl(0 0% 100%);
   font-weight: 600;
 }

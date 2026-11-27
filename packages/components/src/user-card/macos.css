@@ -45,7 +45,7 @@
   height: 4rem;
   font-size: 1.25rem;
   font-weight: 600;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--snice-color-primary) 86%, white), var(--snice-color-primary));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--snice-macos-fill-primary) 86%, white), var(--snice-macos-fill-primary));
   color: hsl(0 0% 100%);
 }
 
@@ -107,7 +107,7 @@
 }
 
 :host [part~="social-link"]:hover {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--snice-color-primary) 90%, white), var(--snice-color-primary));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--snice-macos-fill-primary) 90%, white), var(--snice-macos-fill-primary));
   border-color: transparent;
   color: hsl(0 0% 100%);
 }

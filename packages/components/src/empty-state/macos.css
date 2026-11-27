@@ -93,11 +93,11 @@
   border-radius: var(--snice-border-radius-md, 6px);
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, hsl(0 0% 100%) 16%, var(--snice-color-primary)) 0%,
-    var(--snice-color-primary) 100%
+    color-mix(in srgb, hsl(0 0% 100%) 16%, var(--snice-macos-fill-primary)) 0%,
+    var(--snice-macos-fill-primary) 100%
   );
   color: hsl(0 0% 100%);
-  border: 0.5px solid color-mix(in srgb, hsl(0 0% 0%) 14%, var(--snice-color-primary));
+  border: 0.5px solid color-mix(in srgb, hsl(0 0% 0%) 14%, var(--snice-macos-fill-primary));
   box-shadow: 0 0.5px 1px hsl(0 0% 0% / 0.16), inset 0 0.5px 0 hsl(0 0% 100% / 0.28);
   font-family: var(--snice-font-family);
   font-size: var(--snice-font-size-md, 0.8125rem);

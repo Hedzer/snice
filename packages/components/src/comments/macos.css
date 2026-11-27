@@ -42,7 +42,7 @@
   min-height: 1.75rem;
   padding: 0 0.75rem;
   border-radius: 6px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--snice-color-primary) 88%, white), var(--snice-color-primary));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--snice-macos-fill-primary) 88%, white), var(--snice-macos-fill-primary));
   color: hsl(0 0% 100%);
   box-shadow: 0 0.5px 1px hsl(0 0% 0% / 0.2), inset 0 0.5px 0 hsl(0 0% 100% / 0.25);
   font-size: 0.8125rem;

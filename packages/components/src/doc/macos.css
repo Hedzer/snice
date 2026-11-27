@@ -121,7 +121,7 @@
 
 /* macOS NSMenu Accent Hover — explicit white ink for light & dark */
 :host [part~="menu-item"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
 }
 

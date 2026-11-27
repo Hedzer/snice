@@ -43,8 +43,8 @@
 :host([variant="featured"]) [part~="base"] {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--snice-color-primary) 90%, white),
-    var(--snice-color-primary)
+    color-mix(in srgb, var(--snice-macos-fill-primary) 90%, white),
+    var(--snice-macos-fill-primary)
   );
   color: hsl(0 0% 100%);
   border: 0.5px solid hsl(0 0% 100% / 0.16);

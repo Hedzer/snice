@@ -303,7 +303,7 @@
 /* AppKit top-lit glossed accent selection with explicit white ink */
 :host [part~="day-selected"],
 :host [part~="day-today"][part~="day-selected"] {
-  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent), var(--snice-color-primary);
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent), var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
   font-weight: 600;
 }
@@ -356,7 +356,7 @@
 }
 
 :host [part~="year-cell-selected"] {
-  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent), var(--snice-color-primary);
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent), var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
   font-weight: 600;
 }

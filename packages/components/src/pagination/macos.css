@@ -77,8 +77,8 @@
 
 [part~="page"][part~="page-current"],
 :host([variant="text"]) [part~="page"][part~="page-current"] {
-  background: var(--snice-color-primary);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 75%, black);
+  background: var(--snice-macos-fill-primary);
+  border-color: color-mix(in srgb, var(--snice-macos-fill-primary) 75%, black);
   color: hsl(0 0% 100%);
   font-weight: 600;
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.28), 0 0.5px 1.5px hsl(0 0% 0% / 0.18);

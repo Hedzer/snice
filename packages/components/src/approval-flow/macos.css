@@ -28,8 +28,8 @@
 [part~="avatar-approved"] {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--snice-color-success) 88%, white),
-    var(--snice-color-success)
+    color-mix(in srgb, var(--snice-macos-fill-success) 88%, white),
+    var(--snice-macos-fill-success)
   );
   border: 1px solid transparent;
   color: hsl(0 0% 100%);
@@ -38,8 +38,8 @@
 [part~="avatar-rejected"] {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--snice-color-danger) 88%, white),
-    var(--snice-color-danger)
+    color-mix(in srgb, var(--snice-macos-fill-danger) 88%, white),
+    var(--snice-macos-fill-danger)
   );
   border: 1px solid transparent;
   color: hsl(0 0% 100%);
@@ -173,8 +173,8 @@
 [part~="button-approve"] {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--snice-color-success) 88%, white),
-    var(--snice-color-success)
+    color-mix(in srgb, var(--snice-macos-fill-success) 88%, white),
+    var(--snice-macos-fill-success)
   );
   color: hsl(0 0% 100%);
 }
@@ -182,8 +182,8 @@
 [part~="button-reject"] {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--snice-color-danger) 88%, white),
-    var(--snice-color-danger)
+    color-mix(in srgb, var(--snice-macos-fill-danger) 88%, white),
+    var(--snice-macos-fill-danger)
   );
   color: hsl(0 0% 100%);
 }

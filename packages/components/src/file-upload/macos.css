@@ -123,7 +123,7 @@
   border: 0.5px solid hsl(0 0% 0% / 0.12);
   background:
     linear-gradient(180deg, hsl(0 0% 100% / 0.16), transparent),
-    var(--snice-color-primary);
+    var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
   font-family: var(--snice-font-family);
   font-size: 0.8125rem;

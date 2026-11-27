@@ -65,9 +65,9 @@
 
 /* AppKit green Start push button with explicit white ink (dark-mode safe) */
 [part~="button"][part~="start-button"] {
-  background: var(--snice-color-success);
+  background: var(--snice-macos-fill-success);
   color: hsl(0 0% 100%);
-  border-color: color-mix(in srgb, var(--snice-color-success) 80%, hsl(0 0% 0%));
+  border-color: color-mix(in srgb, var(--snice-macos-fill-success) 80%, hsl(0 0% 0%));
   box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.22), var(--snice-shadow-xs);
 }
 

@@ -93,8 +93,8 @@
 :host [part~="button-start"] {
   width: 2.375rem;
   height: 2.375rem;
-  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
-  border-color: color-mix(in srgb, white 26%, var(--snice-color-primary));
+  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-macos-fill-primary)) 0%, var(--snice-macos-fill-primary) 100%);
+  border-color: color-mix(in srgb, white 26%, var(--snice-macos-fill-primary));
   color: hsl(0 0% 100%);
 }
 
@@ -105,8 +105,8 @@
 :host [part~="button-stop"] {
   width: 2.375rem;
   height: 2.375rem;
-  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-danger)) 0%, var(--snice-color-danger) 100%);
-  border-color: color-mix(in srgb, white 24%, var(--snice-color-danger));
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-macos-fill-danger)) 0%, var(--snice-macos-fill-danger) 100%);
+  border-color: color-mix(in srgb, white 24%, var(--snice-macos-fill-danger));
   color: hsl(0 0% 100%);
 }
 
@@ -118,7 +118,7 @@
 :host [part~="result"] {
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
-  background: color-mix(in srgb, var(--snice-color-success) 90%, black);
+  background: color-mix(in srgb, var(--snice-macos-fill-success) 90%, black);
   color: hsl(0 0% 100%);
   font-size: 0.8125rem;
   font-weight: 500;
@@ -128,7 +128,7 @@
 :host [part~="error-text"] {
   border-radius: 10px;
   padding: 0.75rem 1rem;
-  background: color-mix(in srgb, var(--snice-color-danger) 90%, black);
+  background: color-mix(in srgb, var(--snice-macos-fill-danger) 90%, black);
   color: hsl(0 0% 100%);
   font-size: 0.8125rem;
   font-weight: 500;

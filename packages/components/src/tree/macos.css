@@ -50,7 +50,7 @@
 
 /* Explicit white ink on saturated AppKit accent selection (never --snice-color-text-inverse!) */
 :host [part~="item-content"][part~="item-content-selected"] {
-  background-color: var(--snice-color-primary);
+  background-color: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
   font-weight: 500;
 }

@@ -113,10 +113,10 @@
   font-weight: 500;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, white 12%, var(--snice-color-primary)) 0%,
-    var(--snice-color-primary) 100%
+    color-mix(in srgb, white 12%, var(--snice-macos-fill-primary)) 0%,
+    var(--snice-macos-fill-primary) 100%
   );
-  border: 0.5px solid color-mix(in srgb, var(--snice-color-primary) 78%, black);
+  border: 0.5px solid color-mix(in srgb, var(--snice-macos-fill-primary) 78%, black);
   color: hsl(0 0% 100%);
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.32), 0 0.5px 1px hsl(0 0% 0% / 0.2);
   transition: filter 120ms ease, transform 120ms ease;
@@ -125,40 +125,40 @@
 :host([variant="info"]) [part~="action"] {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, white 12%, var(--snice-color-primary)) 0%,
-    var(--snice-color-primary) 100%
+    color-mix(in srgb, white 12%, var(--snice-macos-fill-primary)) 0%,
+    var(--snice-macos-fill-primary) 100%
   );
-  border-color: color-mix(in srgb, var(--snice-color-primary) 78%, black);
+  border-color: color-mix(in srgb, var(--snice-macos-fill-primary) 78%, black);
   color: hsl(0 0% 100%);
 }
 
 :host([variant="success"]) [part~="action"] {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, white 12%, var(--snice-color-success)) 0%,
-    var(--snice-color-success) 100%
+    color-mix(in srgb, white 12%, var(--snice-macos-fill-success)) 0%,
+    var(--snice-macos-fill-success) 100%
   );
-  border-color: color-mix(in srgb, var(--snice-color-success) 78%, black);
+  border-color: color-mix(in srgb, var(--snice-macos-fill-success) 78%, black);
   color: hsl(0 0% 100%);
 }
 
 :host([variant="warning"]) [part~="action"] {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, white 14%, var(--snice-color-warning)) 0%,
+    color-mix(in srgb, white 10%, var(--snice-color-warning)) 0%,
     var(--snice-color-warning) 100%
   );
   border-color: color-mix(in srgb, var(--snice-color-warning) 78%, black);
-  color: hsl(26 42% 10%);
+  color: var(--snice-macos-on-warning);
 }
 
 :host([variant="error"]) [part~="action"] {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, white 12%, var(--snice-color-danger)) 0%,
-    var(--snice-color-danger) 100%
+    color-mix(in srgb, white 12%, var(--snice-macos-fill-danger)) 0%,
+    var(--snice-macos-fill-danger) 100%
   );
-  border-color: color-mix(in srgb, var(--snice-color-danger) 78%, black);
+  border-color: color-mix(in srgb, var(--snice-macos-fill-danger) 78%, black);
   color: hsl(0 0% 100%);
 }
 

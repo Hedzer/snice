@@ -96,10 +96,10 @@
   padding: 0 12px;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, hsl(0 0% 100%) 16%, var(--snice-color-primary)) 0%,
-    var(--snice-color-primary) 100%
+    color-mix(in srgb, hsl(0 0% 100%) 16%, var(--snice-macos-fill-primary)) 0%,
+    var(--snice-macos-fill-primary) 100%
   );
-  border: 0.5px solid color-mix(in srgb, hsl(0 0% 0%) 16%, var(--snice-color-primary));
+  border: 0.5px solid color-mix(in srgb, hsl(0 0% 0%) 16%, var(--snice-macos-fill-primary));
   box-shadow:
     0 0.5px 1px hsl(0 0% 0% / 0.2),
     inset 0 0.5px 0 hsl(0 0% 100% / 0.35);
@@ -111,8 +111,8 @@
   opacity: 1;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, hsl(0 0% 100%) 22%, var(--snice-color-primary)) 0%,
-    color-mix(in srgb, hsl(0 0% 100%) 6%, var(--snice-color-primary)) 100%
+    color-mix(in srgb, hsl(0 0% 100%) 22%, var(--snice-macos-fill-primary)) 0%,
+    color-mix(in srgb, hsl(0 0% 100%) 6%, var(--snice-macos-fill-primary)) 100%
   );
   color: hsl(0 0% 100%);
 }
@@ -129,8 +129,8 @@
 }
 
 :host [part~="clear-button"]:hover {
-  background: var(--snice-color-danger);
-  border-color: var(--snice-color-danger);
+  background: var(--snice-macos-fill-danger);
+  border-color: var(--snice-macos-fill-danger);
   color: hsl(0 0% 100%);
 }
 

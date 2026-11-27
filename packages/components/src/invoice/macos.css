@@ -110,6 +110,7 @@
 /* CRITICAL modern dark-mode contrast fix: explicit white ink on saturated macOS blue */
 :host([variant="modern"]) [part~="header"] {
   border-radius: 12px 12px 0 0;
+  background: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
 }
 
@@ -119,7 +120,7 @@
 }
 
 :host([variant="modern"]) [part~="meta-label"] {
-  color: hsl(0 0% 100% / 0.78);
+  color: hsl(0 0% 100% / 0.88);
 }
 
 :host([variant="modern"]) [part~="status"] {

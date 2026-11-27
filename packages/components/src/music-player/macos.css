@@ -119,8 +119,8 @@
   border-radius: 9999px;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, white 16%, var(--snice-color-primary)) 0%,
-    var(--snice-color-primary) 100%
+    color-mix(in srgb, white 16%, var(--snice-macos-fill-primary)) 0%,
+    var(--snice-macos-fill-primary) 100%
   );
   color: hsl(0 0% 100%);
   box-shadow:

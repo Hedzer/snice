@@ -103,15 +103,15 @@
 /* Variant: primary */
 :host([variant="primary"]) [part~="primary"],
 :host([variant="primary"]) [part~="toggle"] {
-  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 80%, black);
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-macos-fill-primary)) 0%, var(--snice-macos-fill-primary) 100%);
+  border-color: color-mix(in srgb, var(--snice-macos-fill-primary) 80%, black);
   color: hsl(0 0% 100%);
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.32), 0 0.5px 1.5px hsl(0 0% 0% / 0.22);
 }
 
 :host([variant="primary"]) [part~="primary"]:hover,
 :host([variant="primary"]) [part~="toggle"]:hover {
-  background: linear-gradient(180deg, color-mix(in srgb, white 16%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, white 16%, var(--snice-macos-fill-primary)) 0%, var(--snice-macos-fill-primary) 100%);
   filter: brightness(1.04);
 }
 
@@ -122,15 +122,15 @@
 /* Variant: success */
 :host([variant="success"]) [part~="primary"],
 :host([variant="success"]) [part~="toggle"] {
-  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-success)) 0%, var(--snice-color-success) 100%);
-  border-color: color-mix(in srgb, var(--snice-color-success) 80%, black);
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-macos-fill-success)) 0%, var(--snice-macos-fill-success) 100%);
+  border-color: color-mix(in srgb, var(--snice-macos-fill-success) 80%, black);
   color: hsl(0 0% 100%);
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.32), 0 0.5px 1.5px hsl(0 0% 0% / 0.22);
 }
 
 :host([variant="success"]) [part~="primary"]:hover,
 :host([variant="success"]) [part~="toggle"]:hover {
-  background: linear-gradient(180deg, color-mix(in srgb, white 16%, var(--snice-color-success)) 0%, var(--snice-color-success) 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, white 16%, var(--snice-macos-fill-success)) 0%, var(--snice-macos-fill-success) 100%);
   filter: brightness(1.04);
 }
 
@@ -141,15 +141,15 @@
 /* Variant: warning */
 :host([variant="warning"]) [part~="primary"],
 :host([variant="warning"]) [part~="toggle"] {
-  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-warning)) 0%, var(--snice-color-warning) 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, white 10%, var(--snice-color-warning)) 0%, var(--snice-color-warning) 100%);
   border-color: color-mix(in srgb, var(--snice-color-warning) 78%, black);
-  color: hsl(26 42% 10%);
+  color: var(--snice-macos-on-warning);
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.36), 0 0.5px 1.5px hsl(0 0% 0% / 0.18);
 }
 
 :host([variant="warning"]) [part~="primary"]:hover,
 :host([variant="warning"]) [part~="toggle"]:hover {
-  background: linear-gradient(180deg, color-mix(in srgb, white 18%, var(--snice-color-warning)) 0%, var(--snice-color-warning) 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-warning)) 0%, var(--snice-color-warning) 100%);
   filter: brightness(1.04);
 }
 
@@ -160,15 +160,15 @@
 /* Variant: danger */
 :host([variant="danger"]) [part~="primary"],
 :host([variant="danger"]) [part~="toggle"] {
-  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-danger)) 0%, var(--snice-color-danger) 100%);
-  border-color: color-mix(in srgb, var(--snice-color-danger) 80%, black);
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-macos-fill-danger)) 0%, var(--snice-macos-fill-danger) 100%);
+  border-color: color-mix(in srgb, var(--snice-macos-fill-danger) 80%, black);
   color: hsl(0 0% 100%);
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.32), 0 0.5px 1.5px hsl(0 0% 0% / 0.22);
 }
 
 :host([variant="danger"]) [part~="primary"]:hover,
 :host([variant="danger"]) [part~="toggle"]:hover {
-  background: linear-gradient(180deg, color-mix(in srgb, white 16%, var(--snice-color-danger)) 0%, var(--snice-color-danger) 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, white 16%, var(--snice-macos-fill-danger)) 0%, var(--snice-macos-fill-danger) 100%);
   filter: brightness(1.04);
 }
 
@@ -299,7 +299,7 @@
 }
 
 [part~="action"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
 }
 

@@ -84,9 +84,9 @@
 /* Prominent Liquid Glass Capsules — clean translucent accent glass with
    optical 0.5px specular rim (no 2013 candy-bar gradients, no neon glow). */
 :host([variant="primary"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 92%, transparent);
+  background: color-mix(in srgb, var(--snice-macos-fill-primary) 92%, transparent);
   color: hsl(0 0% 100%);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 72%, hsl(0 0% 0% / 0.35));
+  border-color: color-mix(in srgb, var(--snice-macos-fill-primary) 72%, hsl(0 0% 0% / 0.35));
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.38),
     inset 0 -0.5px 0 hsl(0 0% 0% / 0.24),
@@ -94,9 +94,9 @@
 }
 
 :host([variant="primary"]) [part~="base"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 95%, transparent);
+  background: color-mix(in srgb, var(--snice-macos-fill-primary) 95%, transparent);
   color: hsl(0 0% 100%);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 72%, hsl(0 0% 0% / 0.35));
+  border-color: color-mix(in srgb, var(--snice-macos-fill-primary) 72%, hsl(0 0% 0% / 0.35));
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.44),
     inset 0 -0.5px 0 hsl(0 0% 0% / 0.24),
@@ -106,9 +106,9 @@
 }
 
 :host([variant="primary"]) [part~="base"]:active {
-  background: color-mix(in srgb, var(--snice-color-primary) 96%, black);
+  background: color-mix(in srgb, var(--snice-macos-fill-primary) 96%, black);
   color: hsl(0 0% 100%);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 72%, hsl(0 0% 0% / 0.35));
+  border-color: color-mix(in srgb, var(--snice-macos-fill-primary) 72%, hsl(0 0% 0% / 0.35));
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.24),
     inset 0 -0.5px 0 hsl(0 0% 0% / 0.24);
@@ -117,9 +117,9 @@
 }
 
 :host([variant="success"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-success) 92%, transparent);
+  background: color-mix(in srgb, var(--snice-macos-fill-success) 92%, transparent);
   color: hsl(0 0% 100%);
-  border-color: color-mix(in srgb, var(--snice-color-success) 72%, hsl(0 0% 0% / 0.35));
+  border-color: color-mix(in srgb, var(--snice-macos-fill-success) 72%, hsl(0 0% 0% / 0.35));
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.36),
     inset 0 -0.5px 0 hsl(0 0% 0% / 0.24),
@@ -127,9 +127,9 @@
 }
 
 :host([variant="success"]) [part~="base"]:hover {
-  background: color-mix(in srgb, var(--snice-color-success) 95%, transparent);
+  background: color-mix(in srgb, var(--snice-macos-fill-success) 95%, transparent);
   color: hsl(0 0% 100%);
-  border-color: color-mix(in srgb, var(--snice-color-success) 72%, hsl(0 0% 0% / 0.35));
+  border-color: color-mix(in srgb, var(--snice-macos-fill-success) 72%, hsl(0 0% 0% / 0.35));
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.42),
     inset 0 -0.5px 0 hsl(0 0% 0% / 0.24),
@@ -139,9 +139,9 @@
 }
 
 :host([variant="success"]) [part~="base"]:active {
-  background: color-mix(in srgb, var(--snice-color-success) 96%, black);
+  background: color-mix(in srgb, var(--snice-macos-fill-success) 96%, black);
   color: hsl(0 0% 100%);
-  border-color: color-mix(in srgb, var(--snice-color-success) 72%, hsl(0 0% 0% / 0.35));
+  border-color: color-mix(in srgb, var(--snice-macos-fill-success) 72%, hsl(0 0% 0% / 0.35));
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.24),
     inset 0 -0.5px 0 hsl(0 0% 0% / 0.24);
@@ -151,7 +151,7 @@
 
 :host([variant="warning"]) [part~="base"] {
   background: color-mix(in srgb, var(--snice-color-warning) 92%, transparent);
-  color: hsl(26 42% 10%);
+  color: var(--snice-macos-on-warning);
   border-color: color-mix(in srgb, var(--snice-color-warning) 72%, hsl(0 0% 0% / 0.3));
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.42),
@@ -161,7 +161,7 @@
 
 :host([variant="warning"]) [part~="base"]:hover {
   background: color-mix(in srgb, var(--snice-color-warning) 95%, transparent);
-  color: hsl(26 42% 10%);
+  color: var(--snice-macos-on-warning);
   border-color: color-mix(in srgb, var(--snice-color-warning) 72%, hsl(0 0% 0% / 0.3));
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.46),
@@ -173,7 +173,7 @@
 
 :host([variant="warning"]) [part~="base"]:active {
   background: color-mix(in srgb, var(--snice-color-warning) 96%, black);
-  color: hsl(26 42% 10%);
+  color: var(--snice-macos-on-warning);
   border-color: color-mix(in srgb, var(--snice-color-warning) 72%, hsl(0 0% 0% / 0.3));
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.26),
@@ -183,9 +183,9 @@
 }
 
 :host([variant="danger"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-danger) 92%, transparent);
+  background: color-mix(in srgb, var(--snice-macos-fill-danger) 92%, transparent);
   color: hsl(0 0% 100%);
-  border-color: color-mix(in srgb, var(--snice-color-danger) 72%, hsl(0 0% 0% / 0.35));
+  border-color: color-mix(in srgb, var(--snice-macos-fill-danger) 72%, hsl(0 0% 0% / 0.35));
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.36),
     inset 0 -0.5px 0 hsl(0 0% 0% / 0.24),
@@ -193,9 +193,9 @@
 }
 
 :host([variant="danger"]) [part~="base"]:hover {
-  background: color-mix(in srgb, var(--snice-color-danger) 95%, transparent);
+  background: color-mix(in srgb, var(--snice-macos-fill-danger) 95%, transparent);
   color: hsl(0 0% 100%);
-  border-color: color-mix(in srgb, var(--snice-color-danger) 72%, hsl(0 0% 0% / 0.35));
+  border-color: color-mix(in srgb, var(--snice-macos-fill-danger) 72%, hsl(0 0% 0% / 0.35));
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.42),
     inset 0 -0.5px 0 hsl(0 0% 0% / 0.24),
@@ -205,9 +205,9 @@
 }
 
 :host([variant="danger"]) [part~="base"]:active {
-  background: color-mix(in srgb, var(--snice-color-danger) 96%, black);
+  background: color-mix(in srgb, var(--snice-macos-fill-danger) 96%, black);
   color: hsl(0 0% 100%);
-  border-color: color-mix(in srgb, var(--snice-color-danger) 72%, hsl(0 0% 0% / 0.35));
+  border-color: color-mix(in srgb, var(--snice-macos-fill-danger) 72%, hsl(0 0% 0% / 0.35));
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.24),
     inset 0 -0.5px 0 hsl(0 0% 0% / 0.24);

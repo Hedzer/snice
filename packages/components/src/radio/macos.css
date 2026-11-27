@@ -61,8 +61,8 @@
 
 /* Checked — macOS 26 Tahoe translucent glass accent disc */
 [part~="radio-checked"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 94%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 74%, hsl(0 0% 0% / 0.34));
+  background: color-mix(in srgb, var(--snice-macos-fill-primary) 94%, transparent);
+  border-color: color-mix(in srgb, var(--snice-macos-fill-primary) 74%, hsl(0 0% 0% / 0.34));
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.36),
     0 0.5px 1.5px hsl(0 0% 0% / 0.18);
@@ -123,8 +123,8 @@
 }
 
 [part~="radio-invalid"][part~="radio-checked"] {
-  background: var(--snice-color-danger);
-  border-color: color-mix(in srgb, var(--snice-color-danger) 82%, black);
+  background: var(--snice-macos-fill-danger);
+  border-color: color-mix(in srgb, var(--snice-macos-fill-danger) 82%, black);
   box-shadow:
     inset 0 0.5px 0 hsl(0 0% 100% / 0.34),
     0 0.5px 1.5px hsl(0 0% 0% / 0.2);

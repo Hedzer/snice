@@ -563,7 +563,7 @@
 [part~="option"]:hover,
 [part~="option-selected"]:hover,
 [part~="option"][part~="option-selected"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
 }
 

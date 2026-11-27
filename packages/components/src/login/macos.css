@@ -160,8 +160,8 @@
   min-height: 1.75rem;
   padding: 0 0.75rem;
   border-radius: 6px;
-  background: linear-gradient(180deg, color-mix(in srgb, white 15%, var(--snice-color-primary)), var(--snice-color-primary));
-  border: 0.5px solid color-mix(in srgb, black 12%, var(--snice-color-primary));
+  background: linear-gradient(180deg, color-mix(in srgb, white 15%, var(--snice-macos-fill-primary)), var(--snice-macos-fill-primary));
+  border: 0.5px solid color-mix(in srgb, black 12%, var(--snice-macos-fill-primary));
   color: hsl(0 0% 100%);
   font-family: var(--snice-font-family);
   font-size: 0.8125rem;

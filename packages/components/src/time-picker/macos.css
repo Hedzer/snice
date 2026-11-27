@@ -161,7 +161,7 @@
 
 :host [part~="selector-item"][part~="selector-item-selected"],
 :host [part~="selector-item"][part~="selector-item-selected"]:hover {
-  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent), var(--snice-color-primary);
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent), var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
   font-weight: 600;
 }

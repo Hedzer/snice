@@ -70,7 +70,7 @@
 
 /* Explicit white ink on saturated AppKit blue (never --snice-color-text-inverse in dark mode!) */
 :host [part~="sort-order"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
 }
 
@@ -118,8 +118,8 @@
 
 :host [part~="pagination-button"][part~="pagination-button-active"],
 :host [part~="pagination-button"][part~="pagination-button-active"]:hover {
-  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-primary)), var(--snice-color-primary));
-  border-color: color-mix(in srgb, black 12%, var(--snice-color-primary));
+  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-macos-fill-primary)), var(--snice-macos-fill-primary));
+  border-color: color-mix(in srgb, black 12%, var(--snice-macos-fill-primary));
   color: hsl(0 0% 100%);
 }
 

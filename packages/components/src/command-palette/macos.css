@@ -74,12 +74,12 @@
 
 [part~="item-active"],
 [part~="item-active"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
 }
 
 [part~="item"]:active {
-  background: color-mix(in srgb, var(--snice-color-primary) 88%, black);
+  background: color-mix(in srgb, var(--snice-macos-fill-primary) 88%, black);
   color: hsl(0 0% 100%);
 }
 

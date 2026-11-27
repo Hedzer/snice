@@ -89,7 +89,7 @@
 }
 
 :host [part~="slot-selected"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
 }
 
@@ -103,7 +103,7 @@
 }
 
 :host [part~="slot-dragging"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 82%, transparent);
+  background: color-mix(in srgb, var(--snice-macos-fill-primary) 82%, transparent);
   color: hsl(0 0% 100%);
 }
 

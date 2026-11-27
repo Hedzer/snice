@@ -39,7 +39,7 @@
 }
 
 [part~="track-checked"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
   box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.14);
 }
 
@@ -81,7 +81,7 @@
 }
 
 [part~="track-invalid"][part~="track-checked"] {
-  background: var(--snice-color-danger);
+  background: var(--snice-macos-fill-danger);
   box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.14);
 }
 
@@ -91,7 +91,7 @@
 }
 
 :host(:hover) [part~="track-checked"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 92%, white);
+  background: color-mix(in srgb, var(--snice-macos-fill-primary) 92%, white);
 }
 
 :host(:hover) [part~="track-invalid"] {
@@ -99,7 +99,7 @@
 }
 
 :host(:hover) [part~="track-invalid"][part~="track-checked"] {
-  background: color-mix(in srgb, var(--snice-color-danger) 92%, white);
+  background: color-mix(in srgb, var(--snice-macos-fill-danger) 92%, white);
 }
 
 /* Disabled & loading track overrides */
@@ -117,7 +117,7 @@
 :host([disabled]:hover) [part~="track-checked"],
 :host([loading]) [part~="track-checked"],
 :host([loading]:hover) [part~="track-checked"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
   box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.14);
 }
 
@@ -133,7 +133,7 @@
 :host([disabled]:hover) [part~="track-invalid"][part~="track-checked"],
 :host([loading]) [part~="track-invalid"][part~="track-checked"],
 :host([loading]:hover) [part~="track-invalid"][part~="track-checked"] {
-  background: var(--snice-color-danger);
+  background: var(--snice-macos-fill-danger);
   box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.14);
 }
 

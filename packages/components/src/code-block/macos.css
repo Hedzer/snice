@@ -129,8 +129,8 @@
 :host [part~="copy-button-copied"],
 :host([theme="dark"]) [part~="copy-button-copied"],
 :host([theme="light"]) [part~="copy-button-copied"] {
-  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent), var(--snice-color-success);
-  border-color: var(--snice-color-success);
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent), var(--snice-macos-fill-success);
+  border-color: var(--snice-macos-fill-success);
   color: hsl(0 0% 100%);
 }
 

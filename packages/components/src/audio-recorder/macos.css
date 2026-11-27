@@ -116,19 +116,19 @@
   box-sizing: border-box;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, white 14%, var(--snice-color-danger)) 0%,
-    var(--snice-color-danger) 100%
+    color-mix(in srgb, white 14%, var(--snice-macos-fill-danger)) 0%,
+    var(--snice-macos-fill-danger) 100%
   );
   color: hsl(0 0% 100%);
   border: 2px solid var(--snice-color-background-element);
-  box-shadow: 0 0 0 1.5px var(--snice-color-danger);
+  box-shadow: 0 0 0 1.5px var(--snice-macos-fill-danger);
 }
 
 :host [part~="button-play"] {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, white 16%, var(--snice-color-primary)) 0%,
-    var(--snice-color-primary) 100%
+    color-mix(in srgb, white 16%, var(--snice-macos-fill-primary)) 0%,
+    var(--snice-macos-fill-primary) 100%
   );
   color: hsl(0 0% 100%);
 }

@@ -181,17 +181,17 @@
   padding: 1.5px 6px;
   font-size: 0.6875rem;
   font-weight: 600;
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
 }
 
 :host [part~="status-success"] {
-  background: var(--snice-color-success);
+  background: var(--snice-macos-fill-success);
   color: hsl(0 0% 100%);
 }
 
 :host [part~="status-error"] {
-  background: var(--snice-color-danger);
+  background: var(--snice-macos-fill-danger);
   color: hsl(0 0% 100%);
 }
 

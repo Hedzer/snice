@@ -107,8 +107,8 @@
 [part~="toggle-collapsed"] {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--snice-color-primary) 88%, white),
-    var(--snice-color-primary)
+    color-mix(in srgb, var(--snice-macos-fill-primary) 88%, white),
+    var(--snice-macos-fill-primary)
   );
   border-color: transparent;
   color: hsl(0 0% 100%);
