@@ -1,12 +1,218 @@
-/* macOS 26+ Liquid Glass / AppKit — snice-work-order */
-[part~="base"] {
-  border-radius: 12px;
-  background: var(--snice-color-background-element);
-  border: 0.5px solid var(--snice-color-border);
+/* macOS 26 Tahoe AppKit work order skin */
+
+:host {
+  --wo-bg: var(--snice-color-background-element);
+  --wo-bg-element: var(--snice-color-surface-container-low);
+  --wo-border: var(--snice-color-border);
+  --wo-signature-line-color: var(--snice-color-border-hover);
+  --wo-task-checkbox-size: 1rem;
+  font-size: 0.8125rem;
 }
 
-[part~="status"],
-[part~="priority"],
+:host([variant="field-service"]) {
+  --wo-task-checkbox-size: 1.375rem;
+}
+
+:host:not([variant="paper"]):not([variant="ink"]):not([variant="ledger"]):not([variant="ticket"]) [part~="base"] {
+  background: var(--wo-bg);
+  border: 1px solid var(--snice-color-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host:not([variant="paper"]):not([variant="ink"]):not([variant="ticket"]) [part~="header"] {
+  padding: 1.125rem 1.25rem;
+  border-bottom: 1px solid var(--snice-color-border);
+}
+
+[part~="wo-number"] {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="date"],
+[part~="due-date"],
+[part~="task-hours"],
+[part~="part-qty"],
+[part~="part-cost"],
+[part~="part-total"],
+[part~="parts-total-value"],
+[part~="labor-hours"],
+[part~="labor-rate"],
+[part~="labor-total"],
+[part~="grand-total"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Badges: compact macOS 6px tags on standard/ops variants */
+:host:not([variant="paper"]):not([variant="ink"]) [part~="priority"],
+:host:not([variant="paper"]):not([variant="ink"]) [part~="status"] {
+  border-radius: 0.375rem;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Ink variant dark-mode masthead contrast fix */
+:host([variant="ink"]) [part~="header"],
+:host([variant="ink"]) [part~="wo-number"],
+:host([variant="ink"]) [part~="date"],
+:host([variant="ink"]) [part~="due-date"] {
+  color: var(--snice-color-text-inverse);
+}
+
+:host([variant="ink"]) [part~="title"],
+:host([variant="ink"]) [part~="date-label"] {
+  color: color-mix(in srgb, var(--snice-color-text-inverse) 72%, transparent);
+}
+
+:host([variant="ink"]) [part~="priority"],
+:host([variant="ink"]) [part~="status"] {
+  color: var(--snice-color-text-inverse);
+  border-color: color-mix(in srgb, var(--snice-color-text-inverse) 55%, transparent);
+}
+
+/* Compact desktop sections */
+[part~="customer"],
+[part~="asset"],
+[part~="description"],
+[part~="tasks"],
+[part~="parts"],
+[part~="labor"],
+[part~="notes"],
+[part~="signature"] {
+  padding: 0.875rem 1.25rem;
+  border-bottom-color: var(--snice-color-border);
+}
+
+[part~="section-title"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="customer-value"],
+[part~="description-content"],
+[part~="asset-value"],
+[part~="task-description"],
+[part~="labor-value"],
+[part~="notes-content"] {
+  font-size: 0.8125rem;
+}
+
+:host([variant="maintenance"]) [part~="asset-fields"] {
+  border-radius: 0.5rem;
+  border: 1px solid var(--snice-color-border);
+}
+
+/* Task rows & AppKit 4px bezel checkboxes */
+[part~="task"] {
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  transition: background-color 140ms ease;
+}
+
+:host([variant="field-service"]) [part~="task"] {
+  border-radius: 0.5rem;
+}
+
+[part~="task-checkbox"] {
+  border-radius: 0.25rem;
+  border: 1px solid var(--snice-color-border-hover);
+  background: var(--snice-macos-control-bg);
+  box-shadow: inset 0 0.5px 0 rgb(255 255 255 / 0.14), 0 0.5px 1px rgb(0 0 0 / 0.08);
+  transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+[part~="task-checkbox-checked"] {
+  background: var(--snice-color-success);
+  border-color: var(--snice-color-success);
+  color: hsl(0 0% 100%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28);
+}
+
+[part~="task-check-icon"] {
+  color: inherit;
+}
+
+[part~="task-checkbox"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* AppKit NSTableView zebra-striped parts table */
+[part~="parts-table"] {
+  font-size: 0.8125rem;
+}
+
+[part~="parts-header-cell"] {
+  border-bottom: 1px solid var(--snice-color-border);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="parts-row"]:nth-child(even) {
+  background: var(--snice-macos-table-stripe);
+}
+
+[part~="part-name"],
+[part~="part-number"],
+[part~="part-qty"],
+[part~="part-cost"],
+[part~="part-total"] {
+  border-bottom-color: var(--snice-color-border);
+}
+
+[part~="costs"] {
+  padding: 0.875rem 1.25rem;
+  border-top: 1px solid var(--snice-color-border);
+}
+
+[part~="footer"] {
+  padding: 0.625rem 1.25rem;
+  border-top: 1px solid var(--snice-color-border);
+}
+
+/* Sign-off action: compact 28px AppKit bezel button */
 [part~="sign-button"] {
-  border-radius: 6px;
+  min-height: 1.75rem;
+  padding: 0 0.875rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--snice-color-border);
+  background: var(--snice-macos-control-bg);
+  color: var(--snice-color-text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  box-shadow: inset 0 0.5px 0 rgb(255 255 255 / 0.16), 0 0.5px 1px rgb(0 0 0 / 0.08);
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+
+[part~="sign-button"]:hover {
+  background: var(--snice-color-primary);
+  border-color: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28);
+}
+
+[part~="sign-button"]:active {
+  background: var(--snice-color-primary-hover);
+  border-color: var(--snice-color-primary-hover);
+  color: hsl(0 0% 100%);
+}
+
+[part~="sign-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="task"],
+  [part~="task-checkbox"],
+  [part~="sign-button"] {
+    transition: none;
+  }
 }

@@ -375,6 +375,12 @@
   outline-offset: var(--snice-focus-ring-offset, 2px);
 }
 
+.wo__task-checkbox svg {
+  display: none;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
 .wo__task-checkbox--checked {
   background: var(--wo-success);
   border-color: var(--wo-success);
@@ -382,12 +388,6 @@
 
 .wo__task-checkbox--checked svg {
   display: block;
-}
-
-.wo__task-checkbox svg {
-  display: none;
-  width: 0.75rem;
-  height: 0.75rem;
 }
 
 .wo__task-content {
@@ -1016,8 +1016,8 @@
 
 :host([variant="ink"]) .wo__header {
   background: var(--wo-ink);
-  color: var(--snice-color-surface, rgb(249 247 242));
-  margin: -1.5rem -1.5rem 1.5rem;
+  color: var(--snice-color-text-inverse, rgb(249 247 242));
+  margin: 0;
   padding: 1.5rem;
   border-bottom: none;
 }
