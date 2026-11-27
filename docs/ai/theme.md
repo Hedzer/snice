@@ -47,6 +47,10 @@ HSL space-separated channels: `hue saturation% lightness%`. Alpha syntax: `hsl(0
 - `data-theme="dark"` activates dark mode; `data-theme="light"` locks light; omitted or `data-theme="auto"` follows OS `prefers-color-scheme: dark`.
 - Native controls filter: `--snice-color-scheme-filter` (`none` in light, `invert(1) hue-rotate(180deg)` in dark).
 
+## Platform Skins
+
+Contemporary OS skins (`ios`, `material`, `windows`, `macos`) layer on top of `core.css` + `dark.css` via `snice({ platform })` (build-time, 0 B unused) or `theme/platforms/<p>-scoped.css` + `[data-platform="<p>"]` (runtime). Brand overrides on `--snice-color-primary` cascade automatically. See `platform-skins.md`.
+
 ## Complete Token List
 
 Exhaustive token table: `components/theme.md`.

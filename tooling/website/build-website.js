@@ -11,6 +11,16 @@ try { mkdirSync(out, { recursive: true }); } catch {}
 
 mkdirSync(join(out, 'theme'), { recursive: true });
 cpSync(join(root, 'packages/components/src/theme/theme.css'), join(out, 'theme/theme.css'));
+const distPlatformsDir = join(root, 'dist/components/theme/platforms');
+if (existsSync(distPlatformsDir)) {
+  mkdirSync(join(out, 'theme/platforms'), { recursive: true });
+  for (const pf of ['ios', 'material', 'windows', 'macos']) {
+    const scopedSrc = join(distPlatformsDir, `${pf}-scoped.css`);
+    if (existsSync(scopedSrc)) {
+      cpSync(scopedSrc, join(out, 'theme/platforms', `${pf}-scoped.css`));
+    }
+  }
+}
 
 const cdnDir = join(root, 'dist/cdn');
 const components = existsSync(cdnDir)
@@ -2239,6 +2249,46 @@ const themeScripts = themeComponents.map(c => `  <script async src="components/s
 const themesHtml = `${head('Themes')}
 ${header('themes')}
   <main class="wrap">
+    <link rel="stylesheet" href="theme/platforms/ios-scoped.css">
+    <link rel="stylesheet" href="theme/platforms/material-scoped.css">
+    <link rel="stylesheet" href="theme/platforms/windows-scoped.css">
+    <link rel="stylesheet" href="theme/platforms/macos-scoped.css">
+
+    <!-- Platform Skin Switcher (pure CSS [data-platform]) -->
+    <section class="themes-section" aria-labelledby="platform-skins-heading">
+      <h3 id="platform-skins-heading">Platform Skins</h3>
+      <div id="platform-switcher" role="radiogroup" aria-label="Platform skin" style="display:flex;flex-wrap:wrap;gap:0.5rem">
+        <button type="button" role="radio" aria-checked="true" data-platform-choice="default" style="padding:0.4rem 0.85rem;border-radius:6px;border:1px solid var(--snice-color-primary);background:var(--snice-color-primary-subtle,rgba(37,99,235,0.12));color:var(--snice-color-text);cursor:pointer;font:inherit">Default</button>
+        <button type="button" role="radio" aria-checked="false" data-platform-choice="ios" style="padding:0.4rem 0.85rem;border-radius:6px;border:1px solid var(--snice-color-border);background:transparent;color:var(--snice-color-text);cursor:pointer;font:inherit">iOS 26+</button>
+        <button type="button" role="radio" aria-checked="false" data-platform-choice="material" style="padding:0.4rem 0.85rem;border-radius:6px;border:1px solid var(--snice-color-border);background:transparent;color:var(--snice-color-text);cursor:pointer;font:inherit">Material 3</button>
+        <button type="button" role="radio" aria-checked="false" data-platform-choice="windows" style="padding:0.4rem 0.85rem;border-radius:6px;border:1px solid var(--snice-color-border);background:transparent;color:var(--snice-color-text);cursor:pointer;font:inherit">Windows 11</button>
+        <button type="button" role="radio" aria-checked="false" data-platform-choice="macos" style="padding:0.4rem 0.85rem;border-radius:6px;border:1px solid var(--snice-color-border);background:transparent;color:var(--snice-color-text);cursor:pointer;font:inherit">macOS 26+</button>
+      </div>
+      <script>
+        (function(){
+          var group = document.getElementById('platform-switcher');
+          if (!group) return;
+          function selectPlatform(pf) {
+            var panel = document.querySelector('.theme-preview-panel');
+            if (panel) {
+              if (pf === 'default') panel.removeAttribute('data-platform');
+              else panel.setAttribute('data-platform', pf);
+            }
+            group.querySelectorAll('[data-platform-choice]').forEach(function(btn) {
+              var active = btn.getAttribute('data-platform-choice') === pf;
+              btn.setAttribute('aria-checked', active ? 'true' : 'false');
+              btn.style.borderColor = active ? 'var(--snice-color-primary)' : 'var(--snice-color-border)';
+              btn.style.background = active ? 'var(--snice-color-primary-subtle, rgba(37,99,235,0.12))' : 'transparent';
+            });
+          }
+          group.addEventListener('click', function(e) {
+            var btn = e.target.closest('[data-platform-choice]');
+            if (btn) selectPlatform(btn.getAttribute('data-platform-choice'));
+          });
+        })();
+      </script>
+    </section>
+
     <!-- Preset Gallery -->
     <section class="themes-section">
       <h3>Presets</h3>

@@ -54,6 +54,7 @@ for depth; read the aggregates when you want the whole surface at once.
 *Styling:*
 - `styling.md` - `@styles`, scoped CSS, host styling, icons
 - `theme.md` - Tokens, surfaces, dark mode
+- `platform-skins.md` - Native OS skins (`ios`, `material`, `windows`, `macos`), build-time `snice({ platform })`, runtime `[data-platform]` scoping
 
 *Tooling:*
 - `bundler-plugin.md` - `snice/vite` & `snice/rollup` plugin options, decorator lowering, CSS/template slimming, caching tiers

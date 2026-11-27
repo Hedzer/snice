@@ -1,10 +1,21 @@
 import type { Preview } from '@storybook/html-vite';
+import { enableRuntimePlatformBehaviors } from '../packages/components/src/platform-behaviors/runtime';
 
 // Snice theme CSS
 const themeLink = document.createElement('link');
 themeLink.rel = 'stylesheet';
 themeLink.href = '/snice-components/theme/theme.css';
 document.head.appendChild(themeLink);
+
+// Scoped platform skin sheets (pure CSS [data-platform] scoping — zero :root leak)
+for (const pf of ['ios', 'material', 'windows', 'macos']) {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = `/snice-components/theme/platforms/${pf}-scoped.css`;
+  document.head.appendChild(link);
+}
+
+enableRuntimePlatformBehaviors(document);
 
 // Material Symbols icon font (used by many components for icons)
 const iconFont = document.createElement('link');
@@ -83,10 +94,32 @@ const preview: Preview = {
         dynamicTitle: true,
       },
     },
+    platform: {
+      name: 'Platform',
+      description: 'Snice contemporary OS platform skin',
+      defaultValue: 'default',
+      toolbar: {
+        icon: 'mobile',
+        items: [
+          { value: 'default',  title: 'Default' },
+          { value: 'ios',      title: 'iOS 26+' },
+          { value: 'material', title: 'Material 3' },
+          { value: 'windows',  title: 'Windows 11' },
+          { value: 'macos',    title: 'macOS 26+' },
+        ],
+        dynamicTitle: true,
+      },
+    },
   },
   decorators: [
     (story, context) => {
       document.documentElement.setAttribute('data-theme', context.globals.theme || 'dark');
+      const platform = context.globals.platform || 'default';
+      if (platform === 'default') {
+        document.documentElement.removeAttribute('data-platform');
+      } else {
+        document.documentElement.setAttribute('data-platform', platform);
+      }
       return story();
     },
   ],

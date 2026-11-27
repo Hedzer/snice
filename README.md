@@ -986,6 +986,7 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 - [Queries](./docs/queries.md) - Resolving elements with `@query` and `@queryAll`
 - [Styling](./docs/styling.md) - Scoped CSS, host styling, and icons
 - [Theming](./docs/theme.md) - Design tokens, surfaces, and dark mode
+- [Platform Skins](./docs/platform-skins.md) - Contemporary OS skins (`ios`, `material`, `windows`, `macos`), build-time 0-byte compilation, and runtime `[data-platform]` scoping
 - [Bundler Plugin](./docs/bundler-plugin.md) - `snice/vite` and `snice/rollup` decorator lowering, template/CSS slimming, and cache-tiered builds
 - [CLI](./docs/cli.md) - Scaffolding, diagnostics, source validation, and AI setup
 - [Utilities](./docs/utilities.md) - Method decorators, escaping, durations, scroll lock, controller helpers

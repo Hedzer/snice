@@ -163,3 +163,7 @@ Scope an override wherever you need it — globally, or on a subtree:
 ```
 
 Every component inside `.checkout` picks up the local value (and its derived hover/subtle/focus tokens), because tokens inherit through the shadow boundary.
+
+## Platform Skins
+
+Snice includes contemporary native OS skins for **iOS 26+ Liquid Glass** (`ios`), **Android Material 3 Expressive** (`material`), **Windows 11 Fluent 2 / WinUI 3** (`windows`), and **macOS 26+ Liquid Glass / AppKit** (`macos`) built strictly on pure CSS tokens and standard `::part()` rules — with zero-cost build-time compilation (`snice({ platform })`) and pure-CSS runtime scoping (`[data-platform]`). See [Platform Skins](./platform-skins.md).

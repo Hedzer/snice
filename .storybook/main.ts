@@ -11,6 +11,7 @@ const config: StorybookConfig = {
   staticDirs: [
     { from: '../dist/components', to: '/snice-components' },
     { from: '../packages/components/src/theme', to: '/snice-components/theme' },
+    { from: '../dist/components/theme/platforms', to: '/snice-components/theme/platforms' },
     { from: '../website/public', to: '/public' },
   ],
   async viteFinal(cfg) {

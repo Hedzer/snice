@@ -125,6 +125,8 @@ export interface SnicePluginOptions {
     cells?: string[];
     features?: string[];
   };
+  /** Build-time platform skin compilation (`'default' | 'ios' | 'material' | 'windows' | 'macos' | 'multi' | 'preserve'`). See docs/platform-skins.md. */
+  platform?: 'default' | 'ios' | 'material' | 'windows' | 'macos' | 'multi' | 'preserve';
 }
 ```
 

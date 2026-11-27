@@ -66,6 +66,7 @@ interface SnicePluginOptions {
     cells?: string[];                      // undefined = all 21 cells; [] = core 'text' only
     features?: string[];                   // undefined = all 11 features; [] = core only; transitive deps auto-added
   };
+  platform?: 'default' | 'ios' | 'material' | 'windows' | 'macos' | 'multi' | 'preserve'; // build-time single-platform skin compilation & 0-byte DCE (see platform-skins.md)
 }
 ```
 
