@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en" data-platform="default">
+<head>
+  <meta charset="utf-8" />
+  <title>Snice Platform Skins Conformance & Marquee Review</title>
+  <link rel="stylesheet" href="/dist/components/theme/core.css" />
+  <link rel="stylesheet" href="/dist/components/theme/dark.css" />
+  <link rel="stylesheet" href="/dist/components/theme/platforms/ios-scoped.css" />
+  <link rel="stylesheet" href="/dist/components/theme/platforms/material-scoped.css" />
+  <link rel="stylesheet" href="/dist/components/theme/platforms/windows-scoped.css" />
+  <link rel="stylesheet" href="/dist/components/theme/platforms/macos-scoped.css" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px 24px 32px;
+      background: var(--snice-color-surface, var(--snice-color-background));
+      color: var(--snice-color-text);
+      font-family: var(--snice-font-family);
+      font-size: var(--snice-font-size-md, 14px);
+    }
+    .banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border));
+    }
+    .banner h1 {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+    .banner .meta {
+      font-size: 0.8125rem;
+      color: var(--snice-color-text-secondary);
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      max-width: 1200px;
+    }
+    .full { grid-column: 1 / -1; }
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+  </style>
+  <style id="brand-css"></style>
+</head>
+<body>
+  <div class="banner">
+    <h1 id="title-label">Snice Platform Skin — default (light)</h1>
+    <span class="meta" id="meta-label">One class, one template, pure CSS</span>
+  </div>
+
+  <div class="layout">
+    <div class="full">
+      <snice-nav id="cf-nav" orientation="horizontal"></snice-nav>
+    </div>
+
+    <div class="section">
+      <div class="row" role="group" data-m3-connected>
+        <snice-button id="cf-btn-primary" variant="primary">Primary Action</snice-button>
+        <snice-button id="cf-btn-default">Secondary</snice-button>
+        <snice-button id="cf-btn-outline" outline>Outline</snice-button>
+      </div>
+
+      <div class="row">
+        <snice-switch id="cf-switch" label="Notifications" checked></snice-switch>
+        <snice-checkbox id="cf-checkbox" label="Auto-sync" checked></snice-checkbox>
+        <snice-radio id="cf-radio" name="cf-r" label="Adaptive" checked></snice-radio>
+      </div>
+
+      <div class="row">
+        <snice-chip id="cf-chip-1" label="Design" selectable selected></snice-chip>
+        <snice-chip id="cf-chip-2" label="Engineering" selectable></snice-chip>
+        <snice-chip id="cf-chip-3" label="Release" selectable></snice-chip>
+      </div>
+
+      <div class="row">
+        <snice-input id="cf-input" label="Workspace" placeholder="snice-app"></snice-input>
+        <snice-slider id="cf-slider" label="Intensity" value="62" min="0" max="100"></snice-slider>
+      </div>
+    </div>
+
+    <div class="section">
+      <snice-tabs id="cf-tabs">
+        <snice-tab slot="nav">Overview</snice-tab>
+        <snice-tab slot="nav">Activity</snice-tab>
+        <snice-tab slot="nav">Settings</snice-tab>
+        <snice-tab-panel>Overview workspace metrics and platform chrome.</snice-tab-panel>
+        <snice-tab-panel>Recent deployment activity.</snice-tab-panel>
+        <snice-tab-panel>Platform &amp; accessibility settings.</snice-tab-panel>
+      </snice-tabs>
+
+      <snice-card id="cf-card">
+        <span slot="header">Release Summary</span>
+        <p style="margin:0">Contemporary native visual &amp; behavioral parity across iOS 26+, Material 3 Expressive, Windows 11 Fluent 2, and macOS 26+.</p>
+      </snice-card>
+
+      <shadow-host-demo id="cf-shadow-host"></shadow-host-demo>
+    </div>
+
+    <div class="full">
+      <snice-table id="cf-table"></snice-table>
+    </div>
+
+    <div class="section">
+      <snice-kanban id="cf-kanban"></snice-kanban>
+    </div>
+
+    <div class="section">
+      <snice-calendar id="cf-calendar"></snice-calendar>
+    </div>
+  </div>
+
+  <snice-modal id="cf-modal" label="Confirm Release">
+    <p>Deploy platform skin build to production?</p>
+  </snice-modal>
+
+  <script type="module">
+    import '/dist/components/button/snice-button.js';
+    import '/dist/components/switch/snice-switch.js';
+    import '/dist/components/checkbox/snice-checkbox.js';
+    import '/dist/components/radio/snice-radio.js';
+    import '/dist/components/chip/snice-chip.js';
+    import '/dist/components/input/snice-input.js';
+    import '/dist/components/slider/snice-slider.js';
+    import '/dist/components/tabs/snice-tabs.js';
+    import '/dist/components/tabs/snice-tab.js';
+    import '/dist/components/tabs/snice-tab-panel.js';
+    import '/dist/components/card/snice-card.js';
+    import '/dist/components/nav/snice-nav.js';
+    import '/dist/components/modal/snice-modal.js';
+    import '/dist/components/table/snice-table.js';
+    import '/dist/components/kanban/snice-kanban.js';
+    import '/dist/components/calendar/snice-calendar.js';
+    import { enableRuntimePlatformBehaviors } from '/dist/components/platform-behaviors/runtime.js';
+
+    // Nested custom Shadow DOM host to prove CSS custom property cascade across shadow boundaries
+    class ShadowHostDemo extends HTMLElement {
+      constructor() {
+        super();
+        const root = this.attachShadow({ mode: 'open' });
+        root.innerHTML = `<div style="display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:var(--snice-border-radius-md);background:var(--snice-color-surface-container-low, var(--snice-color-background-secondary));border:1px solid var(--snice-color-border-subtle, var(--snice-color-border));">
+          <span style="font-size:12px;color:var(--snice-color-text-secondary)">Nested Shadow DOM:</span>
+          <snice-button id="nested-btn" variant="primary">Inherited Token</snice-button>
+        </div>`;
+      }
+    }
+    if (!customElements.get('shadow-host-demo')) {
+      customElements.define('shadow-host-demo', ShadowHostDemo);
+    }
+
+    const params = new URLSearchParams(location.search);
+    const platform = params.get('platform') || 'default';
+    const theme = params.get('theme') || 'light';
+    const dir = params.get('dir') || 'ltr';
+
+    document.documentElement.setAttribute('data-platform', platform);
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('dir', dir);
+    document.getElementById('title-label').textContent = `Snice Platform Skin — ${platform} (${theme})`;
+
+    const nav = document.getElementById('cf-nav');
+    nav.update([
+      { name: 'overview', title: 'Overview', href: '#overview' },
+      { name: 'components', title: 'Components', href: '#components' },
+      { name: 'tokens', title: 'Tokens', href: '#tokens' },
+      { name: 'releases', title: 'Releases', href: '#releases' },
+    ], undefined, 'overview');
+
+    const table = document.getElementById('cf-table');
+    table.columns = [
+      { key: 'platform', label: 'Platform', type: 'text' },
+      { key: 'spec', label: 'Spec Target', type: 'text' },
+      { key: 'status', label: 'Status', type: 'text' },
+    ];
+    table.data = [
+      { platform: 'iOS 26+', spec: 'Liquid Glass HIG', status: 'Verified' },
+      { platform: 'Android', spec: 'Material 3 Expressive', status: 'Verified' },
+      { platform: 'Windows 11', spec: 'Fluent 2 / WinUI 3', status: 'Verified' },
+      { platform: 'macOS 26+', spec: 'Liquid Glass / AppKit', status: 'Verified' },
+    ];
+
+    const kanban = document.getElementById('cf-kanban');
+    kanban.columns = [
+      { id: 'design', title: 'Design', cards: [{ id: '1', title: 'Tokens & Parts' }] },
+      { id: 'shipped', title: 'Shipped', cards: [{ id: '2', title: 'Zero-Cost DCE' }] },
+    ];
+
+    window.__cfHandle = enableRuntimePlatformBehaviors(document);
+    window.__cfReady = Promise.all([
+      customElements.whenDefined('snice-button'),
+      customElements.whenDefined('snice-switch'),
+      customElements.whenDefined('snice-slider'),
+      customElements.whenDefined('snice-tabs'),
+      customElements.whenDefined('snice-card'),
+      customElements.whenDefined('snice-nav'),
+      customElements.whenDefined('snice-table'),
+      customElements.whenDefined('snice-kanban'),
+      customElements.whenDefined('snice-calendar'),
+    ]).then(() => new Promise((r) => setTimeout(r, 120)));
+  </script>
+</body>
+</html>

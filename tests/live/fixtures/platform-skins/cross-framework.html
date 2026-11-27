@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en" data-platform="ios">
+<head>
+  <meta charset="utf-8" />
+  <title>Cross-Framework Platform Parity (Vanilla HTML vs React 19 Adapters)</title>
+  <link rel="stylesheet" href="/dist/components/theme/core.css" />
+  <link rel="stylesheet" href="/dist/components/theme/dark.css" />
+  <link rel="stylesheet" href="/dist/components/theme/platforms/ios-scoped.css" />
+  <link rel="stylesheet" href="/dist/components/theme/platforms/material-scoped.css" />
+  <link rel="stylesheet" href="/dist/components/theme/platforms/windows-scoped.css" />
+  <link rel="stylesheet" href="/dist/components/theme/platforms/macos-scoped.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: var(--snice-color-surface, var(--snice-color-background));
+      color: var(--snice-color-text);
+      font-family: var(--snice-font-family);
+    }
+    .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 960px; }
+    .col { display: flex; flex-direction: column; gap: 12px; }
+  </style>
+</head>
+<body>
+  <div class="cols">
+    <section id="vanilla-col" class="col">
+      <h2>Vanilla HTML</h2>
+      <snice-button id="v-btn" variant="primary">Save Changes</snice-button>
+      <snice-switch id="v-sw" label="Notifications" checked></snice-switch>
+      <snice-input id="v-inp" label="Name" placeholder="Snice"></snice-input>
+      <snice-chip id="v-chip" label="Platform" selectable selected></snice-chip>
+      <snice-card id="v-card"><span slot="header">Card</span><p>Body</p></snice-card>
+    </section>
+
+    <section id="react-col" class="col"></section>
+  </div>
+
+  <script type="module">
+    import React from 'react';
+    import { createRoot } from 'react-dom/client';
+    import '/dist/components/button/snice-button.js';
+    import '/dist/components/switch/snice-switch.js';
+    import '/dist/components/input/snice-input.js';
+    import '/dist/components/chip/snice-chip.js';
+    import '/dist/components/card/snice-card.js';
+    import { Button } from '/adapters/react/button.js';
+    import { Switch } from '/adapters/react/switch.js';
+    import { Input } from '/adapters/react/input.js';
+    import { Chip } from '/adapters/react/chip.js';
+    import { Card } from '/adapters/react/card.js';
+    import { enableRuntimePlatformBehaviors } from '/dist/components/platform-behaviors/runtime.js';
+
+    const params = new URLSearchParams(location.search);
+    const platform = params.get('platform') || 'ios';
+    document.documentElement.setAttribute('data-platform', platform);
+
+    window.__events = { vanillaClicks: 0, reactClicks: 0 };
+    document.getElementById('v-btn').addEventListener('button-click', () => {
+      window.__events.vanillaClicks++;
+    });
+
+    function App() {
+      return React.createElement(
+        React.Fragment,
+        null,
+        React.createElement('h2', null, 'React 19 Adapter'),
+        React.createElement(
+          Button,
+          {
+            id: 'r-btn',
+            variant: 'primary',
+            onButtonClick: () => {
+              window.__events.reactClicks++;
+            },
+          },
+          'Save Changes'
+        ),
+        React.createElement(Switch, { id: 'r-sw', label: 'Notifications', checked: true }),
+        React.createElement(Input, { id: 'r-inp', label: 'Name', placeholder: 'Snice' }),
+        React.createElement(Chip, { id: 'r-chip', label: 'Platform', selectable: true, selected: true }),
+        React.createElement(
+          Card,
+          { id: 'r-card' },
+          React.createElement('span', { slot: 'header' }, 'Card'),
+          React.createElement('p', null, 'Body')
+        )
+      );
+    }
+
+    const root = createRoot(document.getElementById('react-col'));
+    root.render(React.createElement(App));
+
+    window.__xfHandle = enableRuntimePlatformBehaviors(document);
+    window.__xfReady = Promise.all([
+      customElements.whenDefined('snice-button'),
+      customElements.whenDefined('snice-switch'),
+      customElements.whenDefined('snice-input'),
+      customElements.whenDefined('snice-chip'),
+      customElements.whenDefined('snice-card'),
+    ]).then(() => new Promise((r) => setTimeout(r, 140)));
+  </script>
+</body>
+</html>
