@@ -1,37 +1,39 @@
-/* Windows 11 Fluent 2 / Power BI waterfall bridge chart skin */
+/* Windows 11 Fluent 2 / Power BI & Excel WinUI 3 — snice-waterfall
+ * Crisp 8px elevated top-lit Mica card, razor-sharp 0px crispEdges bridge bars,
+ * solid precision connectors, Segoe UI Variable tabular labels, and full WHCM.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
 
 [part~="base"] {
   box-sizing: border-box;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  border-radius: 0.5rem;
-  background: var(--snice-color-surface-container-lowest);
-  border: 1px solid var(--snice-color-border-subtle);
   padding: 0.875rem;
-}
-
-[part~="chart"] {
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-  height: 100%;
+  border-radius: 8px;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  box-shadow: var(--snice-shadow-xs);
 }
 
 [part~="axis"] {
   stroke: var(--snice-color-border-hover);
   stroke-width: 1px;
+  shape-rendering: crispEdges;
 }
 
 [part~="connector"] {
-  stroke: var(--snice-color-text-tertiary);
-  stroke-dasharray: 3 2;
+  stroke: color-mix(in srgb, var(--snice-color-text) 28%, transparent);
   stroke-width: 1px;
+  stroke-dasharray: none;
+  shape-rendering: crispEdges;
 }
 
 [part~="bar"] {
-  rx: 2px;
-  ry: 2px;
+  rx: 0;
+  ry: 0;
+  shape-rendering: crispEdges;
   transition: opacity 100ms cubic-bezier(0, 0, 0, 1);
 }
 
@@ -39,49 +41,26 @@
   opacity: 0.85;
 }
 
-[part~="bar"]:active {
-  opacity: 0.74;
-}
-
 [part~="bar"]:focus-visible {
   outline: 2px solid var(--snice-color-text);
   outline-offset: 2px;
 }
 
-[part~="bar-animated"] {
-  animation-duration: 260ms;
-  animation-timing-function: cubic-bezier(0, 0, 0, 1);
-}
-
 [part~="label"] {
-  font-size: 0.75rem;
+  font-family: var(--snice-font-family);
   font-weight: 400;
   fill: var(--snice-color-text-secondary);
 }
 
 [part~="value"] {
-  font-size: 0.6875rem;
+  font-family: var(--snice-font-family);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
-[part~="value-increase"] {
-  fill: var(--snice-color-success);
-}
-
-[part~="value-decrease"] {
-  fill: var(--snice-color-danger);
-}
-
-[part~="value-total"] {
-  fill: var(--snice-color-primary);
-}
-
 @media (prefers-reduced-motion: reduce) {
-  [part~="bar"],
-  [part~="bar-animated"] {
+  [part~="bar"] {
     transition: none;
-    animation: none;
   }
 }
 
@@ -89,9 +68,29 @@
   [part~="base"] {
     background: Canvas;
     border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="axis"],
+  [part~="connector"] {
+    stroke: CanvasText;
+  }
+
+  [part~="bar"] {
+    stroke: CanvasText;
+    stroke-width: 1.5px;
   }
 
   [part~="bar"]:focus-visible {
     outline-color: Highlight;
+  }
+
+  [part~="bar-total"] {
+    fill: Highlight;
+  }
+
+  [part~="label"],
+  [part~="value"] {
+    fill: CanvasText;
   }
 }

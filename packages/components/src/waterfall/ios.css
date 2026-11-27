@@ -1,92 +1,96 @@
-/* iOS 26+ Liquid Glass / Apple Card & Numbers waterfall bridge chart skin */
+/* iOS 26+ Liquid Glass / Apple Finance Bridge — snice-waterfall
+ * 22px grouped card with top atmospheric sheen, lush 5px rounded bridge bars,
+ * dotted round-cap connectors, and SF Pro tabular values & axis labels.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+}
 
 [part~="base"] {
   box-sizing: border-box;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  border-radius: 1.25rem;
-  background: var(--snice-color-surface-container-high);
-  border: 0.5px solid var(--snice-color-border-subtle);
   padding: 1rem;
-}
-
-[part~="chart"] {
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-  height: 100%;
+  border-radius: 22px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 5%, var(--snice-color-surface-container-high)) 0%,
+    var(--snice-color-surface-container-high) 42%
+  );
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-sm);
 }
 
 [part~="axis"] {
-  stroke: var(--snice-color-border);
+  stroke: var(--snice-color-border-hover);
   stroke-width: 1px;
 }
 
 [part~="connector"] {
-  stroke: var(--snice-color-text-tertiary);
-  stroke-dasharray: 2 3;
-  stroke-width: 1px;
-  opacity: 0.75;
+  stroke: color-mix(in srgb, var(--snice-color-text) 28%, transparent);
+  stroke-width: 1.25px;
+  stroke-dasharray: 1.5 3.5;
+  stroke-linecap: round;
 }
 
 [part~="bar"] {
   rx: 5px;
   ry: 5px;
-  transition: opacity var(--snice-transition-fast, 160ms) var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1)),
-    filter var(--snice-transition-fast, 160ms) var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
+  transition: opacity 160ms var(--snice-ease-out), filter 160ms var(--snice-ease-out);
 }
 
 [part~="bar"]:hover {
-  opacity: 0.9;
-  filter: brightness(1.07);
-}
-
-[part~="bar"]:active {
-  opacity: 0.78;
-  filter: brightness(0.95);
+  opacity: 0.88;
+  filter: brightness(1.06);
 }
 
 [part~="bar"]:focus-visible {
-  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color);
+  outline: 3px solid var(--snice-focus-ring-color);
   outline-offset: 2px;
 }
 
-[part~="bar-animated"] {
-  animation-duration: 420ms;
-  animation-timing-function: var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
-}
-
 [part~="label"] {
-  font-size: 0.75rem;
+  font-family: var(--snice-font-family);
   font-weight: 500;
-  letter-spacing: -0.008em;
+  letter-spacing: -0.01em;
   fill: var(--snice-color-text-secondary);
 }
 
 [part~="value"] {
-  font-size: 0.6875rem;
+  font-family: var(--snice-font-family);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
-}
-
-[part~="value-increase"] {
-  fill: color-mix(in srgb, var(--snice-color-success) 84%, var(--snice-color-text));
-}
-
-[part~="value-decrease"] {
-  fill: color-mix(in srgb, var(--snice-color-danger) 88%, var(--snice-color-text));
-}
-
-[part~="value-total"] {
-  fill: var(--snice-color-primary);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [part~="bar"],
-  [part~="bar-animated"] {
+  [part~="bar"] {
     transition: none;
-    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="axis"],
+  [part~="connector"] {
+    stroke: CanvasText;
+  }
+
+  [part~="bar"] {
+    stroke: CanvasText;
+    stroke-width: 1.5px;
+  }
+
+  [part~="bar-total"] {
+    fill: Highlight;
+  }
+
+  [part~="label"],
+  [part~="value"] {
+    fill: CanvasText;
   }
 }

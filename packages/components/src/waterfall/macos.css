@@ -1,89 +1,92 @@
-/* macOS 26 Tahoe AppKit / Numbers desktop waterfall bridge chart skin */
+/* macOS 26+ Tahoe AppKit / Numbers Pro Finance — snice-waterfall
+ * Compact 10px recessed AppKit well, crisp 1.5px rectilinear bridge bars,
+ * precision solid hairline connectors, and SF Mono tabular value callouts.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+}
 
 [part~="base"] {
   box-sizing: border-box;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  border-radius: 0.75rem;
-  background: var(--snice-color-background-element);
-  border: 0.5px solid var(--snice-color-border);
   padding: 0.75rem;
-}
-
-[part~="chart"] {
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-  height: 100%;
+  border-radius: 10px;
+  background: color-mix(in srgb, black 5%, var(--snice-color-surface));
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow:
+    inset 0 1.5px 4px hsl(0 0% 0% / 0.24),
+    inset 0 0 0 0.5px var(--snice-color-border-subtle),
+    0 0.5px 0 hsl(0 0% 100% / 0.08);
 }
 
 [part~="axis"] {
-  stroke: var(--snice-color-border);
-  stroke-width: 0.75px;
+  stroke: var(--snice-color-border-hover);
+  stroke-width: 1px;
 }
 
 [part~="connector"] {
-  stroke: var(--snice-color-text-tertiary);
-  stroke-dasharray: 2 2.5;
+  stroke: color-mix(in srgb, var(--snice-color-text) 26%, transparent);
   stroke-width: 0.75px;
+  stroke-dasharray: none;
 }
 
 [part~="bar"] {
-  rx: 4px;
-  ry: 4px;
-  transition: opacity 140ms var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1)),
-    filter 140ms var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
+  rx: 1.5px;
+  ry: 1.5px;
+  transition: opacity 120ms ease;
 }
 
 [part~="bar"]:hover {
-  opacity: 0.88;
-  filter: brightness(1.06);
-}
-
-[part~="bar"]:active {
-  opacity: 0.76;
+  opacity: 0.85;
 }
 
 [part~="bar"]:focus-visible {
-  outline: 2.5px solid var(--snice-focus-ring-color);
+  outline: 3px solid var(--snice-focus-ring-color);
   outline-offset: 2px;
 }
 
-[part~="bar-animated"] {
-  animation-duration: 300ms;
-  animation-timing-function: var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
-}
-
 [part~="label"] {
-  font-size: 0.6875rem;
+  font-family: var(--snice-font-family);
   font-weight: 500;
-  letter-spacing: -0.005em;
   fill: var(--snice-color-text-secondary);
 }
 
 [part~="value"] {
-  font-size: 0.6875rem;
+  font-family: var(--snice-font-family-mono);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
-[part~="value-increase"] {
-  fill: color-mix(in srgb, var(--snice-color-success) 88%, var(--snice-color-text));
-}
-
-[part~="value-decrease"] {
-  fill: color-mix(in srgb, var(--snice-color-danger) 90%, var(--snice-color-text));
-}
-
-[part~="value-total"] {
-  fill: var(--snice-color-primary);
-}
-
 @media (prefers-reduced-motion: reduce) {
-  [part~="bar"],
-  [part~="bar-animated"] {
+  [part~="bar"] {
     transition: none;
-    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="axis"],
+  [part~="connector"] {
+    stroke: CanvasText;
+  }
+
+  [part~="bar"] {
+    stroke: CanvasText;
+    stroke-width: 1.5px;
+  }
+
+  [part~="bar-total"] {
+    fill: Highlight;
+  }
+
+  [part~="label"],
+  [part~="value"] {
+    fill: CanvasText;
   }
 }

@@ -1,23 +1,27 @@
-/* Android Material 3 Expressive conversion funnel card skin */
+/* Android Material 3 Expressive / Google Analytics — snice-funnel
+ * Generous 28px borderless primary-tinted tonal surface (-low), airy 3px tonal
+ * seams, Roboto medium tabular figures, and 16px elevated Rich Tooltip.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
 
 [part~="base"] {
   box-sizing: border-box;
-  border-radius: 1rem;
-  background: var(--snice-color-surface-container-low);
-  border: 1px solid var(--snice-color-border-subtle);
   padding: 1rem;
+  border-radius: 28px;
+  background: var(--snice-color-surface-container-low);
+  border: none;
+  box-shadow: var(--snice-shadow-xs);
 }
 
 [part~="stage"] {
-  transition: opacity var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+  transition: opacity 150ms var(--snice-m3-spring-effects);
 }
 
 [part~="stage"]:hover {
   opacity: 0.88;
-}
-
-[part~="stage"]:active {
-  opacity: 0.76;
 }
 
 [part~="stage"]:focus-visible {
@@ -27,37 +31,36 @@
 
 [part~="stage-shape"] {
   stroke: var(--snice-color-surface-container-low);
-  stroke-width: 2.5px;
+  stroke-width: 3px;
   stroke-linejoin: round;
 }
 
 [part~="label"] {
-  font-size: 0.8125rem;
+  font-family: var(--snice-font-family);
   font-weight: 500;
-  letter-spacing: 0.006em;
   fill: var(--snice-color-text);
 }
 
 [part~="value"] {
-  font-size: 0.75rem;
+  font-family: var(--snice-font-family);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   fill: var(--snice-color-text-secondary);
 }
 
 [part~="percentage"] {
-  font-size: 0.6875rem;
+  font-family: var(--snice-font-family);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   fill: var(--snice-color-primary);
 }
 
-/* M3 Rich Tooltip (zero blur) */
+/* 16px borderless elevated M3 Rich Tooltip */
 [part~="tooltip"] {
-  border-radius: 0.75rem;
-  padding: 0.5rem 0.75rem;
+  border-radius: 16px;
+  padding: 0.5625rem 0.875rem;
   background: var(--snice-color-surface-container-highest);
-  border: 1px solid var(--snice-color-border-subtle);
+  border: none;
   box-shadow: var(--snice-shadow-md);
   color: var(--snice-color-text);
 }
@@ -68,12 +71,36 @@
 }
 
 [part~="tooltip-value"] {
-  color: var(--snice-color-text-secondary);
   font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
 }
 
 @media (prefers-reduced-motion: reduce) {
   [part~="stage"] {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="tooltip"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="stage-shape"] {
+    stroke: CanvasText;
+    stroke-width: 1.5px;
+  }
+
+  [part~="label"],
+  [part~="value"] {
+    fill: CanvasText;
+  }
+
+  [part~="percentage"] {
+    fill: Highlight;
   }
 }

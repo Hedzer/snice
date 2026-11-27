@@ -1,68 +1,75 @@
-/* iOS 26+ Liquid Glass / App Store Connect conversion funnel skin */
+/* iOS 26+ Liquid Glass / Apple Analytics — snice-funnel
+ * 22px grouped Apple card with subtle top atmospheric sheen, rounded stage seams,
+ * SF Pro tabular labels/values/percentages, and 14px high-legibility Regular Liquid Glass tooltip.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+}
 
 [part~="base"] {
   box-sizing: border-box;
-  border-radius: 1.25rem;
-  background: var(--snice-color-surface-container-high);
-  border: 0.5px solid var(--snice-color-border-subtle);
   padding: 1rem;
+  border-radius: 22px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 5%, var(--snice-color-surface-container-high)) 0%,
+    var(--snice-color-surface-container-high) 42%
+  );
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-sm);
 }
 
 [part~="stage"] {
-  transition: opacity 180ms var(--snice-ease-spring, cubic-bezier(0.25, 1, 0.5, 1)),
-    filter 180ms var(--snice-ease-spring, cubic-bezier(0.25, 1, 0.5, 1));
+  transition: opacity 160ms var(--snice-ease-out), filter 160ms var(--snice-ease-out);
 }
 
 [part~="stage"]:hover {
   opacity: 0.9;
-  filter: brightness(1.05);
-}
-
-[part~="stage"]:active {
-  opacity: 0.78;
+  filter: brightness(1.06);
 }
 
 [part~="stage"]:focus-visible {
-  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color);
+  outline: 3px solid var(--snice-focus-ring-color);
   outline-offset: 2px;
-  border-radius: 0.375rem;
 }
 
 [part~="stage-shape"] {
-  stroke: var(--snice-color-surface-container-high);
-  stroke-width: 2px;
-  stroke-linejoin: round;
+  stroke: hsl(0 0% 100% / 0.28);
+  stroke-width: 1px;
+  filter: drop-shadow(0 1.5px 3px hsl(0 0% 0% / 0.12));
 }
 
 [part~="label"] {
-  font-size: 0.8125rem;
+  font-family: var(--snice-font-family);
   font-weight: 600;
-  letter-spacing: -0.008em;
+  letter-spacing: -0.015em;
   fill: var(--snice-color-text);
 }
 
 [part~="value"] {
-  font-size: 0.75rem;
+  font-family: var(--snice-font-family);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   fill: var(--snice-color-text-secondary);
 }
 
 [part~="percentage"] {
-  font-size: 0.6875rem;
+  font-family: var(--snice-font-family);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   fill: var(--snice-color-primary);
 }
 
-/* Floating Regular Liquid Glass callout */
+/* 14px high-legibility Regular Liquid Glass tooltip */
 [part~="tooltip"] {
-  border-radius: 0.875rem;
+  border-radius: 14px;
   padding: 0.5rem 0.75rem;
-  background: var(--snice-ios-glass-regular-bg);
+  background: color-mix(in srgb, var(--snice-color-surface-container-highest) 88%, transparent);
   backdrop-filter: var(--snice-ios-glass-blur);
   -webkit-backdrop-filter: var(--snice-ios-glass-blur);
-  border: 1px solid var(--snice-ios-glass-border);
+  border: 0.5px solid var(--snice-ios-glass-border);
   box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
   color: var(--snice-color-text);
 }
@@ -73,12 +80,47 @@
 }
 
 [part~="tooltip-value"] {
-  color: var(--snice-color-text-secondary);
   font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="tooltip"] {
+    background: var(--snice-color-surface-container-highest);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid var(--snice-color-border);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   [part~="stage"] {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="tooltip"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  [part~="stage-shape"] {
+    stroke: CanvasText;
+    stroke-width: 1.5px;
+    filter: none;
+  }
+
+  [part~="label"],
+  [part~="value"] {
+    fill: CanvasText;
+  }
+
+  [part~="percentage"] {
+    fill: Highlight;
   }
 }

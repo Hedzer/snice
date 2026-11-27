@@ -1,73 +1,100 @@
-/* iOS 26+ Liquid Glass / Apple Energy & Finance Sankey flow card skin */
+/* iOS 26+ Liquid Glass / Apple Analytics Flow — snice-sankey
+ * 22px grouped card with subtle top atmospheric sheen, 4px rounded pill nodes,
+ * legible haloed SF Pro labels & tabular values, and 14px Regular Liquid Glass tooltip.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  -webkit-font-smoothing: antialiased;
+  --sankey-node-stroke: var(--snice-color-surface-container-high);
+  --sankey-node-stroke-width: 1.5px;
+  --sankey-link-opacity: 0.34;
+  --sankey-label-halo: var(--snice-color-surface-container-high);
+}
 
 [part~="base"] {
   box-sizing: border-box;
-  height: 100%;
-  border-radius: 1.25rem;
-  background: var(--snice-color-surface-container-high);
-  border: 0.5px solid var(--snice-color-border-subtle);
-  padding: 0.75rem;
-}
-
-[part~="chart"] {
-  width: 100%;
-  height: 100%;
+  padding: 1rem;
+  border-radius: 22px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 5%, var(--snice-color-surface-container-high)) 0%,
+    var(--snice-color-surface-container-high) 42%
+  );
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14), var(--snice-shadow-sm);
 }
 
 [part~="node-rect"] {
   rx: 4px;
   ry: 4px;
-  stroke: var(--snice-color-surface-container-high);
-  stroke-width: 1.5px;
-  transition: filter var(--snice-transition-fast, 160ms) var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
-}
-
-[part~="node-rect"]:hover {
-  filter: brightness(1.08);
-}
-
-[part~="node-rect"]:active {
-  filter: brightness(0.95);
 }
 
 [part~="label"] {
-  font-size: 0.75rem;
+  font-family: var(--snice-font-family);
   font-weight: 600;
-  letter-spacing: -0.008em;
+  letter-spacing: -0.01em;
   fill: var(--snice-color-text);
 }
 
 [part~="value"] {
-  font-size: 0.6875rem;
+  font-family: var(--snice-font-family);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
-  fill: var(--snice-color-text-secondary);
+  fill: color-mix(in srgb, var(--snice-color-text) 78%, var(--snice-color-text-secondary));
 }
 
-/* Regular Liquid Glass floating callout (preserve base opacity toggle) */
+/* 14px high-legibility Regular Liquid Glass tooltip */
 [part~="tooltip"] {
-  border-radius: 0.875rem;
+  border-radius: 14px;
   padding: 0.5rem 0.75rem;
-  background: var(--snice-ios-glass-regular-bg);
+  background: color-mix(in srgb, var(--snice-color-surface-container-highest) 88%, transparent);
   backdrop-filter: var(--snice-ios-glass-blur);
   -webkit-backdrop-filter: var(--snice-ios-glass-blur);
-  border: 1px solid var(--snice-ios-glass-border);
+  border: 0.5px solid var(--snice-ios-glass-border);
   box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
   color: var(--snice-color-text);
 }
 
-[part~="tooltip-label"] {
-  font-weight: 600;
-  color: var(--snice-color-text);
+[part~="tooltip-value"] {
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
 }
 
-[part~="tooltip-value"] {
-  color: var(--snice-color-text-secondary);
-  font-variant-numeric: tabular-nums;
+@media (prefers-reduced-transparency: reduce) {
+  [part~="tooltip"] {
+    background: var(--snice-color-surface-container-highest);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid var(--snice-color-border);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [part~="node-rect"] {
+  [part~="node"],
+  [part~="link"],
+  [part~="tooltip"] {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    --sankey-node-stroke: CanvasText;
+    --sankey-label-halo: Canvas;
+  }
+
+  [part~="base"],
+  [part~="tooltip"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  [part~="label"],
+  [part~="value"] {
+    fill: CanvasText;
   }
 }

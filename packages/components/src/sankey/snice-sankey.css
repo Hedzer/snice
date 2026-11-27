@@ -5,7 +5,7 @@
 :host {
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-  contain: layout style paint;
+  contain: layout style;
   width: 100%;
 }
 
@@ -27,8 +27,8 @@
 }
 
 .sankey__node rect {
-  stroke: var(--snice-color-surface, rgb(255 255 255));
-  stroke-width: 1px;
+  stroke: var(--sankey-node-stroke, var(--snice-color-surface, rgb(255 255 255)));
+  stroke-width: var(--sankey-node-stroke-width, 1px);
 }
 
 .sankey__node:hover rect {
@@ -42,7 +42,7 @@
 
 .sankey__link path {
   fill: none;
-  stroke-opacity: 0.35;
+  stroke-opacity: var(--sankey-link-opacity, 0.35);
   transition: stroke-opacity var(--snice-transition-fast, 150ms) ease;
 }
 
@@ -61,6 +61,11 @@
 .sankey__label {
   font-size: var(--snice-font-size-sm, 0.75rem);
   fill: var(--snice-color-text, rgb(23 23 23));
+  paint-order: stroke;
+  stroke: var(--sankey-label-halo, var(--snice-color-surface, rgb(255 255 255)));
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  transform: translateY(-1.5px);
   pointer-events: none;
   dominant-baseline: central;
 }
@@ -68,6 +73,11 @@
 .sankey__value {
   font-size: var(--snice-font-size-xs, 0.625rem);
   fill: var(--snice-color-text-secondary, rgb(82 82 82));
+  paint-order: stroke;
+  stroke: var(--sankey-label-halo, var(--snice-color-surface, rgb(255 255 255)));
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  transform: translateY(2.5px);
   pointer-events: none;
   dominant-baseline: central;
 }

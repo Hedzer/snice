@@ -1,82 +1,102 @@
-/* Windows 11 Fluent 2 / Power BI Sankey flow visual skin */
+/* Windows 11 Fluent 2 / Power BI WinUI 3 — snice-sankey
+ * Crisp 8px elevated top-lit Mica card, razor-sharp 0px crispEdges node blocks,
+ * Segoe UI Variable haloed labels/values, transient 4px Acrylic flyout with
+ * 3px top Fluent accent bar, and complete WHCM.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --sankey-node-stroke: var(--snice-color-surface-container-highest);
+  --sankey-node-stroke-width: 1px;
+  --sankey-link-opacity: 0.36;
+  --sankey-label-halo: var(--snice-color-surface-container-highest);
+}
 
 [part~="base"] {
   box-sizing: border-box;
-  height: 100%;
-  border-radius: 0.5rem;
-  background: var(--snice-color-surface-container-lowest);
-  border: 1px solid var(--snice-color-border-subtle);
-  padding: 0.75rem;
-}
-
-[part~="chart"] {
-  width: 100%;
-  height: 100%;
+  padding: 0.875rem;
+  border-radius: 8px;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  box-shadow: var(--snice-shadow-xs);
 }
 
 [part~="node-rect"] {
-  rx: 2px;
-  ry: 2px;
-  stroke: var(--snice-color-surface-container-lowest);
-  stroke-width: 1px;
-  transition: filter 100ms cubic-bezier(0, 0, 0, 1);
-}
-
-[part~="node-rect"]:hover {
-  filter: brightness(1.06);
-}
-
-[part~="node-rect"]:active {
-  filter: brightness(0.94);
+  rx: 0;
+  ry: 0;
+  shape-rendering: crispEdges;
 }
 
 [part~="label"] {
-  font-size: 0.75rem;
+  font-family: var(--snice-font-family);
   font-weight: 600;
   fill: var(--snice-color-text);
 }
 
 [part~="value"] {
-  font-size: 0.6875rem;
+  font-family: var(--snice-font-family);
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
-  fill: var(--snice-color-text-secondary);
+  fill: color-mix(in srgb, var(--snice-color-text) 78%, var(--snice-color-text-secondary));
 }
 
-/* Transient Acrylic floating tooltip (preserve base opacity toggle) */
+/* Transient 4px Acrylic flyout with iconic 3px top Fluent accent bar */
 [part~="tooltip"] {
-  border-radius: 0.25rem;
-  padding: 0.4375rem 0.625rem;
-  background: var(--snice-win-acrylic-bg);
-  backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
-  border: 1px solid var(--snice-color-border);
+  border-radius: 4px;
+  padding: 0.5rem 0.6875rem;
+  background: color-mix(in srgb, var(--snice-color-surface-container-highest) 92%, transparent);
+  backdrop-filter: var(--snice-win-acrylic-blur);
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  border-top: 3px solid var(--snice-color-primary);
   box-shadow: var(--snice-shadow-md);
-  color: var(--snice-color-text);
-  transition: opacity 100ms cubic-bezier(0, 0, 0, 1);
-}
-
-[part~="tooltip-label"] {
-  font-weight: 600;
   color: var(--snice-color-text);
 }
 
 [part~="tooltip-value"] {
-  color: var(--snice-color-text-secondary);
   font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="tooltip"] {
+    background: var(--snice-color-surface-container-highest);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [part~="node-rect"],
+  [part~="node"],
+  [part~="link"],
   [part~="tooltip"] {
     transition: none;
   }
 }
 
 @media (forced-colors: active) {
+  :host {
+    --sankey-node-stroke: CanvasText;
+    --sankey-label-halo: Canvas;
+  }
+
   [part~="base"],
   [part~="tooltip"] {
     background: Canvas;
-    border-color: CanvasText;
     color: CanvasText;
+    border-color: CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  [part~="tooltip"] {
+    border-top-color: Highlight;
+  }
+
+  [part~="label"],
+  [part~="value"] {
+    fill: CanvasText;
   }
 }
