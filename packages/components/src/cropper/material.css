@@ -1,0 +1,115 @@
+/* Material 3 Expressive — snice-cropper
+ * Google Photos Crop Editor: 16px primary-tinted dark tonal stage, 60% scrim,
+ * crisp 2px white crop border + rule-of-thirds guides, primary-ringed white
+ * corner circles & edge pill bars with M3 spatial spring scale.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  border-radius: 16px;
+  border: 1px solid var(--snice-color-border-subtle);
+  background: color-mix(in srgb, var(--snice-color-primary) 5%, hsl(266 14% 8%));
+  box-shadow: var(--snice-shadow-xs);
+  --cropper-overlay: hsl(266 16% 6% / 0.6);
+  --cropper-border-color: hsl(0 0% 100% / 0.94);
+  --cropper-guide-color: hsl(0 0% 100% / 0.36);
+  --cropper-handle-color: hsl(0 0% 100%);
+  --cropper-handle-border: hsl(0 0% 0% / 0.28);
+}
+
+:host(:focus-visible) {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+:host [part~="crop-area"] {
+  border: 2px solid var(--cropper-border-color);
+  box-shadow:
+    0 0 0 9999px var(--cropper-overlay),
+    inset 0 0 0 1px hsl(0 0% 0% / 0.2);
+}
+
+:host [part~="crop-area"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+/* Tactile Material 3 Expressive Handles */
+:host [part~="handle"] {
+  box-sizing: border-box;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  background: var(--cropper-handle-color);
+  border: 2px solid var(--snice-color-primary);
+  box-shadow: var(--snice-shadow-sm);
+  transition:
+    scale var(--snice-transition-fast, 180ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    border-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="handle-nw"] { top: -8px; left: -8px; }
+:host [part~="handle-ne"] { top: -8px; right: -8px; }
+:host [part~="handle-sw"] { bottom: -8px; left: -8px; }
+:host [part~="handle-se"] { bottom: -8px; right: -8px; }
+
+:host [part~="handle-n"],
+:host [part~="handle-s"] {
+  width: 1.5rem;
+  height: 0.4375rem;
+  border-radius: 9999px;
+}
+
+:host [part~="handle-n"] { top: -4px; }
+:host [part~="handle-s"] { bottom: -4px; }
+
+:host [part~="handle-w"],
+:host [part~="handle-e"] {
+  width: 0.4375rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+}
+
+:host [part~="handle-w"] { left: -4px; }
+:host [part~="handle-e"] { right: -4px; }
+
+/* Independent CSS scale preserves translateX/Y(-50%) edge centering */
+:host [part~="handle"]:hover {
+  scale: 1.24;
+  background: var(--snice-m3-primary-container);
+}
+
+:host [part~="handle"]:active {
+  scale: 1.32;
+  background: var(--snice-color-primary);
+  border-color: hsl(0 0% 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="handle"] {
+    transition: none;
+  }
+
+  :host [part~="handle"]:hover,
+  :host [part~="handle"]:active {
+    scale: 1;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="crop-area"] {
+    border: 2px solid Highlight;
+  }
+
+  :host [part~="handle"] {
+    background: Highlight;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+}

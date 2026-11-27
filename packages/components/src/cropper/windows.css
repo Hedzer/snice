@@ -1,0 +1,111 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-cropper
+ * Microsoft Photos Crop Canvas: crisp 8px dark studio frame, 1px Fluent card
+ * border, 58% scrim, signature 14px circular white handles with dark contrast
+ * ring, 100ms zero-bounce fast-out transitions, and dual-stroke keyboard focus.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  border-radius: 8px;
+  border: 1px solid var(--snice-color-border);
+  background: hsl(0 0% 10%);
+  box-shadow: var(--snice-shadow-xs);
+  --cropper-overlay: hsl(0 0% 0% / 0.58);
+  --cropper-border-color: hsl(0 0% 100% / 0.95);
+  --cropper-guide-color: hsl(0 0% 100% / 0.35);
+  --cropper-handle-color: hsl(0 0% 100%);
+  --cropper-handle-border: hsl(0 0% 0% / 0.42);
+}
+
+:host(:focus-visible) {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="crop-area"] {
+  border: 1.5px solid var(--cropper-border-color);
+  box-shadow:
+    0 0 0 9999px var(--cropper-overlay),
+    inset 0 0 0 1px hsl(0 0% 0% / 0.28);
+}
+
+:host [part~="crop-area"]:focus-visible {
+  outline: 2px solid hsl(0 0% 100%);
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 9999px var(--cropper-overlay),
+    0 0 0 2px hsl(0 0% 0%);
+}
+
+/* Signature Windows 11 Photos 14px Circular Handles */
+:host [part~="handle"] {
+  box-sizing: border-box;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 9999px;
+  background: var(--cropper-handle-color);
+  border: 1.5px solid var(--cropper-handle-border);
+  box-shadow: 0 2px 4px hsl(0 0% 0% / 0.4);
+  transition:
+    scale 100ms cubic-bezier(0, 0, 0, 1),
+    border-color 100ms cubic-bezier(0, 0, 0, 1),
+    background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="handle-nw"] { top: -7px; left: -7px; }
+:host [part~="handle-ne"] { top: -7px; right: -7px; }
+:host [part~="handle-sw"] { bottom: -7px; left: -7px; }
+:host [part~="handle-se"] { bottom: -7px; right: -7px; }
+:host [part~="handle-n"] { top: -7px; }
+:host [part~="handle-s"] { bottom: -7px; }
+:host [part~="handle-w"] { left: -7px; }
+:host [part~="handle-e"] { right: -7px; }
+
+/* Independent CSS scale preserves translateX/Y(-50%) edge centering */
+:host [part~="handle"]:hover {
+  scale: 1.18;
+  border-color: var(--snice-color-primary);
+}
+
+:host [part~="handle"]:active {
+  scale: 1.12;
+  background: var(--snice-color-primary);
+  border-color: hsl(0 0% 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="handle"] {
+    transition: none;
+  }
+
+  :host [part~="handle"]:hover,
+  :host [part~="handle"]:active {
+    scale: 1;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host(:focus-visible) {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+
+  :host [part~="crop-area"] {
+    border: 2px solid Highlight;
+  }
+
+  :host [part~="crop-area"]:focus-visible {
+    outline: 2px solid Highlight;
+  }
+
+  :host [part~="handle"] {
+    background: Highlight;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,119 @@
+/* macOS 26 Tahoe Liquid Glass / AppKit — snice-cropper
+ * macOS Photos & Preview.app Crop Canvas: compact 12px concentric darkroom
+ * frame, 0.5px hairline border, precision 12px corner dots & slim 4px desktop
+ * edge pills, independent scale hover, and AppKit focus halo.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  border-radius: 12px;
+  border: 0.5px solid var(--snice-color-border);
+  background: hsl(240 4% 11%);
+  box-shadow: var(--snice-shadow-sm);
+  --cropper-overlay: hsl(240 5% 6% / 0.6);
+  --cropper-border-color: hsl(0 0% 100% / 0.94);
+  --cropper-guide-color: hsl(0 0% 100% / 0.32);
+  --cropper-handle-color: hsl(0 0% 100%);
+  --cropper-handle-border: hsl(0 0% 0% / 0.32);
+}
+
+:host(:focus-visible) {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="crop-area"] {
+  border: 1.5px solid var(--cropper-border-color);
+  box-shadow:
+    0 0 0 9999px var(--cropper-overlay),
+    inset 0 0 0 0.5px hsl(0 0% 0% / 0.3);
+}
+
+:host [part~="crop-area"]:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--snice-color-primary) 75%, transparent);
+  outline-offset: 1px;
+}
+
+/* Precision Desktop AppKit Handles */
+:host [part~="handle"] {
+  box-sizing: border-box;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+  background: var(--cropper-handle-color);
+  border: 0.5px solid var(--cropper-handle-border);
+  box-shadow:
+    0 1px 4px hsl(0 0% 0% / 0.42),
+    inset 0 0.5px 0 hsl(0 0% 100%);
+  transition:
+    scale var(--snice-transition-fast, 140ms) ease-out,
+    background-color var(--snice-transition-fast, 140ms) ease-out,
+    box-shadow var(--snice-transition-fast, 140ms) ease-out;
+}
+
+:host [part~="handle-nw"] { top: -6px; left: -6px; }
+:host [part~="handle-ne"] { top: -6px; right: -6px; }
+:host [part~="handle-sw"] { bottom: -6px; left: -6px; }
+:host [part~="handle-se"] { bottom: -6px; right: -6px; }
+
+:host [part~="handle-n"],
+:host [part~="handle-s"] {
+  width: 1.125rem;
+  height: 0.25rem;
+  border-radius: 9999px;
+}
+
+:host [part~="handle-n"] { top: -2px; }
+:host [part~="handle-s"] { bottom: -2px; }
+
+:host [part~="handle-w"],
+:host [part~="handle-e"] {
+  width: 0.25rem;
+  height: 1.125rem;
+  border-radius: 9999px;
+}
+
+:host [part~="handle-w"] { left: -2px; }
+:host [part~="handle-e"] { right: -2px; }
+
+/* Independent CSS scale preserves translateX/Y(-50%) edge centering */
+:host [part~="handle"]:hover {
+  scale: 1.2;
+  box-shadow:
+    0 2px 6px hsl(0 0% 0% / 0.48),
+    0 0 0 2px color-mix(in srgb, var(--snice-color-primary) 50%, transparent);
+}
+
+:host [part~="handle"]:active {
+  scale: 1.25;
+  background: var(--snice-color-primary);
+  border-color: hsl(0 0% 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="handle"] {
+    transition: none;
+  }
+
+  :host [part~="handle"]:hover,
+  :host [part~="handle"]:active {
+    scale: 1;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="crop-area"] {
+    border: 2px solid Highlight;
+  }
+
+  :host [part~="handle"] {
+    background: Highlight;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+}
