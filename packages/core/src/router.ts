@@ -16,6 +16,7 @@ import { Context } from './types/context';
 import { provideRouterContext } from './app-context';
 import { hasContextProvider } from './context-provider';
 import { matchRoute } from './route-match';
+import { beginRouteAutofocus, captureFocusSnapshot, type FocusSnapshot } from './autofocus';
 
 // Router historically allows a later Router instance to take over the same
 // target. Track only Router-owned provider releases so that handoff remains
@@ -246,7 +247,7 @@ export function Router(options: RouterOptions): RouterInstance {
         contextProviderRoot = null;
         return;
       }
-      renderPath(getPath());
+      renderPath(getPath(), true);
     };
 
     switch (options.type) {
@@ -287,7 +288,7 @@ export function Router(options: RouterOptions): RouterInstance {
     setupEventListeners();
 
     const path = getPath();
-    renderPath(path);
+    renderPath(path, false);
   }
 
   function collectPlacards(): void {
@@ -352,7 +353,7 @@ export function Router(options: RouterOptions): RouterInstance {
     }
   }
   
-  function renderForbiddenPage(target: Element): void {
+  function renderForbiddenPage(target: Element, priorFocus?: FocusSnapshot, isNavigation = false): void {
     let newPageElement: HTMLElement;
 
     if (_403) {
@@ -364,6 +365,13 @@ export function Router(options: RouterOptions): RouterInstance {
       div.innerHTML = /*html*/`<h1>403</h1><p>Unauthorized</p>`;
       newPageElement = div;
     }
+
+    const outgoingPage = target.children[0] as HTMLElement | null;
+    beginRouteAutofocus(newPageElement, {
+      allowPriorFocusOverride: isNavigation,
+      priorFocus,
+      outgoingPage
+    });
 
     target.innerHTML = '';
     target.appendChild(newPageElement);
@@ -382,7 +390,7 @@ export function Router(options: RouterOptions): RouterInstance {
     return container;
   }
 
-  async function checkGuards(guards: Guard<any> | Guard<any>[] | undefined, params: RouteParams, target: Element, stale?: () => boolean): Promise<boolean> {
+  async function checkGuards(guards: Guard<any> | Guard<any>[] | undefined, params: RouteParams, target: Element, stale?: () => boolean, priorFocus?: FocusSnapshot, isNavigation = false): Promise<boolean> {
     const hasGuards = !!guards;
     if (!hasGuards) {
       return true;
@@ -407,7 +415,7 @@ export function Router(options: RouterOptions): RouterInstance {
           // Don't stomp the current page with a 403 if a newer navigation
           // already took over while this guard was resolving.
           if (!stale || !stale()) {
-            renderForbiddenPage(target);
+            renderForbiddenPage(target, priorFocus, isNavigation);
           }
           return false;
         }
@@ -447,7 +455,7 @@ export function Router(options: RouterOptions): RouterInstance {
     return { element: div, transition: undefined, layout: undefined };
   }
 
-  async function resolveRoute(path: string, target: Element, stale?: () => boolean): Promise<{ result: RouteResult; element?: HTMLElement; transition?: Transition; layout?: string | false; routeParams?: RouteParams }> {
+  async function resolveRoute(path: string, target: Element, stale?: () => boolean, priorFocus?: FocusSnapshot, isNavigation = false): Promise<{ result: RouteResult; element?: HTMLElement; transition?: Transition; layout?: string | false; routeParams?: RouteParams }> {
     for (const route of routes) {
       const params = matchRoute(route.route, path);
       const isMatch = params !== false;
@@ -455,7 +463,7 @@ export function Router(options: RouterOptions): RouterInstance {
         continue;
       }
 
-      const guardsAllowed = await checkGuards(route.guards, params as RouteParams, target, stale);
+      const guardsAllowed = await checkGuards(route.guards, params as RouteParams, target, stale, priorFocus, isNavigation);
       if (!guardsAllowed) {
         return { result: RouteResult.GUARDS_FAILED };
       }
@@ -515,7 +523,7 @@ export function Router(options: RouterOptions): RouterInstance {
     return { element: null, needsNewLayout: true };
   }
 
-  async function renderWithLayout(target: Element, pageElement: HTMLElement, transition: Transition | undefined, layoutElement: HTMLElement | null, needsNewLayout: boolean, currentPath: string, routeParams: RouteParams, stale?: () => boolean): Promise<void> {
+  async function renderWithLayout(target: Element, pageElement: HTMLElement, transition: Transition | undefined, layoutElement: HTMLElement | null, needsNewLayout: boolean, currentPath: string, routeParams: RouteParams, stale?: () => boolean, priorFocus?: FocusSnapshot, isNavigation = false): Promise<void> {
     const currentLayout = layoutElement || getCurrentLayoutElement(target);
     if (!currentLayout) {
       return;
@@ -525,6 +533,13 @@ export function Router(options: RouterOptions): RouterInstance {
     updateLayout(currentLayout, currentPath, routeParams);
 
     const oldPageInLayout = currentLayout.querySelector('[slot="page"]') as HTMLElement | null;
+    const outgoingPage = oldPageInLayout || (needsNewLayout ? (target.children[0] as HTMLElement | null) : null);
+    beginRouteAutofocus(pageElement, {
+      allowPriorFocusOverride: isNavigation,
+      priorFocus,
+      outgoingPage
+    });
+
     const shouldTransition = !!(transition && oldPageInLayout);
 
     if (shouldTransition) {
@@ -552,8 +567,13 @@ export function Router(options: RouterOptions): RouterInstance {
     }
   }
 
-  async function renderDirect(target: Element, pageElement: HTMLElement, transition: Transition | undefined, stale?: () => boolean): Promise<void> {
+  async function renderDirect(target: Element, pageElement: HTMLElement, transition: Transition | undefined, stale?: () => boolean, priorFocus?: FocusSnapshot, isNavigation = false): Promise<void> {
     const currentElementInTarget = target.children[0] as HTMLElement | null;
+    beginRouteAutofocus(pageElement, {
+      allowPriorFocusOverride: isNavigation,
+      priorFocus,
+      outgoingPage: currentElementInTarget
+    });
     const shouldTransition = !!(transition && currentElementInTarget);
 
     if (shouldTransition) {
@@ -567,20 +587,20 @@ export function Router(options: RouterOptions): RouterInstance {
     target.appendChild(pageElement);
   }
 
-  async function renderPage(target: Element, pageElement: HTMLElement, transition: Transition | undefined, layout: string | false | undefined, path: string, routeParams: RouteParams, stale?: () => boolean): Promise<void> {
+  async function renderPage(target: Element, pageElement: HTMLElement, transition: Transition | undefined, layout: string | false | undefined, path: string, routeParams: RouteParams, stale?: () => boolean, priorFocus?: FocusSnapshot, isNavigation = false): Promise<void> {
     const layoutToUse = determineLayout(layout);
     const { element: layoutElement, needsNewLayout } = setupLayout(layoutToUse);
     const finalTransition = transition || options.transition;
 
     const hasLayout = layoutElement !== null || getCurrentLayoutElement(target) !== null;
     if (hasLayout) {
-      await renderWithLayout(target, pageElement, finalTransition, layoutElement, needsNewLayout, path, routeParams, stale);
+      await renderWithLayout(target, pageElement, finalTransition, layoutElement, needsNewLayout, path, routeParams, stale, priorFocus, isNavigation);
       if (stale && stale()) return;
       emitContextUpdate(target, path, routeParams);
       return;
     }
 
-    await renderDirect(target, pageElement, finalTransition, stale);
+    await renderDirect(target, pageElement, finalTransition, stale, priorFocus, isNavigation);
     if (stale && stale()) return;
     emitContextUpdate(target, path, routeParams);
   }
@@ -592,13 +612,14 @@ export function Router(options: RouterOptions): RouterInstance {
    * navigate('/login');
    */
   let navGeneration = 0;
-  async function renderPath(path: string): Promise<void> {
+  async function renderPath(path: string, isNavigation = false): Promise<void> {
     const target = doc.querySelector(options.target);
     if (!target) {
       throw new Error(`Target element not found: ${options.target}`);
     }
     ensureContextProvider(target);
 
+    const priorFocus = isNavigation ? captureFocusSnapshot(doc) : undefined;
     const myGen = ++navGeneration;
     const stale = () => myGen !== navGeneration;
 
@@ -609,10 +630,10 @@ export function Router(options: RouterOptions): RouterInstance {
     const isHomePath = (path?.trim() === '' || path === '/') && !!home;
     if (isHomePath) {
       const homeRoute = routes.find(r => r.route.match('/'));
-      if (!(await checkGuards(homeRoute?.guards, {}, target, stale))) return;
+      if (!(await checkGuards(homeRoute?.guards, {}, target, stale, priorFocus, isNavigation))) return;
       if (stale()) return;
       const { element, transition, layout } = createHomeElement();
-      await renderPage(target, element, transition, layout, path, {}, stale);
+      await renderPage(target, element, transition, layout, path, {}, stale, priorFocus, isNavigation);
       return;
     }
 
@@ -620,7 +641,7 @@ export function Router(options: RouterOptions): RouterInstance {
     if (!path) return;
 
     // Resolve route
-    const routeResult = await resolveRoute(path, target, stale);
+    const routeResult = await resolveRoute(path, target, stale, priorFocus, isNavigation);
     if (stale()) return;
 
     // Guards failed (403 already rendered by checkGuards)
@@ -629,19 +650,19 @@ export function Router(options: RouterOptions): RouterInstance {
     // Route matched
     if (routeResult.result === RouteResult.SUCCESS) {
       const { element, transition, layout, routeParams = {} } = routeResult;
-      await renderPage(target, element!, transition, layout, path, routeParams, stale);
+      await renderPage(target, element!, transition, layout, path, routeParams, stale, priorFocus, isNavigation);
       return;
     }
 
     // 404 fallthrough
     const { element, transition, layout } = create404Element();
-    await renderPage(target, element, transition, layout, path, {}, stale);
+    await renderPage(target, element, transition, layout, path, {}, stale, priorFocus, isNavigation);
   }
 
   async function navigate(path: string): Promise<void> {
     const normalizedPath = normalizePath(path);
     recordNavigation(normalizedPath);
-    await renderPath(normalizedPath);
+    await renderPath(normalizedPath, true);
   }
 
   async function performTransition(
