@@ -136,9 +136,11 @@
   background: var(--progress-color, var(--snice-color-primary));
 }
 
-/* Circular variant reset */
+/* Circular variant reset + M3 Expressive CircularWavyProgressIndicator */
 :host([variant="circular"]) [part~="base"] {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: var(--progress-spinner-size, 2.5rem);
   gap: 0;
   background: transparent;
@@ -149,6 +151,17 @@
 :host([variant="circular"]) [part~="base"]::after {
   content: none;
   display: none;
+}
+
+:host([variant="circular"][data-m3-wavy="true"]) [part~="circle"] {
+  display: none;
+}
+
+:host([variant="circular"][data-m3-wavy="true"]) [part~="wave"] {
+  display: block;
+  flex: 0 0 auto;
+  width: var(--progress-spinner-size, 2.5rem);
+  height: var(--progress-spinner-size, 2.5rem);
 }
 
 [part~="circle-bg"] {
@@ -187,8 +200,29 @@
   transform: translate(-50%, -50%);
   text-align: center;
   color: var(--snice-color-text);
+  font-size: 0.5625rem;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+}
+
+:host([variant="circular"][size="small"]) [part~="label"] {
+  font-size: 0.4375rem;
+}
+
+:host([variant="circular"][size="large"]) [part~="label"] {
+  font-size: 0.8125rem;
+}
+
+:host([variant="circular"][size="xl"]) [part~="label"] {
+  font-size: 1.125rem;
+}
+
+:host([variant="circular"][size="xxl"]) [part~="label"] {
+  font-size: 1.5rem;
+}
+
+:host([variant="circular"][size="xxxl"]) [part~="label"] {
+  font-size: 2rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

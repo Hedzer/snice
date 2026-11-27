@@ -247,7 +247,9 @@ function attachSliderBehavior(el: Element): PlatformBehaviorCleanup {
 function attachSingleElement(el: Element): PlatformBehaviorCleanup {
   const tag = el.tagName.toLowerCase();
   if (tag === 'snice-slider') return attachSliderBehavior(el);
-  if (tag === 'snice-progress') return attachLazyWavyProgress(el);
+  if (tag === 'snice-progress' || tag === 'snice-progress-ring' || tag === 'snice-spinner') {
+    return attachLazyWavyProgress(el);
+  }
   if (
     tag === 'snice-button' ||
     tag === 'snice-switch' ||
@@ -262,7 +264,7 @@ function attachSingleElement(el: Element): PlatformBehaviorCleanup {
 }
 
 const M3_INTERACTIVE_SELECTOR =
-  'snice-button, snice-switch, snice-checkbox, snice-radio, snice-tab, snice-chip, snice-slider, snice-progress';
+  'snice-button, snice-switch, snice-checkbox, snice-radio, snice-tab, snice-chip, snice-slider, snice-progress, snice-progress-ring, snice-spinner';
 
 export function attach(root: Document | Element): PlatformBehaviorCleanup {
   if (root instanceof Element && root.tagName.toLowerCase().startsWith('snice-')) {

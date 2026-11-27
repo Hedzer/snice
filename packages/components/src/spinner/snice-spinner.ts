@@ -1,6 +1,7 @@
-import { element, property, render, styles, html, css } from 'snice';
+import { element, property, ready, reconnect, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-spinner.css?inline';
 import type { SpinnerSize, SpinnerColor, SpinnerVariant, SniceSpinnerElement } from './snice-spinner.types';
+import { attachCompiledPlatformBehavior } from '../platform-behaviors/bind';
 
 @element('snice-spinner')
 export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
@@ -18,6 +19,26 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
 
   @property({  })
   variant: SpinnerVariant = 'arc';
+
+  private platformBehaviorCleanup?: () => void;
+
+  @ready()
+  private onReady() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
+  }
+
+  @reconnect()
+  private onReconnect() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
+  }
+
+  @dispose()
+  private onDispose() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = undefined;
+  }
 
   @render()
   render() {
@@ -108,6 +129,7 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
           pathLength="1"
         ></circle>
       </svg>
+      <svg class="spinner__wave" part="wave" data-platform-only="material" aria-hidden="true" hidden></svg>
     `);
   }
 

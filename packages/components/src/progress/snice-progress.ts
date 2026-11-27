@@ -1,6 +1,7 @@
-import { element, property, watch, query, render, styles, html, css as cssTag } from 'snice';
+import { element, property, watch, query, ready, reconnect, dispose, render, styles, html, css as cssTag } from 'snice';
 import cssContent from './snice-progress.css?inline';
 import type { ProgressVariant, ProgressSize, ProgressColor, SniceProgressElement } from './snice-progress.types';
+import { attachCompiledPlatformBehavior } from '../platform-behaviors/bind';
 
 @element('snice-progress')
 export class SniceProgress extends HTMLElement implements SniceProgressElement {
@@ -51,6 +52,25 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
 
   private radius = 0;
   private circumference = 0;
+  private platformBehaviorCleanup?: () => void;
+
+  @ready()
+  private onReady() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
+  }
+
+  @reconnect()
+  private onReconnect() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
+  }
+
+  @dispose()
+  private onDispose() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = undefined;
+  }
 
   @render()
   render() {
@@ -130,6 +150,7 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
             stroke-dashoffset="${offset}"
           />
         </svg>
+        <svg class="progress__wave" part="wave" data-platform-only="material" aria-hidden="true" hidden></svg>
         <if ${this.showLabel}>
           <div part="label" class="progress__circle-label">${labelText}</div>
         </if>

@@ -4,6 +4,8 @@
   --spinner-size: 2.5rem;
   --spinner-stroke: 4px;
   --spinner-color: var(--snice-color-primary);
+  --_m3-wave-active: var(--spinner-color);
+  --_m3-wave-track: var(--snice-m3-secondary-container);
 }
 
 :host([size="small"]) {
@@ -46,6 +48,27 @@
 [part~="circle"] {
   animation-duration: 1.6s;
   animation-timing-function: linear;
+}
+
+[part~="wave"] {
+  display: none;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
+  overflow: visible;
+}
+
+:host([data-m3-wavy="true"]) [part~="circle"] {
+  display: none;
+}
+
+:host([data-m3-wavy="true"]) [part~="wave"] {
+  display: block;
+}
+
+:host([color="success"]),
+:host([color="warning"]),
+:host([color="error"]) {
+  --_m3-wave-track: color-mix(in srgb, var(--spinner-color) 18%, transparent);
 }
 
 [part~="track"] {
@@ -127,6 +150,11 @@
 }
 
 @media (forced-colors: active) {
+  :host {
+    --_m3-wave-active: Highlight;
+    --_m3-wave-track: CanvasText;
+  }
+
   [part~="fill"] {
     stroke: Highlight;
   }

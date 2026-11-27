@@ -37649,6 +37649,9 @@
             },
             {
               "name": "value"
+            },
+            {
+              "name": "wave"
             }
           ],
           "cssProperties": []
@@ -43964,6 +43967,9 @@
             },
             {
               "name": "track"
+            },
+            {
+              "name": "wave"
             }
           ],
           "cssProperties": [

@@ -1,4 +1,5 @@
-:host([hidden]) {
+:host([hidden]),
+.spinner__wave {
   display: none;
 }
 

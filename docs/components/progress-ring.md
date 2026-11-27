@@ -41,6 +41,7 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `svg` | `<svg>` | The ring SVG canvas |
 | `track` | `<circle>` | Background circle |
 | `fill` | `<circle>` | Progress circle |
+| `wave` | `<svg>` | Material 3 Expressive circular wavy progress indicator helper |
 | `center` | `<div>` | Center text container |
 | `value` | `<span>` | Percentage text |
 | `label` | `<span>` | Label text |

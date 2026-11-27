@@ -1,4 +1,5 @@
-:host([hidden]) {
+:host([hidden]),
+.progress-ring__wave {
   display: none;
 }
 

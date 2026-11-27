@@ -1,6 +1,7 @@
-import { element, property, watch, dispatch, render, styles, html, css } from 'snice';
+import { element, property, watch, dispatch, ready, reconnect, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-progress-ring.css?inline';
 import type { ProgressRingSize, SniceProgressRingElement } from './snice-progress-ring.types';
+import { attachCompiledPlatformBehavior } from '../platform-behaviors/bind';
 
 @element('snice-progress-ring')
 export class SniceProgressRing extends HTMLElement implements SniceProgressRingElement {
@@ -26,6 +27,25 @@ export class SniceProgressRing extends HTMLElement implements SniceProgressRingE
   label = '';
 
   private previousValue = 0;
+  private platformBehaviorCleanup?: () => void;
+
+  @ready()
+  private onReady() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
+  }
+
+  @reconnect()
+  private onReconnect() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
+  }
+
+  @dispose()
+  private onDispose() {
+    this.platformBehaviorCleanup?.();
+    this.platformBehaviorCleanup = undefined;
+  }
 
   @render()
   renderContent() {
@@ -66,6 +86,7 @@ export class SniceProgressRing extends HTMLElement implements SniceProgressRingE
             style="--progress-ring-empty: ${circumference}"
           />
         </svg>
+        <svg class="progress-ring__wave" part="wave" data-platform-only="material" aria-hidden="true" hidden></svg>
         <if ${showCenter}>
           <div class="progress-ring__center" part="center">
             <if ${this.label}>

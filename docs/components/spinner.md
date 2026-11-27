@@ -30,6 +30,7 @@ An animated loading indicator with configurable size, color, and optional label.
 | `circle` | SVG spinner element (arc variant) |
 | `track` | Background circle inside the arc SVG |
 | `fill` | Animated arc circle inside the arc SVG |
+| `wave` | Material 3 Expressive circular wavy indeterminate indicator helper (`<svg>`) |
 | `dots` | Dot container (dots variant) |
 | `dot` | Individual dot (dots and orbit variants) |
 | `orbit-dot` | Added to `dot` for the orbit variant's dots |

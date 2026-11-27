@@ -18,6 +18,7 @@ thickness: number = 4;   // only applies to arc variant
 - `circle` - Arc variant's SVG element
 - `track` - Arc variant's background circle
 - `fill` - Arc variant's animated arc circle
+- `wave` - Material 3 Expressive circular wavy indeterminate indicator helper (`<svg>`)
 - `dots` / `pulse` / `orbit` / `bars` - Variant wrapper parts
 - `dot` - Individual dot (dots and orbit variants)
 - `orbit-dot` - Added to `dot` for the orbit variant's dots

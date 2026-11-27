@@ -24,6 +24,7 @@ label: string = '';                                  // Custom center text
 - `svg` - The ring SVG canvas
 - `track` - Background circle
 - `fill` - Progress circle
+- `wave` - Material 3 Expressive circular wavy progress indicator helper (`<svg>`)
 - `center` - Center text container
 - `value` - Percentage text
 - `label` - Label text
