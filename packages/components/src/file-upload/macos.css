@@ -1,0 +1,285 @@
+/* macOS 26+ Tahoe AppKit — snice-file-upload
+   Native counterpart: AppKit / Finder document drop well + compact attachment rows.
+   Strictly opaque desktop surfaces (never Liquid Glass on inline drop wells or file rows). */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  gap: 0.375rem;
+}
+
+:host [part~="label"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 0.125rem;
+}
+
+:host [part~="upload-area"] {
+  padding: 1.375rem 1.25rem;
+  gap: 0.625rem;
+  background: var(--snice-color-surface-container-low);
+  border: 1px dashed var(--snice-color-border-hover);
+  border-radius: 10px;
+  box-shadow: inset 0 0.5px 1.5px hsl(0 0% 0% / 0.05);
+  transition:
+    background-color var(--snice-transition-fast, 140ms) var(--snice-ease-spring),
+    border-color var(--snice-transition-fast, 140ms) var(--snice-ease-spring),
+    box-shadow var(--snice-transition-fast, 140ms) var(--snice-ease-spring);
+}
+
+:host([size="small"]) [part~="upload-area"] {
+  padding: 0.875rem;
+  border-radius: 8px;
+}
+
+:host([size="large"]) [part~="upload-area"] {
+  padding: 2rem 1.5rem;
+  border-radius: 12px;
+}
+
+:host([variant="filled"]) [part~="upload-area"] {
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: none;
+}
+
+:host [part~="upload-area"]:hover {
+  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 4%, var(--snice-color-surface-container-low));
+}
+
+:host([variant="filled"]) [part~="upload-area"]:hover {
+  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 5%, var(--snice-color-surface-container));
+}
+
+:host [part~="upload-area"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="upload-area"][part~="upload-area-drag-over"],
+:host([variant="filled"]) [part~="upload-area"][part~="upload-area-drag-over"] {
+  border-style: solid;
+  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, var(--snice-color-surface-container-low));
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="upload-area"][part~="upload-area-invalid"],
+:host([variant="filled"]) [part~="upload-area"][part~="upload-area-invalid"] {
+  border-color: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 6%, var(--snice-color-surface-container-low));
+}
+
+:host [part~="upload-area"][part~="upload-area-disabled"],
+:host [part~="upload-area"][part~="upload-area-disabled"]:hover,
+:host([variant="filled"]) [part~="upload-area"][part~="upload-area-disabled"],
+:host([variant="filled"]) [part~="upload-area"][part~="upload-area-disabled"]:hover {
+  opacity: 0.46;
+  border-color: var(--snice-color-border-hover);
+  background: var(--snice-color-surface-container-low);
+  box-shadow: none;
+}
+
+:host([variant="filled"]) [part~="upload-area"][part~="upload-area-disabled"],
+:host([variant="filled"]) [part~="upload-area"][part~="upload-area-disabled"]:hover {
+  border-color: var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container);
+}
+
+:host [part~="upload-icon"] {
+  font-size: 2.25rem;
+  color: var(--snice-color-text-tertiary);
+  line-height: 1;
+}
+
+:host([size="small"]) [part~="upload-icon"] {
+  font-size: 1.75rem;
+}
+
+:host([size="large"]) [part~="upload-icon"] {
+  font-size: 3rem;
+}
+
+:host [part~="upload-text"] {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--snice-color-text-secondary);
+}
+
+/* Primary Browse CTA (28px AppKit Default Accent Push Button, explicit white ink) */
+:host [part~="button"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.75rem;
+  padding: 0 0.875rem;
+  border-radius: 6px;
+  border: 0.5px solid hsl(0 0% 0% / 0.12);
+  background:
+    linear-gradient(180deg, hsl(0 0% 100% / 0.16), transparent),
+    var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  box-shadow:
+    0 0.5px 1px hsl(0 0% 0% / 0.16),
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.25);
+  transition:
+    filter var(--snice-transition-fast, 140ms) var(--snice-ease-spring),
+    transform var(--snice-transition-fast, 140ms) var(--snice-ease-spring),
+    box-shadow var(--snice-transition-fast, 140ms) var(--snice-ease-spring);
+}
+
+:host([size="small"]) [part~="button"] {
+  min-height: 1.375rem;
+  padding: 0 0.625rem;
+  border-radius: 5px;
+  font-size: 0.75rem;
+}
+
+:host([size="large"]) [part~="button"] {
+  min-height: 2.125rem;
+  padding: 0 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+:host [part~="button"]:hover {
+  background:
+    linear-gradient(180deg, hsl(0 0% 100% / 0.2), transparent),
+    var(--snice-color-primary);
+  filter: brightness(1.04);
+}
+
+:host [part~="button"]:active {
+  transform: scale(0.97);
+  filter: brightness(0.96);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="button"]:disabled {
+  opacity: 0.46;
+  box-shadow: none;
+  filter: none;
+  transform: none;
+}
+
+/* Compact AppKit attachment list */
+:host [part~="file-list"] {
+  gap: 0.375rem;
+  margin-top: 0.625rem;
+}
+
+:host [part~="file-item"] {
+  padding: 0.4375rem 0.625rem;
+  gap: 0.625rem;
+  background: var(--snice-macos-control-bg);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 8px;
+  box-shadow: var(--snice-shadow-xs);
+}
+
+:host [part~="image"],
+:host [part~="file-icon"] {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 6px;
+  background: var(--snice-color-surface-container);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  font-size: 1.125rem;
+}
+
+:host [part~="file-name"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+:host [part~="file-size"] {
+  font-size: 0.6875rem;
+  color: var(--snice-color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Remove button (MUST come AFTER all [part~="button"] rules — emits part="button file-remove") */
+:host [part~="button"][part~="file-remove"],
+:host([size="small"]) [part~="button"][part~="file-remove"],
+:host([size="large"]) [part~="button"][part~="file-remove"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  min-height: 1.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--snice-color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  box-shadow: none;
+  filter: none;
+}
+
+:host [part~="button"][part~="file-remove"]:hover {
+  background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-danger);
+  filter: none;
+}
+
+:host [part~="button"][part~="file-remove"]:active {
+  transform: scale(0.95);
+  filter: none;
+}
+
+:host [part~="button"][part~="file-remove"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="helper-text"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="error-text"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--snice-color-danger);
+}
+
+@media (forced-colors: active) {
+  :host [part~="upload-area"],
+  :host [part~="file-item"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="button"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid HighlightText;
+    box-shadow: none;
+  }
+
+  :host [part~="button"][part~="file-remove"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+  }
+}

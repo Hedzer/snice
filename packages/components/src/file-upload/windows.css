@@ -1,0 +1,275 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-file-upload
+   Native counterpart: WinUI 3 Mica 8px file drop card + 32px 4px Accent Button + Subtle remove icon.
+   Strictly opaque Mica surfaces (never Acrylic on inline content dropzones). */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  gap: 0.375rem;
+}
+
+:host [part~="label"] {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--snice-color-text);
+  margin-bottom: 0.125rem;
+}
+
+:host [part~="upload-area"] {
+  padding: 1.5rem;
+  gap: 0.75rem;
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px dashed var(--snice-color-border-hover);
+  border-radius: 8px;
+  transition:
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out),
+    border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out);
+}
+
+:host([size="small"]) [part~="upload-area"] {
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+:host([size="large"]) [part~="upload-area"] {
+  padding: 2.25rem;
+  border-radius: 8px;
+}
+
+:host([variant="filled"]) [part~="upload-area"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border);
+}
+
+:host [part~="upload-area"]:hover {
+  border-color: var(--snice-color-primary);
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host([variant="filled"]) [part~="upload-area"]:hover {
+  border-color: var(--snice-color-primary);
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="upload-area"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="upload-area"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="upload-area"][part~="upload-area-drag-over"],
+:host([variant="filled"]) [part~="upload-area"][part~="upload-area-drag-over"] {
+  border-style: solid;
+  border-color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, var(--snice-color-surface-container-lowest));
+}
+
+:host [part~="upload-area"][part~="upload-area-invalid"],
+:host([variant="filled"]) [part~="upload-area"][part~="upload-area-invalid"] {
+  border-color: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 6%, var(--snice-color-surface-container-lowest));
+}
+
+:host [part~="upload-area"][part~="upload-area-disabled"],
+:host [part~="upload-area"][part~="upload-area-disabled"]:hover,
+:host [part~="upload-area"][part~="upload-area-disabled"]:active,
+:host([variant="filled"]) [part~="upload-area"][part~="upload-area-disabled"],
+:host([variant="filled"]) [part~="upload-area"][part~="upload-area-disabled"]:hover,
+:host([variant="filled"]) [part~="upload-area"][part~="upload-area-disabled"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-color-border-subtle);
+  color: var(--snice-color-text-tertiary);
+  opacity: 0.65;
+}
+
+:host [part~="upload-icon"] {
+  font-size: 2.5rem;
+  color: var(--snice-color-primary);
+  line-height: 1;
+}
+
+:host([size="small"]) [part~="upload-icon"] {
+  font-size: 1.75rem;
+}
+
+:host([size="large"]) [part~="upload-icon"] {
+  font-size: 3.25rem;
+}
+
+:host([disabled]) [part~="upload-icon"],
+:host([disabled]) [part~="upload-text"] {
+  color: var(--snice-color-text-tertiary);
+}
+
+:host [part~="upload-text"] {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--snice-color-text-secondary);
+}
+
+/* Primary Browse CTA (32px WinUI 3 4px Accent Button w/ --snice-win-on-accent: black ink on #60CDFF in dark mode) */
+:host [part~="button"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0 0.875rem;
+  border-radius: 4px;
+  border: 1px solid hsl(0 0% 100% / 0.08);
+  border-bottom-color: hsl(0 0% 0% / 0.4);
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent);
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 400;
+  transition:
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out),
+    opacity var(--snice-transition-fast, 100ms) var(--snice-ease-out);
+}
+
+:host([size="small"]) [part~="button"] {
+  min-height: 1.625rem;
+  padding: 0 0.625rem;
+  font-size: 0.75rem;
+}
+
+:host([size="large"]) [part~="button"] {
+  min-height: 2.5rem;
+  padding: 0 1.125rem;
+  font-size: 0.9375rem;
+}
+
+:host [part~="button"]:hover {
+  background: var(--snice-color-primary-hover);
+}
+
+:host [part~="button"]:active {
+  opacity: 0.88;
+}
+
+:host [part~="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="button"]:disabled,
+:host [part~="button"]:disabled:hover,
+:host [part~="button"]:disabled:active {
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-color-border-subtle);
+  color: var(--snice-color-text-tertiary);
+  opacity: 0.65;
+}
+
+/* Layered Fluent attachment list */
+:host [part~="file-list"] {
+  gap: 0.375rem;
+  margin-top: 0.625rem;
+}
+
+:host [part~="file-item"] {
+  padding: 0.5rem 0.75rem;
+  gap: 0.75rem;
+  background: var(--snice-win-control-bg);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--snice-win-stroke-top) var(--snice-win-stroke-top) var(--snice-win-stroke-bottom);
+  border-radius: 4px;
+}
+
+:host [part~="image"],
+:host [part~="file-icon"] {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 4px;
+  background: var(--snice-color-surface-container);
+  border: 1px solid var(--snice-color-border-subtle);
+  font-size: 1.25rem;
+}
+
+:host [part~="file-name"] {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--snice-color-text);
+}
+
+:host [part~="file-size"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Remove Icon Button (MUST come AFTER all [part~="button"] rules — emits part="button file-remove") */
+:host [part~="button"][part~="file-remove"],
+:host([size="small"]) [part~="button"][part~="file-remove"],
+:host([size="large"]) [part~="button"][part~="file-remove"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  min-height: 1.75rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--snice-color-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1;
+  box-shadow: none;
+  opacity: 1;
+}
+
+:host [part~="button"][part~="file-remove"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  color: var(--snice-color-danger);
+}
+
+:host [part~="button"][part~="file-remove"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  color: var(--snice-color-danger);
+  opacity: 1;
+}
+
+:host [part~="button"][part~="file-remove"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="helper-text"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="error-text"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-danger);
+}
+
+@media (forced-colors: active) {
+  :host [part~="upload-area"],
+  :host [part~="file-item"] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: ButtonBorder;
+  }
+
+  :host [part~="button"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: HighlightText;
+  }
+
+  :host [part~="button"][part~="file-remove"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border-color: ButtonBorder;
+  }
+}
