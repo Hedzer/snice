@@ -1,0 +1,207 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-notification-center (Taskbar Acrylic Flyout) */
+[part~="trigger"] {
+  box-sizing: border-box;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--snice-color-text);
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1), border-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="trigger"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+[part~="trigger-open"],
+[part~="trigger-open"]:hover {
+  background: var(--snice-win-control-bg);
+  border-color: var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+}
+
+[part~="trigger"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+[part~="trigger"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+[part~="badge-badge"] {
+  background: var(--snice-color-danger);
+  color: var(--snice-win-on-accent, var(--snice-color-text-inverse));
+  font-weight: 600;
+}
+
+[part~="panel"] {
+  width: 22.5rem;
+  border-radius: 8px;
+  background: var(--snice-win-acrylic-bg);
+  backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur, blur(30px) saturate(1.25));
+  border: 1px solid var(--snice-color-border-hover);
+  box-shadow: var(--snice-shadow-xl);
+  font-family: var(--snice-font-family);
+  animation-duration: 150ms;
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="panel-header"] {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--snice-color-border);
+}
+
+[part~="panel-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="mark-all-button"] {
+  min-height: 1.75rem;
+  padding: 0 0.625rem;
+  border-radius: 4px;
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  color: var(--snice-color-text);
+  font-size: 0.75rem;
+  font-weight: 400;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="mark-all-button"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+[part~="mark-all-button"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+[part~="mark-all-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+[part~="list"] {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+[part~="item"] {
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-color-border);
+  border-radius: 6px;
+  padding: 0.75rem 0.875rem;
+  box-shadow: none;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="item"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+[part~="item-unread"] {
+  background: var(--snice-color-surface-container-high);
+  border-color: var(--snice-color-border-hover);
+  box-shadow: inset 3px 0 0 var(--snice-color-primary);
+}
+
+[part~="item-unread"]:hover {
+  background: var(--snice-color-surface-container-highest);
+}
+
+[part~="item-icon"] {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 6px;
+}
+
+[part~="item-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="item-message"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="item-time"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="dismiss"] {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 4px;
+  transition: opacity 100ms ease, background-color 100ms cubic-bezier(0, 0, 0, 1), color 100ms ease;
+}
+
+[part~="dismiss"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  color: var(--snice-color-danger);
+}
+
+[part~="dismiss"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+[part~="dismiss"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="panel"] {
+    background: var(--snice-color-surface-container-highest);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="trigger"],
+  [part~="panel"],
+  [part~="mark-all-button"],
+  [part~="item"],
+  [part~="dismiss"] {
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="panel"] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+    backdrop-filter: none;
+  }
+
+  [part~="item"] {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
+  [part~="item-unread"] {
+    box-shadow: inset 3px 0 0 Highlight;
+  }
+
+  [part~="trigger"]:focus-visible,
+  [part~="mark-all-button"]:focus-visible,
+  [part~="dismiss"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,203 @@
+/* iOS 26+ Liquid Glass — snice-notification-center (Liquid Glass Notification Stack Popover) */
+[part~="trigger"] {
+  box-sizing: border-box;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border-radius: 9999px;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-sm);
+  color: var(--snice-color-text);
+  transition:
+    transform 160ms var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+[part~="trigger"]:hover {
+  background: var(--snice-ios-glass-regular-bg);
+  filter: brightness(1.03);
+}
+
+[part~="trigger-open"],
+[part~="trigger-open"]:hover {
+  background: var(--snice-ios-glass-tinted-bg);
+  color: var(--snice-color-primary);
+  filter: none;
+}
+
+[part~="trigger"]:active {
+  transform: scale(0.94);
+}
+
+[part~="trigger"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-ios-glass-rim), 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="badge-badge"] {
+  background: var(--snice-color-danger);
+  color: hsl(0 0% 100%);
+  font-weight: 600;
+}
+
+[part~="panel"] {
+  width: 23rem;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--snice-color-surface-container-low) 88%, transparent);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-2xl);
+  font-family: var(--snice-font-family);
+  animation-duration: 240ms;
+  animation-timing-function: var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+}
+
+[part~="panel-header"] {
+  padding: 0.875rem 1rem 0.75rem;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="panel-title"] {
+  font-family: var(--snice-font-family-display, var(--snice-font-family));
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--snice-color-text);
+}
+
+[part~="mark-all-button"] {
+  padding: 0.3125rem 0.75rem;
+  border-radius: 9999px;
+  background: hsl(240 5% 50% / 0.12);
+  color: var(--snice-color-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition:
+    background-color 140ms ease,
+    transform 160ms var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+}
+
+[part~="mark-all-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+}
+
+[part~="mark-all-button"]:active {
+  transform: scale(0.94);
+}
+
+[part~="mark-all-button"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="list"] {
+  padding: 0.625rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+[part~="item"] {
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 14px;
+  padding: 0.75rem 0.875rem;
+  box-shadow: var(--snice-shadow-xs);
+  transition: background-color 140ms ease;
+}
+
+[part~="item"]:hover {
+  background: var(--snice-color-surface-container-highest);
+}
+
+[part~="item-unread"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 7%, var(--snice-color-surface-container-high));
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="item-unread"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 11%, var(--snice-color-surface-container-high));
+}
+
+[part~="item-icon"] {
+  width: 2.375rem;
+  height: 2.375rem;
+  border-radius: 10px;
+}
+
+[part~="item-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--snice-color-text);
+}
+
+[part~="item-message"] {
+  font-size: 0.875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="item-time"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="dismiss"] {
+  opacity: 0.68;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  background: hsl(240 5% 50% / 0.12);
+  color: var(--snice-color-text-secondary);
+  transition:
+    opacity 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease,
+    transform 160ms var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+}
+
+[part~="dismiss"]:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-danger) 14%, transparent);
+  color: var(--snice-color-danger);
+}
+
+[part~="dismiss"]:active {
+  transform: scale(0.92);
+}
+
+[part~="dismiss"]:focus-visible {
+  outline: none;
+  opacity: 1;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="empty-state"] {
+  background: transparent;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [part~="trigger"],
+  [part~="panel"] {
+    background: var(--snice-color-surface-container-low);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="trigger"],
+  [part~="panel"],
+  [part~="mark-all-button"],
+  [part~="item"],
+  [part~="dismiss"] {
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+  }
+}

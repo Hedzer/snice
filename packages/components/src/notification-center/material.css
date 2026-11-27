@@ -1,0 +1,181 @@
+/* Android Material 3 Expressive — snice-notification-center (M3 Notification Shade Tray) */
+[part~="trigger"] {
+  box-sizing: border-box;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--snice-color-text);
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects, ease),
+    border-radius 150ms var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    color 150ms ease;
+}
+
+[part~="trigger"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+}
+
+[part~="trigger-open"],
+[part~="trigger-open"]:hover {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container, var(--snice-color-text));
+}
+
+[part~="trigger"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+[part~="trigger"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+[part~="badge-badge"] {
+  background: var(--snice-color-danger);
+  color: var(--snice-color-text-inverse);
+  font-weight: 600;
+}
+
+[part~="panel"] {
+  width: 23rem;
+  border-radius: 28px;
+  background: var(--snice-color-surface-container-high);
+  border: none;
+  box-shadow: var(--snice-shadow-lg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  font-family: var(--snice-font-family);
+  animation-duration: 200ms;
+  animation-timing-function: var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="panel-header"] {
+  padding: 1rem 1.25rem 0.625rem;
+  border-bottom: none;
+}
+
+[part~="panel-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+[part~="mark-all-button"] {
+  min-height: 2.25rem;
+  padding: 0 0.875rem;
+  border-radius: 9999px;
+  color: var(--snice-color-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects, ease),
+    border-radius 150ms var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1));
+}
+
+[part~="mark-all-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+}
+
+[part~="mark-all-button"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+[part~="mark-all-button"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+}
+
+[part~="list"] {
+  padding: 0.5rem 0.75rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+[part~="item"] {
+  background: var(--snice-color-surface-container);
+  border: none;
+  border-radius: 16px;
+  padding: 0.875rem 1rem;
+  box-shadow: none;
+  transition: background-color 150ms var(--snice-m3-spring-effects, ease);
+}
+
+[part~="item"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 6%, var(--snice-color-surface-container));
+}
+
+[part~="item-unread"] {
+  background: color-mix(in srgb, var(--snice-m3-secondary-container) 70%, var(--snice-color-surface-container-lowest));
+  box-shadow: var(--snice-shadow-xs);
+}
+
+[part~="item-unread"]:hover {
+  background: var(--snice-m3-secondary-container);
+}
+
+[part~="item-icon"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+}
+
+[part~="item-title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+[part~="item-message"] {
+  font-size: 0.875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="item-time"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="dismiss"] {
+  opacity: 0.72;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  color: var(--snice-color-text-secondary);
+  transition:
+    opacity 150ms ease,
+    background-color 150ms var(--snice-m3-spring-effects, ease),
+    border-radius 150ms var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    color 150ms ease;
+}
+
+[part~="dismiss"]:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-danger) 10%, transparent);
+  color: var(--snice-color-danger);
+}
+
+[part~="dismiss"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+}
+
+[part~="dismiss"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="trigger"],
+  [part~="panel"],
+  [part~="mark-all-button"],
+  [part~="item"],
+  [part~="dismiss"] {
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+  }
+}
