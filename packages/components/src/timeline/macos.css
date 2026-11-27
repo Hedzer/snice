@@ -1,0 +1,78 @@
+/* macOS 26+ Tahoe AppKit — snice-timeline
+   Native counterpart: AppKit / Xcode Commit & Activity Timeline (compact 13px/12px/11px desktop density, 1.5rem markers). */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="item"] {
+  padding-bottom: 1.25rem;
+}
+
+:host [part~="item"]:last-child,
+:host([orientation="horizontal"]) [part~="item"] {
+  padding-bottom: 0;
+}
+
+:host [part~="item"]::before {
+  background: var(--snice-color-border);
+}
+
+/* Keep 1.5rem geometry for pixel-centered connectors; never declare background so semantic marker tints work in Mode B. */
+:host [part~="marker"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-width: 1.5px;
+  box-shadow: 0 0 0 3px var(--snice-color-surface);
+}
+
+:host [part~="item-info"] {
+  --snice-color-primary-subtle: color-mix(in srgb, var(--snice-color-primary) 15%, var(--snice-color-background-element));
+}
+
+:host [part~="item-success"] {
+  --snice-color-success-subtle: color-mix(in srgb, var(--snice-color-success) 15%, var(--snice-color-background-element));
+}
+
+:host [part~="item-warning"] {
+  --snice-color-warning-subtle: color-mix(in srgb, var(--snice-color-warning) 15%, var(--snice-color-background-element));
+}
+
+:host [part~="item-error"] {
+  --snice-color-danger-subtle: color-mix(in srgb, var(--snice-color-danger) 15%, var(--snice-color-background-element));
+}
+
+:host [part~="timestamp"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text-tertiary);
+  margin-bottom: 0.0625rem;
+}
+
+:host [part~="title"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text);
+  line-height: 1.35;
+}
+
+:host [part~="description"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+  line-height: 1.4;
+}
+
+@media (forced-colors: active) {
+  :host [part~="item"]::before {
+    background: CanvasText;
+  }
+
+  :host [part~="marker"] {
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+}
