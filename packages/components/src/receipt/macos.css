@@ -1,0 +1,85 @@
+/* macOS 26+ Tahoe / AppKit — snice-receipt
+ * Compact AppKit Apple Store desktop receipt sheet.
+ * 12px opaque hairline card, 8px inset sections in modern, 13px SF Pro tabular items,
+ * 0.5px hairlines, monospace thermal header fix, and dark-mode ink masthead contrast fix.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --receipt-bg: var(--snice-color-background-element);
+  --receipt-bg-element: var(--snice-color-surface-container-low);
+  --receipt-text: var(--snice-color-text);
+  --receipt-text-secondary: var(--snice-color-text-secondary);
+  --receipt-text-tertiary: var(--snice-color-text-tertiary);
+  --receipt-border: var(--snice-color-border);
+  --receipt-border-color: var(--snice-color-border);
+  --receipt-divider-color: var(--snice-color-border-subtle);
+  --receipt-divider-width: 0.5px;
+  --receipt-border-radius: 12px;
+  --receipt-shadow: var(--snice-shadow-sm);
+  --receipt-accent: var(--snice-color-primary);
+  --receipt-merchant-font-size: 1.125rem;
+  --receipt-item-font-size: 0.8125rem;
+  --receipt-meta-font-size: 0.75rem;
+  --receipt-footer-font-size: 0.75rem;
+  --receipt-modern-radius: 12px;
+  --receipt-modern-section-bg: var(--snice-color-surface-container-low);
+  --receipt-modern-section-radius: 8px;
+  --receipt-modern-shadow: var(--snice-shadow-md);
+  -webkit-font-smoothing: antialiased;
+}
+
+:host([variant="ink"]) {
+  --receipt-padding: 1.25rem;
+}
+
+[part~="merchant-name"] {
+  letter-spacing: -0.015em;
+}
+
+:host([variant="thermal"]) [part~="merchant-name"] {
+  letter-spacing: 0.12em;
+}
+
+:host([variant="paper"]) [part~="merchant-name"] {
+  letter-spacing: 0.3em;
+}
+
+:host([variant="ink"]) [part~="merchant-name"] {
+  letter-spacing: 0.4em;
+}
+
+:host([variant="minimal"]) [part~="merchant-name"] {
+  letter-spacing: 0.15em;
+}
+
+:host([variant="thermal"]) [part~="items-header"] {
+  font-family: inherit;
+}
+
+/* Fix ink masthead contrast in dark mode */
+:host([variant="ink"]) [part~="header"],
+:host([variant="ink"]) [part~="merchant-name"] {
+  color: var(--snice-color-text-inverse);
+}
+
+:host([variant="ink"]) [part~="merchant-address"],
+:host([variant="ink"]) [part~="merchant-contact"] {
+  color: color-mix(in srgb, var(--snice-color-text-inverse) 72%, transparent);
+}
+
+/* Tabular numerals across all receipt figures */
+[part~="item-price"],
+[part~="item-qty"],
+[part~="row-value"],
+[part~="receipt-number"],
+[part~="date"] {
+  font-variant-numeric: tabular-nums;
+}
+
+@media print {
+  :host {
+    --receipt-shadow: none;
+    --receipt-border-radius: 0;
+  }
+}

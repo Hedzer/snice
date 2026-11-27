@@ -1,0 +1,86 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-receipt
+ * Microsoft Store layered digital receipt card.
+ * 8px WinUI card, 4px bordered Mica Alt inset blocks in modern, Segoe UI Variable 14px tabular
+ * figures, monospace thermal header fix, dark-mode ink masthead fix, and full WHCM compliance.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --receipt-bg: var(--snice-color-surface-container-lowest);
+  --receipt-bg-element: var(--snice-color-surface-container-low);
+  --receipt-text: var(--snice-color-text);
+  --receipt-text-secondary: var(--snice-color-text-secondary);
+  --receipt-text-tertiary: var(--snice-color-text-tertiary);
+  --receipt-border: var(--snice-color-border);
+  --receipt-border-color: var(--snice-color-border);
+  --receipt-divider-color: var(--snice-color-border-subtle);
+  --receipt-border-radius: 8px;
+  --receipt-shadow: var(--snice-shadow-xs);
+  --receipt-accent: var(--snice-color-primary);
+  --receipt-merchant-font-size: 1.125rem;
+  --receipt-item-font-size: 0.875rem;
+  --receipt-meta-font-size: 0.75rem;
+  --receipt-modern-radius: 8px;
+  --receipt-modern-section-bg: var(--snice-color-surface-container-low);
+  --receipt-modern-section-radius: 4px;
+  --receipt-modern-shadow: var(--snice-shadow-sm);
+}
+
+:host([variant="ink"]) {
+  --receipt-padding: 1.25rem;
+}
+
+:host([variant="modern"]) [part~="meta"],
+:host([variant="modern"]) [part~="items"],
+:host([variant="modern"]) [part~="totals"],
+:host([variant="modern"]) [part~="payment"] {
+  border: 1px solid var(--snice-color-border-subtle);
+}
+
+:host([variant="thermal"]) [part~="items-header"] {
+  font-family: inherit;
+}
+
+/* Fix ink masthead contrast in dark mode */
+:host([variant="ink"]) [part~="header"],
+:host([variant="ink"]) [part~="merchant-name"] {
+  color: var(--snice-color-text-inverse);
+}
+
+:host([variant="ink"]) [part~="merchant-address"],
+:host([variant="ink"]) [part~="merchant-contact"] {
+  color: color-mix(in srgb, var(--snice-color-text-inverse) 72%, transparent);
+}
+
+/* Tabular numerals across all receipt figures */
+[part~="item-price"],
+[part~="item-qty"],
+[part~="row-value"],
+[part~="receipt-number"],
+[part~="date"] {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host([variant="modern"]) [part~="meta"],
+  :host([variant="modern"]) [part~="items"],
+  :host([variant="modern"]) [part~="totals"],
+  :host([variant="modern"]) [part~="payment"] {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+}
+
+@media print {
+  :host {
+    --receipt-shadow: none;
+    --receipt-border-radius: 0;
+  }
+}
