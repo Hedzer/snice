@@ -1,0 +1,65 @@
+/* macOS 26+ Tahoe AppKit — snice-list
+   Native counterpart: AppKit inset NSTableView + compact 28px NSSearchField (zero blur on scrolling content). */
+
+:host {
+  font-family: var(--snice-font-family);
+  border-radius: 10px;
+  border: 0.5px solid var(--snice-color-border);
+  overflow: hidden;
+}
+
+:host([dividers]) {
+  --snice-color-border: var(--snice-color-border-subtle);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-background-element);
+  color: var(--snice-color-text);
+  border-radius: inherit;
+  border: none;
+  overflow: hidden;
+}
+
+:host [part~="search"] {
+  padding: 0.4375rem 0.625rem;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-low);
+}
+
+:host [part~="search-input"] {
+  height: 1.75rem;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 6px;
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  background: var(--snice-macos-control-bg);
+  color: var(--snice-color-text);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.06);
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+:host [part~="search-input"]:focus-visible {
+  outline: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="empty"],
+:host [part~="loading"] {
+  padding: 1.25rem 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="search-input"] {
+    border: 1px solid ButtonBorder;
+  }
+}

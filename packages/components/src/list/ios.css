@@ -1,0 +1,66 @@
+/* iOS 26+ Liquid Glass — snice-list
+   Native counterpart: SwiftUI List(.insetGrouped) / UITableView + UISearchBar.
+   Strictly opaque grouped container surface (zero blur on scrolling list rows). */
+
+:host {
+  font-family: var(--snice-font-family);
+  border-radius: 16px;
+  border: 0.5px solid var(--snice-color-border-subtle);
+  overflow: hidden;
+}
+
+:host([dividers]) {
+  --snice-color-border: var(--snice-color-border-subtle);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text);
+  border-radius: inherit;
+  border: none;
+  overflow: hidden;
+}
+
+:host [part~="search"] {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-high);
+}
+
+:host [part~="search-input"] {
+  min-height: 2.25rem;
+  padding: 0.4375rem 0.875rem;
+  border-radius: 9999px;
+  border: none;
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  letter-spacing: -0.008em;
+  transition:
+    background-color var(--snice-transition-fast, 160ms) ease,
+    box-shadow var(--snice-transition-fast, 160ms) ease;
+}
+
+:host [part~="search-input"]:focus-visible {
+  outline: none;
+  background: var(--snice-color-surface-container-low);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+:host [part~="empty"],
+:host [part~="loading"] {
+  padding: 1.5rem 1rem;
+  font-size: 0.9375rem;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="search-input"] {
+    border: 1px solid ButtonBorder;
+  }
+}

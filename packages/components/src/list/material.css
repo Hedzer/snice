@@ -1,0 +1,65 @@
+/* Android Material 3 Expressive — snice-list
+   Native counterpart: Material 3 Lists + pill SearchBar on tonal surface containers. */
+
+:host {
+  font-family: var(--snice-font-family);
+  border-radius: 16px;
+  border: 1px solid var(--snice-color-border-subtle);
+  overflow: hidden;
+}
+
+:host([dividers]) {
+  --snice-color-border: var(--snice-color-border-subtle);
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text);
+  border-radius: inherit;
+  border: none;
+  overflow: hidden;
+}
+
+:host [part~="search"] {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-low);
+}
+
+:host [part~="search-input"] {
+  min-height: 3rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text);
+  font-family: var(--snice-font-family);
+  font-size: 1rem;
+  transition:
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects),
+    border-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects);
+}
+
+:host [part~="search-input"]:focus-visible {
+  outline: none;
+  background: var(--snice-color-surface-container-highest);
+  border-color: var(--snice-color-primary);
+  box-shadow: none;
+}
+
+:host [part~="empty"],
+:host [part~="loading"] {
+  padding: 1.5rem 1rem;
+  font-size: 0.875rem;
+  color: var(--snice-color-text-secondary);
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+  }
+
+  :host [part~="search-input"] {
+    border: 1px solid ButtonBorder;
+  }
+}
