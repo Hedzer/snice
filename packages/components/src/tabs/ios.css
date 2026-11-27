@@ -1,17 +1,33 @@
-/* iOS 26+ Liquid Glass — snice-tabs (Floating Liquid Glass Capsule Bar) */
+/* iOS 26+ Liquid Glass — snice-tabs (Floating Liquid Glass Capsule Bar & Vertical Rail) */
 [part~="nav-container"] {
-  border-bottom: none;
+  display: inline-flex;
+  align-self: flex-start;
+  max-width: 100%;
   padding: 0.25rem;
   border-radius: 9999px;
   background: var(--snice-ios-glass-regular-bg);
   backdrop-filter: var(--snice-ios-glass-blur);
   -webkit-backdrop-filter: var(--snice-ios-glass-blur);
-  border: 1px solid var(--snice-ios-glass-border);
+  border: 0.5px solid var(--snice-ios-glass-border);
   box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
 }
 
+:host([placement="bottom"]) [part~="nav-container"] {
+  border: 0.5px solid var(--snice-ios-glass-border);
+}
+
+:host([placement="start"]) [part~="nav-container"],
+:host([placement="end"]) [part~="nav-container"] {
+  display: flex;
+  align-self: flex-start;
+  min-width: 10.5rem;
+  padding: 0.375rem;
+  border-radius: 22px;
+  border: 0.5px solid var(--snice-ios-glass-border);
+}
+
 [part~="nav-track"] {
-  min-height: 2.75rem;
+  min-height: 2.5rem;
   gap: 0.125rem;
 }
 
@@ -25,11 +41,8 @@
   top: 0;
   left: 0;
   border-radius: 9999px;
-  background: var(--snice-color-surface-container-high);
-  border: 0.5px solid var(--snice-ios-glass-border);
-  box-shadow:
-    0 2px 8px hsl(0 0% 0% / 0.12),
-    inset 0 1px 0 hsl(0 0% 100% / 0.75);
+  background: transparent;
+  box-shadow: none;
   pointer-events: none;
   opacity: 0;
   z-index: 0;
@@ -39,6 +52,31 @@
     opacity 150ms ease;
 }
 
+[part~="scroll-button"] {
+  background: transparent;
+  border-radius: 9999px;
+  width: 2.25rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="scroll-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 7%, transparent);
+  color: var(--snice-color-text);
+}
+
+[part~="scroll-button"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
 [part~="panels"] {
-  padding-top: 0.75rem;
+  padding: 0.875rem 0.25rem;
+}
+
+:host([placement="start"]) [part~="panels"] {
+  padding: 0.25rem 0.25rem 0.25rem 1.25rem;
+}
+
+:host([placement="end"]) [part~="panels"] {
+  padding: 0.25rem 1.25rem 0.25rem 0.25rem;
 }

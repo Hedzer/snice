@@ -1,4 +1,4 @@
-import { element, property, state, query, dispatch, render, styles, html, css } from 'snice';
+import { element, property, state, query, ready, dispatch, render, styles, html, css } from 'snice';
 import cssContent from './snice-tab.css?inline';
 import type { TabSelectDetail, TabCloseDetail, SniceTabElement } from './snice-tabs.types';
 
@@ -18,6 +18,13 @@ export class SniceTab extends HTMLElement implements SniceTabElement {
 
   @query('.tab__close')
   closeButton?: HTMLButtonElement;
+
+  @ready()
+  syncInitialActive() {
+    if (this.getAttribute('aria-selected') === 'true' || this.classList.contains('snice-tab--active')) {
+      this.activeState = true;
+    }
+  }
 
   setActiveState(active: boolean) {
     this.activeState = active;

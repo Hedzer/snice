@@ -1,6 +1,28 @@
-/* Windows 11 Fluent 2 / WinUI 3 — snice-tabs (TabView / Pivot) */
+/* Windows 11 Fluent 2 / WinUI 3 — snice-tabs (Pivot / TabView) */
+:host {
+  --snice-tabs-indicator-thickness: 3px;
+}
+
 [part~="nav-container"] {
-  border-bottom: 1px solid var(--snice-color-border);
+  background: transparent;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+:host([placement="bottom"]) [part~="nav-container"] {
+  border-bottom: none;
+  border-top: 1px solid var(--snice-color-border-subtle);
+}
+
+:host([placement="start"]) [part~="nav-container"] {
+  border-bottom: none;
+  border-right: 1px solid var(--snice-color-border-subtle);
+  min-width: 10.5rem;
+}
+
+:host([placement="end"]) [part~="nav-container"] {
+  border-bottom: none;
+  border-left: 1px solid var(--snice-color-border-subtle);
+  min-width: 10.5rem;
 }
 
 [part~="nav-track"] {
@@ -9,10 +31,27 @@
 }
 
 [part~="indicator"] {
-  height: 3px;
   border-radius: 9999px;
   background: var(--snice-color-primary);
   transition:
     transform var(--snice-transition-medium, 187ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
-    width var(--snice-transition-medium, 187ms) var(--snice-ease-out, ease);
+    width var(--snice-transition-medium, 187ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    height var(--snice-transition-medium, 187ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
+}
+
+[part~="scroll-button"] {
+  width: 1.75rem;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="scroll-button"]:hover {
+  background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-text);
+}
+
+[part~="scroll-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
 }

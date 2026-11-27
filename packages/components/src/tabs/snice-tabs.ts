@@ -64,7 +64,7 @@ export class SniceTabs extends HTMLElement {
           <div class="tabs__nav" part="nav" role="tablist">
             <div class="tabs__nav-track" part="nav-track">
               <span class="tabs__pill" part="pill" data-platform-only="ios,macos" aria-hidden="true" hidden></span>
-              <slot name="nav"></slot>
+              <slot name="nav" @slotchange=${this.handleSlotChange}></slot>
               <div class="tabs__indicator" part="indicator"></div>
             </div>
           </div>
@@ -79,7 +79,7 @@ export class SniceTabs extends HTMLElement {
         </div>
 
         <div class="tabs__panels" part="panels">
-          <slot></slot>
+          <slot @slotchange=${this.handleSlotChange}></slot>
         </div>
       </div>
     `;
@@ -210,6 +210,11 @@ export class SniceTabs extends HTMLElement {
     (this.tabs[next] as HTMLElement)?.focus();
   }
 
+  private handleSlotChange() {
+    this.setupTabs();
+    this.updateScrollButtons();
+  }
+
   setupTabs() {
     this.updateSelection();
     this.updateIndicator();
@@ -333,27 +338,37 @@ export class SniceTabs extends HTMLElement {
     if (!activeTab) return;
 
     const isHorizontal = this.placement === 'top' || this.placement === 'bottom';
-    
-    // Get the position of the active tab relative to the nav track container
-    // We need to calculate this manually since tabs are in light DOM and indicator is in shadow DOM
+    const trackRect = this.navTrack.getBoundingClientRect();
+    const tabRect = activeTab.getBoundingClientRect();
+
     let offset = 0;
-    
-    // Sum up the widths/heights of all tabs before the active one
-    for (let i = 0; i < this.selected; i++) {
+    let size = isHorizontal ? activeTab.offsetWidth : activeTab.offsetHeight;
+
+    if (trackRect.width > 0 && (tabRect.width > 0 || tabRect.height > 0)) {
       if (isHorizontal) {
-        offset += this.tabs[i].offsetWidth;
+        offset = tabRect.left - trackRect.left;
+        size = tabRect.width;
       } else {
-        offset += this.tabs[i].offsetHeight;
+        offset = tabRect.top - trackRect.top;
+        size = tabRect.height;
+      }
+    } else {
+      for (let i = 0; i < this.selected; i++) {
+        if (isHorizontal) {
+          offset += this.tabs[i].offsetWidth;
+        } else {
+          offset += this.tabs[i].offsetHeight;
+        }
       }
     }
-    
+
     if (isHorizontal) {
-      this.indicator.style.width = `${activeTab.offsetWidth}px`;
-      this.indicator.style.height = '2px';
+      this.indicator.style.width = `${size}px`;
+      this.indicator.style.height = '';
       this.indicator.style.transform = `translateX(${offset}px)`;
     } else {
-      this.indicator.style.width = '2px';
-      this.indicator.style.height = `${activeTab.offsetHeight}px`;
+      this.indicator.style.width = '';
+      this.indicator.style.height = `${size}px`;
       this.indicator.style.transform = `translateY(${offset}px)`;
     }
   }

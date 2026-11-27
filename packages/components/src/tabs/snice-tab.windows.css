@@ -6,6 +6,10 @@
   font-size: 0.875rem;
   font-weight: 400;
   color: var(--snice-color-text-secondary);
+  background: transparent;
+  transition:
+    color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
+    background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
 }
 
 [part~="base"]:hover {
@@ -13,11 +17,53 @@
   color: var(--snice-color-text);
 }
 
-[part~="base-active"] {
+[part~="base"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="base"][part~="base-active"],
+:host([aria-selected="true"]) [part~="base"] {
   color: var(--snice-color-text);
   font-weight: 600;
 }
 
+[part~="base"][part~="base-active"]:hover,
+:host([aria-selected="true"]) [part~="base"]:hover {
+  background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-text);
+}
+
 [part~="base"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+[part~="base"][part~="base-disabled"],
+:host([disabled]) [part~="base"] {
+  opacity: 1;
+  color: color-mix(in srgb, var(--snice-color-text) 42%, transparent);
+  background: transparent;
+  pointer-events: none;
+}
+
+[part~="close"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 4px;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="close"]:hover {
+  color: var(--snice-color-text);
+  background: var(--snice-win-control-bg-hover);
+}
+
+[part~="close"]:active {
+  background: var(--snice-win-control-bg-pressed);
+}
+
+[part~="close"]:focus-visible {
+  outline: none;
   box-shadow: var(--snice-win-focus-shadow);
 }

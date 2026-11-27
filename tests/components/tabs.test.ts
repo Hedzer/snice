@@ -240,6 +240,48 @@ describe('snice-tabs', () => {
     tabs.transition = 'fade';
     expect(tabs.transition).toBe('fade');
   });
+
+  it('should leave indicator thickness controllable by CSS instead of hardcoding 2px inline', async () => {
+    const tabs = await createTabsStructure({ selected: 0 });
+    const indicator = queryShadow(tabs as HTMLElement, '.tabs__indicator') as HTMLElement;
+    expect(indicator.style.height).toBe('');
+
+    tabs.placement = 'start';
+    await new Promise(resolve => setTimeout(resolve, 10));
+    expect(indicator.style.width).toBe('');
+  });
+
+  it('should initialize active tab and panel when children are slotted after connect', async () => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+
+    const tabs = document.createElement('snice-tabs') as any;
+    container.appendChild(tabs);
+    await tabs.ready;
+
+    for (let i = 0; i < 2; i++) {
+      const tab = document.createElement('snice-tab');
+      tab.setAttribute('slot', 'nav');
+      tab.textContent = `Late Tab ${i + 1}`;
+      tabs.appendChild(tab);
+
+      const panel = document.createElement('snice-tab-panel');
+      panel.textContent = `Late Panel ${i + 1}`;
+      tabs.appendChild(panel);
+    }
+
+    // Trigger slotchange in environments like happy-dom if not auto-fired
+    const navSlot = queryShadow(tabs as HTMLElement, 'slot[name="nav"]');
+    navSlot?.dispatchEvent(new Event('slotchange'));
+    await new Promise(resolve => setTimeout(resolve, 20));
+
+    const tabEls = tabs.querySelectorAll('snice-tab');
+    const panelEls = tabs.querySelectorAll('snice-tab-panel');
+    expect(tabEls[0].getAttribute('aria-selected')).toBe('true');
+    expect(tabEls[1].getAttribute('aria-selected')).toBe('false');
+    expect((panelEls[0] as HTMLElement).hidden).toBe(false);
+    expect((panelEls[1] as HTMLElement).hidden).toBe(true);
+  });
 });
 
 describe('snice-tab', () => {

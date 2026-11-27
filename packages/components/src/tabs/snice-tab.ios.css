@@ -6,23 +6,74 @@
 
 [part~="base"] {
   min-height: 2.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.125rem;
   border-radius: 9999px;
   font-size: 0.9375rem;
   font-weight: 500;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.012em;
   color: var(--snice-color-text-secondary);
   background: transparent;
-  transition: color var(--snice-transition-fast, 180ms) ease, background-color var(--snice-transition-fast, 180ms) ease;
+  border: 0.5px solid transparent;
+  transition:
+    color var(--snice-transition-fast, 180ms) ease,
+    background-color var(--snice-transition-fast, 180ms) ease,
+    box-shadow var(--snice-transition-fast, 180ms) ease,
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, ease);
 }
 
-[part~="base-active"] {
+[part~="base"]:hover {
+  color: var(--snice-color-text);
+  background: color-mix(in srgb, var(--snice-color-text) 6%, transparent);
+}
+
+[part~="base"]:active {
+  transform: scale(0.97);
+}
+
+[part~="base"][part~="base-active"],
+:host([aria-selected="true"]) [part~="base"] {
   color: var(--snice-color-primary);
   font-weight: 600;
-  background: color-mix(in srgb, var(--snice-color-primary) 12%, var(--snice-color-surface-container-high));
-  box-shadow: 0 1px 4px hsl(0 0% 0% / 0.08), inset 0 1px 0 hsl(0 0% 100% / 0.65);
+  background: var(--snice-color-surface-container-highest);
+  border-color: var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), 0 1px 4px hsl(0 0% 0% / 0.10);
+}
+
+[part~="base"][part~="base-active"]:hover,
+:host([aria-selected="true"]) [part~="base"]:hover {
+  color: var(--snice-color-primary);
+  background: var(--snice-color-surface-container-highest);
 }
 
 [part~="base"]:focus-visible {
+  outline: none;
   box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="base"][part~="base-disabled"],
+:host([disabled]) [part~="base"] {
+  opacity: 1;
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  pointer-events: none;
+  transform: none;
+}
+
+[part~="close"] {
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 9999px;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="close"]:hover {
+  color: var(--snice-color-text);
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+}
+
+[part~="close"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--snice-focus-ring-color);
 }

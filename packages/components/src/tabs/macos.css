@@ -1,19 +1,38 @@
-/* macOS 26+ Liquid Glass / AppKit — snice-tabs (NSSegmentedControl Capsule + Sliding Glass Pill) */
+/* macOS 26+ Liquid Glass / AppKit — snice-tabs (NSSegmentedControl Capsule & Sidebar Rail) */
 [part~="nav-container"] {
-  border-bottom: none;
   display: inline-flex;
   align-self: flex-start;
   align-items: center;
+  max-width: 100%;
   padding: 2px;
   border-radius: 7px;
   background: color-mix(in srgb, var(--snice-color-text) 7%, transparent);
   border: 0.5px solid var(--snice-color-border-subtle);
 }
 
+:host([placement="bottom"]) [part~="nav-container"] {
+  border: 0.5px solid var(--snice-color-border-subtle);
+}
+
+:host([placement="start"]) [part~="nav-container"],
+:host([placement="end"]) [part~="nav-container"] {
+  display: flex;
+  align-self: flex-start;
+  align-items: stretch;
+  min-width: 10rem;
+  padding: 5px;
+  border-radius: 10px;
+  background: var(--snice-macos-glass-sidebar-bg);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid var(--snice-macos-glass-border);
+  box-shadow: var(--snice-macos-glass-rim);
+}
+
 [part~="nav-track"] {
   position: relative;
   min-height: 1.5rem;
-  gap: 1px;
+  gap: 2px;
 }
 
 [part~="indicator"] {
@@ -26,8 +45,8 @@
   top: 0;
   left: 0;
   border-radius: 5px;
-  background: var(--snice-macos-control-bg);
-  box-shadow: var(--snice-macos-control-shadow);
+  background: transparent;
+  box-shadow: none;
   pointer-events: none;
   opacity: 0;
   z-index: 0;
@@ -37,6 +56,31 @@
     opacity 120ms ease;
 }
 
+[part~="scroll-button"] {
+  width: 1.5rem;
+  background: transparent;
+  border-radius: 5px;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="scroll-button"]:hover {
+  background: var(--snice-color-overlay-hover);
+  color: var(--snice-color-text);
+}
+
+[part~="scroll-button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
 [part~="panels"] {
-  padding-top: 0.75rem;
+  padding: 0.75rem 0.25rem;
+}
+
+:host([placement="start"]) [part~="panels"] {
+  padding: 0.25rem 0.25rem 0.25rem 1rem;
+}
+
+:host([placement="end"]) [part~="panels"] {
+  padding: 0.25rem 1rem 0.25rem 0.25rem;
 }

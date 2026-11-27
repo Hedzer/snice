@@ -91,6 +91,7 @@
 
 .tabs__indicator {
   position: absolute;
+  height: var(--snice-tabs-indicator-thickness, 2px);
   background-color: var(--snice-color-primary, rgb(37 99 235));
   /* Spring easing for the slide-between-tabs motion gives a light "settle"
      feel instead of a dead ease. Width/height also animate since they change
@@ -112,6 +113,7 @@
 
 .tabs--start .tabs__indicator,
 .tabs--end .tabs__indicator {
+  width: var(--snice-tabs-indicator-thickness, 2px);
   bottom: auto;
   top: 0;
   right: 0;

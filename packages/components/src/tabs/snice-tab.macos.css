@@ -1,4 +1,4 @@
-/* macOS 26+ Liquid Glass / AppKit — snice-tab (Compact 22px NSSegmentedControl Segment) */
+/* macOS 26+ Liquid Glass / AppKit — snice-tab (Compact 24px NSSegmentedControl Segment) */
 :host {
   position: relative;
   z-index: 1;
@@ -6,18 +6,69 @@
 
 [part~="base"] {
   min-height: 1.5rem;
-  padding: 0.1875rem 0.6875rem;
+  padding: 0.1875rem 0.75rem;
   border-radius: 5px;
   font-size: 0.8125rem;
   font-weight: 500;
+  letter-spacing: -0.005em;
   color: var(--snice-color-text-secondary);
   background: transparent;
-  transition: color var(--snice-transition-fast, 140ms) ease, background-color var(--snice-transition-fast, 140ms) ease;
+  transition:
+    color var(--snice-transition-fast, 140ms) ease,
+    background-color var(--snice-transition-fast, 140ms) ease,
+    box-shadow var(--snice-transition-fast, 140ms) ease;
 }
 
-[part~="base-active"] {
+[part~="base"]:hover {
+  color: var(--snice-color-text);
+  background: var(--snice-color-overlay-hover);
+}
+
+[part~="base"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+}
+
+[part~="base"][part~="base-active"],
+:host([aria-selected="true"]) [part~="base"] {
   color: var(--snice-color-text);
   font-weight: 600;
   background: var(--snice-macos-control-bg);
   box-shadow: var(--snice-macos-control-shadow);
+}
+
+[part~="base"][part~="base-active"]:hover,
+:host([aria-selected="true"]) [part~="base"]:hover {
+  color: var(--snice-color-text);
+  background: var(--snice-macos-control-bg);
+}
+
+[part~="base"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+[part~="base"][part~="base-disabled"],
+:host([disabled]) [part~="base"] {
+  opacity: 1;
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  background: transparent;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+[part~="close"] {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 4px;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="close"]:hover {
+  color: var(--snice-color-text);
+  background: var(--snice-color-overlay-hover);
+}
+
+[part~="close"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
 }
