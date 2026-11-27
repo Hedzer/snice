@@ -10109,7 +10109,7 @@
                   "text": "unknown"
                 }
               },
-              "description": "Sets chip text color via runtime luminance check — but ONLY for selected\nchips (the solid-fill state). Unselected chips render as tint-pairs\n(subtle bg + accent-colored text) defined in the CSS; overriding them\nwould flatten the tint down to generic dark text."
+              "description": "Sets chip text color via runtime luminance check — but ONLY for selected\nchips (the solid-fill state) when no platform skin is active. Under an\nactive platform skin (Mode B `[data-platform]` or Mode A adopted sheet),\ndefer to the platform stylesheet's calibrated semantic ink tokens."
             },
             {
               "kind": "field",

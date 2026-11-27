@@ -140,18 +140,30 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
 
   private themeUnsubscribe?: () => void;
   private platformBehaviorCleanup?: () => void;
+  private platformObserver?: MutationObserver;
 
   @ready()
   init() {
     this.applyAutoContrastColor();
     this.themeUnsubscribe = onThemeChange(() => this.applyAutoContrastColor());
     this.platformBehaviorCleanup = attachCompiledPlatformBehavior(this);
+    if (typeof MutationObserver !== 'undefined') {
+      const observer = new MutationObserver(() => this.applyAutoContrastColor());
+      let cur: Element | null = this;
+      while (cur) {
+        observer.observe(cur, { attributes: true, attributeFilter: ['data-platform'] });
+        cur = cur.parentElement;
+      }
+      this.platformObserver = observer;
+    }
   }
 
   @dispose()
   teardown() {
     this.platformBehaviorCleanup?.();
     this.platformBehaviorCleanup = undefined;
+    this.platformObserver?.disconnect();
+    this.platformObserver = undefined;
     this.themeUnsubscribe?.();
   }
 
@@ -166,19 +178,22 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
 
   /**
    * Sets chip text color via runtime luminance check — but ONLY for selected
-   * chips (the solid-fill state). Unselected chips render as tint-pairs
-   * (subtle bg + accent-colored text) defined in the CSS; overriding them
-   * would flatten the tint down to generic dark text.
+   * chips (the solid-fill state) when no platform skin is active. Under an
+   * active platform skin (Mode B `[data-platform]` or Mode A adopted sheet),
+   * defer to the platform stylesheet's calibrated semantic ink tokens.
    */
   applyAutoContrastColor() {
     const el = this.chipElement;
     if (!el) return;
     if (!this.selected) {
-      // Clear any previously-applied inline color so CSS variant tint wins.
       el.style.removeProperty('color');
       return;
     }
     if (this.style.color) return;
+    if (this.closest('[data-platform]') || (this.shadowRoot?.adoptedStyleSheets?.length ?? 0) > 1) {
+      el.style.removeProperty('color');
+      return;
+    }
     const bg = getComputedStyle(el).backgroundColor;
     el.style.color = pickContrastColor(bg);
   }

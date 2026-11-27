@@ -1,23 +1,177 @@
-/* macOS 26+ Liquid Glass / AppKit — snice-chip (Compact Token Capsule) */
+/* macOS 26+ Liquid Glass / AppKit — snice-chip (Compact AppKit Token Capsule) */
 [part~="base"] {
+  box-sizing: border-box;
+  height: 1.5rem;
   min-height: 1.5rem;
   padding: 0 0.625rem;
   border-radius: 9999px;
+  gap: 0.3125rem;
+  font-family: var(--snice-font-family);
   font-size: 0.75rem;
   font-weight: 500;
+  letter-spacing: -0.006em;
   background: var(--snice-macos-control-bg);
   border: 0.5px solid var(--snice-color-border);
   box-shadow: var(--snice-macos-control-shadow);
   color: var(--snice-color-text);
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
 }
 
-[part~="base-selected"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-primary) 42%, transparent);
+:host([size="small"]) [part~="base"] {
+  height: 1.25rem;
+  min-height: 1.25rem;
+  padding: 0 0.4375rem;
+  font-size: 0.6875rem;
+}
+
+:host([size="large"]) [part~="base"] {
+  height: 1.875rem;
+  min-height: 1.875rem;
+  padding: 0 0.875rem;
+  font-size: 0.8125rem;
+}
+
+:host([shape="rounded"]) [part~="base"] {
+  border-radius: 6px;
+}
+
+:host([shape="square"]) [part~="base"] {
+  border-radius: 0;
+}
+
+/* Semantic resting variants */
+:host([variant="primary"]) [part~="base"],
+:host([variant="info"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, var(--snice-macos-control-bg));
+  border-color: color-mix(in srgb, var(--snice-color-primary) 34%, var(--snice-color-border));
   color: var(--snice-color-primary);
-  font-weight: 600;
 }
 
+:host([variant="success"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-success) 12%, var(--snice-macos-control-bg));
+  border-color: color-mix(in srgb, var(--snice-color-success) 34%, var(--snice-color-border));
+  color: color-mix(in srgb, var(--snice-color-success) 82%, var(--snice-color-text));
+}
+
+:host([variant="warning"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-warning) 14%, var(--snice-macos-control-bg));
+  border-color: color-mix(in srgb, var(--snice-color-warning) 36%, var(--snice-color-border));
+  color: color-mix(in srgb, var(--snice-color-warning) 62%, var(--snice-color-text));
+}
+
+:host([variant="error"]) [part~="base"] {
+  background: color-mix(in srgb, var(--snice-color-danger) 12%, var(--snice-macos-control-bg));
+  border-color: color-mix(in srgb, var(--snice-color-danger) 34%, var(--snice-color-border));
+  color: var(--snice-color-danger);
+}
+
+[part~="base"]:hover {
+  filter: brightness(1.04);
+  box-shadow: var(--snice-macos-control-shadow), var(--snice-shadow-xs);
+}
+
+[part~="base"]:active {
+  transform: scale(0.98);
+  filter: brightness(0.94);
+}
+
+[part~="base"]:focus-visible,
 :host([data-macos-focus="keyboard"]) [part~="base"] {
+  outline: none;
   box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Selected states — solid top-lit AppKit accent pills + explicit white ink */
+[part~="base-selected"],
+[part~="base-selected"]:hover,
+:host([variant="default"]) [part~="base-selected"],
+:host([variant="primary"]) [part~="base-selected"],
+:host([variant="info"]) [part~="base-selected"] {
+  background-color: var(--snice-color-primary);
+  background-image: linear-gradient(180deg, hsl(0 0% 100% / 0.14) 0%, transparent 100%);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 78%, black);
+  color: hsl(0 0% 100%);
+  font-weight: 600;
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.3), 0 0.5px 1px hsl(0 0% 0% / 0.2);
+}
+
+:host([variant="success"]) [part~="base-selected"],
+:host([variant="success"]) [part~="base-selected"]:hover {
+  background-color: var(--snice-color-success);
+  background-image: linear-gradient(180deg, hsl(0 0% 100% / 0.14) 0%, transparent 100%);
+  border-color: color-mix(in srgb, var(--snice-color-success) 78%, black);
+  color: hsl(0 0% 100%);
+  font-weight: 600;
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.3), 0 0.5px 1px hsl(0 0% 0% / 0.2);
+}
+
+:host([variant="warning"]) [part~="base-selected"],
+:host([variant="warning"]) [part~="base-selected"]:hover {
+  background-color: var(--snice-color-warning);
+  background-image: linear-gradient(180deg, hsl(0 0% 100% / 0.16) 0%, transparent 100%);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 78%, black);
+  color: hsl(26 42% 10%);
+  font-weight: 600;
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.3), 0 0.5px 1px hsl(0 0% 0% / 0.2);
+}
+
+:host([variant="error"]) [part~="base-selected"],
+:host([variant="error"]) [part~="base-selected"]:hover {
+  background-color: var(--snice-color-danger);
+  background-image: linear-gradient(180deg, hsl(0 0% 100% / 0.14) 0%, transparent 100%);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 78%, black);
+  color: hsl(0 0% 100%);
+  font-weight: 600;
+  box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.3), 0 0.5px 1px hsl(0 0% 0% / 0.2);
+}
+
+[part~="avatar"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-left: -0.3125rem;
+}
+
+[part~="remove-button"] {
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.72;
+  max-width: 1rem;
+  transform: none;
+  border-radius: 9999px;
+}
+
+[part~="remove-button"]:hover {
+  opacity: 1;
+  background: color-mix(in srgb, currentColor 16%, transparent);
+}
+
+/* Specificity-safe disabled state */
+[part~="base-disabled"],
+[part~="base-disabled"]:hover,
+[part~="base-disabled"]:active,
+:host([disabled]) [part~="base"],
+:host([disabled][variant="default"]) [part~="base"],
+:host([disabled][variant="primary"]) [part~="base"],
+:host([disabled][variant="success"]) [part~="base"],
+:host([disabled][variant="warning"]) [part~="base"],
+:host([disabled][variant="error"]) [part~="base"],
+:host([disabled][variant="info"]) [part~="base"],
+:host([disabled][variant="default"]) [part~="base-selected"],
+:host([disabled][variant="primary"]) [part~="base-selected"],
+:host([disabled][variant="success"]) [part~="base-selected"],
+:host([disabled][variant="warning"]) [part~="base-selected"],
+:host([disabled][variant="error"]) [part~="base-selected"],
+:host([disabled][variant="info"]) [part~="base-selected"] {
+  opacity: 0.42;
+  pointer-events: none;
+  box-shadow: none;
+  filter: none;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="base"],
+  [part~="remove-button"] {
+    transition-duration: 0.01ms;
+  }
 }
