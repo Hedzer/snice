@@ -13,6 +13,11 @@
   background: var(--snice-color-primary);
 }
 
+[part~="dot-checked"] {
+  background: hsl(0 0% 100%);
+  transform: scale(0.8);
+}
+
 :host([data-macos-focus="keyboard"]) [part~="radio"] {
   box-shadow: var(--snice-macos-focus-halo);
 }
