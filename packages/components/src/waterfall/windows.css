@@ -1,0 +1,97 @@
+/* Windows 11 Fluent 2 / Power BI waterfall bridge chart skin */
+
+[part~="base"] {
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.5rem;
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
+  padding: 0.875rem;
+}
+
+[part~="chart"] {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+
+[part~="axis"] {
+  stroke: var(--snice-color-border-hover);
+  stroke-width: 1px;
+}
+
+[part~="connector"] {
+  stroke: var(--snice-color-text-tertiary);
+  stroke-dasharray: 3 2;
+  stroke-width: 1px;
+}
+
+[part~="bar"] {
+  rx: 2px;
+  ry: 2px;
+  transition: opacity 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="bar"]:hover {
+  opacity: 0.85;
+}
+
+[part~="bar"]:active {
+  opacity: 0.74;
+}
+
+[part~="bar"]:focus-visible {
+  outline: 2px solid var(--snice-color-text);
+  outline-offset: 2px;
+}
+
+[part~="bar-animated"] {
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="label"] {
+  font-size: 0.75rem;
+  font-weight: 400;
+  fill: var(--snice-color-text-secondary);
+}
+
+[part~="value"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="value-increase"] {
+  fill: var(--snice-color-success);
+}
+
+[part~="value-decrease"] {
+  fill: var(--snice-color-danger);
+}
+
+[part~="value-total"] {
+  fill: var(--snice-color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="bar"],
+  [part~="bar-animated"] {
+    transition: none;
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
+  [part~="bar"]:focus-visible {
+    outline-color: Highlight;
+  }
+}

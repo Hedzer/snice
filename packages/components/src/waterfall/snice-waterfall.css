@@ -57,13 +57,11 @@
 .waterfall-label {
   font-size: 0.75rem;
   fill: var(--snice-color-text-secondary, rgb(82 82 82));
-  text-anchor: middle;
 }
 
 .waterfall-value {
   font-size: 0.6875rem;
   font-weight: var(--snice-font-weight-medium, 500);
-  text-anchor: middle;
 }
 
 .waterfall-value-increase {

@@ -1,0 +1,89 @@
+/* macOS 26 Tahoe AppKit / Numbers desktop waterfall bridge chart skin */
+
+[part~="base"] {
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.75rem;
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  padding: 0.75rem;
+}
+
+[part~="chart"] {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+
+[part~="axis"] {
+  stroke: var(--snice-color-border);
+  stroke-width: 0.75px;
+}
+
+[part~="connector"] {
+  stroke: var(--snice-color-text-tertiary);
+  stroke-dasharray: 2 2.5;
+  stroke-width: 0.75px;
+}
+
+[part~="bar"] {
+  rx: 4px;
+  ry: 4px;
+  transition: opacity 140ms var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1)),
+    filter 140ms var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="bar"]:hover {
+  opacity: 0.88;
+  filter: brightness(1.06);
+}
+
+[part~="bar"]:active {
+  opacity: 0.76;
+}
+
+[part~="bar"]:focus-visible {
+  outline: 2.5px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+[part~="bar-animated"] {
+  animation-duration: 300ms;
+  animation-timing-function: var(--snice-ease-out, cubic-bezier(0.2, 0, 0, 1));
+}
+
+[part~="label"] {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  fill: var(--snice-color-text-secondary);
+}
+
+[part~="value"] {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="value-increase"] {
+  fill: color-mix(in srgb, var(--snice-color-success) 88%, var(--snice-color-text));
+}
+
+[part~="value-decrease"] {
+  fill: color-mix(in srgb, var(--snice-color-danger) 90%, var(--snice-color-text));
+}
+
+[part~="value-total"] {
+  fill: var(--snice-color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="bar"],
+  [part~="bar-animated"] {
+    transition: none;
+    animation: none;
+  }
+}

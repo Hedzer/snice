@@ -113,20 +113,22 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
 
   /** vertical: values run up the page, bars advance across it. */
   private rebuildChartVertical() {
-    const padding = { top: 20, right: 20, bottom: 40, left: 20 };
+    const padding = { top: 24, right: 24, bottom: 36, left: 24 };
     const barCount = this.bars.length;
-    const chartWidth = Math.max(400, barCount * 60);
+    const maxLabelLen = Math.max(...this.bars.map(b => b.label.length), 6);
+    const colWidth = Math.max(76, Math.ceil(maxLabelLen * 7.2));
+    const chartWidth = Math.max(520, barCount * colWidth + padding.left + padding.right);
     const chartHeight = 300;
     const plotWidth = chartWidth - padding.left - padding.right;
     const plotHeight = chartHeight - padding.top - padding.bottom;
 
     const { paddedMin, totalRange } = this.valueRange();
 
-    const barWidth = (plotWidth / barCount) * 0.6;
-    const barGap = (plotWidth / barCount) * 0.4;
+    const barWidth = Math.min(56, (plotWidth / barCount) * 0.56);
+    const colStep = plotWidth / barCount;
 
     const toY = (val: number) => padding.top + plotHeight - ((val - paddedMin) / totalRange) * plotHeight;
-    const toX = (idx: number) => padding.left + (plotWidth / barCount) * idx + barGap / 2;
+    const toX = (idx: number) => padding.left + colStep * idx + (colStep - barWidth) / 2;
 
     const zeroY = toY(0);
 
@@ -150,10 +152,10 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
       parts.push(this.barRect(bar, x, barTop, barWidth, barHeight));
 
       const labelX = x + barWidth / 2;
-      parts.push(`<text part="label" class="waterfall-label" x="${labelX}" y="${chartHeight - 5}">${this.escSvg(bar.label)}</text>`);
+      parts.push(`<text part="label" class="waterfall-label" x="${labelX}" y="${chartHeight - 10}" text-anchor="middle">${this.escSvg(bar.label)}</text>`);
 
       if (this.showValues) {
-        const valY = barTop - 5;
+        const valY = barTop - 6;
         parts.push(this.valueText(bar, labelX, valY));
       }
     }
@@ -163,10 +165,13 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
 
   /** horizontal: values run across the page, bars advance down it. */
   private rebuildChartHorizontal() {
-    const padding = { top: 20, right: 20, bottom: 20, left: 40 };
+    const maxLabelLen = Math.max(...this.bars.map(b => b.label.length), 6);
+    const leftPad = Math.max(64, Math.ceil(maxLabelLen * 6.8) + 14);
+    const rightPad = this.showValues ? 56 : 24;
+    const padding = { top: 20, right: rightPad, bottom: 20, left: leftPad };
     const barCount = this.bars.length;
-    const chartWidth = 400;
-    const chartHeight = Math.max(300, barCount * 60);
+    const chartWidth = Math.max(460, leftPad + rightPad + 300);
+    const chartHeight = Math.max(300, barCount * 56);
     const plotWidth = chartWidth - padding.left - padding.right;
     const plotHeight = chartHeight - padding.top - padding.bottom;
 
@@ -200,10 +205,10 @@ export class SniceWaterfall extends HTMLElement implements SniceWaterfallElement
       parts.push(this.barRect(bar, barLeft, y, barHeight, barWidth));
 
       const labelY = y + barWidth / 2;
-      parts.push(`<text part="label" class="waterfall-label" x="${padding.left - 5}" y="${labelY}" text-anchor="end">${this.escSvg(bar.label)}</text>`);
+      parts.push(`<text part="label" class="waterfall-label" x="${padding.left - 8}" y="${labelY}" text-anchor="end" dominant-baseline="central">${this.escSvg(bar.label)}</text>`);
 
       if (this.showValues) {
-        parts.push(this.valueText(bar, barRight + 5, labelY, 'start'));
+        parts.push(this.valueText(bar, barRight + 6, labelY, 'start'));
       }
     }
 
