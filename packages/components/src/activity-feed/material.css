@@ -1,18 +1,34 @@
 /* Android Material 3 Expressive — snice-activity-feed
-   Native counterpart: M3 Activity History + 8px Filter Chips (secondary-container) + 40dp primary-container medallions. */
+   Native counterpart: M3 Expressive 24dp Tonal Surface Container + 8px/12px Filter Chips
+   + elevated 16dp tonal entry cards + 40dp primary-container medallions with continuous rail. */
 
 :host {
   font-family: var(--snice-font-family);
-  --feed-bg: var(--snice-color-surface);
+  --feed-bg: var(--snice-color-surface-container-low);
   --feed-border: var(--snice-color-border-subtle);
-  --feed-bg-element: var(--snice-color-surface-container-low);
+  --feed-bg-element: var(--snice-color-surface-container-high);
+  --feed-entry-hover-content-bg: transparent;
+  --feed-entry-hover-icon-border: transparent;
+  --feed-entry-hover-icon-bg: var(--snice-m3-primary-container);
+  --feed-entry-focus-content-outline: none;
+}
+
+/* Signature M3 Expressive 24dp primary-tinted tonal surface container (zero harsh border) */
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-low);
+  border: none;
+  border-radius: 24px;
+  padding: 0.875rem 1rem 1rem;
 }
 
 :host [part~="filters"] {
   gap: 0.5rem;
-  border-bottom: 1px solid var(--snice-color-border-subtle);
+  padding-bottom: 0;
+  margin-bottom: 0.5rem;
+  border-bottom: none;
 }
 
+/* M3 Filter Chips (8px outlined -> 12px secondary-container active morph) */
 :host [part~="filter"] {
   min-height: 2rem;
   padding: 0 0.875rem;
@@ -28,7 +44,7 @@
 }
 
 :host [part~="filter"]:hover {
-  background: var(--snice-color-overlay-hover);
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
   border-color: var(--snice-color-border);
   color: var(--snice-color-text);
 }
@@ -43,10 +59,11 @@
 }
 
 :host [part~="filter-active"] {
+  border-radius: 12px;
   background: var(--snice-m3-secondary-container);
   border-color: transparent;
   color: var(--snice-m3-on-secondary-container);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 :host [part~="filter-active"]:hover {
@@ -59,21 +76,45 @@
 
 :host [part~="group-header"] {
   font-family: var(--snice-font-family);
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   color: var(--snice-color-primary);
-  border-bottom: 1px solid var(--snice-color-border-subtle);
-  padding: 0.5rem 0;
+  border-bottom: none;
+  padding: 0.125rem 0.25rem;
+  margin: 0.25rem 0 0;
+}
+
+:host [part~="group-header-first"] {
+  margin-top: 0;
+}
+
+:host [part~="list"] {
+  gap: 0.5rem;
+}
+
+/* Elevated 16dp M3 tonal entry card */
+:host [part~="entry"] {
+  background: var(--snice-color-surface-container-high);
+  border-radius: 16px;
+  padding: 0.625rem 0.875rem;
+  gap: 0.75rem;
+  transition: background-color 150ms var(--snice-m3-spring-effects);
+}
+
+:host [part~="entry"]:hover {
+  background: var(--snice-color-surface-container-highest);
 }
 
 :host [part~="entry"]:focus-visible {
   outline: 3px solid var(--snice-color-primary);
   outline-offset: 2px;
-  border-radius: 12px;
 }
 
-/* 40dp M3 tonal primary-container medallion + dead-center 2px rail */
+/* 40dp M3 tonal primary-container medallion + continuous 2px rail (z-index prevents card occlusion) */
 :host [part~="icon"] {
+  position: relative;
+  z-index: 2;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 9999px;
@@ -83,19 +124,23 @@
 }
 
 :host [part~="entry"]::before {
-  left: calc(1.25rem - 1px);
-  top: 3rem;
+  z-index: 1;
+  left: calc(0.875rem + 1.25rem - 1px);
+  top: 3.125rem;
+  bottom: -1.125rem;
   width: 2px;
-  background: var(--snice-color-border-subtle);
+  background: color-mix(in srgb, var(--snice-color-primary) 30%, transparent);
 }
 
 :host [part~="content"] {
   border-radius: 12px;
-  padding: 0.375rem 0.75rem;
+  padding: 0.0625rem 0.25rem;
 }
 
-:host [part~="content"]:hover {
-  background: var(--snice-color-surface-container-low);
+:host [part~="description"] {
+  font-size: 0.9375rem;
+  line-height: 1.42;
+  color: var(--snice-color-text);
 }
 
 :host [part~="actor"] {
@@ -109,26 +154,36 @@
 }
 
 :host [part~="target"] {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--snice-color-primary);
 }
 
 :host [part~="badge"] {
-  border-radius: 8px;
-  padding: 0.125rem 0.5rem;
-  background: var(--snice-color-surface-container-high);
-  color: var(--snice-color-text-secondary);
+  border-radius: 9999px;
+  padding: 0.125rem 0.5625rem;
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
   font-size: 0.6875rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
+:host [part~="timestamp"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="load-more"] {
+  padding: 0.625rem 0 0;
+}
+
+/* M3 Filled Tonal full-pill Load More button */
 :host [part~="load-more-button"] {
   min-height: 2.5rem;
   padding: 0 1.5rem;
   border-radius: 9999px;
-  background: transparent;
-  border: 1px solid var(--snice-color-border);
-  color: var(--snice-color-primary);
+  background: var(--snice-m3-secondary-container);
+  border: none;
+  color: var(--snice-m3-on-secondary-container);
   font-weight: 500;
   transition:
     background-color 150ms var(--snice-m3-spring-effects),
@@ -136,13 +191,13 @@
 }
 
 :host [part~="load-more-button"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
-  border-color: var(--snice-color-border);
-  color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) 8%, var(--snice-m3-secondary-container));
+  color: var(--snice-m3-on-secondary-container);
+  box-shadow: var(--snice-shadow-xs);
 }
 
 :host [part~="load-more-button"]:active {
-  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  border-radius: var(--snice-m3-shape-morph-pressed, 10px);
 }
 
 :host [part~="load-more-button"]:focus-visible {
@@ -155,7 +210,32 @@
   color: var(--snice-color-text-secondary);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="filter"],
+  :host [part~="entry"],
+  :host [part~="load-more-button"] {
+    transition: none;
+  }
+
+  :host [part~="filter"]:active {
+    border-radius: 8px;
+  }
+
+  :host [part~="filter-active"]:active {
+    border-radius: 12px;
+  }
+
+  :host [part~="load-more-button"]:active {
+    border-radius: 9999px;
+  }
+}
+
 @media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="entry"] {
+    border: 1px solid CanvasText;
+  }
+
   :host [part~="filter-active"] {
     background: Highlight;
     color: HighlightText;

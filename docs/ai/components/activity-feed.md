@@ -56,6 +56,8 @@ interface Activity {
 - `filter-active` - Added to `filter` while that filter is selected
 - `list` - Activity list (role="feed")
 - `entry` - Single activity row (role="article")
+- `entry-last` - Added to `entry` on the final row of a list or date group
+- `entry-even` - Added to `entry` on even-indexed rows within a list or date group
 - `icon` - Activity icon
 - `content` - Activity content area
 - `description` - Actor/action/target line
@@ -67,6 +69,7 @@ interface Activity {
 - `badge` - Activity type badge
 - `timestamp` - Timestamp text
 - `group-header` - Date group header
+- `group-header-first` - Added to `group-header` on the first date group header
 - `load-more` - Load-more row
 - `load-more-button` - Load-more button
 - `empty` - Empty state message

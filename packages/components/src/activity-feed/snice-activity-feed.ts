@@ -267,10 +267,16 @@ export class SniceActivityFeed extends HTMLElement implements SniceActivityFeedE
     `;
   }
 
-  private renderEntry(activity: Activity, posinset: number, setsize: number) {
+  private renderEntry(
+    activity: Activity,
+    posinset: number,
+    setsize: number,
+    isLastInGroup: boolean,
+    isEven: boolean
+  ) {
     return html/*html*/`
       <div class="feed__entry"
-           part="entry"
+           part="entry${isLastInGroup ? ' entry-last' : ''}${isEven ? ' entry-even' : ''}"
            tabindex="0"
            role="article"
            aria-posinset="${posinset}"
@@ -305,7 +311,10 @@ export class SniceActivityFeed extends HTMLElement implements SniceActivityFeedE
 
     return repeat(filtered, {
       key: activity => activity.id,
-      render: activity => this.renderEntry(activity, ++position, setsize),
+      render: activity => {
+        const idx = position++;
+        return this.renderEntry(activity, idx + 1, setsize, idx === setsize - 1, idx % 2 === 1);
+      },
     });
   }
 
@@ -328,15 +337,22 @@ export class SniceActivityFeed extends HTMLElement implements SniceActivityFeedE
 
     const setsize = sorted.length;
     let position = 0;
+    let groupIdx = 0;
 
     const result: unknown[] = [];
     for (const [key, groupActivities] of groups) {
+      const isFirstGroup = groupIdx++ === 0;
+      const groupLen = groupActivities.length;
+      let localIdx = 0;
       result.push(html/*html*/`
-        <div class="feed__group-header" part="group-header">${key}</div>
+        <div class="feed__group-header" part="group-header${isFirstGroup ? ' group-header-first' : ''}">${key}</div>
       `);
       result.push(repeat(groupActivities, {
         key: activity => activity.id,
-        render: activity => this.renderEntry(activity, ++position, setsize),
+        render: activity => {
+          const gIdx = localIdx++;
+          return this.renderEntry(activity, ++position, setsize, gIdx === groupLen - 1, gIdx % 2 === 1);
+        },
       }));
     }
 

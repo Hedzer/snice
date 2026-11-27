@@ -121,7 +121,8 @@
   background: var(--feed-border);
 }
 
-.feed__entry:last-child::before {
+.feed__entry:last-child::before,
+.feed__entry:has(+ .feed__group-header)::before {
   display: none;
 }
 
@@ -162,16 +163,16 @@
 }
 
 .feed__entry:hover .feed__content {
-  background: var(--feed-bg-element);
+  background: var(--feed-entry-hover-content-bg, var(--feed-bg-element));
 }
 
 .feed__entry:hover .feed__icon {
-  border-color: var(--feed-primary);
-  background: color-mix(in srgb, var(--feed-primary) 10%, var(--feed-bg));
+  border-color: var(--feed-entry-hover-icon-border, var(--feed-primary));
+  background: var(--feed-entry-hover-icon-bg, color-mix(in srgb, var(--feed-primary) 10%, var(--feed-bg)));
 }
 
 .feed__entry:focus-visible .feed__content {
-  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline: var(--feed-entry-focus-content-outline, var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)));
   outline-offset: var(--snice-focus-ring-offset, 2px);
 }
 
