@@ -1,0 +1,203 @@
+/* snice-color-picker — macOS 26 Tahoe AppKit NSColorWell skin
+ *
+ * Strictly Layer 2 platform CSS (only :host / [part~="..."] selectors).
+ * Classic wide framed NSColorWell (40×28px medium, 6px outer bezel, 3.5px
+ * inner swatch chip), recessed 28px SF Mono NSTextField, compact 24px 5px-radius
+ * preset chips, soft translucent macOS focus halo, and frosted spinner scrim.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+}
+
+[part~="label"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 0.125rem;
+}
+
+/* Iconic macOS AppKit wide framed NSColorWell */
+:host [part~="swatch"] {
+  box-sizing: border-box;
+  width: 2.5rem;
+  height: 1.75rem;
+  padding: 2.5px;
+  border-radius: 6px;
+  background: var(--snice-macos-control-bg);
+  border: 1px solid var(--snice-color-border-hover);
+  box-shadow: var(--snice-macos-control-shadow);
+  transition: border-color 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease;
+}
+
+:host([size="small"]) [part~="swatch"] {
+  width: 2rem;
+  height: 1.375rem;
+  padding: 2px;
+  border-radius: 5px;
+}
+
+:host([size="large"]) [part~="swatch"] {
+  width: 3rem;
+  height: 2.125rem;
+  padding: 3px;
+  border-radius: 8px;
+}
+
+:host [part~="swatch"]:hover {
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-macos-control-shadow);
+}
+
+:host [part~="swatch"]:active {
+  transform: scale(0.96);
+}
+
+:host [part~="swatch"]:focus-visible {
+  outline: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="swatch-fill"] {
+  border-radius: 3.5px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--snice-color-text) 20%, transparent);
+}
+
+:host [part~="swatch-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+:host [part~="swatch-invalid"]:focus-visible {
+  border-color: var(--snice-color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-danger) 38%, transparent);
+}
+
+:host [part~="swatch-disabled"],
+:host [part~="swatch-disabled"]:hover,
+:host [part~="swatch-disabled"]:active {
+  opacity: 0.46;
+  border-color: var(--snice-color-border);
+  box-shadow: none;
+  transform: none;
+}
+
+:host [part~="swatch-loading"],
+:host [part~="swatch-disabled"][part~="swatch-loading"] {
+  opacity: 1;
+}
+
+/* Frosted Liquid Glass spinner scrim */
+:host [part~="spinner"] {
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--snice-color-background-elevated) 84%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--snice-color-text);
+}
+
+/* Recessed 28px AppKit SF Mono text field */
+:host [part~="input"] {
+  min-height: 1.75rem;
+  padding: 0.25rem 0.5625rem;
+  font-size: 0.8125rem;
+  font-family: var(--snice-font-family-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  background: var(--snice-macos-control-bg);
+  border: 1px solid var(--snice-color-border-hover);
+  border-radius: 6px;
+  color: var(--snice-color-text);
+  box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.08);
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+:host([size="small"]) [part~="input"] {
+  min-height: 1.375rem;
+  padding: 0.125rem 0.4375rem;
+  font-size: 0.75rem;
+  border-radius: 5px;
+}
+
+:host([size="large"]) [part~="input"] {
+  min-height: 2.125rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 8px;
+}
+
+:host [part~="input"]:hover {
+  border-color: var(--snice-color-border-hover);
+}
+
+:host [part~="input"]:focus-visible {
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="input-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+:host [part~="input-invalid"]:focus-visible {
+  border-color: var(--snice-color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-danger) 38%, transparent);
+}
+
+:host [part~="input"]:disabled,
+:host [part~="input"]:disabled:hover {
+  opacity: 0.46;
+  background: var(--snice-color-surface-container-low);
+  border-color: var(--snice-color-border);
+  box-shadow: none;
+}
+
+/* Compact 24px AppKit Color Panel preset chips */
+:host [part~="preset"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 5px;
+  border: 1px solid color-mix(in srgb, var(--snice-color-text) 20%, transparent);
+  box-shadow: var(--snice-shadow-xs);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+:host [part~="preset"]:hover {
+  border-color: var(--snice-color-primary);
+  transform: scale(1.06);
+}
+
+:host [part~="preset"]:active {
+  transform: scale(0.96);
+}
+
+:host [part~="preset"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+:host [part~="preset-selected"] {
+  border: 2px solid var(--snice-color-background-elevated);
+  box-shadow: 0 0 0 2px var(--snice-color-primary);
+}
+
+:host [part~="preset-disabled"],
+:host [part~="preset-disabled"]:hover,
+:host [part~="preset-disabled"]:active {
+  opacity: 0.46;
+  transform: none;
+}
+
+[part~="helper-text"],
+[part~="error-text"] {
+  font-size: 0.6875rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="swatch"]:active,
+  :host [part~="preset"]:hover,
+  :host [part~="preset"]:active {
+    transform: none;
+  }
+}

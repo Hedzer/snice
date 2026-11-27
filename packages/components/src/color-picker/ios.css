@@ -1,0 +1,207 @@
+/* snice-color-picker — iOS 26+ UIColorWell skin
+ *
+ * Strictly Layer 2 platform CSS (only :host / [part~="..."] selectors).
+ * Circular UIColorWell swatch with concentric ring gap, opaque grouped 44pt
+ * SF Mono text field, circular preset dots with concentric selection halo,
+ * and a frosted Liquid Glass spinner scrim legible over any swatch color.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+}
+
+[part~="label"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text-secondary);
+  margin-bottom: 0.125rem;
+}
+
+/* Circular iOS UIColorWell with concentric ring gap */
+:host [part~="swatch"] {
+  box-sizing: border-box;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 3px;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-high);
+  border: 1.5px solid var(--snice-color-border-hover);
+  box-shadow: var(--snice-shadow-xs);
+  transition: border-color 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:host([size="small"]) [part~="swatch"] {
+  width: 2.125rem;
+  height: 2.125rem;
+}
+
+:host([size="large"]) [part~="swatch"] {
+  width: 3.125rem;
+  height: 3.125rem;
+}
+
+:host [part~="swatch"]:hover {
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="swatch"]:active {
+  transform: scale(0.94);
+}
+
+:host [part~="swatch"]:focus-visible {
+  outline: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+:host [part~="swatch-fill"] {
+  border-radius: 9999px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--snice-color-text) 16%, transparent);
+}
+
+:host [part~="swatch-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+:host [part~="swatch-invalid"]:focus-visible {
+  border-color: var(--snice-color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-danger) 32%, transparent);
+}
+
+:host [part~="swatch-disabled"],
+:host [part~="swatch-disabled"]:hover,
+:host [part~="swatch-disabled"]:active {
+  opacity: 0.42;
+  border-color: var(--snice-color-border-subtle);
+  box-shadow: none;
+  transform: none;
+}
+
+:host [part~="swatch-loading"],
+:host [part~="swatch-disabled"][part~="swatch-loading"] {
+  opacity: 1;
+}
+
+/* Contrast-safe frosted circular scrim for loading spinner */
+:host [part~="spinner"] {
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 80%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--snice-color-text);
+}
+
+/* Grouped opaque SF Mono input (aligned to 44pt/34px/50px swatch) */
+:host [part~="input"] {
+  min-height: 2.75rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+  font-family: var(--snice-font-family-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 12px;
+  color: var(--snice-color-text);
+  box-shadow: var(--snice-shadow-xs);
+  transition: border-color 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:host([size="small"]) [part~="input"] {
+  min-height: 2.125rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  border-radius: 10px;
+}
+
+:host([size="large"]) [part~="input"] {
+  min-height: 3.125rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 14px;
+}
+
+:host [part~="input"]:hover {
+  border-color: var(--snice-color-border-hover);
+}
+
+:host [part~="input"]:focus-visible {
+  background: var(--snice-color-surface-container-highest);
+  border-color: var(--snice-color-primary);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+:host [part~="input-invalid"] {
+  border-color: var(--snice-color-danger);
+}
+
+:host [part~="input-invalid"]:focus-visible {
+  border-color: var(--snice-color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-danger) 32%, transparent);
+}
+
+:host [part~="input"]:disabled,
+:host [part~="input"]:disabled:hover {
+  opacity: 0.42;
+  background: var(--snice-color-surface-container);
+  border-color: var(--snice-color-border-subtle);
+  color: var(--snice-color-text-secondary);
+  box-shadow: none;
+}
+
+/* Circular iOS preset color dots */
+:host [part~="preset"] {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+  box-shadow: var(--snice-shadow-xs);
+  transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.14s ease;
+}
+
+:host [part~="preset"]:hover {
+  border-color: color-mix(in srgb, var(--snice-color-text) 24%, transparent);
+  transform: scale(1.08);
+}
+
+:host [part~="preset"]:active {
+  transform: scale(0.94);
+}
+
+:host [part~="preset"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+:host [part~="preset-selected"] {
+  border: 2px solid var(--snice-color-surface-container-high);
+  box-shadow: 0 0 0 2px var(--snice-color-primary);
+}
+
+:host [part~="preset-disabled"],
+:host [part~="preset-disabled"]:hover,
+:host [part~="preset-disabled"]:active {
+  opacity: 0.42;
+  transform: none;
+}
+
+[part~="helper-text"],
+[part~="error-text"] {
+  font-size: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="swatch"]:active,
+  :host [part~="preset"]:hover,
+  :host [part~="preset"]:active {
+    transform: none;
+  }
+}
