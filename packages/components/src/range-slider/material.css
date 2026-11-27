@@ -213,7 +213,7 @@
 
 :host([disabled]) [part~="labels"],
 :host(:disabled) [part~="labels"] {
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -33,7 +33,9 @@
 }
 
 [part~="track"][part~="track-disabled"] {
-  opacity: 0.44;
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  box-shadow: none;
   cursor: not-allowed;
 }
 
@@ -41,6 +43,10 @@
 [part~="range"] {
   border-radius: 9999px;
   background: var(--snice-color-primary);
+}
+
+:host([disabled]) [part~="range"] {
+  background: color-mix(in srgb, var(--snice-color-text) 28%, transparent);
 }
 
 /* Crisp 16px pure-white AppKit knobs */
@@ -104,20 +110,23 @@
     0 1px 3px hsl(0 0% 0% / 0.24);
 }
 
-/* Disabled knob: prevent double opacity compounding & suppress hover/drag lens */
+/* Disabled knob: crisp muted AppKit bezel, zero hover/drag lens */
 [part~="thumb"][part~="thumb-disabled"] {
   opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 16%, var(--snice-color-surface-container-highest));
+  border: 1px solid color-mix(in srgb, var(--snice-color-text) 22%, transparent);
+  box-shadow: none;
   cursor: not-allowed;
 }
 
 [part~="thumb"][part~="thumb-disabled"]:hover,
 [part~="thumb"][part~="thumb-disabled"]:active {
   transform: translate(-50%, -50%);
-  background: hsl(0 0% 100%);
+  background: color-mix(in srgb, var(--snice-color-text) 16%, var(--snice-color-surface-container-highest));
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border: 0.5px solid hsl(0 0% 0% / 0.16);
-  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.24);
+  border: 1px solid color-mix(in srgb, var(--snice-color-text) 22%, transparent);
+  box-shadow: none;
   cursor: not-allowed;
   z-index: 1;
 }
@@ -160,7 +169,8 @@
 }
 
 :host([disabled]) [part~="labels"] {
-  opacity: 0.44;
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
