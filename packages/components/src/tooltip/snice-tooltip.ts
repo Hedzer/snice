@@ -48,6 +48,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
 
   private showTimeout?: number;
   private hideTimeout?: number;
+  private hideAnimationTimeout?: number;
   private activePosition: TooltipPosition = 'top';
   private portalElement?: HTMLElement;
   private scrollHandler = () => this.updatePosition();
@@ -203,10 +204,19 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
       clearTimeout(this.hideTimeout);
       this.hideTimeout = undefined;
     }
+    if (this.hideAnimationTimeout) {
+      clearTimeout(this.hideAnimationTimeout);
+      this.hideAnimationTimeout = undefined;
+    }
   }
 
   show() {
     if (!this.content) return;
+
+    if (this.hideAnimationTimeout) {
+      clearTimeout(this.hideAnimationTimeout);
+      this.hideAnimationTimeout = undefined;
+    }
 
     ensurePortalStyles();
 
@@ -215,6 +225,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
       this.updateArrowStyles(this.position);
     }
 
+    this.syncPortalStyles();
     this.portalElement.style.display = 'block';
     this.updatePortalContent();
 
@@ -247,8 +258,12 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     window.removeEventListener('resize', this.scrollHandler);
     cancelAnimationFrame(this.rafId);
 
-    setTimeout(() => {
-      if (this.portalElement) {
+    if (this.hideAnimationTimeout) {
+      clearTimeout(this.hideAnimationTimeout);
+    }
+    this.hideAnimationTimeout = window.setTimeout(() => {
+      this.hideAnimationTimeout = undefined;
+      if (this.portalElement && !this.portalElement.classList.contains('snice-tooltip--visible')) {
         this.portalElement.style.display = 'none';
       }
     }, 200);
@@ -280,7 +295,8 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
 
     this.portalElement.style.visibility = '';
 
-    const arrowSize = this.arrow ? 6 : 0;
+    const arrowHidden = getComputedStyle(this).getPropertyValue('--tooltip-arrow-display').trim() === 'none';
+    const arrowSize = (this.arrow && !arrowHidden) ? 6 : 0;
     const position = calculatePosition(
       triggerRect, tooltipRect, this.position, this.offset, arrowSize, this.strictPositioning
     );
@@ -400,29 +416,59 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     if (e.key === 'Escape') this.hide();
   };
 
+  private syncPortalStyles() {
+    if (!this.portalElement) return;
+    const hostStyles = getComputedStyle(this);
+    const getVar = (name: string, fallback: string) =>
+      hostStyles.getPropertyValue(name).trim() || fallback;
+
+    const bg = getVar('--tooltip-bg', 'rgb(51 51 51)');
+    const color = getVar('--tooltip-color', 'rgb(255 255 255)');
+    const border = getVar('--tooltip-border', 'none');
+    const radius = getVar('--tooltip-radius', '6px');
+    const padding = getVar('--tooltip-padding', '0.5rem 0.75rem');
+    const fontSize = getVar('--tooltip-font-size', '0.875rem');
+    const fontFamily = getVar('--tooltip-font-family', '');
+    const fontWeight = getVar('--tooltip-font-weight', '');
+    const lineHeight = getVar('--tooltip-line-height', '1.4');
+    const letterSpacing = getVar('--tooltip-letter-spacing', '');
+    const shadow = getVar('--tooltip-shadow', '0 2px 8px rgb(0 0 0 / 0.15)');
+    const backdropFilter = getVar('--tooltip-backdrop-filter', 'none');
+
+    this.portalElement.style.background = bg;
+    this.portalElement.style.color = color;
+    this.portalElement.style.border = border;
+    this.portalElement.style.borderRadius = radius;
+    this.portalElement.style.padding = padding;
+    this.portalElement.style.fontSize = fontSize;
+    this.portalElement.style.lineHeight = lineHeight;
+    this.portalElement.style.boxShadow = shadow;
+    this.portalElement.style.backdropFilter = backdropFilter;
+    (this.portalElement.style as any).webkitBackdropFilter = backdropFilter;
+    if (fontFamily) this.portalElement.style.fontFamily = fontFamily;
+    if (fontWeight) this.portalElement.style.fontWeight = fontWeight;
+    if (letterSpacing) this.portalElement.style.letterSpacing = letterSpacing;
+
+    const arrow = this.portalElement.querySelector('.snice-tooltip__arrow') as HTMLElement | null;
+    if (arrow) {
+      const arrowDisplay = getVar('--tooltip-arrow-display', '');
+      arrow.style.display = (!this.arrow || arrowDisplay === 'none') ? 'none' : '';
+    }
+  }
+
   private createPortalElement(): HTMLElement {
     const portal = document.createElement('div');
     portal.className = `snice-tooltip snice-tooltip--${this.position}`;
     portal.setAttribute('role', 'tooltip');
-    const hostStyles = getComputedStyle(this);
-    const bg = hostStyles.getPropertyValue('--tooltip-bg').trim() || 'rgb(51 51 51)';
-    const color = hostStyles.getPropertyValue('--tooltip-color').trim() || 'rgb(255 255 255)';
     portal.style.cssText = `
       position: fixed;
       z-index: ${this.zIndex};
-      padding: 0.5rem 0.75rem;
-      background: ${bg};
-      color: ${color};
-      border-radius: 6px;
-      font-size: 0.875rem;
-      line-height: 1.4;
       max-width: ${this.maxWidth}px;
       width: max-content;
       pointer-events: none;
       opacity: 0;
       transform: scale(0.95);
       transition: opacity 0.2s, transform 0.2s;
-      box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
       display: none;
     `;
 
@@ -454,6 +500,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
       content.textContent = this.content;
     }
 
+    const arrowHidden = getComputedStyle(this).getPropertyValue('--tooltip-arrow-display').trim() === 'none';
     let arrow = this.portalElement.querySelector('.snice-tooltip__arrow') as HTMLElement;
     if (this.arrow && !arrow) {
       arrow = document.createElement('div');
@@ -465,8 +512,9 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
         border-style: solid;
       `;
       this.portalElement.appendChild(arrow);
-    } else if (arrow) {
-      arrow.style.display = this.arrow ? '' : 'none';
+    }
+    if (arrow) {
+      arrow.style.display = (this.arrow && !arrowHidden) ? '' : 'none';
     }
   }
 }
