@@ -24,11 +24,20 @@ export type { RequestRoute, RequestRouteMap, CreateRequestHandlerOptions } from 
 export { IS_CONTROLLER_INSTANCE, getSymbol } from './symbols';
 
 // v3.0.0 new template system
-export { html, svg, css, nothing, unsafeHTML, __sniceTemplate } from './template';
+export { css, nothing, unsafeHTML } from './template';
 export type { TemplateResult, CompiledTemplateDescriptor, CSSResult, Nothing, UnsafeHTML } from './template';
+export { html, svg } from './parts';
+export { __sniceTemplate } from './compiled-template';
+export { __pNode } from './part-node';
+export { __pAttr, __pBool, __pProp, __pClass, __pStyle, __pComment } from './part-basic';
+export { __pEvent } from './part-event';
+export { __pKeyEvent } from './part-key-event';
+export { __pSpread } from './part-spread';
+export { __pCtrl } from './part-controller';
+export { __pIf, __pElseIf, __pCase, __pWhen } from './part-conditional';
 export { render, styles, setStrictRenderErrors } from './render';
-export { noChange, live } from './parts';
-export type { NoChange } from './parts';
+export { noChange, live } from './part-base';
+export type { NoChange } from './part-base';
 export { repeat } from './repeat';
 export type { RepeatOptions, RepeatResult } from './repeat';
 export type { RenderOptions } from './render';

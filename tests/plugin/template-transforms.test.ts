@@ -214,9 +214,10 @@ export function renderCard(title: string, items: string[], active: boolean) {
     const hashesB = hashDir(join(dirB, 'dist'));
     expect(hashesA).toEqual(hashesB);
 
-    // Confirm __sniceTemplate was actually emitted in app chunk
+    // Confirm compiled template descriptor was emitted in app chunk and runtime parser is tree-shaken out
     const appFile = readdirSync(join(dirA, 'dist/assets')).find(f => f.startsWith('index-') && f.endsWith('.js'))!;
     const appCode = readFileSync(join(dirA, 'dist/assets', appFile), 'utf8');
-    expect(appCode).toContain('kinds:');
+    expect(appCode).toContain('html:');
+    expect(appCode).toContain('parts:');
   }, 60000);
 });

@@ -287,6 +287,30 @@ describe('BS-07: Template minification & pre-compilation runtime parity (happy-d
     expect(errMsg).toContain('expressions directly in opening tags are not supported');
     preMod.setStrictRenderErrors(false);
 
+    // Disconnect, reconnect, and remove precompiled element to verify full lifecycle parity
+    document.body.removeChild(preEl);
+    document.body.appendChild(preEl);
+    (preRoot.querySelector('.btn') as HTMLElement).click();
+    expect(preEl.clicks).toBe(12);
+
+    // Direct CompiledTemplateInstance.render() + marker collision avoidance (`data-s` present in user HTML)
+    const { mod: colMod } = await buildAndImport(`
+      import { html } from 'snice';
+      export function makeCollision(v: string) {
+        return html\`<div data-s="user-attr"><span>\${v}</span></div>\`;
+      }
+    `, { minifyTemplates: true, precompileTemplates: true });
+    const colRes = colMod.makeCollision('safe');
+    expect(colRes.compiled?.m).toBe('data-s0');
+    const colInst = colRes._create(colRes, { tag: 'x-col' }, customElements);
+    expect(colInst.getRenderHostIdentity()).toEqual({ tag: 'x-col' });
+    const colFrag = colInst.render(colRes.values);
+    expect(colFrag.querySelector('div')?.getAttribute('data-s')).toBe('user-attr');
+    expect(colFrag.querySelector('span')?.textContent).toBe('safe');
+    colInst.disconnected();
+    colInst.reconnected();
+    colInst.clear();
+
     // Uncompiled dynamic template in the same app still falls back to scanTemplateQuasis seamlessly
     const scansBeforeDynamic = _getQuasiScanCount();
     const dynRes = preMod.makeUncompiled('dyn');

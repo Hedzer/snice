@@ -290,6 +290,21 @@ describe('Every public export is documented', () => {
     '__sniceField',              // compiler helper: lowered field/property/query/watch registration
     '__sniceMethod',             // compiler helper: lowered method/render/styles/event registration
     '__sniceTemplate',           // compiler helper: pre-compiled template descriptor wrapper
+    '__pNode',                   // compiler helper: tree-shakeable NodePart factory
+    '__pAttr',                   // compiler helper: tree-shakeable AttributePart factory
+    '__pBool',                   // compiler helper: tree-shakeable BooleanAttributePart factory
+    '__pProp',                   // compiler helper: tree-shakeable PropertyPart factory
+    '__pClass',                  // compiler helper: tree-shakeable ClassPart factory
+    '__pStyle',                  // compiler helper: tree-shakeable StylePart factory
+    '__pComment',                // compiler helper: tree-shakeable CommentPart factory
+    '__pEvent',                  // compiler helper: tree-shakeable EventPart factory (no keyboard filter)
+    '__pKeyEvent',               // compiler helper: tree-shakeable EventPart factory (with keyboard filter)
+    '__pSpread',                 // compiler helper: tree-shakeable SpreadPart factory
+    '__pCtrl',                   // compiler helper: tree-shakeable ControllerPart factory
+    '__pIf',                     // compiler helper: tree-shakeable ConditionalIfPart factory
+    '__pElseIf',                 // compiler helper: tree-shakeable ConditionalElseIfPart factory
+    '__pCase',                   // compiler helper: tree-shakeable ConditionalCasePart factory
+    '__pWhen',                   // compiler helper: tree-shakeable ConditionalWhenPart factory
   ]);
 
   const exported = (() => {

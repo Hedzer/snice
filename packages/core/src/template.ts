@@ -17,16 +17,35 @@ const cssResultCache = /*#__PURE__*/ new WeakMap<TemplateStringsArray, CSSResult
 const interpolatedCssResultCache = /*#__PURE__*/ new WeakMap<TemplateStringsArray, { cssText: string; result: CSSResult }>();
 
 /**
+ * Tree-shakeable part factory invoked by `CompiledTemplateInstance`.
+ */
+export type CompiledPartFactory = (
+  node: Node,
+  arg1: any,
+  arg2: any,
+  ctx: any
+) => any;
+
+export type CompiledPartTuple =
+  | readonly [slot: number, valueIndex: number, factory: CompiledPartFactory]
+  | readonly [slot: number, valueIndex: number, factory: CompiledPartFactory, arg1: any]
+  | readonly [slot: number, valueIndex: number, factory: CompiledPartFactory, arg1: any, arg2: any];
+
+/**
  * Pre-compiled build-time descriptor produced by `snice/vite` / `snice/rollup`
- * when `precompileTemplates: true`. Allows `parts.ts` to skip the runtime
- * char-by-char quasi scanner while assembling markers with the live runtime
- * `templateMarker`.
+ * when `precompileTemplates: true`. Allows `CompiledTemplateInstance` to bypass
+ * `prepareTemplate()`, `scanTemplateQuasis()`, and `TreeWalker` completely while
+ * importing ONLY the part factories used by that template.
  */
 export interface CompiledTemplateDescriptor {
-  /** Marker kind per interpolation: 0 = nodeMarker, 1 = marker, 2 = value="marker" */
-  readonly kinds: readonly (0 | 1 | 2)[];
-  /** Original attribute name per interpolation ('' for node/comment slots) */
-  readonly attrs: readonly string[];
+  /** Pre-compiled static HTML with deterministic slot markers */
+  readonly html: string;
+  /** Ordered part descriptors referencing tree-shakeable part factories */
+  readonly parts: readonly CompiledPartTuple[];
+  /** Marker attribute name (defaults to 'data-s') */
+  readonly m?: string;
+  /** Value index of `key=${...}` binding, or -1 if unkeyed */
+  readonly k?: number;
 }
 
 /**
@@ -41,6 +60,14 @@ export interface TemplateResult {
   readonly svg?: boolean;
   /** Optional build-time pre-compiled descriptor */
   readonly compiled?: CompiledTemplateDescriptor;
+  /** @internal Factory creating a TemplateInstance without coupling render.ts to parts.ts */
+  readonly _create?: (
+    result: TemplateResult,
+    renderIdentity: any,
+    customElementRegistry: any
+  ) => any;
+  /** @internal Key-index resolver for keyed list reconciliation */
+  readonly _keyIndex?: (result: TemplateResult) => number;
 }
 
 /**
@@ -51,60 +78,6 @@ export interface CSSResult {
   readonly _$litType$: typeof CSS_RESULT;
   readonly cssText: string;
   styleSheet?: CSSStyleSheet;
-}
-
-/**
- * Tagged template function for creating HTML templates
- *
- * @example
- * ```typescript
- * html`<div class="card">
- *   <h1>${this.title}</h1>
- *   <button @click=${this.handleClick}>Click me</button>
- * </div>`
- * ```
- */
-export function html(strings: TemplateStringsArray, ...values: any[]): TemplateResult {
-  return {
-    _$litType$: HTML_RESULT,
-    strings,
-    values
-  };
-}
-
-/**
- * Tagged template function for SVG fragments.
- *
- * Bare SVG elements (<circle>, <path>, ...) parse as unknown elements in an
- * HTML context. Use svg`` for fragments composed into a surrounding <svg>:
- *
- * @example
- * ```typescript
- * html`<svg viewBox="0 0 100 100">${svg`<circle cx="50" cy="50" r=${r}></circle>`}</svg>`
- * ```
- */
-export function svg(strings: TemplateStringsArray, ...values: any[]): TemplateResult {
-  return {
-    _$litType$: HTML_RESULT,
-    strings,
-    values,
-    svg: true
-  };
-}
-
-/**
- * Runtime constructor for build-time pre-compiled templates (`precompileTemplates: true`).
- * Preserves stable per-callsite `strings` identity and `svg` namespace.
- */
-export function __sniceTemplate(
-  strings: TemplateStringsArray,
-  values: readonly any[],
-  compiled: CompiledTemplateDescriptor,
-  isSvg?: boolean
-): TemplateResult {
-  return isSvg
-    ? { _$litType$: HTML_RESULT, strings, values, svg: true, compiled }
-    : { _$litType$: HTML_RESULT, strings, values, compiled };
 }
 
 /**

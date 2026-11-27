@@ -7,7 +7,16 @@ import baseConfig from './vitest.config';
  * outside this gate and retain their existing suites.
  */
 const coreEngine = [
+  'packages/core/src/compiled-template.ts',
   'packages/core/src/element.ts',
+  'packages/core/src/part-base.ts',
+  'packages/core/src/part-basic.ts',
+  'packages/core/src/part-conditional.ts',
+  'packages/core/src/part-controller.ts',
+  'packages/core/src/part-event.ts',
+  'packages/core/src/part-key-event.ts',
+  'packages/core/src/part-node.ts',
+  'packages/core/src/part-spread.ts',
   'packages/core/src/parts.ts',
   'packages/core/src/reactive.ts',
   'packages/core/src/render-root.ts',

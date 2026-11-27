@@ -4,7 +4,7 @@
  */
 
 import { TemplateResult, CSSResult, isTemplateResult, isCSSResult } from './template';
-import { TemplateInstance } from './parts';
+import { createTemplateInstance, type TemplateInstanceLike } from './part-base';
 import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED, PARENT_STYLES_METHODS, PENDING_RECONNECT_RENDER, RENDER_DEPTH, RENDERED_PROMISE, RENDERED_RESOLVE } from './symbols';
 import { ensureRenderRoot } from './render-root';
 import { scheduleAutofocus } from './autofocus';
@@ -214,7 +214,7 @@ function performRender(
       }
       const template = document.createElement('template');
       template.innerHTML = result;
-      const instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | null | undefined;
+      const instance = (element as any)[RENDER_INSTANCE] as TemplateInstanceLike | null | undefined;
       instance?.clear();
       const removable = Array.from(renderRoot.childNodes).filter(node => !(
         node.nodeType === Node.ELEMENT_NODE &&
@@ -239,7 +239,7 @@ function performRender(
       return;
     }
 
-    let instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | undefined;
+    let instance = (element as any)[RENDER_INSTANCE] as TemplateInstanceLike | undefined;
 
     if (instance && instance.isSameTemplate(result.strings)) {
       renderIdentity = instance.getRenderHostIdentity() ?? capturedIdentity;
@@ -254,7 +254,7 @@ function performRender(
           customElementRegistry?: CustomElementRegistry;
         }).customElementRegistry ?? renderRoot.ownerDocument.defaultView?.customElements ?? null
       : renderRoot.ownerDocument.defaultView?.customElements ?? null;
-    const nextInstance = new TemplateInstance(result, capturedIdentity, customElementRegistry);
+    const nextInstance = createTemplateInstance(result, capturedIdentity, customElementRegistry);
     const nextFragment = nextInstance.renderFragment();
 
     // Commit while detached first. A malformed binding can then fail without
@@ -427,7 +427,7 @@ export function clearRenderTimers(element: HTMLElement): boolean {
 
 /** Pause connection-aware render parts while an element is detached. */
 export function disconnectRenderTree(element: HTMLElement): void {
-  const instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | undefined;
+  const instance = (element as any)[RENDER_INSTANCE] as TemplateInstanceLike | undefined;
   // A host disconnection is not the same thing as parking a conditional
   // branch. The shadow/light render tree still belongs to the host, so native
   // event listeners remain usable on retained node references. Async iteration
@@ -438,7 +438,7 @@ export function disconnectRenderTree(element: HTMLElement): void {
 
 /** Resume connection-aware render parts when an existing tree reconnects. */
 export function reconnectRenderTree(element: HTMLElement): void {
-  const instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | undefined;
+  const instance = (element as any)[RENDER_INSTANCE] as TemplateInstanceLike | undefined;
   instance?.reconnected();
 }
 

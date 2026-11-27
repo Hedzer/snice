@@ -138,6 +138,32 @@ describe('BS-09: Distribution dogfooding, bundle-size budgets & cache-hash stabi
     // far below the 126 KB raw / 36.1 KB gz full runtime and below the 21.1 KB gz baseline).
     expect(raw).toBeLessThan(77_000);
     expect(gzip).toBeLessThan(21_000);
+
+    // Modular parts + precompileTemplates:true bypasses prepareTemplate/TreeWalker and
+    // tree-shakes unused part families + keyboard-filter for a major further drop (~14.2 KB gz).
+    await viteBuild({
+      root: dir,
+      logLevel: 'silent',
+      plugins: [sniceVite({ caching: false, precompileTemplates: true })],
+      build: { outDir: 'dist-pre', emptyOutDir: true },
+    });
+    const preFiles: Record<string, Buffer> = {};
+    const preAssets = join(dir, 'dist-pre/assets');
+    for (const f of readdirSync(preAssets)) {
+      preFiles[f] = readFileSync(join(preAssets, f));
+    }
+    const preSizes = sumAssets(preFiles);
+    const preBundle = Object.entries(preFiles)
+      .filter(([k]) => k.endsWith('.js'))
+      .map(([, b]) => b.toString('utf8'))
+      .join('\n');
+
+    expect(preBundle).not.toContain('createTreeWalker');
+    expect(preBundle).not.toContain('ArrowUp');
+    expect(preBundle).not.toContain('...props');
+    expect(preBundle).not.toContain('conditional-if');
+    expect(preSizes.raw).toBeLessThan(raw - 15_000);
+    expect(preSizes.gzip).toBeLessThan(16_000);
   }, 30000);
 
   it('AC-4(2): medium Snice SPA shrinks measurably with snice() vs baseline and keeps 0% hash churn on stable tiers across app edits', async () => {
