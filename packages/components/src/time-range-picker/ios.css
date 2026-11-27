@@ -1,0 +1,135 @@
+/* snice-time-range-picker — iOS 26+ Apple Calendar grouped time-slot skin
+ *
+ * Strictly Layer 2 platform CSS (only :host / [part~="..."] selectors).
+ * Opaque inset-grouped card (zero glass on scrolling rows), 44pt touch rows,
+ * concentric 20px card & 12px range caps, tinted header range capsule, and
+ * explicit white ink (--trp-selected-text: hsl(0 0% 100%)) in dark mode.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --trp-bg: var(--snice-color-surface-container-high);
+  --trp-text: var(--snice-color-text);
+  --trp-text-secondary: var(--snice-color-text-secondary);
+  --trp-border: var(--snice-color-border-subtle);
+  --trp-primary: var(--snice-color-primary);
+  --trp-primary-hover: var(--snice-color-primary-hover);
+  --trp-slot-hover: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+  --trp-disabled-bg: var(--snice-color-surface-container-low);
+  --trp-disabled-text: var(--snice-color-text-tertiary);
+  --trp-selected-bg: var(--snice-color-primary);
+  --trp-selected-text: hsl(0 0% 100%);
+}
+
+:host([disabled]) {
+  opacity: 0.45;
+}
+
+:host [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 20px;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host [part~="header"] {
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  background: var(--snice-color-surface-container-high);
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+}
+
+[part~="label"] {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--snice-color-text);
+}
+
+:host [part~="value"] {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  padding: 0.1875rem 0.625rem;
+  border-radius: 9999px;
+}
+
+:host [part~="value"][part~="value-empty"] {
+  background: transparent;
+  padding: 0;
+  font-style: normal;
+  font-weight: 400;
+  color: var(--snice-color-text-tertiary);
+}
+
+:host [part~="slot"] {
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--snice-color-border-subtle);
+  transition: background-color 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.14s ease;
+}
+
+:host [part~="slot"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: -2px;
+}
+
+[part~="slot-time"] {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+:host [part~="slot-hour-start"] {
+  border-top: 1px solid var(--snice-color-border);
+}
+
+:host [part~="slot-selected"] {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="slot-selected"]:hover {
+  background: var(--snice-color-primary-hover);
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="slot-dragging"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 82%, transparent);
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="slot-hour-start"][part~="slot-selected"],
+:host [part~="slot-hour-start"][part~="slot-dragging"] {
+  border-top-color: hsl(0 0% 100% / 0.28);
+}
+
+:host [part~="slot-range-start"] {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+:host [part~="slot-range-end"] {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+:host [part~="slot-disabled"] {
+  background: var(--snice-color-surface-container-low);
+  color: var(--snice-color-text-tertiary);
+  opacity: 0.55;
+}
+
+:host([readonly]) [part~="slot"]:hover {
+  background: transparent;
+}
+
+:host([readonly]) [part~="slot-selected"]:hover {
+  background: var(--snice-color-primary);
+}
