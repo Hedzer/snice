@@ -1,0 +1,38 @@
+/* iOS 26+ Liquid Glass — snice-qr-code
+ * Apple Wallet / AirDrop QR Plaque: concentric 18px opaque grouped pass
+ * plaque with 8px quiet bezel, 0.5px hairline rim, 12px inner canvas rounding,
+ * SF Pro Display SVG text, and 100% unaltered optical QR scannability.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --qr-padding: 8px;
+  --qr-border-radius: 12px;
+}
+
+:host [part~="base"] {
+  box-sizing: border-box;
+  padding: var(--qr-padding, 8px);
+  background: var(--snice-color-surface-container-high);
+  border-radius: 18px;
+  border: 0.5px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+/* Preserve 100% optical QR scannability — zero opacity, blur, or color inversion */
+:host [part~="canvas"],
+:host [part~="svg"] {
+  border-radius: var(--qr-border-radius, 12px);
+  overflow: hidden;
+}
+
+:host [part~="center-text"] {
+  font-family: var(--snice-font-family-display);
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+}

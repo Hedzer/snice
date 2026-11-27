@@ -1,0 +1,38 @@
+/* macOS 26 Tahoe Liquid Glass / AppKit — snice-qr-code
+ * AppKit Passkey / Wi-Fi Share QR Plaque: compact desktop 12px concentric
+ * outer plaque, 6px bezel, 8px inner matrix rounding, opaque elevated AppKit
+ * surface with 0.5px hairline rim, and 100% unaltered optical scannability.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --qr-padding: 6px;
+  --qr-border-radius: 8px;
+}
+
+:host [part~="base"] {
+  box-sizing: border-box;
+  padding: var(--qr-padding, 6px);
+  background: var(--snice-color-background-elevated);
+  border-radius: var(--snice-border-radius-lg, 12px);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+/* Preserve 100% optical QR scannability — zero opacity, blur, or color inversion */
+:host [part~="canvas"],
+:host [part~="svg"] {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+:host [part~="center-text"] {
+  font-family: var(--snice-font-family-display);
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+}

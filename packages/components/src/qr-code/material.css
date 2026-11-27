@@ -1,0 +1,38 @@
+/* Material 3 Expressive — snice-qr-code
+ * Android Quick Share / Google Wallet QR Card: expressive 20px primary-tinted
+ * tonal plaque with 10px bezel, 12px inner matrix rounding, 1px outline-variant
+ * border, M3 elevation, and 100% unaltered optical QR scannability.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --qr-padding: 10px;
+  --qr-border-radius: 12px;
+}
+
+:host [part~="base"] {
+  box-sizing: border-box;
+  padding: var(--qr-padding, 10px);
+  background: var(--snice-color-surface-container-low);
+  border-radius: 20px;
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+/* Preserve 100% optical QR scannability — zero opacity, blur, or color inversion */
+:host [part~="canvas"],
+:host [part~="svg"] {
+  border-radius: var(--qr-border-radius, 12px);
+  overflow: hidden;
+}
+
+:host [part~="center-text"] {
+  font-family: var(--snice-font-family-display);
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+}

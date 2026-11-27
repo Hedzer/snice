@@ -1,0 +1,39 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-qr-code
+ * Windows 11 Share / Wi-Fi QR Tile: crisp 8px Fluent card plaque with 8px
+ * bezel, 4px inner matrix rounding, 1px top-lit elevation borders, Segoe UI
+ * Variable SVG text, WHCM framing, and 100% unaltered optical scannability.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  --qr-padding: 8px;
+  --qr-border-radius: 4px;
+}
+
+:host [part~="base"] {
+  box-sizing: border-box;
+  padding: var(--qr-padding, 8px);
+  background: var(--snice-color-surface-container-high);
+  border-radius: var(--snice-border-radius-lg, 8px);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+/* Preserve 100% optical QR scannability — zero opacity, blur, or color inversion */
+:host [part~="canvas"],
+:host [part~="svg"] {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+:host [part~="center-text"] {
+  font-family: var(--snice-font-family-display);
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border: 1px solid ButtonBorder;
+    box-shadow: none;
+  }
+}
