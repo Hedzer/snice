@@ -1,0 +1,245 @@
+/* iOS 26+ Liquid Glass — snice-login
+   Native counterpart: iOS 26 Apple Account Sign-In Card & Grouped Form (opaque 20px card, 44pt 12px fields, zero blur). */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host([variant="card"]) [part~="base"] {
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host([variant="minimal"]) [part~="base"] {
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+:host [part~="header"] {
+  margin-bottom: 1.5rem;
+}
+
+:host [part~="title"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.024em;
+  line-height: 1.2;
+  color: var(--snice-color-text);
+}
+
+:host([size="small"]) [part~="title"] {
+  font-size: 1.25rem;
+}
+
+:host([size="large"]) [part~="title"] {
+  font-size: 1.75rem;
+}
+
+:host [part~="subtitle"] {
+  font-size: 0.9375rem;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="form"] {
+  gap: 0.875rem;
+}
+
+:host [part~="field"] {
+  gap: 0.3125rem;
+}
+
+:host [part~="label"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--snice-color-text-secondary);
+  padding-left: 0.25rem;
+}
+
+:host [part~="input"] {
+  min-height: 2.75rem;
+  padding: 0 0.875rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  letter-spacing: -0.008em;
+  background: var(--snice-color-surface-container-low);
+  border: 0.5px solid var(--snice-color-border);
+  color: var(--snice-color-text);
+  box-sizing: border-box;
+  transition:
+    border-color var(--snice-transition-fast, 160ms) var(--snice-ease-out),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-ease-out),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-ease-out);
+}
+
+:host([size="small"]) [part~="input"] {
+  min-height: 2.375rem;
+  padding: 0 0.75rem;
+  font-size: 0.9375rem;
+  border-radius: 10px;
+}
+
+:host([size="large"]) [part~="input"] {
+  min-height: 3.125rem;
+  padding: 0 1rem;
+  font-size: 1.0625rem;
+  border-radius: 14px;
+}
+
+:host [part~="input"]:hover {
+  border-color: var(--snice-color-border-hover);
+}
+
+:host [part~="input"]:focus-visible {
+  background: var(--snice-color-surface-container-high);
+  border-color: var(--snice-color-primary);
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+:host [part~="input"]:disabled,
+:host([disabled]) [part~="input"] {
+  opacity: 0.45;
+  border-color: var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container);
+  cursor: not-allowed;
+}
+
+:host [part~="options"] {
+  margin: 0.125rem 0;
+}
+
+:host [part~="remember"] {
+  min-height: 2.25rem;
+  font-size: 0.9375rem;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-text);
+  cursor: pointer;
+}
+
+:host([disabled]) [part~="remember"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+:host [part~="checkbox"] {
+  width: 1.1875rem;
+  height: 1.1875rem;
+  accent-color: var(--snice-color-primary);
+  cursor: pointer;
+}
+
+:host [part~="checkbox"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+:host [part~="forgot-link"] {
+  min-height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.008em;
+  color: var(--snice-color-primary);
+  text-decoration: none;
+  transition: opacity 140ms ease, transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring);
+}
+
+:host [part~="forgot-link"]:hover {
+  opacity: 0.72;
+  text-decoration: none;
+}
+
+:host [part~="forgot-link"]:active {
+  opacity: 0.45;
+  transform: scale(0.98);
+}
+
+:host [part~="forgot-link"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+:host [part~="submit-button"] {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+/* Mode B parity for shadow-nested <snice-button exportparts="base: submit-button-base"> */
+:host [part~="submit-button-base"] {
+  width: 100%;
+  min-height: 2.75rem;
+  border-radius: 9999px;
+  border: none;
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  font-family: var(--snice-font-family);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  box-shadow: var(--snice-shadow-xs);
+  transition:
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring),
+    background-color 140ms ease,
+    opacity 140ms ease;
+}
+
+:host([size="small"]) [part~="submit-button-base"] {
+  min-height: 2.375rem;
+  font-size: 0.9375rem;
+}
+
+:host([size="large"]) [part~="submit-button-base"] {
+  min-height: 3.125rem;
+  font-size: 1.0625rem;
+}
+
+:host [part~="submit-button-base"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 88%, white);
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="submit-button-base"]:active {
+  transform: scale(0.97);
+}
+
+:host [part~="submit-button-base"]:focus-visible {
+  outline: 3px solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+:host [part~="submit-button-base-disabled"] {
+  opacity: 0.45;
+}
+
+:host [part~="alert"] {
+  display: block;
+  margin-top: 1rem;
+}
+
+@media (forced-colors: active) {
+  :host([variant="card"]) [part~="base"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="input"] {
+    border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="submit-button-base"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+  }
+}

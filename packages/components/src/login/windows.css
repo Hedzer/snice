@@ -1,0 +1,231 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-login
+   Native counterpart: WinUI 3 Microsoft Account Sign-In Card (8px card, 32px 4px TextBox with 2px bottom accent focus). */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host([variant="card"]) [part~="base"] {
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--snice-shadow-sm);
+}
+
+:host([variant="minimal"]) [part~="base"] {
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+:host [part~="header"] {
+  margin-bottom: 1.25rem;
+}
+
+:host [part~="title"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--snice-color-text);
+}
+
+:host([size="small"]) [part~="title"] {
+  font-size: 1.125rem;
+}
+
+:host([size="large"]) [part~="title"] {
+  font-size: 1.5rem;
+}
+
+:host [part~="subtitle"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host [part~="form"] {
+  gap: 0.75rem;
+}
+
+:host [part~="field"] {
+  gap: 0.25rem;
+}
+
+:host [part~="label"] {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--snice-color-text);
+}
+
+:host [part~="input"] {
+  min-height: 2rem;
+  padding: 0 0.6875rem;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-input-bottom);
+  color: var(--snice-color-text);
+  box-sizing: border-box;
+  transition:
+    background-color 100ms cubic-bezier(0, 0, 0, 1),
+    border-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host([size="small"]) [part~="input"] {
+  min-height: 1.625rem;
+  padding: 0 0.5rem;
+  font-size: 0.8125rem;
+}
+
+:host([size="large"]) [part~="input"] {
+  min-height: 2.5rem;
+  padding: 0 0.75rem;
+  font-size: 0.9375rem;
+}
+
+:host [part~="input"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="input"]:focus-visible {
+  background: var(--snice-color-surface-container-lowest);
+  border-color: var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-color-primary);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-primary);
+}
+
+:host [part~="input"]:disabled,
+:host([disabled]) [part~="input"] {
+  background: var(--snice-win-control-bg-pressed);
+  border-color: var(--snice-color-border-subtle);
+  color: var(--snice-color-text-tertiary);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+:host [part~="options"] {
+  margin: 0.125rem 0;
+}
+
+:host [part~="remember"] {
+  font-size: 0.875rem;
+  color: var(--snice-color-text);
+  cursor: pointer;
+}
+
+:host [part~="checkbox"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--snice-color-primary);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+:host [part~="checkbox"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="forgot-link"] {
+  font-size: 0.875rem;
+  color: var(--snice-color-primary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="forgot-link"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  text-decoration: none;
+}
+
+:host [part~="forgot-link"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  opacity: 0.8;
+}
+
+:host [part~="forgot-link"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="submit-button"] {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+/* Mode B parity for shadow-nested <snice-button exportparts="base: submit-button-base"> */
+:host [part~="submit-button-base"] {
+  width: 100%;
+  min-height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 4px;
+  background: var(--snice-color-primary);
+  border: 1px solid color-mix(in srgb, white 10%, var(--snice-color-primary));
+  border-bottom-color: color-mix(in srgb, black 22%, var(--snice-color-primary));
+  color: var(--snice-win-on-accent);
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 400;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host([size="small"]) [part~="submit-button-base"] {
+  min-height: 1.625rem;
+  font-size: 0.8125rem;
+}
+
+:host([size="large"]) [part~="submit-button-base"] {
+  min-height: 2.5rem;
+  font-size: 0.9375rem;
+}
+
+:host [part~="submit-button-base"]:hover {
+  background: var(--snice-color-primary-hover);
+  color: var(--snice-win-on-accent);
+}
+
+:host [part~="submit-button-base"]:active {
+  background: color-mix(in srgb, var(--snice-color-primary) 86%, transparent);
+}
+
+:host [part~="submit-button-base"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+:host [part~="submit-button-base-disabled"] {
+  opacity: 0.45;
+}
+
+:host [part~="alert"] {
+  display: block;
+  margin-top: 0.875rem;
+}
+
+@media (forced-colors: active) {
+  :host([variant="card"]) [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="input"] {
+    background: Field;
+    color: FieldText;
+    border-color: ButtonBorder;
+    border-bottom-color: CanvasText;
+  }
+
+  :host [part~="submit-button-base"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+}
