@@ -1,0 +1,84 @@
+/* Android Material 3 Expressive — snice-menu-item (48dp M3 Expressive Menu Row) */
+[part~="item"] {
+  box-sizing: border-box;
+  min-height: 3rem;
+  padding: 0 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.006em;
+  color: var(--snice-color-text);
+  background: transparent;
+  gap: 0.75rem;
+  transition:
+    background-color 150ms var(--snice-m3-spring-effects, ease),
+    border-radius 150ms var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1));
+}
+
+[part~="item"]::before {
+  display: none;
+}
+
+[part~="item"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  color: var(--snice-color-text);
+}
+
+[part~="item"]:active {
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+  border-radius: 12px;
+}
+
+:host(:focus-visible) [part~="item"],
+[part~="item"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: -3px;
+  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+}
+
+[part~="item"][part~="item-selected"] {
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+[part~="icon"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="shortcut"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+:host([variant="danger"]) [part~="item"] {
+  color: var(--snice-color-danger);
+}
+
+:host([variant="danger"]) [part~="icon"] {
+  color: var(--snice-color-danger);
+}
+
+:host([variant="danger"]) [part~="item"]:hover {
+  background: color-mix(in srgb, var(--snice-color-danger) 8%, transparent);
+  color: var(--snice-color-danger);
+}
+
+:host([disabled]) [part~="item"],
+:host([disabled]) [part~="item"]:hover,
+:host([variant="danger"][disabled]) [part~="item"],
+:host([variant="danger"][disabled]) [part~="item"]:hover,
+[part~="item"][part~="item-disabled"] {
+  opacity: 1;
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="item"] {
+    transition-duration: 0.01ms;
+  }
+}

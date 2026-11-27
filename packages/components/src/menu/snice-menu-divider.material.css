@@ -1,0 +1,9 @@
+/* Android Material 3 Expressive — snice-menu-divider */
+:host {
+  padding: 0.5rem 0;
+}
+
+[part~="divider"] {
+  height: 1px;
+  background: var(--snice-color-border-subtle);
+}

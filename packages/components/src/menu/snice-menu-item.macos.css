@@ -1,0 +1,87 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-menu-item (Compact 24px NSMenuItem) */
+[part~="item"] {
+  box-sizing: border-box;
+  min-height: 1.5rem;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 5px;
+  font-size: 0.8125rem;
+  line-height: 1.38;
+  letter-spacing: -0.005em;
+  color: var(--snice-color-text);
+  background: transparent;
+  gap: 0.5rem;
+  transition: background-color 60ms linear, color 60ms linear;
+}
+
+[part~="item"]::before {
+  display: none;
+}
+
+[part~="item"]:hover {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+[part~="item"]:active {
+  background: color-mix(in srgb, var(--snice-color-primary) 88%, black);
+  color: hsl(0 0% 100%);
+}
+
+:host(:focus-visible) [part~="item"],
+[part~="item"]:focus-visible {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  outline: none;
+}
+
+[part~="item"][part~="item-selected"] {
+  background: transparent;
+  color: var(--snice-color-text);
+  font-weight: 500;
+}
+
+[part~="item"][part~="item-selected"]:hover {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+}
+
+[part~="item"][part~="item-selected"]::after {
+  content: '✓';
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.375rem;
+}
+
+[part~="icon"] {
+  width: 0.9375rem;
+  height: 0.9375rem;
+  color: inherit;
+  opacity: 0.85;
+}
+
+[part~="shortcut"] {
+  font-size: 0.75rem;
+  color: inherit;
+  opacity: 0.58;
+  letter-spacing: 0.04em;
+}
+
+:host([variant="danger"]) [part~="item"] {
+  color: var(--snice-color-danger);
+}
+
+:host([variant="danger"]) [part~="item"]:hover,
+:host([variant="danger"]) [part~="item"]:focus-visible {
+  background: var(--snice-color-danger);
+  color: hsl(0 0% 100%);
+}
+
+:host([disabled]) [part~="item"],
+:host([disabled]) [part~="item"]:hover,
+:host([variant="danger"][disabled]) [part~="item"],
+:host([variant="danger"][disabled]) [part~="item"]:hover,
+[part~="item"][part~="item-disabled"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  opacity: 1;
+  background: transparent;
+}

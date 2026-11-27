@@ -1,0 +1,9 @@
+/* macOS 26+ Liquid Glass / AppKit — snice-menu-divider */
+:host {
+  padding: 0.25rem 0.625rem;
+}
+
+[part~="divider"] {
+  height: 0.5px;
+  background: var(--snice-color-border);
+}

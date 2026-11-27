@@ -1,0 +1,90 @@
+/* iOS 26+ Liquid Glass — snice-menu-item (44pt Touch Target Context Row) */
+[part~="item"] {
+  box-sizing: border-box;
+  min-height: 2.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  letter-spacing: -0.015em;
+  color: var(--snice-color-text);
+  background: transparent;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    transform 160ms var(--snice-ease-spring, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+[part~="item"]::before {
+  display: none;
+}
+
+[part~="item"]:hover {
+  background: hsl(240 5% 50% / 0.12);
+  color: var(--snice-color-text);
+}
+
+[part~="item"]:active {
+  background: hsl(240 5% 50% / 0.2);
+  transform: scale(0.98);
+}
+
+:host(:focus-visible) [part~="item"],
+[part~="item"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+}
+
+[part~="item"][part~="item-selected"] {
+  background: var(--snice-ios-glass-tinted-bg);
+  color: var(--snice-color-primary);
+  font-weight: 600;
+}
+
+[part~="item"][part~="item-selected"]::after {
+  content: '✓';
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  color: var(--snice-color-primary);
+}
+
+[part~="icon"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="shortcut"] {
+  font-size: 0.8125rem;
+  color: var(--snice-color-text-tertiary);
+}
+
+:host([variant="danger"]) [part~="item"] {
+  color: var(--snice-color-danger);
+}
+
+:host([variant="danger"]) [part~="icon"] {
+  color: var(--snice-color-danger);
+}
+
+:host([variant="danger"]) [part~="item"]:hover {
+  background: color-mix(in srgb, var(--snice-color-danger) 12%, transparent);
+  color: var(--snice-color-danger);
+}
+
+:host([disabled]) [part~="item"],
+:host([disabled]) [part~="item"]:hover,
+:host([variant="danger"][disabled]) [part~="item"],
+:host([variant="danger"][disabled]) [part~="item"]:hover,
+[part~="item"][part~="item-disabled"] {
+  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  opacity: 1;
+  background: transparent;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="item"] {
+    transition-duration: 0.01ms;
+  }
+}

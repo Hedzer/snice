@@ -1,0 +1,9 @@
+/* iOS 26+ Liquid Glass — snice-menu-divider */
+:host {
+  padding: 0.25rem 0.5rem;
+}
+
+[part~="divider"] {
+  height: 0.5px;
+  background: var(--snice-color-border-subtle);
+}
