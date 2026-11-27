@@ -26,6 +26,52 @@ export {
 } from './chunking';
 
 /**
+ * Hoist emitted `snice-theme-*.css` stylesheet `<link>` tags ahead of app
+ * stylesheets in Vite-generated HTML so base Snice theme tokens never override
+ * user `:root` seed overrides or custom `[data-theme="..."]` blocks.
+ */
+export function reorderThemeStylesheetsInHtml(html: string): string {
+  if (!html.includes('snice-theme')) return html;
+
+  const linkRe = /<link\b[^>]*>/gi;
+  const links: Array<{ start: number; end: number; tag: string; isSniceTheme: boolean }> = [];
+  let match: RegExpExecArray | null;
+  while ((match = linkRe.exec(html)) !== null) {
+    const tag = match[0];
+    if (!/\brel\s*=\s*["']?stylesheet["']?(?=[\s/>])/i.test(tag)) continue;
+    const isSniceTheme = /\bhref\s*=\s*["'][^"']*\/?snice-theme(?:-[^"'./]+)?\.css(?:\?[^"']*)?["']/i.test(tag);
+    links.push({ start: match.index, end: match.index + tag.length, tag, isSniceTheme });
+  }
+
+  const firstAppIdx = links.findIndex((l) => !l.isSniceTheme);
+  if (firstAppIdx === -1) return html;
+  const misplacedTheme = links.filter((l, idx) => l.isSniceTheme && idx > firstAppIdx);
+  if (misplacedTheme.length === 0) return html;
+
+  const firstApp = links[firstAppIdx];
+  const lineStart = html.lastIndexOf('\n', firstApp.start) + 1;
+  const indent = html.slice(lineStart, firstApp.start).match(/^[ \t]*/)?.[0] ?? '';
+
+  let result = html;
+  for (let i = misplacedTheme.length - 1; i >= 0; i--) {
+    const entry = misplacedTheme[i];
+    let rmStart = entry.start;
+    let rmEnd = entry.end;
+    const ls = result.lastIndexOf('\n', rmStart);
+    const beforeOnLine = result.slice(ls + 1, rmStart);
+    if (/^[ \t]*$/.test(beforeOnLine)) {
+      rmStart = ls + 1;
+      if (result[rmEnd] === '\r' && result[rmEnd + 1] === '\n') rmEnd += 2;
+      else if (result[rmEnd] === '\n') rmEnd += 1;
+    }
+    result = result.slice(0, rmStart) + result.slice(rmEnd);
+  }
+
+  const hoistedBlock = misplacedTheme.map((l) => `${l.tag}\n${indent}`).join('');
+  return result.slice(0, firstApp.start) + hoistedBlock + result.slice(firstApp.start);
+}
+
+/**
  * Official Snice Vite plugin (`snice/vite`).
  */
 export function snice(options?: SnicePluginOptions): Record<string, any> {
@@ -116,6 +162,13 @@ export function snice(options?: SnicePluginOptions): Record<string, any> {
         code: hmrRes.code,
         map: composeSourceMaps(baseRes?.map ?? null, hmrRes.map) ?? hmrRes.map,
       };
+    },
+
+    transformIndexHtml: {
+      order: 'post' as const,
+      handler(html: string) {
+        return reorderThemeStylesheetsInHtml(html);
+      },
     },
   };
 }

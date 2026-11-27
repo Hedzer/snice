@@ -305,6 +305,17 @@ describe('Modular theme/*.css slices, CSS-first seed derivation, feature pruning
       expect(allCss).toMatch(/\[data-theme=["']?brand["']?\]/);
       expect(allCss).toContain('--brand-custom-token');
       expect(allCss).toContain('280');
+
+      // When caching splits snice-theme into its own CSS asset, its <link> MUST
+      // precede the app stylesheet in dist/index.html so user :root / [data-theme] wins!
+      if (caching) {
+        const html = files['index.html']?.toString('utf8') ?? '';
+        const themeLinkIdx = html.search(/<link[^>]+snice-theme[^>]+>/);
+        const appLinkIdx = html.search(/<link[^>]+href="[^"]*\/index-[^"]+\.css"[^>]*>/);
+        expect(themeLinkIdx).toBeGreaterThan(-1);
+        expect(appLinkIdx).toBeGreaterThan(-1);
+        expect(themeLinkIdx).toBeLessThan(appLinkIdx);
+      }
     }
   }, 45000);
 });
