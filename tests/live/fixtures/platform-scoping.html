@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Platform Runtime Scoping Fixture</title>
+  <link rel="stylesheet" href="/dist/components/theme/core.css" />
+  <link rel="stylesheet" href="/dist/components/theme/dark.css" />
+  <style id="brand-override"></style>
+  <style id="scoped-ios"></style>
+  <style id="scoped-material"></style>
+</head>
+<body>
+  <section id="default-zone">
+    <snice-switch id="sw-default" label="Default"></snice-switch>
+    <snice-button id="btn-default" variant="primary">Default</snice-button>
+  </section>
+
+  <section id="ios-zone" data-platform="ios">
+    <snice-switch id="sw-ios" label="iOS"></snice-switch>
+    <snice-button id="btn-ios" variant="primary">iOS</snice-button>
+
+    <div id="nested-material" data-platform="material">
+      <snice-switch id="sw-nested-mat" label="Nested Material"></snice-switch>
+      <snice-button id="btn-nested-mat" variant="primary">Nested Material</snice-button>
+
+      <div id="deep-ios" data-platform="ios">
+        <snice-switch id="sw-deep-ios" label="Deep iOS"></snice-switch>
+      </div>
+    </div>
+  </section>
+
+  <section id="material-zone" data-platform="material">
+    <snice-switch id="sw-mat" label="Material"></snice-switch>
+    <snice-button id="btn-mat" variant="primary">Material</snice-button>
+
+    <div id="nested-ios" data-platform="ios">
+      <snice-switch id="sw-nested-ios" label="Nested iOS"></snice-switch>
+    </div>
+  </section>
+
+  <section id="toggle-zone" data-platform="ios">
+    <form id="toggle-form">
+      <snice-input id="toggle-input" name="note" label="Note" value="hello"></snice-input>
+      <snice-switch id="toggle-switch" name="agree" label="Agree"></snice-switch>
+    </form>
+  </section>
+
+  <script type="module">
+    import '/packages/components/src/switch/snice-switch.ts';
+    import '/packages/components/src/button/snice-button.ts';
+    import '/packages/components/src/input/snice-input.ts';
+    import { enableRuntimePlatformBehaviors } from '/packages/components/src/platform-behaviors/runtime.ts';
+
+    window.__enableRuntimePlatformBehaviors = enableRuntimePlatformBehaviors;
+    window.__fixtureReady = Promise.all([
+      customElements.whenDefined('snice-switch'),
+      customElements.whenDefined('snice-button'),
+      customElements.whenDefined('snice-input'),
+    ]);
+  </script>
+</body>
+</html>

@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import CleanCSS from 'clean-css';
 import { getWipComponents } from './tooling/shared/wip-components.js';
+import { compileAllScopedPlatforms } from './tooling/build/compile-scoped-platforms.mjs';
 import sniceRollup from './dist/plugin/rollup.js';
 
 const require = createRequire(import.meta.url);
@@ -463,7 +464,7 @@ export default [
           const wip = getWipComponents();
           const platformCssRe = /^(?:.+\.)?(?:ios|material|windows|macos)\.css$/;
           for (const entry of fs.readdirSync(componentSource, { withFileTypes: true })) {
-            if (!entry.isDirectory() || entry.name === 'theme' || wip.has(entry.name)) continue;
+            if (!entry.isDirectory() || entry.name === 'theme' || entry.name === 'platform-behaviors' || wip.has(entry.name)) continue;
             const compSrcDir = path.join(componentSource, entry.name);
             for (const file of fs.readdirSync(compSrcDir)) {
               if (!platformCssRe.test(file)) continue;
@@ -474,6 +475,11 @@ export default [
               fs.copyFileSync(path.join(compSrcDir, file), path.join(compDestDir, file));
             }
           }
+
+          // Generate 1:1 pure-CSS runtime multi-platform scoped stylesheets
+          // (`dist/components/theme/platforms/<platform>-scoped.css`) with zero :root leak
+          // and zero :host-context() for Chromium/Firefox/WebKit parity.
+          compileAllScopedPlatforms(componentSource, path.join(themeDest, 'platforms'), wip);
         }
       },
       // Plugin to copy code-block grammar JSON files
