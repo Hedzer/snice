@@ -1,0 +1,132 @@
+/* iOS 26+ Liquid Glass / Storage & Market Map treemap skin */
+
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+[part~="breadcrumbs"] {
+  gap: 0.375rem;
+  padding: 0 0 0.625rem 0;
+  min-height: 2.25rem;
+}
+
+[part~="breadcrumb"] {
+  min-height: 2rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  color: var(--snice-color-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: transform var(--snice-transition-fast, 160ms) var(--snice-ease-spring, cubic-bezier(0.25, 1, 0.5, 1)),
+    background-color var(--snice-transition-fast, 160ms) ease;
+}
+
+[part~="breadcrumb"]:hover {
+  background: var(--snice-color-surface-container);
+}
+
+[part~="breadcrumb"]:active {
+  transform: scale(0.96);
+}
+
+[part~="breadcrumb"]:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color);
+  outline-offset: 2px;
+}
+
+[part~="breadcrumb-current"] {
+  background: transparent;
+  border-color: transparent;
+  color: var(--snice-color-text);
+  font-weight: 600;
+}
+
+[part~="breadcrumb-current"]:hover {
+  background: transparent;
+}
+
+[part~="separator"] {
+  color: var(--snice-color-text-tertiary);
+  font-size: 0.75rem;
+}
+
+[part~="base"] {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 1.25rem;
+  background: var(--snice-color-surface-container-high);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  padding: 0.5rem;
+}
+
+[part~="chart"] {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+
+[part~="tile"],
+[part~="tile-border"] {
+  rx: 6px;
+  ry: 6px;
+}
+
+[part~="tile"]:hover {
+  opacity: 0.88;
+  filter: brightness(1.06);
+}
+
+[part~="tile"]:active {
+  opacity: 0.8;
+}
+
+[part~="tile-border"] {
+  stroke: var(--snice-color-surface-container-high);
+  stroke-width: 2.5px;
+}
+
+[part~="label"],
+[part~="value"] {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  paint-order: stroke;
+  stroke: hsl(0 0% 0% / 0.36);
+  stroke-width: 2.5px;
+  stroke-linejoin: round;
+}
+
+[part~="value"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Regular Liquid Glass floating callout (preserve base opacity toggle) */
+[part~="tooltip"] {
+  border-radius: 0.75rem;
+  padding: 0.375rem 0.6875rem;
+  background: var(--snice-ios-glass-regular-bg);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
+  color: var(--snice-color-text);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="breadcrumb"] {
+    transition: none;
+  }
+
+  [part~="breadcrumb"]:active {
+    transform: none;
+  }
+}
