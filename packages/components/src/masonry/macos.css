@@ -1,0 +1,12 @@
+/* macOS 26 Tahoe AppKit masonry layout skin */
+
+:host {
+  --masonry-gap: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+[part~="base"] {
+  overflow: visible;
+  padding: 0.25rem;
+  column-fill: balance;
+}

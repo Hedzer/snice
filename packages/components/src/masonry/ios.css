@@ -1,0 +1,11 @@
+/* iOS 26+ Liquid Glass / UIKit masonry layout skin */
+
+:host {
+  --masonry-gap: 0.875rem;
+}
+
+[part~="base"] {
+  overflow: visible;
+  padding: 0.25rem;
+  column-fill: balance;
+}

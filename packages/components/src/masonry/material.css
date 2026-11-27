@@ -1,0 +1,11 @@
+/* Material 3 Expressive masonry layout skin */
+
+:host {
+  --masonry-gap: 1rem;
+}
+
+[part~="base"] {
+  overflow: visible;
+  padding: 0.25rem;
+  column-fill: balance;
+}

@@ -1,0 +1,17 @@
+/* Windows 11 Fluent 2 / WinUI 3 masonry layout skin */
+
+:host {
+  --masonry-gap: 0.75rem;
+}
+
+[part~="base"] {
+  overflow: visible;
+  padding: 0.25rem;
+  column-fill: balance;
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    forced-color-adjust: auto;
+  }
+}
