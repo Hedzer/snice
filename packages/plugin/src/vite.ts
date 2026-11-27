@@ -6,6 +6,9 @@ import { validateOptions, type SnicePluginOptions } from './types';
 
 export type {
   SnicePluginOptions,
+  SnicePlatform,
+  SniceSkinPlatform,
+  SnicePlatformOption,
   SniceCachingOptions,
   SniceBuildReport,
   SniceChunkReport,
@@ -18,6 +21,7 @@ export type {
   SniceTableOption,
   SniceThemeOptions,
 } from './types';
+export { SNICE_PLATFORMS, SNICE_PLATFORM_OPTIONS } from './types';
 export {
   createSniceManualChunks,
   createSniceAdvancedChunksGroups,
@@ -105,10 +109,17 @@ export function snice(options?: SnicePluginOptions): Record<string, any> {
       const userDefine = userConfig?.define;
       const hasUserDevDefine =
         userDefine && Object.prototype.hasOwnProperty.call(userDefine, '__SNICE_DEV__');
-      if (!hasUserDevDefine) {
-        patch.define = {
-          __SNICE_DEV__: JSON.stringify(env.isDev),
-        };
+      const hasUserPlatformDefine =
+        userDefine && Object.prototype.hasOwnProperty.call(userDefine, '__SNICE_PLATFORM__');
+      const definePatch: Record<string, string> = {};
+      if (!hasUserDevDefine && validated.dev !== 'preserve') {
+        definePatch.__SNICE_DEV__ = JSON.stringify(env.isDev);
+      }
+      if (!hasUserPlatformDefine && validated.platform !== 'preserve') {
+        definePatch.__SNICE_PLATFORM__ = JSON.stringify(validated.platform ?? 'multi');
+      }
+      if (Object.keys(definePatch).length > 0) {
+        patch.define = definePatch;
       }
 
       if (validated.target !== false && userConfig?.build?.target === undefined) {

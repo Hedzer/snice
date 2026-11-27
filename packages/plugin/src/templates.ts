@@ -1,9 +1,201 @@
 import MagicString from 'magic-string';
 import { parseModuleAst } from './parser';
+import type { SnicePlatform, SnicePlatformOption } from './types';
 
 type AstNode = Record<string, any>;
 
 const RAW_WHITESPACE_TAGS = new Set(['pre', 'code', 'textarea', 'script', 'style']);
+const PLATFORM_VOID_TAGS = new Set([
+  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+  'link', 'meta', 'param', 'source', 'track', 'wbr',
+]);
+
+function isConcretePlatform(p: SnicePlatformOption | undefined): p is SnicePlatform {
+  return p === 'default' || p === 'ios' || p === 'material' || p === 'windows' || p === 'macos';
+}
+
+/**
+ * Linear O(L) stripper for static HTML elements carrying `data-platform-only="<list>"`
+ * where `<list>` does NOT contain the target single `platform`.
+ *
+ * Guarantees:
+ * - Preserves exact quasi count and expression alignment (elements spanning a `${...}`
+ *   expression or unclosed/malformed tags are safely preserved untouched).
+ * - Handles self-closing tags, HTML void tags, and nested same-tag elements linearly.
+ */
+export function stripPlatformOnlyQuasis(
+  quasis: readonly string[],
+  platform: SnicePlatform
+): string[] {
+  let anyPlatformAttr = false;
+  for (let q = 0; q < quasis.length; q++) {
+    if (quasis[q].includes('data-platform-only')) {
+      anyPlatformAttr = true;
+      break;
+    }
+  }
+  if (!anyPlatformAttr) return [...quasis];
+
+  const out: string[] = [];
+  for (let q = 0; q < quasis.length; q++) {
+    const src = quasis[q];
+    if (!src.includes('data-platform-only')) {
+      out.push(src);
+      continue;
+    }
+
+    const len = src.length;
+    let buf = '';
+    let i = 0;
+
+    while (i < len) {
+      const lt = src.indexOf('<', i);
+      if (lt === -1) {
+        buf += src.slice(i);
+        break;
+      }
+      buf += src.slice(i, lt);
+      i = lt;
+
+      // Skip comments untouched
+      if (src.startsWith('<!--', i)) {
+        const endC = src.indexOf('-->', i + 4);
+        if (endC === -1) {
+          buf += src.slice(i);
+          break;
+        }
+        buf += src.slice(i, endC + 3);
+        i = endC + 3;
+        continue;
+      }
+
+      // Check for opening tag `<tagName ...>`
+      if (!/[A-Za-z]/.test(src[i + 1] || '')) {
+        buf += src[i++];
+        continue;
+      }
+
+      let nameEnd = i + 1;
+      while (nameEnd < len && /[A-Za-z0-9-]/.test(src[nameEnd])) nameEnd++;
+      const tagName = src.slice(i + 1, nameEnd).toLowerCase();
+
+      // Find end of opening tag `>` respecting quoted attribute values
+      let tagEnd = nameEnd;
+      let quote = '';
+      while (tagEnd < len) {
+        const ch = src[tagEnd];
+        if (quote) {
+          if (ch === quote) quote = '';
+        } else if (ch === '"' || ch === "'") {
+          quote = ch;
+        } else if (ch === '>') {
+          break;
+        }
+        tagEnd++;
+      }
+
+      if (tagEnd >= len) {
+        // Opening tag spans into `${expr}` or unclosed: preserve untouched
+        buf += src.slice(i);
+        break;
+      }
+
+      const openTag = src.slice(i, tagEnd + 1);
+      const attrMatch = /\bdata-platform-only\s*=\s*(?:"([^"]*)"|'([^']*)')/.exec(openTag);
+      if (!attrMatch) {
+        buf += openTag;
+        i = tagEnd + 1;
+        continue;
+      }
+
+      const rawList = attrMatch[1] ?? attrMatch[2] ?? '';
+      const allowed = rawList.split(',').map((s) => s.trim()).filter(Boolean);
+      if (allowed.includes(platform)) {
+        // Active platform matches: keep element intact
+        buf += openTag;
+        i = tagEnd + 1;
+        continue;
+      }
+
+      // Unselected platform: strip this element if wholly contained within this quasi
+      const selfClosing = openTag.endsWith('/>') || PLATFORM_VOID_TAGS.has(tagName);
+      if (selfClosing) {
+        i = tagEnd + 1;
+        continue;
+      }
+
+      // Linear scan to find matching closing `</tagName>` respecting nested same-tag elements
+      let scan = tagEnd + 1;
+      let depth = 1;
+      let closedAt = -1;
+      while (scan < len && depth > 0) {
+        const nextLt = src.indexOf('<', scan);
+        if (nextLt === -1) break;
+        if (src.startsWith('<!--', nextLt)) {
+          const endC = src.indexOf('-->', nextLt + 4);
+          if (endC === -1) break;
+          scan = endC + 3;
+          continue;
+        }
+        if (src[nextLt + 1] === '/') {
+          let cnEnd = nextLt + 2;
+          while (cnEnd < len && /[A-Za-z0-9-]/.test(src[cnEnd])) cnEnd++;
+          const closeName = src.slice(nextLt + 2, cnEnd).toLowerCase();
+          const gt = src.indexOf('>', cnEnd);
+          if (gt === -1) break;
+          if (closeName === tagName) {
+            depth--;
+            if (depth === 0) {
+              closedAt = gt + 1;
+              break;
+            }
+          }
+          scan = gt + 1;
+          continue;
+        }
+        if (/[A-Za-z]/.test(src[nextLt + 1] || '')) {
+          let onEnd = nextLt + 1;
+          while (onEnd < len && /[A-Za-z0-9-]/.test(src[onEnd])) onEnd++;
+          const openName = src.slice(nextLt + 1, onEnd).toLowerCase();
+          let innerEnd = onEnd;
+          let iq = '';
+          while (innerEnd < len) {
+            const c = src[innerEnd];
+            if (iq) {
+              if (c === iq) iq = '';
+            } else if (c === '"' || c === "'") {
+              iq = c;
+            } else if (c === '>') {
+              break;
+            }
+            innerEnd++;
+          }
+          if (innerEnd >= len) break;
+          const isInnerSelfClosing = src[innerEnd - 1] === '/' || PLATFORM_VOID_TAGS.has(openName);
+          if (openName === tagName && !isInnerSelfClosing) {
+            depth++;
+          }
+          scan = innerEnd + 1;
+          continue;
+        }
+        scan = nextLt + 1;
+      }
+
+      if (closedAt !== -1) {
+        // Successfully matched wholly-static element inside this quasi -> strip!
+        i = closedAt;
+      } else {
+        // Spans into next quasi (contains `${...}`) or malformed -> preserve safely!
+        buf += openTag;
+        i = tagEnd + 1;
+      }
+    }
+
+    out.push(buf);
+  }
+
+  return out;
+}
 
 const BLOCK_STRUCTURAL_TAGS = new Set([
   'div', 'section', 'header', 'footer', 'main', 'nav', 'aside', 'article',
@@ -823,6 +1015,7 @@ export interface TemplateTransformOptions {
   id: string;
   minifyTemplates: boolean;
   precompileTemplates: boolean;
+  platform?: SnicePlatformOption;
 }
 
 export interface TemplateTransformResult {
@@ -865,7 +1058,8 @@ export function transformTemplates(
   code: string,
   opts: TemplateTransformOptions
 ): TemplateTransformResult | null {
-  if (!opts.minifyTemplates && !opts.precompileTemplates) return null;
+  const concretePlatform = isConcretePlatform(opts.platform) ? opts.platform : null;
+  if (!opts.minifyTemplates && !opts.precompileTemplates && !concretePlatform) return null;
   // Fast O(1) pre-filter
   if (!code.includes('`') || !code.includes('snice')) return null;
 
@@ -930,12 +1124,22 @@ export function transformTemplates(
     if (hasInvalidCooked) continue;
 
     let finalQuasis = cookedQuasis;
-    let minified = false;
+    let quasisUpdated = false;
+    if (concretePlatform) {
+      const stripped = stripPlatformOnlyQuasis(finalQuasis, concretePlatform);
+      for (let idx = 0; idx < stripped.length; idx++) {
+        if (stripped[idx] !== finalQuasis[idx]) {
+          quasisUpdated = true;
+          break;
+        }
+      }
+      finalQuasis = stripped;
+    }
     if (opts.minifyTemplates) {
-      const minRes = minifyHtmlQuasis(cookedQuasis);
+      const minRes = minifyHtmlQuasis(finalQuasis);
       if (minRes !== null) {
         finalQuasis = minRes;
-        minified = true;
+        quasisUpdated = true;
       }
     }
 
@@ -990,8 +1194,8 @@ export function transformTemplates(
       }
     }
 
-    // Standard minification (update individual quasi ranges — 100% disjoint from nested expressions!)
-    if (minified) {
+    // Standard minification / platform-node stripping (update individual quasi ranges — 100% disjoint from nested expressions!)
+    if (quasisUpdated) {
       for (let q = 0; q < quasiNodes.length; q++) {
         const qn = quasiNodes[q];
         const escaped = escapeTemplateQuasi(finalQuasis[q]);

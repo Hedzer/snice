@@ -1,7 +1,8 @@
 import MagicString from 'magic-string';
 import { parseModuleAst, type AstNode } from './parser';
 
-const TARGET = '__SNICE_DEV__';
+const DEV_TARGET = '__SNICE_DEV__';
+const PLATFORM_TARGET = '__SNICE_PLATFORM__';
 
 export interface DevDefineResult {
   code: string;
@@ -13,16 +14,17 @@ function isNode(v: unknown): v is AstNode {
 }
 
 /**
- * AST-accurate, sourcemap-preserving replacement of bare `__SNICE_DEV__`
- * identifiers for pure Rollup builds (immune to regex literals, division,
- * nested template literals, comments, strings, property keys, and member access).
+ * AST-accurate, sourcemap-preserving replacement of a bare global identifier
+ * (immune to regex literals, division, nested template literals, comments,
+ * strings, property keys, and member access).
  */
-export function replaceSniceDevIdentifier(
+export function replaceSniceGlobalIdentifier(
   code: string,
-  isDev: boolean,
+  target: string,
+  replacement: string,
   id?: string
 ): DevDefineResult | null {
-  if (!code.includes(TARGET)) return null;
+  if (!code.includes(target)) return null;
 
   let ast: AstNode;
   try {
@@ -31,14 +33,13 @@ export function replaceSniceDevIdentifier(
     return null;
   }
 
-  const replacement = isDev ? 'true' : 'false';
   const s = new MagicString(code);
   let changed = false;
 
   const walk = (node: AstNode | null | undefined, parent: AstNode | null, key: string | null) => {
     if (!isNode(node)) return;
 
-    if (node.type === 'Identifier' && node.name === TARGET) {
+    if (node.type === 'Identifier' && node.name === target) {
       const isNonValueRef =
         (parent?.type === 'MemberExpression' && key === 'property' && !parent.computed) ||
         (parent?.type === 'OptionalMemberExpression' && key === 'property' && !parent.computed) ||
@@ -55,8 +56,7 @@ export function replaceSniceDevIdentifier(
 
       if (!isNonValueRef) {
         if (parent?.type === 'ObjectProperty' && parent.shorthand && key === 'value') {
-          // `{ __SNICE_DEV__ }` -> `{ __SNICE_DEV__: false }`
-          s.overwrite(node.start, node.end, `${TARGET}: ${replacement}`);
+          s.overwrite(node.start, node.end, `${target}: ${replacement}`);
         } else if (parent?.type === 'ObjectProperty' && parent.shorthand && key === 'key') {
           return;
         } else {
@@ -93,4 +93,28 @@ export function replaceSniceDevIdentifier(
       hires: 'boundary',
     }),
   };
+}
+
+/**
+ * AST-accurate, sourcemap-preserving replacement of bare `__SNICE_DEV__`
+ * identifiers for pure Rollup builds.
+ */
+export function replaceSniceDevIdentifier(
+  code: string,
+  isDev: boolean,
+  id?: string
+): DevDefineResult | null {
+  return replaceSniceGlobalIdentifier(code, DEV_TARGET, isDev ? 'true' : 'false', id);
+}
+
+/**
+ * AST-accurate, sourcemap-preserving replacement of bare `__SNICE_PLATFORM__`
+ * identifiers so unselected platform behavior modules dead-code-eliminate to 0 bytes.
+ */
+export function replaceSnicePlatformIdentifier(
+  code: string,
+  platform: string,
+  id?: string
+): DevDefineResult | null {
+  return replaceSniceGlobalIdentifier(code, PLATFORM_TARGET, JSON.stringify(platform), id);
 }

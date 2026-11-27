@@ -1,10 +1,11 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { basename, dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from '@babel/parser';
 import MagicString from 'magic-string';
 import { parseModuleAst } from './parser';
+import type { SniceSkinPlatform } from './types';
 
 type AstNode = Record<string, any>;
 
@@ -20,8 +21,10 @@ export const SNICE_THEME_SLICES = new Set([
   'print.css',
 ]);
 const SNICE_THEME_SLICE_ID_RE =
-  /(?:^|[\\/])(?:snice[\\/](?:dist[\\/])?components|packages[\\/]components[\\/]src)[\\/]theme[\\/](theme|core|dark|accents|effects|density|motion|print)\.css(?:\?.*)?$/;
-const GENERIC_THEME_CSS_ID_RE = /(?:^|[\\/])theme[\\/]theme\.css(?:\?.*)?$/;
+  /(?:^|[\\/])(?:snice[\\/](?:dist[\\/])?components|packages[\\/]components[\\/]src)[\\/]theme[\\/](?:(theme|core|dark|accents|effects|density|motion|print)\.css|platforms[\\/]([a-z0-9_-]+)\.css)(?:\?.*)?$/;
+const GENERIC_THEME_CSS_ID_RE = /(?:^|[\\/])theme[\\/](?:theme\.css|platforms[\\/][a-z0-9_-]+\.css)(?:\?.*)?$/;
+const PLATFORM_THEME_ID_RE = /(?:^|[\\/])theme[\\/]platforms[\\/](ios|material|windows|macos)\.css(?:\?.*)?$/;
+const BASE_THEME_SLICE_RE = /(?:^|[\\/])theme[\\/](theme|core|dark)\.css(?:\?.*)?$/;
 const CALC_FN_NAMES = new Set(['calc', 'min', 'max', 'clamp']);
 const SNICE_TOKEN_RE = /--snice-[a-zA-Z0-9_-]+/g;
 const DYNAMIC_TOKEN_PREFIX_RE = /(--snice-[a-zA-Z0-9_-]+-)(?:\$\{|['"`]\s*\+)/g;
@@ -58,6 +61,93 @@ export function isThemeCssId(id: string): boolean {
 
 export function isFullThemeCssId(id: string): boolean {
   return /(?:^|[\\/])theme[\\/]theme\.css(?:\?.*)?$/.test(id);
+}
+
+export function getPlatformThemeCssName(id: string): SniceSkinPlatform | null {
+  const m = PLATFORM_THEME_ID_RE.exec(id);
+  return m ? (m[1] as SniceSkinPlatform) : null;
+}
+
+export function getBaseThemeSliceKind(id: string): 'theme' | 'core' | 'dark' | null {
+  const m = BASE_THEME_SLICE_RE.exec(id);
+  return m ? (m[1] as 'theme' | 'core' | 'dark') : null;
+}
+
+/**
+ * Load a platform's Layer 1 token CSS (`theme/platforms/<platform>.css`),
+ * preferring the sibling `platforms/` directory next to the imported theme file.
+ */
+export function loadPlatformThemeCss(
+  platform: SniceSkinPlatform,
+  fromThemeId?: string
+): string | null {
+  const candidates: string[] = [];
+  if (fromThemeId) {
+    const clean = fromThemeId.split('?')[0];
+    candidates.push(join(dirname(clean), 'platforms', `${platform}.css`));
+  }
+  const here = dirname(fileURLToPath(import.meta.url));
+  candidates.push(
+    resolve(here, `../components/theme/platforms/${platform}.css`),
+    resolve(here, `../../components/theme/platforms/${platform}.css`),
+    resolve(here, `../../components/src/theme/platforms/${platform}.css`),
+    resolve(here, `../../../dist/components/theme/platforms/${platform}.css`),
+    resolve(process.cwd(), `dist/components/theme/platforms/${platform}.css`),
+    resolve(process.cwd(), `packages/components/src/theme/platforms/${platform}.css`)
+  );
+  for (const p of candidates) {
+    if (existsSync(p)) {
+      return readFileSync(p, 'utf8');
+    }
+  }
+  return null;
+}
+
+/**
+ * Find colocated Layer 2 component platform CSS (`<baseName>.<platform>.css` or `<platform>.css`)
+ * next to a Snice component module (works identically for source `packages/components/src/` and
+ * pre-built `dist/components/`).
+ */
+export function findComponentPlatformCss(
+  moduleId: string,
+  platform: SniceSkinPlatform
+): string | null {
+  const clean = moduleId.split('?')[0];
+  const dir = dirname(clean);
+  const dirName = basename(dir);
+  const baseName = basename(clean, extname(clean));
+
+  // 1. Sub-element override first (e.g. snice-tab.ios.css, snice-menu-item.material.css)
+  const specificPath = join(dir, `${baseName}.${platform}.css`);
+  if (existsSync(specificPath)) {
+    return readFileSync(specificPath, 'utf8');
+  }
+
+  // 2. Primary component override (`<comp>/<platform>.css`) for `snice-<comp>` or `snice-<comp>-core`
+  if (baseName === `snice-${dirName}` || baseName === `snice-${dirName}-core`) {
+    const sharedPath = join(dir, `${platform}.css`);
+    if (existsSync(sharedPath)) {
+      return readFileSync(sharedPath, 'utf8');
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Wrap base component shadow CSS in `@layer snice-base{...}` and append the
+ * component's platform CSS outside the layer so `[part~="..."]` rules
+ * deterministically override base shadow rules with zero `!important`.
+ */
+export function wrapBaseAndPlatformCss(
+  baseCss: string,
+  platformCss: string,
+  minify: boolean
+): string {
+  const basePart = minify ? minifyCssText(baseCss) : baseCss;
+  const platPart = minify ? minifyCssText(platformCss) : platformCss;
+  if (!platPart.trim()) return basePart;
+  return `@layer snice-base{${basePart}}${platPart}`;
 }
 
 function isSniceImportSource(source: string): boolean {
@@ -1136,6 +1226,7 @@ export function pruneThemeCss(
 export interface TransformCssModuleOptions {
   id: string;
   minifyCss: boolean;
+  platform?: SniceSkinPlatform;
 }
 
 export interface TransformCssModuleResult {
@@ -1148,12 +1239,17 @@ export interface TransformCssModuleResult {
  * - Minifies inline Snice `css\`...\`` tagged templates (import-binding verified)
  * - Folds static `.css?inline` imports used in `css\`${cssContent}\`` into static zero-interpolation `css\`...\``
  * - Folds pre-built `dist/components/` static `var cssContent = "..."` + `css\`${cssContent}\`` into static `css\`...\``
+ * - When `platform` is set and a colocated `<comp>/<platform>.css` exists, wraps base CSS in
+ *   `@layer snice-base{...}` and appends the platform CSS outside the base layer.
  */
 export function transformCssModule(
   code: string,
   options: TransformCssModuleOptions
 ): TransformCssModuleResult | null {
-  if (!code.includes('css')) return null;
+  const platformCss = options.platform
+    ? findComponentPlatformCss(options.id, options.platform)
+    : null;
+  if (!code.includes('css') && !platformCss) return null;
 
   let ast: AstNode;
   try {
@@ -1223,7 +1319,36 @@ export function transformCssModule(
     }
   }
 
-  if (sniceCssBindings.size === 0) return null;
+  if (sniceCssBindings.size === 0) {
+    // Handle imperative-style components (like snice-nav) that assign `.css?inline`
+    // or a pre-built `var cssContent = "..."` directly to `style.textContent` without `css\`...\``.
+    if (!platformCss) return null;
+    const s = new MagicString(code);
+    let directChanged = false;
+    for (const [name, inlineInfo] of inlineCssImports) {
+      const merged = wrapBaseAndPlatformCss(inlineInfo.cssText, platformCss, options.minifyCss);
+      s.overwrite(inlineInfo.stmt.start, inlineInfo.stmt.end, `const ${name} = ${JSON.stringify(merged)};`);
+      directChanged = true;
+      break;
+    }
+    if (!directChanged) {
+      const cssDecl = staticStringDecls.get('cssContent');
+      if (cssDecl) {
+        const merged = wrapBaseAndPlatformCss(cssDecl.value, platformCss, options.minifyCss);
+        s.overwrite(cssDecl.decl.init.start, cssDecl.decl.init.end, JSON.stringify(merged));
+        directChanged = true;
+      }
+    }
+    if (!directChanged) return null;
+    return {
+      code: s.toString(),
+      map: s.generateMap({
+        source: options.id,
+        includeContent: true,
+        hires: 'boundary',
+      }),
+    };
+  }
 
   // 2. Walk AST to count references to candidate CSS bindings, detect mutations,
   //    and collect Snice `css` TaggedTemplateExpressions.
@@ -1303,7 +1428,11 @@ export function transformCssModule(
         const strInfo = staticStringDecls.get(bindingName);
         const rawCss = inlineInfo ? inlineInfo.cssText : strInfo ? strInfo.value : null;
         if (rawCss !== null) {
-          const finalCss = options.minifyCss ? minifyCssText(rawCss) : rawCss;
+          const finalCss = platformCss
+            ? wrapBaseAndPlatformCss(rawCss, platformCss, options.minifyCss)
+            : options.minifyCss
+              ? minifyCssText(rawCss)
+              : rawCss;
           s.overwrite(quasiNode.start, quasiNode.end, `\`${escapeTemplateQuasi(finalCss)}\``);
           foldedUses.set(bindingName, (foldedUses.get(bindingName) ?? 0) + 1);
           changed = true;
@@ -1312,19 +1441,23 @@ export function transformCssModule(
       }
     }
 
-    // Pattern 2: Inline `css\`...\`` minification
-    if (!options.minifyCss) continue;
+    // Pattern 2: Inline `css\`...\`` minification & optional platform folding
+    if (!options.minifyCss && !platformCss) continue;
 
     if (expressions.length === 0 && quasis.length === 1) {
       const cooked = quasis[0].value.cooked;
       if (typeof cooked !== 'string') continue;
-      const minified = minifyCssText(cooked);
-      if (minified !== cooked) {
-        s.overwrite(quasiNode.start, quasiNode.end, `\`${escapeTemplateQuasi(minified)}\``);
+      const nextCss = platformCss
+        ? wrapBaseAndPlatformCss(cooked, platformCss, options.minifyCss)
+        : minifyCssText(cooked);
+      if (nextCss !== cooked) {
+        s.overwrite(quasiNode.start, quasiNode.end, `\`${escapeTemplateQuasi(nextCss)}\``);
         changed = true;
       }
       continue;
     }
+
+    if (!options.minifyCss) continue;
 
     // Interpolated `css\`...\``: join with unique placeholders, minify, split back
     const cookedParts: string[] = [];

@@ -461,12 +461,12 @@ export default [
           }
 
           const wip = getWipComponents();
-          const platformCssFiles = new Set(['ios.css', 'material.css', 'windows.css', 'macos.css']);
+          const platformCssRe = /^(?:.+\.)?(?:ios|material|windows|macos)\.css$/;
           for (const entry of fs.readdirSync(componentSource, { withFileTypes: true })) {
             if (!entry.isDirectory() || entry.name === 'theme' || wip.has(entry.name)) continue;
             const compSrcDir = path.join(componentSource, entry.name);
             for (const file of fs.readdirSync(compSrcDir)) {
-              if (!platformCssFiles.has(file)) continue;
+              if (!platformCssRe.test(file)) continue;
               const compDestDir = path.join('dist/components', entry.name);
               if (!fs.existsSync(compDestDir)) {
                 fs.mkdirSync(compDestDir, { recursive: true });
@@ -564,6 +564,7 @@ export default [
         stripCssFallbacks: false,
         caching: false,
         dev: 'preserve',
+        platform: 'preserve',
       })
     ]
   }

@@ -4,6 +4,9 @@ import { validateOptions, type SnicePluginOptions } from './types';
 
 export type {
   SnicePluginOptions,
+  SnicePlatform,
+  SniceSkinPlatform,
+  SnicePlatformOption,
   SniceCachingOptions,
   SniceBuildReport,
   SniceChunkReport,
@@ -16,6 +19,7 @@ export type {
   SniceTableOption,
   SniceThemeOptions,
 } from './types';
+export { SNICE_PLATFORMS, SNICE_PLATFORM_OPTIONS } from './types';
 export {
   createSniceManualChunks,
   createSniceAdvancedChunksGroups,

@@ -110,6 +110,24 @@ export interface SniceThemeOptions {
   safelist?: (string | RegExp)[];
 }
 
+export type SnicePlatform = 'default' | 'ios' | 'material' | 'windows' | 'macos';
+export type SniceSkinPlatform = Exclude<SnicePlatform, 'default'>;
+export type SnicePlatformOption = SnicePlatform | 'multi' | 'preserve';
+
+export const SNICE_PLATFORMS: readonly SnicePlatform[] = [
+  'default',
+  'ios',
+  'material',
+  'windows',
+  'macos',
+];
+
+export const SNICE_PLATFORM_OPTIONS: readonly SnicePlatformOption[] = [
+  ...SNICE_PLATFORMS,
+  'multi',
+  'preserve',
+];
+
 export interface SnicePluginOptions {
   /** Build-time Snice decorator lowering + TC39 2022-03 fallback (BS-06, default true). */
   decorators?: boolean;
@@ -139,6 +157,15 @@ export interface SnicePluginOptions {
   hmr?: boolean;
   /** Optional snice-table cell/feature stripping: explicit allowlist, 'auto' conservative static detection, or false to disable. */
   table?: SniceTableOption;
+  /**
+   * Target platform skin compilation mode:
+   * - `'ios' | 'material' | 'windows' | 'macos'`: single-platform zero-cost build (folds ONLY that platform's CSS, auto-layers token CSS into snice-theme, strips unused data-platform-only markup & DCEs other platform behaviors to 0 bytes).
+   * - `'default'`: explicit default-only build (strips all platform-only helper markup & behaviors).
+   * - `'multi'`: preserves all data-platform-only helper nodes and runtime platform hooks for live `[data-platform="..."]` switching.
+   * - `'preserve'`: leaves `__SNICE_PLATFORM__` untouched for library distribution builds.
+   * - `undefined` (default): backwards-compatible passthrough (`__SNICE_PLATFORM__` resolves to `'multi'` so runtime switching works out of the box).
+   */
+  platform?: SnicePlatformOption;
 }
 
 function assertBooleanOrUndefined(value: unknown, name: string): void {
@@ -162,6 +189,16 @@ export function validateOptions(options: unknown): SnicePluginOptions {
   assertBooleanOrUndefined(opts.hmr, 'hmr');
   if (opts.dev !== undefined && typeof opts.dev !== 'boolean' && opts.dev !== 'preserve') {
     throw new TypeError(`snice plugin: "dev" must be a boolean or "preserve", received ${typeof opts.dev}.`);
+  }
+
+  if (
+    opts.platform !== undefined &&
+    (typeof opts.platform !== 'string' ||
+      !(SNICE_PLATFORM_OPTIONS as readonly string[]).includes(opts.platform))
+  ) {
+    throw new TypeError(
+      `snice plugin: "platform" must be one of ${SNICE_PLATFORM_OPTIONS.map((p) => `"${p}"`).join(', ')}, received ${JSON.stringify(opts.platform)}.`
+    );
   }
 
   if (

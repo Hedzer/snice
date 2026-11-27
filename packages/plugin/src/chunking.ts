@@ -108,10 +108,10 @@ export function classifyModuleTier(
   const query = queryIdx >= 0 ? normalized.slice(queryIdx) : '';
   const isInlineQuery = query.includes('inline');
 
-  // Tier 3: snice-theme (standalone theme/*.css stylesheets)
+  // Tier 3: snice-theme (standalone theme/*.css and theme/platforms/*.css stylesheets)
   if (
     !isInlineQuery &&
-    /(?:^|\/)(?:snice\/dist\/components|packages\/components\/src)\/theme\/[^/]+\.css$/.test(cleanPath)
+    /(?:^|\/)(?:snice\/dist\/components|packages\/components\/src)\/theme\/(?:platforms\/)?[^/]+\.css$/.test(cleanPath)
   ) {
     return 'snice-theme';
   }

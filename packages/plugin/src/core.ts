@@ -8,7 +8,10 @@ import {
 import {
   collectReferencedSniceTokens,
   extractTopLevelRootAllowlist,
+  getBaseThemeSliceKind,
+  getPlatformThemeCssName,
   isThemeCssId,
+  loadPlatformThemeCss,
   loadShippedThemeCss,
   pruneThemeCss,
   pruneThemeFeatureBlocks,
@@ -18,7 +21,7 @@ import {
   transformCssModule,
 } from './css';
 import { transformDecorators } from './decorators';
-import { replaceSniceDevIdentifier } from './dev-define';
+import { replaceSniceDevIdentifier, replaceSnicePlatformIdentifier } from './dev-define';
 import { buildBundleReport, formatBuildReport } from './report';
 import { composeSourceMaps } from './sourcemap';
 import {
@@ -31,7 +34,13 @@ import {
 } from './table-strip';
 import { TC39_RUNTIME_CODE, TC39_SPECIFIER, TC39_VIRTUAL_ID } from './tc39-fallback-runtime';
 import { transformTemplates } from './templates';
-import { validateOptions, type SniceCachingOptions, type SnicePluginOptions } from './types';
+import {
+  validateOptions,
+  type SniceCachingOptions,
+  type SnicePlatform,
+  type SnicePluginOptions,
+  type SniceSkinPlatform,
+} from './types';
 
 export interface SniceRuntimeEnv {
   /** Whether Vite is driving this plugin (so Vite's `define` handles __SNICE_DEV__). */
@@ -59,6 +68,50 @@ function findNearestProjectRoot(importer?: string): string {
 }
 
 const SINGLE_FILE_FORMATS = new Set(['iife', 'umd']);
+const PLATFORM_BEHAVIOR_MODULE_RE =
+  /(?:^|[\\/])(?:snice[\\/](?:dist[\\/])?components|packages[\\/]components[\\/]src)[\\/]platform-behaviors[\\/][^/\\]+\.(?:[cm]?[jt]s)$/;
+
+function asSkinPlatform(p: SnicePluginOptions['platform']): SniceSkinPlatform | null {
+  if (p === 'ios' || p === 'material' || p === 'windows' || p === 'macos') return p;
+  return null;
+}
+
+function asConcretePlatform(p: SnicePluginOptions['platform']): SnicePlatform | null {
+  if (p === 'default' || p === 'ios' || p === 'material' || p === 'windows' || p === 'macos') {
+    return p;
+  }
+  return null;
+}
+
+/**
+ * Clean up auto-injected platform CSS markers in an emitted CSS asset:
+ * - If the user explicitly imported `theme/platforms/<p>.css`, drop all auto-injected blocks.
+ * - Else if both `core` and `dark` auto-injected blocks exist, drop the earlier `core` copy
+ *   and keep the later `dark` copy (so platform dark overrides stay after `dark.css`).
+ * - Always strip the `/*!snice-pf-...*\/` sentinel comments themselves.
+ */
+function reconcileAutoInjectedPlatformCss(
+  cssText: string,
+  explicitImported: boolean
+): string {
+  if (!cssText.includes('snice-pf-start:')) return cssText;
+
+  const blockRe = /\/\*!snice-pf-start:(theme|core|dark)\*\/[\s\S]*?\/\*!snice-pf-end:\1\*\//g;
+  if (explicitImported) {
+    return cssText.replace(blockRe, '');
+  }
+
+  const hasDarkBlock = cssText.includes('/*!snice-pf-start:dark*/');
+  const hasThemeBlock = cssText.includes('/*!snice-pf-start:theme*/');
+  return cssText.replace(blockRe, (match, kind: string) => {
+    if (kind === 'core' && (hasDarkBlock || hasThemeBlock)) {
+      return '';
+    }
+    return match
+      .replace(`/*!snice-pf-start:${kind}*/`, '')
+      .replace(`/*!snice-pf-end:${kind}*/`, '');
+  });
+}
 
 export function createSniceCorePlugin(
   rawOptions?: SnicePluginOptions,
@@ -79,9 +132,13 @@ export function createSniceCorePlugin(
     ? createSniceManualChunksController(cachingOptions)
     : null;
 
+  const activeSkinPlatform = asSkinPlatform(options.platform);
+  const concretePlatform = asConcretePlatform(options.platform);
+
   // Per-instance build-scoped CSS/theme and table-stripping state (reset in buildStart)
   let sniceThemeDetected = false;
   let fullThemeAtImportDetected = false;
+  let explicitPlatformThemeImported = false;
   let themeAllowlist: Set<string> | null = null;
   let shippedAllowlistCache: Set<string> | null = null;
   let tableStripConfig: ResolvedTableStripConfig | null = null;
@@ -164,7 +221,7 @@ export function createSniceCorePlugin(
 
   function isThemeCssAsset(fileName: string, cssContent: string): boolean {
     if (/(?:^|\/)snice-theme(?:-[^/]+)?\.css$/.test(fileName)) return true;
-    if (/(?:^|\/)(?:theme|core|dark|accents|effects|density|motion|print)\.css$/.test(fileName) && sniceThemeDetected) {
+    if (/(?:^|\/)(?:theme|core|dark|accents|effects|density|motion|print|ios|material|windows|macos|default)(?:-scoped)?\.css$/.test(fileName) && sniceThemeDetected) {
       return true;
     }
     if (
@@ -187,6 +244,7 @@ export function createSniceCorePlugin(
       chunkController?.reset();
       sniceThemeDetected = false;
       fullThemeAtImportDetected = false;
+      explicitPlatformThemeImported = false;
       themeAllowlist = null;
       lastTableImporter = undefined;
       tableAutoEvaluated = false;
@@ -215,6 +273,9 @@ export function createSniceCorePlugin(
       }
       if (isThemeCssId(id)) {
         sniceThemeDetected = true;
+        if (activeSkinPlatform && getPlatformThemeCssName(id) === activeSkinPlatform) {
+          explicitPlatformThemeImported = true;
+        }
       }
       return null;
     },
@@ -228,6 +289,9 @@ export function createSniceCorePlugin(
       }
       if (isThemeCssId(id)) {
         recordThemeCss(id);
+        if (activeSkinPlatform && getPlatformThemeCssName(id) === activeSkinPlatform) {
+          explicitPlatformThemeImported = true;
+        }
       } else if (id.split('?')[0].endsWith('.css')) {
         recordCustomThemeCss(id);
       }
@@ -245,6 +309,22 @@ export function createSniceCorePlugin(
           code.includes('@media') ||
           code.includes('[data-');
         recordThemeCss(id, looksRawCss ? code : undefined);
+
+        if (activeSkinPlatform) {
+          if (getPlatformThemeCssName(id) === activeSkinPlatform) {
+            explicitPlatformThemeImported = true;
+          } else if (looksRawCss && !id.includes('?inline')) {
+            const sliceKind = getBaseThemeSliceKind(id);
+            if (sliceKind) {
+              const platformCss = loadPlatformThemeCss(activeSkinPlatform, cleanId);
+              if (platformCss) {
+                addToThemeAllowlist(platformCss);
+                const tagged = `\n/*!snice-pf-start:${sliceKind}*/\n${platformCss}\n/*!snice-pf-end:${sliceKind}*/\n`;
+                return { code: code + tagged, map: null };
+              }
+            }
+          }
+        }
         return null;
       }
       if (cleanId.endsWith('.css')) {
@@ -280,15 +360,17 @@ export function createSniceCorePlugin(
         }
       }
 
-      // Pass B: Build-time html`` / svg`` template minification & opt-in pre-compilation.
+      // Pass B: Build-time html`` / svg`` template minification, unused data-platform-only
+      // element stripping, & opt-in pre-compilation.
       const shouldMinifyTemplates =
         options.minifyTemplates !== undefined ? options.minifyTemplates : !runtimeEnv.isDev;
       const shouldPrecompileTemplates = options.precompileTemplates === true;
-      if (shouldMinifyTemplates || shouldPrecompileTemplates) {
+      if (shouldMinifyTemplates || shouldPrecompileTemplates || concretePlatform) {
         const tmplResult = transformTemplates(currentCode, {
           id: cleanId,
           minifyTemplates: shouldMinifyTemplates,
           precompileTemplates: shouldPrecompileTemplates,
+          platform: options.platform,
         });
         if (tmplResult) {
           currentCode = tmplResult.code;
@@ -297,12 +379,14 @@ export function createSniceCorePlugin(
         }
       }
 
-      // Pass C1: Inline css`` minification & static .css?inline folding.
+      // Pass C1: Inline css`` minification, static .css?inline folding, & colocated
+      // component platform CSS folding above `@layer snice-base`.
       const shouldMinifyCss =
         options.minifyCss !== undefined ? options.minifyCss : !runtimeEnv.isDev;
       const cssResult = transformCssModule(currentCode, {
         id: cleanId,
         minifyCss: shouldMinifyCss,
+        platform: activeSkinPlatform ?? undefined,
       });
       if (cssResult) {
         currentCode = cssResult.code;
@@ -310,8 +394,8 @@ export function createSniceCorePlugin(
         changed = true;
       }
 
-      // Pass D: In pure Rollup, fold bare `__SNICE_DEV__` identifiers unless `dev: 'preserve'`
-      // (library builds keep `__SNICE_DEV__` intact for downstream app bundlers).
+      // Pass D: In pure Rollup, fold bare `__SNICE_DEV__` and `__SNICE_PLATFORM__`
+      // identifiers unless `'preserve'` is set (library builds keep them intact).
       if (!runtimeEnv.isVite && options.dev !== 'preserve') {
         const devRes = replaceSniceDevIdentifier(currentCode, runtimeEnv.isDev, cleanId);
         if (devRes !== null) {
@@ -320,9 +404,31 @@ export function createSniceCorePlugin(
           changed = true;
         }
       }
+      if (!runtimeEnv.isVite && options.platform !== 'preserve') {
+        const platRes = replaceSnicePlatformIdentifier(
+          currentCode,
+          options.platform ?? 'multi',
+          cleanId
+        );
+        if (platRes !== null) {
+          currentCode = platRes.code;
+          currentMap = composeSourceMaps(currentMap, platRes.map);
+          changed = true;
+        }
+      }
 
-      if (!changed) return null;
-      return { code: currentCode, map: currentMap ?? { mappings: '' } };
+      const isPlatformBehaviorMod = PLATFORM_BEHAVIOR_MODULE_RE.test(cleanId);
+      if (!changed) {
+        if (isPlatformBehaviorMod) {
+          return { code: currentCode, map: null, moduleSideEffects: false };
+        }
+        return null;
+      }
+      return {
+        code: currentCode,
+        map: currentMap ?? { mappings: '' },
+        ...(isPlatformBehaviorMod ? { moduleSideEffects: false } : {}),
+      };
     },
 
     renderChunk(code: string, chunk?: { fileName?: string }) {
@@ -402,19 +508,29 @@ export function createSniceCorePlugin(
 
         for (const [fileName, item] of Object.entries(bundle)) {
           if (item.type !== 'asset' || !fileName.endsWith('.css')) continue;
-          const cssText = typeof item.source === 'string'
+          let cssText = typeof item.source === 'string'
             ? item.source
             : Buffer.from(item.source).toString('utf8');
 
-          if (isThemeCssAsset(fileName, cssText)) {
-            themeAssetNames.push(fileName);
+          let currentFileName = fileName;
+          const reconciled = reconcileAutoInjectedPlatformCss(
+            cssText,
+            explicitPlatformThemeImported
+          );
+          if (reconciled !== cssText) {
+            currentFileName = rehashBundleAsset(bundle, currentFileName, reconciled);
+            cssText = reconciled;
+          }
+
+          if (isThemeCssAsset(currentFileName, cssText)) {
+            themeAssetNames.push(currentFileName);
             continue;
           }
 
           if (allowlist) {
             const stripped = stripVarFallbacks(cssText, allowlist);
             if (stripped !== cssText) {
-              rehashBundleAsset(bundle, fileName, stripped);
+              rehashBundleAsset(bundle, currentFileName, stripped);
             }
           }
         }
