@@ -1,0 +1,208 @@
+/* macOS 26+ Tahoe / AppKit — snice-pricing-table
+ * System Settings / iCloud+ desktop plan comparison.
+ * Compact 28px NSSegmentedControl billing toggle, 12px opaque hairline cards,
+ * 13px SF Pro desktop density, glossy 32px AppKit primary CTA with explicit white dark-mode ink.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+  --pt-bg: var(--snice-color-background-element);
+  --pt-bg-element: var(--snice-color-surface-container-low);
+  --pt-border: var(--snice-color-border);
+  --pt-text: var(--snice-color-text);
+  --pt-text-secondary: var(--snice-color-text-secondary);
+  --pt-text-tertiary: var(--snice-color-text-tertiary);
+  --pt-primary: var(--snice-color-primary);
+  --pt-success: var(--snice-color-success);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Compact 28px AppKit NSSegmentedControl */
+[part~="toggle"] {
+  border-radius: 8px;
+  padding: 0.125rem;
+  gap: 0.125rem;
+  background: var(--snice-color-surface-container);
+  border: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="toggle-button"] {
+  min-height: 1.5rem;
+  padding: 0.1875rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+  transition: background-color 140ms var(--snice-ease-out),
+              color 140ms var(--snice-ease-out),
+              box-shadow 140ms var(--snice-ease-out);
+}
+
+[part~="toggle-button-active"] {
+  background: var(--snice-macos-control-bg);
+  color: var(--snice-color-text);
+  font-weight: 600;
+  box-shadow: var(--snice-macos-control-shadow);
+}
+
+[part~="toggle-button"]:focus-visible,
+[part~="cta"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Compact 12px opaque AppKit plan cards */
+[part~="card"] {
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 12px;
+  padding: 1.125rem;
+  gap: 0.75rem;
+  box-shadow: var(--snice-shadow-sm);
+  transition: box-shadow 140ms var(--snice-ease-out);
+}
+
+[part~="card"]:hover {
+  transform: none;
+  box-shadow: var(--snice-shadow-md);
+}
+
+[part~="card-highlighted"] {
+  border: 1.5px solid var(--snice-color-primary);
+  box-shadow: var(--snice-shadow-md);
+  transform: none;
+}
+
+[part~="card-highlighted"]:hover {
+  transform: none;
+  box-shadow: var(--snice-shadow-lg);
+}
+
+/* Compact badge with explicit white ink */
+[part~="badge"] {
+  background: var(--snice-color-primary);
+  color: hsl(0 0% 100%);
+  border-radius: 9999px;
+  padding: 0.125rem 0.5625rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+/* Compact desktop typography */
+[part~="plan-name"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--snice-color-text);
+}
+
+[part~="plan-description"] {
+  font-size: 0.75rem;
+  color: var(--snice-color-text-secondary);
+}
+
+[part~="amount"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 2rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.025em;
+}
+
+:host([variant="table"]) [part~="amount"] {
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: normal;
+}
+
+[part~="feature"] {
+  font-size: 0.8125rem;
+}
+
+[part~="feature-icon-included"] {
+  color: var(--snice-color-success);
+}
+
+/* Compact 32px AppKit CTAs */
+[part~="cta"] {
+  min-height: 2rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 7px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: filter 140ms var(--snice-ease-out),
+              background-color 140ms var(--snice-ease-out);
+}
+
+[part~="cta"]:hover {
+  opacity: 1;
+}
+
+[part~="cta"]:active {
+  filter: brightness(0.93);
+}
+
+[part~="cta-primary"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--snice-color-primary) 88%, white),
+    var(--snice-color-primary)
+  );
+  border: 0.5px solid hsl(0 0% 100% / 0.16);
+  box-shadow: 0 0.5px 1.5px hsl(0 0% 0% / 0.22), inset 0 0.5px 0 hsl(0 0% 100% / 0.22);
+  color: hsl(0 0% 100%);
+}
+
+[part~="cta-primary"]:hover {
+  filter: brightness(1.06);
+}
+
+[part~="cta-secondary"] {
+  background: var(--snice-macos-control-bg);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-macos-control-shadow);
+  color: var(--snice-color-text);
+}
+
+[part~="cta-secondary"]:hover {
+  border-color: var(--snice-color-border-hover);
+}
+
+[part~="cta-outline"] {
+  background: transparent;
+  border: 0.5px solid var(--snice-color-primary);
+  color: var(--snice-color-primary);
+}
+
+[part~="cta-outline"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+}
+
+:host([variant="table"]) [part~="cta"] {
+  min-height: 1.75rem;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+}
+
+/* Compact 12px comparison table */
+[part~="table"] {
+  background: var(--snice-color-background-element);
+  border: 0.5px solid var(--snice-color-border);
+  border-radius: 12px;
+}
+
+[part~="header-cell"],
+[part~="table-cell"] {
+  font-size: 0.8125rem;
+  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+}
+
+[part~="header-cell"] {
+  background: var(--snice-color-surface-container-low);
+}
+
+[part~="header-cell-highlighted"],
+[part~="table-cell-highlighted"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+}

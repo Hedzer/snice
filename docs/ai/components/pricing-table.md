@@ -48,6 +48,7 @@ Attributes: `excluded` (boolean), `value` (string for custom display)
 - `feature-name` - Feature label wrapper inside a feature row
 - `feature-value` - Value text for a non-boolean feature
 - `cta` - Call-to-action button
+- `cta-primary` / `cta-secondary` / `cta-outline` - Variant modifier token added to `cta`
 - `table-wrapper` - Table layout wrapper
 - `table` - The comparison table element
 - `table-header` - Comparison table header section

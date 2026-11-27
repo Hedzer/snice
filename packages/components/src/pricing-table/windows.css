@@ -1,0 +1,245 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-pricing-table
+ * Microsoft 365 / Azure subscription comparison.
+ * 4px Fluent segmented toggle with 3px accent indicator pill, 8px layered cards,
+ * 4px badges & top-lit CTAs with --snice-win-on-accent dark-mode black ink, dual-stroke focus.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+  color: var(--snice-color-text);
+  --pt-bg: var(--snice-color-surface-container-lowest);
+  --pt-bg-element: var(--snice-color-surface-container-low);
+  --pt-border: var(--snice-color-border);
+  --pt-text: var(--snice-color-text);
+  --pt-text-secondary: var(--snice-color-text-secondary);
+  --pt-text-tertiary: var(--snice-color-text-tertiary);
+  --pt-primary: var(--snice-color-primary);
+  --pt-success: var(--snice-color-success);
+}
+
+/* Fluent 2 segmented pivot toggle with 3px bottom accent indicator */
+[part~="toggle"] {
+  border-radius: 4px;
+  padding: 0.1875rem;
+  gap: 0.125rem;
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border);
+}
+
+[part~="toggle-button"] {
+  position: relative;
+  min-height: 2rem;
+  padding: 0.3125rem 1rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--snice-color-text-secondary);
+  border: 1px solid transparent;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1),
+              color 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="toggle-button"]:hover {
+  background: var(--snice-win-control-bg-hover);
+  color: var(--snice-color-text);
+}
+
+[part~="toggle-button-active"] {
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  color: var(--snice-color-text);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+[part~="toggle-button-active"]::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 1rem;
+  height: 3px;
+  border-radius: 9999px;
+  background: var(--snice-color-primary);
+}
+
+[part~="toggle-button"]:focus-visible,
+[part~="cta"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* 8px layered WinUI 3 plan cards (zero hover lift or scale clip) */
+[part~="card"] {
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: var(--snice-shadow-xs);
+  transition: border-color 100ms cubic-bezier(0, 0, 0, 1),
+              box-shadow 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="card"]:hover {
+  transform: none;
+  border-color: var(--snice-color-border-hover);
+  box-shadow: var(--snice-shadow-sm);
+}
+
+[part~="card-highlighted"] {
+  border: 2px solid var(--snice-color-primary);
+  box-shadow: var(--snice-shadow-md);
+  transform: none;
+}
+
+[part~="card-highlighted"]:hover {
+  transform: none;
+  border-color: var(--snice-color-primary);
+  box-shadow: var(--snice-shadow-md);
+}
+
+/* Crisp 4px badge with --snice-win-on-accent dark-mode black ink */
+[part~="badge"] {
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent);
+  border-radius: 4px;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+[part~="plan-name"] {
+  font-family: var(--snice-font-family-display);
+  font-weight: 600;
+  color: var(--snice-color-text);
+}
+
+[part~="amount"] {
+  font-family: var(--snice-font-family-display);
+  font-size: 2.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+:host([variant="table"]) [part~="amount"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[part~="feature"] {
+  font-size: 0.875rem;
+}
+
+[part~="feature-icon-included"] {
+  color: var(--snice-color-success);
+}
+
+/* 4px Fluent 2 CTAs */
+[part~="cta"] {
+  min-height: 2.25rem;
+  padding: 0.4375rem 1rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background-color 100ms cubic-bezier(0, 0, 0, 1),
+              filter 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="cta"]:hover {
+  opacity: 1;
+}
+
+[part~="cta-primary"] {
+  background: var(--snice-color-primary);
+  border: 1px solid hsl(0 0% 100% / 0.08);
+  border-bottom-color: hsl(0 0% 0% / 0.3);
+  color: var(--snice-win-on-accent);
+}
+
+[part~="cta-primary"]:hover {
+  filter: brightness(0.95);
+}
+
+[part~="cta-primary"]:active {
+  filter: brightness(0.88);
+}
+
+[part~="cta-secondary"] {
+  background: var(--snice-win-control-bg);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  color: var(--snice-color-text);
+}
+
+[part~="cta-secondary"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+[part~="cta-secondary"]:active {
+  background: var(--snice-win-control-bg-pressed);
+  border-bottom-color: var(--snice-win-stroke-top);
+}
+
+[part~="cta-outline"] {
+  background: transparent;
+  border: 1px solid var(--snice-color-primary);
+  color: var(--snice-color-primary);
+}
+
+[part~="cta-outline"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 8%, transparent);
+}
+
+:host([variant="table"]) [part~="cta"] {
+  min-height: 2rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+/* 8px Fluent comparison table */
+[part~="table"] {
+  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border);
+  border-radius: 8px;
+}
+
+[part~="header-cell"] {
+  background: var(--snice-color-surface-container-low);
+}
+
+[part~="header-cell-highlighted"],
+[part~="table-cell-highlighted"] {
+  background: color-mix(in srgb, var(--snice-color-primary) 7%, transparent);
+}
+
+@media (forced-colors: active) {
+  [part~="card"],
+  [part~="table"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="card-highlighted"] {
+    border: 2px solid Highlight;
+  }
+
+  [part~="badge"],
+  [part~="cta-primary"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid HighlightText;
+  }
+
+  [part~="cta-secondary"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+  }
+
+  [part~="toggle-button-active"]::after {
+    background: Highlight;
+  }
+}

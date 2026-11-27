@@ -89,6 +89,9 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `feature-name` | `<span>` | Feature label wrapper inside a feature row |
 | `feature-value` | `<span>` | Value text for a non-boolean feature |
 | `cta` | `<button>` | Call-to-action button |
+| `cta-primary` | `<button>` | Added to `cta` for a primary call-to-action button |
+| `cta-secondary` | `<button>` | Added to `cta` for a secondary call-to-action button |
+| `cta-outline` | `<button>` | Added to `cta` for an outline call-to-action button |
 | `table-wrapper` | `<div>` | Table layout wrapper |
 | `table` | `<table>` | The comparison table element |
 | `table-header` | `<thead>` | Comparison table header section |

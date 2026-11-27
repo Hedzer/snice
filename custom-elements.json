@@ -36259,6 +36259,15 @@
               "name": "cta"
             },
             {
+              "name": "cta-outline"
+            },
+            {
+              "name": "cta-primary"
+            },
+            {
+              "name": "cta-secondary"
+            },
+            {
               "name": "currency"
             },
             {
@@ -36432,6 +36441,15 @@
             },
             {
               "name": "cta"
+            },
+            {
+              "name": "cta-outline"
+            },
+            {
+              "name": "cta-primary"
+            },
+            {
+              "name": "cta-secondary"
             },
             {
               "name": "currency"
@@ -36692,6 +36710,15 @@
             },
             {
               "name": "cta"
+            },
+            {
+              "name": "cta-outline"
+            },
+            {
+              "name": "cta-primary"
+            },
+            {
+              "name": "cta-secondary"
             },
             {
               "name": "currency"

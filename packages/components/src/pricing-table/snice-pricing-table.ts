@@ -188,7 +188,8 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
     const price = this.getPrice(plan);
     const currency = plan.currency || '$';
     const period = plan.period || '/mo';
-    const ctaClass = `pricing__cta pricing__cta--${plan.ctaVariant || (plan.highlighted ? 'primary' : 'secondary')}`;
+    const ctaVariant = plan.ctaVariant || (plan.highlighted ? 'primary' : 'secondary');
+    const ctaClass = `pricing__cta pricing__cta--${ctaVariant}`;
 
     return html/*html*/`
       <div class="pricing__card ${plan.highlighted ? 'pricing__card--highlighted' : ''}" part="card${plan.highlighted ? ' card-highlighted' : ''}">
@@ -211,7 +212,7 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
         </ul>
         <button class="${ctaClass}"
                 @click=${() => this.handleSelect(plan, index)}
-                part="cta">
+                part="cta${({ primary: ' cta-primary', secondary: ' cta-secondary', outline: ' cta-outline' } as Record<string, string>)[ctaVariant] ?? ''}">
           ${plan.cta}
         </button>
       </div>
@@ -296,15 +297,18 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
             `)}
             <tr part="table-row">
               <td part="table-cell"></td>
-              ${this.plans.map((plan, i) => html/*html*/`
-                <td class="${plan.highlighted ? 'pricing__table-highlight' : ''}" part="table-cell${plan.highlighted ? ' table-cell-highlighted' : ''}">
-                  <button class="pricing__cta pricing__cta--${plan.ctaVariant || (plan.highlighted ? 'primary' : 'outline')}"
-                          @click=${() => this.handleSelect(plan, i)}
-                          part="cta">
-                    ${plan.cta}
-                  </button>
-                </td>
-              `)}
+              ${this.plans.map((plan, i) => {
+                const tableCtaVariant = plan.ctaVariant || (plan.highlighted ? 'primary' : 'outline');
+                return html/*html*/`
+                  <td class="${plan.highlighted ? 'pricing__table-highlight' : ''}" part="table-cell${plan.highlighted ? ' table-cell-highlighted' : ''}">
+                    <button class="pricing__cta pricing__cta--${tableCtaVariant}"
+                            @click=${() => this.handleSelect(plan, i)}
+                            part="cta${({ primary: ' cta-primary', secondary: ' cta-secondary', outline: ' cta-outline' } as Record<string, string>)[tableCtaVariant] ?? ''}">
+                      ${plan.cta}
+                    </button>
+                  </td>
+                `;
+              })}
             </tr>
           </tbody>
         </table>
