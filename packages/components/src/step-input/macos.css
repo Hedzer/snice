@@ -200,14 +200,13 @@
   cursor: default;
 }
 
-/* Disabled State — Single Clean 0.44 AppKit Opacity (eliminates base 0.6 x 0.4
-   compounded opacity bug by keeping inner button & input at opacity: 1) */
+/* Disabled State — opacity: 1 crisp muted AppKit bezel in both light & dark */
 :host([disabled]) [part~="base"],
 :host([disabled]) [part~="base"]:hover,
 :host([disabled]) [part~="base"]:focus-within {
-  opacity: 0.44;
-  background: var(--snice-macos-control-bg);
-  border-color: var(--snice-color-border-hover);
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 5%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
   box-shadow: none;
   cursor: not-allowed;
 }
@@ -219,15 +218,15 @@
 :host([disabled]) [part~="button"]:disabled:hover,
 :host([disabled]) [part~="button"]:disabled:active {
   opacity: 1;
-  background: var(--snice-color-surface-container-low);
-  color: var(--snice-color-text);
+  background: color-mix(in srgb, var(--snice-color-text) 4%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   cursor: not-allowed;
 }
 
 :host([disabled]) [part~="input"],
 :host([disabled]) [part~="input"]:disabled {
   opacity: 1;
-  color: var(--snice-color-text);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   cursor: not-allowed;
 }
 

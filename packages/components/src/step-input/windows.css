@@ -199,22 +199,22 @@
   transform: none;
 }
 
-/* Disabled State — flat Fluent disabled chrome, single 0.65 opacity on base (zero compounding) */
+/* Disabled State — opacity: 1 crisp WinUI 3 disabled chrome in both light & dark */
 :host([disabled]) [part~="base"],
 :host([disabled]) [part~="base"]:hover,
 :host(:disabled) [part~="base"],
 :host(:disabled) [part~="base"]:hover {
-  background: var(--snice-win-control-bg-pressed);
-  border-color: var(--snice-color-border-subtle);
+  background: color-mix(in srgb, var(--snice-color-text) 4%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
   box-shadow: none;
-  opacity: 0.65;
+  opacity: 1;
   cursor: not-allowed;
 }
 
 :host([disabled]) [part~="input"],
 :host([disabled]) [part~="input"]:disabled,
 :host(:disabled) [part~="input"]:disabled {
-  color: var(--snice-color-text-tertiary);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   opacity: 1;
   cursor: not-allowed;
 }
@@ -226,8 +226,8 @@
 :host(:disabled) [part~="button"]:disabled,
 :host(:disabled) [part~="button"]:disabled:hover {
   background: transparent;
-  color: var(--snice-color-text-tertiary);
-  border-color: var(--snice-color-border-subtle);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
   opacity: 1;
   cursor: not-allowed;
   transform: none;

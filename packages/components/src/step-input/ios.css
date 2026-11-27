@@ -31,10 +31,10 @@
     var(--snice-ios-glass-rim);
 }
 
-/* Stepper segment buttons — square touch targets with crisp press tint */
+/* Stepper segment buttons — sleek touch targets with crisp press tint */
 [part~="button"] {
   box-sizing: border-box;
-  width: 2.75rem;
+  width: 2.5rem;
   height: 100%;
   background: transparent;
   color: var(--snice-color-text);
@@ -92,7 +92,7 @@
 /* Centered editable numeric readout */
 [part~="input"] {
   box-sizing: border-box;
-  width: 3.75rem;
+  width: 3.25rem;
   height: 100%;
   padding: 0 0.375rem;
   font-family: var(--snice-font-family);
@@ -106,8 +106,8 @@
 
 /* Form-disabled fallback (e.g. fieldset[disabled] without host [disabled]) */
 [part~="input"]:disabled {
-  opacity: 0.38;
-  color: var(--snice-color-text);
+  opacity: 1;
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   cursor: not-allowed;
 }
 
@@ -117,11 +117,11 @@
 }
 
 :host([size="small"]) [part~="button"] {
-  width: 2.125rem;
+  width: 2rem;
 }
 
 :host([size="small"]) [part~="input"] {
-  width: 3rem;
+  width: 2.625rem;
   padding: 0 0.25rem;
   font-size: 0.875rem;
   letter-spacing: -0.008em;
@@ -137,11 +137,11 @@
 }
 
 :host([size="large"]) [part~="button"] {
-  width: 3.125rem;
+  width: 2.75rem;
 }
 
 :host([size="large"]) [part~="input"] {
-  width: 4.25rem;
+  width: 3.75rem;
   padding: 0 0.5rem;
   font-size: 1.0625rem;
   letter-spacing: -0.016em;
@@ -195,13 +195,15 @@
   cursor: default;
 }
 
-/* Disabled state — single clean 0.38 mute on shell, children forced to opacity: 1
-   (eliminates base CSS compounded 0.6 * 0.4 = 0.24 washout) */
+/* Disabled state — opacity: 1 crisp muted tokens so OLED dark & light stay clearly visible */
 :host([disabled]) [part~="base"],
 :host([disabled]) [part~="base"]:focus-within {
-  opacity: 0.38;
-  border-color: var(--snice-color-border);
-  box-shadow: var(--snice-ios-glass-rim);
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-text) 6%, transparent);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: color-mix(in srgb, var(--snice-color-text) 16%, transparent);
+  box-shadow: none;
   cursor: not-allowed;
 }
 
@@ -215,7 +217,7 @@
 :host([disabled]) [part~="button"]:disabled:focus-visible {
   opacity: 1;
   background: transparent;
-  color: var(--snice-color-text);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   box-shadow: none;
   cursor: not-allowed;
 }
@@ -223,7 +225,7 @@
 :host([disabled]) [part~="input"],
 :host([disabled]) [part~="input"]:disabled {
   opacity: 1;
-  color: var(--snice-color-text);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   cursor: not-allowed;
 }
 

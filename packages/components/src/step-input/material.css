@@ -140,13 +140,13 @@
   cursor: default;
 }
 
-/* Disabled State — exact M3 4% base / 12% border & end-caps / 38% ink (opacity: 1) */
+/* Disabled State — crisp M3 disabled contrast (opacity: 1) */
 :host([disabled]) [part~="base"],
 :host([disabled]) [part~="base"]:hover,
 :host([disabled]) [part~="base"]:focus-within {
   opacity: 1;
   background: color-mix(in srgb, var(--snice-color-text) 4%, transparent);
-  border-color: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-text) 18%, transparent);
   box-shadow: none;
   cursor: not-allowed;
 }
@@ -159,15 +159,15 @@
 :host([disabled]) [part~="button"]:disabled:active {
   opacity: 1;
   background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   cursor: not-allowed;
 }
 
 :host [part~="input"]:disabled,
 :host([disabled]) [part~="input"] {
   opacity: 1;
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
-  -webkit-text-fill-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
+  -webkit-text-fill-color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   cursor: not-allowed;
 }
 
