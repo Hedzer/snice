@@ -1,0 +1,90 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-progress-ring (WinUI 3 Determinate ProgressRing) */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="svg"],
+:host([size="medium"]) [part~="svg"] {
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
+:host([size="small"]) [part~="svg"] {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+:host([size="large"]) [part~="svg"] {
+  width: 7rem;
+  height: 7rem;
+}
+
+[part~="track"] {
+  stroke: var(--snice-color-border-hover);
+}
+
+[part~="fill"] {
+  stroke: var(--progress-ring-color, var(--snice-color-primary));
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--snice-transition-medium, 187ms) cubic-bezier(0, 0, 0, 1);
+}
+
+[part~="center"] {
+  gap: 0.0625rem;
+}
+
+:host [part~="value"],
+:host([size="medium"]) [part~="value"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+:host([size="small"]) [part~="value"] {
+  font-size: 0.625rem;
+}
+
+:host([size="large"]) [part~="value"] {
+  font-size: 1.375rem;
+}
+
+:host [part~="label"],
+:host([size="medium"]) [part~="label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.625rem;
+  font-weight: 400;
+  color: var(--snice-color-text-secondary);
+}
+
+:host([size="small"]) [part~="label"] {
+  font-size: 0.5rem;
+}
+
+:host([size="large"]) [part~="label"] {
+  font-size: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="fill"] {
+    transition: none;
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="track"] {
+    stroke: CanvasText;
+  }
+
+  [part~="fill"] {
+    stroke: Highlight;
+  }
+
+  [part~="value"],
+  [part~="label"] {
+    color: CanvasText;
+  }
+}

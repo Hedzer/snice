@@ -1,0 +1,76 @@
+/* iOS 26+ Liquid Glass — snice-progress-ring (Apple Activity / Download Circular Gauge) */
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="svg"],
+:host([size="medium"]) [part~="svg"] {
+  width: 5rem;
+  height: 5rem;
+}
+
+:host([size="small"]) [part~="svg"] {
+  width: 3rem;
+  height: 3rem;
+}
+
+:host([size="large"]) [part~="svg"] {
+  width: 8rem;
+  height: 8rem;
+}
+
+[part~="track"] {
+  stroke: color-mix(in srgb, var(--progress-ring-color, var(--snice-color-primary)) 18%, hsl(240 5% 50% / 0.16));
+}
+
+[part~="fill"] {
+  stroke: var(--progress-ring-color, var(--snice-color-primary));
+  stroke-linecap: round;
+  transition: stroke-dashoffset 420ms var(--snice-ease-out, cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+[part~="center"] {
+  gap: 0.0625rem;
+}
+
+:host [part~="value"],
+:host([size="medium"]) [part~="value"] {
+  font-family: var(--snice-font-family-display, var(--snice-font-family));
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.028em;
+  font-variant-numeric: tabular-nums;
+  color: var(--snice-color-text);
+}
+
+:host([size="small"]) [part~="value"] {
+  font-size: 0.6875rem;
+}
+
+:host([size="large"]) [part~="value"] {
+  font-size: 1.625rem;
+}
+
+:host [part~="label"],
+:host([size="medium"]) [part~="label"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--snice-color-text-secondary);
+}
+
+:host([size="small"]) [part~="label"] {
+  font-size: 0.5625rem;
+}
+
+:host([size="large"]) [part~="label"] {
+  font-size: 0.8125rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="fill"] {
+    transition: none;
+    animation: none;
+  }
+}
