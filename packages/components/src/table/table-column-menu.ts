@@ -3,7 +3,13 @@
  * Right-click or menu icon on header — sort, filter, hide, pin, autosize.
  */
 
-import { ARROW_UP, ARROW_DOWN, FUNNEL, EYE_SLASH, MAP_PIN, ARROWS_RIGHT_LEFT, X_MARK } from '../icons';
+import { ARROW_UP } from '../icons/arrow-up';
+import { ARROW_DOWN } from '../icons/arrow-down';
+import { FUNNEL } from '../icons/funnel';
+import { EYE_SLASH } from '../icons/eye-slash';
+import { MAP_PIN } from '../icons/map-pin';
+import { ARROWS_RIGHT_LEFT } from '../icons/arrows-right-left';
+import { X_MARK } from '../icons/x-mark';
 
 export interface ColumnMenuAction {
   label: string;
