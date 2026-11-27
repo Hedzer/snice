@@ -1,0 +1,206 @@
+/* iOS 26+ Liquid Glass — snice-qr-reader
+ * Apple Code Scanner / iOS 26 Camera QR Viewfinder: 20px viewfinder housing,
+ * iconic 12px-rounded Apple yellow scan reticles, floating Liquid Glass camera
+ * controls (52px primary start/stop + 44px Clear Glass switch), explicit white
+ * ink on saturated dark-mode fills, and spring press physics.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  border-radius: 20px;
+  border: 0.5px solid hsl(0 0% 100% / 0.14);
+  box-shadow: var(--snice-shadow-lg);
+}
+
+:host [part~="overlay"] {
+  background: hsl(0 0% 0% / 0.62);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:host [part~="message"] {
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  background: hsl(240 6% 14% / 0.68);
+  backdrop-filter: var(--snice-ios-glass-clear-blur, var(--snice-ios-glass-blur));
+  -webkit-backdrop-filter: var(--snice-ios-glass-clear-blur, var(--snice-ios-glass-blur));
+  border: 0.5px solid hsl(0 0% 100% / 0.22);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.2);
+}
+
+:host [part~="message-text"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: hsl(0 0% 100% / 0.92);
+}
+
+/* Iconic Apple Code Scanner Yellow Rounded Brackets */
+:host [part~="corner"] {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-width: 4px;
+  border-color: hsl(48 100% 52%);
+  filter: drop-shadow(0 2px 6px hsl(0 0% 0% / 0.45));
+}
+
+:host [part~="corner-top-left"] { border-top-left-radius: 12px; }
+:host [part~="corner-top-right"] { border-top-right-radius: 12px; }
+:host [part~="corner-bottom-left"] { border-bottom-left-radius: 12px; }
+:host [part~="corner-bottom-right"] { border-bottom-right-radius: 12px; }
+
+/* Floating Liquid Glass Camera Controls */
+:host [part~="controls"] {
+  padding: 1.25rem 1rem;
+  gap: 1rem;
+  background: linear-gradient(to top, hsl(0 0% 0% / 0.55), transparent);
+}
+
+:host [part~="button"] {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  background: hsl(240 6% 18% / 0.58);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 1px solid hsl(0 0% 100% / 0.28);
+  color: hsl(0 0% 100%);
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.32),
+    0 6px 20px hsl(0 0% 0% / 0.35);
+  transition:
+    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
+    background-color var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease-out),
+    filter var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease-out);
+}
+
+:host [part~="button"]:hover {
+  background: hsl(240 6% 24% / 0.7);
+  filter: brightness(1.08);
+  transform: scale(1.04);
+}
+
+:host [part~="button"]:active {
+  transform: scale(0.92);
+  filter: brightness(0.94);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px var(--snice-focus-ring-color),
+    0 0 0 1px hsl(0 0% 100% / 0.9);
+}
+
+/* Explicit white ink avoids iOS dark-mode --snice-color-text-inverse black trap */
+:host [part~="button-start"] {
+  width: 3.25rem;
+  height: 3.25rem;
+  background: var(--snice-color-primary);
+  border-color: color-mix(in srgb, white 32%, var(--snice-color-primary));
+  color: hsl(0 0% 100%);
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.42),
+    0 8px 22px -4px color-mix(in srgb, var(--snice-color-primary) 60%, transparent);
+}
+
+:host [part~="button-start"]:hover {
+  background: var(--snice-color-primary);
+}
+
+:host [part~="button-stop"] {
+  width: 3.25rem;
+  height: 3.25rem;
+  background: var(--snice-color-danger);
+  border-color: color-mix(in srgb, white 28%, var(--snice-color-danger));
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="button-stop"]:hover {
+  background: var(--snice-color-danger);
+}
+
+/* Floating Liquid Glass Result & Error Banners */
+:host [part~="result"] {
+  border-radius: 9999px;
+  padding: 0.625rem 1rem;
+  background: color-mix(in srgb, var(--snice-color-success) 88%, black);
+  backdrop-filter: var(--snice-ios-glass-clear-blur, var(--snice-ios-glass-blur));
+  -webkit-backdrop-filter: var(--snice-ios-glass-clear-blur, var(--snice-ios-glass-blur));
+  border: 0.5px solid hsl(0 0% 100% / 0.3);
+  color: hsl(0 0% 100%);
+  font-weight: 500;
+  box-shadow: var(--snice-ios-glass-shadow);
+}
+
+:host [part~="error-text"] {
+  border-radius: 16px;
+  padding: 0.875rem 1.25rem;
+  background: color-mix(in srgb, var(--snice-color-danger) 90%, black);
+  backdrop-filter: var(--snice-ios-glass-clear-blur, var(--snice-ios-glass-blur));
+  -webkit-backdrop-filter: var(--snice-ios-glass-clear-blur, var(--snice-ios-glass-blur));
+  border: 0.5px solid hsl(0 0% 100% / 0.28);
+  color: hsl(0 0% 100%);
+  font-weight: 500;
+  box-shadow: var(--snice-ios-glass-shadow);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="overlay"],
+  :host [part~="message"],
+  :host [part~="button"],
+  :host [part~="result"],
+  :host [part~="error-text"] {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="message"] {
+    background: hsl(240 6% 14%);
+  }
+
+  :host [part~="button"] {
+    background: hsl(240 6% 20%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"] {
+    transition: none;
+  }
+
+  :host [part~="button"]:hover,
+  :host [part~="button"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="message"],
+  :host [part~="result"],
+  :host [part~="error-text"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="button"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="button-start"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+}

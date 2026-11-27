@@ -1,0 +1,199 @@
+/* Windows 11 Fluent 2 / WinUI 3 — snice-qr-reader
+ * Windows 11 Camera QR Scanner: crisp 8px viewfinder with 1px top-lit stroke,
+ * 4px-cornered 2px primary reticles, transient Acrylic idle prompt & camera
+ * buttons, --snice-win-on-accent dark-safe accent ink, 100ms zero-bounce
+ * transitions, and WinUI 3 dual-stroke focus.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  border-radius: var(--snice-border-radius-lg, 8px);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="overlay"] {
+  background: hsl(0 0% 0% / 0.56);
+}
+
+:host [part~="message"] {
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  background: var(--snice-win-acrylic-bg);
+  backdrop-filter: var(--snice-win-acrylic-blur);
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur);
+  border: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text);
+  box-shadow: var(--snice-shadow-lg);
+}
+
+:host [part~="message-text"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--snice-color-text);
+}
+
+/* Crisp Windows Camera Reticles */
+:host [part~="corner"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-width: 2px;
+  border-color: var(--snice-color-primary);
+}
+
+:host [part~="corner-top-left"] { border-top-left-radius: 4px; }
+:host [part~="corner-top-right"] { border-top-right-radius: 4px; }
+:host [part~="corner-bottom-left"] { border-bottom-left-radius: 4px; }
+:host [part~="corner-bottom-right"] { border-bottom-right-radius: 4px; }
+
+/* Transient Acrylic Control Dock & Crisp Fluent Buttons */
+:host [part~="controls"] {
+  padding: 0.875rem 1rem;
+  gap: 0.75rem;
+  background: linear-gradient(to top, hsl(0 0% 0% / 0.6), transparent);
+}
+
+:host [part~="button"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: var(--snice-win-acrylic-bg);
+  backdrop-filter: var(--snice-win-acrylic-blur);
+  -webkit-backdrop-filter: var(--snice-win-acrylic-blur);
+  border: 1px solid var(--snice-win-stroke-top);
+  border-bottom-color: var(--snice-win-stroke-bottom);
+  color: var(--snice-color-text);
+  transition:
+    background-color 100ms cubic-bezier(0, 0, 0, 1),
+    border-color 100ms cubic-bezier(0, 0, 0, 1),
+    filter 100ms cubic-bezier(0, 0, 0, 1);
+}
+
+:host [part~="button"]:hover {
+  transform: none;
+  background: var(--snice-win-control-bg-hover);
+  border-color: var(--snice-color-border-hover);
+}
+
+:host [part~="button"]:active {
+  transform: none;
+  background: var(--snice-win-control-bg-pressed);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-win-focus-shadow);
+}
+
+/* --snice-win-on-accent ensures black ink on luminous #60CDFF / #FF99A4 in dark mode */
+:host [part~="button-start"] {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--snice-color-primary);
+  border-color: color-mix(in srgb, white 16%, var(--snice-color-primary));
+  color: var(--snice-win-on-accent);
+}
+
+:host [part~="button-start"]:hover {
+  background: color-mix(in srgb, var(--snice-color-primary) 90%, white);
+  color: var(--snice-win-on-accent);
+}
+
+:host [part~="button-start"]:active {
+  background: var(--snice-color-primary);
+  filter: brightness(0.92);
+}
+
+:host [part~="button-stop"] {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--snice-color-danger);
+  border-color: color-mix(in srgb, white 16%, var(--snice-color-danger));
+  color: var(--snice-win-on-accent);
+}
+
+:host [part~="button-stop"]:hover {
+  background: color-mix(in srgb, var(--snice-color-danger) 90%, white);
+  color: var(--snice-win-on-accent);
+}
+
+/* Fluent InfoBar Result & Error Banners */
+:host [part~="result"] {
+  border-radius: 4px;
+  padding: 0.5rem 0.875rem;
+  background: var(--snice-color-success);
+  color: var(--snice-win-on-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="error-text"] {
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  background: var(--snice-color-danger);
+  color: var(--snice-win-on-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--snice-shadow-lg);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="message"],
+  :host [part~="button"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :host [part~="message"],
+  :host [part~="button"] {
+    background: var(--snice-color-surface-container-high);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="message"],
+  :host [part~="result"],
+  :host [part~="error-text"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="button"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="button-start"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+
+  :host [part~="button"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,189 @@
+/* macOS 26 Tahoe Liquid Glass / AppKit — snice-qr-reader
+ * Continuity Camera / AppKit Code Scanner Sheet: compact desktop 12px
+ * viewfinder, 8px-rounded 3px scan brackets, compact 38px/32px Liquid Glass
+ * controls, explicit white ink on saturated buttons/banners, AppKit focus halo.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  border-radius: var(--snice-border-radius-lg, 12px);
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="overlay"] {
+  background: hsl(0 0% 0% / 0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+:host [part~="message"] {
+  padding: 0.875rem 1.25rem;
+  border-radius: 10px;
+  background: hsl(240 5% 16% / 0.72);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid hsl(0 0% 100% / 0.2);
+  box-shadow: var(--snice-macos-glass-rim);
+}
+
+:host [part~="message-text"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: hsl(0 0% 100% / 0.9);
+}
+
+/* Desktop Viewfinder Reticles */
+:host [part~="corner"] {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-width: 3px;
+  border-color: hsl(48 100% 52%);
+  filter: drop-shadow(0 1px 4px hsl(0 0% 0% / 0.4));
+}
+
+:host [part~="corner-top-left"] { border-top-left-radius: 8px; }
+:host [part~="corner-top-right"] { border-top-right-radius: 8px; }
+:host [part~="corner-bottom-left"] { border-bottom-left-radius: 8px; }
+:host [part~="corner-bottom-right"] { border-bottom-right-radius: 8px; }
+
+/* Compact Desktop Liquid Glass Controls */
+:host [part~="controls"] {
+  padding: 0.875rem 1rem;
+  gap: 0.625rem;
+  background: linear-gradient(to top, hsl(0 0% 0% / 0.5), transparent);
+}
+
+:host [part~="button"] {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background: hsl(240 5% 18% / 0.64);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid hsl(0 0% 100% / 0.24);
+  color: hsl(0 0% 100%);
+  box-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-sm);
+  transition:
+    transform var(--snice-transition-fast, 140ms) ease-out,
+    filter var(--snice-transition-fast, 140ms) ease-out;
+}
+
+:host [part~="button"]:hover {
+  background: hsl(240 5% 24% / 0.72);
+  filter: brightness(1.08);
+  transform: none;
+}
+
+:host [part~="button"]:active {
+  transform: scale(0.95);
+  filter: brightness(0.92);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--snice-macos-focus-halo);
+}
+
+/* Explicit white ink avoids macOS dark-mode --snice-color-text-inverse black trap */
+:host [part~="button-start"] {
+  width: 2.375rem;
+  height: 2.375rem;
+  background: linear-gradient(180deg, color-mix(in srgb, white 14%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
+  border-color: color-mix(in srgb, white 26%, var(--snice-color-primary));
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="button-start"]:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, white 18%, var(--snice-color-primary)) 0%, var(--snice-color-primary) 100%);
+}
+
+:host [part~="button-stop"] {
+  width: 2.375rem;
+  height: 2.375rem;
+  background: linear-gradient(180deg, color-mix(in srgb, white 12%, var(--snice-color-danger)) 0%, var(--snice-color-danger) 100%);
+  border-color: color-mix(in srgb, white 24%, var(--snice-color-danger));
+  color: hsl(0 0% 100%);
+}
+
+:host [part~="button-stop"]:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, white 16%, var(--snice-color-danger)) 0%, var(--snice-color-danger) 100%);
+}
+
+/* Result & Error Banners */
+:host [part~="result"] {
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  background: color-mix(in srgb, var(--snice-color-success) 90%, black);
+  color: hsl(0 0% 100%);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="error-text"] {
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  background: color-mix(in srgb, var(--snice-color-danger) 90%, black);
+  color: hsl(0 0% 100%);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  box-shadow: var(--snice-shadow-md);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="overlay"],
+  :host [part~="message"],
+  :host [part~="button"] {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="message"] {
+    background: hsl(240 5% 16%);
+  }
+
+  :host [part~="button"] {
+    background: hsl(240 5% 22%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"] {
+    transition: none;
+  }
+
+  :host [part~="button"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="message"],
+  :host [part~="result"],
+  :host [part~="error-text"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="button"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="button-start"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+}

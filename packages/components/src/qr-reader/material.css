@@ -1,0 +1,174 @@
+/* Material 3 Expressive — snice-qr-reader
+ * Google Lens / Android M3 Expressive QR Scanner: 24px viewfinder, 16px-rounded
+ * primary Lens scan brackets, tonal M3 idle prompt card, 56dp squircle FAB
+ * start/stop + 48dp circular tonal switch with press morph, and dark-mode T80
+ * pastel-safe --snice-m3-on-primary / --snice-color-text-inverse ink.
+ */
+
+:host {
+  font-family: var(--snice-font-family);
+}
+
+:host [part~="base"] {
+  border-radius: 24px;
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="overlay"] {
+  background: color-mix(in srgb, var(--snice-color-surface-container-lowest) 12%, hsl(266 16% 6% / 0.78));
+}
+
+:host [part~="message"] {
+  padding: 1.25rem 1.5rem;
+  border-radius: 20px;
+  background: var(--snice-color-surface-container-high);
+  color: var(--snice-color-text);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="message-icon"] {
+  color: var(--snice-color-primary);
+  opacity: 1;
+}
+
+:host [part~="message-text"] {
+  font-family: var(--snice-font-family);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--snice-color-text);
+}
+
+/* Google Lens Expressive Rounded Brackets */
+:host [part~="corner"] {
+  width: 3rem;
+  height: 3rem;
+  border-width: 4px;
+  border-color: var(--snice-color-primary);
+  filter: drop-shadow(0 2px 6px hsl(0 0% 0% / 0.45));
+}
+
+:host [part~="corner-top-left"] { border-top-left-radius: 16px; }
+:host [part~="corner-top-right"] { border-top-right-radius: 16px; }
+:host [part~="corner-bottom-left"] { border-bottom-left-radius: 16px; }
+:host [part~="corner-bottom-right"] { border-bottom-right-radius: 16px; }
+
+/* Expressive FAB & Tonal Controls (Zero Glass Blur) */
+:host [part~="controls"] {
+  padding: 1.25rem 1rem;
+  gap: 1rem;
+}
+
+:host [part~="button"] {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  background: var(--snice-m3-secondary-container);
+  color: var(--snice-m3-on-secondary-container);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: var(--snice-shadow-sm);
+  transition:
+    border-radius var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    transform var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.38, 1.21, 0.22, 1)),
+    background-color var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    box-shadow var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+}
+
+:host [part~="button"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container) 8%, var(--snice-m3-secondary-container));
+  box-shadow: var(--snice-shadow-md);
+  transform: none;
+}
+
+:host [part~="button"]:active {
+  border-radius: var(--snice-m3-shape-morph-pressed, 8px);
+  transform: scale(0.96);
+}
+
+:host [part~="button"]:focus-visible {
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 3px;
+}
+
+/* M3 56dp FAB Squircle with --snice-m3-on-primary ink (dark plum on dark T80 lavender) */
+:host [part~="button-start"] {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 16px;
+  background: var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="button-start"]:hover {
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 8%, var(--snice-color-primary));
+  color: var(--snice-m3-on-primary);
+  box-shadow: var(--snice-shadow-lg);
+}
+
+:host [part~="button-stop"] {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 16px;
+  background: var(--snice-color-danger);
+  color: var(--snice-color-text-inverse);
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="button-stop"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text-inverse) 8%, var(--snice-color-danger));
+  color: var(--snice-color-text-inverse);
+}
+
+/* T80 Pastel-Safe Result & Error Banners */
+:host [part~="result"] {
+  border-radius: 9999px;
+  padding: 0.625rem 1.125rem;
+  background: var(--snice-color-success);
+  color: var(--snice-color-text-inverse);
+  font-weight: 500;
+  box-shadow: var(--snice-shadow-md);
+}
+
+:host [part~="error-text"] {
+  border-radius: 16px;
+  padding: 0.875rem 1.25rem;
+  background: var(--snice-color-danger);
+  color: var(--snice-color-text-inverse);
+  font-weight: 500;
+  box-shadow: var(--snice-shadow-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="button"] {
+    transition: none;
+  }
+
+  :host [part~="button"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"],
+  :host [part~="message"],
+  :host [part~="result"],
+  :host [part~="error-text"] {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="button"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="button-start"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+}
