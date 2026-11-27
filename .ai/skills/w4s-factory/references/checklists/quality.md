@@ -1,0 +1,33 @@
+# Quality reviewer
+
+Read the bundled [Safeloop guide](../safeloop/guide.md) in full and only the language follow-ups relevant to this review; keep existing scope, advisory authority, and verification timing.
+
+Review repository practice, construction, diagnostics, design fidelity, and proof.
+Inspect the assigned artifact, applicable rules, tests, evidence, and any relevant research. Exclude
+unrelated defects, preferred designs, and work beyond the spec. At item review, do not
+reopen accepted items without a new causal link. Leave intended results to behaviour
+and protection mechanisms to risk. Report each issue under its owning check once.
+
+Use C1–C14 as inspection questions under [advisory review](../review.md).
+Report only serious demonstrated issues affecting requested behaviour, safety, data,
+or contracts. No pass/fail answers, clearance, minor backlog, or veto. Checklist
+requirements describe properties to inspect; critics cannot impose scope or block work.
+Read binding non-workflow policies fully and only the workflow/checklist references relevant to this
+assignment. Do not edit source, scope, state, or delivery records.
+
+| ID | Question and required examination | Applies when; boundary |
+|---|---|---|
+| C1 | Does the artifact follow applicable non-workflow repository requirements, including nested rules for affected paths? | Relevant changed work. Route behaviour and protection requirements to their owning reviewer instead of duplicating them here. |
+| C2 | Does the change follow applicable project patterns and approved decisions? Inspect material exceptions; search history only for a concrete unresolved question, not a routine precedent sweep. | A relevant project precedent exists; separate research artifacts are not required. Protection correctness belongs to risk; this checks use of the established pattern. |
+| C3 | Does the implementation fit the target repository's layers and reuse its existing facilities? Derive layer boundaries from that repository rather than imposing an architecture. | Executable code changes. Formatting and unrelated cleanup belong to C4. |
+| C4 | Is the item limited to its complete change/file/test assignment? Reject dead code, temporary diagnostics, commented code, unrelated cleanup, and unused options or abstractions. Prefer existing facilities, standard facilities, then installed dependencies before new machinery. Inspect available fast targeted formatting, lint, type/build evidence for the card; do not report style-only or cosmetic advice. | Executable code changes. C3 owns architecture; C1 owns additional repository requirements. |
+| C5 | Do changed tests use the repository's supported dependencies and fixture methods? For persistence behaviour, exercise the actual storage dependency in isolation; reject substitutes that bypass the changed storage guarantee. Require tests when behaviour changes. | Tests change, or behaviour changes without tests. Storage-specific checks apply only when the tested behaviour uses storage. Assertions and scenario choice belong to C6–C8. |
+| C6 | Do assertions compare the complete relevant response or value with established comparison helpers instead of checking isolated fields that can conceal a regression? | Tests are added or changed. C7 owns which input/permission cases are present. |
+| C7 | Do changed entry points include denied-scope, unauthenticated/unauthorized, and invalid-input tests where those conditions apply? | An entry point, access guard, or input constraint changes. Protection correctness belongs to risk; this checks case coverage. |
+| C8 | Which named test would fail if the behaviour change were reverted? Require evidence that it detects the regression. | Behaviour changes. Coverage percentage belongs to C10. |
+| C9 | Are tests fast, repeatable, and run in parallel where independent? Inspect avoidable serialization, repeated setup, fixed-delay readiness checks, and live third-party latency. Require isolated resources or noninterfering owned data, distinct ports, and owned cleanup. Reject skipped required tests and permissive mocks that ignore a new argument. | Tests are added or changed. Missing cases belong to C7. |
+| C10 | Does the card's changed production code have meaningful fast targeted test evidence? Complete suites, production-code coverage, and full customer verification run at story end; do not demand them for card review. Do not demand numerical coverage for tests/helpers or bespoke instrumentation. Missing tooling is a truthful limitation, not a new delivery prerequisite. | Production code changes. No executable product change makes numerical coverage inapplicable. C5–C9 own test quality. |
+| C11 | Does every new user-visible failure produce one useful diagnostic event with sufficient context? Avoid duplicate error reporting across layers. | A changed path can fail in a way a user can encounter. Otherwise inapplicable. Risk owns sensitive-data exposure in diagnostics. |
+| C12 | Are the specified operational signals implemented and usable? Observation-only controls must record each prevented-in-enforcement case with fields sufficient to evaluate readiness. Keep metric dimensions bounded. | The spec names an operational signal, observation-only mode is used, or a changed failure needs operational detection. Sensitive content belongs to risk; single-failure reporting belongs to C11. |
+| C13 | Does the changed interface meet the request using current project patterns, components, tokens, required strings/locales, and settled states/interactions? Are necessary missing components identified? At card review compare the card's changed required states with the request and any existing design targets. A separate design artifact or prototype is not required for a bounded settled change. | Anything a user sees or interacts with changes. Backend-only interfaces without visual output are inapplicable. Behaviour owns whether the interaction satisfies the spec. |
+| C14 | Does every changed path map to a customer scenario for final story verification? Cover acceptance criteria, modes, allowed/denied actors, error states, and surrounding behaviour at risk. At story end, the verifier executes these scenarios with real product dependencies through the actual entry point: browser, authorized network request, command, or public integration boundary. Apply [external-service isolation](../verify-deliver.md#fast-parallel-tests) where appropriate. Internal handlers and mocks of the product cannot replace that final evidence; do not require the full run for card review. | Card review checks scenario coverage; execution evidence is due at story end. Unit/integration proof belongs to C5–C10; risk evaluates whether affected flows remain usable. |
