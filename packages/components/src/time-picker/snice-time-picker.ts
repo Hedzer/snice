@@ -39,6 +39,9 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
   @state()
   private formDisabled = false;
 
+  @state()
+  private showValidation = false;
+
   /**
    * Live canonical time value. Assigning it does not rewrite the authored
    * form-reset default stored by the `value` content attribute.
@@ -377,6 +380,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
 
   formResetCallback() {
     this.dirtyValue = false;
+    this.showValidation = false;
     this.applyDefaultValue();
   }
 
@@ -664,6 +668,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
       this.syncNativeInput();
       return;
     }
+    this.showValidation = true;
     const input = e.target as HTMLInputElement;
     this.setValueFromInput(input.value, true);
     if (this.selectedParts) this.emitTimeChange();
@@ -674,6 +679,10 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
   }
 
   private handleBlur() {
+    if (!this.showValidation) {
+      this.showValidation = true;
+      this.syncValidity();
+    }
     this.emitBlur();
   }
 
@@ -903,13 +912,25 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
     };
   }
 
-  private hasValidationError(): boolean {
-    return Object.values(this.getValidityFlags()).some(Boolean);
+  private hasValidationError(flags = this.getValidityFlags()): boolean {
+    const hasImmediateError = Boolean(
+      flags.badInput ||
+      flags.customError ||
+      flags.patternMismatch ||
+      flags.rangeOverflow ||
+      flags.rangeUnderflow ||
+      flags.stepMismatch ||
+      flags.tooLong ||
+      flags.tooShort ||
+      flags.typeMismatch
+    );
+    return hasImmediateError || (this.showValidation && Boolean(flags.valueMissing));
   }
 
   private syncValidity() {
     const flags = this.getValidityFlags();
     const hasError = Object.values(flags).some(Boolean);
+    const displayedConstraintError = this.hasValidationError(flags);
     const message = this.customValidationMessage ||
       (flags.badInput ? 'Please enter a valid time.' : '') ||
       (flags.rangeUnderflow ? `Time must be ${this.minTime} or later.` : '') ||
@@ -932,7 +953,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
 
     if (this.input) {
       this.input.setCustomValidity(hasError ? message : '');
-      const invalid = this.invalid || hasError;
+      const invalid = this.invalid || displayedConstraintError;
       this.input.setAttribute('aria-invalid', String(invalid));
       this.input.classList.toggle('input--invalid', invalid);
     }
@@ -1118,6 +1139,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
   }
 
   clear() {
+    this.showValidation = true;
     this.commitTimeState(null, '', '', true);
     this.emitClear();
     this.emitTimeChange();
@@ -1161,6 +1183,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
   }
 
   reportValidity() {
+    this.showValidation = true;
     this.syncValidity();
     return this.internals?.reportValidity() ?? this.input?.reportValidity() ?? true;
   }

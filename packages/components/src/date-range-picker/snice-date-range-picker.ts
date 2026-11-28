@@ -45,6 +45,9 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   @state()
   private constraintInvalid = false;
 
+  @state()
+  private showValidation = false;
+
   /**
    * Live start value. Canonical and configured display-format strings are
    * accepted; assigning it does not rewrite the authored reset default.
@@ -224,7 +227,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
             @click=${(e: Event) => this.handleInputClick(e)}
             @keydown=${(e: KeyboardEvent) => this.handleKeydown(e)}
             @focus=${() => this.dispatchFocusEvent()}
-            @blur=${() => this.dispatchBlurEvent()}
+            @blur=${() => this.handleBlur()}
           />
 
           <button
@@ -409,6 +412,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
 
   formResetCallback() {
     this.dirtyRange = false;
+    this.showValidation = false;
     this.selectionPhase = 'idle';
     this.hoverDate = null;
     this.applyDefaultRange();
@@ -1141,6 +1145,18 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       valueMissing: !barred && this.required && !complete
     };
     const hasError = Object.values(flags).some(Boolean);
+    const hasImmediateError = Boolean(
+      flags.badInput ||
+      flags.customError ||
+      flags.patternMismatch ||
+      flags.rangeOverflow ||
+      flags.rangeUnderflow ||
+      flags.stepMismatch ||
+      flags.tooLong ||
+      flags.tooShort ||
+      flags.typeMismatch
+    );
+    const displayedConstraintInvalid = hasImmediateError || (this.showValidation && Boolean(flags.valueMissing));
     const message = this.customValidationMessage ||
       (flags.badInput ? 'Please select both a valid start and end date.' : '') ||
       (reversed ? 'End date must be on or after start date.' : '') ||
@@ -1149,8 +1165,8 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       (flags.rangeOverflow && maxDate ? `Dates must be on or before ${this.toCanonicalDate(maxDate)}.` : '') ||
       (hasError ? 'Please select a valid date range.' : '');
 
-    this.constraintInvalid = hasError;
-    const displayedInvalid = this.invalid || hasError;
+    this.constraintInvalid = displayedConstraintInvalid;
+    const displayedInvalid = this.invalid || displayedConstraintInvalid;
     const proxy = this.validationProxy;
     proxy.disabled = barred;
     proxy.value = complete ? `${this.toCanonicalDate(this.startDate!)} / ${this.toCanonicalDate(this.endDate!)}` : '';
@@ -1336,7 +1352,16 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     this.input?.blur();
   }
 
+  private handleBlur() {
+    if (!this.showValidation) {
+      this.showValidation = true;
+      this.syncValidity();
+    }
+    this.dispatchBlurEvent();
+  }
+
   clear() {
+    this.showValidation = true;
     this.selectionPhase = 'idle';
     this.hoverDate = null;
     this.commitRangeValues('', '', true);
@@ -1443,6 +1468,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   }
 
   reportValidity() {
+    this.showValidation = true;
     this.syncValidity();
     return this.internals?.reportValidity() ?? this.validationProxy.reportValidity();
   }

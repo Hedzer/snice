@@ -17,7 +17,7 @@
   --trp-slot-hover: var(--snice-color-overlay-hover);
   --trp-disabled-bg: var(--snice-color-surface-container-low);
   --trp-disabled-text: var(--snice-color-text-tertiary);
-  --trp-selected-bg: var(--snice-color-primary);
+  --trp-selected-bg: var(--snice-macos-fill-primary);
   --trp-selected-text: hsl(0 0% 100%);
 }
 
@@ -94,11 +94,11 @@
 }
 
 :host [part~="slot-selected"][part~="slot-range-start"] {
-  background: linear-gradient(180deg, hsl(0 0% 100% / 0.12), transparent), var(--snice-color-primary);
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.08), transparent), var(--snice-macos-fill-primary);
 }
 
 :host [part~="slot-selected"]:hover {
-  background: var(--snice-color-primary-hover);
+  background: color-mix(in srgb, var(--snice-macos-fill-primary) 90%, white);
   color: hsl(0 0% 100%);
 }
 
@@ -133,5 +133,38 @@
 }
 
 :host([readonly]) [part~="slot-selected"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="slot"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="base"] {
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  :host [part~="slot-selected"],
+  :host [part~="slot-selected"][part~="slot-range-start"],
+  :host [part~="slot-selected"]:hover,
+  :host [part~="slot-dragging"] {
+    background: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+
+  :host [part~="slot-disabled"] {
+    color: GrayText;
+    opacity: 1;
+  }
+
+  :host [part~="slot"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    box-shadow: none;
+  }
 }
