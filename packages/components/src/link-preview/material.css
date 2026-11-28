@@ -115,6 +115,10 @@
   border-radius: 20px;
 }
 
+:host([size="large"]) [part~="base"]:active {
+  border-radius: 16px;
+}
+
 :host([size="large"]) [part~="content"] {
   padding: 1rem 1.25rem;
 }
@@ -136,15 +140,35 @@
   :host([size="small"]) [part~="base"]:active {
     border-radius: 12px;
   }
+
+  :host([size="large"]) [part~="base"]:active {
+    border-radius: 20px;
+  }
 }
 
 @media (forced-colors: active) {
-  :host [part~="base"] {
+  :host [part~="base"],
+  :host [part~="base"]:hover {
     border: 1px solid CanvasText;
     box-shadow: none;
   }
 
+  :host [part~="media"] {
+    border-bottom: 1px solid CanvasText;
+  }
+
+  :host([variant="horizontal"]) [part~="media"] {
+    border-bottom: none;
+    border-right: 1px solid CanvasText;
+  }
+
+  :host [part~="placeholder"] {
+    background: Canvas;
+    color: CanvasText;
+  }
+
   :host [part~="base"]:focus-visible {
     outline: 2px solid Highlight;
+    outline-offset: 2px;
   }
 }

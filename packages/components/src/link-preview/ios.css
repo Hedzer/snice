@@ -138,13 +138,24 @@
 }
 
 @media (forced-colors: active) {
-  :host [part~="base"] {
+  :host [part~="base"],
+  :host [part~="base"]:hover {
     border: 1px solid CanvasText;
     box-shadow: none;
   }
 
+  :host [part~="media"],
+  :host([variant="horizontal"]) [part~="media"] {
+    border-color: CanvasText;
+  }
+
+  :host [part~="placeholder"] {
+    color: CanvasText;
+  }
+
   :host [part~="base"]:focus-visible {
     outline: 2px solid Highlight;
+    outline-offset: 2px;
     box-shadow: none;
   }
 }

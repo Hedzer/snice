@@ -49,6 +49,39 @@ describe('snice-link-preview', () => {
       expect(titleEl?.textContent?.trim()).toBe('Test Title');
     });
 
+    it('should display title from HTML attribute without native tooltip leak', async () => {
+      el = await createComponent<SniceLinkPreviewElement>('snice-link-preview', {
+        title: 'Declarative Title'
+      });
+
+      const titleEl = queryShadow(el as HTMLElement, '.link-preview__title');
+      expect(titleEl).toBeTruthy();
+      expect(titleEl?.textContent?.trim()).toBe('Declarative Title');
+      expect(el.hasAttribute('title')).toBe(false);
+    });
+
+    it('should deduplicate footer when site-name matches URL hostname', async () => {
+      el = await createComponent<SniceLinkPreviewElement>('snice-link-preview', {
+        'site-name': 'snice.dev',
+        url: 'https://www.snice.dev/guide'
+      });
+
+      expect(queryShadow(el as HTMLElement, '.link-preview__site-name')?.textContent?.trim()).toBe('snice.dev');
+      expect(queryShadow(el as HTMLElement, '.link-preview__footer-separator')).toBeNull();
+      expect(queryShadow(el as HTMLElement, '.link-preview__domain')).toBeNull();
+    });
+
+    it('should display both site-name and domain when they differ', async () => {
+      el = await createComponent<SniceLinkPreviewElement>('snice-link-preview', {
+        'site-name': 'Snice Docs',
+        url: 'https://snice.dev/guide'
+      });
+
+      expect(queryShadow(el as HTMLElement, '.link-preview__site-name')?.textContent?.trim()).toBe('Snice Docs');
+      expect(queryShadow(el as HTMLElement, '.link-preview__footer-separator')).toBeTruthy();
+      expect(queryShadow(el as HTMLElement, '.link-preview__domain')?.textContent?.trim()).toBe('snice.dev');
+    });
+
     it('should display description', async () => {
       el = await createComponent<SniceLinkPreviewElement>('snice-link-preview');
 

@@ -78,14 +78,14 @@
 }
 
 :host [part~="site-name"] {
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   font-weight: 500;
   color: var(--snice-color-text-secondary);
 }
 
 :host [part~="domain"],
 :host [part~="separator"] {
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   color: var(--snice-color-text-tertiary);
 }
 
@@ -106,8 +106,14 @@
   font-size: 0.75rem;
 }
 
+:host([size="small"]) [part~="site-name"],
+:host([size="small"]) [part~="domain"],
+:host([size="small"]) [part~="separator"] {
+  font-size: 0.6875rem;
+}
+
 :host([size="small"][variant="horizontal"]) [part~="media"] {
-  width: 5.25rem;
+  width: 4.25rem;
   min-height: 3.75rem;
 }
 
@@ -139,13 +145,24 @@
 }
 
 @media (forced-colors: active) {
-  :host [part~="base"] {
+  :host [part~="base"],
+  :host [part~="base"]:hover {
     border: 1px solid CanvasText;
     box-shadow: none;
   }
 
+  :host [part~="media"],
+  :host([variant="horizontal"]) [part~="media"] {
+    border-color: CanvasText;
+  }
+
+  :host [part~="placeholder"] {
+    color: CanvasText;
+  }
+
   :host [part~="base"]:focus-visible {
     outline: 2px solid Highlight;
+    outline-offset: 2px;
     box-shadow: none;
   }
 }
