@@ -107,14 +107,21 @@
 
 :host [part~="speed-button"]:hover,
 :host [part~="sleep-button"]:hover {
-  background: color-mix(in srgb, var(--snice-color-text) 5%, var(--snice-macos-control-bg));
+  background:
+    linear-gradient(var(--snice-color-overlay-hover), var(--snice-color-overlay-hover)),
+    var(--snice-macos-control-bg);
 }
 
 :host [part~="speed-button-active"],
 :host [part~="speed-button-active"]:hover,
 :host [part~="sleep-button-active"],
 :host [part~="sleep-button-active"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 16%, var(--snice-macos-control-bg));
+  background:
+    linear-gradient(
+      color-mix(in srgb, var(--snice-color-primary) 16%, transparent),
+      color-mix(in srgb, var(--snice-color-primary) 16%, transparent)
+    ),
+    var(--snice-macos-control-bg);
   border-color: color-mix(in srgb, var(--snice-color-primary) 50%, transparent);
   color: var(--snice-color-primary);
 }
@@ -145,8 +152,8 @@
 :host [part~="play-button"]:hover {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, white 22%, var(--snice-color-primary)) 0%,
-    color-mix(in srgb, white 6%, var(--snice-color-primary)) 100%
+    color-mix(in srgb, white 22%, var(--snice-macos-fill-primary)) 0%,
+    color-mix(in srgb, white 6%, var(--snice-macos-fill-primary)) 100%
   );
 }
 
@@ -155,8 +162,25 @@
 }
 
 :host [part~="button"]:disabled,
-:host [part~="play-button"]:disabled {
-  opacity: 0.35;
+:host [part~="button"]:disabled:hover,
+:host [part~="button"]:disabled:active {
+  opacity: 0.52;
+  background: transparent;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+:host [part~="play-button"]:disabled,
+:host [part~="play-button"]:disabled:hover,
+:host [part~="play-button"]:disabled:active {
+  opacity: 0.58;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 16%, var(--snice-macos-fill-primary)) 0%,
+    var(--snice-macos-fill-primary) 100%
+  );
+  color: hsl(0 0% 100%);
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
@@ -310,11 +334,34 @@
     box-shadow: none;
   }
 
+  :host [part~="speed-button"],
+  :host [part~="sleep-button"] {
+    border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="button"]:disabled,
+  :host [part~="play-button"]:disabled {
+    background: ButtonFace;
+    color: GrayText;
+    border: 1px solid GrayText;
+    opacity: 1;
+  }
+
   :host [part~="progress"] {
     border: 1px solid CanvasText;
   }
 
   :host [part~="progress-bar"] {
     background: Highlight;
+  }
+
+  :host [part~="button"]:focus-visible,
+  :host [part~="progress"]:focus-visible,
+  :host [part~="volume-slider"]:focus-visible,
+  :host [part~="chapter"]:focus-visible,
+  :host [part~="episode"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

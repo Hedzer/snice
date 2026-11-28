@@ -137,17 +137,30 @@
 }
 
 :host [part~="play-button"]:hover {
-  background: color-mix(in srgb, white 10%, var(--snice-color-primary));
+  background: color-mix(in srgb, white 10%, var(--snice-ios-fill-primary));
 }
 
 :host [part~="play-button"]:active {
-  background: color-mix(in srgb, black 8%, var(--snice-color-primary));
+  background: color-mix(in srgb, black 10%, var(--snice-ios-fill-primary));
   transform: scale(0.92);
 }
 
 :host [part~="button"]:disabled,
-:host [part~="play-button"]:disabled {
-  opacity: 0.36;
+:host [part~="button"]:disabled:hover,
+:host [part~="button"]:disabled:active {
+  opacity: 0.52;
+  background: transparent;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+:host [part~="play-button"]:disabled,
+:host [part~="play-button"]:disabled:hover,
+:host [part~="play-button"]:disabled:active {
+  opacity: 0.58;
+  background: var(--snice-ios-fill-primary);
+  color: hsl(0 0% 100%);
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
@@ -298,6 +311,14 @@
     background: Highlight;
     color: HighlightText;
     box-shadow: none;
+  }
+
+  :host [part~="button"]:disabled,
+  :host [part~="play-button"]:disabled {
+    background: ButtonFace;
+    color: GrayText;
+    border: 1px solid GrayText;
+    opacity: 1;
   }
 
   :host [part~="speed-button"],

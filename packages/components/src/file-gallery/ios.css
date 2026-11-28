@@ -119,6 +119,10 @@
 }
 
 /* Gallery Cards — strictly opaque grouped surfaces */
+:host [part~="gallery"] {
+  gap: 12px;
+}
+
 :host [part~="item"] {
   border-radius: 16px;
   border: 0.5px solid var(--snice-color-border-subtle);
@@ -224,22 +228,28 @@
   font-weight: 500;
 }
 
-/* Item Actions */
+/* Item Actions — floating Liquid Glass top-right thumbnail pills */
 :host [part~="item-actions"] {
-  border-top: 0.5px solid var(--snice-color-border-subtle);
-  padding: 6px 10px;
-  gap: 6px;
+  border-top: none;
+  padding: 0;
+  gap: 4px;
 }
 
 :host([view="list"]) [part~="item-actions"] {
   border-top: none;
   border-left: 0.5px solid var(--snice-color-border-subtle);
+  padding: 6px 10px;
 }
 
 :host [part~="item-action"] {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 88%, transparent);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border: 0.5px solid var(--snice-ios-glass-border);
+  box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-xs);
   color: var(--snice-color-text);
   transition:
     background-color var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out),
@@ -247,7 +257,7 @@
 }
 
 :host [part~="item-action"]:hover {
-  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  background: var(--snice-color-surface-container-high);
 }
 
 :host [part~="item-action"]:active {
@@ -264,7 +274,7 @@
 }
 
 :host [part~="item-action-delete"]:hover {
-  background: color-mix(in srgb, var(--snice-color-danger) 14%, transparent);
+  background: color-mix(in srgb, var(--snice-color-danger) 16%, var(--snice-color-surface-container-high));
 }
 
 /* Add Tile & Custom Action */
@@ -311,6 +321,22 @@
 :host [part~="add-icon"] {
   background: transparent;
   color: var(--snice-color-primary);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="action-button"],
+  :host [part~="item-action"] {
+    background: var(--snice-color-surface-container-high);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :host [part~="action-button"],
+  :host [part~="item-action"] {
+    background: var(--snice-color-surface-container-high);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -24,7 +24,7 @@
   gap: 0.1875rem;
   padding: 0.5rem 0.375rem;
   background: var(--paint-toolbar-bg, var(--snice-color-surface-container-low, rgb(245 245 245)));
-  width: 3rem;
+  width: 3.75rem;
   align-items: center;
   flex-shrink: 0;
   overflow-y: auto;
@@ -86,7 +86,7 @@
   border-radius: 50%;
   background: var(--c);
   cursor: pointer;
-  border: 2px solid transparent;
+  border: 1.5px solid color-mix(in srgb, var(--snice-color-text, rgb(23 23 23)) 26%, transparent);
   transition: all 0.15s;
   box-sizing: border-box;
 }
@@ -149,8 +149,47 @@
 }
 
 .paint-size-slider {
-  width: 2.125rem;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 3rem;
+  height: 1.125rem;
+  background: transparent;
+  cursor: pointer;
+  margin: 0.125rem 0;
   accent-color: var(--snice-color-primary, rgb(37 99 235));
+}
+
+.paint-size-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-text, rgb(23 23 23)) 24%, transparent);
+}
+
+.paint-size-slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--snice-color-primary, rgb(37 99 235));
+  border: 1.5px solid var(--snice-color-surface, rgb(255 255 255));
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+  margin-top: -4px;
+}
+
+.paint-size-slider::-moz-range-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-text, rgb(23 23 23)) 24%, transparent);
+}
+
+.paint-size-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--snice-color-primary, rgb(37 99 235));
+  border: 1.5px solid var(--snice-color-surface, rgb(255 255 255));
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
 }
 
 .paint-canvas-wrap {
@@ -207,5 +246,12 @@
   * {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .paint-size-slider {
+    appearance: auto;
+    -webkit-appearance: auto;
   }
 }

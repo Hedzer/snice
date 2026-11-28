@@ -101,12 +101,19 @@
 }
 
 :host [part~="action-button"]:hover {
-  background: color-mix(in srgb, var(--snice-color-text) 5%, var(--snice-macos-control-bg));
+  background:
+    linear-gradient(var(--snice-color-overlay-hover), var(--snice-color-overlay-hover)),
+    var(--snice-macos-control-bg);
   border-color: var(--snice-color-border-hover);
 }
 
 :host [part~="action-button"]:active {
-  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-macos-control-bg));
+  background:
+    linear-gradient(
+      color-mix(in srgb, var(--snice-color-text) 10%, transparent),
+      color-mix(in srgb, var(--snice-color-text) 10%, transparent)
+    ),
+    var(--snice-macos-control-bg);
 }
 
 :host [part~="action-button"]:focus-visible {
@@ -220,32 +227,38 @@
   color: var(--snice-color-danger);
 }
 
-/* Compact 26px Item Actions */
+/* Compact 26px Floating AppKit Overlay Actions */
 :host [part~="item-actions"] {
-  border-top: 0.5px solid var(--snice-color-border-subtle);
-  padding: 6px 8px;
+  border-top: none;
+  padding: 0;
   gap: 4px;
 }
 
 :host([view="list"]) [part~="item-actions"] {
   border-top: none;
   border-left: 0.5px solid var(--snice-color-border-subtle);
+  padding: 6px 8px;
 }
 
 :host [part~="item-action"] {
   width: 26px;
   height: 26px;
-  border-radius: 6px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--snice-color-background-element) 88%, transparent);
+  backdrop-filter: var(--snice-macos-glass-blur);
+  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  border: 0.5px solid var(--snice-macos-glass-border);
+  box-shadow: var(--snice-shadow-xs);
   color: var(--snice-color-text);
   transition: background-color var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease-out);
 }
 
 :host [part~="item-action"]:hover {
-  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  background: var(--snice-color-background-element);
 }
 
 :host [part~="item-action"]:active {
-  background: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+  background: var(--snice-color-surface-container);
 }
 
 :host [part~="item-action"]:focus-visible {
@@ -258,7 +271,7 @@
 }
 
 :host [part~="item-action-delete"]:hover {
-  background: color-mix(in srgb, var(--snice-color-danger) 16%, transparent);
+  background: color-mix(in srgb, var(--snice-color-danger) 16%, var(--snice-color-background-element));
 }
 
 /* Add Tile & Custom Action */
@@ -296,6 +309,20 @@
   color: var(--snice-color-primary);
 }
 
+@media (prefers-reduced-transparency: reduce) {
+  :host [part~="item-action"] {
+    background: var(--snice-color-background-element);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :host [part~="item-action"] {
+    background: var(--snice-color-background-element);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   :host [part~="dropzone"],
   :host [part~="action-button"],
@@ -326,6 +353,18 @@
     background: Canvas;
     color: ButtonText;
     border: 1px solid ButtonBorder;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  :host [part~="action-button"]:focus-visible,
+  :host [part~="item-action"]:focus-visible,
+  :host [part~="dropzone"]:focus-visible,
+  :host [part~="add-button"]:focus-visible,
+  :host [part~="custom-action"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
     box-shadow: none;
   }
 }

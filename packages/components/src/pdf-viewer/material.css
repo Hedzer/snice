@@ -64,13 +64,13 @@
   outline-offset: 2px;
 }
 
-/* Exact M3 38% Disabled Ink (opacity: 1) */
+/* Legible M3 Disabled Ink (opacity: 1, >=46% floor for dark mode clarity) */
 :host [part~="button"]:disabled,
 :host [part~="button"]:disabled:hover,
 :host [part~="button"]:disabled:active {
   opacity: 1;
   background: transparent;
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   border-radius: 9999px;
   cursor: not-allowed;
 }
@@ -79,8 +79,8 @@
   width: 3.25rem;
   height: 2.25rem;
   border-radius: 8px;
-  border: 1px solid var(--snice-color-border);
-  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-highest);
   color: var(--snice-color-text);
   font-family: var(--snice-font-family);
   font-size: 0.875rem;
@@ -116,11 +116,21 @@
 }
 
 :host [part~="fit-select"] {
+  appearance: none;
+  -webkit-appearance: none;
   height: 2.25rem;
-  padding: 0 0.75rem;
+  padding: 0 2rem 0 0.75rem;
   border-radius: 8px;
-  border: 1px solid var(--snice-color-border);
-  background: var(--snice-color-surface-container-lowest);
+  border: 1px solid var(--snice-color-border-subtle);
+  background-color: var(--snice-color-surface-container-highest);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--snice-color-text-secondary) 50%),
+    linear-gradient(135deg, var(--snice-color-text-secondary) 50%, transparent 50%);
+  background-position:
+    calc(100% - 15px) 52%,
+    calc(100% - 11px) 52%;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
   color: var(--snice-color-text);
   font-family: var(--snice-font-family);
   font-size: 0.875rem;
@@ -193,6 +203,12 @@
     background: ButtonFace;
     color: ButtonText;
     border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="fit-select"] {
+    appearance: auto;
+    background-image: none;
+    padding-right: 0.5rem;
   }
 
   :host [part~="button"]:disabled {

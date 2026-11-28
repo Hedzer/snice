@@ -67,8 +67,9 @@
 :host [part~="button"]:disabled,
 :host [part~="button"]:disabled:hover,
 :host [part~="button"]:disabled:active {
-  opacity: 0.35;
+  opacity: 1;
   background: transparent;
+  color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
   cursor: not-allowed;
 }
 
@@ -110,13 +111,20 @@
   min-width: 2.75rem;
 }
 
-/* Raised 24px AppKit NSPopUpButton */
+/* Raised 24px AppKit NSPopUpButton with adaptive double chevron */
 :host [part~="fit-select"] {
+  appearance: none;
+  -webkit-appearance: none;
   height: 1.5rem;
-  padding: 0 0.5rem;
+  padding: 0 1.625rem 0 0.5625rem;
   border-radius: 6px;
   border: 0.5px solid var(--snice-color-border);
-  background: var(--snice-macos-control-bg);
+  background:
+    linear-gradient(135deg, transparent 50%, var(--snice-color-text-secondary) 50%) calc(100% - 12px) calc(50% - 3px) / 3.5px 3.5px no-repeat,
+    linear-gradient(45deg, var(--snice-color-text-secondary) 50%, transparent 50%) calc(100% - 8.5px) calc(50% - 3px) / 3.5px 3.5px no-repeat,
+    linear-gradient(45deg, transparent 50%, var(--snice-color-text-secondary) 50%) calc(100% - 12px) calc(50% + 3px) / 3.5px 3.5px no-repeat,
+    linear-gradient(135deg, var(--snice-color-text-secondary) 50%, transparent 50%) calc(100% - 8.5px) calc(50% + 3px) / 3.5px 3.5px no-repeat,
+    var(--snice-macos-control-bg);
   box-shadow: var(--snice-macos-control-shadow);
   color: var(--snice-color-text);
   font-family: var(--snice-font-family);
@@ -205,6 +213,24 @@
     background: ButtonFace;
     color: ButtonText;
     border: 1px solid ButtonBorder;
+    box-shadow: none;
+  }
+
+  :host [part~="fit-select"] {
+    appearance: auto;
+    background-image: none;
+    padding-right: 0.5rem;
+  }
+
+  :host [part~="button"]:disabled {
+    color: GrayText;
+  }
+
+  :host [part~="button"]:focus-visible,
+  :host [part~="page-input"]:focus-visible,
+  :host [part~="fit-select"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
     box-shadow: none;
   }
 }

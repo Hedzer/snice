@@ -108,6 +108,10 @@
 }
 
 /* Tonal Gallery Cards */
+:host [part~="gallery"] {
+  gap: 12px;
+}
+
 :host [part~="item"] {
   border-radius: 16px;
   background: var(--snice-color-surface-container-low);
@@ -209,22 +213,28 @@
   color: var(--snice-color-danger);
 }
 
-/* Item Actions with Expressive Corner Morph */
+/* Floating M3 Tonal Overlay Actions with Expressive Corner Morph */
 :host [part~="item-actions"] {
-  border-top: 1px solid var(--snice-color-border-subtle);
-  padding: 6px 10px;
-  gap: 6px;
+  border-top: none;
+  padding: 0;
+  gap: 4px;
 }
 
 :host([view="list"]) [part~="item-actions"] {
   border-top: none;
   border-left: 1px solid var(--snice-color-border-subtle);
+  padding: 6px 10px;
 }
 
 :host [part~="item-action"] {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border-radius: 9999px;
+  background: var(--snice-color-surface-container-high);
+  border: 1px solid var(--snice-color-border-subtle);
+  box-shadow: var(--snice-shadow-sm);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   color: var(--snice-color-text);
   transition:
     border-radius var(--snice-transition-fast, 160ms) var(--snice-m3-spring-spatial-fast, cubic-bezier(0.42, 1.4, 0.24, 1)),
@@ -232,11 +242,11 @@
 }
 
 :host [part~="item-action"]:hover {
-  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-high));
 }
 
 :host [part~="item-action"]:active {
-  background: color-mix(in srgb, var(--snice-color-text) 10%, transparent);
+  background: color-mix(in srgb, var(--snice-color-text) 12%, var(--snice-color-surface-container-high));
   border-radius: var(--snice-m3-shape-morph-pressed, 8px);
 }
 
@@ -250,7 +260,7 @@
 }
 
 :host [part~="item-action-delete"]:hover {
-  background: color-mix(in srgb, var(--snice-color-danger) 12%, transparent);
+  background: color-mix(in srgb, var(--snice-color-danger) 14%, var(--snice-color-surface-container-high));
 }
 
 /* Add Tile & Custom Action */

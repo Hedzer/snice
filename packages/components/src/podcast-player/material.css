@@ -73,10 +73,16 @@
 
 :host [part~="skip-back-button"],
 :host [part~="skip-forward-button"] {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   position: relative;
+  background: var(--snice-color-surface-container-high);
+}
+
+:host [part~="skip-back-button"]:hover,
+:host [part~="skip-forward-button"]:hover {
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-high));
 }
 
 :host [part~="skip-label"] {
@@ -86,15 +92,15 @@
   color: inherit;
 }
 
-/* M3 Filter-Chip Speed & Sleep Controls */
+/* Unified M3 Expressive Tonal Pill Speed & Sleep Controls */
 :host [part~="speed-button"],
 :host [part~="sleep-button"] {
   height: 36px;
   min-width: 44px;
   padding: 0 12px;
-  border-radius: 8px;
-  border: 1px solid var(--snice-color-border);
-  background: transparent;
+  border-radius: 9999px;
+  border: none;
+  background: var(--snice-color-surface-container-high);
   font-size: 0.8125rem;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
@@ -103,7 +109,7 @@
 
 :host [part~="speed-button"]:hover,
 :host [part~="sleep-button"]:hover {
-  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-high));
 }
 
 :host [part~="speed-button-active"],
@@ -141,12 +147,23 @@
   border-radius: var(--snice-m3-shape-morph-selected, 12px);
 }
 
-/* Exact Material 3 disabled spec: opacity 1, 12% surface / 38% ink */
+/* Legible M3 Disabled Transport States — preserve primary Play hierarchy & >=52% dark ink */
 :host [part~="button"]:disabled,
-:host [part~="play-button"]:disabled {
+:host [part~="button"]:disabled:hover {
   opacity: 1;
-  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  background: color-mix(in srgb, var(--snice-color-text) 7%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 52%, transparent);
+  border-color: transparent;
+  border-radius: 9999px;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+:host [part~="play-button"]:disabled,
+:host [part~="play-button"]:disabled:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--snice-color-primary) 28%, var(--snice-color-surface-container-highest));
+  color: color-mix(in srgb, var(--snice-color-primary) 72%, var(--snice-color-text));
   border-color: transparent;
   border-radius: 9999px;
   box-shadow: none;
@@ -286,10 +303,17 @@
     box-shadow: none;
   }
 
+  :host [part~="speed-button"],
+  :host [part~="sleep-button"] {
+    border: 1px solid ButtonBorder;
+  }
+
   :host [part~="button"]:disabled,
   :host [part~="play-button"]:disabled {
+    background: ButtonFace;
     color: GrayText;
     border: 1px solid GrayText;
+    opacity: 1;
   }
 
   :host [part~="progress"] {

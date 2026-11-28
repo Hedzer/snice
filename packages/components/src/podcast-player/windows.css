@@ -146,8 +146,19 @@
 }
 
 :host [part~="button"]:disabled,
-:host [part~="play-button"]:disabled {
-  opacity: 0.38;
+:host [part~="button"]:disabled:hover,
+:host [part~="button"]:disabled:active {
+  opacity: 0.52;
+  background: transparent;
+  cursor: not-allowed;
+}
+
+:host [part~="play-button"]:disabled,
+:host [part~="play-button"]:disabled:hover,
+:host [part~="play-button"]:disabled:active {
+  opacity: 0.58;
+  background: var(--snice-color-primary);
+  color: var(--snice-win-on-accent);
   cursor: not-allowed;
 }
 
@@ -305,6 +316,14 @@
   :host [part~="speed-button"],
   :host [part~="sleep-button"] {
     border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="button"]:disabled,
+  :host [part~="play-button"]:disabled {
+    background: ButtonFace;
+    color: GrayText;
+    border: 1px solid GrayText;
+    opacity: 1;
   }
 
   :host [part~="button"]:focus-visible,
