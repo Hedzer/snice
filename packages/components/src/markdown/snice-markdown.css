@@ -129,22 +129,62 @@
   list-style-type: none;
   margin-left: -1.5rem;
   padding-left: 0;
+  display: flex;
+  align-items: center;
 }
 
 .markdown-body .task-list-item input[type="checkbox"] {
-  margin-right: var(--snice-spacing-xs, 0.5rem);
-  vertical-align: middle;
-  accent-color: var(--snice-color-primary, rgb(37 99 235));
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  display: inline-grid;
+  place-content: center;
+  width: var(--md-checkbox-size, 1rem);
+  height: var(--md-checkbox-size, 1rem);
+  margin: 0 var(--snice-spacing-xs, 0.5rem) 0 0;
+  border-radius: var(--md-checkbox-radius, 0.25rem);
+  border: var(--md-checkbox-border-width, 1.5px) solid var(--md-checkbox-border-color, var(--snice-color-border-hover, rgb(148 163 184)));
+  background: var(--md-checkbox-bg, transparent);
+  box-shadow: var(--md-checkbox-shadow, none);
+  opacity: 1;
+  flex-shrink: 0;
+}
+
+.markdown-body .task-list-item input[type="checkbox"]:checked {
+  background: var(--md-checkbox-checked-bg, var(--snice-color-primary, rgb(37 99 235)));
+  border-color: var(--md-checkbox-checked-border, var(--snice-color-primary, rgb(37 99 235)));
+  box-shadow: var(--md-checkbox-checked-shadow, none);
+}
+
+.markdown-body .task-list-item input[type="checkbox"]:checked::after {
+  content: '';
+  width: var(--md-checkbox-check-width, 0.3125rem);
+  height: var(--md-checkbox-check-height, 0.5625rem);
+  border: solid var(--md-checkbox-check-color, var(--snice-color-text-inverse, rgb(255 255 255)));
+  border-width: 0 2px 2px 0;
+  transform: translateY(-0.0625rem) rotate(45deg);
 }
 
 /* Blockquote */
 .markdown-body blockquote {
+  position: relative;
+  overflow: hidden;
   margin: 0 0 var(--snice-spacing-md, 1rem) 0;
-  padding: var(--md-blockquote-padding, var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem));
-  border-left: var(--md-blockquote-border-width, 4px) solid var(--md-blockquote-border-color, var(--snice-color-border, rgb(226 226 226)));
+  padding: var(--md-blockquote-padding, var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem) var(--snice-spacing-xs, 0.5rem) calc(var(--md-blockquote-border-width, 4px) + var(--snice-spacing-md, 1rem)));
+  border: var(--md-blockquote-border, none);
   color: var(--md-blockquote-color, var(--snice-color-text-secondary, rgb(82 82 82)));
   background: var(--md-blockquote-bg, var(--snice-color-surface-container-high, rgb(252 251 249)));
   border-radius: var(--md-blockquote-radius, 0 var(--snice-border-radius-md, 0.25rem) var(--snice-border-radius-md, 0.25rem) 0);
+}
+
+.markdown-body blockquote::before {
+  content: '';
+  position: absolute;
+  inset: var(--md-blockquote-accent-inset, 0 auto 0 0);
+  width: var(--md-blockquote-border-width, 4px);
+  background: var(--md-blockquote-border-color, var(--snice-color-border, rgb(226 226 226)));
+  border-radius: var(--md-blockquote-accent-radius, 0);
+  pointer-events: none;
 }
 
 .markdown-body blockquote > :last-child {
@@ -168,8 +208,9 @@
   margin-bottom: var(--snice-spacing-md, 1rem);
   padding: var(--md-pre-padding, var(--snice-spacing-md, 1rem));
   background: var(--md-pre-bg, var(--snice-color-surface-container-high, rgb(252 251 249)));
-  border: var(--md-border-width, 1px) solid var(--md-border-color, var(--snice-color-border, rgb(226 226 226)));
+  border: var(--md-pre-border, var(--md-border-width, 1px) solid var(--md-border-color, var(--snice-color-border, rgb(226 226 226))));
   border-radius: var(--md-pre-radius, var(--snice-border-radius-lg, 0.5rem));
+  box-shadow: var(--md-pre-shadow, none);
   overflow-x: auto;
   font-family: var(--md-font-mono, var(--snice-font-family-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace));
   font-size: var(--md-pre-font-size, 0.875rem);
@@ -202,7 +243,12 @@
 
 .markdown-body th {
   background: var(--md-table-th-bg, var(--snice-color-surface-container-high, rgb(252 251 249)));
+  color: var(--md-table-th-color, inherit);
   font-weight: var(--md-table-th-weight, var(--snice-font-weight-semibold, 600));
+  font-size: var(--md-table-th-font-size, inherit);
+  text-transform: var(--md-table-th-transform, none);
+  letter-spacing: var(--md-table-th-letter-spacing, normal);
+  border-bottom: var(--md-table-th-border-bottom, var(--md-border-width, 1px) solid var(--md-border-color, var(--snice-color-border, rgb(226 226 226))));
 }
 
 .markdown-body tr:nth-child(even) {
@@ -238,7 +284,7 @@
 }
 
 :host([theme="github"]) .markdown-body blockquote {
-  border-left-color: var(--md-github-blockquote-border-color, var(--snice-color-text-tertiary, rgb(115 115 115)));
+  --md-blockquote-border-color: var(--md-github-blockquote-border-color, var(--snice-color-text-tertiary, rgb(115 115 115)));
   background: var(--md-github-blockquote-bg, transparent);
 }
 

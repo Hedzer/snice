@@ -33,7 +33,7 @@
   --md-blockquote-bg: var(--snice-m3-secondary-container);
   --md-blockquote-color: var(--snice-m3-on-secondary-container);
   --md-blockquote-radius: 0 12px 12px 0;
-  --md-blockquote-padding: 0.75rem 1rem;
+  --md-blockquote-padding: 0.75rem 1rem 0.75rem 1.25rem;
   --md-github-blockquote-border-color: var(--snice-color-primary);
   --md-github-blockquote-bg: var(--snice-m3-secondary-container);
   --md-table-th-bg: var(--snice-color-surface-container-high);
@@ -41,6 +41,14 @@
   --md-table-stripe-bg: var(--snice-color-surface-container-low);
   --md-table-cell-padding: 0.5rem 0.75rem;
   --md-table-font-size: 0.875rem;
+  --md-checkbox-size: 1.0625rem;
+  --md-checkbox-radius: 2px;
+  --md-checkbox-border-width: 2px;
+  --md-checkbox-border-color: var(--snice-color-text-secondary);
+  --md-checkbox-bg: transparent;
+  --md-checkbox-checked-bg: var(--snice-color-primary);
+  --md-checkbox-checked-border: var(--snice-color-primary);
+  --md-checkbox-check-color: var(--snice-m3-on-primary);
   --md-img-radius: 12px;
   --md-link-weight: 500;
   --md-link-decoration: underline;
@@ -66,8 +74,17 @@
     --md-code-border: 1px solid CanvasText;
     --md-pre-bg: Canvas;
     --md-blockquote-bg: Canvas;
+    --md-blockquote-border: 1px solid CanvasText;
+    --md-blockquote-border-color: Highlight;
+    --md-github-blockquote-bg: Canvas;
+    --md-github-blockquote-border-color: Highlight;
     --md-blockquote-color: CanvasText;
     --md-table-th-bg: Canvas;
     --md-table-stripe-bg: Canvas;
+    --md-checkbox-bg: Canvas;
+    --md-checkbox-border-color: CanvasText;
+    --md-checkbox-checked-bg: Highlight;
+    --md-checkbox-checked-border: Highlight;
+    --md-checkbox-check-color: HighlightText;
   }
 }

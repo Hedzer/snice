@@ -43,6 +43,7 @@ icons: 'default'|'material'|'fontawesome' = 'default';
 - `base` - Outer document wrapper
 - `editor` - Editable content area
 - `toolbar` - Formatting toolbar
+- `toolbar-group` - Logical cluster of related toolbar buttons
 - `icon` - Toolbar icon element
 - `button` - A toolbar button
 - `toolbar-button` - A toolbar button (same element as `button`)

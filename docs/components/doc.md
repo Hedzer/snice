@@ -60,6 +60,7 @@ A simple WYSIWYG document editor component with formatting toolbar and content i
 | `base` | The outer document wrapper |
 | `editor` | The editable content area |
 | `toolbar` | The formatting toolbar |
+| `toolbar-group` | A logical cluster of related toolbar buttons |
 | `icon` | Toolbar icon element |
 | `button` | A toolbar button |
 | `toolbar-button` | A toolbar button (same element as `button`) |

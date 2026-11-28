@@ -1,7 +1,7 @@
 /* iOS 26+ Liquid Glass — snice-markdown
  * Apple Notes / Swift Documentation prose: 17px SF Pro Text Dynamic Type body,
- * tight -0.024em display headings, 0.5px hairlines, SF Mono 12px rounded code
- * wells (opaque surface-container so they never vanish on white grouped cards),
+ * tight -0.024em display headings, 0.5px hairlines, SF Mono 14px elevated code
+ * cards, inset-pill DocC callouts, circular Apple Reminders task checkboxes,
  * Apple blue tinted links with tap fade, and zero blur on reading content.
  */
 
@@ -25,22 +25,39 @@
   --md-code-radius: 6px;
   --md-code-padding: 0.125rem 0.375rem;
   --md-code-border: 0.5px solid var(--snice-color-border-subtle);
-  --md-pre-bg: var(--snice-color-surface-container);
-  --md-pre-radius: 12px;
-  --md-pre-padding: 0.875rem 1rem;
+  --md-pre-bg: var(--snice-color-surface-container-high);
+  --md-pre-border: 0.5px solid var(--snice-color-border);
+  --md-pre-radius: 14px;
+  --md-pre-padding: 0.875rem 1.125rem;
+  --md-pre-shadow: var(--snice-shadow-xs);
   --md-pre-font-size: 0.875rem;
-  --md-blockquote-border-width: 3px;
+  --md-blockquote-border: 0.5px solid color-mix(in srgb, var(--snice-color-primary) 24%, transparent);
+  --md-blockquote-border-width: 3.5px;
   --md-blockquote-border-color: var(--snice-color-primary);
-  --md-blockquote-bg: var(--snice-color-surface-container-low);
-  --md-blockquote-color: var(--snice-color-text-secondary);
-  --md-blockquote-radius: 0 12px 12px 0;
-  --md-blockquote-padding: 0.75rem 1rem;
+  --md-blockquote-accent-inset: 8px auto 8px 10px;
+  --md-blockquote-accent-radius: 9999px;
+  --md-blockquote-bg: color-mix(in srgb, var(--snice-color-primary) 9%, var(--snice-color-surface-container-high));
+  --md-blockquote-color: var(--snice-color-text);
+  --md-blockquote-radius: 14px;
+  --md-blockquote-padding: 0.875rem 1.125rem 0.875rem 1.625rem;
   --md-github-blockquote-border-color: var(--snice-color-primary);
-  --md-github-blockquote-bg: var(--snice-color-surface-container-low);
+  --md-github-blockquote-bg: color-mix(in srgb, var(--snice-color-primary) 9%, var(--snice-color-surface-container-high));
   --md-table-th-bg: var(--snice-color-surface-container);
+  --md-table-th-color: var(--snice-color-text-secondary);
+  --md-table-th-transform: uppercase;
+  --md-table-th-letter-spacing: 0.04em;
+  --md-table-th-font-size: 0.75rem;
   --md-table-stripe-bg: var(--snice-color-surface-container-low);
-  --md-table-cell-padding: 0.5rem 0.75rem;
+  --md-table-cell-padding: 0.5625rem 0.75rem;
   --md-table-font-size: 0.9375rem;
+  --md-checkbox-size: 1.125rem;
+  --md-checkbox-radius: 9999px;
+  --md-checkbox-border-width: 1.5px;
+  --md-checkbox-border-color: color-mix(in srgb, var(--snice-color-text) 30%, transparent);
+  --md-checkbox-bg: var(--snice-color-surface-container-high);
+  --md-checkbox-checked-bg: var(--snice-ios-fill-primary);
+  --md-checkbox-checked-border: var(--snice-ios-fill-primary);
+  --md-checkbox-check-color: hsl(0 0% 100%);
   --md-img-radius: 12px;
   --md-link-decoration: none;
   --md-link-hover-decoration: underline;
@@ -63,7 +80,16 @@
     --md-code-bg: Canvas;
     --md-pre-bg: Canvas;
     --md-blockquote-bg: Canvas;
+    --md-blockquote-border: 1px solid CanvasText;
+    --md-blockquote-border-color: Highlight;
+    --md-github-blockquote-bg: Canvas;
+    --md-github-blockquote-border-color: Highlight;
     --md-table-th-bg: Canvas;
     --md-table-stripe-bg: Canvas;
+    --md-checkbox-bg: Canvas;
+    --md-checkbox-border-color: CanvasText;
+    --md-checkbox-checked-bg: Highlight;
+    --md-checkbox-checked-border: Highlight;
+    --md-checkbox-check-color: HighlightText;
   }
 }

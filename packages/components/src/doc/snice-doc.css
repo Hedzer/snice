@@ -57,6 +57,12 @@
   background: var(--snice-doc-active-background, var(--snice-color-surface-active, rgb(227 227 227)));
 }
 
+.toolbar-group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
 .toolbar-divider {
   width: 1px;
   background: var(--snice-doc-border, var(--snice-color-border, rgb(225 228 232)));

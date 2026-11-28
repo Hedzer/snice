@@ -200,16 +200,26 @@ export class SniceDoc extends HTMLElement {
       { cmd: 'download', icon: 'download', title: 'Download' },
     ];
 
+    let currentGroup = document.createElement('div');
+    currentGroup.className = 'toolbar-group';
+    currentGroup.setAttribute('part', 'toolbar-group');
+    toolbar.appendChild(currentGroup);
+
     tools.forEach(tool => {
       if (tool.cmd === 'divider') {
         const divider = document.createElement('div');
         divider.className = 'toolbar-divider';
         divider.setAttribute('part', 'divider');
         toolbar.appendChild(divider);
+
+        currentGroup = document.createElement('div');
+        currentGroup.className = 'toolbar-group';
+        currentGroup.setAttribute('part', 'toolbar-group');
+        toolbar.appendChild(currentGroup);
       } else {
         const btn = this.createToolbarButton(tool.icon!, tool.title!);
         btn.addEventListener('click', () => this.execCommand(tool.cmd, tool.value));
-        toolbar.appendChild(btn);
+        currentGroup.appendChild(btn);
       }
     });
 
