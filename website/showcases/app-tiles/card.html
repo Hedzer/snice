@@ -185,6 +185,25 @@
       <!-- Image icons (imperative) -->
       <div class="comp-split">
         <div class="comp-split-demo">
+          <style>
+            #demo-tiles-images::part(icon-container) {
+              padding: 0.5rem;
+              box-sizing: border-box;
+              background: var(--snice-color-surface-container-high);
+            }
+            #demo-tiles-images::part(image) {
+              object-fit: contain;
+            }
+            [data-theme="dark"] #demo-tiles-images::part(image) {
+              filter: invert(1);
+            }
+            @media (prefers-color-scheme: dark) {
+              :root:not([data-theme]) #demo-tiles-images::part(image),
+              :root[data-theme="auto"] #demo-tiles-images::part(image) {
+                filter: invert(1);
+              }
+            }
+          </style>
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-surface,#1a1a2e);width:18rem">
             <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">image icons</span>
             <snice-app-tiles id="demo-tiles-images" columns="3"></snice-app-tiles>
@@ -210,8 +229,6 @@ tiles.addEventListener('tile-click',
     customElements.whenDefined('snice-app-tiles').then(() => {
       const el = document.getElementById('demo-tiles-images');
       if (el) {
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        const filter = isDark ? 'invert(1) hue-rotate(180deg)' : 'none';
         el.tiles = [
           { id: '1', name: 'Chrome', icon: 'assets/icons/googlechrome.svg' },
           { id: '2', name: 'Firefox', icon: 'assets/icons/firefox.svg' },
@@ -223,9 +240,6 @@ tiles.addEventListener('tile-click',
           { id: '8', name: 'Slack', icon: 'assets/icons/slack.svg' },
           { id: '9', name: 'GitHub', icon: 'assets/icons/github.svg' },
         ];
-        requestAnimationFrame(() => {
-          el.shadowRoot?.querySelectorAll('.tile__icon img').forEach(img => img.style.filter = filter);
-        });
       }
     });
 </script>

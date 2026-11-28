@@ -56,6 +56,37 @@ function isEmoji(str: string): boolean {
   return !/[a-zA-Z_]/.test(str);
 }
 
+/** Pick literal white or dark ink for an explicit tile background color (works identically in light & dark themes). */
+function contrastInkForColor(bg: string): string {
+  const s = bg.trim();
+  let r = 0, g = 0, b = 0;
+  const hex = s.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+  if (hex) {
+    const h = hex[1];
+    if (h.length === 3) {
+      r = parseInt(h[0] + h[0], 16);
+      g = parseInt(h[1] + h[1], 16);
+      b = parseInt(h[2] + h[2], 16);
+    } else {
+      r = parseInt(h.slice(0, 2), 16);
+      g = parseInt(h.slice(2, 4), 16);
+      b = parseInt(h.slice(4, 6), 16);
+    }
+  } else {
+    const rgb = s.match(/^rgba?\(\s*(\d+(?:\.\d+)?)\s*[,\s]\s*(\d+(?:\.\d+)?)\s*[,\s]\s*(\d+(?:\.\d+)?)/i);
+    if (!rgb) return 'rgb(255 255 255)';
+    r = Number(rgb[1]);
+    g = Number(rgb[2]);
+    b = Number(rgb[3]);
+  }
+  const lin = (c: number) => {
+    const v = c / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  };
+  const lum = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+  return lum > 0.36 ? 'rgb(23 23 23)' : 'rgb(255 255 255)';
+}
+
 @element('snice-app-tiles')
 export class SniceAppTiles extends HTMLElement implements SniceAppTilesElement {
   @property({ type: Array, attribute: false })
@@ -156,7 +187,8 @@ export class SniceAppTiles extends HTMLElement implements SniceAppTilesElement {
     if (!raw) {
       const letter = tile.name.charAt(0).toUpperCase();
       const bg = tile.color || DEFAULT_COLORS[index % DEFAULT_COLORS.length];
-      return `<div class="tile__icon tile__icon--text" part="icon-container" style="background:${bg}">${letter}</div>`;
+      const ink = contrastInkForColor(bg);
+      return `<div class="tile__icon tile__icon--text" part="icon-container" style="background:${this.escAttr(bg)};color:${ink}">${this.esc(letter)}</div>`;
     }
 
     // Strip scheme override prefix for src/content
@@ -167,16 +199,20 @@ export class SniceAppTiles extends HTMLElement implements SniceAppTilesElement {
     const type = iconType(raw);
 
     if (type === 'img') {
-      return `<div class="tile__icon" part="icon-container"><img part="image" src="${this.escAttr(src)}" alt="${this.escAttr(tile.name)}" /></div>`;
+      const bgStyle = tile.color ? ` style="background:${this.escAttr(tile.color)}"` : '';
+      return `<div class="tile__icon" part="icon-container"${bgStyle}><img part="image" src="${this.escAttr(src)}" alt="${this.escAttr(tile.name)}" /></div>`;
     }
 
     // Text icon: emoji or Material Symbols ligature
-    const bg = tile.color ? `background:${tile.color}` : '';
     if (isEmoji(src)) {
+      const bg = tile.color ? `background:${this.escAttr(tile.color)}` : '';
       return `<div class="tile__icon tile__icon--emoji" part="icon-container" style="${bg}">${this.esc(src)}</div>`;
     }
     // Ligature (e.g. Material Symbols)
-    return `<div class="tile__icon tile__icon--ligature" part="icon-container" style="${bg}"><span class="icon" part="icon">${this.esc(src)}</span></div>`;
+    const ligStyle = tile.color
+      ? `background:${this.escAttr(tile.color)};color:${contrastInkForColor(tile.color)}`
+      : '';
+    return `<div class="tile__icon tile__icon--ligature" part="icon-container" style="${ligStyle}"><span class="icon" part="icon">${this.esc(src)}</span></div>`;
   }
 
   private esc(str: string): string {

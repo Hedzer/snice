@@ -53,6 +53,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   overflow: hidden;
   flex-shrink: 0;
@@ -116,7 +117,7 @@
 /* Emoji icon */
 .tile__icon--emoji {
   font-size: 1.5rem;
-  background: var(--snice-color-surface-container-high, rgb(252 251 249));
+  background: var(--snice-app-tile-bg, var(--snice-color-surface-container-high, rgb(252 251 249)));
 }
 
 :host([size="sm"]) .tile__icon--emoji {
@@ -137,7 +138,8 @@
 
 /* Ligature icon (Material Symbols etc.) */
 .tile__icon--ligature {
-  background: var(--snice-color-surface-container-high, rgb(252 251 249));
+  background: var(--snice-app-tile-bg, var(--snice-color-surface-container-high, rgb(252 251 249)));
+  color: var(--snice-app-tile-ink, var(--snice-color-text, rgb(23 23 23)));
 }
 
 .tile__icon--ligature .icon {
@@ -152,7 +154,7 @@
   word-wrap: normal;
   direction: ltr;
   -webkit-font-smoothing: antialiased;
-  color: var(--snice-color-text, rgb(23 23 23));
+  color: inherit;
 }
 
 :host([size="sm"]) .tile__icon--ligature .icon {
@@ -175,7 +177,7 @@
 .tile__name {
   font-size: var(--snice-font-size-xs, 0.75rem);
   text-align: center;
-  line-height: var(--snice-line-height-tight, 1.25);
+  line-height: 1.35;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -301,4 +303,11 @@
 .tiles--list .tile__name {
   font-size: var(--snice-font-size-sm, 0.875rem);
   text-align: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

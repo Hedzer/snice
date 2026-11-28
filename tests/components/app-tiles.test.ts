@@ -106,6 +106,22 @@ describe('snice-app-tiles', () => {
       expect(img).toBeTruthy();
       expect(img?.getAttribute('src')).toBe('https://example.com/icon.png');
     });
+
+    it('should apply high-contrast ink to colored ligature tiles and defer to theme when uncolored', async () => {
+      tiles = await createComponent<SniceAppTilesElement>('snice-app-tiles');
+      tiles.tiles = [
+        { id: '1', name: 'Mail', icon: 'mail', color: 'rgb(220 38 38)' },
+        { id: '2', name: 'Notes', icon: 'note', color: '#fde047' },
+        { id: '3', name: 'Home', icon: 'home' },
+      ];
+      await wait(50);
+
+      const containers = queryShadowAll(tiles as HTMLElement, '.tile__icon--ligature') as NodeListOf<HTMLElement>;
+      expect(containers.length).toBe(3);
+      expect(containers[0].style.color).toMatch(/^rgb\(255[, ]+255[, ]+255\)$/);
+      expect(containers[1].style.color).toMatch(/^rgb\(23[, ]+23[, ]+23\)$/);
+      expect(containers[2].style.color).toBe('');
+    });
   });
 
   describe('events', () => {
