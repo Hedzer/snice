@@ -92,10 +92,21 @@
   background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
 }
 
+[part~="day-disabled"] {
+  opacity: 1;
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="day-other"] {
+  opacity: 0.52;
+  color: var(--snice-color-text-tertiary);
+}
+
 [part~="day-today"] {
-  border: 1px solid var(--snice-color-primary);
+  opacity: 1;
+  border: 1.5px solid var(--snice-color-primary);
   color: var(--snice-color-primary);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 [part~="day-available"] {
@@ -234,9 +245,9 @@
 
 [part~="button"]:disabled {
   opacity: 1;
-  background: color-mix(in srgb, var(--snice-color-text) 12%, transparent);
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
-  border-color: transparent;
+  background: var(--snice-color-surface-container-highest);
+  color: var(--snice-color-text-secondary);
+  border: 1px solid var(--snice-color-border-subtle);
   border-radius: 9999px;
 }
 

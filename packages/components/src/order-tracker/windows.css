@@ -67,16 +67,16 @@
 }
 
 [part~="step-indicator-pending"] {
-  background: var(--snice-color-surface-container-lowest);
+  background: var(--snice-color-surface-container-low);
   border: 1.5px solid var(--snice-color-border-hover);
-  color: var(--snice-color-text-tertiary);
+  color: var(--snice-color-text-secondary);
 }
 
-/* CRITICAL Fluent dark-mode fix: black --snice-win-on-accent ink on #60CDFF / #6CCB5F */
+/* Win11 Fluent 2 crisp accent ring active indicator */
 [part~="step-indicator-active"] {
-  background: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, var(--snice-color-surface-container-lowest));
   border: 2px solid var(--snice-color-primary);
-  color: var(--snice-win-on-accent);
+  color: var(--snice-color-primary);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-primary) 22%, transparent);
 }
 
@@ -104,7 +104,7 @@
 
 [part~="step-label-active"] {
   font-weight: 600;
-  color: var(--snice-color-text);
+  color: var(--snice-color-primary);
 }
 
 [part~="step-label-completed"] {
@@ -113,7 +113,7 @@
 }
 
 [part~="step-label-pending"] {
-  color: var(--snice-color-text-tertiary);
+  color: var(--snice-color-text-secondary);
 }
 
 [part~="step-timestamp"] {

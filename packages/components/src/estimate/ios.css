@@ -16,6 +16,8 @@
   --estimate-success: var(--snice-color-success);
   --estimate-danger: var(--snice-color-danger);
   --estimate-warning: var(--snice-color-warning);
+  --estimate-optional-bg: color-mix(in srgb, var(--snice-color-warning) 16%, transparent);
+  --estimate-optional-text: color-mix(in srgb, var(--snice-color-warning) 75%, var(--snice-color-text));
   --estimate-radius: 20px;
   --estimate-shadow: var(--snice-shadow-sm);
   -webkit-font-smoothing: antialiased;
@@ -70,6 +72,8 @@
 
 [part~="optional-tag"] {
   border-radius: 9999px;
+  font-weight: 600;
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-warning) 35%, transparent);
 }
 
 /* Tabular numerals across all estimate figures */
@@ -107,7 +111,7 @@
 }
 
 [part~="item-toggle-active"] {
-  background: var(--snice-color-success);
+  background: hsl(135 59% 49%);
 }
 
 [part~="item-toggle-active"]::after {

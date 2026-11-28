@@ -83,18 +83,19 @@ export class SniceOrderTracker extends HTMLElement implements SniceOrderTrackerE
         ${this.renderTrackingInfo()}
         <div class="${stepsClasses}" part="steps${STEPS_VARIANT_PARTS[this.variant] ?? ''}" role="list">
           ${this.steps.map((step: OrderStep, index: number) => {
+            const isCompleted = step.status === 'completed';
+            const isActiveStep = step.status === 'active' || (step.status as string) === 'current';
+            const normalizedStatus = isCompleted ? 'completed' : isActiveStep ? 'active' : 'pending';
             const stepClasses = [
               'tracker__step',
-              `tracker__step--${step.status}`
+              `tracker__step--${normalizedStatus}`
             ].join(' ');
-            const isCompleted = step.status === 'completed';
-            const isActiveStep = step.status === 'active';
 
             return html/*html*/`
               <div class="${stepClasses}"
                    part="step ${isCompleted ? 'step-completed' : isActiveStep ? 'step-active' : 'step-pending'}"
                    role="listitem"
-                   aria-current="${step.status === 'active' ? 'step' : 'false'}"
+                   aria-current="${isActiveStep ? 'step' : 'false'}"
                    tabindex="0"
                    @click=${() => this.handleStepClick(step, index)}
                    @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.handleStepClick(step, index); } }}>

@@ -19,7 +19,7 @@
 
 [part~="base"] {
   background: var(--snice-color-surface-container-high);
-  border: 0.5px solid var(--snice-color-border-subtle);
+  border: 0.5px solid var(--snice-color-border);
   border-radius: 20px;
   padding: 20px;
   box-shadow: var(--snice-shadow-sm);
@@ -68,15 +68,17 @@
 [part~="step-indicator-pending"] {
   background: var(--snice-color-surface-container-low);
   border: 1.5px solid var(--snice-color-border-hover);
-  color: var(--snice-color-text-tertiary);
+  color: var(--snice-color-text-secondary);
 }
 
-/* CRITICAL iOS dark-mode fix: explicit white icon ink + seed-derived active halo */
+/* CRITICAL iOS dark-mode fix: explicit white icon ink + luminous Apple blue halo ring */
 [part~="step-indicator-active"] {
   background: var(--snice-ios-fill-primary);
   border: 2px solid var(--snice-ios-fill-primary);
   color: hsl(0 0% 100%);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--snice-color-primary) 24%, transparent);
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.28),
+    0 0 0 4px color-mix(in srgb, var(--snice-color-primary) 28%, transparent);
 }
 
 [part~="step-indicator-completed"] {
@@ -103,14 +105,18 @@
   letter-spacing: -0.014em;
 }
 
-[part~="step-label-active"],
+[part~="step-label-active"] {
+  font-weight: 600;
+  color: var(--snice-color-primary);
+}
+
 [part~="step-label-completed"] {
   font-weight: 600;
   color: var(--snice-color-text);
 }
 
 [part~="step-label-pending"] {
-  color: var(--snice-color-text-tertiary);
+  color: var(--snice-color-text-secondary);
 }
 
 [part~="step-timestamp"] {

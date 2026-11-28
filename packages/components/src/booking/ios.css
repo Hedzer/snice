@@ -61,10 +61,11 @@
   min-width: 2.25rem;
   min-height: 2.25rem;
   border-radius: 9999px;
-  border: none;
-  background: var(--snice-color-surface-container-low);
+  border: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--snice-ios-secondary-fill);
   color: var(--snice-color-primary);
   font-size: 1.25rem;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -107,19 +108,31 @@
   transform: scale(0.93);
 }
 
+[part~="day-disabled"] {
+  opacity: 1;
+  color: var(--snice-color-text-tertiary);
+}
+
+[part~="day-other"] {
+  opacity: 0.55;
+  color: var(--snice-color-text-tertiary);
+}
+
 [part~="day-today"] {
+  opacity: 1;
   color: var(--snice-color-primary);
   font-weight: 700;
+  box-shadow: inset 0 0 0 1.5px var(--snice-color-primary);
 }
 
 [part~="day-available"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 12%, transparent);
+  background: color-mix(in srgb, var(--snice-color-primary) 18%, transparent);
   color: var(--snice-color-primary);
   font-weight: 600;
 }
 
 [part~="day-available"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 20%, transparent);
+  background: color-mix(in srgb, var(--snice-color-primary) 26%, transparent);
 }
 
 [part~="day-selected"] {

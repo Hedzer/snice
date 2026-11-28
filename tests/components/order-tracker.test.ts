@@ -240,6 +240,21 @@ describe('snice-order-tracker', () => {
       expect(steps[1].getAttribute('aria-current')).toBe('step');
       expect(steps[2].getAttribute('aria-current')).toBe('false');
     });
+
+    it('treats status="current" alias as active step', async () => {
+      el = await createComponent<SniceOrderTrackerElement>('snice-order-tracker');
+      el.steps = [
+        { label: 'Ordered', status: 'completed' },
+        { label: 'In Transit', status: 'current' as any },
+        { label: 'Delivered', status: 'pending' },
+      ];
+      await wait(50);
+
+      const steps = queryShadowAll(el as HTMLElement, '.tracker__step');
+      expect(steps[1].classList.contains('tracker__step--active')).toBe(true);
+      expect(steps[1].getAttribute('aria-current')).toBe('step');
+      expect(steps[1].getAttribute('part')).toContain('step-active');
+    });
   });
 
   describe('stylesheet contracts', () => {

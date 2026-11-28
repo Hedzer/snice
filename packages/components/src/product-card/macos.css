@@ -249,11 +249,15 @@
   min-height: 0;
   padding: 0;
   border-radius: 9999px;
-  box-shadow: none;
+  border: 1px solid color-mix(in srgb, var(--snice-color-text) 24%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--snice-color-text) 16%, transparent);
 }
 
 [part~="variant-option-color"][part~="variant-option-selected"] {
-  box-shadow: 0 0 0 2px var(--snice-color-background-element), 0 0 0 4px var(--snice-color-primary);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--snice-color-text) 24%, transparent),
+    0 0 0 2px var(--snice-color-background-element),
+    0 0 0 4px var(--snice-color-primary);
 }
 
 /* Compact 32px top-lit glossy AppKit accent CTA with explicit white dark-mode ink */
@@ -294,7 +298,7 @@
 
 :host([variant="minimal"]) [part~="cta"] {
   background: var(--snice-macos-control-bg);
-  border: 0.5px solid var(--snice-color-border);
+  border: 0.5px solid var(--snice-color-border-hover);
   box-shadow: var(--snice-macos-control-shadow);
   color: var(--snice-color-text);
 }

@@ -71,12 +71,12 @@
   color: var(--snice-color-text-secondary);
 }
 
-/* CRITICAL M3 dark-mode T80 fix: dark --snice-m3-on-primary ink + seed-derived halo */
+/* M3 Expressive primary tonal container active node */
 [part~="step-indicator-active"] {
-  background: var(--snice-color-primary);
+  background: var(--snice-m3-primary-container);
   border: 2px solid var(--snice-color-primary);
-  color: var(--snice-m3-on-primary);
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--snice-color-primary) 18%, transparent);
+  color: var(--snice-m3-on-primary-container);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--snice-color-primary) 18%, transparent);
 }
 
 [part~="step-indicator-completed"] {
@@ -122,7 +122,7 @@
 
 [part~="step-label-active"] {
   font-weight: 600;
-  color: var(--snice-color-text);
+  color: var(--snice-color-primary);
 }
 
 [part~="step-label-completed"] {
@@ -131,7 +131,7 @@
 }
 
 [part~="step-label-pending"] {
-  color: var(--snice-color-text-tertiary);
+  color: var(--snice-color-text-secondary);
 }
 
 [part~="step-timestamp"] {

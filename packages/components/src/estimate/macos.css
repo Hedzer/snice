@@ -16,6 +16,8 @@
   --estimate-success: var(--snice-color-success);
   --estimate-danger: var(--snice-color-danger);
   --estimate-warning: var(--snice-color-warning);
+  --estimate-optional-bg: color-mix(in srgb, var(--snice-color-warning) 16%, transparent);
+  --estimate-optional-text: color-mix(in srgb, var(--snice-color-warning) 75%, var(--snice-color-text));
   --estimate-radius: 12px;
   --estimate-shadow: var(--snice-shadow-sm);
   -webkit-font-smoothing: antialiased;
@@ -70,6 +72,8 @@
 
 [part~="optional-tag"] {
   border-radius: 4px;
+  font-weight: 600;
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-warning) 35%, transparent);
 }
 
 /* Tabular numerals across all estimate figures */
@@ -147,15 +151,16 @@
 }
 
 [part~="decline-button"] {
-  background: var(--snice-macos-control-bg);
+  background: color-mix(in srgb, var(--snice-color-danger) 10%, var(--snice-macos-control-bg));
   color: var(--snice-color-danger);
-  border: 0.5px solid var(--snice-color-border);
+  font-weight: 600;
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-danger) 48%, var(--snice-color-border));
   box-shadow: var(--snice-macos-control-shadow);
 }
 
 [part~="decline-button"]:hover {
-  background: color-mix(in srgb, var(--snice-color-danger) 10%, var(--snice-macos-control-bg));
-  border-color: color-mix(in srgb, var(--snice-color-danger) 40%, var(--snice-color-border));
+  background: color-mix(in srgb, var(--snice-color-danger) 18%, var(--snice-macos-control-bg));
+  border-color: color-mix(in srgb, var(--snice-color-danger) 68%, var(--snice-color-border));
 }
 
 [part~="option-button"] {

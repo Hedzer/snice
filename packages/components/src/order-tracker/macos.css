@@ -26,9 +26,11 @@
 }
 
 [part~="info"] {
-  padding-bottom: 12px;
-  margin-bottom: 16px;
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-low);
+  margin: -16px -18px 16px;
+  padding: 10px 18px;
+  border-radius: 11px 11px 0 0;
+  border-bottom: 0.5px solid var(--snice-color-border);
 }
 
 [part~="info-label"] {
@@ -66,17 +68,17 @@
 
 [part~="step-indicator-pending"] {
   background: var(--snice-macos-control-bg);
-  border: 1px solid var(--snice-color-border);
+  border: 1px solid var(--snice-color-border-hover);
   box-shadow: var(--snice-macos-control-shadow);
-  color: var(--snice-color-text-tertiary);
+  color: var(--snice-color-text-secondary);
 }
 
-/* CRITICAL macOS dark-mode fix: explicit white ink + seed-derived halo */
+/* CRITICAL macOS dark-mode fix: explicit white ink + AppKit focus halo */
 [part~="step-indicator-active"] {
-  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent 55%), var(--snice-macos-fill-primary);
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.16), transparent 55%), var(--snice-macos-fill-primary);
   border: 1px solid var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-macos-fill-primary) 24%, transparent);
+  box-shadow: var(--snice-macos-focus-halo), inset 0 0.5px 0 hsl(0 0% 100% / 0.25);
 }
 
 [part~="step-indicator-completed"] {
@@ -133,7 +135,7 @@
 
 [part~="step-label-active"] {
   font-weight: 600;
-  color: var(--snice-color-text);
+  color: var(--snice-color-primary);
 }
 
 [part~="step-label-completed"] {
@@ -142,7 +144,7 @@
 }
 
 [part~="step-label-pending"] {
-  color: var(--snice-color-text-tertiary);
+  color: var(--snice-color-text-secondary);
 }
 
 [part~="step-timestamp"],

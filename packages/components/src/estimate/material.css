@@ -149,13 +149,14 @@
 }
 
 [part~="decline-button"] {
-  background: transparent;
+  background: color-mix(in srgb, var(--snice-color-danger) 10%, transparent);
   color: var(--snice-color-danger);
-  border: 1px solid var(--snice-color-border);
+  font-weight: 600;
+  border: 1px solid color-mix(in srgb, var(--snice-color-danger) 55%, var(--snice-color-border));
 }
 
 [part~="decline-button"]:hover {
-  background: color-mix(in srgb, var(--snice-color-danger) 8%, transparent);
+  background: color-mix(in srgb, var(--snice-color-danger) 18%, transparent);
   border-color: var(--snice-color-danger);
 }
 
