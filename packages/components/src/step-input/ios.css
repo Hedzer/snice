@@ -241,20 +241,63 @@
 
 /* Accessibility: Forced Colors */
 @media (forced-colors: active) {
-  [part~="base"] {
+  [part~="base"],
+  [part~="base-invalid"],
+  :host([readonly]) [part~="base"] {
+    background: Canvas;
     border-color: ButtonBorder;
     box-shadow: none;
   }
 
-  [part~="base"]:focus-within {
+  [part~="base"]:focus-within,
+  [part~="base-invalid"]:focus-within,
+  :host([readonly]) [part~="base"]:focus-within {
     border-color: Highlight;
     outline: 2px solid Highlight;
+    outline-offset: 2px;
     box-shadow: none;
   }
 
   [part~="decrement-button"],
   [part~="increment-button"] {
     border-color: ButtonBorder;
+  }
+
+  [part~="button"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    box-shadow: none;
+  }
+
+  [part~="button"]:disabled,
+  [part~="button"]:disabled:hover,
+  [part~="button"]:disabled:active,
+  [part~="button"]:disabled:focus-visible,
+  :host([disabled]) [part~="button"],
+  :host([disabled]) [part~="button"]:hover,
+  :host([disabled]) [part~="button"]:active,
+  :host([disabled]) [part~="button"]:focus-visible,
+  :host([disabled]) [part~="button"]:disabled,
+  :host([disabled]) [part~="button"]:disabled:hover,
+  :host([disabled]) [part~="button"]:disabled:active,
+  :host([disabled]) [part~="button"]:disabled:focus-visible {
+    color: GrayText;
+    border-color: GrayText;
+    opacity: 1;
+  }
+
+  :host([disabled]) [part~="base"],
+  :host([disabled]) [part~="base"]:focus-within {
+    border-color: GrayText;
+    outline: none;
+    opacity: 1;
+  }
+
+  [part~="input"]:disabled,
+  :host([disabled]) [part~="input"],
+  :host([disabled]) [part~="input"]:disabled {
+    color: GrayText;
+    opacity: 1;
   }
 }
 
