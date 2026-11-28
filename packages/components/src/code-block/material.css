@@ -124,8 +124,14 @@
 
 /* Copied Confirmation — M3 Dark-Mode T80 Pastel + Dark Inverse Ink */
 :host [part~="copy-button-copied"],
+:host [part~="copy-button-copied"]:hover,
+:host [part~="copy-button-copied"]:active,
 :host([theme="dark"]) [part~="copy-button-copied"],
-:host([theme="light"]) [part~="copy-button-copied"] {
+:host([theme="dark"]) [part~="copy-button-copied"]:hover,
+:host([theme="dark"]) [part~="copy-button-copied"]:active,
+:host([theme="light"]) [part~="copy-button-copied"],
+:host([theme="light"]) [part~="copy-button-copied"]:hover,
+:host([theme="light"]) [part~="copy-button-copied"]:active {
   background: var(--snice-color-success);
   color: var(--snice-color-text-inverse);
   border-radius: 9999px;

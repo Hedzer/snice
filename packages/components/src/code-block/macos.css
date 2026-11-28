@@ -25,7 +25,7 @@
 :host [part~="base"] {
   border-radius: 10px;
   border: 0.5px solid var(--snice-color-border);
-  box-shadow: var(--snice-shadow-xs);
+  box-shadow: var(--snice-shadow-sm);
   background: var(--code-block-bg, var(--_cb-bg));
 }
 
@@ -86,12 +86,19 @@
 }
 
 :host [part~="copy-button"]:hover {
-  background: color-mix(in srgb, var(--snice-color-text) 4%, var(--snice-macos-control-bg));
+  background:
+    linear-gradient(var(--snice-color-overlay-hover), var(--snice-color-overlay-hover)),
+    var(--snice-macos-control-bg);
   border-color: var(--snice-color-border-hover);
 }
 
 :host [part~="copy-button"]:active {
-  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-macos-control-bg));
+  background:
+    linear-gradient(
+      color-mix(in srgb, var(--snice-color-text) 10%, transparent),
+      color-mix(in srgb, var(--snice-color-text) 10%, transparent)
+    ),
+    var(--snice-macos-control-bg);
   box-shadow: inset 0 1px 2px hsl(0 0% 0% / 0.14);
 }
 
@@ -127,8 +134,14 @@
 
 /* Copied Confirmation — AppKit Top-Lit Gloss + Explicit White Ink */
 :host [part~="copy-button-copied"],
+:host [part~="copy-button-copied"]:hover,
+:host [part~="copy-button-copied"]:active,
 :host([theme="dark"]) [part~="copy-button-copied"],
-:host([theme="light"]) [part~="copy-button-copied"] {
+:host([theme="dark"]) [part~="copy-button-copied"]:hover,
+:host([theme="dark"]) [part~="copy-button-copied"]:active,
+:host([theme="light"]) [part~="copy-button-copied"],
+:host([theme="light"]) [part~="copy-button-copied"]:hover,
+:host([theme="light"]) [part~="copy-button-copied"]:active {
   background: linear-gradient(180deg, hsl(0 0% 100% / 0.14), transparent), var(--snice-macos-fill-success);
   border-color: var(--snice-macos-fill-success);
   color: hsl(0 0% 100%);
@@ -206,9 +219,17 @@
     box-shadow: none;
   }
 
-  :host [part~="copy-button-copied"] {
+  :host [part~="copy-button-copied"],
+  :host [part~="copy-button-copied"]:hover,
+  :host [part~="copy-button-copied"]:active {
     background: Highlight;
     color: HighlightText;
     border: 1px solid Highlight;
+  }
+
+  :host [part~="copy-button"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

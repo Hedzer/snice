@@ -1,14 +1,14 @@
 /* iOS 26+ Liquid Glass — snice-code-block
- * Swift Playgrounds / Apple Developer Docs listing: opaque 16px grouped inset
+ * Swift Playgrounds / Apple Developer Docs listing: opaque 20px grouped inset
  * code card (zero glass blur over scrolling code), 0.5px hairline border,
- * SF Mono typography, floating Liquid Glass capsule Copy pill, and explicit
- * white ink on green copied confirmation in both light and dark modes.
+ * SF Mono typography, Liquid Glass header + floating capsule Copy pill, and
+ * explicit white ink on green copied confirmation in both light and dark modes.
  */
 
 :host {
   font-family: var(--snice-font-family);
   --_cb-bg: var(--snice-color-surface-container-high);
-  --_cb-header-bg: var(--snice-color-surface-container-low);
+  --_cb-header-bg: var(--snice-ios-glass-regular-bg);
 }
 
 :host([theme="dark"]) {
@@ -21,27 +21,31 @@
   --_cb-header-bg: #eaeaeb;
 }
 
-/* Opaque Grouped Content Card (Zero Backdrop Blur) */
+/* Opaque 20px Grouped Content Card (Zero Backdrop Blur over Code Body) */
 :host [part~="base"] {
-  border-radius: 16px;
-  border: 0.5px solid var(--snice-color-border-subtle);
-  box-shadow: var(--snice-shadow-xs);
+  border-radius: 20px;
+  border: 0.5px solid var(--snice-color-border);
+  box-shadow: var(--snice-shadow-sm);
   background: var(--code-block-bg, var(--_cb-bg));
 }
 
 :host([theme="dark"]) [part~="base"] {
-  border-color: hsl(0 0% 100% / 0.12);
+  border-color: hsl(0 0% 100% / 0.14);
 }
 
 :host([theme="light"]) [part~="base"] {
-  border-color: hsl(0 0% 0% / 0.1);
+  border-color: hsl(0 0% 0% / 0.12);
 }
 
+/* Liquid Glass Header Chrome with Specular Top Rim */
 :host [part~="header"] {
-  min-height: 2.75rem;
+  min-height: 2.875rem;
   padding: 0.5rem 1rem;
   background: var(--code-block-header-bg, var(--_cb-header-bg));
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  backdrop-filter: var(--snice-ios-glass-blur);
+  -webkit-backdrop-filter: var(--snice-ios-glass-blur);
+  border-bottom: 0.5px solid var(--snice-color-border);
+  box-shadow: inset 0 1px 0.5px hsl(0 0% 100% / 0.32);
   font-family: var(--snice-font-family);
 }
 
@@ -127,8 +131,14 @@
 
 /* Copied Confirmation Capsule — explicit white ink for light & dark iOS */
 :host [part~="copy-button-copied"],
+:host [part~="copy-button-copied"]:hover,
+:host [part~="copy-button-copied"]:active,
 :host([theme="dark"]) [part~="copy-button-copied"],
-:host([theme="light"]) [part~="copy-button-copied"] {
+:host([theme="dark"]) [part~="copy-button-copied"]:hover,
+:host([theme="dark"]) [part~="copy-button-copied"]:active,
+:host([theme="light"]) [part~="copy-button-copied"],
+:host([theme="light"]) [part~="copy-button-copied"]:hover,
+:host([theme="light"]) [part~="copy-button-copied"]:active {
   background: var(--snice-ios-fill-success);
   border-color: var(--snice-ios-fill-success);
   color: hsl(0 0% 100%);
@@ -148,7 +158,6 @@
 :host [part~="line-number"] {
   font-variant-numeric: tabular-nums;
   width: 2.75rem;
-  opacity: 0.75;
 }
 
 :host [part~="line-highlight"] {
@@ -161,10 +170,24 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
+  :host [part~="header"] {
+    background: var(--snice-color-surface-container-low);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
   :host [part~="copy-button"] {
     background: var(--snice-color-surface-container-high);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+
+  :host([theme="dark"]) [part~="header"] {
+    background: #21252b;
+  }
+
+  :host([theme="light"]) [part~="header"] {
+    background: #eaeaeb;
   }
 
   :host([theme="dark"]) [part~="copy-button"] {
@@ -174,11 +197,33 @@
   :host([theme="light"]) [part~="copy-button"] {
     background: hsl(0 0% 100%);
   }
+
+  :host [part~="copy-button-copied"],
+  :host [part~="copy-button-copied"]:hover,
+  :host [part~="copy-button-copied"]:active,
+  :host([theme="dark"]) [part~="copy-button-copied"],
+  :host([theme="dark"]) [part~="copy-button-copied"]:hover,
+  :host([theme="dark"]) [part~="copy-button-copied"]:active,
+  :host([theme="light"]) [part~="copy-button-copied"],
+  :host([theme="light"]) [part~="copy-button-copied"]:hover,
+  :host([theme="light"]) [part~="copy-button-copied"]:active {
+    background: var(--snice-ios-fill-success);
+  }
 }
 
 @supports not (backdrop-filter: blur(1px)) {
+  :host [part~="header"] {
+    background: var(--snice-color-surface-container-low);
+  }
+
   :host [part~="copy-button"] {
     background: var(--snice-color-surface-container-high);
+  }
+
+  :host [part~="copy-button-copied"],
+  :host [part~="copy-button-copied"]:hover,
+  :host [part~="copy-button-copied"]:active {
+    background: var(--snice-ios-fill-success);
   }
 }
 

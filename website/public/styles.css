@@ -13,24 +13,24 @@ body {
 a { color: var(--snice-color-primary); }
 code { font-family: var(--snice-font-family-mono); }
 
-/* ─── Global snice-code-block styling ─── */
-snice-code-block {
+/* ─── Global snice-code-block styling (doc & snippet panels only; leave live component demos untouched) ─── */
+snice-code-block:not(.demo-code-block) {
   margin-bottom: 1rem;
 }
-snice-code-block::part(container) {
+snice-code-block:not(.demo-code-block)::part(container) {
   background: #2a2a3a;
   border-radius: 6px;
 }
-[data-theme="light"] snice-code-block::part(container) {
+[data-theme="light"] snice-code-block:not(.demo-code-block)::part(container) {
   background: #fafafa;
 }
-snice-code-block::part(header) { display: none; }
-snice-code-block::part(code) {
+snice-code-block:not(.demo-code-block)::part(header) { display: none; }
+snice-code-block:not(.demo-code-block)::part(code) {
   font-size: 0.8rem;
   line-height: 1.6;
 }
 @media (max-width: 800px) {
-  snice-code-block::part(code) { font-size: 0.7rem; }
+  snice-code-block:not(.demo-code-block)::part(code) { font-size: 0.7rem; }
 }
 .wrap { max-width: 1100px; margin: 0 auto; padding: 0 2rem; overflow-x: clip; }
 

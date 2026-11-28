@@ -122,8 +122,14 @@
 
 /* Copied Confirmation — --snice-win-on-accent (white light / black dark) */
 :host [part~="copy-button-copied"],
+:host [part~="copy-button-copied"]:hover,
+:host [part~="copy-button-copied"]:active,
 :host([theme="dark"]) [part~="copy-button-copied"],
-:host([theme="light"]) [part~="copy-button-copied"] {
+:host([theme="dark"]) [part~="copy-button-copied"]:hover,
+:host([theme="dark"]) [part~="copy-button-copied"]:active,
+:host([theme="light"]) [part~="copy-button-copied"],
+:host([theme="light"]) [part~="copy-button-copied"]:hover,
+:host([theme="light"]) [part~="copy-button-copied"]:active {
   background: var(--snice-color-success);
   border-color: var(--snice-color-success);
   color: var(--snice-win-on-accent);
