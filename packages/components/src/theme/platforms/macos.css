@@ -108,7 +108,7 @@
   --snice-color-primary: hsl(211 100% 69%);
   --snice-color-success: hsl(135 65% 54%);
   --snice-color-warning: hsl(38 100% 58%);
-  --snice-color-danger: hsl(3 100% 68%);
+  --snice-color-danger: hsl(3 100% 72%);
   --snice-color-neutral: hsl(240 4% 44%);
 
   --snice-macos-fill-primary: hsl(211 100% 41%);
@@ -156,7 +156,7 @@
     --snice-color-primary: hsl(211 100% 69%);
     --snice-color-success: hsl(135 65% 54%);
     --snice-color-warning: hsl(38 100% 58%);
-    --snice-color-danger: hsl(3 100% 68%);
+    --snice-color-danger: hsl(3 100% 72%);
     --snice-color-neutral: hsl(240 4% 44%);
 
     --snice-macos-fill-primary: hsl(211 100% 41%);

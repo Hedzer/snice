@@ -7,11 +7,11 @@
 
 [part~="bone"] {
   background: var(--skeleton-bg);
-  border-radius: var(--snice-border-radius-md, 4px);
+  border-radius: var(--snice-border-radius-sm, 2px);
 }
 
 :host([variant="text"]) [part~="bone"] {
-  border-radius: var(--snice-border-radius-md, 4px);
+  border-radius: var(--snice-border-radius-sm, 2px);
 }
 
 :host([variant="circular"]) [part~="bone"] {
@@ -19,7 +19,7 @@
 }
 
 :host([variant="rounded"]) [part~="bone"] {
-  border-radius: var(--snice-border-radius-lg, 8px);
+  border-radius: var(--snice-border-radius-md, 4px);
 }
 
 :host([variant="rectangular"]) [part~="bone"] {

@@ -59,9 +59,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--snice-color-surface-container-lowest, rgb(248 247 245));
-  border: 2px solid var(--snice-color-border, rgb(226 226 226));
-  border-radius: var(--snice-border-radius-sm, 0.125rem);
+  box-sizing: border-box;
+  background: var(--snice-checkbox-bg, var(--snice-color-surface-container-lowest, rgb(248 247 245)));
+  border: var(--snice-checkbox-border-width, 2px) solid var(--snice-checkbox-border-color, var(--snice-color-border, rgb(226 226 226)));
+  border-radius: var(--snice-checkbox-radius, var(--snice-border-radius-sm, 0.125rem));
+  box-shadow: var(--snice-checkbox-shadow, none);
   transition: all var(--snice-transition-fast, 150ms) ease;
 }
 

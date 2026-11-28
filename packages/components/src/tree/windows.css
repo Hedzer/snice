@@ -4,6 +4,10 @@
 
 :host {
   font-family: var(--snice-font-family);
+  --snice-checkbox-bg: var(--snice-win-control-bg);
+  --snice-checkbox-border-width: 1px;
+  --snice-checkbox-border-color: var(--snice-color-text-secondary);
+  --snice-checkbox-radius: 3px;
 }
 
 :host [part~="base"] {

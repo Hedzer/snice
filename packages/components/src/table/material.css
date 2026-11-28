@@ -3,10 +3,14 @@
 
 :host {
   font-family: var(--snice-font-family);
+  --snice-checkbox-bg: transparent;
+  --snice-checkbox-border-width: 2px;
+  --snice-checkbox-border-color: var(--snice-color-text-secondary);
+  --snice-checkbox-radius: 2px;
   --snice-table-body-bg: var(--snice-color-surface-container-low);
   --snice-table-row-border: 1px solid var(--snice-color-border-subtle);
   --snice-table-cell-border: none;
-  --snice-table-cell-padding: 0.875rem 1rem;
+  --snice-table-cell-padding: 0.875rem 0.875rem;
   --snice-table-stripe-bg: color-mix(in srgb, var(--snice-color-primary) 3.5%, transparent);
   --snice-table-group-header-bg: var(--snice-color-surface-container);
   --snice-table-group-count-bg: var(--snice-m3-secondary-container);

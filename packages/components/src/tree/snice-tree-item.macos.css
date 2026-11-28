@@ -3,6 +3,11 @@
 
 :host {
   font-family: var(--snice-font-family);
+  --snice-checkbox-bg: var(--snice-macos-control-bg);
+  --snice-checkbox-border-width: 1px;
+  --snice-checkbox-border-color: color-mix(in srgb, var(--snice-color-text) 34%, transparent);
+  --snice-checkbox-radius: 3.5px;
+  --snice-checkbox-shadow: var(--snice-macos-control-shadow);
 }
 
 :host [part~="content"] {
@@ -31,7 +36,7 @@
 }
 
 :host [part~="content"][part~="content-selected"] {
-  background-color: var(--snice-color-primary);
+  background-color: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
 }
 

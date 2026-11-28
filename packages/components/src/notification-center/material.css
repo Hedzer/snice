@@ -137,7 +137,7 @@
 
 [part~="item-time"] {
   font-size: 0.75rem;
-  color: var(--snice-color-text-tertiary);
+  color: var(--snice-color-text-secondary);
 }
 
 [part~="dismiss"] {

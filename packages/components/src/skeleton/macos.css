@@ -1,17 +1,20 @@
 /* macOS 26 Tahoe Liquid Glass / AppKit — snice-skeleton (Desktop .redacted Placeholders) */
 :host {
-  --skeleton-bg: color-mix(in srgb, var(--snice-color-text) 12%, var(--snice-color-surface-container-low));
-  --skeleton-highlight: hsl(0 0% 100% / 0.26);
-  --skeleton-duration: 1.6s;
+  --skeleton-bg: color-mix(in srgb, var(--snice-color-primary) 5%, color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface-container-low)));
+  --skeleton-highlight: hsl(0 0% 100% / 0.34);
+  --skeleton-duration: 1.65s;
 }
 
 [part~="bone"] {
   background: var(--skeleton-bg);
-  border-radius: var(--snice-border-radius-sm, 4px);
+  border-radius: var(--snice-border-radius-md, 6px);
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.36),
+    inset 0 0 0 0.5px var(--snice-color-border-subtle);
 }
 
 :host([variant="text"]) [part~="bone"] {
-  border-radius: var(--snice-border-radius-sm, 4px);
+  border-radius: var(--snice-border-radius-md, 6px);
 }
 
 :host([variant="circular"]) [part~="bone"] {
@@ -19,7 +22,7 @@
 }
 
 :host([variant="rounded"]) [part~="bone"] {
-  border-radius: 10px;
+  border-radius: var(--snice-border-radius-lg, 12px);
 }
 
 :host([variant="rectangular"]) [part~="bone"] {

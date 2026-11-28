@@ -3,6 +3,11 @@
 
 :host {
   font-family: var(--snice-font-family);
+  --snice-checkbox-bg: var(--snice-macos-control-bg);
+  --snice-checkbox-border-width: 1px;
+  --snice-checkbox-border-color: color-mix(in srgb, var(--snice-color-text) 34%, transparent);
+  --snice-checkbox-radius: 3.5px;
+  --snice-checkbox-shadow: var(--snice-macos-control-shadow);
   --snice-table-body-bg: var(--snice-color-background-element);
   --snice-table-row-border: 0.5px solid var(--snice-color-border-subtle);
   --snice-table-cell-border: 0.5px solid color-mix(in srgb, var(--snice-color-border-subtle) 70%, transparent);

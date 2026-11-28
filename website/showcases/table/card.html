@@ -32,16 +32,16 @@
       const table = document.getElementById('demo-table');
       if (table) {
         table.columns = [
-          { key: 'product', label: 'Product', type: 'text', sortable: true, width: '160' },
-          { key: 'revenue', label: 'Revenue', type: 'currency', sortable: true, width: '120',
+          { key: 'product', label: 'Product', type: 'text', sortable: true, width: '134' },
+          { key: 'revenue', label: 'Revenue', type: 'currency', sortable: true, width: '102',
             currencyFormat: { currency: 'USD', decimals: 0 } },
           { key: 'growth', label: 'Growth', type: 'percent', sortable: true, width: '80' },
-          { key: 'rating', label: 'Rating', type: 'rating', sortable: true, width: '110' },
-          { key: 'progress', label: 'Completion', type: 'progress', sortable: true, width: '120',
+          { key: 'rating', label: 'Rating', type: 'rating', sortable: true, width: '102' },
+          { key: 'progress', label: 'Completion', type: 'progress', sortable: true, width: '108',
             progressFormat: { colorize: true } },
-          { key: 'trend', label: 'Trend', type: 'sparkline', sortable: false, width: '100',
-            sparklineFormat: { type: 'line', height: 24, width: 80 } },
-          { key: 'status', label: 'Status', type: 'tag', sortable: true, width: '80' }
+          { key: 'trend', label: 'Trend', type: 'sparkline', sortable: false, width: '90',
+            sparklineFormat: { type: 'line', height: 24, width: 72 } },
+          { key: 'status', label: 'Status', type: 'tag', sortable: true, width: '96' }
         ];
         table.setData([
           { product: 'Nebula Pro', revenue: 284500, growth: 12.5, rating: 4.5, progress: 92, trend: { values: [32,35,38,36,42,45,48], color: '#22c55e' }, status: 'Active' },

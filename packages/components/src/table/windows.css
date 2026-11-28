@@ -3,6 +3,10 @@
 
 :host {
   font-family: var(--snice-font-family);
+  --snice-checkbox-bg: var(--snice-win-control-bg);
+  --snice-checkbox-border-width: 1px;
+  --snice-checkbox-border-color: var(--snice-color-text-secondary);
+  --snice-checkbox-radius: 3px;
   --snice-table-body-bg: var(--snice-color-surface-container-lowest);
   --snice-table-row-border: 1px solid var(--snice-color-border-subtle);
   --snice-table-cell-border: 1px solid color-mix(in srgb, var(--snice-color-border-subtle) 65%, transparent);
@@ -35,6 +39,28 @@
 :host [part~="controls"] {
   gap: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+:host [part~="filter-input-input"] {
+  border-radius: 4px;
+  background: var(--snice-win-control-bg);
+  border-width: 1px;
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--snice-color-text) 14%, transparent) color-mix(in srgb, var(--snice-color-text) 14%, transparent) var(--snice-win-stroke-input-bottom);
+  box-shadow: none;
+  color: var(--snice-color-text);
+}
+
+:host [part~="filter-input-input"]:hover {
+  background: var(--snice-win-control-bg-hover);
+}
+
+:host [part~="filter-input-input"]:focus,
+:host [part~="filter-input-input"]:focus-visible {
+  outline: none;
+  background: var(--snice-color-surface-container-lowest);
+  border-color: color-mix(in srgb, var(--snice-color-text) 14%, transparent) color-mix(in srgb, var(--snice-color-text) 14%, transparent) var(--snice-color-primary);
+  box-shadow: inset 0 -1px 0 0 var(--snice-color-primary);
 }
 
 :host [part~="superheader"] {

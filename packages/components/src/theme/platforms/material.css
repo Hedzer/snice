@@ -100,7 +100,7 @@
   --snice-color-primary: hsl(258 100% 87%);
   --snice-color-success: hsl(138 48% 70%);
   --snice-color-warning: hsl(35 87% 70%);
-  --snice-color-danger: hsl(3 70% 83%);
+  --snice-color-danger: hsl(3 82% 80%);
   --snice-color-neutral: hsl(264 8% 64%);
 
   --snice-m3-on-primary: hsl(265 58% 22%);
@@ -140,7 +140,7 @@
     --snice-color-primary: hsl(258 100% 87%);
     --snice-color-success: hsl(138 48% 70%);
     --snice-color-warning: hsl(35 87% 70%);
-    --snice-color-danger: hsl(3 70% 83%);
+    --snice-color-danger: hsl(3 82% 80%);
     --snice-color-neutral: hsl(264 8% 64%);
 
     --snice-m3-on-primary: hsl(265 58% 22%);
