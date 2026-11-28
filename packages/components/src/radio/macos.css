@@ -389,3 +389,53 @@
     transition: none;
   }
 }
+
+@media (forced-colors: active) {
+  [part~="radio"],
+  [part~="radio-invalid"] {
+    background: Canvas;
+    border-color: ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="radio-checked"],
+  [part~="radio-invalid"][part~="radio-checked"] {
+    background: Highlight;
+    border-color: Highlight;
+    box-shadow: none;
+  }
+
+  [part~="dot"],
+  [part~="dot-checked"],
+  :host([invalid]) [part~="dot"],
+  :host([invalid]) [part~="dot-checked"] {
+    background: HighlightText;
+    box-shadow: none;
+  }
+
+  [part~="radio-keyboard-focus"],
+  :host([data-macos-focus="keyboard"]) [part~="radio"],
+  :host(:focus-visible) [part~="radio"],
+  [part~="radio-checked"][part~="radio-keyboard-focus"],
+  :host([data-macos-focus="keyboard"]) [part~="radio-checked"],
+  :host(:focus-visible) [part~="radio-checked"] {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  :host([disabled]) [part~="radio"],
+  :host([disabled]) [part~="radio-checked"] {
+    background: Canvas;
+    border-color: GrayText;
+  }
+
+  :host([disabled]) [part~="dot-checked"] {
+    background: GrayText;
+  }
+
+  :host([disabled]) [part~="label"],
+  :host([disabled]) [part~="description"] {
+    color: GrayText;
+  }
+}

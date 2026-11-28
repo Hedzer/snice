@@ -45,30 +45,30 @@
   border-radius: 0;
 }
 
-/* Semantic resting variants */
+/* Semantic resting variants — mixed with --snice-color-text so ink deepens in light & brightens in dark */
 :host([variant="primary"]) [part~="base"],
 :host([variant="info"]) [part~="base"] {
   background: color-mix(in srgb, var(--snice-color-primary) 14%, var(--snice-color-surface-container-high));
-  border-color: color-mix(in srgb, var(--snice-color-primary) 28%, transparent);
-  color: var(--snice-color-primary);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 30%, transparent);
+  color: color-mix(in srgb, var(--snice-color-primary) 76%, var(--snice-color-text));
 }
 
 :host([variant="success"]) [part~="base"] {
   background: color-mix(in srgb, var(--snice-color-success) 14%, var(--snice-color-surface-container-high));
-  border-color: color-mix(in srgb, var(--snice-color-success) 28%, transparent);
-  color: color-mix(in srgb, var(--snice-color-success) 82%, var(--snice-color-text));
+  border-color: color-mix(in srgb, var(--snice-color-success) 30%, transparent);
+  color: color-mix(in srgb, var(--snice-color-success) 72%, var(--snice-color-text));
 }
 
 :host([variant="warning"]) [part~="base"] {
   background: color-mix(in srgb, var(--snice-color-warning) 16%, var(--snice-color-surface-container-high));
-  border-color: color-mix(in srgb, var(--snice-color-warning) 32%, transparent);
-  color: color-mix(in srgb, var(--snice-color-warning) 62%, var(--snice-color-text));
+  border-color: color-mix(in srgb, var(--snice-color-warning) 34%, transparent);
+  color: color-mix(in srgb, var(--snice-color-warning) 58%, var(--snice-color-text));
 }
 
 :host([variant="error"]) [part~="base"] {
   background: color-mix(in srgb, var(--snice-color-danger) 14%, var(--snice-color-surface-container-high));
-  border-color: color-mix(in srgb, var(--snice-color-danger) 28%, transparent);
-  color: var(--snice-color-danger);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 30%, transparent);
+  color: color-mix(in srgb, var(--snice-color-danger) 72%, var(--snice-color-text));
 }
 
 [part~="base"]:hover {
@@ -109,7 +109,7 @@
 :host([variant="warning"]) [part~="base-selected"]:hover {
   background: var(--snice-color-warning);
   border-color: transparent;
-  color: hsl(24 40% 10%);
+  color: var(--snice-ios-on-warning);
   box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.34), var(--snice-shadow-sm);
 }
 
@@ -177,5 +177,59 @@
   [part~="base"],
   [part~="remove-button"] {
     transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  :host([variant="primary"]) [part~="base"],
+  :host([variant="info"]) [part~="base"],
+  :host([variant="success"]) [part~="base"],
+  :host([variant="warning"]) [part~="base"],
+  :host([variant="error"]) [part~="base"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+    box-shadow: none;
+  }
+
+  [part~="base-selected"],
+  :host([variant="default"]) [part~="base-selected"],
+  :host([variant="primary"]) [part~="base-selected"],
+  :host([variant="info"]) [part~="base-selected"],
+  :host([variant="success"]) [part~="base-selected"],
+  :host([variant="warning"]) [part~="base-selected"],
+  :host([variant="error"]) [part~="base-selected"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+    box-shadow: none;
+  }
+
+  [part~="base"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  [part~="base-disabled"],
+  :host([disabled]) [part~="base"],
+  :host([disabled][variant="default"]) [part~="base"],
+  :host([disabled][variant="primary"]) [part~="base"],
+  :host([disabled][variant="success"]) [part~="base"],
+  :host([disabled][variant="warning"]) [part~="base"],
+  :host([disabled][variant="error"]) [part~="base"],
+  :host([disabled][variant="info"]) [part~="base"],
+  :host([disabled]) [part~="base-selected"],
+  :host([disabled][variant="default"]) [part~="base-selected"],
+  :host([disabled][variant="primary"]) [part~="base-selected"],
+  :host([disabled][variant="success"]) [part~="base-selected"],
+  :host([disabled][variant="warning"]) [part~="base-selected"],
+  :host([disabled][variant="error"]) [part~="base-selected"],
+  :host([disabled][variant="info"]) [part~="base-selected"] {
+    opacity: 1;
+    background: ButtonFace;
+    color: GrayText;
+    border-color: GrayText;
   }
 }

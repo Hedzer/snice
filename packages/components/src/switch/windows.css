@@ -354,17 +354,38 @@
   color: color-mix(in srgb, var(--snice-color-text) 46%, transparent);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  [part~="track"],
+  [part~="thumb"] {
+    transition: none;
+  }
+}
+
 /* First-class Windows High Contrast Mode (WHCM / forced-colors) */
 @media (forced-colors: active) {
-  [part~="track"] {
+  [part~="track"],
+  [part~="track-invalid"] {
     background: Canvas;
     border-color: ButtonText;
+    box-shadow: none;
   }
 
-  [part~="track-checked"] {
+  [part~="track-checked"],
+  [part~="track-invalid"][part~="track-checked"] {
     forced-color-adjust: none;
     background: Highlight;
     border-color: Highlight;
+  }
+
+  :host(:focus-visible) [part~="track"],
+  :host(:focus-visible) [part~="track-checked"],
+  :host(:focus-visible) [part~="track-invalid"],
+  :host([data-win-focus="keyboard"]) [part~="track"],
+  :host([data-win-focus="keyboard"]) [part~="track-checked"],
+  :host([data-win-focus="keyboard"]) [part~="track-invalid"] {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 
   [part~="thumb"] {
@@ -378,7 +399,9 @@
   }
 
   :host([disabled]) [part~="track"],
-  :host([disabled]) [part~="track-checked"] {
+  :host([disabled]) [part~="track-checked"],
+  :host([disabled]) [part~="track-invalid"],
+  :host([disabled]) [part~="track-invalid"][part~="track-checked"] {
     forced-color-adjust: none;
     background: Canvas;
     border-color: GrayText;
@@ -388,5 +411,11 @@
   :host([disabled]) [part~="thumb-checked"] {
     forced-color-adjust: none;
     background: GrayText;
+  }
+
+  :host([disabled]) [part~="label"],
+  :host([disabled]) [part~="label-on"],
+  :host([disabled]) [part~="label-off"] {
+    color: GrayText;
   }
 }

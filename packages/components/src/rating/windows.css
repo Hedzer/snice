@@ -61,6 +61,17 @@
   color: var(--rating-color);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  [part~="star"] {
+    transition: none;
+  }
+
+  [part~="star"]:hover,
+  [part~="star"]:active {
+    transform: none;
+  }
+}
+
 /* Windows High Contrast Mode (WHCM) */
 @media (forced-colors: active) {
   :host {

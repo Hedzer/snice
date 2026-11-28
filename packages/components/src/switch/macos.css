@@ -331,14 +331,35 @@
 }
 
 @media (forced-colors: active) {
-  [part~="track"] {
-    background: Canvas;
-    box-shadow: inset 0 0 0 1px ButtonText;
+  [part~="base-disabled"] {
+    opacity: 1;
   }
 
-  [part~="track-checked"] {
+  [part~="track"],
+  [part~="track-invalid"] {
+    background: Canvas;
+    box-shadow: none;
+    outline: 1px solid ButtonText;
+    outline-offset: -1px;
+  }
+
+  [part~="track-checked"],
+  [part~="track-invalid"][part~="track-checked"] {
     background: Highlight;
-    box-shadow: inset 0 0 0 1px Highlight;
+    box-shadow: none;
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+
+  :host(:focus-visible) [part~="track"],
+  :host(:focus-visible) [part~="track-checked"],
+  :host(:focus-visible) [part~="track-invalid"],
+  :host([data-macos-focus="keyboard"]) [part~="track"],
+  :host([data-macos-focus="keyboard"]) [part~="track-checked"],
+  :host([data-macos-focus="keyboard"]) [part~="track-invalid"] {
+    box-shadow: none;
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
   }
 
   [part~="thumb"] {
@@ -348,5 +369,24 @@
 
   [part~="thumb-checked"] {
     background: HighlightText;
+  }
+
+  :host([disabled]) [part~="track"],
+  :host([disabled]) [part~="track-checked"],
+  :host([disabled]) [part~="track-invalid"],
+  :host([disabled]) [part~="track-invalid"][part~="track-checked"] {
+    background: Canvas;
+    outline-color: GrayText;
+  }
+
+  :host([disabled]) [part~="thumb"],
+  :host([disabled]) [part~="thumb-checked"] {
+    background: GrayText;
+  }
+
+  :host([disabled]) [part~="label"],
+  :host([disabled]) [part~="label-on"],
+  :host([disabled]) [part~="label-off"] {
+    color: GrayText;
   }
 }

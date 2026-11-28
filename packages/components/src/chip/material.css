@@ -35,6 +35,10 @@
   font-size: 0.9375rem;
 }
 
+:host([shape="pill"]) [part~="base"] {
+  border-radius: 9999px;
+}
+
 :host([shape="rounded"]) [part~="base"] {
   border-radius: 12px;
 }
@@ -148,6 +152,24 @@
   border-radius: 10px;
 }
 
+/* Preserve explicit consumer shape overrides across selected & active states */
+:host([shape="pill"]) [part~="base-selected"],
+:host([shape="pill"][variant]) [part~="base-selected"] {
+  border-radius: 9999px;
+}
+
+:host([shape="rounded"]) [part~="base-selected"],
+:host([shape="rounded"][variant]) [part~="base-selected"] {
+  border-radius: 12px;
+}
+
+:host([shape="square"]) [part~="base"]:active,
+:host([shape="square"]) [part~="base-selected"],
+:host([shape="square"][variant]) [part~="base-selected"],
+:host([shape="square"]) [part~="base-selected"]:active {
+  border-radius: 0;
+}
+
 [part~="remove-button"] {
   opacity: 0.78;
   max-width: 1.25rem;
@@ -248,5 +270,56 @@
   [part~="ripple"],
   [part~="remove-button"] {
     transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  :host([variant="primary"]) [part~="base"],
+  :host([variant="info"]) [part~="base"],
+  :host([variant="success"]) [part~="base"],
+  :host([variant="warning"]) [part~="base"],
+  :host([variant="error"]) [part~="base"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border-color: ButtonBorder;
+  }
+
+  [part~="base-selected"],
+  :host([variant="default"]) [part~="base-selected"],
+  :host([variant="primary"]) [part~="base-selected"],
+  :host([variant="info"]) [part~="base-selected"],
+  :host([variant="success"]) [part~="base-selected"],
+  :host([variant="warning"]) [part~="base-selected"],
+  :host([variant="error"]) [part~="base-selected"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+
+  [part~="base"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  [part~="base-disabled"],
+  :host([disabled]) [part~="base"],
+  :host([disabled][variant="default"]) [part~="base"],
+  :host([disabled][variant="primary"]) [part~="base"],
+  :host([disabled][variant="success"]) [part~="base"],
+  :host([disabled][variant="warning"]) [part~="base"],
+  :host([disabled][variant="error"]) [part~="base"],
+  :host([disabled][variant="info"]) [part~="base"],
+  :host([disabled]) [part~="base-selected"],
+  :host([disabled][variant="default"]) [part~="base-selected"],
+  :host([disabled][variant="primary"]) [part~="base-selected"],
+  :host([disabled][variant="success"]) [part~="base-selected"],
+  :host([disabled][variant="warning"]) [part~="base-selected"],
+  :host([disabled][variant="error"]) [part~="base-selected"],
+  :host([disabled][variant="info"]) [part~="base-selected"] {
+    opacity: 1;
+    background: ButtonFace;
+    color: GrayText;
+    border-color: GrayText;
   }
 }

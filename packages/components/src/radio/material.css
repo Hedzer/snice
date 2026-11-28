@@ -447,3 +447,52 @@
   --_m3-label-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
   --_m3-description-color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="radio"],
+  [part~="dot"],
+  [part~="ripple"],
+  [part~="base-block"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="radio"],
+  [part~="radio-invalid"] {
+    background: Canvas;
+    border-color: ButtonText;
+  }
+
+  [part~="radio-checked"],
+  [part~="radio-invalid"][part~="radio-checked"] {
+    border-color: Highlight;
+  }
+
+  [part~="dot"],
+  :host([invalid]) [part~="dot"] {
+    background: Highlight;
+  }
+
+  :host(:focus-visible) [part~="radio"],
+  [part~="radio-keyboard-focus"],
+  :host(:focus-visible) [part~="radio-invalid"],
+  [part~="radio-invalid"][part~="radio-keyboard-focus"] {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  :host([disabled]) [part~="radio"],
+  :host([disabled]) [part~="radio-checked"] {
+    border-color: GrayText;
+  }
+
+  :host([disabled]) [part~="dot"] {
+    background: GrayText;
+  }
+
+  :host([disabled]) [part~="label"],
+  :host([disabled]) [part~="description"] {
+    color: GrayText;
+  }
+}

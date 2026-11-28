@@ -441,9 +441,46 @@
 
 /* Windows High Contrast Mode (WHCM / forced-colors) */
 @media (forced-colors: active) {
+  [part~="radio"],
+  [part~="radio-invalid"] {
+    background: Canvas;
+    border-color: ButtonText;
+    box-shadow: none;
+  }
+
   [part~="radio-checked"],
-  [part~="dot-checked"] {
-    forced-color-adjust: none;
+  [part~="radio-invalid"][part~="radio-checked"] {
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  [part~="dot"],
+  [part~="dot-checked"],
+  :host([invalid]) [part~="dot-checked"] {
+    background: HighlightText;
+  }
+
+  [part~="radio-keyboard-focus"],
+  :host([data-win-focus="keyboard"]) [part~="radio"],
+  :host(:focus-visible) [part~="radio"] {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  :host([disabled]) [part~="radio"],
+  :host([disabled]) [part~="radio-checked"] {
+    background: Canvas;
+    border-color: GrayText;
+  }
+
+  :host([disabled]) [part~="dot-checked"] {
+    background: GrayText;
+  }
+
+  :host([disabled]) [part~="label"],
+  :host([disabled]) [part~="description"] {
+    color: GrayText;
   }
 }
 

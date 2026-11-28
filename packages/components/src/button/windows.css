@@ -591,11 +591,53 @@
   box-shadow: var(--snice-win-focus-shadow);
 }
 
-/* Windows High Contrast Mode (WHCM) keyboard focus fallback */
+/* Windows High Contrast Mode (WHCM) */
 @media (forced-colors: active) {
+  [part~="base"],
+  :host([variant]) [part~="base"],
+  [part~="base-outline"],
+  :host([variant]) [part~="base-outline"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border-color: ButtonBorder;
+    box-shadow: none;
+  }
+
+  :host([variant="text"]) [part~="base"] {
+    background: transparent;
+    border-color: transparent;
+    color: LinkText;
+  }
+
   [part~="base"]:focus-visible,
-  :host([data-win-focus="keyboard"]) [part~="base"] {
+  [part~="base"]:focus-visible:hover,
+  :host([variant]) [part~="base"]:focus-visible,
+  :host([variant]) [part~="base"]:focus-visible:hover,
+  :host([variant]) [part~="base-outline"]:focus-visible,
+  :host([variant]) [part~="base-outline"]:focus-visible:hover,
+  :host([data-win-focus="keyboard"]) [part~="base"],
+  :host([data-win-focus="keyboard"]) [part~="base"]:hover,
+  :host([data-win-focus="keyboard"][variant]) [part~="base"],
+  :host([data-win-focus="keyboard"][variant]) [part~="base"]:hover,
+  :host([data-win-focus="keyboard"][variant]) [part~="base-outline"],
+  :host([data-win-focus="keyboard"][variant]) [part~="base-outline"]:hover {
     outline: 2px solid Highlight;
     outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  :host([disabled]) [part~="base"],
+  :host([disabled][variant]) [part~="base"],
+  :host([disabled][outline]) [part~="base"],
+  :host([disabled][variant][outline]) [part~="base"],
+  :host([disabled][variant="text"]) [part~="base"] {
+    color: GrayText;
+    border-color: GrayText;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="base"] {
+    transition: none;
   }
 }

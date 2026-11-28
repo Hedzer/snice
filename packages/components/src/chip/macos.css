@@ -18,9 +18,9 @@
 }
 
 :host([size="small"]) [part~="base"] {
-  height: 1.25rem;
-  min-height: 1.25rem;
-  padding: 0 0.4375rem;
+  height: 1.375rem;
+  min-height: 1.375rem;
+  padding: 0 0.5625rem;
   font-size: 0.6875rem;
 }
 
@@ -39,30 +39,30 @@
   border-radius: 0;
 }
 
-/* Semantic resting variants */
+/* Semantic resting variants — mix into opaque color token (never linear-gradient) + AA+ ink in light & dark */
 :host([variant="primary"]) [part~="base"],
 :host([variant="info"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 12%, var(--snice-macos-control-bg));
-  border-color: color-mix(in srgb, var(--snice-color-primary) 34%, var(--snice-color-border));
-  color: var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 15%, var(--snice-color-background-element));
+  border-color: color-mix(in srgb, var(--snice-color-primary) 36%, var(--snice-color-border));
+  color: color-mix(in srgb, var(--snice-color-primary) 76%, var(--snice-color-text));
 }
 
 :host([variant="success"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-success) 12%, var(--snice-macos-control-bg));
-  border-color: color-mix(in srgb, var(--snice-color-success) 34%, var(--snice-color-border));
-  color: color-mix(in srgb, var(--snice-color-success) 82%, var(--snice-color-text));
+  background: color-mix(in srgb, var(--snice-color-success) 15%, var(--snice-color-background-element));
+  border-color: color-mix(in srgb, var(--snice-color-success) 36%, var(--snice-color-border));
+  color: color-mix(in srgb, var(--snice-color-success) 72%, var(--snice-color-text));
 }
 
 :host([variant="warning"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-warning) 14%, var(--snice-macos-control-bg));
-  border-color: color-mix(in srgb, var(--snice-color-warning) 36%, var(--snice-color-border));
-  color: color-mix(in srgb, var(--snice-color-warning) 62%, var(--snice-color-text));
+  background: color-mix(in srgb, var(--snice-color-warning) 16%, var(--snice-color-background-element));
+  border-color: color-mix(in srgb, var(--snice-color-warning) 38%, var(--snice-color-border));
+  color: color-mix(in srgb, var(--snice-color-warning) 58%, var(--snice-color-text));
 }
 
 :host([variant="error"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-danger) 12%, var(--snice-macos-control-bg));
-  border-color: color-mix(in srgb, var(--snice-color-danger) 34%, var(--snice-color-border));
-  color: var(--snice-color-danger);
+  background: color-mix(in srgb, var(--snice-color-danger) 15%, var(--snice-color-background-element));
+  border-color: color-mix(in srgb, var(--snice-color-danger) 36%, var(--snice-color-border));
+  color: color-mix(in srgb, var(--snice-color-danger) 72%, var(--snice-color-text));
 }
 
 [part~="base"]:hover {
@@ -110,7 +110,7 @@
   background-color: var(--snice-color-warning);
   background-image: linear-gradient(180deg, hsl(0 0% 100% / 0.16) 0%, transparent 100%);
   border-color: color-mix(in srgb, var(--snice-color-warning) 78%, black);
-  color: hsl(26 42% 10%);
+  color: var(--snice-macos-on-warning);
   font-weight: 600;
   box-shadow: inset 0 0.5px 0 hsl(0 0% 100% / 0.3), 0 0.5px 1px hsl(0 0% 0% / 0.2);
 }
@@ -173,5 +173,60 @@
   [part~="base"],
   [part~="remove-button"] {
     transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  :host([variant="primary"]) [part~="base"],
+  :host([variant="info"]) [part~="base"],
+  :host([variant="success"]) [part~="base"],
+  :host([variant="warning"]) [part~="base"],
+  :host([variant="error"]) [part~="base"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+    box-shadow: none;
+  }
+
+  [part~="base-selected"],
+  :host([variant="default"]) [part~="base-selected"],
+  :host([variant="primary"]) [part~="base-selected"],
+  :host([variant="info"]) [part~="base-selected"],
+  :host([variant="success"]) [part~="base-selected"],
+  :host([variant="warning"]) [part~="base-selected"],
+  :host([variant="error"]) [part~="base-selected"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+    box-shadow: none;
+  }
+
+  [part~="base"]:focus-visible,
+  :host([data-macos-focus="keyboard"]) [part~="base"] {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  [part~="base-disabled"],
+  :host([disabled]) [part~="base"],
+  :host([disabled][variant="default"]) [part~="base"],
+  :host([disabled][variant="primary"]) [part~="base"],
+  :host([disabled][variant="success"]) [part~="base"],
+  :host([disabled][variant="warning"]) [part~="base"],
+  :host([disabled][variant="error"]) [part~="base"],
+  :host([disabled][variant="info"]) [part~="base"],
+  :host([disabled]) [part~="base-selected"],
+  :host([disabled][variant="default"]) [part~="base-selected"],
+  :host([disabled][variant="primary"]) [part~="base-selected"],
+  :host([disabled][variant="success"]) [part~="base-selected"],
+  :host([disabled][variant="warning"]) [part~="base-selected"],
+  :host([disabled][variant="error"]) [part~="base-selected"],
+  :host([disabled][variant="info"]) [part~="base-selected"] {
+    opacity: 1;
+    background: ButtonFace;
+    color: GrayText;
+    border-color: GrayText;
   }
 }

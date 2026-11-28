@@ -217,7 +217,7 @@
 
 :host([variant="primary"]) [part~="base-outline"] {
   background-color: transparent;
-  border-color: color-mix(in srgb, var(--snice-color-border) 62%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 68%, transparent);
   color: color-mix(in srgb, var(--snice-color-primary) 88%, var(--snice-color-text));
   box-shadow: none;
 }
@@ -242,7 +242,7 @@
 
 :host([variant="success"]) [part~="base-outline"] {
   background-color: transparent;
-  border-color: color-mix(in srgb, var(--snice-color-success) 52%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-success) 68%, transparent);
   color: color-mix(in srgb, var(--snice-color-success) 86%, var(--snice-color-text));
   box-shadow: none;
 }
@@ -267,7 +267,7 @@
 
 :host([variant="warning"]) [part~="base-outline"] {
   background-color: transparent;
-  border-color: color-mix(in srgb, var(--snice-color-warning) 52%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-warning) 68%, transparent);
   color: color-mix(in srgb, var(--snice-color-warning) 84%, var(--snice-color-text));
   box-shadow: none;
 }
@@ -292,7 +292,7 @@
 
 :host([variant="danger"]) [part~="base-outline"] {
   background-color: transparent;
-  border-color: color-mix(in srgb, var(--snice-color-danger) 52%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-danger) 68%, transparent);
   color: color-mix(in srgb, var(--snice-color-danger) 86%, var(--snice-color-text));
   box-shadow: none;
 }
@@ -586,5 +586,39 @@
   [part~="base"],
   [part~="ripple"] {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  :host([variant]) [part~="base"],
+  [part~="base-outline"],
+  :host([variant]) [part~="base-outline"] {
+    background-color: ButtonFace;
+    color: ButtonText;
+    border-color: ButtonBorder;
+    box-shadow: none;
+  }
+
+  :host([variant="text"]) [part~="base"] {
+    background-color: transparent;
+    border-color: transparent;
+    color: LinkText;
+  }
+
+  [part~="base"]:focus-visible,
+  :host([variant]) [part~="base"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  :host([disabled]) [part~="base"],
+  :host([disabled][variant]) [part~="base"],
+  :host([disabled][outline]) [part~="base"],
+  :host([disabled][variant][outline]) [part~="base"],
+  :host([disabled][variant="text"]) [part~="base"] {
+    color: GrayText;
+    border-color: GrayText;
   }
 }

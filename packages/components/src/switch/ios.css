@@ -53,7 +53,7 @@
 }
 
 [part~="track-checked"] {
-  background: var(--snice-ios-fill-success);
+  background: hsl(135 59% 49%);
   box-shadow: inset 0 0.5px 1px hsl(0 0% 0% / 0.1);
 }
 
@@ -62,7 +62,7 @@
 }
 
 :host(:hover) [part~="track-checked"] {
-  background: color-mix(in srgb, var(--snice-ios-fill-success) 92%, white);
+  background: color-mix(in srgb, hsl(135 59% 49%) 92%, white);
 }
 
 /* Track sizes */
@@ -256,7 +256,7 @@
 
 :host([loading]) [part~="track-checked"],
 :host([loading]:hover) [part~="track-checked"] {
-  background: var(--snice-color-success);
+  background: hsl(135 59% 49%);
 }
 
 :host([loading]) [part~="track-invalid"],
@@ -266,16 +266,20 @@
 
 :host([loading]) [part~="track-invalid"][part~="track-checked"],
 :host([loading]:hover) [part~="track-invalid"][part~="track-checked"] {
-  background: var(--snice-color-danger);
+  background: var(--snice-ios-fill-danger);
 }
 
-/* State labels */
+/* State labels — deep forest ink (9.2:1 AAA) on authentic iOS System Green #34C759; white on invalid danger fill */
 [part~="label-on"] {
   left: 0.5625rem;
   font-size: 0.5625rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   line-height: 1;
+  color: hsl(135 50% 8%);
+}
+
+:host([invalid]) [part~="label-on"] {
   color: hsl(0 0% 100%);
 }
 
@@ -331,7 +335,7 @@
 
 :host([disabled]) [part~="track-checked"],
 :host([disabled]:hover) [part~="track-checked"] {
-  background: var(--snice-color-success);
+  background: hsl(135 59% 49%);
 }
 
 :host([disabled]) [part~="track-invalid"],
@@ -341,7 +345,7 @@
 
 :host([disabled]) [part~="track-invalid"][part~="track-checked"],
 :host([disabled]:hover) [part~="track-invalid"][part~="track-checked"] {
-  background: var(--snice-color-danger);
+  background: var(--snice-ios-fill-danger);
 }
 
 :host([disabled]) [part~="thumb"],
@@ -381,16 +385,24 @@
 }
 
 @media (forced-colors: active) {
-  [part~="track"] {
+  [part~="base-disabled"] {
+    opacity: 1;
+  }
+
+  [part~="track"],
+  [part~="track-invalid"] {
     background: Canvas;
     box-shadow: none;
     outline: 1px solid ButtonText;
     outline-offset: -1px;
   }
 
-  [part~="track-checked"] {
+  [part~="track-checked"],
+  [part~="track-invalid"][part~="track-checked"] {
     background: Highlight;
-    outline-color: Highlight;
+    box-shadow: none;
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
   }
 
   :host(:focus-visible) [part~="track"],
@@ -408,5 +420,24 @@
 
   [part~="thumb-checked"] {
     background: HighlightText;
+  }
+
+  :host([disabled]) [part~="track"],
+  :host([disabled]) [part~="track-checked"],
+  :host([disabled]) [part~="track-invalid"],
+  :host([disabled]) [part~="track-invalid"][part~="track-checked"] {
+    background: Canvas;
+    outline-color: GrayText;
+  }
+
+  :host([disabled]) [part~="thumb"],
+  :host([disabled]) [part~="thumb-checked"] {
+    background: GrayText;
+  }
+
+  :host([disabled]) [part~="label"],
+  :host([disabled]) [part~="label-on"],
+  :host([disabled]) [part~="label-off"] {
+    color: GrayText;
   }
 }

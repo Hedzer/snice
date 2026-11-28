@@ -70,3 +70,26 @@
 [part~="star-full"] {
   color: var(--rating-color);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="star"] {
+    transition: none;
+  }
+
+  [part~="star"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    --rating-color: Highlight;
+    --rating-color-empty: GrayText;
+  }
+
+  [part~="base"]:focus-visible,
+  :host(:focus-visible) {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}
