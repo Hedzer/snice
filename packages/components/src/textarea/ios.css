@@ -77,8 +77,8 @@
 
 /* Variants: Filled (iOS Secondary System Fill) & Underlined */
 :host([variant="filled"]) [part~="textarea"] {
-  background: hsl(240 6% 48% / 0.12);
-  border-color: transparent;
+  background: var(--snice-ios-secondary-fill, hsl(240 6% 48% / 0.14));
+  border-color: var(--snice-color-border-subtle);
   border-radius: 12px;
   box-shadow: none;
 }
@@ -92,7 +92,7 @@
 }
 
 :host([variant="filled"]) [part~="textarea"]:hover {
-  background: hsl(240 6% 48% / 0.16);
+  background: color-mix(in srgb, var(--snice-color-text) 6%, var(--snice-ios-secondary-fill, hsl(240 6% 48% / 0.16)));
   border-color: var(--snice-color-border-hover);
 }
 
@@ -235,8 +235,8 @@
 :host([variant="filled"]) [part~="textarea-loading"]:disabled,
 :host([variant="filled"]) [part~="textarea-loading"]:disabled:hover {
   opacity: 0.82;
-  background: hsl(240 6% 48% / 0.12);
-  border-color: transparent;
+  background: var(--snice-ios-secondary-fill, hsl(240 6% 48% / 0.14));
+  border-color: var(--snice-color-border-subtle);
   color: var(--snice-color-text);
   box-shadow: none;
   cursor: wait;
@@ -329,5 +329,29 @@
 @media (prefers-reduced-motion: reduce) {
   [part~="textarea"] {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="textarea"],
+  :host([variant="filled"]) [part~="textarea"] {
+    background: Field;
+    color: FieldText;
+    border: 1px solid ButtonBorder;
+    box-shadow: none;
+  }
+
+  [part~="textarea"]:focus-visible,
+  :host([variant]) [part~="textarea"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  [part~="textarea"]:disabled,
+  :host([variant]) [part~="textarea"]:disabled {
+    opacity: 1;
+    color: GrayText;
+    border-color: GrayText;
   }
 }

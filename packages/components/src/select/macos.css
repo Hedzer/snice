@@ -404,37 +404,61 @@
 }
 
 [part~="arrow"] {
-  width: 1rem;
-  height: 1rem;
+  width: 1.0625rem;
+  height: 1.0625rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--snice-color-text-secondary);
   transition:
     transform var(--snice-transition-fast, 140ms) var(--snice-ease-out, ease),
+    background-color var(--snice-transition-fast, 140ms) ease,
     color var(--snice-transition-fast, 140ms) ease;
 }
 
+[part~="arrow"]::before {
+  content: '';
+  display: block;
+  width: 0.6875rem;
+  height: 0.6875rem;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3.25 4.5L6 1.75L8.75 4.5M3.25 7.5L6 10.25L8.75 7.5' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3.25 4.5L6 1.75L8.75 4.5M3.25 7.5L6 10.25L8.75 7.5' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
 :host([open]) [part~="arrow"] {
-  color: var(--snice-color-text);
+  background: var(--snice-macos-fill-primary, var(--snice-color-primary));
+  color: hsl(0 0% 100%);
+}
+
+:host([disabled]) [part~="arrow"] {
+  background: color-mix(in srgb, var(--snice-color-text) 5%, transparent);
 }
 
 [part~="arrow-icon"] {
-  width: 0.625rem;
-  height: 0.625rem;
+  display: none;
 }
 
 :host([size="small"]) [part~="arrow"] {
   width: 0.875rem;
   height: 0.875rem;
+  border-radius: 3px;
 }
 
-:host([size="small"]) [part~="arrow-icon"] {
+:host([size="small"]) [part~="arrow"]::before {
   width: 0.5625rem;
   height: 0.5625rem;
 }
 
-:host([size="large"]) [part~="arrow-icon"] {
+:host([size="large"]) [part~="arrow"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 5px;
+}
+
+:host([size="large"]) [part~="arrow"]::before {
   width: 0.75rem;
   height: 0.75rem;
 }
@@ -664,6 +688,16 @@
     background: Canvas;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+
+  [part~="arrow"]::before {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+
+  :host([disabled]) [part~="arrow"]::before {
+    forced-color-adjust: none;
+    background: GrayText;
   }
 
   [part~="trigger"]:focus-visible,

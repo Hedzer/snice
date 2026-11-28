@@ -87,8 +87,8 @@
 
 /* Variants: Filled (iOS Secondary System Fill) & Underlined */
 :host([variant="filled"]) [part~="input"] {
-  background: hsl(240 6% 48% / 0.12);
-  border-color: transparent;
+  background: var(--snice-ios-secondary-fill, hsl(240 6% 48% / 0.14));
+  border-color: var(--snice-color-border-subtle);
   border-radius: 12px;
   box-shadow: none;
 }
@@ -102,7 +102,7 @@
 }
 
 :host([variant="filled"]) [part~="input"]:hover {
-  background: hsl(240 6% 48% / 0.16);
+  background: color-mix(in srgb, var(--snice-color-text) 6%, var(--snice-ios-secondary-fill, hsl(240 6% 48% / 0.16)));
   border-color: var(--snice-color-border-hover);
 }
 
@@ -283,8 +283,8 @@
 :host([variant="filled"]) [part~="input-loading"]:disabled,
 :host([variant="filled"]) [part~="input-loading"]:disabled:hover {
   opacity: 0.82;
-  background: hsl(240 6% 48% / 0.12);
-  border-color: transparent;
+  background: var(--snice-ios-secondary-fill, hsl(240 6% 48% / 0.14));
+  border-color: var(--snice-color-border-subtle);
   color: var(--snice-color-text);
   box-shadow: none;
   cursor: wait;
@@ -443,5 +443,34 @@
   [part~="password-toggle"],
   [part~="container"]::after {
     transition: none;
+  }
+
+  [part~="clear"]:active,
+  [part~="password-toggle"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="input"],
+  :host([variant="filled"]) [part~="input"] {
+    background: Field;
+    color: FieldText;
+    border: 1px solid ButtonBorder;
+    box-shadow: none;
+  }
+
+  [part~="input"]:focus-visible,
+  :host([variant]) [part~="input"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  [part~="input-disabled"]:disabled,
+  :host([variant]) [part~="input-disabled"]:disabled {
+    opacity: 1;
+    color: GrayText;
+    border-color: GrayText;
   }
 }

@@ -44,6 +44,8 @@
   --snice-color-surface-container: hsl(240 14% 93%);
   --snice-color-surface-container-high: hsl(0 0% 100%);
   --snice-color-surface-container-highest: hsl(0 0% 100%);
+  --snice-ios-secondary-fill: hsl(240 5% 48% / 0.14);
+  --snice-ios-tertiary-fill: hsl(240 16% 95%);
 
   /* Text & Hairline Separators */
   --snice-color-text: hsl(0 0% 0%);
@@ -118,6 +120,8 @@
   --snice-color-surface-container: hsl(240 4% 16%);
   --snice-color-surface-container-high: hsl(240 5% 11%);
   --snice-color-surface-container-highest: hsl(240 4% 15%);
+  --snice-ios-secondary-fill: hsl(240 5% 50% / 0.28);
+  --snice-ios-tertiary-fill: hsl(240 4% 18%);
 
   --snice-color-text: hsl(0 0% 100%);
   --snice-color-text-secondary: hsl(240 5% 74%);
@@ -157,6 +161,8 @@
     --snice-color-surface-container: hsl(240 4% 16%);
     --snice-color-surface-container-high: hsl(240 5% 11%);
     --snice-color-surface-container-highest: hsl(240 4% 15%);
+    --snice-ios-secondary-fill: hsl(240 5% 50% / 0.28);
+    --snice-ios-tertiary-fill: hsl(240 4% 18%);
 
     --snice-color-text: hsl(0 0% 100%);
     --snice-color-text-secondary: hsl(240 5% 74%);

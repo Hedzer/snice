@@ -75,15 +75,15 @@
 :host([size="small"]) [part~="trigger"],
 :host([size="small"]) [part~="input"] {
   min-height: 2.5rem;
-  padding: 0.375rem 1.75rem 0.375rem 0.625rem;
+  padding: 0.375rem 2rem 0.375rem 0.625rem;
   font-size: 0.8125rem;
 }
 
 :host([size="large"]) [part~="trigger"],
 :host([size="large"]) [part~="input"] {
   min-height: 3.5rem;
-  padding: 0.75rem 2.75rem 0.75rem 1rem;
-  font-size: 1.0625rem;
+  padding: 0.75rem 2.125rem 0.75rem 0.75rem;
+  font-size: 1rem;
 }
 
 /* Clearable Right-Padding Clearance — placed after size rules so text never clips under clear + chevron */
@@ -226,7 +226,7 @@
 }
 
 :host([size="large"]) [part~="icons"] {
-  right: 0.75rem;
+  right: 0.625rem;
 }
 
 [part~="arrow"] {
@@ -239,12 +239,21 @@
     color var(--snice-transition-fast, 150ms) var(--snice-m3-spring-effects, ease);
 }
 
+[part~="arrow-icon"] {
+  width: 0.6875rem;
+  height: 0.6875rem;
+}
+
 :host([editable]) [part~="arrow"] {
-  right: 0.75rem;
+  right: 0.6875rem;
 }
 
 :host([editable][size="small"]) [part~="arrow"] {
   right: 0.5rem;
+}
+
+:host([editable][size="large"]) [part~="arrow"] {
+  right: 0.625rem;
 }
 
 :host([open]) [part~="arrow"] {
@@ -482,4 +491,65 @@
   letter-spacing: 0.025em;
   color: var(--snice-color-danger);
   margin-top: 0.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="label"],
+  [part~="trigger"],
+  [part~="input"],
+  [part~="arrow"],
+  [part~="clear-button"],
+  [part~="tag-remove"],
+  [part~="dropdown"],
+  [part~="search-input"],
+  [part~="option"] {
+    transition: none;
+  }
+
+  [part~="dropdown"] {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="trigger"],
+  [part~="input"],
+  [part~="search-input"] {
+    background: Field;
+    color: FieldText;
+    border: 1px solid ButtonBorder;
+    box-shadow: none;
+  }
+
+  [part~="dropdown"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="trigger"]:focus-visible,
+  [part~="input"]:focus-visible,
+  [part~="search-input"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  [part~="trigger-disabled"],
+  [part~="input-disabled"],
+  :host([disabled]) [part~="label"],
+  :host([disabled]) [part~="placeholder"] {
+    color: GrayText;
+    border-color: GrayText;
+  }
+
+  [part~="option-selected"] {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  [part~="option-disabled"] {
+    color: GrayText;
+  }
 }

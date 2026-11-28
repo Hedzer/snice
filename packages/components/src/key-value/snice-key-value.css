@@ -275,7 +275,7 @@
 .kv__view-key {
   font-weight: var(--snice-font-weight-medium, 500);
   color: var(--kv-text);
-  min-width: 8rem;
+  min-width: 7rem;
   flex-shrink: 0;
   font-size: 0.875rem;
   word-break: break-word;
@@ -283,9 +283,11 @@
 
 .kv__view-value {
   flex: 1;
+  min-width: 0;
   color: var(--kv-text-secondary);
-  font-size: 0.875rem;
-  word-break: break-word;
+  font-size: 0.8125rem;
+  word-break: normal;
+  overflow-wrap: break-word;
   font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 }
 

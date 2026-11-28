@@ -77,9 +77,9 @@
 :host [part~="value-input"] {
   min-height: 2.5rem;
   padding: 0.5rem 0.75rem;
-  border-width: 0.5px;
+  border: 1px solid var(--snice-color-border);
   border-radius: 10px;
-  background: var(--snice-color-surface-container-low);
+  background: var(--snice-ios-tertiary-fill, var(--snice-color-surface-container-low));
   color: var(--snice-color-text);
   font-size: 0.9375rem;
   letter-spacing: -0.008em;
@@ -88,11 +88,18 @@
 :host [part~="description-input"] {
   min-height: 2rem;
   padding: 0.3125rem 0.75rem;
-  border-width: 0.5px;
+  border: 1px solid var(--snice-color-border);
   border-radius: 8px;
-  background: var(--snice-color-surface-container-low);
+  background: var(--snice-ios-tertiary-fill, var(--snice-color-surface-container-low));
   color: var(--snice-color-text-secondary);
   font-size: 0.8125rem;
+}
+
+:host [part~="key-input"]::placeholder,
+:host [part~="value-input"]::placeholder,
+:host [part~="description-input"]::placeholder {
+  color: var(--snice-color-text-tertiary);
+  opacity: 1;
 }
 
 :host [part~="key-input"]:focus-visible,
@@ -144,7 +151,7 @@
 
 :host [part~="view-value"] {
   font-family: var(--snice-font-family-mono);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--snice-color-text-secondary);
 }
 
@@ -193,6 +200,18 @@
   opacity: 0.5;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="copy-button"],
+  :host [part~="delete-button"] {
+    transition: none;
+  }
+
+  :host [part~="copy-button"]:active,
+  :host [part~="delete-button"]:active {
+    transform: none;
+  }
+}
+
 @media (forced-colors: active) {
   :host [part~="base"] {
     border: 1px solid CanvasText;
@@ -202,6 +221,18 @@
   :host [part~="key-input"],
   :host [part~="value-input"],
   :host [part~="description-input"] {
+    background: Field;
+    color: FieldText;
     border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="key-input"]:focus-visible,
+  :host [part~="value-input"]:focus-visible,
+  :host [part~="description-input"]:focus-visible,
+  :host [part~="copy-button"]:focus-visible,
+  :host [part~="delete-button"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

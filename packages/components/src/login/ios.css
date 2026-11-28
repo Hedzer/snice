@@ -69,14 +69,19 @@
   border-radius: 12px;
   font-size: 1rem;
   letter-spacing: -0.008em;
-  background: var(--snice-color-surface-container-low);
-  border: 0.5px solid var(--snice-color-border);
+  background: var(--snice-ios-tertiary-fill, var(--snice-color-surface-container-low));
+  border: 1px solid var(--snice-color-border);
   color: var(--snice-color-text);
   box-sizing: border-box;
   transition:
     border-color var(--snice-transition-fast, 160ms) var(--snice-ease-out),
     box-shadow var(--snice-transition-fast, 160ms) var(--snice-ease-out),
     background-color var(--snice-transition-fast, 160ms) var(--snice-ease-out);
+}
+
+:host [part~="input"]::placeholder {
+  color: var(--snice-color-text-tertiary);
+  opacity: 1;
 }
 
 :host([size="small"]) [part~="input"] {
@@ -227,6 +232,19 @@
   margin-top: 1rem;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :host [part~="input"],
+  :host [part~="forgot-link"],
+  :host [part~="submit-button-base"] {
+    transition: none;
+  }
+
+  :host [part~="forgot-link"]:active,
+  :host [part~="submit-button-base"]:active {
+    transform: none;
+  }
+}
+
 @media (forced-colors: active) {
   :host([variant="card"]) [part~="base"] {
     border: 1px solid CanvasText;
@@ -234,7 +252,18 @@
   }
 
   :host [part~="input"] {
+    background: Field;
+    color: FieldText;
     border: 1px solid ButtonBorder;
+  }
+
+  :host [part~="input"]:focus-visible,
+  :host [part~="checkbox"]:focus-visible,
+  :host [part~="forgot-link"]:focus-visible,
+  :host [part~="submit-button-base"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 
   :host [part~="submit-button-base"] {

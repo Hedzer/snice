@@ -331,13 +331,18 @@
   box-shadow: var(--snice-win-focus-shadow);
 }
 
-[part~="clear-icon"],
-[part~="arrow-icon"] {
+[part~="clear-icon"] {
   width: 0.6875rem;
   height: 0.6875rem;
 }
 
+[part~="arrow-icon"] {
+  display: none;
+}
+
 [part~="arrow"] {
+  width: 0.875rem;
+  height: 0.875rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -345,6 +350,16 @@
   transition:
     transform var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
     color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1));
+}
+
+[part~="arrow"]::before {
+  content: '';
+  display: block;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4.25L6 8.25L10 4.25' stroke='%23000' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4.25L6 8.25L10 4.25' stroke='%23000' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 /* Multi-Select Tags — crisp 4px Fluent subtle container tokens */
@@ -545,12 +560,67 @@
   font-size: 0.8125rem;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  [part~="trigger"],
+  [part~="input"],
+  [part~="arrow"],
+  [part~="clear-button"],
+  [part~="tag-remove"],
+  [part~="dropdown"],
+  [part~="search-input"],
+  [part~="option"] {
+    transition: none;
+  }
+
+  [part~="dropdown"] {
+    transform: none;
+  }
+}
+
 /* Windows High Contrast Mode (WHCM) keyboard focus & selection pill fallbacks */
 @media (forced-colors: active) {
+  [part~="trigger"],
+  [part~="input"],
+  [part~="search-input"] {
+    background: Field;
+    color: FieldText;
+    border-color: ButtonBorder;
+    box-shadow: none;
+  }
+
+  [part~="dropdown"] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  [part~="arrow"]::before {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+
+  :host([disabled]) [part~="arrow"]::before {
+    forced-color-adjust: none;
+    background: GrayText;
+  }
+
   [part~="trigger"]:focus-visible,
+  [part~="input"]:focus-visible,
   [part~="clear-button"]:focus-visible {
     outline: 2px solid Highlight;
     outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  [part~="trigger-disabled"],
+  [part~="input-disabled"],
+  :host([disabled]) [part~="label"],
+  :host([disabled]) [part~="placeholder"] {
+    color: GrayText;
+    border-color: GrayText;
   }
 
   [part~="option-selected"]::before {
