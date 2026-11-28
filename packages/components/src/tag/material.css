@@ -44,18 +44,19 @@
   color: var(--snice-m3-on-primary-container, var(--snice-color-text));
 }
 
+/* Clean luminous M3 tonal containers (~89-92% L in light, ~16-20% L in dark) */
 :host([variant="success"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-success) 18%, var(--snice-color-surface-container-high));
+  background: color-mix(in srgb, var(--snice-color-success) 13%, var(--snice-color-surface-container-lowest));
   color: color-mix(in srgb, var(--snice-color-success) 82%, var(--snice-color-text));
 }
 
 :host([variant="warning"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-warning) 20%, var(--snice-color-surface-container-high));
+  background: color-mix(in srgb, var(--snice-color-warning) 15%, var(--snice-color-surface-container-lowest));
   color: color-mix(in srgb, var(--snice-color-warning) 78%, var(--snice-color-text));
 }
 
 :host([variant="danger"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-danger) 18%, var(--snice-color-surface-container-high));
+  background: color-mix(in srgb, var(--snice-color-danger) 13%, var(--snice-color-surface-container-lowest));
   color: color-mix(in srgb, var(--snice-color-danger) 85%, var(--snice-color-text));
 }
 
@@ -94,7 +95,7 @@
 
 [part~="remove-button"] {
   border-radius: 9999px;
-  opacity: 0.78;
+  opacity: 0.82;
   transition: background-color 150ms var(--snice-m3-spring-effects, ease), opacity 150ms ease;
 }
 
@@ -110,4 +111,26 @@
 [part~="remove-button"]:focus-visible {
   outline: 2px solid var(--snice-color-primary);
   outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="remove-button"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  :host([variant]) [part~="base"],
+  :host([outline]) [part~="base"],
+  :host([outline][variant]) [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+  }
+
+  [part~="remove-button"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 1px;
+  }
 }

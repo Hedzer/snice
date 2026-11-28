@@ -88,3 +88,19 @@
   background: var(--snice-macos-fill-danger);
   color: hsl(0 0% 100%);
 }
+
+@media (forced-colors: active) {
+  [part~="badge"],
+  :host([variant]) [part~="badge"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+    outline: 2px solid Canvas;
+    box-shadow: none;
+  }
+
+  :host([inline]) [part~="badge"],
+  :host([inline][variant]) [part~="badge"] {
+    outline: none;
+  }
+}

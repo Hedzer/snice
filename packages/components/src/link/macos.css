@@ -55,8 +55,7 @@
 
 [part~="external-icon"] {
   font-size: 0.78em;
-  font-variant-emoji: text;
-  opacity: 0.72;
+  opacity: 0.82;
 }
 
 :host([disabled]) [part~="link"],
@@ -64,8 +63,42 @@
 :host([disabled][variant="secondary"]) [part~="link"],
 :host([disabled][variant="muted"]) [part~="link"],
 [part~="link"][part~="link-disabled"] {
-  color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
+  color: color-mix(in srgb, var(--snice-color-text) 48%, transparent);
   opacity: 1;
   text-decoration: none;
   pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="link"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="link"],
+  [part~="link"]:hover,
+  [part~="link"]:active,
+  :host([variant="primary"]) [part~="link"],
+  :host([variant="primary"]) [part~="link"]:hover,
+  :host([variant="secondary"]) [part~="link"],
+  :host([variant="secondary"]) [part~="link"]:hover,
+  :host([variant="muted"]) [part~="link"],
+  :host([variant="muted"]) [part~="link"]:hover {
+    color: LinkText;
+  }
+
+  [part~="link"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  :host([disabled]) [part~="link"],
+  :host([disabled][variant="primary"]) [part~="link"],
+  :host([disabled][variant="secondary"]) [part~="link"],
+  :host([disabled][variant="muted"]) [part~="link"],
+  [part~="link"][part~="link-disabled"] {
+    color: GrayText;
+  }
 }

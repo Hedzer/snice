@@ -81,10 +81,26 @@
 
 :host([variant="warning"]) [part~="badge"] {
   background: var(--snice-color-warning);
-  color: hsl(24 40% 10%);
+  color: var(--snice-ios-on-warning);
 }
 
 :host([variant="error"]) [part~="badge"] {
   background: var(--snice-ios-fill-danger);
   color: hsl(0 0% 100%);
+}
+
+@media (forced-colors: active) {
+  [part~="badge"],
+  :host([variant]) [part~="badge"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+    outline: 2px solid Canvas;
+    box-shadow: none;
+  }
+
+  :host([inline]) [part~="badge"],
+  :host([inline][variant]) [part~="badge"] {
+    outline: none;
+  }
 }

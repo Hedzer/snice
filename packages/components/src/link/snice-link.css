@@ -98,7 +98,16 @@
 
 .link__external-icon {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: var(--snice-font-size-xs, 0.75rem);
+  line-height: 1;
+}
+
+.link__external-icon svg {
+  width: 0.95em;
+  height: 0.95em;
+  display: block;
 }
 
 :host([disabled]) .link {

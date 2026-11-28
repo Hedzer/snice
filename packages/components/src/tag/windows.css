@@ -117,15 +117,25 @@
   box-shadow: var(--snice-win-focus-shadow);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  [part~="remove-button"] {
+    transition: none;
+  }
+}
+
 @media (forced-colors: active) {
-  [part~="base"] {
+  [part~="base"],
+  :host([variant]) [part~="base"],
+  :host([outline]) [part~="base"],
+  :host([outline][variant]) [part~="base"] {
     background: Canvas;
     color: CanvasText;
-    border-color: CanvasText;
+    border: 1px solid CanvasText;
   }
 
   [part~="remove-button"]:focus-visible {
     outline: 2px solid Highlight;
+    outline-offset: 1px;
     box-shadow: none;
   }
 }

@@ -96,7 +96,7 @@ export class SniceLink extends HTMLElement implements SniceLinkElement {
       >
         <slot></slot>
         <if ${this.external}>
-          <span class="link__external-icon" part="icon external-icon">↗</span>
+          <span class="link__external-icon" part="icon external-icon" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5L8.5 3.5M4.5 3.5h4v4"/></svg></span>
         </if>
       </a>
     `;

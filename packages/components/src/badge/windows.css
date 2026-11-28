@@ -87,13 +87,17 @@
 }
 
 @media (forced-colors: active) {
-  [part~="badge"] {
+  [part~="badge"],
+  :host([variant]) [part~="badge"] {
     background: Highlight;
     color: HighlightText;
-    box-shadow: 0 0 0 2px Canvas;
+    border: 1px solid Highlight;
+    outline: 2px solid Canvas;
+    box-shadow: none;
   }
 
-  :host([inline]) [part~="badge"] {
-    box-shadow: none;
+  :host([inline]) [part~="badge"],
+  :host([inline][variant]) [part~="badge"] {
+    outline: none;
   }
 }
