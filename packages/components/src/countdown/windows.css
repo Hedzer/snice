@@ -80,7 +80,7 @@
   font-size: 1.375rem;
 }
 
-/* Circular variant — 56px WinUI accent ring badges */
+/* Circular variant — 68px WinUI accent ring badges with room for 4-digit counts */
 :host([variant="circular"]) [part~="base"] {
   gap: 0.5rem;
 }
@@ -90,11 +90,11 @@
 }
 
 :host([variant="circular"]) [part~="value"] {
-  width: 3.5rem;
-  height: 3.5rem;
-  min-width: 3.5rem;
-  padding: 0;
-  font-size: 1.0625rem;
+  width: 4.25rem;
+  height: 4.25rem;
+  min-width: 4.25rem;
+  padding: 0 0.3125rem;
+  font-size: 1rem;
   font-weight: 600;
   border-radius: 9999px;
   background: var(--snice-color-surface-container-high);
@@ -104,7 +104,7 @@
 }
 
 :host([variant="circular"]) [part~="separator"] {
-  height: 3.5rem;
+  height: 4.25rem;
   font-size: 1.375rem;
 }
 

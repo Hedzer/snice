@@ -9,12 +9,12 @@
   font-family: var(--snice-font-family);
 }
 
-/* Opaque Grouped Canvas Stage */
+/* Opaque Grouped Canvas Stage with crisp OLED-safe hairline frame */
 :host [part~="base"] {
   box-sizing: border-box;
   background: var(--snice-color-surface);
-  border: 0.5px solid var(--snice-color-border-subtle);
-  border-radius: 16px;
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-text) 20%, transparent);
+  border-radius: 20px;
   box-shadow: var(--snice-shadow-xs);
 }
 
@@ -23,19 +23,25 @@
   outline-offset: 2px;
 }
 
-/* Opaque Grouped Node Cards — NEVER set transform (preserves inline zoomScale) */
+/* Liquid Glass Shortcuts-style Node Cards — NEVER set transform (preserves inline zoomScale) */
 :host [part~="node"] {
-  background: var(--snice-color-surface-container-high);
-  border: 0.5px solid var(--snice-color-border);
-  border-radius: 14px;
-  box-shadow: var(--snice-shadow-sm);
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 86%, transparent);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-text) 18%, transparent);
+  border-radius: 16px;
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.28),
+    var(--snice-shadow-md);
   transition:
     box-shadow var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out),
     border-color var(--snice-transition-fast, 160ms) var(--snice-ease-out, ease-out);
 }
 
 :host [part~="node"]:hover {
-  box-shadow: var(--snice-shadow-md);
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.34),
+    var(--snice-shadow-lg);
 }
 
 :host [part~="node-selected"] {
@@ -50,10 +56,14 @@
   box-shadow: var(--snice-shadow-xl);
 }
 
+/* Soft translucent semantic tinted header with Apple specular highlight */
 :host [part~="node-header"] {
-  border-radius: 13px 13px 0 0;
+  border-radius: 15px 15px 0 0;
   padding: 0.4375rem 0.625rem;
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  background: color-mix(in srgb, var(--flow-node-color, var(--snice-color-primary)) 18%, var(--snice-color-surface-container-high));
+  color: var(--snice-color-text);
+  border-bottom: 0.5px solid color-mix(in srgb, var(--flow-node-color, var(--snice-color-primary)) 28%, transparent);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.3);
   font-family: var(--snice-font-family-display);
   font-size: 0.75rem;
   font-weight: 600;
@@ -63,8 +73,8 @@
 :host [part~="node-type"] {
   font-size: 0.625rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  color: inherit;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--flow-node-color, var(--snice-color-primary)) 45%, var(--snice-color-text));
   opacity: 1;
 }
 
@@ -93,9 +103,9 @@
   transform: scale(1.3);
 }
 
-/* Edges — preserve authored --flow-edge-stroke */
+/* Edges — crisp OLED-visible stroke while preserving authored --flow-edge-stroke */
 :host [part~="edge"] {
-  stroke: var(--flow-edge-stroke, var(--snice-color-border-hover));
+  stroke: var(--flow-edge-stroke, color-mix(in srgb, var(--snice-color-text) 42%, transparent));
   stroke-width: 2px;
   stroke-linecap: round;
 }
@@ -153,6 +163,7 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
+  :host [part~="node"],
   :host [part~="minimap"] {
     background: var(--snice-color-surface-container-high);
     backdrop-filter: none;
@@ -161,6 +172,7 @@
 }
 
 @supports not (backdrop-filter: blur(1px)) {
+  :host [part~="node"],
   :host [part~="minimap"] {
     background: var(--snice-color-surface-container-high);
   }

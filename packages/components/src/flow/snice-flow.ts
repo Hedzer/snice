@@ -196,6 +196,12 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
   fitView() {
     if (this.nodes.length === 0) return;
 
+    const rect = this.containerEl?.getBoundingClientRect();
+    if (rect && rect.width > 0 && rect.height > 0) {
+      this.containerWidth = rect.width;
+      this.containerHeight = rect.height;
+    }
+
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     for (const node of this.nodes) {
       const w = node.width || DEFAULT_NODE_WIDTH;
@@ -206,7 +212,7 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
       maxY = Math.max(maxY, node.y + h);
     }
 
-    const padding = 40;
+    const padding = 32;
     const contentW = maxX - minX + padding * 2;
     const contentH = maxY - minY + padding * 2;
     const scaleX = this.containerWidth / contentW;
@@ -659,13 +665,14 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
       if (node.id === this.selectedNodeId) cls.push('flow__node--selected');
       if (this.dragNode && this.dragNode.id === node.id) cls.push('flow__node--dragging');
 
-      const headerBg = node.color ? `background:${node.color};color:white;` : '';
+      const nodeColorStyle = node.color ? `--flow-node-color:${escapeAttr(node.color)};` : '';
+      const headerCls = node.color ? 'flow__node-header flow__node-header--colored' : 'flow__node-header';
 
       // Scale the whole node uniformly so port positions match the edges'
       // canvas-space endpoints. Width+height stay in canvas units; CSS scale
       // maps them to screen pixels.
-      nodesHtml += `<div class="${cls.join(' ')}" part="node${node.id === this.selectedNodeId ? ' node-selected' : ''}${this.dragNode && this.dragNode.id === node.id ? ' node-dragging' : ''}" data-node-id="${escapeAttr(node.id)}" style="left:${x}px;top:${y}px;width:${w}px;transform-origin:top left;transform:scale(${this.zoomScale});">`;
-      nodesHtml += `<div class="flow__node-header" part="node-header" style="${headerBg}">`;
+      nodesHtml += `<div class="${cls.join(' ')}" part="node${node.id === this.selectedNodeId ? ' node-selected' : ''}${this.dragNode && this.dragNode.id === node.id ? ' node-dragging' : ''}" data-node-id="${escapeAttr(node.id)}" style="${nodeColorStyle}left:${x}px;top:${y}px;width:${w}px;transform-origin:top left;transform:scale(${this.zoomScale});">`;
+      nodesHtml += `<div class="${headerCls}" part="node-header">`;
       if (node.type) nodesHtml += `<span class="flow__node-type" part="node-type">${escapeHtml(node.type)}</span>`;
       nodesHtml += `<span part="node-label">${escapeHtml(node.label || node.id)}</span>`;
       nodesHtml += `</div>`;

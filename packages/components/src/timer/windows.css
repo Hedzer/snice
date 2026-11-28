@@ -123,6 +123,12 @@
   transform: none;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  [part~="button"] {
+    transition: none;
+  }
+}
+
 /* Windows High Contrast Mode (WHCM) */
 @media (forced-colors: active) {
   [part~="base"] {

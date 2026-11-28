@@ -12,9 +12,9 @@
 /* Opaque Desktop Canvas */
 :host [part~="base"] {
   box-sizing: border-box;
-  background: var(--snice-color-surface);
+  background: var(--snice-color-background-secondary);
   border: 0.5px solid var(--snice-color-border);
-  border-radius: 12px;
+  border-radius: 10px;
   box-shadow: var(--snice-shadow-xs);
 }
 
@@ -23,12 +23,14 @@
   box-shadow: var(--snice-macos-focus-halo);
 }
 
-/* Compact Opaque AppKit Node Cards — NEVER set transform */
+/* Compact Opaque AppKit Inspector Window Cards — NEVER set transform */
 :host [part~="node"] {
   background: var(--snice-color-background-element);
   border: 0.5px solid var(--snice-color-border);
-  border-radius: 10px;
-  box-shadow: var(--snice-shadow-sm);
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.16),
+    var(--snice-shadow-sm);
   transition:
     box-shadow var(--snice-transition-fast, 140ms) ease-out,
     border-color var(--snice-transition-fast, 140ms) ease-out;
@@ -51,10 +53,14 @@
   box-shadow: var(--snice-shadow-lg);
 }
 
+/* AppKit Neutral Titlebar with 3.5px Semantic Left Accent Rail */
 :host [part~="node-header"] {
-  border-radius: 9.5px 9.5px 0 0;
-  padding: 0.3125rem 0.625rem;
-  border-bottom: 0.5px solid var(--snice-color-border-subtle);
+  border-radius: 7.5px 7.5px 0 0;
+  padding: 0.3125rem 0.625rem 0.3125rem 0.75rem;
+  background: var(--snice-color-surface-container);
+  color: var(--snice-color-text);
+  border-bottom: 0.5px solid var(--snice-color-border);
+  box-shadow: inset 3.5px 0 0 var(--flow-node-color, var(--snice-color-primary));
   font-family: var(--snice-font-family);
   font-size: 0.75rem;
   font-weight: 600;
@@ -64,7 +70,7 @@
 :host [part~="node-type"] {
   font-size: 0.5625rem;
   font-weight: 700;
-  color: inherit;
+  color: var(--snice-color-text-secondary);
   opacity: 1;
 }
 
@@ -94,7 +100,7 @@
 
 /* Edges — preserve authored --flow-edge-stroke */
 :host [part~="edge"] {
-  stroke: var(--flow-edge-stroke, var(--snice-color-border-hover));
+  stroke: var(--flow-edge-stroke, color-mix(in srgb, var(--snice-color-text) 38%, transparent));
   stroke-width: 1.75px;
   stroke-linecap: round;
 }
@@ -190,6 +196,11 @@
     box-shadow: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+
+  :host [part~="base"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
   }
 
   :host [part~="node-selected"] {

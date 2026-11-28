@@ -14,7 +14,7 @@
   box-sizing: border-box;
   background: var(--snice-color-surface-container-low);
   border: 1px solid var(--snice-color-border-subtle);
-  border-radius: 16px;
+  border-radius: 20px;
 }
 
 :host [part~="base"]:focus-visible {
@@ -26,7 +26,7 @@
 :host [part~="node"] {
   background: var(--snice-color-surface-container-lowest);
   border: 1px solid var(--snice-color-border-subtle);
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: var(--snice-shadow-xs);
   transition:
     box-shadow var(--snice-transition-fast, 160ms) var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
@@ -50,10 +50,13 @@
   box-shadow: var(--snice-shadow-lg);
 }
 
+/* M3 Harmonized Tonal Container Header (Zero Harsh Raw Fills) */
 :host [part~="node-header"] {
-  border-radius: 11px 11px 0 0;
-  padding: 0.4375rem 0.625rem;
-  border-bottom: 1px solid var(--snice-color-border-subtle);
+  border-radius: 15px 15px 0 0;
+  padding: 0.5rem 0.75rem;
+  background: color-mix(in srgb, var(--flow-node-color, var(--snice-color-primary)) 18%, var(--snice-m3-primary-container));
+  color: var(--snice-color-text);
+  border-bottom: none;
   font-family: var(--snice-font-family-display);
   font-size: 0.75rem;
   font-weight: 500;
@@ -62,7 +65,7 @@
 :host [part~="node-type"] {
   font-size: 0.625rem;
   font-weight: 700;
-  color: inherit;
+  color: var(--snice-m3-on-primary-container);
   opacity: 1;
 }
 
