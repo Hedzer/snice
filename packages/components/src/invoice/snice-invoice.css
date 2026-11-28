@@ -403,16 +403,16 @@
 }
 
 :host([variant="modern"]) .invoice__meta-label {
-  color: rgb(255 255 255 / 0.7);
+  color: color-mix(in srgb, var(--invoice-header-text) 84%, transparent);
 }
 
 :host([variant="modern"]) .invoice__meta-value {
-  color: var(--snice-color-text-inverse, rgb(255 255 255));
+  color: var(--invoice-header-text);
 }
 
 :host([variant="modern"]) .invoice__status {
-  background: rgb(255 255 255 / 0.2);
-  color: var(--snice-color-text-inverse, rgb(255 255 255));
+  background: color-mix(in srgb, var(--invoice-header-text) 16%, transparent);
+  color: var(--invoice-header-text);
   text-decoration: none;
 }
 
@@ -974,10 +974,13 @@
   --invoice-text-tertiary: var(--snice-color-text-tertiary, rgb(146 139 126));
   --invoice-border: var(--snice-color-border, rgb(220 214 202));
   --invoice-bg-element: var(--snice-color-surface-container-high, rgb(244 242 236));
-  --invoice-border-color: rgb(32 30 27);
+  --invoice-border-color: color-mix(in srgb, var(--snice-color-text, rgb(32 30 27)) 42%, transparent);
   --invoice-border-radius: 0;
   --invoice-shadow: 0 18px 40px -20px rgb(30 28 24 / 0.5);
   --invoice-ink: var(--snice-color-text, rgb(28 26 23));
+  --invoice-ink-band: color-mix(in srgb, rgb(24 23 21) 86%, var(--snice-color-text, rgb(24 23 21)));
+  --invoice-ink-on-band: rgb(249 247 242);
+  --invoice-ink-muted-on-band: rgb(214 210 202);
 }
 
 :host([variant="ink"]) .invoice {
@@ -986,15 +989,16 @@
 }
 
 :host([variant="ink"]) .invoice__header {
-  background: var(--invoice-ink);
-  color: var(--snice-color-surface, rgb(249 247 242));
+  background: var(--invoice-ink-band);
+  color: var(--invoice-ink-on-band);
   margin: calc(-1 * var(--invoice-padding)) calc(-1 * var(--invoice-padding)) var(--invoice-section-gap);
   padding: calc(var(--invoice-padding) * 0.9) var(--invoice-padding);
-  border-bottom: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--invoice-ink-on-band) 16%, transparent);
   align-items: center;
 }
 
 :host([variant="ink"]) .invoice__title {
+  color: var(--invoice-ink-on-band);
   font-weight: var(--snice-font-weight-light, 300);
   text-transform: uppercase;
   letter-spacing: 0.5em;
@@ -1002,21 +1006,21 @@
 }
 
 :host([variant="ink"]) .invoice__meta-label {
-  color: color-mix(in srgb, var(--snice-color-surface, rgb(249 247 242)) 55%, transparent);
+  color: var(--invoice-ink-muted-on-band);
   text-transform: uppercase;
   letter-spacing: var(--snice-tracking-widest, 0.1em);
   font-size: 0.6875rem;
 }
 
 :host([variant="ink"]) .invoice__meta-value {
-  color: var(--snice-color-surface, rgb(249 247 242));
+  color: var(--invoice-ink-on-band);
   font-variant-numeric: tabular-nums lining-nums;
 }
 
 :host([variant="ink"]) .invoice__status {
   background: transparent;
-  border: 1px solid color-mix(in srgb, var(--snice-color-surface, rgb(249 247 242)) 55%, transparent);
-  color: var(--snice-color-surface, rgb(249 247 242));
+  border: 1px solid color-mix(in srgb, var(--invoice-ink-on-band) 60%, transparent);
+  color: var(--invoice-ink-on-band);
   letter-spacing: var(--snice-tracking-widest, 0.1em);
 }
 
@@ -1066,7 +1070,7 @@
   right: 0;
   bottom: 0;
   height: 0.625rem;
-  background: var(--invoice-ink);
+  background: var(--invoice-ink-band);
 }
 
 /* ══════════════════════════════════════════════════════

@@ -34,6 +34,10 @@
   --invoice-status-cancelled-text: var(--snice-color-text-tertiary);
 }
 
+:host:not([variant="classic"]):not([variant="minimal"]):not([variant="paper"]):not([variant="ink"]):not([variant="ledger"]):not([variant="ticket"]) {
+  --invoice-table-header-bg: var(--snice-color-surface-container-low);
+}
+
 :host([variant="classic"]) {
   --invoice-border-width: 2px;
   --invoice-border-radius: 0;
@@ -89,6 +93,10 @@
   border-radius: 4px;
 }
 
+:host:not([variant="classic"]):not([variant="minimal"]):not([variant="paper"]):not([variant="ink"]):not([variant="ledger"]):not([variant="ticket"]):not([variant="modern"]) [part~="notes"] {
+  border: 1px solid var(--snice-color-border-subtle);
+}
+
 :host([variant="classic"]) [part~="notes"],
 :host([variant="minimal"]) [part~="notes"],
 :host([variant="paper"]) [part~="notes"],
@@ -120,22 +128,6 @@
   border-radius: 4px;
 }
 
-/* Fix ink variant masthead contrast in dark mode */
-:host([variant="ink"]) [part~="header"],
-:host([variant="ink"]) [part~="title"],
-:host([variant="ink"]) [part~="meta-value"] {
-  color: var(--snice-color-text-inverse);
-}
-
-:host([variant="ink"]) [part~="meta-label"] {
-  color: color-mix(in srgb, var(--snice-color-text-inverse) 68%, transparent);
-}
-
-:host([variant="ink"]) [part~="status"] {
-  color: var(--snice-color-text-inverse);
-  border-color: color-mix(in srgb, var(--snice-color-text-inverse) 55%, transparent);
-}
-
 @media (forced-colors: active) {
   [part~="base"] {
     background: Canvas;
@@ -144,7 +136,9 @@
     box-shadow: none;
   }
 
-  :host([variant="modern"]) [part~="header"] {
+  :host([variant="modern"]) [part~="header"],
+  :host([variant="ink"]) [part~="header"] {
+    forced-color-adjust: none;
     background: Highlight;
     color: HighlightText;
   }
@@ -152,8 +146,13 @@
   :host([variant="modern"]) [part~="title"],
   :host([variant="modern"]) [part~="meta-label"],
   :host([variant="modern"]) [part~="meta-value"],
-  :host([variant="modern"]) [part~="status"] {
+  :host([variant="modern"]) [part~="status"],
+  :host([variant="ink"]) [part~="title"],
+  :host([variant="ink"]) [part~="meta-label"],
+  :host([variant="ink"]) [part~="meta-value"],
+  :host([variant="ink"]) [part~="status"] {
     color: HighlightText;
+    border-color: HighlightText;
   }
 }
 

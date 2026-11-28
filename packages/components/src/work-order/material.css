@@ -4,7 +4,7 @@
   --wo-bg: var(--snice-color-surface-container-low);
   --wo-bg-element: var(--snice-color-surface-container);
   --wo-border: var(--snice-color-border-subtle);
-  --wo-signature-line-color: var(--snice-color-border, var(--snice-color-border));
+  --wo-signature-line-color: var(--snice-color-border);
   --wo-task-checkbox-size: 1.25rem;
 }
 
@@ -35,6 +35,7 @@
 [part~="part-qty"],
 [part~="part-cost"],
 [part~="part-total"],
+[part~="parts-total"],
 [part~="parts-total-value"],
 [part~="labor-hours"],
 [part~="labor-rate"],
@@ -51,25 +52,6 @@
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.03em;
-}
-
-/* Ink variant dark-mode masthead contrast fix */
-:host([variant="ink"]) [part~="header"],
-:host([variant="ink"]) [part~="wo-number"],
-:host([variant="ink"]) [part~="date"],
-:host([variant="ink"]) [part~="due-date"] {
-  color: var(--snice-color-text-inverse);
-}
-
-:host([variant="ink"]) [part~="title"],
-:host([variant="ink"]) [part~="date-label"] {
-  color: color-mix(in srgb, var(--snice-color-text-inverse) 72%, transparent);
-}
-
-:host([variant="ink"]) [part~="priority"],
-:host([variant="ink"]) [part~="status"] {
-  color: var(--snice-color-text-inverse);
-  border-color: color-mix(in srgb, var(--snice-color-text-inverse) 55%, transparent);
 }
 
 [part~="section-title"] {
@@ -95,7 +77,7 @@
 
 [part~="task-checkbox"] {
   border-radius: 0.1875rem;
-  border: 2px solid var(--snice-color-border, var(--snice-color-border-hover));
+  border: 2px solid var(--snice-color-border-hover);
   background: transparent;
   transition: background-color 160ms cubic-bezier(0.2, 0, 0, 1), border-color 160ms cubic-bezier(0.2, 0, 0, 1);
 }
@@ -168,5 +150,43 @@
 
   [part~="sign-button"]:active {
     border-radius: 9999px;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="task-checkbox"],
+  [part~="sign-button"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="task-checkbox-checked"],
+  [part~="sign-button"]:hover,
+  :host([variant="ink"]) [part~="header"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    border-color: Highlight;
+    color: HighlightText;
+  }
+
+  :host([variant="ink"]) [part~="title"],
+  :host([variant="ink"]) [part~="wo-number"],
+  :host([variant="ink"]) [part~="date-label"],
+  :host([variant="ink"]) [part~="date"],
+  :host([variant="ink"]) [part~="due-date"],
+  :host([variant="ink"]) [part~="priority"],
+  :host([variant="ink"]) [part~="status"] {
+    color: HighlightText;
+    border-color: HighlightText;
+  }
+
+  [part~="task-checkbox"]:focus-visible,
+  [part~="sign-button"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

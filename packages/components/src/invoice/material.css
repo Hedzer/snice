@@ -115,11 +115,11 @@
 }
 
 :host([variant="modern"]) [part~="meta-label"] {
-  color: color-mix(in srgb, var(--snice-m3-on-primary) 78%, transparent);
+  color: color-mix(in srgb, var(--snice-m3-on-primary) 88%, transparent);
 }
 
 :host([variant="modern"]) [part~="status"] {
-  background: color-mix(in srgb, var(--snice-m3-on-primary) 14%, transparent);
+  background: color-mix(in srgb, var(--snice-m3-on-primary) 16%, transparent);
   color: var(--snice-m3-on-primary);
 }
 
@@ -127,20 +127,32 @@
   border-radius: 12px;
 }
 
-/* Fix ink variant masthead contrast in dark mode */
-:host([variant="ink"]) [part~="header"],
-:host([variant="ink"]) [part~="title"],
-:host([variant="ink"]) [part~="meta-value"] {
-  color: var(--snice-color-text-inverse);
-}
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
 
-:host([variant="ink"]) [part~="meta-label"] {
-  color: color-mix(in srgb, var(--snice-color-text-inverse) 68%, transparent);
-}
+  :host([variant="modern"]) [part~="header"],
+  :host([variant="ink"]) [part~="header"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
 
-:host([variant="ink"]) [part~="status"] {
-  color: var(--snice-color-text-inverse);
-  border-color: color-mix(in srgb, var(--snice-color-text-inverse) 55%, transparent);
+  :host([variant="modern"]) [part~="title"],
+  :host([variant="modern"]) [part~="meta-label"],
+  :host([variant="modern"]) [part~="meta-value"],
+  :host([variant="modern"]) [part~="status"],
+  :host([variant="ink"]) [part~="title"],
+  :host([variant="ink"]) [part~="meta-label"],
+  :host([variant="ink"]) [part~="meta-value"],
+  :host([variant="ink"]) [part~="status"] {
+    color: HighlightText;
+    border-color: HighlightText;
+  }
 }
 
 @media print {

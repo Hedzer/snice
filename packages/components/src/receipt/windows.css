@@ -41,15 +41,12 @@
   font-family: inherit;
 }
 
-/* Fix ink masthead contrast in dark mode */
-:host([variant="ink"]) [part~="header"],
-:host([variant="ink"]) [part~="merchant-name"] {
-  color: var(--snice-color-text-inverse);
-}
-
-:host([variant="ink"]) [part~="merchant-address"],
-:host([variant="ink"]) [part~="merchant-contact"] {
-  color: color-mix(in srgb, var(--snice-color-text-inverse) 72%, transparent);
+/* Fluent 2 layered payment block on standard digital receipt */
+:host:not([variant="thermal"]):not([variant="modern"]):not([variant="minimal"]):not([variant="paper"]):not([variant="ink"]):not([variant="ledger"]):not([variant="ticket"]) [part~="payment"] {
+  background: var(--snice-color-surface-container-low);
+  border: 1px solid var(--snice-color-border-subtle);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
 }
 
 /* Tabular numerals across all receipt figures */
@@ -75,6 +72,18 @@
   :host([variant="modern"]) [part~="payment"] {
     background: Canvas;
     border-color: CanvasText;
+  }
+
+  :host([variant="ink"]) [part~="header"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  :host([variant="ink"]) [part~="merchant-name"],
+  :host([variant="ink"]) [part~="merchant-address"],
+  :host([variant="ink"]) [part~="merchant-contact"] {
+    color: HighlightText;
   }
 }
 

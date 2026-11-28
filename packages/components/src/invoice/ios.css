@@ -21,14 +21,15 @@
   --invoice-danger: var(--snice-color-danger);
   --invoice-status-draft-bg: var(--snice-color-surface-container);
   --invoice-status-draft-text: var(--snice-color-text-secondary);
-  --invoice-status-sent-bg: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
-  --invoice-status-sent-text: var(--snice-color-primary);
-  --invoice-status-paid-bg: color-mix(in srgb, var(--snice-color-success) 15%, transparent);
-  --invoice-status-paid-text: var(--snice-color-success);
-  --invoice-status-overdue-bg: color-mix(in srgb, var(--snice-color-danger) 15%, transparent);
-  --invoice-status-overdue-text: var(--snice-color-danger);
+  --invoice-status-sent-bg: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+  --invoice-status-sent-text: color-mix(in srgb, var(--snice-color-primary) 82%, var(--snice-color-text));
+  --invoice-status-paid-bg: color-mix(in srgb, var(--snice-color-success) 16%, transparent);
+  --invoice-status-paid-text: color-mix(in srgb, var(--snice-color-success) 82%, var(--snice-color-text));
+  --invoice-status-overdue-bg: color-mix(in srgb, var(--snice-color-danger) 16%, transparent);
+  --invoice-status-overdue-text: color-mix(in srgb, var(--snice-color-danger) 82%, var(--snice-color-text));
   --invoice-status-cancelled-bg: var(--snice-color-surface-container-low);
   --invoice-status-cancelled-text: var(--snice-color-text-tertiary);
+  --invoice-total-border: 0.5px solid var(--snice-color-border);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -130,20 +131,32 @@
   border-radius: 14px;
 }
 
-/* Fix ink variant masthead contrast in dark mode (inverted ink header uses --snice-color-text-inverse) */
-:host([variant="ink"]) [part~="header"],
-:host([variant="ink"]) [part~="title"],
-:host([variant="ink"]) [part~="meta-value"] {
-  color: var(--snice-color-text-inverse);
-}
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
 
-:host([variant="ink"]) [part~="meta-label"] {
-  color: color-mix(in srgb, var(--snice-color-text-inverse) 68%, transparent);
-}
+  :host([variant="modern"]) [part~="header"],
+  :host([variant="ink"]) [part~="header"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
 
-:host([variant="ink"]) [part~="status"] {
-  color: var(--snice-color-text-inverse);
-  border-color: color-mix(in srgb, var(--snice-color-text-inverse) 55%, transparent);
+  :host([variant="modern"]) [part~="title"],
+  :host([variant="modern"]) [part~="meta-label"],
+  :host([variant="modern"]) [part~="meta-value"],
+  :host([variant="modern"]) [part~="status"],
+  :host([variant="ink"]) [part~="title"],
+  :host([variant="ink"]) [part~="meta-label"],
+  :host([variant="ink"]) [part~="meta-value"],
+  :host([variant="ink"]) [part~="status"] {
+    color: HighlightText;
+    border-color: HighlightText;
+  }
 }
 
 @media print {

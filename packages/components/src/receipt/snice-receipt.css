@@ -743,12 +743,15 @@
   --receipt-text-tertiary: var(--snice-color-text-tertiary, rgb(146 139 126));
   --receipt-border: var(--snice-color-border, rgb(220 214 202));
   --receipt-ink: var(--snice-color-text, rgb(28 26 23));
+  --receipt-ink-band: color-mix(in srgb, rgb(24 23 21) 86%, var(--snice-color-text, rgb(24 23 21)));
+  --receipt-ink-on-band: rgb(249 247 242);
+  --receipt-ink-muted-on-band: rgb(214 210 202);
 }
 
 :host([variant="ink"]) .receipt {
   background: var(--receipt-bg);
   color: var(--receipt-text);
-  border: 1px solid var(--receipt-ink);
+  border: 1px solid color-mix(in srgb, var(--snice-color-text, rgb(28 26 23)) 42%, transparent);
   border-radius: 0;
   overflow: hidden;
   position: relative;
@@ -757,14 +760,15 @@
 }
 
 :host([variant="ink"]) .receipt__header {
-  background: var(--receipt-ink);
-  color: var(--snice-color-surface, rgb(249 247 242));
+  background: var(--receipt-ink-band);
+  color: var(--receipt-ink-on-band);
   margin: -1.25rem -1.25rem 1.25rem;
   padding: 1.25rem;
-  border-bottom: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--receipt-ink-on-band) 16%, transparent);
 }
 
 :host([variant="ink"]) .receipt__merchant-name {
+  color: var(--receipt-ink-on-band);
   text-transform: uppercase;
   letter-spacing: 0.4em;
   font-weight: var(--snice-font-weight-light, 300);
@@ -772,7 +776,7 @@
 
 :host([variant="ink"]) .receipt__merchant-address,
 :host([variant="ink"]) .receipt__merchant-contact {
-  color: color-mix(in srgb, var(--snice-color-surface, rgb(249 247 242)) 60%, transparent);
+  color: var(--receipt-ink-muted-on-band);
 }
 
 :host([variant="ink"]) .receipt__total-row--grand {
@@ -793,7 +797,7 @@
   right: 0;
   bottom: 0;
   height: 0.5rem;
-  background: var(--receipt-ink);
+  background: var(--receipt-ink-band);
 }
 
 /* ══════════════════════════════════════════════════════
