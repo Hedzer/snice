@@ -17,6 +17,8 @@ import type {
  *   - trigger: the element that toggles the panel
  *   - default: the panel's contents
  */
+const PANEL_PLACEMENT_PARTS = { top: ' panel-top', topStart: ' panel-top-start', topEnd: ' panel-top-end', bottom: ' panel-bottom', bottomStart: ' panel-bottom-start', bottomEnd: ' panel-bottom-end', left: ' panel-left', leftStart: ' panel-left-start', leftEnd: ' panel-left-end', right: ' panel-right', rightStart: ' panel-right-start', rightEnd: ' panel-right-end' } as Record<string, string>;
+
 @element('snice-popover')
 export class SnicePopover extends HTMLElement implements SnicePopoverElement {
   @property({ type: Boolean })
@@ -55,6 +57,8 @@ export class SnicePopover extends HTMLElement implements SnicePopoverElement {
       this.open ? 'popover__panel--open' : '',
     ].filter(Boolean).join(' ');
 
+    const placementKey = this.placement.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
+
     return html/*html*/`
       <div class="popover" part="base">
         <div class="popover__trigger" part="trigger" tabindex="0" role="button"
@@ -62,7 +66,8 @@ export class SnicePopover extends HTMLElement implements SnicePopoverElement {
              aria-expanded="${this.open ? 'true' : 'false'}">
           <slot name="trigger"></slot>
         </div>
-        <div class="${panelClasses}" part="panel${this.open ? ' panel-open' : ''}" role="dialog" popover="manual">
+        <div class="${panelClasses}" part="panel${PANEL_PLACEMENT_PARTS[placementKey] ?? ''}${this.open ? ' panel-open' : ''}" role="dialog" popover="manual">
+          <span class="popover__arrow" part="arrow" aria-hidden="true"></span>
           <div class="popover__content" part="content">
             <slot></slot>
           </div>
@@ -167,7 +172,9 @@ export class SnicePopover extends HTMLElement implements SnicePopoverElement {
   private position() {
     if (!this.panel || !this.triggerElement) return;
     const a = this.triggerElement.getBoundingClientRect();
-    const p = this.panel.getBoundingClientRect();
+    const rect = this.panel.getBoundingClientRect();
+    const pw = this.panel.offsetWidth || rect.width;
+    const ph = this.panel.offsetHeight || rect.height;
     const margin = 4;
     const dist = this.distance;
     let top = 0;
@@ -175,20 +182,20 @@ export class SnicePopover extends HTMLElement implements SnicePopoverElement {
 
     switch (this.placement) {
       case 'top':
-        top = a.top - p.height - dist;
-        left = a.left + a.width / 2 - p.width / 2;
+        top = a.top - ph - dist;
+        left = a.left + a.width / 2 - pw / 2;
         break;
       case 'top-start':
-        top = a.top - p.height - dist;
+        top = a.top - ph - dist;
         left = a.left;
         break;
       case 'top-end':
-        top = a.top - p.height - dist;
-        left = a.right - p.width;
+        top = a.top - ph - dist;
+        left = a.right - pw;
         break;
       case 'bottom':
         top = a.bottom + dist;
-        left = a.left + a.width / 2 - p.width / 2;
+        left = a.left + a.width / 2 - pw / 2;
         break;
       case 'bottom-start':
         top = a.bottom + dist;
@@ -197,22 +204,22 @@ export class SnicePopover extends HTMLElement implements SnicePopoverElement {
       case 'bottom-end':
       default:
         top = a.bottom + dist;
-        left = a.right - p.width;
+        left = a.right - pw;
         break;
       case 'left':
-        top = a.top + a.height / 2 - p.height / 2;
-        left = a.left - p.width - dist;
+        top = a.top + a.height / 2 - ph / 2;
+        left = a.left - pw - dist;
         break;
       case 'left-start':
         top = a.top;
-        left = a.left - p.width - dist;
+        left = a.left - pw - dist;
         break;
       case 'left-end':
-        top = a.bottom - p.height;
-        left = a.left - p.width - dist;
+        top = a.bottom - ph;
+        left = a.left - pw - dist;
         break;
       case 'right':
-        top = a.top + a.height / 2 - p.height / 2;
+        top = a.top + a.height / 2 - ph / 2;
         left = a.right + dist;
         break;
       case 'right-start':
@@ -220,16 +227,16 @@ export class SnicePopover extends HTMLElement implements SnicePopoverElement {
         left = a.right + dist;
         break;
       case 'right-end':
-        top = a.bottom - p.height;
+        top = a.bottom - ph;
         left = a.right + dist;
         break;
     }
 
     // Clamp to viewport
     if (left < margin) left = margin;
-    if (left + p.width > window.innerWidth - margin) left = window.innerWidth - p.width - margin;
+    if (left + pw > window.innerWidth - margin) left = window.innerWidth - pw - margin;
     if (top < margin) top = margin;
-    if (top + p.height > window.innerHeight - margin) top = window.innerHeight - p.height - margin;
+    if (top + ph > window.innerHeight - margin) top = window.innerHeight - ph - margin;
 
     this.panel.style.top = `${top}px`;
     this.panel.style.left = `${left}px`;

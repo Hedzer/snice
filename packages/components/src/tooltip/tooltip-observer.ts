@@ -59,6 +59,7 @@ function createPortal(config: TooltipConfig): HTMLElement {
   portal.setAttribute('role', 'tooltip');
   portal.style.cssText = `
     position: fixed;
+    box-sizing: border-box;
     z-index: ${config.zIndex};
     padding: ${config.padding};
     background: ${config.bg};
@@ -71,7 +72,6 @@ function createPortal(config: TooltipConfig): HTMLElement {
     pointer-events: none;
     opacity: 0;
     transform: scale(0.95);
-    transition: opacity 0.2s, transform 0.2s;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     display: none;
   `;

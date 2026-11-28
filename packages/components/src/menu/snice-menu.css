@@ -91,6 +91,7 @@
   .menu__panel[popover] {
     position-anchor: --menu-anchor;
     min-width: max(var(--menu-min-width), anchor-size(width));
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
   }
 
   .menu__panel[popover].menu__panel--bottom-start {
@@ -100,20 +101,17 @@
 
   .menu__panel[popover].menu__panel--bottom-end {
     top: calc(anchor(bottom) + var(--menu-distance, 4px));
-    left: anchor(right);
-    translate: -100% 0;
+    right: anchor(right);
   }
 
   .menu__panel[popover].menu__panel--top-start {
-    top: calc(anchor(top) - var(--menu-distance, 4px));
+    bottom: calc(anchor(top) + var(--menu-distance, 4px));
     left: anchor(left);
-    translate: 0 -100%;
   }
 
   .menu__panel[popover].menu__panel--top-end {
-    top: calc(anchor(top) - var(--menu-distance, 4px));
-    left: anchor(right);
-    translate: -100% -100%;
+    bottom: calc(anchor(top) + var(--menu-distance, 4px));
+    right: anchor(right);
   }
 
   .menu__panel[popover].menu__panel--right-start {
@@ -122,21 +120,18 @@
   }
 
   .menu__panel[popover].menu__panel--right-end {
-    top: anchor(bottom);
+    bottom: anchor(bottom);
     left: calc(anchor(right) + var(--menu-distance, 4px));
-    translate: 0 -100%;
   }
 
   .menu__panel[popover].menu__panel--left-start {
     top: anchor(top);
-    left: calc(anchor(left) - var(--menu-distance, 4px));
-    translate: -100% 0;
+    right: calc(anchor(left) + var(--menu-distance, 4px));
   }
 
   .menu__panel[popover].menu__panel--left-end {
-    top: anchor(bottom);
-    left: calc(anchor(left) - var(--menu-distance, 4px));
-    translate: -100% -100%;
+    bottom: anchor(bottom);
+    right: calc(anchor(left) + var(--menu-distance, 4px));
   }
 }
 

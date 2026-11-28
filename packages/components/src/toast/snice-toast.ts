@@ -179,10 +179,12 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
       }
 
       /* For top-positioned container - slide down */
+      :host([data-position^="top"]),
       :host-context(snice-toast-container[position^="top"]) {
         animation: slideInTop 0.3s ease-out;
       }
 
+      :host([data-position^="top"].hiding),
       :host-context(snice-toast-container[position^="top"]):host(.hiding) {
         animation: slideOutTop 0.3s ease-out;
       }
@@ -211,6 +213,22 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
 
       [hidden] {
         display: none !important;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        :host,
+        :host(.hiding),
+        :host([data-position^="top"]),
+        :host([data-position^="top"].hiding),
+        :host-context(snice-toast-container[position^="top"]),
+        :host-context(snice-toast-container[position^="top"]):host(.hiding) {
+          animation-duration: 0.01ms !important;
+        }
+
+        .toast,
+        .toast-close {
+          transition-duration: 0.01ms !important;
+        }
       }
     `;
   }

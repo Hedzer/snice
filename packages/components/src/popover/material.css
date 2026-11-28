@@ -1,14 +1,18 @@
 /* Android Material 3 Expressive — snice-popover (16dp Tonal Surface Popover Card) */
+:host {
+  --popover-enter-scale: 0.94;
+}
+
 [part~="panel"] {
-  border-radius: 16px;
-  padding: 0.875rem 1rem;
-  min-width: 12.5rem;
-  background: var(--snice-color-surface-container-high);
+  border-radius: var(--snice-popover-radius, 16px);
+  padding: var(--snice-popover-padding, 0.875rem 1rem);
+  min-width: var(--snice-popover-min-width, 12.5rem);
+  background: var(--snice-popover-bg, var(--snice-color-surface-container-high));
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border: none;
-  box-shadow: var(--snice-shadow-md);
-  color: var(--snice-color-text);
+  border: 1px solid var(--snice-popover-border, transparent);
+  box-shadow: var(--snice-popover-shadow, var(--snice-shadow-md));
+  color: var(--snice-popover-text, var(--snice-color-text));
   font-size: 0.875rem;
   line-height: 1.43;
   letter-spacing: 0.015em;
@@ -17,11 +21,17 @@
   transition:
     opacity 180ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
     transform 220ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
-    scale 220ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+    scale 220ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)),
+    display 180ms allow-discrete,
+    overlay 180ms allow-discrete;
 }
 
 [part~="panel"][part~="panel-open"] {
   scale: 1;
+}
+
+[part~="arrow"] {
+  display: none;
 }
 
 [part~="trigger"] {
@@ -36,5 +46,20 @@
 @media (prefers-reduced-motion: reduce) {
   [part~="panel"] {
     transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="panel"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="trigger"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

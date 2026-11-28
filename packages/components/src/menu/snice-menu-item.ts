@@ -1,4 +1,4 @@
-import { element, property, dispatch, on, render, styles, html, css } from 'snice';
+import { element, property, dispatch, on, ready, render, styles, html, css } from 'snice';
 import cssContent from './snice-menu-item.css?inline';
 import type { SniceMenuItemElement, MenuItemSelectDetail } from './snice-menu-item.types';
 
@@ -12,6 +12,23 @@ export class SniceMenuItem extends HTMLElement implements SniceMenuItemElement {
 
   @property({ type: Boolean })
   selected = false;
+
+  @property({ attribute: false })
+  private hasIcon = false;
+
+  @property({ attribute: false })
+  private hasShortcut = false;
+
+  @ready()
+  init() {
+    this.syncSlotState();
+    this.shadowRoot?.addEventListener('slotchange', () => this.syncSlotState());
+  }
+
+  private syncSlotState() {
+    this.hasIcon = !!this.querySelector('[slot="icon"]');
+    this.hasShortcut = !!this.querySelector('[slot="shortcut"]');
+  }
 
   @on('click')
   handleClick(e: MouseEvent) {
@@ -43,13 +60,13 @@ export class SniceMenuItem extends HTMLElement implements SniceMenuItemElement {
 
     return html/*html*/`
       <div class="${itemClasses}" part="base item${this.selected ? ' item-selected' : ''}${this.disabled ? ' item-disabled' : ''}" role="menuitem" aria-disabled="${this.disabled}">
-        <span class="menu-item__icon" part="icon">
+        <span class="menu-item__icon" part="icon" ?hidden=${!this.hasIcon}>
           <slot name="icon"></slot>
         </span>
         <span class="menu-item__label" part="label">
           <slot></slot>
         </span>
-        <span class="menu-item__shortcut" part="shortcut">
+        <span class="menu-item__shortcut" part="shortcut" ?hidden=${!this.hasShortcut}>
           <slot name="shortcut"></slot>
         </span>
       </div>

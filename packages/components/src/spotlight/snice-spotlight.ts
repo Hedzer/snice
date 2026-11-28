@@ -1,5 +1,4 @@
 import { element, property, dispatch, dispose, render, styles, html, css as cssTag } from 'snice';
-import cssContent from './snice-spotlight.css?inline';
 import type { SpotlightStep, SniceSpotlightElement } from './snice-spotlight.types';
 
 @element('snice-spotlight')
@@ -56,7 +55,7 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
     const portal = document.createElement('div');
     portal.setAttribute('data-snice-spotlight-portal', '');
     portal.innerHTML = `
-      <style>${cssContent}
+      <style>
         [data-snice-spotlight-portal] { font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif); }
         [data-snice-spotlight-portal] .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9998; pointer-events: none; }
         [data-snice-spotlight-portal] .backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; }
@@ -73,6 +72,9 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
         [data-snice-spotlight-portal] .btn-primary:hover { opacity: 0.9; }
         [data-snice-spotlight-portal] .btn-skip { border: none; background: none; color: var(--snice-color-text-tertiary, rgb(115 115 115)); padding: var(--snice-spacing-2xs, 0.25rem); }
         [data-snice-spotlight-portal] .btn-skip:hover { color: var(--snice-color-text, rgb(23 23 23)); }
+        @media (prefers-reduced-motion: reduce) {
+          [data-snice-spotlight-portal] * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+        }
       </style>
       <div class="overlay" part="base">
         <div class="backdrop" part="backdrop"></div>
@@ -347,36 +349,57 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
     if (!popover) return;
 
     const gap = 12;
+    const margin = 8;
     popover.style.top = '';
     popover.style.left = '';
     popover.style.bottom = '';
     popover.style.right = '';
 
+    const popRect = popover.getBoundingClientRect();
+    const popWidth = popover.offsetWidth || popRect.width || 280;
+    const popHeight = popover.offsetHeight || popRect.height || 160;
+
     let pos = position;
     if (pos === 'auto') {
       const spaceBelow = window.innerHeight - targetRect.bottom;
       const spaceAbove = targetRect.top;
-      pos = spaceBelow > 200 ? 'bottom' : spaceAbove > 200 ? 'top' : 'bottom';
+      pos = spaceBelow > popHeight + padding + gap ? 'bottom' : spaceAbove > popHeight + padding + gap ? 'top' : 'bottom';
     }
+
+    let top = 0;
+    let left = 0;
 
     switch (pos) {
       case 'bottom':
-        popover.style.top = `${targetRect.bottom + padding + gap}px`;
-        popover.style.left = `${Math.max(8, targetRect.left)}px`;
+        top = targetRect.bottom + padding + gap;
+        left = targetRect.left;
         break;
       case 'top':
-        popover.style.bottom = `${window.innerHeight - targetRect.top + padding + gap}px`;
-        popover.style.left = `${Math.max(8, targetRect.left)}px`;
+        top = targetRect.top - padding - gap - popHeight;
+        left = targetRect.left;
         break;
       case 'left':
-        popover.style.top = `${targetRect.top}px`;
-        popover.style.right = `${window.innerWidth - targetRect.left + padding + gap}px`;
+        top = targetRect.top;
+        left = targetRect.left - padding - gap - popWidth;
         break;
       case 'right':
-        popover.style.top = `${targetRect.top}px`;
-        popover.style.left = `${targetRect.right + padding + gap}px`;
+        top = targetRect.top;
+        left = targetRect.right + padding + gap;
+        break;
+      default:
+        top = targetRect.bottom + padding + gap;
+        left = targetRect.left;
         break;
     }
+
+    // Clamp to viewport bounds
+    const maxLeft = Math.max(margin, window.innerWidth - popWidth - margin);
+    const maxTop = Math.max(margin, window.innerHeight - popHeight - margin);
+    left = Math.max(margin, Math.min(left, maxLeft));
+    top = Math.max(margin, Math.min(top, maxTop));
+
+    popover.style.top = `${top}px`;
+    popover.style.left = `${left}px`;
   }
 
   /** Scroll target into view, then position once scroll settles. */

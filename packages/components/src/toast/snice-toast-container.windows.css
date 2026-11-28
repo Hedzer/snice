@@ -79,16 +79,25 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  [part~="toast-close-button"] {
+    transition-duration: 0.01ms;
+  }
+}
+
 @media (forced-colors: active) {
   [part~="toast-base"] {
     background: Canvas;
     color: CanvasText;
     border-color: CanvasText;
+    box-shadow: none;
     backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   [part~="toast-close-button"]:focus-visible {
     outline: 2px solid Highlight;
+    outline-offset: 2px;
     box-shadow: none;
   }
 }

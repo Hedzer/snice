@@ -18,18 +18,18 @@
 }
 
 [part~="item"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary, var(--snice-color-primary));
   color: hsl(0 0% 100%);
 }
 
 [part~="item"]:active {
-  background: color-mix(in srgb, var(--snice-color-primary) 88%, black);
+  background: color-mix(in srgb, var(--snice-macos-fill-primary, var(--snice-color-primary)) 88%, black);
   color: hsl(0 0% 100%);
 }
 
 :host(:focus-visible) [part~="item"],
 [part~="item"]:focus-visible {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary, var(--snice-color-primary));
   color: hsl(0 0% 100%);
   outline: none;
 }
@@ -41,7 +41,7 @@
 }
 
 [part~="item"][part~="item-selected"]:hover {
-  background: var(--snice-color-primary);
+  background: var(--snice-macos-fill-primary, var(--snice-color-primary));
   color: hsl(0 0% 100%);
 }
 
@@ -67,12 +67,18 @@
 }
 
 :host([variant="danger"]) [part~="item"] {
-  color: var(--snice-color-danger);
+  color: color-mix(in srgb, var(--snice-color-danger) 85%, var(--snice-color-text));
 }
 
 :host([variant="danger"]) [part~="item"]:hover,
-:host([variant="danger"]) [part~="item"]:focus-visible {
-  background: var(--snice-color-danger);
+:host([variant="danger"]) [part~="item"]:focus-visible,
+:host([variant="danger"]:focus-visible) [part~="item"] {
+  background: var(--snice-macos-fill-danger, var(--snice-color-danger));
+  color: hsl(0 0% 100%);
+}
+
+:host([variant="danger"]) [part~="item"]:active {
+  background: color-mix(in srgb, var(--snice-macos-fill-danger, var(--snice-color-danger)) 88%, black);
   color: hsl(0 0% 100%);
 }
 
@@ -84,4 +90,34 @@
   color: color-mix(in srgb, var(--snice-color-text) 38%, transparent);
   opacity: 1;
   background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="item"] {
+    transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  :host(:focus-visible) [part~="item"],
+  [part~="item"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  [part~="item"]:hover {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  :host([disabled]) [part~="item"],
+  :host([disabled]) [part~="item"]:hover,
+  :host([variant="danger"][disabled]) [part~="item"],
+  :host([variant="danger"][disabled]) [part~="item"]:hover,
+  [part~="item"][part~="item-disabled"] {
+    color: GrayText;
+    background: transparent;
+  }
 }

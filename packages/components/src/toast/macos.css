@@ -107,4 +107,29 @@
     animation-duration: 0.01ms;
     transition-duration: 0.01ms;
   }
+
+  [part~="close-button"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  :host([type="info"]) [part~="base"],
+  :host([type="success"]) [part~="base"],
+  :host([type="warning"]) [part~="base"],
+  :host([type="error"]) [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  [part~="close-button"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
 }

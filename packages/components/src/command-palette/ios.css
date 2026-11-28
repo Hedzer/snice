@@ -37,6 +37,12 @@
   color: var(--snice-color-text-tertiary);
 }
 
+[part~="input"]:focus-visible {
+  outline: none;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 2px var(--snice-focus-ring-color);
+}
+
 [part~="results"] {
   padding: 0.5rem 0.625rem 0.625rem;
   display: flex;
@@ -77,6 +83,9 @@
 [part~="item-active"]:hover {
   background: var(--snice-ios-glass-tinted-bg);
   box-shadow: inset 0 0 0 0.5px color-mix(in srgb, var(--snice-color-primary) 28%, transparent);
+  --cp-shortcut-bg: color-mix(in srgb, var(--snice-color-text) 14%, transparent);
+  --cp-shortcut-color: var(--snice-color-text);
+  --cp-shortcut-border: 0.5px solid color-mix(in srgb, var(--snice-color-text) 24%, transparent);
 }
 
 [part~="item"]:active {
@@ -99,7 +108,7 @@
   height: 1.75rem;
   border-radius: 8px;
   background: hsl(240 5% 50% / 0.1);
-  color: var(--snice-color-primary);
+  color: var(--cp-icon-color, var(--snice-color-primary));
   font-size: 1rem;
 }
 
@@ -107,22 +116,22 @@
   font-size: 0.9375rem;
   font-weight: 500;
   letter-spacing: -0.012em;
-  color: var(--snice-color-text);
+  color: inherit;
 }
 
 [part~="item-description"] {
   font-size: 0.8125rem;
-  color: var(--snice-color-text-secondary);
+  color: var(--cp-desc-color, var(--snice-color-text-secondary));
 }
 
 [part~="item-shortcut"] {
   padding: 0.1875rem 0.5rem;
   border-radius: 7px;
-  background: hsl(240 5% 50% / 0.12);
-  border: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--cp-shortcut-bg, hsl(240 5% 50% / 0.12));
+  border: var(--cp-shortcut-border, 0.5px solid var(--snice-color-border-subtle));
   font-family: var(--snice-font-family-mono);
   font-size: 0.75rem;
-  color: var(--snice-color-text-secondary);
+  color: var(--cp-shortcut-color, var(--snice-color-text-secondary));
 }
 
 [part~="empty"] {
@@ -160,5 +169,47 @@
   [part~="item"] {
     animation-duration: 0.01ms;
     transition-duration: 0.01ms;
+  }
+
+  [part~="item"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="container"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  [part~="item-active"],
+  [part~="item-active"]:hover {
+    background: Highlight;
+    color: HighlightText;
+    box-shadow: none;
+    --cp-icon-color: HighlightText;
+    --cp-desc-color: HighlightText;
+    --cp-shortcut-bg: HighlightText;
+    --cp-shortcut-color: Highlight;
+    --cp-shortcut-border: 1px solid HighlightText;
+  }
+
+  [part~="item-disabled"] {
+    color: GrayText;
+    opacity: 1;
+    --cp-icon-color: GrayText;
+    --cp-desc-color: GrayText;
+    --cp-shortcut-color: GrayText;
+  }
+
+  [part~="input"]:focus-visible,
+  [part~="item"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    box-shadow: none;
   }
 }

@@ -99,3 +99,18 @@
     transition-duration: 0.01ms;
   }
 }
+
+@media (forced-colors: active) {
+  [part~="panel"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="close"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}

@@ -46,6 +46,7 @@ container?: string | Element;        // attr: container — center inside this e
 - `close` - Close button
 - `body` - Body content section
 - `footer` - Footer section
+- `grabber` - Hidden iOS sheet drag grabber handle (`data-platform-only="ios"`)
 
 State tokens:
 
@@ -59,7 +60,7 @@ State tokens:
 - `footer-empty` - Added to `footer` when the footer has no content
 - `backdrop-open` - Added to `backdrop` while open
 - `panel-open` - Added to `panel` while open
-- `grabber` - Hidden iOS/Material sheet drag grabber handle (`data-platform-only="ios,material"`)
+- `panel-container` - Added to `panel` while the modal is container-scoped
 
 ## Basic Usage
 

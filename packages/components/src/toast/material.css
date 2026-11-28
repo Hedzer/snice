@@ -34,22 +34,22 @@
 
 [part~="icon"][part~="icon-info"],
 :host([type="info"]) [part~="icon"] {
-  color: color-mix(in srgb, var(--snice-color-primary) 50%, var(--snice-color-text-inverse));
+  color: color-mix(in srgb, var(--snice-color-primary) 42%, var(--snice-color-text-inverse));
 }
 
 [part~="icon"][part~="icon-success"],
 :host([type="success"]) [part~="icon"] {
-  color: color-mix(in srgb, var(--snice-color-success) 55%, var(--snice-color-text-inverse));
+  color: color-mix(in srgb, var(--snice-color-success) 42%, var(--snice-color-text-inverse));
 }
 
 [part~="icon"][part~="icon-warning"],
 :host([type="warning"]) [part~="icon"] {
-  color: color-mix(in srgb, var(--snice-color-warning) 60%, var(--snice-color-text-inverse));
+  color: color-mix(in srgb, var(--snice-color-warning) 40%, var(--snice-color-text-inverse));
 }
 
 [part~="icon"][part~="icon-error"],
 :host([type="error"]) [part~="icon"] {
-  color: color-mix(in srgb, var(--snice-color-danger) 60%, var(--snice-color-text-inverse));
+  color: color-mix(in srgb, var(--snice-color-danger) 42%, var(--snice-color-text-inverse));
 }
 
 [part~="close-button"] {
@@ -86,5 +86,28 @@
   [part~="close-button"] {
     animation-duration: 0.01ms;
     transition-duration: 0.01ms;
+  }
+
+  [part~="close-button"]:active {
+    border-radius: 9999px;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  :host([type="info"]) [part~="base"],
+  :host([type="success"]) [part~="base"],
+  :host([type="warning"]) [part~="base"],
+  :host([type="error"]) [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="close-button"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

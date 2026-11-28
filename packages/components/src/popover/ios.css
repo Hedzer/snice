@@ -1,14 +1,19 @@
 /* iOS 26+ Liquid Glass — snice-popover (Concentric 20px Liquid Glass Popover) */
+:host {
+  --popover-enter-scale: 0.96;
+  --popover-arrow-inset: 26px;
+}
+
 [part~="panel"] {
-  border-radius: 20px;
-  padding: 0.875rem 1rem;
-  min-width: 13rem;
-  background: color-mix(in srgb, var(--snice-color-surface-container-high) 88%, transparent);
+  border-radius: var(--snice-popover-radius, 20px);
+  padding: var(--snice-popover-padding, 0.875rem 1rem);
+  min-width: var(--snice-popover-min-width, 13rem);
+  background: var(--snice-popover-bg, color-mix(in srgb, var(--snice-color-surface-container-high) 88%, transparent));
   backdrop-filter: var(--snice-ios-glass-blur);
   -webkit-backdrop-filter: var(--snice-ios-glass-blur);
-  border: 1px solid var(--snice-ios-glass-border);
-  box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
-  color: var(--snice-color-text);
+  border: 1px solid var(--snice-popover-border, var(--snice-ios-glass-border));
+  box-shadow: var(--snice-popover-shadow, var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow));
+  color: var(--snice-popover-text, var(--snice-color-text));
   font-size: 0.9375rem;
   line-height: 1.4;
   letter-spacing: -0.012em;
@@ -17,11 +22,20 @@
   transition:
     opacity 180ms var(--snice-ease-out, ease),
     transform 260ms var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
-    scale 260ms var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1));
+    scale 260ms var(--snice-ease-spring, cubic-bezier(0.28, 1.32, 0.42, 1)),
+    display 180ms allow-discrete,
+    overlay 180ms allow-discrete;
 }
 
 [part~="panel"][part~="panel-open"] {
   scale: 1;
+}
+
+[part~="arrow"] {
+  display: block;
+  background: var(--snice-popover-bg, var(--snice-color-surface-container-high));
+  border-top: 1px solid var(--snice-popover-border, var(--snice-ios-glass-border));
+  border-left: 1px solid var(--snice-popover-border, var(--snice-ios-glass-border));
 }
 
 [part~="trigger"] {
@@ -35,14 +49,41 @@
 
 @media (prefers-reduced-transparency: reduce) {
   [part~="panel"] {
-    background: var(--snice-color-surface-container-high);
+    background: var(--snice-popover-bg, var(--snice-color-surface-container-high));
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+
+  [part~="arrow"] {
+    background: var(--snice-popover-bg, var(--snice-color-surface-container-high));
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   [part~="panel"] {
     transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="panel"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  [part~="arrow"] {
+    background: Canvas;
+    border-top-color: CanvasText;
+    border-left-color: CanvasText;
+  }
+
+  [part~="trigger"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

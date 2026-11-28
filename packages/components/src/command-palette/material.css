@@ -36,6 +36,12 @@
   color: var(--snice-color-text-secondary);
 }
 
+[part~="input"]:focus-visible {
+  outline: 2px solid var(--snice-color-primary);
+  outline-offset: -2px;
+  border-radius: 20px;
+}
+
 [part~="results"] {
   padding: 0.5rem 0.75rem 0.75rem;
   display: flex;
@@ -73,8 +79,10 @@
 
 [part~="item-active"],
 [part~="item-active"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 14%, var(--snice-m3-secondary-container));
+  background: var(--snice-m3-secondary-container);
   color: var(--snice-m3-on-secondary-container, var(--snice-color-text));
+  --cp-shortcut-bg: color-mix(in srgb, var(--snice-m3-on-secondary-container, var(--snice-color-text)) 12%, transparent);
+  --cp-shortcut-color: var(--snice-m3-on-secondary-container, var(--snice-color-text));
 }
 
 [part~="item"]:active {
@@ -115,11 +123,11 @@
 [part~="item-shortcut"] {
   padding: 0.1875rem 0.5rem;
   border-radius: 8px;
-  background: var(--snice-color-surface-container-highest);
+  background: var(--cp-shortcut-bg, var(--snice-color-surface-container-highest));
   border: none;
   font-family: var(--snice-font-family-mono);
   font-size: 0.75rem;
-  color: var(--snice-color-text-secondary);
+  color: var(--cp-shortcut-color, var(--snice-color-text-secondary));
 }
 
 [part~="empty"] {
@@ -144,5 +152,34 @@
   [part~="item"] {
     animation-duration: 0.01ms;
     transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="container"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="item-active"],
+  [part~="item-active"]:hover {
+    background: Highlight;
+    color: HighlightText;
+    --cp-shortcut-bg: HighlightText;
+    --cp-shortcut-color: Highlight;
+  }
+
+  [part~="item-disabled"] {
+    color: GrayText;
+    --cp-shortcut-color: GrayText;
+  }
+
+  [part~="input"]:focus-visible,
+  [part~="item"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    box-shadow: none;
   }
 }

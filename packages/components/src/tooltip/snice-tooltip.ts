@@ -434,6 +434,8 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     const letterSpacing = getVar('--tooltip-letter-spacing', '');
     const shadow = getVar('--tooltip-shadow', '0 2px 8px rgb(0 0 0 / 0.15)');
     const backdropFilter = getVar('--tooltip-backdrop-filter', 'none');
+    const transition = getVar('--tooltip-transition', 'opacity 0.2s, transform 0.2s');
+    const minHeight = getVar('--tooltip-min-height', '');
 
     this.portalElement.style.background = bg;
     this.portalElement.style.color = color;
@@ -445,9 +447,11 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     this.portalElement.style.boxShadow = shadow;
     this.portalElement.style.backdropFilter = backdropFilter;
     (this.portalElement.style as any).webkitBackdropFilter = backdropFilter;
-    if (fontFamily) this.portalElement.style.fontFamily = fontFamily;
-    if (fontWeight) this.portalElement.style.fontWeight = fontWeight;
-    if (letterSpacing) this.portalElement.style.letterSpacing = letterSpacing;
+    this.portalElement.style.transition = transition;
+    this.portalElement.style.minHeight = minHeight;
+    this.portalElement.style.fontFamily = fontFamily;
+    this.portalElement.style.fontWeight = fontWeight;
+    this.portalElement.style.letterSpacing = letterSpacing;
 
     const arrow = this.portalElement.querySelector('.snice-tooltip__arrow') as HTMLElement | null;
     if (arrow) {
@@ -462,13 +466,13 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     portal.setAttribute('role', 'tooltip');
     portal.style.cssText = `
       position: fixed;
+      box-sizing: border-box;
       z-index: ${this.zIndex};
       max-width: ${this.maxWidth}px;
       width: max-content;
       pointer-events: none;
       opacity: 0;
       transform: scale(0.95);
-      transition: opacity 0.2s, transform 0.2s;
       display: none;
     `;
 

@@ -109,11 +109,14 @@
     background: Canvas;
     color: CanvasText;
     border-color: CanvasText;
+    box-shadow: none;
     backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   [part~="close-button"]:focus-visible {
     outline: 2px solid Highlight;
+    outline-offset: 2px;
     box-shadow: none;
   }
 }

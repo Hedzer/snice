@@ -1,3 +1,8 @@
+.snice-tooltip {
+  box-sizing: border-box;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
 .snice-tooltip--visible {
   opacity: 1 !important;
   transform: scale(1) !important;
@@ -76,4 +81,21 @@
 .snice-tooltip--right-end .snice-tooltip__arrow {
   bottom: 16px;
   top: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snice-tooltip {
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .snice-tooltip {
+    background: Canvas !important;
+    color: CanvasText !important;
+    border: 1px solid CanvasText !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
 }

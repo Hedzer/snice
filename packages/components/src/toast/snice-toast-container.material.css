@@ -29,19 +29,19 @@
 }
 
 [part~="toast-icon-info"] {
-  color: color-mix(in srgb, var(--snice-color-primary) 50%, var(--snice-color-text-inverse));
+  color: color-mix(in srgb, var(--snice-color-primary) 42%, var(--snice-color-text-inverse));
 }
 
 [part~="toast-icon-success"] {
-  color: color-mix(in srgb, var(--snice-color-success) 55%, var(--snice-color-text-inverse));
+  color: color-mix(in srgb, var(--snice-color-success) 42%, var(--snice-color-text-inverse));
 }
 
 [part~="toast-icon-warning"] {
-  color: color-mix(in srgb, var(--snice-color-warning) 60%, var(--snice-color-text-inverse));
+  color: color-mix(in srgb, var(--snice-color-warning) 40%, var(--snice-color-text-inverse));
 }
 
 [part~="toast-icon-error"] {
-  color: color-mix(in srgb, var(--snice-color-danger) 60%, var(--snice-color-text-inverse));
+  color: color-mix(in srgb, var(--snice-color-danger) 42%, var(--snice-color-text-inverse));
 }
 
 [part~="toast-close-button"] {
@@ -71,4 +71,29 @@
 [part~="toast-close-button"]:focus-visible {
   outline: 2px solid var(--snice-color-text-inverse);
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="toast-close-button"] {
+    transition-duration: 0.01ms;
+  }
+
+  [part~="toast-close-button"]:active {
+    border-radius: 9999px;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="toast-base"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="toast-close-button"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
 }

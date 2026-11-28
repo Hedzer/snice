@@ -79,6 +79,11 @@
   justify-content: center;
 }
 
+.menu-item__icon[hidden],
+.menu-item__shortcut[hidden] {
+  display: none;
+}
+
 .menu-item__label {
   flex: 1;
 }
@@ -88,4 +93,11 @@
   font-size: 0.75rem;
   color: var(--snice-color-text-secondary, rgb(107 114 128));
   margin-left: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-item,
+  .menu-item::before {
+    transition-duration: 0.01ms !important;
+  }
 }

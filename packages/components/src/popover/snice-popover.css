@@ -46,34 +46,114 @@
   /* Animation: fade + slight slide */
   opacity: 0;
   transform: translateY(-4px);
-  transition: opacity 150ms ease-out, transform 150ms ease-out;
+  transform-origin: top center;
+  transition:
+    opacity 150ms ease-out,
+    transform 150ms ease-out,
+    display 150ms allow-discrete,
+    overlay 150ms allow-discrete;
   pointer-events: none;
 }
+
+/* Placement-aware transform origins & entrance offsets */
+.popover__panel--bottom-start { transform-origin: top left; }
+.popover__panel--bottom-end   { transform-origin: top right; }
 
 /* Top placements enter from below */
 .popover__panel--top,
 .popover__panel--top-start,
 .popover__panel--top-end {
   transform: translateY(4px);
+  transform-origin: bottom center;
 }
+.popover__panel--top-start { transform-origin: bottom left; }
+.popover__panel--top-end   { transform-origin: bottom right; }
 
 /* Left/right placements enter from the side */
 .popover__panel--left,
 .popover__panel--left-start,
 .popover__panel--left-end {
   transform: translateX(4px);
+  transform-origin: right center;
 }
+.popover__panel--left-start { transform-origin: right top; }
+.popover__panel--left-end   { transform-origin: right bottom; }
+
 .popover__panel--right,
 .popover__panel--right-start,
 .popover__panel--right-end {
   transform: translateX(-4px);
+  transform-origin: left center;
 }
+.popover__panel--right-start { transform-origin: left top; }
+.popover__panel--right-end   { transform-origin: left bottom; }
 
+.popover__panel[popover]:popover-open,
 .popover__panel--open {
   opacity: 1;
   transform: translate(0, 0);
   pointer-events: auto;
 }
+
+@starting-style {
+  .popover__panel[popover]:popover-open {
+    opacity: 0;
+    transform: translateY(-4px);
+    scale: var(--popover-enter-scale, 1);
+  }
+}
+
+/* Directional arrow beak (hidden by default; opt-in per platform skin) */
+.popover__arrow {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  pointer-events: none;
+  clip-path: polygon(0 0, 100% 0, 100% 24%, 24% 100%, 0 100%);
+}
+
+.popover__panel--bottom .popover__arrow,
+.popover__panel--bottom-start .popover__arrow,
+.popover__panel--bottom-end .popover__arrow {
+  top: -6px;
+  transform: rotate(45deg);
+}
+.popover__panel--bottom .popover__arrow       { left: calc(50% - 6px); }
+.popover__panel--bottom-start .popover__arrow { left: var(--popover-arrow-inset, 16px); }
+.popover__panel--bottom-end .popover__arrow   { right: var(--popover-arrow-inset, 16px); }
+
+.popover__panel--top .popover__arrow,
+.popover__panel--top-start .popover__arrow,
+.popover__panel--top-end .popover__arrow {
+  bottom: -6px;
+  transform: rotate(225deg);
+}
+.popover__panel--top .popover__arrow       { left: calc(50% - 6px); }
+.popover__panel--top-start .popover__arrow { left: var(--popover-arrow-inset, 16px); }
+.popover__panel--top-end .popover__arrow   { right: var(--popover-arrow-inset, 16px); }
+
+.popover__panel--left .popover__arrow,
+.popover__panel--left-start .popover__arrow,
+.popover__panel--left-end .popover__arrow {
+  right: -6px;
+  transform: rotate(135deg);
+}
+.popover__panel--left .popover__arrow       { top: calc(50% - 6px); }
+.popover__panel--left-start .popover__arrow { top: var(--popover-arrow-inset, 16px); }
+.popover__panel--left-end .popover__arrow   { bottom: var(--popover-arrow-inset, 16px); }
+
+.popover__panel--right .popover__arrow,
+.popover__panel--right-start .popover__arrow,
+.popover__panel--right-end .popover__arrow {
+  left: -6px;
+  transform: rotate(-45deg);
+}
+.popover__panel--right .popover__arrow       { top: calc(50% - 6px); }
+.popover__panel--right-start .popover__arrow { top: var(--popover-arrow-inset, 16px); }
+.popover__panel--right-end .popover__arrow   { bottom: var(--popover-arrow-inset, 16px); }
 
 .popover__content {
   display: block;

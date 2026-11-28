@@ -210,39 +210,41 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
     const anchor = this.menuElement.getBoundingClientRect();
     const floor = parseFloat(getComputedStyle(this.panel).minWidth) || 0;
     this.panel.style.minWidth = `${Math.max(anchor.width, floor)}px`;
-    const box = this.panel.getBoundingClientRect();
+    const width = this.panel.offsetWidth || this.panel.getBoundingClientRect().width;
+    const height = this.panel.offsetHeight || this.panel.getBoundingClientRect().height;
     const distance = this.distance;
+    const margin = 8;
     let top = 0;
     let left = 0;
 
     switch (this.placement) {
       case 'bottom-end':
         top = anchor.bottom + distance;
-        left = anchor.right - box.width;
+        left = anchor.right - width;
         break;
       case 'top-start':
-        top = anchor.top - distance - box.height;
+        top = anchor.top - distance - height;
         left = anchor.left;
         break;
       case 'top-end':
-        top = anchor.top - distance - box.height;
-        left = anchor.right - box.width;
+        top = anchor.top - distance - height;
+        left = anchor.right - width;
         break;
       case 'right-start':
         top = anchor.top;
         left = anchor.right + distance;
         break;
       case 'right-end':
-        top = anchor.bottom - box.height;
+        top = anchor.bottom - height;
         left = anchor.right + distance;
         break;
       case 'left-start':
         top = anchor.top;
-        left = anchor.left - distance - box.width;
+        left = anchor.left - distance - width;
         break;
       case 'left-end':
-        top = anchor.bottom - box.height;
-        left = anchor.left - distance - box.width;
+        top = anchor.bottom - height;
+        left = anchor.left - distance - width;
         break;
       case 'bottom-start':
       default:
@@ -250,6 +252,28 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
         left = anchor.left;
         break;
     }
+
+    // Flip vertically when bottom placement overflows viewport and space above is better
+    if (this.placement.startsWith('bottom') && top + height > window.innerHeight - margin) {
+      const flippedTop = anchor.top - distance - height;
+      if (flippedTop >= margin) top = flippedTop;
+    } else if (this.placement.startsWith('top') && top < margin) {
+      const flippedTop = anchor.bottom + distance;
+      if (flippedTop + height <= window.innerHeight - margin) top = flippedTop;
+    }
+
+    // Flip horizontally when side placement overflows viewport
+    if (this.placement.startsWith('right') && left + width > window.innerWidth - margin) {
+      const flippedLeft = anchor.left - distance - width;
+      if (flippedLeft >= margin) left = flippedLeft;
+    } else if (this.placement.startsWith('left') && left < margin) {
+      const flippedLeft = anchor.right + distance;
+      if (flippedLeft + width <= window.innerWidth - margin) left = flippedLeft;
+    }
+
+    // Clamp to viewport bounds
+    top = Math.max(margin, Math.min(top, window.innerHeight - height - margin));
+    left = Math.max(margin, Math.min(left, window.innerWidth - width - margin));
 
     this.panel.style.top = `${top}px`;
     this.panel.style.left = `${left}px`;

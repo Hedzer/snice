@@ -91,7 +91,7 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
            @click=${this.handleBackdropClick}
            @keydown=${this.handleKeydown}>
         <div class="modal__backdrop" part="backdrop${this.open ? ' backdrop-open' : ''}"></div>
-        <div class="${panelClass}" part="panel${PANEL_SIZE_PARTS[this.size] ?? ''}${this.open ? ' panel-open' : ''}">
+        <div class="${panelClass}" part="panel${PANEL_SIZE_PARTS[this.size] ?? ''}${this.open ? ' panel-open' : ''}${this.containerActive ? ' panel-container' : ''}" tabindex="-1">
           <span class="modal__grabber" part="grabber" data-platform-only="ios" aria-hidden="true" hidden></span>
           <if ${!this.noHeader}>
             <div class="modal__header${this.hasHeaderContent || !this.noCloseButton ? '' : ' modal__header--empty'}" part="header${this.hasHeaderContent || !this.noCloseButton ? '' : ' header-empty'}" id="${this.headerId}">
@@ -217,15 +217,16 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
     this.setupContainerTracking();
     this.showOverlay();
 
-    // Focus first focusable element or modal itself
+    // Focus an explicit autofocus or form input inside the modal, otherwise
+    // focus the dialog panel itself so opening doesn't highlight the close X.
     requestAnimationFrame(() => {
-      const firstFocusable = this.panel?.querySelector<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      const preferred = this.querySelector<HTMLElement>(
+        '[autofocus], input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
       );
-      if (firstFocusable) {
-        firstFocusable.focus();
+      if (preferred) {
+        preferred.focus();
       } else {
-        this.panel?.focus();
+        this.panel?.focus({ preventScroll: true });
       }
     });
 

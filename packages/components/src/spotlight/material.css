@@ -90,8 +90,8 @@
 }
 
 [part~="button-back"]:hover {
-  background: var(--snice-m3-secondary-container);
-  filter: brightness(0.96);
+  background: color-mix(in srgb, var(--snice-m3-on-secondary-container, var(--snice-color-text)) 8%, var(--snice-m3-secondary-container));
+  filter: none;
 }
 
 [part~="button-next"] {
@@ -121,5 +121,49 @@
   [part~="cutout"],
   [part~="button"] {
     transition-duration: 0.01ms;
+  }
+
+  [part~="button"]:active {
+    border-radius: 9999px;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="cutout"] {
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+
+  [part~="popover"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="button-back"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+    box-shadow: none;
+  }
+
+  [part~="button-next"] {
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid Highlight;
+    box-shadow: none;
+  }
+
+  [part~="button-skip"] {
+    background: Canvas;
+    color: ButtonText;
+    border: 1px solid transparent;
+  }
+
+  [part~="button"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

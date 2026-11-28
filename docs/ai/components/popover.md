@@ -47,6 +47,19 @@ noEscapeDismiss: boolean = false;            // attr: no-escape-dismiss
 - `trigger` - Trigger wrapper
 - `panel` - Floating panel
 - `panel-open` - Added to `panel` while the popover is open
+- `panel-top` - Added to `panel` when `placement="top"`
+- `panel-top-start` - Added to `panel` when `placement="top-start"`
+- `panel-top-end` - Added to `panel` when `placement="top-end"`
+- `panel-bottom` - Added to `panel` when `placement="bottom"`
+- `panel-bottom-start` - Added to `panel` when `placement="bottom-start"`
+- `panel-bottom-end` - Added to `panel` when `placement="bottom-end"`
+- `panel-left` - Added to `panel` when `placement="left"`
+- `panel-left-start` - Added to `panel` when `placement="left-start"`
+- `panel-left-end` - Added to `panel` when `placement="left-end"`
+- `panel-right` - Added to `panel` when `placement="right"`
+- `panel-right-start` - Added to `panel` when `placement="right-start"`
+- `panel-right-end` - Added to `panel` when `placement="right-end"`
+- `arrow` - Directional popover beak pointing toward the trigger (visible on iOS and macOS skins)
 - `content` - Inner content wrapper
 
 ## Basic Usage

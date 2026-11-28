@@ -82,3 +82,25 @@
     transition-duration: 0.01ms;
   }
 }
+
+@media (forced-colors: active) {
+  :host(:focus-visible) [part~="item"],
+  [part~="item"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    box-shadow: none;
+  }
+
+  [part~="item"][part~="item-selected"] {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  :host([disabled]) [part~="item"],
+  :host([disabled]) [part~="item"]:hover,
+  :host([variant="danger"][disabled]) [part~="item"],
+  :host([variant="danger"][disabled]) [part~="item"]:hover,
+  [part~="item"][part~="item-disabled"] {
+    color: GrayText;
+  }
+}

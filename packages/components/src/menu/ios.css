@@ -1,8 +1,11 @@
 /* iOS 26+ Liquid Glass — snice-menu (Floating Liquid Glass Context Popover) */
+:host {
+  --menu-min-width: 14rem;
+}
+
 :host [part~="panel"] {
   border-radius: 18px;
   padding: 0;
-  min-width: 14rem;
   background: color-mix(in srgb, var(--snice-color-surface-container-high) 88%, transparent);
   backdrop-filter: var(--snice-ios-glass-blur);
   -webkit-backdrop-filter: var(--snice-ios-glass-blur);
@@ -39,5 +42,22 @@
 @media (prefers-reduced-motion: reduce) {
   :host [part~="panel"] {
     transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  :host [part~="panel"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  [part~="trigger"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

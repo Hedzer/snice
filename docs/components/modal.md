@@ -68,6 +68,7 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `close` | `<button>` | Close button |
 | `body` | `<div>` | Body content section |
 | `footer` | `<div>` | Footer section |
+| `grabber` | `<span>` | Hidden iOS sheet drag grabber handle (`data-platform-only="ios"`) |
 
 State tokens are added alongside the base token, so they are matched with
 `::part(base base-open)`.
@@ -82,9 +83,9 @@ State tokens are added alongside the base token, so they are matched with
 | `panel-fullscreen` | Added to `panel` when `size` is `fullscreen` |
 | `header-empty` | Added to `header` when it has no content and no close button |
 | `footer-empty` | Added to `footer` when it has no content |
-| — | `backdrop-open` | Added to `backdrop` while open |
-| — | `panel-open` | Added to `panel` while open |
-| — | `grabber` | Hidden iOS/Material sheet drag grabber handle (`data-platform-only="ios,material"`) |
+| `backdrop-open` | Added to `backdrop` while open |
+| `panel-open` | Added to `panel` while open |
+| `panel-container` | Added to `panel` while the modal is scoped to a container |
 
 ## Basic Usage
 

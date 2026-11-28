@@ -71,12 +71,12 @@
 }
 
 [part~="item"]:hover {
-  background: var(--snice-win-control-bg-hover);
+  background: color-mix(in srgb, var(--snice-color-text) 6%, transparent);
 }
 
 [part~="item-active"],
 [part~="item-active"]:hover {
-  background: var(--snice-win-control-bg-hover);
+  background: color-mix(in srgb, var(--snice-color-text) 6%, transparent);
 }
 
 [part~="item-active"]::before {
@@ -92,7 +92,7 @@
 }
 
 [part~="item"]:active {
-  background: var(--snice-win-control-bg-pressed);
+  background: color-mix(in srgb, var(--snice-color-text) 4%, transparent);
 }
 
 [part~="item"]:focus-visible {
@@ -108,30 +108,30 @@
 [part~="item-icon"] {
   width: 1.125rem;
   height: 1.125rem;
-  color: var(--snice-color-text-secondary);
+  color: var(--cp-icon-color, var(--snice-color-text-secondary));
   font-size: 0.9375rem;
 }
 
 [part~="item-label"] {
   font-size: 0.875rem;
   font-weight: 400;
-  color: var(--snice-color-text);
+  color: inherit;
 }
 
 [part~="item-description"] {
   font-size: 0.75rem;
-  color: var(--snice-color-text-secondary);
+  color: var(--cp-desc-color, var(--snice-color-text-secondary));
 }
 
 [part~="item-shortcut"] {
   padding: 0.125rem 0.375rem;
   border-radius: 4px;
-  background: var(--snice-win-control-bg);
+  background: var(--cp-shortcut-bg, var(--snice-win-control-bg));
   border: 1px solid var(--snice-win-stroke-top);
   border-bottom-color: var(--snice-win-stroke-bottom);
   font-family: var(--snice-font-family-mono);
   font-size: 0.75rem;
-  color: var(--snice-color-text-secondary);
+  color: var(--cp-shortcut-color, var(--snice-color-text-secondary));
 }
 
 [part~="empty"] {
@@ -173,19 +173,44 @@
     background: Canvas;
     color: CanvasText;
     border-color: CanvasText;
+    box-shadow: none;
     backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  [part~="item-active"],
+  [part~="item-active"]:hover {
+    background: Highlight;
+    color: HighlightText;
+    --cp-icon-color: HighlightText;
+    --cp-desc-color: HighlightText;
+    --cp-shortcut-bg: HighlightText;
+    --cp-shortcut-color: Highlight;
   }
 
   [part~="item-active"]::before {
-    background: Highlight;
+    forced-color-adjust: none;
+    background: HighlightText;
   }
 
-  [part~="input"]:focus {
+  [part~="item-disabled"] {
+    color: GrayText;
+    opacity: 1;
+    --cp-icon-color: GrayText;
+    --cp-desc-color: GrayText;
+    --cp-shortcut-color: GrayText;
+  }
+
+  [part~="input"]:focus,
+  [part~="input"]:focus-visible {
     border-bottom-color: Highlight;
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
   }
 
   [part~="item"]:focus-visible {
     outline: 2px solid Highlight;
+    outline-offset: -2px;
     box-shadow: none;
   }
 }

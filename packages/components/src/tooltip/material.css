@@ -13,6 +13,8 @@
   --tooltip-shadow: none;
   --tooltip-backdrop-filter: none;
   --tooltip-arrow-display: none;
+  --tooltip-min-height: 1.5rem;
+  --tooltip-transition: opacity 120ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)), transform 150ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
 }
 
 [part~="tooltip"] {
@@ -51,7 +53,34 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  :host {
+    --tooltip-transition: none;
+  }
+
   [part~="tooltip"] {
     transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    --tooltip-bg: Canvas;
+    --tooltip-color: CanvasText;
+    --tooltip-border: 1px solid CanvasText;
+    --tooltip-shadow: none;
+    --tooltip-backdrop-filter: none;
+  }
+
+  [part~="tooltip"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="trigger"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

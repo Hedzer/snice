@@ -1,13 +1,10 @@
 /* iOS 26+ Liquid Glass — snice-toast-container (Mode B Exported Toast Parts + Safe Area) */
-:host {
+[part~="base"] {
   padding:
     calc(1rem + var(--snice-safe-top, 0px))
     calc(1rem + var(--snice-safe-right, 0px))
     calc(1rem + var(--snice-safe-bottom, 0px))
     calc(1rem + var(--snice-safe-left, 0px));
-}
-
-[part~="base"] {
   gap: 0.625rem;
 }
 
@@ -85,5 +82,32 @@
     background: var(--snice-color-surface-container-high);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="toast-close-button"] {
+    transition-duration: 0.01ms;
+  }
+
+  [part~="toast-close-button"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="toast-base"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  [part~="toast-close-button"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

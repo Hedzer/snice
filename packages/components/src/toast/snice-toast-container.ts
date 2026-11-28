@@ -44,7 +44,6 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
         display: flex;
         flex-direction: column;
         gap: 12px;
-        padding: 16px;
       }
 
       /* Position variants */
@@ -87,9 +86,11 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
       }
 
       .toast-wrapper {
+        box-sizing: border-box;
         display: flex;
         flex-direction: column;
         gap: 8px;
+        padding: 1rem;
       }
     `;
   }
@@ -191,6 +192,7 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
     // Create toast element
     const toast = document.createElement('snice-toast') as any;
     toast.setAttribute('toast-id', id);
+    toast.setAttribute('data-position', this.position);
     toast.setAttribute('part', 'toast');
     toast.setAttribute('exportparts', 'base: toast-base, icon: toast-icon, icon-info: toast-icon-info, icon-success: toast-icon-success, icon-warning: toast-icon-warning, icon-error: toast-icon-error, content: toast-content, close-button: toast-close-button');
     toast.type = type;

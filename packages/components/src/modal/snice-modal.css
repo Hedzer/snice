@@ -91,15 +91,19 @@
   height: 100%;
 }
 
+.modal__panel:focus {
+  outline: none;
+}
+
 /* Content fades in a beat after the panel so header/body don't read as a
    flat block on mount. Opt in via [data-stagger-content] on the modal. */
-.modal--open .modal__panel > * {
+:host([data-stagger-content]) .modal--open .modal__panel > * {
   animation: snice-modal-content-in 240ms var(--snice-ease-out, ease) backwards;
 }
 
-.modal--open .modal__header { animation-delay: 140ms; }
-.modal--open .modal__body   { animation-delay: 180ms; }
-.modal--open .modal__footer { animation-delay: 220ms; }
+:host([data-stagger-content]) .modal--open .modal__header { animation-delay: 140ms; }
+:host([data-stagger-content]) .modal--open .modal__body   { animation-delay: 180ms; }
+:host([data-stagger-content]) .modal--open .modal__footer { animation-delay: 220ms; }
 
 @keyframes snice-modal-content-in {
   from { opacity: 0; transform: translateY(4px); }
@@ -130,6 +134,9 @@
 
 .modal__header {
   font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--snice-color-text, rgb(23 23 23));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -145,9 +152,11 @@
 ::slotted([slot="header"]) {
   flex: 1;
   margin: 0;
-  font-size: var(--snice-font-size-lg, 1.125rem);
-  font-weight: var(--snice-font-weight-semibold, 600);
-  color: var(--snice-color-text, rgb(23 23 23));
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  color: inherit;
 }
 
 .modal__close {
