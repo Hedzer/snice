@@ -11,8 +11,13 @@
   -webkit-backdrop-filter: none;
   border: none;
   border-radius: 0 16px 16px 0;
+  box-shadow: none;
+  transition: transform 300ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)), visibility 0s linear 300ms, box-shadow 200ms ease;
+}
+
+:host([open]) [part~="base"] {
   box-shadow: var(--snice-shadow-md);
-  transition: transform 300ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1));
+  transition: transform 300ms var(--snice-m3-spring-effects, cubic-bezier(0.2, 0, 0, 1)), visibility 0s linear 0s, box-shadow 200ms ease;
 }
 
 :host([position="left"]) [part~="base"] {
@@ -42,6 +47,7 @@
 }
 
 :host([inline]) [part~="base"],
+:host([inline][open]) [part~="base"],
 :host([inline][position="left"]) [part~="base"],
 :host([inline][position="right"]) [part~="base"],
 :host([inline][position="top"]) [part~="base"],
@@ -49,6 +55,7 @@
   background: var(--snice-color-surface-container-low);
   border-radius: 0;
   box-shadow: none;
+  transition: none;
   border: none;
   border-right: 1px solid var(--snice-color-border-subtle);
 }
@@ -141,7 +148,21 @@
 
 @media (prefers-reduced-motion: reduce) {
   [part~="base"],
+  :host([open]) [part~="base"],
   [part~="close"] {
     transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="close"]:focus-visible {
+    outline: 2px solid Highlight;
   }
 }

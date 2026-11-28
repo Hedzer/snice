@@ -12,8 +12,13 @@
   border: 1px solid var(--snice-ios-glass-border);
   border-left: none;
   border-radius: 0 24px 24px 0;
+  box-shadow: none;
+  transition: transform var(--snice-transition-medium, 340ms) var(--snice-ios-spring-sheet, cubic-bezier(0.32, 0.72, 0, 1)), visibility 0s linear 340ms, box-shadow 200ms ease;
+}
+
+:host([open]) [part~="base"] {
   box-shadow: var(--snice-ios-glass-rim), var(--snice-shadow-2xl);
-  transition: transform var(--snice-transition-medium, 340ms) var(--snice-ios-spring-sheet, cubic-bezier(0.32, 0.72, 0, 1));
+  transition: transform var(--snice-transition-medium, 340ms) var(--snice-ios-spring-sheet, cubic-bezier(0.32, 0.72, 0, 1)), visibility 0s linear 0s, box-shadow 200ms ease;
 }
 
 :host([position="left"]) [part~="base"] {
@@ -51,6 +56,7 @@
 }
 
 :host([inline]) [part~="base"],
+:host([inline][open]) [part~="base"],
 :host([inline][position="left"]) [part~="base"],
 :host([inline][position="right"]) [part~="base"],
 :host([inline][position="top"]) [part~="base"],
@@ -60,6 +66,7 @@
   -webkit-backdrop-filter: none;
   border-radius: 0;
   box-shadow: none;
+  transition: none;
   border: none;
   border-right: 0.5px solid var(--snice-color-border-subtle);
 }
@@ -131,8 +138,8 @@
   width: 2rem;
   height: 2rem;
   border-radius: 9999px;
-  background: hsl(240 5% 50% / 0.14);
-  color: var(--snice-color-text-secondary);
+  background: var(--snice-ios-secondary-fill, hsl(240 5% 50% / 0.16));
+  color: var(--snice-color-text);
   transition:
     background-color 180ms ease,
     color 180ms ease,
@@ -168,8 +175,31 @@
 
 @media (prefers-reduced-motion: reduce) {
   [part~="base"],
+  :host([open]) [part~="base"],
   [part~="close"],
   [part~="grabber"] {
     transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  [part~="close"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+  }
+
+  [part~="close"]:focus-visible {
+    outline: 2px solid Highlight;
+    box-shadow: none;
   }
 }
