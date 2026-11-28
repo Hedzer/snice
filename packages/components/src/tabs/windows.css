@@ -1,6 +1,11 @@
 /* Windows 11 Fluent 2 / WinUI 3 — snice-tabs (Pivot / TabView) */
 :host {
   --snice-tabs-indicator-thickness: 3px;
+  --snice-tabs-indicator-bg: transparent;
+  --snice-tabs-indicator-fill: var(--snice-color-primary);
+  --snice-tabs-indicator-inset-inline: 18px;
+  --snice-tabs-indicator-inset-block: 8px;
+  --snice-tabs-indicator-radius: 9999px;
 }
 
 [part~="nav-container"] {
@@ -16,23 +21,26 @@
 :host([placement="start"]) [part~="nav-container"] {
   border-bottom: none;
   border-right: 1px solid var(--snice-color-border-subtle);
-  min-width: 10.5rem;
+  min-width: 10rem;
+  padding-right: 0.25rem;
 }
 
 :host([placement="end"]) [part~="nav-container"] {
   border-bottom: none;
   border-left: 1px solid var(--snice-color-border-subtle);
-  min-width: 10.5rem;
+  min-width: 10rem;
+  padding-left: 0.25rem;
 }
 
 [part~="nav-track"] {
-  min-height: 2.25rem;
+  min-height: 2.375rem;
+  padding: 0.25rem 0;
   gap: 0.25rem;
 }
 
 [part~="indicator"] {
   border-radius: 9999px;
-  background: var(--snice-color-primary);
+  background: transparent;
   transition:
     transform var(--snice-transition-medium, 187ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
     width var(--snice-transition-medium, 187ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),

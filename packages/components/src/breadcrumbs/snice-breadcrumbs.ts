@@ -53,6 +53,11 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
 
             return html/*html*/`
               <li class="${itemClass}" part="item${isActive ? ' item-active' : ''}${isHidden ? ' item-hidden' : ''}">
+                <if ${index > 0}>
+                  <span part="separator" class="breadcrumb-separator" aria-hidden="true">
+                    ${this.separator}
+                  </span>
+                </if>
                 <if ${showLink}>
                   <a part="link" href="${item.href}"
                      class="breadcrumb-link"
@@ -74,23 +79,18 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
                     ${item.label}
                   </span>
                 </if>
-                <if ${!isLast}>
-                  <span part="separator" class="breadcrumb-separator" aria-hidden="true">
-                    ${this.separator}
-                  </span>
-                </if>
               </li>
               <if ${hasCollapsed && index === 0 && allItems.length > this.maxItems}>
                 <li class="breadcrumb-item" part="item item-overflow">
+                  <span part="separator" class="breadcrumb-separator" aria-hidden="true">
+                    ${this.separator}
+                  </span>
                   <button part="ellipsis" class="breadcrumb-ellipsis"
                           aria-label="Show all breadcrumbs"
                           aria-expanded="false"
                           tabindex="0">
                     <span class="breadcrumb-ellipsis-icon" part="ellipsis-icon" aria-hidden="true">${unsafeHTML(ELLIPSIS_HORIZONTAL)}</span>
                   </button>
-                  <span class="breadcrumb-separator" part="separator" aria-hidden="true">
-                    ${this.separator}
-                  </span>
                 </li>
               </if>
             `;

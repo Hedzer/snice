@@ -92,7 +92,7 @@
 .tabs__indicator {
   position: absolute;
   height: var(--snice-tabs-indicator-thickness, 2px);
-  background-color: var(--snice-color-primary, rgb(37 99 235));
+  background-color: var(--snice-tabs-indicator-bg, var(--snice-color-primary, rgb(37 99 235)));
   /* Spring easing for the slide-between-tabs motion gives a light "settle"
      feel instead of a dead ease. Width/height also animate since they change
      with the active tab's content. */
@@ -104,6 +104,19 @@
   left: 0;
   pointer-events: none;
   border-radius: var(--snice-border-radius-sm, 0.125rem);
+}
+
+.tabs__indicator::after {
+  content: '';
+  position: absolute;
+  inset: 0 var(--snice-tabs-indicator-inset-inline, 0px);
+  background-color: var(--snice-tabs-indicator-fill, transparent);
+  border-radius: var(--snice-tabs-indicator-radius, var(--snice-border-radius-sm, 0.125rem));
+}
+
+.tabs--start .tabs__indicator::after,
+.tabs--end .tabs__indicator::after {
+  inset: var(--snice-tabs-indicator-inset-block, 0px) 0;
 }
 
 .tabs--bottom .tabs__indicator {

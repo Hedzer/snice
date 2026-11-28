@@ -1,7 +1,7 @@
 /* iOS 26+ Liquid Glass — snice-breadcrumbs (Files Path Trail) */
 :host {
-  --breadcrumb-font-size: 0.9375rem;
-  --breadcrumb-spacing: 0.25rem;
+  --breadcrumb-font-size: 0.875rem;
+  --breadcrumb-spacing: 0.1875rem;
   --breadcrumb-color: var(--snice-color-primary);
   --breadcrumb-hover-color: var(--snice-color-primary);
   --breadcrumb-active-color: var(--snice-color-text);
@@ -9,18 +9,18 @@
 }
 
 :host([size="small"]) {
-  --breadcrumb-font-size: 0.8125rem;
-  --breadcrumb-spacing: 0.1875rem;
+  --breadcrumb-font-size: 0.75rem;
+  --breadcrumb-spacing: 0.125rem;
 }
 
 :host([size="large"]) {
-  --breadcrumb-font-size: 1.0625rem;
-  --breadcrumb-spacing: 0.3125rem;
+  --breadcrumb-font-size: 1rem;
+  --breadcrumb-spacing: 0.25rem;
 }
 
 [part~="link"] {
   margin: 0;
-  padding: 0.1875rem 0.5625rem;
+  padding: 0.125rem 0.4375rem;
   border-radius: 9999px;
   color: var(--snice-color-primary);
   font-weight: 500;

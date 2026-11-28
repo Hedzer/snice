@@ -13,6 +13,7 @@
 }
 
 .tab {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: var(--snice-spacing-xs, 0.5rem);

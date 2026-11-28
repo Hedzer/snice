@@ -37,7 +37,11 @@
 }
 
 ::slotted(snice-accordion-item:not(:last-child)) {
-  border-bottom: 1px solid var(--accordion-border-color);
+  border-bottom: var(--accordion-divider-border, 1px solid var(--accordion-border-color));
+}
+
+::slotted(snice-accordion-item:not(:first-child)) {
+  --accordion-top-inset-divider: var(--accordion-divider-inset-color, transparent);
 }
 
 /* ── Elevated variant ── */
@@ -51,17 +55,23 @@
 }
 
 .accordion--elevated ::slotted(snice-accordion-item) {
-  --accordion-header-bg: var(--snice-color-surface-container-low, var(--snice-color-surface-container-high, rgb(252 251 249)));
-  --accordion-content-bg: var(--snice-color-surface-container-low, var(--snice-color-surface-container-high, rgb(252 251 249)));
+  --accordion-header-bg: var(--accordion-elevated-bg, var(--snice-color-surface-container-low, var(--snice-color-surface-container-high, rgb(252 251 249))));
+  --accordion-content-bg: var(--accordion-elevated-bg, var(--snice-color-surface-container-low, var(--snice-color-surface-container-high, rgb(252 251 249))));
+  border: var(--accordion-elevated-border, none);
   border-radius: var(--accordion-border-radius);
-  box-shadow: 0 1px 3px 0 hsl(0 0% 0%/0.12), 0 1px 2px -1px hsl(0 0% 0%/0.12);
-  border-bottom: none;
+  box-shadow: var(--accordion-elevated-shadow, 0 1px 3px 0 hsl(0 0% 0%/0.12), 0 1px 2px -1px hsl(0 0% 0%/0.12));
+  border-bottom: var(--accordion-elevated-border, none);
+  --accordion-top-inset-divider: transparent;
   overflow: hidden;
   transition: box-shadow var(--accordion-animation-duration) ease, transform var(--accordion-animation-duration) ease;
 }
 
 .accordion--elevated ::slotted(snice-accordion-item:not(:last-child)) {
-  border-bottom: none;
+  border-bottom: var(--accordion-elevated-border, none);
+}
+
+.accordion--elevated ::slotted(snice-accordion-item:not(:first-child)) {
+  --accordion-top-inset-divider: transparent;
 }
 
 .accordion--elevated ::slotted(snice-accordion-item[open]) {

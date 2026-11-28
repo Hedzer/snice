@@ -3,8 +3,8 @@
   font-family: var(--snice-font-family);
   --action-bar-background: color-mix(in srgb, var(--snice-color-surface-container-high) 86%, transparent);
   --action-bar-border: 1px solid var(--snice-ios-glass-border);
-  --action-bar-border-radius: 20px;
-  --action-bar-padding: 0.5rem 0.625rem;
+  --action-bar-border-radius: 9999px;
+  --action-bar-padding: 0.4375rem 0.625rem;
   --action-bar-gap: 0.375rem;
   --action-bar-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
 }
@@ -25,8 +25,8 @@
 }
 
 :host([size="small"]) {
-  --action-bar-border-radius: 16px;
-  --action-bar-padding: 0.3125rem 0.5rem;
+  --action-bar-border-radius: 9999px;
+  --action-bar-padding: 0.25rem 0.4375rem;
   --action-bar-gap: 0.25rem;
 }
 

@@ -13,6 +13,7 @@
 }
 
 .accordion-item__header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -28,6 +29,17 @@
   cursor: pointer;
   transition: background-color var(--snice-transition-fast, 150ms);
   outline-offset: -2px;
+}
+
+.accordion-item__header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--accordion-divider-inset, 0px);
+  right: 0;
+  height: 1px;
+  background: var(--accordion-top-inset-divider, transparent);
+  pointer-events: none;
 }
 
 .accordion-item__header:hover {

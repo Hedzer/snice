@@ -1,12 +1,12 @@
 /* macOS 26 Tahoe Liquid Glass / AppKit — snice-action-bar (Compact Floating Liquid Glass HUD Toolbar) */
 :host {
   font-family: var(--snice-font-family);
-  --action-bar-background: color-mix(in srgb, var(--snice-color-background-elevated) 88%, transparent);
-  --action-bar-border: 0.5px solid var(--snice-macos-glass-border);
-  --action-bar-border-radius: 10px;
-  --action-bar-padding: 0.3125rem 0.4375rem;
+  --action-bar-background: color-mix(in srgb, var(--snice-color-background-elevated) 92%, transparent);
+  --action-bar-border: 1px solid var(--snice-color-border-hover);
+  --action-bar-border-radius: 8px;
+  --action-bar-padding: 0.25rem 0.375rem;
   --action-bar-gap: 0.25rem;
-  --action-bar-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-lg);
+  --action-bar-shadow: var(--snice-macos-glass-rim), var(--snice-shadow-md);
 }
 
 :host([ready]),
@@ -25,8 +25,8 @@
 }
 
 :host([size="small"]) {
-  --action-bar-border-radius: 8px;
-  --action-bar-padding: 0.1875rem 0.3125rem;
+  --action-bar-border-radius: 6px;
+  --action-bar-padding: 0.1875rem 0.25rem;
   --action-bar-gap: 0.1875rem;
 }
 
