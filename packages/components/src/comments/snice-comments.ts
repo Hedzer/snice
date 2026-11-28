@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, on, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, on, render, styles, html, css } from 'snice';
 import cssContent from './snice-comments.css?inline';
 import type { SniceCommentsElement, Comment, CommentAddDetail, CommentReplyDetail, CommentDeleteDetail, CommentLikeDetail } from './snice-comments.types';
 
@@ -55,10 +55,25 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
   private replyingTo: string | null = null;
   private replyText = '';
   private newCommentText = '';
+  private fromDeclarativeChildren = false;
+  private collectingFromChildren = false;
+  private onDomReadyBound?: () => void;
 
   @ready()
   init() {
     this.collectCommentsFromChildren();
+    if (typeof document !== 'undefined' && document.readyState === 'loading') {
+      this.onDomReadyBound = () => this.collectCommentsFromChildren();
+      document.addEventListener('DOMContentLoaded', this.onDomReadyBound, { once: true });
+    }
+  }
+
+  @dispose()
+  cleanup() {
+    if (this.onDomReadyBound && typeof document !== 'undefined') {
+      document.removeEventListener('DOMContentLoaded', this.onDomReadyBound);
+      this.onDomReadyBound = undefined;
+    }
   }
 
   @on('slotchange', { target: 'slot' })
@@ -68,12 +83,15 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
 
   /** Reads <snice-comment> children into the comments array (only if no comments set via property) */
   private collectCommentsFromChildren() {
-    if (this.comments.length > 0) return;
+    if (this.comments.length > 0 && !this.fromDeclarativeChildren) return;
 
     const commentEls = Array.from(this.querySelectorAll(':scope > snice-comment'));
     if (commentEls.length === 0) return;
 
+    this.collectingFromChildren = true;
+    this.fromDeclarativeChildren = true;
     this.comments = commentEls.map(el => this.parseCommentElement(el));
+    this.collectingFromChildren = false;
   }
 
   private parseCommentElement(el: Element): Comment {
@@ -108,7 +126,9 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
 
   @watch('comments')
   handleCommentsChange() {
-    // Re-render on comments change
+    if (!this.collectingFromChildren) {
+      this.fromDeclarativeChildren = false;
+    }
   }
 
   private generateId(): string {
@@ -427,6 +447,7 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
         <if ${!hasComments}>
           <div class="comments__empty" part="empty">No comments yet. Be the first to comment!</div>
         </if>
+        <slot style="display: none;"></slot>
       </div>
     `;
   }

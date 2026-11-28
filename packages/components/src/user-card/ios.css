@@ -32,7 +32,7 @@
 
 /* Explicit white ink on saturated iOS blue — never --snice-color-text-inverse (black in dark mode!) */
 :host [part~="avatar-fallback"] {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--snice-ios-fill-primary) 88%, white), var(--snice-color-primary));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--snice-ios-fill-primary) 88%, white), var(--snice-ios-fill-primary));
   color: hsl(0 0% 100%);
   font-family: var(--snice-font-family-display);
   font-weight: 600;
