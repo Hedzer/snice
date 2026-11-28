@@ -65,6 +65,8 @@ cellSizing: 'square'|'stretch' = 'square'; // attribute: cell-sizing — square:
 - `day-static` - Added to `day` while `no-day-select` is set
 - `day-stretch` - Added to `day` while `cell-sizing="stretch"`
 - `day-number` - The date number inside a day cell
+- `day-number-today` - Added to `day-number` for today
+- `day-number-selected` - Added to `day-number` for the selected date
 - `event-title` - The title text inside an event bar
 - `event-bar-continues-left` - Added to `event-bar` on a segment that continues into the previous week row
 - `event-bar-continues-right` - Added to `event-bar` on a segment that continues into the next week row

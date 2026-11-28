@@ -692,7 +692,14 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
 
       // Update day number
       const dayNumber = cell.querySelector('.calendar__day-number') as HTMLElement;
-      if (dayNumber) dayNumber.textContent = String(date.getDate());
+      if (dayNumber) {
+        dayNumber.textContent = String(date.getDate());
+        dayNumber.setAttribute('part', [
+          'day-number',
+          isToday ? 'day-number-today' : '',
+          isSelected ? 'day-number-selected' : '',
+        ].filter(Boolean).join(' '));
+      }
 
       // Update click handler
       cell.onclick = () => this.handleDayClick(date);

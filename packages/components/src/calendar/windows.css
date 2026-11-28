@@ -23,7 +23,7 @@
   min-height: 2rem;
   padding: 0 0.75rem;
   border-radius: 0.25rem;
-  background: var(--snice-color-surface-container-low);
+  background: var(--snice-win-control-bg);
   border: 1px solid var(--snice-win-stroke-top, var(--snice-color-border));
   border-bottom-color: var(--snice-win-stroke-bottom, var(--snice-color-border-hover));
   color: var(--snice-color-text);
@@ -33,7 +33,7 @@
 }
 
 [part~="nav-button"]:hover {
-  background: var(--snice-color-surface-container);
+  background: var(--snice-win-control-bg-hover);
 }
 
 [part~="nav-button"]:focus-visible {
@@ -181,7 +181,12 @@
     border-color: ButtonText;
   }
 
+  [part~="day-today"] {
+    border: 2px solid Highlight;
+  }
+
   [part~="day-selected"] {
+    forced-color-adjust: none;
     background: Highlight;
     color: HighlightText;
   }

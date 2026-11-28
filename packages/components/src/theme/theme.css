@@ -308,6 +308,7 @@
   --snice-focus-ring-color-success: color-mix(in srgb, var(--snice-color-success) 50%, transparent);
   --snice-focus-ring-color-warning: color-mix(in srgb, var(--snice-color-warning) 55%, transparent);
   --snice-focus-ring-color-danger: color-mix(in srgb, var(--snice-color-danger) 50%, transparent);
+  --snice-map-tile-filter: none;
 
   /* Color scheme for native controls */
   --snice-color-scheme-filter: none;
@@ -395,6 +396,7 @@
 
   /* Color scheme for native controls */
   --snice-color-scheme-filter: invert(1) hue-rotate(180deg);
+  --snice-map-tile-filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9);
   color-scheme: dark;
 }
 
@@ -476,6 +478,7 @@
 
     /* Color scheme for native controls */
     --snice-color-scheme-filter: invert(1) hue-rotate(180deg);
+    --snice-map-tile-filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9);
     color-scheme: dark;
   }
 }

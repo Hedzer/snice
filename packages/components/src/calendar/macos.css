@@ -88,13 +88,14 @@
   color: var(--snice-color-text-tertiary);
 }
 
+/* macOS Calendar signature: clean cell + compact filled Apple Red today badge */
 [part~="day-today"] {
-  background: color-mix(in srgb, var(--snice-color-danger) 10%, var(--snice-color-background-element));
-  color: var(--snice-color-danger);
+  background: var(--snice-color-background-element);
+  color: var(--snice-color-text);
 }
 
 [part~="day-today"]:hover {
-  background: color-mix(in srgb, var(--snice-color-danger) 16%, var(--snice-color-background-element));
+  background: var(--snice-color-surface-container-low);
 }
 
 [part~="day-selected"] {
@@ -122,7 +123,7 @@
 }
 
 [part~="day-static"][part~="day-today"]:hover {
-  background: color-mix(in srgb, var(--snice-color-danger) 10%, var(--snice-color-background-element));
+  background: var(--snice-color-background-element);
 }
 
 [part~="day"]:focus-visible {
@@ -135,6 +136,26 @@
   font-size: 0.8125rem;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+}
+
+[part~="day-number"][part~="day-number-today"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.375rem;
+  height: 1.375rem;
+  margin-top: -0.1875rem;
+  margin-left: -0.125rem;
+  margin-bottom: 0;
+  border-radius: 9999px;
+  background: var(--snice-macos-fill-danger);
+  color: hsl(0 0% 100%);
+  font-weight: 600;
+  line-height: 1;
+}
+
+[part~="day-number"][part~="day-number-today"][part~="day-number-selected"] {
+  box-shadow: 0 0 0 1.5px hsl(0 0% 100% / 0.88);
 }
 
 /* Event bars */
@@ -155,7 +176,7 @@
 }
 
 [part~="more-chip"] {
-  color: var(--snice-color-primary);
+  color: color-mix(in srgb, var(--snice-color-primary) 82%, var(--snice-color-text));
   font-size: 0.6875rem;
 }
 
@@ -182,4 +203,40 @@
 [part~="more-item"]:hover {
   background: var(--snice-macos-fill-primary);
   color: hsl(0 0% 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="nav-button"],
+  [part~="day"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"],
+  [part~="nav-button"],
+  [part~="day"],
+  [part~="event-popover"] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: ButtonText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  [part~="day-selected"],
+  [part~="day-number"][part~="day-number-today"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid HighlightText;
+  }
+
+  [part~="nav-button"]:focus-visible,
+  [part~="day"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    box-shadow: none;
+  }
 }

@@ -117,11 +117,13 @@
   --snice-win-stroke-input-bottom: hsl(0 0% 100% / 0.54);
   --snice-win-acrylic-bg: hsl(0 0% 17% / 0.84);
   --snice-win-focus-shadow: 0 0 0 1px hsl(0 0% 0%), 0 0 0 3px hsl(0 0% 100%);
+  --snice-map-tile-filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]),
   :root[data-theme="auto"] {
+    --snice-map-tile-filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9);
     --snice-color-primary: hsl(200 100% 65%);
     --snice-color-success: hsl(113 46% 58%);
     --snice-color-warning: hsl(42 88% 64%);

@@ -6,6 +6,7 @@
 
 :host {
   font-family: var(--snice-font-family);
+  --snice-map-marker-color: hsl(5 81% 56%);
 }
 
 :host [part~="base"] {
@@ -112,6 +113,14 @@
   :host [part~="control"],
   :host [part~="marker"] {
     transition: none;
+  }
+
+  :host [part~="zoom-in"]:active {
+    border-radius: 16px 16px 6px 6px;
+  }
+
+  :host [part~="zoom-out"]:active {
+    border-radius: 6px 6px 16px 16px;
   }
 }
 

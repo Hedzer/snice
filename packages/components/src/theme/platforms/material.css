@@ -118,11 +118,13 @@
   --snice-color-border-hover: hsl(270 10% 72%);
   --snice-color-border-subtle: hsl(270 8% 30%);
   --snice-color-overlay-hover: color-mix(in srgb, var(--snice-color-text) 8%, transparent);
+  --snice-map-tile-filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]),
   :root[data-theme="auto"] {
+    --snice-map-tile-filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9);
     --snice-color-primary: hsl(258 100% 87%);
     --snice-color-success: hsl(138 48% 70%);
     --snice-color-warning: hsl(35 87% 70%);

@@ -115,9 +115,9 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
                       ? html`<img class="map-marker-icon" part="marker-icon" src="${escapeAttr(icon)}" alt="" loading="lazy" />`
                       : html`<span class="map-marker-icon" part="marker-icon">${escapeHtml(icon)}</span>`)
                     : html`
-                      <svg part="marker-icon" viewBox="0 0 24 36" fill="var(--snice-color-danger, rgb(220 38 38))">
-                        <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"/>
-                        <circle cx="12" cy="12" r="4" fill="white"/>
+                      <svg part="marker-icon" viewBox="-1.5 -1.5 27 39" fill="var(--snice-map-marker-color, rgb(220 38 38))">
+                        <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+                        <circle cx="12" cy="12" r="4.5" fill="white"/>
                       </svg>
                     `}
                 </div>

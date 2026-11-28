@@ -6,6 +6,7 @@
 
 :host {
   font-family: var(--snice-font-family);
+  --snice-map-marker-color: hsl(3 86% 54%);
 }
 
 :host [part~="base"] {
@@ -112,7 +113,7 @@
   right: 0.625rem;
   padding: 0.1875rem 0.5rem;
   border-radius: 9999px;
-  background: color-mix(in srgb, var(--snice-color-surface-container-high) 84%, transparent);
+  background: color-mix(in srgb, var(--snice-color-surface-container-high) 90%, transparent);
   backdrop-filter: var(--snice-ios-glass-clear-blur, var(--snice-ios-glass-blur));
   -webkit-backdrop-filter: var(--snice-ios-glass-clear-blur, var(--snice-ios-glass-blur));
   border: 0.5px solid var(--snice-ios-glass-border);
@@ -121,8 +122,8 @@
 }
 
 :host [part~="attribution-link"] {
-  color: var(--snice-color-primary);
-  font-weight: 500;
+  color: color-mix(in srgb, var(--snice-color-primary) 82%, var(--snice-color-text));
+  font-weight: 600;
 }
 
 @media (prefers-reduced-transparency: reduce) {

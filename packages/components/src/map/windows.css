@@ -6,6 +6,7 @@
 
 :host {
   font-family: var(--snice-font-family);
+  --snice-map-marker-color: hsl(358 68% 50%);
 }
 
 :host [part~="base"] {

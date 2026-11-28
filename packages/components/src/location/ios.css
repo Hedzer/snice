@@ -81,7 +81,7 @@
   font-variant-numeric: tabular-nums;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--snice-color-primary);
+  color: color-mix(in srgb, var(--snice-color-primary) 82%, var(--snice-color-text));
 }
 
 :host [part~="map"] {
