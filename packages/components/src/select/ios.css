@@ -35,9 +35,9 @@
   letter-spacing: -0.012em;
   box-shadow: var(--snice-shadow-xs);
   transition:
-    border-color var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease),
-    background-color var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease),
-    box-shadow var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease);
+    border-color var(--snice-transition-fast) var(--snice-ease-out),
+    background-color var(--snice-transition-fast) var(--snice-ease-out),
+    box-shadow var(--snice-transition-fast) var(--snice-ease-out);
 }
 
 [part~="input"] {
@@ -45,7 +45,8 @@
   text-overflow: ellipsis;
 }
 
-[part~="input"]::placeholder {
+[part~="input"]::placeholder,
+[part~="search-input"]::placeholder {
   color: var(--snice-color-text-tertiary);
   opacity: 1;
 }
@@ -58,7 +59,8 @@
   gap: 0.5rem;
 }
 
-[part~="value-label"] {
+[part~="value-label"],
+[part~="option-label"] {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -256,9 +258,9 @@
   background: hsl(240 6% 48% / 0.18);
   color: var(--snice-color-text-secondary);
   transition:
-    background-color var(--snice-transition-fast, 180ms) ease,
-    color var(--snice-transition-fast, 180ms) ease,
-    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, ease);
+    background-color var(--snice-transition-fast) ease,
+    color var(--snice-transition-fast) ease,
+    transform var(--snice-transition-fast) var(--snice-ease-spring);
 }
 
 :host([size="small"]) [part~="clear-button"] {
@@ -294,18 +296,19 @@
   height: 0.875rem;
   color: var(--snice-color-text-secondary);
   transition:
-    transform var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease),
-    color var(--snice-transition-fast, 180ms) ease;
+    transform var(--snice-transition-fast) var(--snice-ease-out),
+    color var(--snice-transition-fast) ease;
 }
 
 [part~="arrow"]::before {
   content: '';
   display: block;
-  width: 0.75rem;
-  height: 0.75rem;
-  background: currentColor;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.25L6 7.75L9.5 4.25' stroke='%23000' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.25L6 7.75L9.5 4.25' stroke='%23000' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-right: 1.75px solid currentColor;
+  border-bottom: 1.75px solid currentColor;
+  border-radius: 0.5px;
+  transform: translateY(-0.125rem) rotate(45deg);
 }
 
 :host([editable]) [part~="arrow"] {
@@ -378,8 +381,8 @@
   line-height: 1;
   opacity: 1;
   transition:
-    background-color var(--snice-transition-fast, 180ms) ease,
-    transform var(--snice-transition-fast, 180ms) var(--snice-ease-spring, ease);
+    background-color var(--snice-transition-fast) ease,
+    transform var(--snice-transition-fast) var(--snice-ease-spring);
 }
 
 [part~="tag-remove"]:hover {
@@ -403,8 +406,8 @@
   box-shadow: var(--snice-ios-glass-rim), var(--snice-ios-glass-shadow);
   transform: translateY(-6px) scale(0.97);
   transition:
-    opacity var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease),
-    transform var(--snice-transition-fast, 180ms) var(--snice-ease-out, ease);
+    opacity var(--snice-transition-fast) var(--snice-ease-out),
+    transform var(--snice-transition-fast) var(--snice-ease-out);
 }
 
 [part~="dropdown-open"] {
@@ -430,14 +433,9 @@
   font-size: 0.9375rem;
   letter-spacing: -0.01em;
   transition:
-    background-color var(--snice-transition-fast, 180ms) ease,
-    border-color var(--snice-transition-fast, 180ms) ease,
-    box-shadow var(--snice-transition-fast, 180ms) ease;
-}
-
-[part~="search-input"]::placeholder {
-  color: var(--snice-color-text-tertiary);
-  opacity: 1;
+    background-color var(--snice-transition-fast) ease,
+    border-color var(--snice-transition-fast) ease,
+    box-shadow var(--snice-transition-fast) ease;
 }
 
 [part~="search-input"]:focus-visible {
@@ -468,8 +466,8 @@
   letter-spacing: -0.01em;
   color: var(--snice-color-text);
   transition:
-    background-color var(--snice-transition-fast, 180ms) ease,
-    color var(--snice-transition-fast, 180ms) ease;
+    background-color var(--snice-transition-fast) ease,
+    color var(--snice-transition-fast) ease;
 }
 
 :host [part~="option"]:hover {
@@ -518,12 +516,6 @@
   border-radius: 4px;
 }
 
-[part~="option-label"] {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 /* Remote loading indicator & empty state inside popover */
 [part~="loading-indicator"] {
   padding: 0.875rem 1rem;
@@ -544,10 +536,6 @@
   border-top-color: var(--snice-color-primary);
 }
 
-[part~="loading-text"] {
-  color: var(--snice-color-text-secondary);
-}
-
 [part~="empty"] {
   padding: 1.125rem 0.75rem;
   color: var(--snice-color-text-secondary);
@@ -555,7 +543,9 @@
   letter-spacing: -0.008em;
 }
 
-[part~="empty-text"] {
+[part~="loading-text"],
+[part~="empty-text"],
+[part~="helper-text"] {
   color: var(--snice-color-text-secondary);
 }
 
@@ -566,10 +556,6 @@
   font-size: 0.75rem;
   line-height: 1.35;
   letter-spacing: -0.004em;
-}
-
-[part~="helper-text"] {
-  color: var(--snice-color-text-secondary);
 }
 
 [part~="error-text"] {
@@ -599,10 +585,7 @@
     transition: none;
   }
 
-  [part~="dropdown"] {
-    transform: none;
-  }
-
+  [part~="dropdown"],
   [part~="clear-button"]:active,
   [part~="tag-remove"]:active {
     transform: none;
@@ -628,14 +611,12 @@
     -webkit-backdrop-filter: none;
   }
 
-  [part~="arrow"]::before {
-    forced-color-adjust: none;
-    background: CanvasText;
+  [part~="arrow"] {
+    color: CanvasText;
   }
 
-  :host([disabled]) [part~="arrow"]::before {
-    forced-color-adjust: none;
-    background: GrayText;
+  :host([disabled]) [part~="arrow"] {
+    color: GrayText;
   }
 
   [part~="trigger"]:focus-visible,

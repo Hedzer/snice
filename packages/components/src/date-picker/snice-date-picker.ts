@@ -41,6 +41,9 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   private constraintInvalid = false;
 
   @state()
+  private hasConstraintError = false;
+
+  @state()
   private showValidation = false;
 
   /**
@@ -184,7 +187,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             .name=${this.name || ''}
             aria-label="${accessibleName}"
             aria-describedby="${describedBy}"
-            aria-invalid="${displayedInvalid ? 'true' : 'false'}"
+            aria-invalid="${(this.invalid || this.hasConstraintError) ? 'true' : 'false'}"
             part="input${displayedInvalid ? ' input-invalid' : ''}${this.clearable ? ' input-clearable' : ''}${this.loading ? ' input-loading' : ''}"
             autocomplete="off"
             @input=${(e: Event) => this.handleInput(e)}
@@ -655,7 +658,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       this.input.readOnly = this.readonly;
       this.input.required = this.required;
       this.input.name = this.name;
-      this.input.setAttribute('aria-invalid', String(this.invalid || this.constraintInvalid));
+      this.input.setAttribute('aria-invalid', String(this.invalid || this.hasConstraintError));
     }
     if (this.calendarToggle) this.calendarToggle.disabled = this.interactionDisabled;
     if (this.clearButton) this.clearButton.disabled = this.interactionDisabled || this.readonly;
@@ -934,9 +937,8 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   @watch('invalid')
   handleInvalidChange() {
     if (this.input) {
-      const displayedInvalid = this.invalid || this.constraintInvalid;
-      this.input.setAttribute('aria-invalid', String(displayedInvalid));
-      this.input.classList.toggle('input--invalid', displayedInvalid);
+      this.input.setAttribute('aria-invalid', String(this.invalid || this.hasConstraintError));
+      this.input.classList.toggle('input--invalid', this.invalid || this.constraintInvalid);
     }
   }
 
@@ -1006,10 +1008,12 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       (badInput ? 'Please enter a valid date.' : proxy.validationMessage) ||
       (hasError ? 'Please enter a valid date.' : '');
 
+    this.hasConstraintError = hasError;
     this.constraintInvalid = displayedConstraintInvalid;
     const displayedInvalid = this.invalid || displayedConstraintInvalid;
+    const ariaInvalid = this.invalid || hasError;
     this.input?.setCustomValidity(hasError ? message : '');
-    this.input?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.input?.setAttribute('aria-invalid', String(ariaInvalid));
     this.input?.classList.toggle('input--invalid', displayedInvalid);
     applyElementInternalsValidity(this.internals, flags, message, this.input);
   }

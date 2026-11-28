@@ -1,4 +1,4 @@
-import { element, property, watch, ready, dispatch, on, render, styles, html, css, isSafeUrl } from 'snice';
+import { element, property, dispatch, on, render, styles, html, css, isSafeUrl } from 'snice';
 import cssContent from './snice-link-preview.css?inline';
 import type { LinkPreviewVariant, LinkPreviewSize, SniceLinkPreviewElement } from './snice-link-preview.types';
 
@@ -7,9 +7,8 @@ export class SniceLinkPreview extends HTMLElement implements SniceLinkPreviewEle
   @property()
   url = '';
 
-  // No reflection: a `title` attribute on the host would double as a native
-  // browser tooltip over the whole link preview card.
-  @property({ reflect: false })
+  // JS-only property: keeps the HTML `title` attribute free for native tooltips.
+  @property({ attribute: false })
   title = '';
 
   @property()
@@ -49,25 +48,6 @@ export class SniceLinkPreview extends HTMLElement implements SniceLinkPreviewEle
   @dispatch('link-click', { bubbles: true, composed: true })
   private dispatchLinkClick() {
     return { url: this.url };
-  }
-
-  @ready()
-  init() {
-    this.stripNativeTooltip();
-  }
-
-  @watch('title')
-  handleTitleChange() {
-    this.stripNativeTooltip();
-  }
-
-  private stripNativeTooltip() {
-    if (!this.hasAttribute('title')) return;
-    const value = this.title || this.getAttribute('title') || '';
-    this.removeAttribute('title');
-    if (this.title !== value) {
-      this.title = value;
-    }
   }
 
   private getDomain(): string {

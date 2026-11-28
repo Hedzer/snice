@@ -404,6 +404,9 @@
               "name": "--accordion-icon-size"
             },
             {
+              "name": "--accordion-top-inset-divider"
+            },
+            {
               "name": "--elevated"
             }
           ]
@@ -947,6 +950,12 @@
               "name": "entry"
             },
             {
+              "name": "entry-even"
+            },
+            {
+              "name": "entry-last"
+            },
+            {
               "name": "filter"
             },
             {
@@ -957,6 +966,9 @@
             },
             {
               "name": "group-header"
+            },
+            {
+              "name": "group-header-first"
             },
             {
               "name": "icon"
@@ -6144,6 +6156,12 @@
               "name": "day-number"
             },
             {
+              "name": "day-number-selected"
+            },
+            {
+              "name": "day-number-today"
+            },
+            {
               "name": "day-other-month"
             },
             {
@@ -10927,6 +10945,9 @@
             },
             {
               "name": "--_cb-text"
+            },
+            {
+              "name": "--copied"
             }
           ]
         }
@@ -12234,6 +12255,16 @@
                 "text": "boolean"
               },
               "default": "true"
+            },
+            {
+              "kind": "method",
+              "name": "cleanup",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "field",
@@ -13997,6 +14028,9 @@
               "name": "--invalid"
             },
             {
+              "name": "--picker-active-pr"
+            },
+            {
               "name": "--required"
             }
           ]
@@ -14916,6 +14950,9 @@
               "name": "--invalid"
             },
             {
+              "name": "--picker-active-pr"
+            },
+            {
               "name": "--range-end"
             },
             {
@@ -15749,6 +15786,9 @@
               "name": "--invalid"
             },
             {
+              "name": "--picker-active-pr"
+            },
+            {
               "name": "--required"
             },
             {
@@ -16505,6 +16545,9 @@
             },
             {
               "name": "toolbar-button"
+            },
+            {
+              "name": "toolbar-group"
             }
           ],
           "cssProperties": []
@@ -20644,7 +20687,11 @@
               "name": "port-output"
             }
           ],
-          "cssProperties": []
+          "cssProperties": [
+            {
+              "name": "--flow-node-header-color"
+            }
+          ]
         }
       ],
       "exports": [
@@ -24156,6 +24203,15 @@
             },
             {
               "name": "--invoice-ink"
+            },
+            {
+              "name": "--invoice-ink-band"
+            },
+            {
+              "name": "--invoice-ink-muted-on-band"
+            },
+            {
+              "name": "--invoice-ink-on-band"
             },
             {
               "name": "--invoice-label-font-size"
@@ -30687,7 +30743,11 @@
               "name": "base"
             }
           ],
-          "cssProperties": []
+          "cssProperties": [
+            {
+              "name": "--md-blockquote-border-color"
+            }
+          ]
         }
       ],
       "exports": [
@@ -30929,6 +30989,16 @@
                   "optional": false
                 }
               ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "init",
+              "parameters": [],
               "return": {
                 "type": {
                   "text": "unknown"
@@ -31848,6 +31918,9 @@
             },
             {
               "name": "panel"
+            },
+            {
+              "name": "panel-container"
             },
             {
               "name": "panel-fullscreen"
@@ -35947,7 +36020,6 @@
           "superclass": {
             "name": "HTMLElement"
           },
-          "description": "<snice-popover> — click-triggered, interactive panel anchored to a trigger.\n\nDistinct from <snice-tooltip> (hover-triggered, non-interactive text/HTML).\nDistinct from <snice-menu> (popover specialised for menu items + keyboard nav).\n\nSlots:\n  - trigger: the element that toggles the panel\n  - default: the panel's contents",
           "members": [
             {
               "kind": "method",
@@ -36174,6 +36246,9 @@
           ],
           "cssParts": [
             {
+              "name": "arrow"
+            },
+            {
               "name": "base"
             },
             {
@@ -36183,7 +36258,43 @@
               "name": "panel"
             },
             {
+              "name": "panel-bottom"
+            },
+            {
+              "name": "panel-bottom-end"
+            },
+            {
+              "name": "panel-bottom-start"
+            },
+            {
+              "name": "panel-left"
+            },
+            {
+              "name": "panel-left-end"
+            },
+            {
+              "name": "panel-left-start"
+            },
+            {
               "name": "panel-open"
+            },
+            {
+              "name": "panel-right"
+            },
+            {
+              "name": "panel-right-end"
+            },
+            {
+              "name": "panel-right-start"
+            },
+            {
+              "name": "panel-top"
+            },
+            {
+              "name": "panel-top-end"
+            },
+            {
+              "name": "panel-top-start"
             },
             {
               "name": "trigger"
@@ -36618,6 +36729,16 @@
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "cleanup",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",
@@ -40531,6 +40652,15 @@
             },
             {
               "name": "--receipt-ink"
+            },
+            {
+              "name": "--receipt-ink-band"
+            },
+            {
+              "name": "--receipt-ink-muted-on-band"
+            },
+            {
+              "name": "--receipt-ink-on-band"
             },
             {
               "name": "--receipt-item-font-size"
@@ -57904,6 +58034,9 @@
               "name": "--invalid"
             },
             {
+              "name": "--picker-active-pr"
+            },
+            {
               "name": "--required"
             },
             {
@@ -58456,7 +58589,17 @@
               "name": "title"
             }
           ],
-          "cssProperties": []
+          "cssProperties": [
+            {
+              "name": "--snice-timeline-content-divider"
+            },
+            {
+              "name": "--snice-timeline-content-divider-pad"
+            },
+            {
+              "name": "--snice-timeline-item-gap"
+            }
+          ]
         }
       ],
       "exports": [
@@ -60631,6 +60774,9 @@
           "cssProperties": [
             {
               "name": "--current"
+            },
+            {
+              "name": "--treemap-tile-transition"
             }
           ]
         }
@@ -62860,6 +63006,15 @@
             },
             {
               "name": "--wo-ink"
+            },
+            {
+              "name": "--wo-ink-band"
+            },
+            {
+              "name": "--wo-ink-muted-on-band"
+            },
+            {
+              "name": "--wo-ink-on-band"
             },
             {
               "name": "--wo-max-width"

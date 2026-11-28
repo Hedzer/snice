@@ -46,6 +46,9 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   private constraintInvalid = false;
 
   @state()
+  private hasConstraintError = false;
+
+  @state()
   private showValidation = false;
 
   /**
@@ -221,7 +224,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
             .name=${this.name || ''}
             aria-label="${accessibleName}"
             aria-describedby="${describedBy}"
-            aria-invalid="${displayedInvalid ? 'true' : 'false'}"
+            aria-invalid="${(this.invalid || this.hasConstraintError) ? 'true' : 'false'}"
             part="input${displayedInvalid ? ' input-invalid' : ''}${this.clearable ? ' input-clearable' : ''}${this.loading ? ' input-loading' : ''}"
             autocomplete="off"
             @click=${(e: Event) => this.handleInputClick(e)}
@@ -1165,14 +1168,16 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       (flags.rangeOverflow && maxDate ? `Dates must be on or before ${this.toCanonicalDate(maxDate)}.` : '') ||
       (hasError ? 'Please select a valid date range.' : '');
 
+    this.hasConstraintError = hasError;
     this.constraintInvalid = displayedConstraintInvalid;
     const displayedInvalid = this.invalid || displayedConstraintInvalid;
+    const ariaInvalid = this.invalid || hasError;
     const proxy = this.validationProxy;
     proxy.disabled = barred;
     proxy.value = complete ? `${this.toCanonicalDate(this.startDate!)} / ${this.toCanonicalDate(this.endDate!)}` : '';
     proxy.setCustomValidity(hasError ? message : '');
     this.input?.setCustomValidity(hasError ? message : '');
-    this.input?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.input?.setAttribute('aria-invalid', String(ariaInvalid));
     this.input?.classList.toggle('input--invalid', displayedInvalid);
 
     applyElementInternalsValidity(this.internals, flags, message, this.input);
@@ -1284,9 +1289,8 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   @watch('invalid')
   handleInvalidChange() {
     if (this.input) {
-      const displayedInvalid = this.invalid || this.constraintInvalid;
-      this.input.setAttribute('aria-invalid', String(displayedInvalid));
-      this.input.classList.toggle('input--invalid', displayedInvalid);
+      this.input.setAttribute('aria-invalid', String(this.invalid || this.hasConstraintError));
+      this.input.classList.toggle('input--invalid', this.invalid || this.constraintInvalid);
     }
   }
 

@@ -6260,7 +6260,7 @@
     },
     {
       "name": "snice-popover",
-      "description": "<snice-popover> — click-triggered, interactive panel anchored to a trigger.\n\nDistinct from <snice-tooltip> (hover-triggered, non-interactive text/HTML).\nDistinct from <snice-menu> (popover specialised for menu items + keyboard nav).\n\nSlots:\n  - trigger: the element that toggles the panel\n  - default: the panel's contents",
+      "description": "SnicePopover custom element.",
       "attributes": [
         {
           "name": "distance",

@@ -5,7 +5,7 @@
       <div class="comp-split">
         <div class="comp-split-demo" style="gap:1rem;flex-direction:column;flex-wrap:nowrap;align-items:stretch">
           <snice-link-preview
-            title="Snice - Beautiful Decorators for Custom Elements"
+            id="demo-link-preview-1"
             description="Write clean, reactive web components with TypeScript decorators. No framework. No virtual DOM."
             image="assets/photos/link-preview.jpg"
             site-name="snice.dev"
@@ -13,17 +13,17 @@
           ></snice-link-preview>
           <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.75rem">
             <snice-link-preview
+              id="demo-link-preview-2"
               variant="horizontal"
               size="small"
-              title="Getting Started Guide"
               description="Learn to build elements step by step"
               site-name="snice.dev"
               url="https://snice.dev/guide"
             ></snice-link-preview>
             <snice-link-preview
+              id="demo-link-preview-3"
               variant="horizontal"
               size="small"
-              title="Component Library"
               description="64+ pre-built UI components"
               site-name="snice.dev"
               url="https://snice.dev/components"
@@ -51,3 +51,16 @@
         </div>
       </div>
     </div>
+    <script>
+    customElements.whenDefined('snice-link-preview').then(() => {
+      const titles = {
+        'demo-link-preview-1': 'Snice - Beautiful Decorators for Custom Elements',
+        'demo-link-preview-2': 'Getting Started Guide',
+        'demo-link-preview-3': 'Component Library',
+      };
+      for (const [id, title] of Object.entries(titles)) {
+        const el = document.getElementById(id);
+        if (el) el.title = title;
+      }
+    });
+    </script>

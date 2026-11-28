@@ -243,5 +243,6 @@
 
   /* Color scheme for native controls */
   --snice-color-scheme-filter: none;
+  --snice-map-tile-filter: none;
   color-scheme: light;
 }

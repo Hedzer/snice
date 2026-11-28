@@ -63,6 +63,7 @@
   --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.03), transparent 50%);
 
   --snice-color-scheme-filter: invert(1) hue-rotate(180deg);
+  --snice-map-tile-filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9);
   color-scheme: dark;
 }
 
@@ -131,6 +132,7 @@
     --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.03), transparent 50%);
 
     --snice-color-scheme-filter: invert(1) hue-rotate(180deg);
+    --snice-map-tile-filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9);
     color-scheme: dark;
   }
 }
