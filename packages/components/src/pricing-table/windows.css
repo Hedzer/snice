@@ -213,7 +213,16 @@
   background: color-mix(in srgb, var(--snice-color-primary) 7%, transparent);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  [part~="toggle-button"],
+  [part~="card"],
+  [part~="cta"] {
+    transition: none;
+  }
+}
+
 @media (forced-colors: active) {
+  [part~="toggle"],
   [part~="card"],
   [part~="table"] {
     background: Canvas;
@@ -228,18 +237,34 @@
 
   [part~="badge"],
   [part~="cta-primary"] {
+    forced-color-adjust: none;
     background: Highlight;
     color: HighlightText;
     border: 1px solid HighlightText;
+    box-shadow: none;
   }
 
-  [part~="cta-secondary"] {
+  [part~="cta-secondary"],
+  [part~="cta-outline"] {
     background: ButtonFace;
     color: ButtonText;
     border: 1px solid ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="toggle-button-active"] {
+    border-color: Highlight;
   }
 
   [part~="toggle-button-active"]::after {
+    forced-color-adjust: none;
     background: Highlight;
+  }
+
+  [part~="toggle-button"]:focus-visible,
+  [part~="cta"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
   }
 }

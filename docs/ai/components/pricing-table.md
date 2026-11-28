@@ -16,7 +16,7 @@ annual: boolean = false;                             // Show annual pricing
 Attributes: `name`, `price`, `annual-price`, `period`, `currency`, `description`, `cta`, `cta-variant`, `highlighted` (boolean), `badge`
 
 **`<snice-feature>`** - Declarative feature child element.
-Attributes: `excluded` (boolean), `value` (string for custom display)
+Attributes: `name` (optional; falls back to text content), `included` (boolean), `excluded` (boolean), `value` (string for custom display)
 
 ## Events
 

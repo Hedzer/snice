@@ -126,10 +126,6 @@
   color: var(--snice-color-success);
 }
 
-[part~="feature-excluded"] {
-  opacity: 0.55;
-}
-
 /* 44px capsule CTAs */
 [part~="cta"] {
   min-height: 2.75rem;
@@ -162,23 +158,24 @@
 }
 
 [part~="cta-secondary"] {
-  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
-  color: var(--snice-color-primary);
-  border: none;
+  background: color-mix(in srgb, var(--snice-color-primary) 18%, transparent);
+  color: color-mix(in srgb, var(--snice-color-primary) 82%, var(--snice-color-text));
+  border: 0.5px solid color-mix(in srgb, var(--snice-color-primary) 34%, transparent);
 }
 
 [part~="cta-secondary"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 20%, transparent);
+  background: color-mix(in srgb, var(--snice-color-primary) 24%, transparent);
+  border-color: color-mix(in srgb, var(--snice-color-primary) 46%, transparent);
 }
 
 [part~="cta-outline"] {
-  background: transparent;
-  color: var(--snice-color-primary);
-  border: 1px solid var(--snice-color-primary);
+  background: color-mix(in srgb, var(--snice-color-primary) 6%, transparent);
+  color: color-mix(in srgb, var(--snice-color-primary) 82%, var(--snice-color-text));
+  border: 1px solid color-mix(in srgb, var(--snice-color-primary) 72%, var(--snice-color-text));
 }
 
 [part~="cta-outline"]:hover {
-  background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+  background: color-mix(in srgb, var(--snice-color-primary) 14%, transparent);
 }
 
 :host([variant="table"]) [part~="cta"] {
@@ -206,4 +203,58 @@
 [part~="header-cell-highlighted"],
 [part~="table-cell-highlighted"] {
   background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="toggle-button"],
+  [part~="card"],
+  [part~="cta"] {
+    transition: none;
+  }
+
+  [part~="toggle-button"]:active,
+  [part~="cta"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="toggle"],
+  [part~="card"],
+  [part~="table"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  [part~="card-highlighted"] {
+    border: 2px solid Highlight;
+  }
+
+  [part~="toggle-button-active"],
+  [part~="badge"],
+  [part~="cta-primary"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid HighlightText;
+    box-shadow: none;
+  }
+
+  [part~="cta-secondary"],
+  [part~="cta-outline"] {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+  }
+
+  [part~="toggle-button"]:focus-visible,
+  [part~="cta"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
 }

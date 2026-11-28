@@ -1,4 +1,4 @@
-import { element, property, watch, dispatch, ready, on, render, styles, html, css } from 'snice';
+import { element, property, watch, dispatch, ready, dispose, on, render, styles, html, css } from 'snice';
 import cssContent from './snice-pricing-table.css?inline';
 import type { SnicePricingTableElement, PricingTableVariant, PricingPlan, PricingFeature, PlanSelectDetail } from './snice-pricing-table.types';
 
@@ -55,9 +55,30 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
   @property({ type: Boolean })
   annual = false;
 
+  private declarativePlansRef: PricingPlan[] | null = null;
+  private lastDeclarativeSig = '';
+  private childObserver?: MutationObserver;
+
   @ready()
   init() {
     this.collectPlansFromChildren();
+    if (typeof MutationObserver !== 'undefined') {
+      this.childObserver = new MutationObserver(() => {
+        this.collectPlansFromChildren();
+      });
+      this.childObserver.observe(this, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        characterData: true
+      });
+    }
+  }
+
+  @dispose()
+  cleanup() {
+    this.childObserver?.disconnect();
+    this.childObserver = undefined;
   }
 
   @on('slotchange', { target: 'slot' })
@@ -68,20 +89,34 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
   /** Reads <snice-plan> and <snice-feature> children into the plans array (only if no plans set via property) */
   private collectPlansFromChildren() {
     // Don't override programmatically-set plans
-    if (this.plans.length > 0) return;
+    if (this.plans.length > 0 && this.plans !== this.declarativePlansRef) return;
 
     const planEls = Array.from(this.querySelectorAll('snice-plan'));
     if (planEls.length === 0) return;
+
+    const allFeatureEls = Array.from(this.querySelectorAll('snice-plan snice-feature'));
+    const usesExplicitIncluded = allFeatureEls.some(f => f.hasAttribute('included'));
 
     const collected: PricingPlan[] = planEls.map(planEl => {
       const features: PricingFeature[] = Array.from(planEl.querySelectorAll('snice-feature')).map(featureEl => {
         const excluded = featureEl.hasAttribute('excluded');
         const value = featureEl.getAttribute('value');
-        const name = featureEl.textContent?.trim() || '';
+        const name = featureEl.getAttribute('name')?.trim() || featureEl.textContent?.trim() || '';
+
+        let included: boolean | string;
+        if (value) {
+          included = value;
+        } else if (excluded) {
+          included = false;
+        } else if (featureEl.hasAttribute('included')) {
+          included = featureEl.getAttribute('included') !== 'false';
+        } else {
+          included = !usesExplicitIncluded;
+        }
 
         return {
           name,
-          included: value ? value : !excluded
+          included
         };
       });
 
@@ -105,6 +140,10 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
       return plan;
     });
 
+    const sig = JSON.stringify(collected);
+    if (sig === this.lastDeclarativeSig) return;
+    this.lastDeclarativeSig = sig;
+    this.declarativePlansRef = collected;
     this.plans = collected;
   }
 
@@ -323,6 +362,7 @@ export class SnicePricingTable extends HTMLElement implements SnicePricingTableE
 
     return html/*html*/`
       <div class="pricing" part="base">
+        <slot class="pricing__slot" aria-hidden="true"></slot>
         <if ${showToggle}>
           <div class="pricing__toggle" part="toggle" role="radiogroup" aria-label="Billing period">
             <button class="pricing__toggle-btn ${!this.annual ? 'pricing__toggle-btn--active' : ''}"

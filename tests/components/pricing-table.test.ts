@@ -258,6 +258,58 @@ describe('snice-pricing-table', () => {
     expect(value!.textContent?.trim()).toContain('50GB');
   });
 
+  it('should hydrate declarative <snice-plan> and <snice-feature name="..." included> children added after connect', async () => {
+    el = await createComponent<SnicePricingTableElement>('snice-pricing-table');
+    el.innerHTML = `
+      <snice-plan name="Starter" price="0" cta="Get Started" cta-variant="outline">
+        <snice-feature name="1 user" included></snice-feature>
+        <snice-feature name="API access"></snice-feature>
+      </snice-plan>
+      <snice-plan name="Pro" price="29" annual-price="24" highlighted badge="Popular" cta="Start Trial">
+        <snice-feature name="10 users" included></snice-feature>
+        <snice-feature name="API access" included></snice-feature>
+      </snice-plan>
+    `;
+    await wait(60);
+
+    const cards = queryShadowAll(el as HTMLElement, '.pricing__card');
+    expect(cards.length).toBe(2);
+
+    const featureNames = Array.from(queryShadowAll(el as HTMLElement, '[part~="feature-name"]'))
+      .map(n => n.textContent?.trim());
+    expect(featureNames).toEqual(['1 user', 'API access', '10 users', 'API access']);
+
+    const excluded = queryShadowAll(el as HTMLElement, '.pricing__feature--excluded');
+    expect(excluded.length).toBe(1);
+    expect(excluded[0].textContent?.trim()).toBe('API access');
+  });
+
+  it('should support text-content declarative <snice-feature> with excluded and value attributes', async () => {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
+      <snice-pricing-table>
+        <snice-plan name="Free" price="0" cta="Start">
+          <snice-feature>5 projects</snice-feature>
+          <snice-feature excluded>API access</snice-feature>
+          <snice-feature value="1GB">Storage</snice-feature>
+        </snice-plan>
+      </snice-pricing-table>
+    `;
+    document.body.appendChild(wrapper);
+    el = wrapper.querySelector('snice-pricing-table') as SnicePricingTableElement;
+    await wait(60);
+
+    const featureNames = Array.from(queryShadowAll(el as HTMLElement, '[part~="feature-name"]'))
+      .map(n => n.textContent?.replace(/\s+/g, ' ').trim());
+    expect(featureNames).toEqual(['5 projects', 'API access', 'Storage - 1GB']);
+
+    const excluded = queryShadowAll(el as HTMLElement, '.pricing__feature--excluded');
+    expect(excluded.length).toBe(1);
+    expect(excluded[0].textContent?.trim()).toBe('API access');
+
+    wrapper.remove();
+  });
+
   describe('stylesheet contracts', () => {
     const cssPath = resolve(process.cwd(), 'packages/components/src/pricing-table/snice-pricing-table.css');
 

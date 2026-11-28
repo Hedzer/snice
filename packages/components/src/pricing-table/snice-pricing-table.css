@@ -30,6 +30,10 @@
   gap: var(--snice-spacing-lg, 1.5rem);
 }
 
+.pricing__slot {
+  display: none;
+}
+
 /* Billing toggle */
 .pricing__toggle {
   display: flex;
@@ -200,11 +204,10 @@
 
 .pricing__feature-icon--excluded {
   color: var(--pt-text-tertiary);
-  opacity: 0.5;
 }
 
 .pricing__feature--excluded {
-  opacity: 0.5;
+  color: var(--pt-text-tertiary);
   text-decoration: line-through;
 }
 
