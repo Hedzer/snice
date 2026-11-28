@@ -238,7 +238,7 @@
 
 [part~="variant-option-selected"] {
   border-color: var(--snice-color-primary);
-  color: var(--snice-color-primary);
+  color: var(--snice-color-text);
   font-weight: 600;
   box-shadow: 0 0 0 1px var(--snice-color-primary);
 }

@@ -49,15 +49,16 @@ describe('snice-link-preview', () => {
       expect(titleEl?.textContent?.trim()).toBe('Test Title');
     });
 
-    it('should display title from HTML attribute without native tooltip leak', async () => {
-      el = await createComponent<SniceLinkPreviewElement>('snice-link-preview', {
-        title: 'Declarative Title'
-      });
+    it('should keep HTML title attribute as native tooltip (JS-only title property)', async () => {
+      const host = document.createElement('snice-link-preview') as SniceLinkPreviewElement;
+      host.setAttribute('title', 'Native Tooltip');
+      document.body.appendChild(host as HTMLElement);
+      el = host;
+      await (el as any).ready;
 
       const titleEl = queryShadow(el as HTMLElement, '.link-preview__title');
-      expect(titleEl).toBeTruthy();
-      expect(titleEl?.textContent?.trim()).toBe('Declarative Title');
-      expect(el.hasAttribute('title')).toBe(false);
+      expect(titleEl).toBeNull();
+      expect(el.getAttribute('title')).toBe('Native Tooltip');
     });
 
     it('should deduplicate footer when site-name matches URL hostname', async () => {
