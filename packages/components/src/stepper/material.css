@@ -24,12 +24,13 @@
   background: var(--snice-color-primary);
   border: 1px solid var(--snice-color-primary);
   color: var(--snice-m3-on-primary);
+  box-shadow: 0 0 0 4px var(--snice-m3-primary-container);
 }
 
 [part~="step-indicator"][part~="step-indicator-completed"] {
-  background: var(--snice-m3-primary-container);
-  border: 1px solid transparent;
-  color: var(--snice-m3-on-primary-container);
+  background: var(--snice-color-primary);
+  border: 1px solid var(--snice-color-primary);
+  color: var(--snice-m3-on-primary);
 }
 
 [part~="step-indicator"][part~="step-indicator-error"] {
@@ -77,6 +78,54 @@
 }
 
 [part~="step"][part~="step-clickable"]:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
+  outline: 3px solid var(--snice-color-primary);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="step-indicator"],
+  [part~="step-connector"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="step-indicator"][part~="step-indicator-pending"] {
+    background: Canvas;
+    border: 2px solid ButtonText;
+    color: ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="step-indicator"][part~="step-indicator-active"],
+  [part~="step-indicator"][part~="step-indicator-completed"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    border: 2px solid Highlight;
+    color: HighlightText;
+    box-shadow: none;
+  }
+
+  [part~="step-indicator"][part~="step-indicator-error"] {
+    background: Canvas;
+    border: 2px solid Highlight;
+    color: Highlight;
+    box-shadow: none;
+  }
+
+  [part~="step-connector"] {
+    forced-color-adjust: none;
+    background: ButtonBorder;
+  }
+
+  [part~="step-connector"][part~="step-connector-completed"] {
+    background: Highlight;
+  }
+
+  [part~="step"][part~="step-clickable"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
 }

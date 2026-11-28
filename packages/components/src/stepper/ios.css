@@ -89,3 +89,55 @@
   outline: none;
   box-shadow: 0 0 0 3px var(--snice-focus-ring-color);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="step-indicator"],
+  [part~="step-connector"],
+  [part~="step"][part~="step-clickable"] {
+    transition: none;
+  }
+
+  [part~="step"][part~="step-clickable"]:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="step-indicator"][part~="step-indicator-pending"] {
+    background: Canvas;
+    border: 2px solid ButtonText;
+    color: ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="step-indicator"][part~="step-indicator-active"],
+  [part~="step-indicator"][part~="step-indicator-completed"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    border: 2px solid Highlight;
+    color: HighlightText;
+    box-shadow: none;
+  }
+
+  [part~="step-indicator"][part~="step-indicator-error"] {
+    background: Canvas;
+    border: 2px solid Highlight;
+    color: Highlight;
+    box-shadow: none;
+  }
+
+  [part~="step-connector"] {
+    forced-color-adjust: none;
+    background: ButtonBorder;
+  }
+
+  [part~="step-connector"][part~="step-connector-completed"] {
+    background: Highlight;
+  }
+
+  [part~="step"][part~="step-clickable"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}

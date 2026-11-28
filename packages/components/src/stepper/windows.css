@@ -7,6 +7,7 @@
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   box-sizing: border-box;
+  transform: none;
   transition:
     background-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
     border-color var(--snice-transition-fast, 100ms) var(--snice-ease-out, cubic-bezier(0, 0, 0, 1)),
@@ -15,7 +16,7 @@
 
 [part~="step-indicator"][part~="step-indicator-pending"] {
   background: var(--snice-win-control-bg);
-  border: 1px solid var(--snice-win-stroke-bottom);
+  border: 1px solid var(--snice-color-border-hover);
   color: var(--snice-color-text-secondary);
 }
 
@@ -91,4 +92,51 @@
 [part~="step"][part~="step-clickable"]:focus-visible {
   outline: none;
   box-shadow: var(--snice-win-focus-shadow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [part~="step-indicator"],
+  [part~="step-connector"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="step-indicator"][part~="step-indicator-pending"] {
+    background: Canvas;
+    border: 2px solid ButtonText;
+    color: ButtonText;
+    box-shadow: none;
+  }
+
+  [part~="step-indicator"][part~="step-indicator-active"],
+  [part~="step-indicator"][part~="step-indicator-completed"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    border: 2px solid Highlight;
+    color: HighlightText;
+    box-shadow: none;
+  }
+
+  [part~="step-indicator"][part~="step-indicator-error"] {
+    background: Canvas;
+    border: 2px solid Highlight;
+    color: Highlight;
+    box-shadow: none;
+  }
+
+  [part~="step-connector"] {
+    forced-color-adjust: none;
+    background: ButtonBorder;
+  }
+
+  [part~="step-connector"][part~="step-connector-completed"] {
+    background: Highlight;
+  }
+
+  [part~="step"][part~="step-clickable"]:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
 }
