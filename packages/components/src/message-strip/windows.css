@@ -9,7 +9,7 @@
   font-size: 0.875rem;
   line-height: 1.43;
   background: var(--snice-color-surface-container-lowest);
-  border: 1px solid var(--snice-color-border);
+  border: 1px solid var(--snice-color-border-hover);
   color: var(--snice-color-text);
 }
 
@@ -19,7 +19,7 @@
 
 :host([variant="info"]) [part~="base"] {
   background: var(--snice-color-surface-container-lowest);
-  border-color: var(--snice-color-border);
+  border-color: var(--snice-color-border-hover);
   color: var(--snice-color-text);
 }
 

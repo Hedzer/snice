@@ -22,20 +22,20 @@
 }
 
 :host([variant="success"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-success) 16%, var(--snice-color-surface-container-high));
-  color: var(--snice-color-text);
+  background: var(--snice-m3-success-container, color-mix(in srgb, var(--snice-color-success) 16%, var(--snice-color-surface-container-lowest)));
+  color: var(--snice-m3-on-success-container, var(--snice-color-text));
   border: none;
 }
 
 :host([variant="warning"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-warning) 18%, var(--snice-color-surface-container-high));
-  color: var(--snice-color-text);
+  background: var(--snice-m3-warning-container, color-mix(in srgb, var(--snice-color-warning) 18%, var(--snice-color-surface-container-lowest)));
+  color: var(--snice-m3-on-warning-container, var(--snice-color-text));
   border: none;
 }
 
 :host([variant="error"]) [part~="base"] {
-  background: color-mix(in srgb, var(--snice-color-danger) 16%, var(--snice-color-surface-container-high));
-  color: var(--snice-color-text);
+  background: var(--snice-m3-error-container, color-mix(in srgb, var(--snice-color-danger) 16%, var(--snice-color-surface-container-lowest)));
+  color: var(--snice-m3-on-error-container, var(--snice-color-text));
   border: none;
 }
 
@@ -120,12 +120,14 @@
   font-family: var(--snice-font-family);
   font-weight: 600;
   letter-spacing: 0.005em;
+  color: inherit;
   margin-bottom: 0.1875rem;
 }
 
 [part~="description"] {
   font-weight: 400;
-  opacity: 0.9;
+  color: inherit;
+  opacity: 0.92;
 }
 
 [part~="close"] {
@@ -161,5 +163,17 @@
   [part~="close"] {
     animation-duration: 0.01ms;
     transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  [part~="base"] {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+  }
+
+  [part~="close"]:focus-visible {
+    outline: 2px solid Highlight;
   }
 }

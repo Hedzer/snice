@@ -29,9 +29,15 @@
 
   --snice-m3-on-primary: hsl(0 0% 100%);
   --snice-m3-primary-container: color-mix(in srgb, var(--snice-color-primary) 16%, hsl(0 0% 100%));
-  --snice-m3-on-primary-container: color-mix(in srgb, var(--snice-color-primary) 86%, black);
+  --snice-m3-on-primary-container: color-mix(in srgb, var(--snice-color-primary) 40%, black);
   --snice-m3-secondary-container: color-mix(in srgb, var(--snice-color-primary) 12%, hsl(270 14% 94%));
   --snice-m3-on-secondary-container: color-mix(in srgb, var(--snice-color-primary) 72%, hsl(270 10% 15%));
+  --snice-m3-success-container: hsl(142 66% 91%);
+  --snice-m3-on-success-container: hsl(144 68% 15%);
+  --snice-m3-warning-container: hsl(42 96% 89%);
+  --snice-m3-on-warning-container: hsl(28 84% 16%);
+  --snice-m3-error-container: hsl(4 90% 92%);
+  --snice-m3-on-error-container: hsl(3 78% 18%);
 
   /* M3 5-Step Tonal Surface Container Ladder (auto-tinted from primary seed) */
   --snice-color-surface: color-mix(in srgb, var(--snice-color-primary) 2%, hsl(270 25% 99%));
@@ -98,10 +104,16 @@
   --snice-color-neutral: hsl(264 8% 64%);
 
   --snice-m3-on-primary: hsl(265 58% 22%);
-  --snice-m3-primary-container: color-mix(in srgb, var(--snice-color-primary) 24%, hsl(270 14% 12%));
+  --snice-m3-primary-container: color-mix(in srgb, var(--snice-color-primary) 15%, hsl(262 48% 13%));
   --snice-m3-on-primary-container: color-mix(in srgb, var(--snice-color-primary) 78%, white);
   --snice-m3-secondary-container: color-mix(in srgb, var(--snice-color-primary) 20%, hsl(270 12% 17%));
   --snice-m3-on-secondary-container: color-mix(in srgb, var(--snice-color-primary) 78%, white);
+  --snice-m3-success-container: hsl(146 46% 18%);
+  --snice-m3-on-success-container: hsl(140 65% 88%);
+  --snice-m3-warning-container: hsl(33 56% 19%);
+  --snice-m3-on-warning-container: hsl(42 94% 88%);
+  --snice-m3-error-container: hsl(3 54% 21%);
+  --snice-m3-on-error-container: hsl(5 88% 90%);
 
   --snice-color-surface: color-mix(in srgb, var(--snice-color-primary) 3%, hsl(266 14% 8%));
   --snice-color-surface-container-lowest: hsl(266 16% 6%);
@@ -132,10 +144,16 @@
     --snice-color-neutral: hsl(264 8% 64%);
 
     --snice-m3-on-primary: hsl(265 58% 22%);
-    --snice-m3-primary-container: color-mix(in srgb, var(--snice-color-primary) 24%, hsl(270 14% 12%));
+    --snice-m3-primary-container: color-mix(in srgb, var(--snice-color-primary) 15%, hsl(262 48% 13%));
     --snice-m3-on-primary-container: color-mix(in srgb, var(--snice-color-primary) 78%, white);
     --snice-m3-secondary-container: color-mix(in srgb, var(--snice-color-primary) 20%, hsl(270 12% 17%));
     --snice-m3-on-secondary-container: color-mix(in srgb, var(--snice-color-primary) 78%, white);
+    --snice-m3-success-container: hsl(146 46% 18%);
+    --snice-m3-on-success-container: hsl(140 65% 88%);
+    --snice-m3-warning-container: hsl(33 56% 19%);
+    --snice-m3-on-warning-container: hsl(42 94% 88%);
+    --snice-m3-error-container: hsl(3 54% 21%);
+    --snice-m3-on-error-container: hsl(5 88% 90%);
 
     --snice-color-surface: color-mix(in srgb, var(--snice-color-primary) 3%, hsl(266 14% 8%));
     --snice-color-surface-container-lowest: hsl(266 16% 6%);
