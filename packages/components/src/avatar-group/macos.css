@@ -61,11 +61,11 @@
   font-family: var(--snice-font-family);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  background: color-mix(in srgb, var(--snice-color-background-elevated) 88%, transparent);
-  backdrop-filter: var(--snice-macos-glass-blur);
-  -webkit-backdrop-filter: var(--snice-macos-glass-blur);
+  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-background-element));
   color: var(--snice-color-text);
-  box-shadow: var(--snice-macos-glass-rim), inset 0 0 0 0.5px var(--snice-macos-glass-border);
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.42),
+    inset 0 0 0 0.75px var(--snice-color-border-hover);
   transition:
     transform var(--snice-transition-fast, 140ms) var(--snice-ease-out),
     box-shadow var(--snice-transition-fast, 140ms) var(--snice-ease-out);
@@ -89,14 +89,6 @@
   outline: none;
   box-shadow: var(--snice-macos-focus-halo);
   z-index: 3;
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  [part~="overflow"] {
-    background: var(--snice-color-background-elevated);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

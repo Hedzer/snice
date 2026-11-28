@@ -5,7 +5,7 @@
   font-family: var(--snice-font-family);
   --card-border-radius: 20px;
   --card-padding: 1rem;
-  --card-bg: var(--snice-color-surface-container-high);
+  --card-bg: var(--snice-color-surface-container-highest);
   --card-border-color: var(--snice-color-border-subtle);
   --card-shadow: 0 2px 12px -2px hsl(0 0% 0% / 0.06), 0 1px 2px hsl(0 0% 0% / 0.03);
   --card-hover-shadow: 0 6px 20px -4px hsl(0 0% 0% / 0.1), 0 2px 4px hsl(0 0% 0% / 0.04);
@@ -23,8 +23,8 @@
 
 :host [part~="base"] {
   border-radius: var(--card-border-radius);
-  background: var(--snice-color-surface-container-high);
-  border: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-highest);
+  border: 0.5px solid var(--snice-color-border);
   box-shadow: var(--card-shadow);
   color: var(--snice-color-text);
   transition:
@@ -38,10 +38,22 @@
   display: none;
 }
 
+:host [part~="base"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow:
+    inset 0 1px 0.5px hsl(0 0% 100% / 0.42),
+    inset 0 0 0 0.5px hsl(0 0% 100% / 0.16);
+}
+
 /* Variants */
 :host([variant="elevated"]) [part~="base"] {
-  background: var(--snice-color-surface-container-high);
-  border: 0.5px solid var(--snice-color-border-subtle);
+  background: var(--snice-color-surface-container-highest);
+  border: 0.5px solid var(--snice-color-border);
   box-shadow: var(--card-shadow);
 }
 
@@ -52,9 +64,14 @@
 }
 
 :host([variant="flat"]) [part~="base"] {
-  background: var(--snice-color-surface-container-low);
-  border: none;
+  background: color-mix(in srgb, hsl(0 0% 0%) 5%, var(--snice-color-surface-container-high));
+  border: 0.5px solid var(--snice-color-border);
   box-shadow: none;
+}
+
+:host([variant="bordered"]) [part~="base"]::after,
+:host([variant="flat"]) [part~="base"]::after {
+  display: none;
 }
 
 /* Sections */
@@ -182,6 +199,10 @@
   :host [part~="base"] {
     border: 1px solid CanvasText;
     box-shadow: none;
+  }
+
+  :host [part~="base"]::after {
+    display: none;
   }
 
   :host([selected]) [part~="base"][part~="base-selected"] {

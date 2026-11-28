@@ -33,12 +33,25 @@
   overflow: hidden;
   background: var(--snice-color-background-elevated);
   color: var(--snice-color-text);
-  border: 0.5px solid var(--snice-color-border);
+  border: 0.5px solid var(--snice-color-border-hover);
   box-shadow: var(--snice-shadow-sm);
   transition:
     box-shadow var(--snice-transition-fast, 140ms) ease-out,
     border-color var(--snice-transition-fast, 140ms) ease-out,
     visibility var(--flip-duration, 600ms) ease-in-out;
+}
+
+/* AppKit hairline top bezel overlay */
+:host [part~="front"]::after,
+:host [part~="back"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0.5px 0 hsl(0 0% 100% / 0.36),
+    inset 0 0 0 0.5px hsl(0 0% 0% / 0.14);
 }
 
 :host([click-to-flip]):hover [part~="front"],

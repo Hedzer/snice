@@ -59,9 +59,9 @@
   font-family: var(--snice-font-family);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  background: var(--snice-color-surface-container-highest);
+  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface-container-lowest));
   color: var(--snice-color-text);
-  box-shadow: inset 0 1px 0 var(--snice-win-stroke-top), inset 0 -1px 0 var(--snice-win-stroke-bottom);
+  box-shadow: inset 0 0 0 1px var(--snice-color-border-hover);
   transition:
     transform var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1),
     box-shadow var(--snice-transition-fast, 100ms) cubic-bezier(0, 0, 0, 1),

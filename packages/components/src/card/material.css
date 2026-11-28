@@ -5,10 +5,10 @@
   font-family: var(--snice-font-family);
   --card-border-radius: 16px;
   --card-padding: 1rem;
-  --card-bg: var(--snice-color-surface-container-low);
+  --card-bg: var(--snice-color-surface-container-high);
   --card-border-color: var(--snice-color-border-subtle);
-  --card-shadow: var(--snice-shadow-xs);
-  --card-hover-shadow: var(--snice-shadow-sm);
+  --card-shadow: var(--snice-shadow-sm);
+  --card-hover-shadow: var(--snice-shadow-md);
 }
 
 :host([size="small"]) {
@@ -23,9 +23,9 @@
 
 :host [part~="base"] {
   border-radius: var(--card-border-radius);
-  background: var(--snice-color-surface-container-low);
+  background: var(--snice-color-surface-container-high);
   border: none;
-  box-shadow: var(--snice-shadow-xs);
+  box-shadow: var(--snice-shadow-sm);
   color: var(--snice-color-text);
   transition:
     background-color var(--snice-transition-fast, 180ms) var(--snice-m3-spring-effects),
@@ -38,11 +38,11 @@
   display: none;
 }
 
-/* Variants: Elevated (Level 1 tonal), Bordered (M3 Outlined), Flat (M3 Filled) */
+/* Variants: Elevated (higher tonal step + shadow), Bordered (M3 Outlined), Flat (M3 Filled — recessed below elevated) */
 :host([variant="elevated"]) [part~="base"] {
-  background: var(--snice-color-surface-container-low);
+  background: var(--snice-color-surface-container-high);
   border: none;
-  box-shadow: var(--snice-shadow-xs);
+  box-shadow: var(--snice-shadow-sm);
 }
 
 :host([variant="bordered"]) [part~="base"] {
@@ -52,8 +52,8 @@
 }
 
 :host([variant="flat"]) [part~="base"] {
-  background: var(--snice-color-surface-container-highest);
-  border: none;
+  background: var(--snice-color-surface-container);
+  border: 1px solid color-mix(in srgb, var(--snice-color-border-subtle) 55%, transparent);
   box-shadow: none;
 }
 
@@ -88,8 +88,8 @@
 :host([clickable]) [part~="base"][part~="base-clickable"]:hover,
 :host([clickable][variant="elevated"]) [part~="base"][part~="base-clickable"]:hover {
   transform: none;
-  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-low));
-  box-shadow: var(--snice-shadow-sm);
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-high));
+  box-shadow: var(--snice-shadow-md);
 }
 
 :host([clickable][variant="bordered"]) [part~="base"][part~="base-clickable"]:hover {
@@ -101,7 +101,7 @@
 
 :host([clickable][variant="flat"]) [part~="base"][part~="base-clickable"]:hover {
   transform: none;
-  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container-highest));
+  background: color-mix(in srgb, var(--snice-color-text) 8%, var(--snice-color-surface-container));
   box-shadow: none;
 }
 
@@ -109,7 +109,7 @@
 :host([clickable][variant="elevated"]) [part~="base"][part~="base-clickable"]:active {
   transform: none;
   border-radius: var(--snice-m3-shape-morph-selected, 12px);
-  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface-container-low));
+  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface-container-high));
   box-shadow: var(--snice-shadow-xs);
 }
 
@@ -122,7 +122,7 @@
 :host([clickable][variant="flat"]) [part~="base"][part~="base-clickable"]:active {
   transform: none;
   border-radius: var(--snice-m3-shape-morph-selected, 12px);
-  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface-container-highest));
+  background: color-mix(in srgb, var(--snice-color-text) 10%, var(--snice-color-surface-container));
 }
 
 :host([clickable][size="small"]) [part~="base"][part~="base-clickable"]:active {
